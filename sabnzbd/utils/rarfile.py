@@ -688,8 +688,12 @@ class RarFile(object):
         return self._file_parser.needs_password()
 
     def namelist(self):
-        '''Return list of filenames in archive.'''
+        '''Return list of file and foldernames in archive.'''
         return [f.filename for f in self.infolist()]
+
+    def filelist(self):
+        '''Return list of file and foldernames in archive.'''
+        return [f.filename for f in self.infolist() if not f.isdir()]
 
     def infolist(self):
         '''Return RarInfo objects for all files/directories in archive.'''
@@ -818,10 +822,16 @@ class RarFile(object):
     def testrar(self):
         """Let 'unrar' test the archive.
         """
+        # Modified for SABnzbd by clipping paths
+        # and de-unicoding only here
+        from sabnzbd.misc import clip_path
+        from sabnzbd.encoding import deunicode
+        rarpath = deunicode(clip_path(self._rarfile))
+
         cmd = [UNRAR_TOOL] + list(TEST_ARGS)
         add_password_arg(cmd, self._password)
         cmd.append('--')
-        with XTempFile(self._rarfile) as rarfile:
+        with XTempFile(rarpath) as rarfile:
             cmd.append(rarfile)
             p = custom_popen(cmd)
             output = p.communicate()[0]

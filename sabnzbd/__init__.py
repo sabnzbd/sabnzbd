@@ -96,7 +96,7 @@ except:
 
 try:
     import cryptography
-    HAVE_CRYPTOGRAPHY = True
+    HAVE_CRYPTOGRAPHY = cryptography.__version__
 except:
     HAVE_CRYPTOGRAPHY = False
 
@@ -292,9 +292,8 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
     # Set cache limit
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        if cfg.cache_limit() == '' or cfg.cache_limit() == '200M':
-            cfg.cache_limit.set('450M')
+    if not cfg.cache_limit() or (cfg.cache_limit() == '200M' and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
+        cfg.cache_limit.set(misc.get_cache_limit())
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     check_incomplete_vs_complete()
@@ -609,7 +608,7 @@ def save_compressed(folder, filename, data):
     # Need to go to the save folder to
     # prevent the pathname being embedded in the GZ file
     here = os.getcwd()
-    os.chdir(misc.short_path(folder))
+    os.chdir(folder)
 
     if filename.endswith('.nzb'):
         filename += '.gz'
@@ -858,7 +857,7 @@ def keep_awake():
 def CheckFreeSpace():
     """ Check if enough disk space is free, if not pause downloader and send email """
     if cfg.download_free() and not sabnzbd.downloader.Downloader.do.paused:
-        if misc.diskfree(cfg.download_dir.get_path()) < cfg.download_free.get_float() / GIGI:
+        if misc.diskspace(cfg.download_dir.get_path(), force=True)[1] < cfg.download_free.get_float() / GIGI:
             logging.warning(T('Too little diskspace forcing PAUSE'))
             # Pause downloader, but don't save, since the disk is almost full!
             Downloader.do.pause(save=False)

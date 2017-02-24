@@ -82,15 +82,16 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
                 if 'http request' in e.args[1]:
                     # The client is speaking HTTP to an HTTPS server.
                     raise wsgiserver.NoSSLError
-                elif 'unknown protocol' in e.args[1]:
-                    # The client is speaking some non-HTTP protocol.
-                    # Drop the conn.
-                    return None, {}
-                elif 'unknown ca' in e.args[1]:
-                    # This error is thrown by builtin SSL if Safari connects
-                    # when self-signed certificates are used. The connection
-                    # can be dropped until the users adds the exception
-                    return None, {}
+
+                # Check if it's one of the known errors
+                # Errors that are caught by PyOpenSSL, but thrown by built-in ssl
+                _block_errors = ('unknown protocol', 'unknown ca', 'unknown_ca',
+                                 'inappropriate fallback', 'wrong version number',
+                                 'no shared cipher', 'certificate unknown', 'ccs received early')
+                for error_text in _block_errors:
+                    if error_text in e.args[1].lower():
+                        # Accepted error, let's pass
+                        return None, {}
             elif 'handshake operation timed out' in e.args[0]:
                 # This error is thrown by builtin SSL after a timeout
                 # when client is speaking HTTP to an HTTPS server.

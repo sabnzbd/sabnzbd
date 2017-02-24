@@ -31,9 +31,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="${root}staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="${root}staticcfg/ico/android-192x192.png" />
 
-    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="${root}staticcfg/bootstrap/css/bootstrap.min.css?v=$version" />
     <link rel="stylesheet" type="text/css" href="${root}staticcfg/css/style.css?p=$pid" />
-    <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico?v=1.1.0" />
+    <link rel="shortcut icon" href="${root}staticcfg/ico/favicon.ico?v=$version" />
 
     <script type="text/javascript">
         // Keeping track of the form state
@@ -59,9 +59,9 @@
         configTranslate.confirmLeave = "$T('confirmWithoutSavingPrompt')";
         configTranslate.searchPages = ['$T('cmenu-general')', '$T('cmenu-folders')', '$T('cmenu-switches')', '$T('cmenu-sorting')', '$T('cmenu-notif')', '$T('cmenu-special')']
     </script>
-    <script type="text/javascript" src="${root}staticcfg/js/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="${root}staticcfg/js/script.js?p=$pid"></script>
+    <script type="text/javascript" src="${root}staticcfg/js/jquery-3.1.1.min.js?v=$version"></script>
+    <script type="text/javascript" src="${root}staticcfg/bootstrap/js/bootstrap.min.js?v=$version"></script>
+    <script type="text/javascript" src="${root}staticcfg/js/script.js?v=$version"></script>
     <script type="text/javascript">
         // Set default functions for the autocomplete everywhere
         \$.extend(\$.fn.typeahead.defaults, {

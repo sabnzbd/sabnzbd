@@ -1264,7 +1264,7 @@ class ConfigPage(object):
 
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
-        conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
+        conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
         conf['have_yenc'] = HAVE_YENC
 
         if sabnzbd.HAVE_SSL:
@@ -1419,7 +1419,7 @@ SWITCH_LIST = \
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal',
              'ignore_samples', 'pause_on_post_processing', 'quick_check', 'nice', 'ionice',
              'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
-             'unpack_check', 'quota_size', 'quota_day', 'quota_resume', 'quota_period',
+             'quota_size', 'quota_day', 'quota_resume', 'quota_period',
              'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless_jobs', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'enable_meta', 'sanitize_safe',
@@ -1609,7 +1609,7 @@ class ConfigGeneral(object):
 
         conf['have_ssl'] = sabnzbd.HAVE_SSL
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
-        conf['have_cryptography'] = sabnzbd.HAVE_CRYPTOGRAPHY
+        conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
 
         wlist = []
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)
@@ -2795,55 +2795,67 @@ def ShowString(name, string):
 
 def GetRssLog(feed):
     def make_item(job):
-        url = job.get('url', '')
-        title = xml_name(job.get('title', ''))
-        size = job.get('size')
-        age = job.get('age', 0)
-        age_ms = job.get('age', 0)
-        time_downloaded = job.get('time_downloaded')
-        time_downloaded_ms = job.get('time_downloaded')
+        # Make a copy
+        job = job.copy()
 
-        if sabnzbd.rss.special_rss_site(url):
-            nzbname = ""
+        # Now we apply some formatting
+        job['title'] = xml_name(job['title'])
+        job['skip'] = '*' * int(job.get('status', '').endswith('*'))
+        # These fields could be empty
+        job['cat'] = job.get('cat', '')
+        job['size'] = job.get('size', '')
+
+        # Auto-fetched jobs didn't have these fields set
+        if job.get('url'):
+            job['baselink'] = get_base_url(job.get('url'))
+            if sabnzbd.rss.special_rss_site(job.get('url')):
+                job['nzbname'] = ''
+            else:
+                job['nzbname'] = xml_name(job['title'])
         else:
-            nzbname = xml_name(job.get('title', ''))
+            job['baselink'] = ''
+            job['nzbname'] = xml_name(job['title'])
 
-        if size:
-            size = to_units(size)
+        if job.get('size', 0):
+            job['size_units'] = to_units(job['size'])
+        else:
+            job['size_units'] = '-'
 
-        if age:
-            age = calc_age(age, True)
-            age_ms = time.mktime(age_ms.timetuple())
+        # And we add extra fields for sorting
+        if job.get('age', 0):
+            job['age_ms'] = time.mktime(job['age'].timetuple())
+            job['age'] = calc_age(job['age'], True)
+        else:
+            job['age_ms'] = ''
+            job['age'] = ''
 
-        if time_downloaded:
-            time_downloaded = time.strftime(time_format('%H:%M %a %d %b'), time_downloaded).decode(codepage)
-            time_downloaded_ms = time.mktime(time_downloaded_ms)
+        if job.get('time_downloaded'):
+            job['time_downloaded_ms'] = time.mktime(job['time_downloaded'])
+            job['time_downloaded'] = time.strftime(time_format('%H:%M %a %d %b'), job['time_downloaded']).decode(codepage)
+        else:
+            job['time_downloaded_ms'] = ''
+            job['time_downloaded'] = ''
 
-        # Also return extra fields for sorting
-        return url, \
-               title, \
-               '*' * int(job.get('status', '').endswith('*')), \
-               job.get('rule', 0), \
-               nzbname, \
-               size, \
-               job.get('size'), \
-               age, \
-               age_ms, \
-               time_downloaded, \
-               time_downloaded_ms,\
-               job.get('cat')
+        return job
 
-    jobs = sabnzbd.rss.show_result(feed)
-    names = jobs.keys()
-    # Sort in the order the jobs came from the feed
-    names.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
+    jobs = sabnzbd.rss.show_result(feed).values()
+    good, bad, done = ([], [], [])
+    for job in jobs:
+        if job['status'][0] == 'G':
+            good.append(make_item(job))
+        elif job['status'][0] == 'B':
+            bad.append(make_item(job))
+        elif job['status'] == 'D':
+            done.append(make_item(job))
 
-    good = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'G']
-    bad = [make_item(jobs[job]) for job in names if jobs[job]['status'][0] == 'B']
-
-    # Sort in reverse order of time stamp for 'Done'
-    names.sort(lambda x, y: int(jobs[y].get('time', 0) - jobs[x].get('time', 0)))
-    done = [make_item(jobs[job]) for job in names if jobs[job]['status'] == 'D']
+    try:
+        # Sort based on actual age, in try-catch just to be sure
+        good.sort(key=lambda job: job['age_ms'], reverse=True)
+        bad.sort(key=lambda job: job['age_ms'], reverse=True)
+        done.sort(key=lambda job: job['time_downloaded_ms'], reverse=True)
+    except:
+        # Let the javascript do it then..
+        pass
 
     return done, good, bad
 

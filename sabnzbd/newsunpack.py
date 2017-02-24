@@ -33,7 +33,8 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
     reliable_unpack_names, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    flag_file, real_path, globber, globber_full, short_path, get_all_passwords
+    flag_file, real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
+    has_win_device
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -204,7 +205,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
 
     if depth == 1:
         # First time, ignore anything in workdir_complete
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, None)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir)
     else:
         xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete)
 
@@ -532,18 +533,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     logging.debug("rar_extract(): Extractionpath: %s", extraction_path)
 
-    try:
-        zf = rarfile.RarFile(rarfile_path)
-        expected_files = zf.namelist()
-        zf.close()
-    except:
-        logging.info('Archive %s probably has full encryption', rarfile_path)
-        expected_files = []
-
     if password:
-        password = '-p%s' % password
+        password_command = '-p%s' % password
     else:
-        password = '-p-'
+        password_command = '-p-'
 
     ############################################################################
 
@@ -559,15 +552,16 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         rename = '-or'    # Auto renaming
     if sabnzbd.WIN32:
         # Use all flags
-        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password,
-                   '%s' % rarfile_path, '%s/' % extraction_path]
+        # See: https://github.com/sabnzbd/sabnzbd/pull/771
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
+                   '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
-        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password_command,
                    '%s' % rarfile_path, '%s/' % extraction_path]
     else:
         # Don't use "-ai" (not needed for non-Windows)
-        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, password,
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, password_command,
                    '%s' % rarfile_path, '%s/' % extraction_path]
 
     if cfg.ignore_unrar_dates():
@@ -650,6 +644,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             logging.error(T('ERROR: write error (%s)'), line[11:])
             fail = 1
 
+        elif line.startswith('Cannot create') and sabnzbd.WIN32 and extraction_path.startswith('\\\\?\\'):
+            # Can be due to Unicode problems on Windows, let's retry
+            fail = 4
+
         elif line.startswith('Cannot create'):
             line2 = proc.readline()
             if 'must not exceed 260' in line2:
@@ -723,42 +721,18 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             if proc:
                 proc.close()
             p.wait()
+            logging.debug('UNRAR output %s', '\n'.join(lines))
 
-            return fail, (), ()
+            # Unicode problems, lets start again but now we try without \\?\
+            # This will only fail if the download contains forbidden-Windows-names
+            if fail == 4:
+                return rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, clip_path(extraction_path), password)
+            else:
+                return fail, (), ()
 
     if proc:
         proc.close()
     p.wait()
-
-    if cfg.unpack_check():
-        if reliable_unpack_names() and not RAR_PROBLEM:
-            missing = []
-            # Loop through and check for the presence of all the files the archive contained
-            for path in expected_files:
-                if one_folder or cfg.flat_unpack():
-                    path = os.path.split(path)[1]
-                path = unicode2local(path)
-                if '?' in path:
-                    logging.info('Skipping check of file %s', path)
-                    continue
-                fullpath = os.path.join(extraction_path, path)
-                logging.debug("Checking existence of %s", fullpath)
-                if path.endswith('/'):
-                    # Folder
-                    continue
-                if not os.path.exists(fullpath):
-                    # There was a missing file, show a warning
-                    missing.append(path)
-                    logging.info(T('Missing expected file: %s => unrar error?'), path)
-
-            if missing:
-                nzo.fail_msg = T('Unpacking failed, an expected file was not unpacked')
-                logging.debug("Expecting files: %s" % str(expected_files))
-                msg = T('Unpacking failed, these file(s) are missing:') + ';' + u';'.join([unicoder(item) for item in missing])
-                nzo.set_unpack_info('Unpack', msg, set=setname)
-                return (1, (), ())
-        else:
-            logging.info('Skipping unrar file check due to unreliable file names or old unrar')
 
     logging.debug('UNRAR output %s', '\n'.join(lines))
     nzo.fail_msg = ''
@@ -1002,7 +976,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                 break
 
     # Shorten just the workdir on Windows
-    workdir = short_path(workdir)
     parfile = os.path.join(workdir, parfile_nzf.filename)
 
     old_dir_content = os.listdir(workdir)
@@ -1042,7 +1015,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             nzo.set_action_line(T('Repair'), T('Starting Repair'))
             logging.info('Scanning "%s"', parfile)
 
-            joinables, zips, rars, sevens, ts = build_filelists(workdir, None, check_rar=False)
+            joinables, zips, rars, sevens, ts = build_filelists(workdir, check_rar=False)
 
             finished, readd, pars, datafiles, used_joinables, used_par2 = PAR_Verify(parfile, parfile_nzf, nzo,
                                                                                      setname, joinables, single=single)
@@ -1177,14 +1150,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
     logging.debug('Par2-classic/cmdline = %s', classic)
 
-    # We need to check for the bad par2cmdline that skips blocks
-    # Only if we're not doing multicore and user hasn't set options
-    if not tbb and not options:
-        par2text = run_simple([command[0], '-h'])
-        if 'No data skipping' in par2text:
-            logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
-            command.insert(2, '-N')
-
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
     if single or len(globber(parfolder, setname + '*')) < 2:
@@ -1201,9 +1166,32 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         flist = [item for item in globber_full(parfolder, wildcard) if os.path.isfile(item)]
         command.extend(flist)
 
-    stup, need_shell, command, creationflags = build_command(command)
-    logging.debug('Starting par2: %s', command)
+    # We need to check for the bad par2cmdline that skips blocks
+    # Or the one that complains about basepath
+    # Only if we're not doing multicore
+    if not tbb:
+        par2text = run_simple([command[0], '-h'])
+        if 'No data skipping' in par2text:
+            logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
+            command.insert(2, '-N')
+        if 'Set the basepath' in par2text:
+            logging.info('Detected par2cmdline version that needs basepath, adding -B<path> parameter')
+            command.insert(2, '-B')
+            command.insert(3, parfolder)
 
+    stup, need_shell, command, creationflags = build_command(command)
+
+    # par2multicore wants to see \\.\ paths on Windows
+    # But par2cmdline doesn't support that notation, or \\?\ notation
+    # See: https://github.com/sabnzbd/sabnzbd/pull/771
+    if sabnzbd.WIN32 and (tbb or has_win_device(parfile)):
+        command = [x.replace('\\\\?\\', '\\\\.\\', 1) if x.startswith('\\\\?\\') else x for x in command]
+    elif sabnzbd.WIN32:
+        # For par2cmdline on Windows we need clipped paths
+        command = [clip_path(x) if x.startswith('\\\\?\\') else x for x in command]
+
+    # Run the external command
+    logging.debug('Starting par2: %s', command)
     lines = []
     try:
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -1465,6 +1453,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                     renames[new_name] = old_name
 
+                    # Show progress
+                    if verifytotal == 0 or verifynum < verifytotal:
+                        verifynum += 1
+                        nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
+
+            elif 'Scanning extra files' in line:
+                # Obfuscated post most likely, so reset counter to show progress
+                verifynum = 1
+
             elif 'No details available for recoverable file' in line:
                 msg = unicoder(line.strip())
                 nzo.fail_msg = msg
@@ -1545,6 +1542,18 @@ def fix_env():
     else:
         return None
 
+def userxbit(filename):
+    # Returns boolean if the x-bit for user is set on the given file
+    # This is a workaround: os.access(filename, os.X_OK) does not work on certain mounted file systems
+    # Does not work on Windows, but it is not called on Windows
+
+    # rwx rwx rwx
+    # 876 543 210      # we want bit 6 from the right, counting from 0
+    userxbit = 1<<6 # bit 6
+    rwxbits = os.stat(filename)[0] # the first element of os.stat() is "mode"
+    # do logical AND, check if it is not 0:
+    xbitset = (rwxbits & userxbit) > 0
+    return xbitset
 
 def build_command(command):
     """ Prepare list from running an external program """
@@ -1555,7 +1564,7 @@ def build_command(command):
     if not sabnzbd.WIN32:
         if command[0].endswith('.py'):
             with open(command[0], 'r') as script_file:
-                if not os.access(command[0], os.X_OK):
+                if not userxbit(command[0]):
                     # Inform user that Python scripts need x-bit and then stop
                     logging.error(T('Python script "%s" does not have execute (+x) permission set'), command[0])
                     raise IOError
@@ -1594,6 +1603,7 @@ def build_command(command):
         # scripts with spaces in the path don't work.
         if need_shell and ' ' in command[0]:
             command[0] = win32api.GetShortPathName(command[0])
+
         if need_shell:
             command = list2cmdline(command)
 
@@ -1630,7 +1640,7 @@ def par_sort(a, b):
         return 1
 
 
-def build_filelists(workdir, workdir_complete, check_rar=True):
+def build_filelists(workdir, workdir_complete=None, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
         Optionally test content to establish RAR-ness
     """
@@ -1703,11 +1713,14 @@ def QuickCheck(set, nzo):
 
     result = False
     nzf_list = nzo.finished_files
+    renames = {}
 
     for file in md5pack:
         found = False
+        file_platform = platform_encode(file)
         for nzf in nzf_list:
-            if platform_encode(file) == nzf.filename:
+            # Do a simple filename based check
+            if file_platform == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
@@ -1716,9 +1729,27 @@ def QuickCheck(set, nzo):
                     logging.info('Quick-check of file %s failed!', file)
                     return False  # When any file fails, just stop
                 break
+
+            # Now lets do obfuscation check
+            if nzf.md5sum == md5pack[file]:
+                renames[file_platform] = nzf.filename
+                logging.debug('Quick-check renamed %s to %s', nzf.filename, file_platform)
+                renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file_platform))
+                nzf.filename = file_platform
+                result = True
+                found = True
+                break
+
         if not found:
             logging.info('Cannot Quick-check missing file %s!', file)
             return False  # Missing file is failure
+
+    # Save renames
+    if renames:
+        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
+        for name in previous or {}:
+            renames[name] = previous[name]
+        save_data(renames, RENAMES_FILE, nzo.workpath)
     return result
 
 

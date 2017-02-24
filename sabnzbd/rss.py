@@ -307,31 +307,31 @@ class RSSQueue(object):
                 logging.debug("Running feedparser on %s", uri)
                 feed_parsed = feedparser.parse(uri.replace('feed://', 'http://'))
                 logging.debug("Done parsing %s", uri)
+
                 if not feed_parsed:
                     msg = T('Failed to retrieve RSS from %s: %s') % (uri, '?')
                     logging.info(msg)
-                    return unicoder(msg)
 
                 status = feed_parsed.get('status', 999)
                 if status in (401, 402, 403):
                     msg = T('Do not have valid authentication for feed %s') % feed
                     logging.info(msg)
-                    return unicoder(msg)
+
                 if status >= 500 and status <= 599:
                     msg = T('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
                     logging.info(msg)
-                    return unicoder(msg)
 
                 entries = feed_parsed.get('entries')
                 if 'bozo_exception' in feed_parsed and not entries:
                     msg = str(feed_parsed['bozo_exception'])
                     if 'CERTIFICATE_VERIFY_FAILED' in msg:
                         msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
+                        msg += ' - https://sabnzbd.org/certificate-errors'
                         logging.error(msg)
                     else:
                         msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
                     logging.info(msg)
-                    return unicoder(msg)
+
                 if not entries:
                     msg = T('RSS Feed %s was empty') % uri
                     logging.info(msg)
@@ -492,9 +492,15 @@ class RSSQueue(object):
 
                     if cfg.no_dupes() and self.check_duplicate(title):
                         if cfg.no_dupes() == 1:
+                            # Dupe-detection: Discard
                             logging.info("Ignoring duplicate job %s", title)
                             continue
+                        elif cfg.no_dupes() == 3:
+                            # Dupe-detection: Fail
+                            # We accept it so the Queue can send it to the History
+                            logging.info("Found duplicate job %s", title)
                         else:
+                            # Dupe-detection: Pause
                             myPrio = DUP_PRIORITY
 
                     act = download and not first
@@ -519,7 +525,7 @@ class RSSQueue(object):
             emailer.rss_mail(feed, new_downloads)
 
         remove_obsolete(jobs, newlinks)
-        return ''
+        return msg
 
     def run(self):
         """ Run all the URI's and filters """
@@ -621,12 +627,21 @@ def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat
         pp = None
 
     jobs[link] = {}
+    jobs[link]['title'] = title
+    jobs[link]['url'] = link
+    jobs[link]['cat'] = cat
+    jobs[link]['pp'] = pp
+    jobs[link]['script'] = script
+    jobs[link]['prio'] = str(priority)
     jobs[link]['order'] = order
     jobs[link]['orgcat'] = orgcat
     jobs[link]['size'] = size
     jobs[link]['age'] = age
+    jobs[link]['time'] = time.time()
+    jobs[link]['rule'] = rule
     jobs[link]['season'] = season
     jobs[link]['episode'] = episode
+
     if special_rss_site(link):
         nzbname = None
     else:
@@ -634,7 +649,6 @@ def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat
 
     if download:
         jobs[link]['status'] = 'D'
-        jobs[link]['title'] = title
         jobs[link]['time_downloaded'] = time.localtime()
         logging.info("Adding %s (%s) to queue", link, title)
         sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
@@ -643,16 +657,6 @@ def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat
             jobs[link]['status'] = flag + '*'
         else:
             jobs[link]['status'] = flag
-        jobs[link]['title'] = title
-        jobs[link]['url'] = link
-        jobs[link]['cat'] = cat
-        jobs[link]['pp'] = pp
-        jobs[link]['script'] = script
-        jobs[link]['prio'] = str(priority)
-
-    jobs[link]['time'] = time.time()
-    jobs[link]['rule'] = rule
-
 
 def _get_link(uri, entry):
     """ Retrieve the post link from this entry

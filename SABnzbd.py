@@ -434,7 +434,7 @@ def print_modules():
         logging.warning(T('_yenc module... NOT found!'))
 
     if sabnzbd.HAVE_CRYPTOGRAPHY:
-        logging.info('Cryptography module... found!')
+        logging.info('Cryptography module (v%s)... found!', sabnzbd.HAVE_CRYPTOGRAPHY)
     else:
         logging.info('Cryptography module... NOT found!')
 
@@ -492,6 +492,9 @@ def all_localhosts():
     ips = []
     for item in info:
         item = item[4][0]
+        # Avoid problems on strange Linux settings
+        if not isinstance(item, basestring):
+            continue
         # Only return IPv6 when enabled
         if item not in ips and ('::1' not in item or sabnzbd.cfg.ipv6_hosting()):
             ips.append(item)
@@ -673,7 +676,7 @@ def find_free_port(host, currentport):
     n = 0
     while n < 10 and currentport <= 49151:
         try:
-            cherrypy.process.servers.check_port(host, currentport, timeout=0.1)
+            cherrypy.process.servers.check_port(host, currentport, timeout=0.025)
             return currentport
         except:
             currentport += 5
@@ -1032,13 +1035,13 @@ def main():
     if sabnzbd.DAEMON:
         if enable_https and https_port:
             try:
-                cherrypy.process.servers.check_port(cherryhost, https_port, timeout=0.1)
+                cherrypy.process.servers.check_port(cherryhost, https_port, timeout=0.025)
             except IOError, error:
                 Bail_Out(browserhost, cherryport)
             except:
                 Bail_Out(browserhost, cherryport, '49')
         try:
-            cherrypy.process.servers.check_port(cherryhost, cherryport, timeout=0.1)
+            cherrypy.process.servers.check_port(cherryhost, cherryport, timeout=0.025)
         except IOError, error:
             Bail_Out(browserhost, cherryport)
         except:
@@ -1060,7 +1063,7 @@ def main():
     if enable_https:
         port = https_port or cherryport
         try:
-            cherrypy.process.servers.check_port(browserhost, port, timeout=0.1)
+            cherrypy.process.servers.check_port(browserhost, port, timeout=0.025)
         except IOError, error:
             if str(error) == 'Port not bound.':
                 pass
@@ -1071,19 +1074,22 @@ def main():
                     if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                         newport = find_free_port(browserhost, port)
                         if newport > 0:
-                            sabnzbd.cfg.https_port.set(newport)
                             notify_port_change = True
+                            # Save the new port
                             if https_port:
                                 https_port = newport
+                                sabnzbd.cfg.https_port.set(newport)
                             else:
+                                # In case HTTPS == HTTP port
                                 http_port = newport
+                                sabnzbd.cfg.port.set(newport)
         except:
             Bail_Out(browserhost, cherryport, '49')
 
     # NonSSL check if there's no HTTPS or we only use 1 port
     if not (enable_https and not https_port):
         try:
-            cherrypy.process.servers.check_port(browserhost, cherryport, timeout=0.1)
+            cherrypy.process.servers.check_port(browserhost, cherryport, timeout=0.025)
         except IOError, error:
             if str(error) == 'Port not bound.':
                 pass
@@ -1236,7 +1242,7 @@ def main():
         try:
             from ctypes import cdll
             libc = cdll.LoadLibrary('/usr/lib/libc.dylib')
-            boolSetResult = libc.setiopolicy_np(0, 1, 3)  # @UnusedVariable
+            boolSetResult = libc.setiopolicy_np(0, 1, 3)
             logging.info('[osx] IO priority set to throttle for process scope')
         except:
             logging.info('[osx] IO priority setting not supported')
@@ -1261,7 +1267,6 @@ def main():
     web_dirc = Web_Template(None, DEF_STDCONFIG, '')
 
     wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-    # sabnzbd.lang.install_language(os.path.join(wizard_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), 'wizard')
 
     sabnzbd.WEB_DIR = web_dir
     sabnzbd.WEB_DIR2 = web_dir2

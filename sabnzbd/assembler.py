@@ -35,7 +35,7 @@ except:
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-    set_permissions, flag_file, long_path, clip_path, get_all_passwords, short_path
+    set_permissions, flag_file, long_path, clip_path, has_win_device, get_all_passwords
 from sabnzbd.constants import QCHECK_FILE, Status
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -76,7 +76,8 @@ class Assembler(Thread):
 
             if nzf:
                 sabnzbd.CheckFreeSpace()
-                filename = sanitize_filename(nzf.filename)
+                # We allow win_devices because otherwise par2cmdline fails to repair
+                filename = sanitize_filename(nzf.filename, allow_win_devices=True)
                 nzf.filename = filename
 
                 dupe = nzo.check_for_dupe(nzf)
@@ -119,7 +120,6 @@ class Assembler(Thread):
                         else:
                             logging.warning(T('WARNING: Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'), nzo.final_name)
                             nzo.fail_msg = T('Aborted, encryption detected')
-                            import sabnzbd.nzbqueue
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
                     if unwanted_file:
@@ -132,7 +132,6 @@ class Assembler(Thread):
                         if cfg.action_on_unwanted_extensions() == 2:
                             logging.debug('Unwanted extension ... aborting')
                             nzo.fail_msg = T('Aborted, unwanted extension detected')
-                            import sabnzbd.nzbqueue
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
                     filter, reason = nzo_filtered_by_rating(nzo)
@@ -142,7 +141,6 @@ class Assembler(Thread):
                     elif filter == 2:
                         logging.warning(Ta('WARNING: Aborted job "%s" because of rating (%s)'), nzo.final_name, reason)
                         nzo.fail_msg = T('Aborted, rating filter matched (%s)') % reason
-                        import sabnzbd.nzbqueue
                         sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
                     nzf.completed = True
@@ -312,24 +310,28 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
     encrypted = False
     unwanted = None
 
-    if cfg.unwanted_extensions() or (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
-        # Safe-format for Windows
-        # RarFile requires de-unicoded filenames for zf.testrar()
-        filepath_split = os.path.split(filepath)
-        workdir_short = short_path(filepath_split[0])
-        filepath = deunicode(os.path.join(workdir_short, filepath_split[1]))
+    if (cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions()) or (nzo.encrypted == 0 and cfg.pause_on_pwrar()):
+        # These checks should not break the assembler
+        try:
+            # Rarfile freezes on Windows special names, so don't try those!
+            if sabnzbd.WIN32 and has_win_device(filepath):
+                return encrypted, unwanted
 
-        # Is it even a rarfile?
-        if rarfile.is_rarfile(filepath):
-            try:
+            # Is it even a rarfile?
+            if rarfile.is_rarfile(filepath):
                 zf = rarfile.RarFile(filepath, all_names=True)
+
                 # Check for encryption
                 if nzo.encrypted == 0 and cfg.pause_on_pwrar() and (zf.needs_password() or is_cloaked(filepath, zf.namelist())):
                     # Load all passwords
                     passwords = get_all_passwords(nzo)
 
-                    # if no cryptography installed, only error when no password was set
-                    if not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
+                    # Cloaked job?
+                    if is_cloaked(filepath, zf.namelist()):
+                        nzo.encrypted = 1
+                        encrypted = True
+                    elif not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
+                        # if no cryptography installed, only error when no password was set
                         logging.info(T('%s missing'), 'Python Cryptography')
                         nzo.encrypted = 1
                         encrypted = True
@@ -344,6 +346,11 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                 logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
+                                except:
+                                    # On weird passwords the setpassword() will fail
+                                    # but the actual rartest() will work
+                                    pass
+                                try:
                                     zf.testrar()
                                     password_hit = password
                                     break
@@ -351,7 +358,11 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                     # On CRC error we can continue!
                                     password_hit = password
                                     break
-                                except:
+                                except Exception as e:
+                                    # Did we start from the right volume?
+                                    if 'need to start extraction from a previous volume' in e[0]:
+                                        return encrypted, unwanted
+                                    # This one failed
                                     pass
 
                         # Did any work?
@@ -370,17 +381,16 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                         encrypted = False
 
                 # Check for unwanted extensions
-                if cfg.unwanted_extensions():
+                if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions():
                     for somefile in zf.namelist():
                         logging.debug('File contains: %s', somefile)
                         if os.path.splitext(somefile)[1].replace('.', '').lower() in cfg.unwanted_extensions():
                             logging.debug('Unwanted file %s', somefile)
                             unwanted = somefile
-                            zf.close()
                 zf.close()
                 del zf
-            except:
-                logging.debug('RAR file %s cannot be inspected', filepath)
+        except:
+            logging.info('Error during inspection of RAR-file %s', filepath, exc_info=True)
 
     return encrypted, unwanted
 

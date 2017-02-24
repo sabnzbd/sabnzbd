@@ -913,8 +913,7 @@ class NzbObject(TryList):
             self.deleted = True
             self.status = Status.FAILED
             nzo_id = sabnzbd.NzbQueue.do.add(self, quiet=True)
-            sabnzbd.NzbQueue.do.remove(nzo_id)
-            self.purge_data(keep_basic=True)
+            sabnzbd.NzbQueue.do.end_job(self)
             # Raise error, so it's not added
             raise TypeError
 
@@ -1261,7 +1260,6 @@ class NzbObject(TryList):
                         logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
                     # Reset all try lists
                     self.reset_all_try_lists()
-                    sabnzbd.NzbQueue.do.reset_try_list()
 
 
     def check_quality(self, req_ratio=0):
@@ -1819,6 +1817,10 @@ def scan_password(name):
 
     # Look for name/password, but make sure that '/' comes before any {{
     if slash >= 0 and slash < braces and 'password=' not in name:
+        # Is it maybe in 'name / password' notation?
+        if slash == name.find(' / ') + 1:
+            # Remove the extra space after name and before password
+            return name[:slash-1].strip('. '), name[slash + 2:]
         return name[:slash].strip('. '), name[slash + 1:]
 
     # Look for "name password=password"

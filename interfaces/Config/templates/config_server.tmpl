@@ -325,11 +325,6 @@
         setTimeout(function() { portBox.removeClass('port-highlight') }, 2000)
     })
 
-    \$('.advancedButton').click(function(event){
-        \$('.advanced-settings').toggle()
-        return false;
-    })
-
     \$('.testServer').click(function(event){
         removeObfuscation()
         var theButton = \$(this)
@@ -341,9 +336,11 @@
             url: "../../tapi",
             data: "mode=config&output=json&name=test_server&" + \$(this).parents('form:first').serialize()
         }).then(function(data) {
+            // Let's replace the link
+            msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
             // Fill the box and enable the button
             resultBox.removeClass('alert-success alert-danger').show()
-            resultBox.text(data.value.message)
+            resultBox.html(msg)
             theButton.removeAttr("disabled")
             theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
 

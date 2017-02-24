@@ -60,10 +60,6 @@ msgstr "Disable server:"
 msgid "enable server"
 msgstr "Enable server:"
 
-#: sabnzbd/skintext.py:661
-msgid "Generic Sorting"
-msgstr "Movie Sorting"
-
 #: sabnzbd/emailer.py:117
 msgid "The server didn't reply properly to the helo greeting"
 msgstr "The server didn't reply properly to the hello greeting"
@@ -135,6 +131,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py:333
 msgid "If empty, the standard port will only listen to HTTPS."
-msgstr "If empty, the SABnzbd Port set above will only listen to HTTPS."
+msgstr "If empty, the SABnzbd Port set above will listen to HTTPS."
 
 

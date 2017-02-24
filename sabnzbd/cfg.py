@@ -21,10 +21,9 @@ sabnzbd.cfg - Configuration Parameters
 import re
 
 import sabnzbd
-from sabnzbd.constants import DEF_HOST, DEF_PORT_WIN_SSL, DEF_PORT_WIN, DEF_STDINTF, \
-    DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_PORT_UNIX_SSL, \
-    DEF_SCANRATE, DEF_PORT_UNIX, DEF_COMPLETE_DIR, \
-    DEF_ADMIN_DIR
+from sabnzbd.constants import DEF_HOST, DEF_PORT, DEF_STDINTF, DEF_ADMIN_DIR, \
+    DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_SCANRATE, DEF_COMPLETE_DIR
+
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
     OptionDir, OptionStr, OptionList, no_nonsense, \
     validate_octal, validate_safedir, \
@@ -189,7 +188,6 @@ complete_dir = OptionDir('misc', 'complete_dir', DEF_COMPLETE_DIR, create=False,
 script_dir = OptionDir('misc', 'script_dir', create=True, writable=False)
 nzb_backup_dir = OptionDir('misc', 'nzb_backup_dir', DEF_NZBBACK_DIR)
 admin_dir = OptionDir('misc', 'admin_dir', DEF_ADMIN_DIR, validation=validate_safedir)
-# log_dir = OptionDir('misc', 'log_dir', 'logs')
 dirscan_dir = OptionDir('misc', 'dirscan_dir', create=False)
 dirscan_speed = OptionNumber('misc', 'dirscan_speed', DEF_SCANRATE, 0, 3600)
 size_limit = OptionStr('misc', 'size_limit', '0')
@@ -201,14 +199,8 @@ sanitize_safe = OptionBool('misc', 'sanitize_safe', False)
 api_logging = OptionBool('misc', 'api_logging', True)
 
 cherryhost = OptionStr('misc', 'host', DEF_HOST)
-if sabnzbd.WIN32:
-    cherryport = OptionStr('misc', 'port', DEF_PORT_WIN)
-else:
-    cherryport = OptionStr('misc', 'port', DEF_PORT_UNIX)
-if sabnzbd.WIN32:
-    https_port = OptionStr('misc', 'https_port', DEF_PORT_WIN_SSL)
-else:
-    https_port = OptionStr('misc', 'https_port', DEF_PORT_UNIX_SSL)
+cherryport = OptionStr('misc', 'port', DEF_PORT)
+https_port = OptionStr('misc', 'https_port')
 
 username = OptionStr('misc', 'username')
 password = OptionPassword('misc', 'password')
@@ -242,13 +234,9 @@ https_chain = OptionDir('misc', 'https_chain', create=False)
 enable_https = OptionBool('misc', 'enable_https', False)
 
 language = OptionStr('misc', 'language', 'en')
-unpack_check = OptionBool('misc', 'unpack_check', True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 load_balancing = OptionNumber('misc', 'load_balancing', 2)
 ipv6_servers = OptionNumber('misc', 'ipv6_servers', 1, 0, 2)
-
-# Internal options, not saved in INI file
-debug_delay = OptionNumber('misc', 'debug_delay', 0, add=False)
 
 api_key = OptionStr('misc', 'api_key', create_api_key())
 nzb_key = OptionStr('misc', 'nzb_key', create_api_key())

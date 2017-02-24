@@ -47,16 +47,12 @@ from sabnzbd.encoding import platform_encode
 from sabnzbd.bpsmeter import BPSMeter
 
 
-class NzbQueue(TryList):
+class NzbQueue:
     """ Singleton NzbQueue """
     do = None
 
     def __init__(self):
-        TryList.__init__(self)
-
-        self.__top_only = False  # cfg.top_only()
-        self.__top_nzo = None
-
+        self.__top_only = cfg.top_only()
         self.__nzo_list = []
         self.__nzo_table = {}
 
@@ -323,8 +319,6 @@ class NzbQueue(TryList):
 
                 if cfg.auto_sort():
                     self.sort_by_avg_age()
-
-                self.reset_try_list()
             except:
                 logging.error(T('Error while adding %s, removing'), nzo_id)
                 logging.info("Traceback: ", exc_info=True)
@@ -397,7 +391,6 @@ class NzbQueue(TryList):
 
         # Reset try_lists
         nzo.reset_try_list()
-        self.reset_try_list()
 
         if nzo.nzo_id:
             nzo.deleted = False
@@ -560,7 +553,6 @@ class NzbQueue(TryList):
             nzo.reset_all_try_lists()
             logging.debug("Resumed nzo: %s", nzo_id)
             handled.append(nzo_id)
-        self.reset_try_list()
         return handled
 
     @synchronized(NZBQUEUE_LOCK)
@@ -759,13 +751,11 @@ class NzbQueue(TryList):
             nzf.reset_try_list()
         if nzo:
             nzo.reset_try_list()
-        self.reset_try_list()
 
     @synchronized(NZBQUEUE_LOCK)
     def reset_all_try_lists(self):
         for nzo in self.__nzo_list:
             nzo.reset_all_try_lists()
-        self.reset_try_list()
 
     @synchronized(NZBQUEUE_LOCK)
     def has_articles_for(self, server):
@@ -780,7 +770,7 @@ class NzbQueue(TryList):
                 if not cfg.propagation_delay() or nzo.priority == TOP_PRIORITY or (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) < time.time():
                     # Check if category allowed
                     if nzo.server_allowed(server) or self.__top_only:
-                        return not self.server_in_try_list(server)
+                        return True
         return False
 
     @synchronized(NZBQUEUE_LOCK)
@@ -801,14 +791,14 @@ class NzbQueue(TryList):
                 # Check if past propagation delay, or forced
                 if not cfg.propagation_delay() or nzo.priority == TOP_PRIORITY or (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) < time.time():
                     # Don't try to get an article if server is in try_list of nzo and category allowed by server
-                    if nzo.server_allowed(server) and (not nzo.server_in_try_list(server) or self.__top_only):
+                    if nzo.server_allowed(server) and not nzo.server_in_try_list(server):
                         article = nzo.get_article(server, servers)
                         if article:
                             return article
-
-        # No articles for this server, block server (until reset issued)
-        if not self.__top_only:
-            self.add_to_try_list(server)
+                    # Stop after first job that wasn't paused/propagating/etc
+                    # But make sure not to get stuck behind bad category
+                    if self.__top_only and not nzo.server_allowed(server):
+                        return
 
     @synchronized(NZBQUEUE_LOCK)
     def register_article(self, article, found=True):
@@ -822,9 +812,6 @@ class NzbQueue(TryList):
         file_done, post_done, reset = nzo.remove_article(article, found)
 
         filename = nzf.filename
-
-        if reset:
-            self.reset_try_list()
 
         if nzo.is_gone():
             logging.debug('Discarding file completion %s for deleted job', filename)

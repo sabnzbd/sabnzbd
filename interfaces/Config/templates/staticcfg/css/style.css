@@ -272,6 +272,9 @@ textarea:hover, input[type="date"]:hover, input[type="datetime"]:hover, input[ty
     overflow: auto;
     clear: both;
 }
+.label {
+    font-style: normal;
+}
 .padTable h3 {
     margin-top: 0;
 }
@@ -556,6 +559,9 @@ h2.activeRSS {
     float: left;
     margin: 0 6px 0 2px;
     text-align: center;
+}
+.source-icon span {
+    top: -3px;
 }
 .feed {
     text-decoration: none;
@@ -981,7 +987,7 @@ input[type="checkbox"] {
     opacity: 0.7;
 }
 
-.Servers .advanced-settings {
+.advanced-settings {
     display: none;
 }
 

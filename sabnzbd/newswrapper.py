@@ -241,10 +241,9 @@ class NNTP(object):
             if not block:
                 Thread(target=con, args=(self.sock, self.host, self.port, sslenabled, write_fds, self)).start()
             else:
-                # if blocking (server test) only wait for 4 seconds during connect until timeout
-                self.sock.settimeout(4)
+                # if blocking (server test) only wait for 15 seconds during connect until timeout
+                self.sock.settimeout(15)
                 self.sock.connect((self.host, self.port))
-
                 if sslenabled and sabnzbd.HAVE_SSL:
                     # Log SSL/TLS info
                     logging.info("%s@%s: Connected using %s (%s)",
@@ -277,16 +276,18 @@ class NNTP(object):
         # Catch certificate errors
         if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
             error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, str(error))
+            error += ' - https://sabnzbd.org/certificate-errors'
             # Prevent throwing a lot of errors or when testing server
             if error not in self.nw.server.warning and self.nw.server.id != -1:
                 logging.error(error)
 
-        msg = "Failed to connect: %s" % (str(error))
-        msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
-        self.error_msg = msg
+        # Blocking = server-test, pass directly to display code
         if self.blocking:
-            raise socket.error(errno.ECONNREFUSED, msg)
+            raise socket.error(errno.ECONNREFUSED, str(error))
         else:
+            msg = "Failed to connect: %s" % (str(error))
+            msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.port)
+            self.error_msg = msg
             logging.info(msg)
             self.nw.server.warning = msg
 

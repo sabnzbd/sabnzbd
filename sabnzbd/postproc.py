@@ -24,6 +24,7 @@ import Queue
 import logging
 import sabnzbd
 import xml.sax.saxutils
+import xml.etree.ElementTree
 import time
 import re
 
@@ -31,10 +32,10 @@ from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, \
     sfv_check, build_filelists, rar_sort
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-    make_script_path, short_path, long_path, clip_path, \
+    make_script_path, long_path, clip_path, \
     on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
     set_permissions, cleanup_empty_directories, check_win_maxpath, fix_unix_encoding, \
-    sanitize_and_trim_path
+    sanitize_and_trim_path, sanitize_files_in_folder
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -233,7 +234,7 @@ def process_job(nzo):
     nzb_list = []
     # These need to be initialized in case of a crash
     workdir_complete = ''
-    postproc_time = 0  # @UnusedVariable -- pep8 bug?
+    postproc_time = 0
     script_log = ''
     script_line = ''
     crash_msg = ''
@@ -310,13 +311,14 @@ def process_job(nzo):
 
         # Par processing, if enabled
         if all_ok and flag_repair:
-            if not check_win_maxpath(workdir):
-                crash_msg = T('Path exceeds 260, repair by "par2" is not possible')
-                raise WindowsError
             par_error, re_add = parring(nzo, workdir)
             if re_add:
                 # Try to get more par files
                 return False
+
+        # Sanitize the resulting files
+        if sabnzbd.WIN32:
+            sanitize_files_in_folder(workdir)
 
         # Check if user allows unsafe post-processing
         if flag_repair and cfg.safe_postproc():
@@ -374,10 +376,10 @@ def process_job(nzo):
                     # set the current nzo status to "Extracting...". Used in History
                     nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
-                    short_complete = short_path(tmp_workdir_complete)
-                    unpack_error, newfiles = unpack_magic(nzo, short_path(workdir), short_complete, flag_delete, one_folder, (), (), (), (), ())
-                    if short_complete != tmp_workdir_complete:
-                        newfiles = [f.replace(short_complete, tmp_workdir_complete) for f in newfiles]
+                    unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
+                    if sabnzbd.WIN32:
+                        # Sanitize the resulting files
+                        newfiles = sanitize_files_in_folder(tmp_workdir_complete)
                     logging.info("unpack_magic finished on %s", filename)
                 else:
                     nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
@@ -395,7 +397,8 @@ def process_job(nzo):
                             path = os.path.join(root, file_)
                             new_path = path.replace(workdir, tmp_workdir_complete)
                             ok, new_path = move_to_path(path, new_path)
-                            newfiles.append(new_path)
+                            if new_path:
+                                newfiles.append(new_path)
                             if not ok:
                                 nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (unicoder(path), unicoder(new_path)))
                                 all_ok = False
@@ -464,11 +467,16 @@ def process_job(nzo):
             # Run the user script
             script_path = make_script_path(script)
             if (all_ok or not cfg.safe_postproc()) and (not nzb_list) and script_path:
+                # For windows, we use Short-Paths until 2.0.0 for compatibility
+                if sabnzbd.WIN32 and len(workdir_complete) > 259:
+                    import win32api
+                    workdir_complete = win32api.GetShortPathName(workdir_complete)
+
                 # set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
-                script_log, script_ret = external_processing(short_path(script_path, False), short_path(workdir_complete, False), nzo.filename,
+                script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
                                                              dirname, cat, nzo.group, job_result,
                                                              nzo.nzo_info.get('failure', ''))
                 script_line = get_last_line(script_log)
@@ -505,11 +513,11 @@ def process_job(nzo):
                 script_ret = ''
             if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, xml.sax.saxutils.escape(script_line),
+                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line,
                                     xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
                 # No '(more)' button needed
-                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, xml.sax.saxutils.escape(script_line)), unique=True)
+                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line), unique=True)
 
 
         # Cleanup again, including NZB files
@@ -755,7 +763,7 @@ def try_rar_check(nzo, workdir, setname):
         When setname is '', all RAR files will be used, otherwise only the matching one
         If no RAR's are found, returns True
     """
-    _, _, rars, _, _ = build_filelists(short_path(workdir), None)
+    _, _, rars, _, _ = build_filelists(workdir)
 
     if setname:
         # Filter based on set
@@ -773,7 +781,14 @@ def try_rar_check(nzo, workdir, setname):
             # Set path to unrar and open the file
             # Requires de-unicode for RarFile to work!
             rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
-            zf = rarfile.RarFile(deunicode(rars[0]))
+            zf = rarfile.RarFile(rars[0])
+
+            # Skip if it's encrypted
+            if zf.needs_password():
+                msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), T('Passworded'))
+                nzo.set_unpack_info('Repair', msg, set=setname)
+                return True
+
             # Will throw exception if something is wrong
             zf.testrar()
             # Success!
@@ -892,8 +907,13 @@ def one_file_or_folder(folder):
     return folder
 
 
+TAG_RE = re.compile(r'<[^>]+>')
 def get_last_line(txt):
     """ Return last non-empty line of a text, trim to 150 max """
+    # First we remove HTML code in a basic way
+    txt = TAG_RE.sub(' ', txt)
+
+    # Then we get the last line
     lines = txt.split('\n')
     n = len(lines) - 1
     while n >= 0 and not lines[n].strip('\r\t '):
