@@ -169,11 +169,11 @@ msgstr "Compilarea unei căutări regex nereuşită: %s"
 msgid "Disk full! Forcing Pause"
 msgstr "Disc plin! Pauză Forţată"
 
-#: sabnzbd/assembler.py:99 [Error message]
+#: sabnzbd/assembler.py:100 [Error message]
 msgid "Disk error on creating file %s"
 msgstr "Eroare disc la crearea fişierului %s"
 
-#: sabnzbd/assembler.py:103 [Error message]
+#: sabnzbd/assembler.py:104 [Error message]
 msgid "Fatal error in Assembler"
 msgstr "Eroare fatală în  Assembler"
 

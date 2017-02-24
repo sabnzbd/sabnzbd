@@ -446,8 +446,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         if workdir_complete and rarpath.startswith(workdir):
             extraction_path = workdir_complete
         else:
-            # Make sure that path is not too long
-            extraction_path = short_path(os.path.split(rarpath)[0])
+            extraction_path = os.path.split(rarpath)[0]
 
         logging.info("Extracting rarfile %s (belonging to %s) to %s",
                      rarpath, rar_set, extraction_path)

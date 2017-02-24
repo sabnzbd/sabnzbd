@@ -164,11 +164,11 @@ msgstr ""
 msgid "Disk full! Forcing Pause"
 msgstr ""
 
-#: sabnzbd/assembler.py:99 [Error message]
+#: sabnzbd/assembler.py:100 [Error message]
 msgid "Disk error on creating file %s"
 msgstr ""
 
-#: sabnzbd/assembler.py:103 [Error message]
+#: sabnzbd/assembler.py:104 [Error message]
 msgid "Fatal error in Assembler"
 msgstr ""
 

@@ -167,11 +167,11 @@ msgstr "为搜索关键词编译正则表达式失败: %s"
 msgid "Disk full! Forcing Pause"
 msgstr "磁盘已满! 强制暂停"
 
-#: sabnzbd/assembler.py:99 [Error message]
+#: sabnzbd/assembler.py:100 [Error message]
 msgid "Disk error on creating file %s"
 msgstr "创建文件 %s 时磁盘出错"
 
-#: sabnzbd/assembler.py:103 [Error message]
+#: sabnzbd/assembler.py:104 [Error message]
 msgid "Fatal error in Assembler"
 msgstr "Assembler 出现致命错误"
 

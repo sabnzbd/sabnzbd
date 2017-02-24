@@ -171,11 +171,11 @@ msgstr "Compilación de regex para término fallo: %s"
 msgid "Disk full! Forcing Pause"
 msgstr "Disco lleno! Pausando la cola"
 
-#: sabnzbd/assembler.py:99 [Error message]
+#: sabnzbd/assembler.py:100 [Error message]
 msgid "Disk error on creating file %s"
 msgstr "Error de disco al crear el archivo %s"
 
-#: sabnzbd/assembler.py:103 [Error message]
+#: sabnzbd/assembler.py:104 [Error message]
 msgid "Fatal error in Assembler"
 msgstr "Error grave en el ensamblador"
 

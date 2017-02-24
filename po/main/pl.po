@@ -167,11 +167,11 @@ msgstr "Błąd kompilacji wyrażenia regularnego dla wyszukiwania: %s"
 msgid "Disk full! Forcing Pause"
 msgstr "Dysk pełny! Wstrzymuję pobieranie"
 
-#: sabnzbd/assembler.py:99 [Error message]
+#: sabnzbd/assembler.py:100 [Error message]
 msgid "Disk error on creating file %s"
 msgstr "Błąd dysku podczas tworzenia pliku %s"
 
-#: sabnzbd/assembler.py:103 [Error message]
+#: sabnzbd/assembler.py:104 [Error message]
 msgid "Fatal error in Assembler"
 msgstr "Błąd krytyczny w module składającym"
 

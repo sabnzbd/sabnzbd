@@ -169,11 +169,11 @@ msgstr "Regex käännös epäonnistui hakutermille: %s"
 msgid "Disk full! Forcing Pause"
 msgstr "Levy täynnä! Pakotetaan keskeytys"
 
-#: sabnzbd/assembler.py:99 [Error message]
+#: sabnzbd/assembler.py:100 [Error message]
 msgid "Disk error on creating file %s"
 msgstr "Levyvirhe luotaessa tiedostoa %s"
 
-#: sabnzbd/assembler.py:103 [Error message]
+#: sabnzbd/assembler.py:104 [Error message]
 msgid "Fatal error in Assembler"
 msgstr "Vakava virhe kohteessa Assembler"
 

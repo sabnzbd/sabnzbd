@@ -169,11 +169,11 @@ msgstr "Det lykkedes ikke at kompilere regex for søgestreng: %s"
 msgid "Disk full! Forcing Pause"
 msgstr "Disken er fuld! Pauser..."
 
-#: sabnzbd/assembler.py:99 [Error message]
+#: sabnzbd/assembler.py:100 [Error message]
 msgid "Disk error on creating file %s"
 msgstr "Diskfejl ved oprettelse af fil %s"
 
-#: sabnzbd/assembler.py:103 [Error message]
+#: sabnzbd/assembler.py:104 [Error message]
 msgid "Fatal error in Assembler"
 msgstr "Fatal fejl i Assembler"
 
