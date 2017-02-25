@@ -28,16 +28,7 @@ import datetime
 import xml.sax
 import xml.sax.handler
 import xml.sax.xmlreader
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
-try:
-    import hashlib
-    new_md5 = hashlib.md5
-except:
-    import md5
-    new_md5 = md5.new
+import hashlib
 
 # SABnzbd modules
 import sabnzbd
@@ -366,7 +357,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.skipped_files = 0
         self.nzf_list = []
         self.groups = []
-        self.md5 = new_md5()
+        self.md5 = hashlib.md5()
         self.filter = remove_samples
         self.now = time.time()
 

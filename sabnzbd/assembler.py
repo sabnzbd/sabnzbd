@@ -26,12 +26,7 @@ import struct
 import re
 from threading import Thread
 from time import sleep
-try:
-    import hashlib
-    new_md5 = hashlib.md5
-except:
-    import md5
-    new_md5 = md5.new
+import hashlib
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
@@ -159,7 +154,7 @@ def _assemble(nzf, path, dupe):
     fout = open(path, 'ab')
 
     if cfg.quick_check():
-        md5 = new_md5()
+        md5 = hashlib.md5()
     else:
         md5 = None
 
@@ -264,7 +259,7 @@ def ParseFilePacket(f, header):
 
     # Read and check the data
     data = f.read(len - 32)
-    md5 = new_md5()
+    md5 = hashlib.md5()
     md5.update(data)
     if md5sum != md5.digest():
         return nothing
