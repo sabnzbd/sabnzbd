@@ -1,4 +1,4 @@
-                                SABnzbd 1.2.1
+                                SABnzbd 2.0.0
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -74,8 +74,7 @@ Essential modules
 Optional modules
     unzip >= 6.00           http://www.info-zip.org/
     7zip >= 9.20            http://www.7zip.org/
-    yenc module >= 0.4      use "pip install yenc"
-                            https://sabnzbd.org/wiki/installation/yenc-0.4_py2.7.rar (Win32-only)
+    sabyenc >= 2.7.0        use "pip install sabyenc" - https://sabnzbd.org/sabyenc
     openssl => 1.0.0        http://www.openssl.org/
                             v0.9.8 will work, but limits certificate validation
     cryptography >= 1.0     use "pip install cryptography"

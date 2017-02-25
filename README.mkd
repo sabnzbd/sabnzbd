@@ -1,15 +1,29 @@
-Release Notes  -  SABnzbd 2.0.0
+Release Notes  -  SABnzbd 2.0.0 Alpha 1
 =========================================================
 
+## New in 2.0.0: SABYenc
+  To improve SABnzbd's performance on systems where CPU power is limiting
+  download speed, we developed a new module called SABYenc to accelerate the
+  decoding of usenet articles. Depending on the hardware, download speed can
+  greatly increase.
+  The Windows and macOS releases have this new module build-in, other platforms
+  can read more on - https://sabnzbd.org/sabyenc
+  If you experience issues, please report them on our Forums!
+  The module is not mandatory, the _yenc module will continue to work and
+  its performance is unchanged.
+
 ## What's new in 2.0.0
-- Certificate Validation set to Strict for new newsservers
+- Certificate Validation set to Strict for newly added newsservers
 - Schedule items can now be enabled and disabled
 - Remove Secondary Web Interface option
-
+- HTTP-redirects in interface are now relative URL's
+- Moved some lesser used settings to Config->Specials
+- Cache usage is now updated continuously in the Status Window
+- On macOS SABnzbd was set to have low IO-priority, this is now set to normal
 
 ## Bug fixes in 2.0.0
-
-
+- Warn in case encoding is not set to UTF-8
+- Retry ADMIN-data saving 3x before giving error
 
 ## Upgrade notices
 - Windows: When starting the Post-Processing script, the path to the job folder
