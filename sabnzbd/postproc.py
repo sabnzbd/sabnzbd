@@ -471,9 +471,8 @@ def process_job(nzo):
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
-                script_log, script_ret = external_processing(script_path, clip_path(workdir_complete), nzo.filename,
-                                                             dirname, cat, nzo.group, job_result,
-                                                             nzo.nzo_info.get('failure', ''))
+                script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete),
+                                                             dirname, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id

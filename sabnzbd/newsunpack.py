@@ -34,7 +34,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     flag_file, real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
-    has_win_device
+    has_win_device, calc_age
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -151,19 +151,35 @@ def find_programs(curdir):
         if sabnzbd.newsunpack.RAR_PROBLEM:
             logging.info('Problematic UNRAR')
 
-def external_processing(extern_proc, complete_dir, filename, nicename, cat, group, status, failure_url):
-    """ Run a user postproc script, return console output and exit value """
-    command = [str(extern_proc), str(complete_dir), str(filename),
-               str(nicename), '', str(cat), str(group), str(status)]
 
+ENV_NZO_FIELDS = ['bytes', 'bytes_downloaded', 'bytes_tried', 'cat', 'duplicate', 'encrypted',
+     'fail_msg', 'filename', 'final_name', 'group', 'nzo_id', 'oversized', 'password', 'pp',
+     'priority', 'repair', 'script', 'status', 'unpack', 'unwanted_ext', 'url']
+
+def external_processing(extern_proc, nzo, complete_dir, nicename, status):
+    """ Run a user postproc script, return console output and exit value """
+    command = [str(extern_proc), str(complete_dir), str(nzo.filename),
+               str(nicename), '', str(nzo.cat), str(nzo.group), str(status)]
+
+    failure_url = nzo.nzo_info.get('failure', '')
     if failure_url:
         command.append(str(failure_url))
 
+    # Fields not in the NZO directly
+    extra_env_fields = {'failure_url': failure_url,
+                        'complete_dir': complete_dir,
+                        'pp_status': status,
+                        'download_time': nzo.nzo_info.get('download_time', ''),
+                        'avg_bps': int(nzo.avg_bps_total / nzo.avg_bps_freq),
+                        'age': calc_age(nzo.avg_date),
+                        'version': sabnzbd.__version__}
+
     try:
         stup, need_shell, command, creationflags = build_command(command)
-        env = fix_env()
+        env = create_env(nzo, extra_env_fields)
+
         logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
-                     extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
+                     extern_proc, complete_dir, nzo.filename, nicename, '', nzo.cat, nzo.group, status, failure_url)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
@@ -182,7 +198,7 @@ def external_script(script, p1, p2, p3=None, p4=None):
 
     try:
         stup, need_shell, command, creationflags = build_command(command)
-        env = fix_env()
+        env = create_env()
         logging.info('Running user script %s(%s, %s)', script, p1, p2)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -1527,19 +1543,39 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         return finished, readd, pars, datafiles, used_joinables, used_par2
 
 
-def fix_env():
-    """ OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
+def create_env(nzo=None, extra_env_fields=None):
+    """ Modify the environment for pp-scripts with extra information
+        OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
         other: return None
     """
+    env = os.environ.copy()
+
+    # Are we adding things?
+    if nzo:
+        for field in ENV_NZO_FIELDS:
+            try:
+                env['SAB_' + field.upper()] = str(deunicode(getattr(nzo, field)))
+            except:
+                # Catch key/unicode errors
+                pass
+
+        for field in extra_env_fields:
+            try:
+                env['SAB_' + field.upper()] = str(deunicode(extra_env_fields[field]))
+            except:
+                # Catch key/unicode errors
+                pass
+
     if sabnzbd.DARWIN:
-        env = os.environ.copy()
         if 'PYTHONPATH' in env:
             del env['PYTHONPATH']
         if 'PYTHONHOME' in env:
             del env['PYTHONHOME']
-        return env
-    else:
+    elif not nzo:
+        # No modification
         return None
+    return env
+
 
 def userxbit(filename):
     # Returns boolean if the x-bit for user is set on the given file
@@ -1882,7 +1918,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
 
         try:
             stup, need_shell, command, creationflags = build_command(command)
-            env = fix_env()
+            env = create_env()
             logging.info('Running pre-queue script %s', command)
             p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
