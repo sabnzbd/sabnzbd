@@ -1554,7 +1554,14 @@ def create_env(nzo=None, extra_env_fields=None):
     if nzo:
         for field in ENV_NZO_FIELDS:
             try:
-                env['SAB_' + field.upper()] = str(deunicode(getattr(nzo, field)))
+                field_value = getattr(nzo, field)
+                # Special filters for Python types
+                if field_value is None:
+                    env['SAB_' + field.upper()] = ''
+                elif isinstance(field_value, bool):
+                    env['SAB_' + field.upper()] = str(field_value*1)
+                else:
+                    env['SAB_' + field.upper()] = str(deunicode(field_value))
             except:
                 # Catch key/unicode errors
                 pass
