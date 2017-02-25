@@ -30,6 +30,11 @@ import xml.sax.handler
 import xml.sax.xmlreader
 import hashlib
 
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
+
 # SABnzbd modules
 import sabnzbd
 from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
