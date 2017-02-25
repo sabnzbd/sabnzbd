@@ -895,18 +895,25 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
         logging.debug("Saving data for %s in %s", _id, path)
     path = os.path.join(path, _id)
 
-    try:
-        with open(path, 'wb') as data_file:
-            if do_pickle:
-                if cfg.use_pickle():
-                    cPickle.dump(data, data_file)
+    # We try 3 times, to avoid any dict or access problems
+    for t in xrange(3):
+        try:
+            with open(path, 'wb') as data_file:
+                if do_pickle:
+                    if cfg.use_pickle():
+                        cPickle.dump(data, data_file)
+                    else:
+                        pickle.dump(data, data_file)
                 else:
-                    pickle.dump(data, data_file)
+                    data_file.write(data)
+            break
+        except:
+            if t == 2:
+                logging.error(T('Saving %s failed'), path)
+                logging.info("Traceback: ", exc_info=True)
             else:
-                data_file.write(data)
-    except:
-        logging.error(T('Saving %s failed'), path)
-        logging.info("Traceback: ", exc_info=True)
+                # Wait a tiny bit before trying again
+                time.sleep(0.1)
 
 
 @synchronized(IO_LOCK)
@@ -959,15 +966,22 @@ def save_admin(data, _id):
     path = os.path.join(cfg.admin_dir.get_path(), _id)
     logging.info("Saving data for %s in %s", _id, path)
 
-    try:
-        with open(path, 'wb') as data_file:
-            if cfg.use_pickle():
-                data = pickle.dump(data, data_file)
+    # We try 3 times, to avoid any dict or access problems
+    for t in xrange(3):
+        try:
+            with open(path, 'wb') as data_file:
+                if cfg.use_pickle():
+                    data = pickle.dump(data, data_file)
+                else:
+                    data = cPickle.dump(data, data_file)
+            break
+        except:
+            if t == 2:
+                logging.error(T('Saving %s failed'), path)
+                logging.info("Traceback: ", exc_info=True)
             else:
-                data = cPickle.dump(data, data_file)
-    except:
-        logging.error(T('Saving %s failed'), path)
-        logging.info("Traceback: ", exc_info=True)
+                # Wait a tiny bit before trying again
+                time.sleep(0.1)
 
 
 @synchronized(IO_LOCK)
