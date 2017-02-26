@@ -20,7 +20,7 @@ sabnzbd.decoder - article decoder
 """
 
 import Queue
-import binascii
+import zlib
 import logging
 import re
 from time import sleep
@@ -287,7 +287,7 @@ def decode(article, data):
                     j = '=%c' % (i + 64)
                     data = data.replace(j, chr(i))
                 decoded_data = data.translate(YDEC_TRANS)
-                crc = binascii.crc32(decoded_data)
+                crc = zlib.crc32(decoded_data)
                 partcrc = '%08X' % (crc & 2**32L - 1)
 
             if ypart:
@@ -368,12 +368,15 @@ def ySplit(line, splits = None):
     return fields
 
 def strip(data):
-    while data and not data[0]:
-        data.pop(0)
+    if not data:
+        return data
+    beg = next((i for i, val in enumerate(data) if val), 0)
+    end = next((i for i, val in enumerate(reversed(data)) if val), 0)
+    if beg == 0 and end == 0 and not data[0]:
+        return [] # was a list full of nothings
+    end = len(data) - end
 
-    while data and not data[-1]:
-        data.pop()
-
+    data = data[beg:end]
     for i in xrange(len(data)):
         if data[i][:2] == '..':
             data[i] = data[i][1:]
