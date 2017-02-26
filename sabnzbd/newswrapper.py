@@ -434,23 +434,26 @@ class NewsWrapper(object):
             return (chunk_len, False, False)
         else:
             # Perform manditory splitting
-            new_lines = chunk.split('\r\n')
-            # See if incorrect newline-only was used
-            # Do this as a special case to prevent using extra memory
-            # for normal articles
-            if len(new_lines) == 1 and '\r' not in chunk:
-                new_lines = chunk.split('\n')
+            new_lines = chunk.split('\n')
+
             # Already remove the starting dots
             for i in xrange(len(new_lines)):
                 if new_lines[i][:2] == '..':
                     new_lines[i] = new_lines[i][1:]
+                # Old Yenc can't handle newlines in it's data
+                if not sabnzbd.decoder.HAVE_YENC and new_lines[i]:
+                    if new_lines[i][0] == '\n':
+                        new_lines[i] = new_lines[i][1:]
+                    if new_lines[i][-1] == '\r':
+                        new_lines[i] = new_lines[i][:-1]
+
             self.lines.extend(new_lines)
 
             # For status-code purposes
             if not self.data:
                 self.data.append(chunk)
 
-            if self.lines and (self.lines[-1] == '.' or self.lines[-2] == '.'):
+            if self.lines and (self.lines[-1] == '.' or self.lines[-2] == '.\r' or self.lines[-2] == '.'):
                 return (len(chunk), True, False)
             else:
                 return (len(chunk), False, False)
