@@ -6,11 +6,11 @@ Release Notes  -  SABnzbd 2.0.0 Alpha 1
   download speed, we developed a new module called SABYenc to accelerate the
   decoding of usenet articles. Depending on the hardware, download speed can
   greatly increase.
-  The Windows and macOS releases have this new module build-in, other platforms
-  can read more on - https://sabnzbd.org/sabyenc
+  The Windows and macOS releases automatically include this module, for other
+  platforms you can read more on: https://sabnzbd.org/sabyenc
   If you experience issues, please report them on our Forums!
   The module is not mandatory, the _yenc module will continue to work and
-  its performance is unchanged.
+  its performance will be similar.
 
 ## What's new in 2.0.0
 - Post-processing scripts now get additional job information via SAB_*
