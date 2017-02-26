@@ -13,6 +13,8 @@ Release Notes  -  SABnzbd 2.0.0 Alpha 1
   its performance is unchanged.
 
 ## What's new in 2.0.0
+- Post-processing scripts now get additional job information via SAB_*
+  environment variables - See: https://github.com/sabnzbd/sabnzbd/issues/785
 - Certificate Validation set to Strict for newly added newsservers
 - Schedule items can now be enabled and disabled
 - Remove Secondary Web Interface option
