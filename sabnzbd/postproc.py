@@ -468,9 +468,11 @@ def process_job(nzo):
             script_path = make_script_path(script)
             if (all_ok or not cfg.safe_postproc()) and (not nzb_list) and script_path:
                 # For windows, we use Short-Paths until 2.0.0 for compatibility
-                if sabnzbd.WIN32 and len(workdir_complete) > 259:
+                if sabnzbd.WIN32:
                     import win32api
-                    workdir_complete = win32api.GetShortPathName(workdir_complete)
+                    workdir_complete = clip_path(workdir_complete)
+                    if len(workdir_complete) > 259:
+                        workdir_complete = win32api.GetShortPathName(workdir_complete)
 
                 # set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING

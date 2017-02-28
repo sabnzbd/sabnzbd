@@ -1,5 +1,8 @@
-Release Notes  -  SABnzbd 1.2.1
+Release Notes  -  SABnzbd 1.2.2
 ==============================================
+
+## Bug fix in 1.2.2
+- Windows: job-directory incorrectly passed to PostProcessing-script
 
 ## What's new in 1.2.1
 - QuickCheck will perform fast rename of obfuscated posts
