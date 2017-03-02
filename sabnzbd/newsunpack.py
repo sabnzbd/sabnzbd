@@ -804,12 +804,11 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
 
 def ZIP_Extract(zipfile, extraction_path, one_folder):
     """ Unzip single zip set 'zipfile' to 'extraction_path' """
-    if one_folder or cfg.flat_unpack():
-        option = '-j'  # Unpack without folders
-    else:
-        option = '-qq'  # Dummy option
-    command = ['%s' % ZIP_COMMAND, '-o', '-qq', option, '-Pnone', '%s' % zipfile,
+    command = ['%s' % ZIP_COMMAND, '-o', '-Pnone', '%s' % clip_path(zipfile),
                '-d%s' % extraction_path]
+
+    if one_folder or cfg.flat_unpack():
+        command.insert(3, '-j')  # Unpack without folders
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting unzip: %s', command)
