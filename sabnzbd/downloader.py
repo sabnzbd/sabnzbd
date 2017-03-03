@@ -708,7 +708,6 @@ class Downloader(Thread):
                     elif nw.status_code == '223':
                         done = True
                         logging.debug('Article <%s> is present', article.article)
-                        self.decode(article, nw.lines, nw.data)
 
                     elif nw.status_code == '211':
                         done = False
