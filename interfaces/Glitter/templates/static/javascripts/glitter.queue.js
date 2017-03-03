@@ -171,7 +171,7 @@ function QueueListModel(parent) {
 
     // Do we show search box. So it doesn't dissapear when nothing is found
     self.hasQueueSearch = ko.pureComputed(function() {
-        return (self.pagination.hasPagination() || self.searchTerm())
+        return (self.pagination.hasPagination() || self.searchTerm() || self.isMultiEditing())
     })
 
     // Searching in queue (rate-limited in decleration)
