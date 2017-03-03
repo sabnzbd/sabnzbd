@@ -833,7 +833,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
                          startupinfo=stup, creationflags=creationflags)
 
     output = p.stdout.read()
-    logging.debug('unzip output: %s', output)
+    logging.debug('unzip output: \n%s', output)
 
     ret = p.wait()
 
