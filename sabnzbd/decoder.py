@@ -166,7 +166,7 @@ class Decoder(Thread):
                     if nzo.precheck:
                         if found and not killed:
                             # Pre-check, proper article found, just register
-                            logging.debug('Server has article %s', art_id)
+                            logging.debug('Server %s has article %s', article.fetcher, art_id)
                             register = True
                     elif not killed and not found:
                         logme = T('Badly formed yEnc article in %s') % art_id

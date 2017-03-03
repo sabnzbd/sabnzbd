@@ -728,7 +728,6 @@ class Downloader(Thread):
                         if not self.search_new_server(article):
                             sabnzbd.nzbqueue.NzbQueue.do.register_article(article, False)
 
-
                     elif nw.status_code == '480':
                         if server.active:
                             server.active = False
