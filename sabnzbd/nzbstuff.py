@@ -1042,8 +1042,8 @@ class NzbObject(TryList):
                 return True, True, True
 
         if not found:
-            # Add extra parfiles when there was a damaged article
-            if cfg.prospective_par_download() and self.extrapars:
+            # Add extra parfiles when there was a damaged article and not pre-checking
+            if cfg.prospective_par_download() and self.extrapars and not self.precheck:
                 self.prospective_add(nzf)
 
         if reset:

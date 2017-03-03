@@ -711,9 +711,7 @@ class Downloader(Thread):
 
                     elif nw.status_code == '211':
                         done = False
-
-                        logging.debug("group command ok -> %s",
-                                      nntp_to_msg(nw.data))
+                        logging.debug("group command ok -> %s", nntp_to_msg(nw.data))
                         nw.group = nw.article.nzf.nzo.group
                         nw.lines = []
                         nw.data = []
