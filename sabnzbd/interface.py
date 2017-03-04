@@ -451,6 +451,7 @@ class MainPage(object):
         if msg:
             yield msg
         else:
+            logging.info('Shutdown requested by interface')
             yield "Initiating shutdown..."
             sabnzbd.halt()
             yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
@@ -913,6 +914,7 @@ class QueuePage(object):
         if msg:
             yield msg
         else:
+            logging.info('Shutdown requested by interface')
             yield "Initiating shutdown..."
             sabnzbd.halt()
             yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
@@ -1258,6 +1260,7 @@ class ConfigPage(object):
         if msg:
             yield msg
         else:
+            logging.info('Restart requested by interface')
             yield T('Initiating restart...<br />')
             yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
             sabnzbd.trigger_restart()
@@ -1268,6 +1271,7 @@ class ConfigPage(object):
         if msg:
             yield msg
         else:
+            logging.info('Queue repair requested by interface')
             sabnzbd.request_repair()
             yield T('Initiating restart...<br />')
             yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')

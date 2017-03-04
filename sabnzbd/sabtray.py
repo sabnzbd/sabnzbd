@@ -131,6 +131,7 @@ class SABTrayThread(SysTrayIconThread):
     # menu handler
     def restart(self, icon):
         self.hover_text = self.txt_restart
+        logging.info('Restart requested by tray')
         sabnzbd.trigger_restart()
 
     # menu handler
@@ -157,6 +158,7 @@ class SABTrayThread(SysTrayIconThread):
     # menu handler - adapted from interface.py
     def shutdown(self, icon):
         self.hover_text = self.txt_shutdown
+        logging.info('Shutdown requested by tray')
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True

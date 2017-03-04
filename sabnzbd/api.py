@@ -607,6 +607,7 @@ def _api_resume(name, output, kwargs):
 
 def _api_shutdown(name, output, kwargs):
     """ API: accepts output """
+    logging.info('Shutdown requested by API')
     sabnzbd.halt()
     cherrypy.engine.exit()
     sabnzbd.SABSTOP = True
@@ -660,12 +661,14 @@ def _api_auth(name, output, kwargs):
 
 def _api_restart(name, output, kwargs):
     """ API: accepts output """
+    logging.info('Restart requested by API')
     sabnzbd.trigger_restart()
     return report(output)
 
 
 def _api_restart_repair(name, output, kwargs):
     """ API: accepts output """
+    logging.info('Queue repair requested by API')
     sabnzbd.request_repair()
     sabnzbd.trigger_restart()
     return report(output)
