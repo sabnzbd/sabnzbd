@@ -49,6 +49,7 @@ socket.setdefaulttimeout(DEF_TIMEOUT)
 # to delayed starts and timeouts on connections.
 # Because of this, the results will be cached in the server object.
 
+
 def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
     info = GetServerParms(server.host, server.port)
@@ -113,7 +114,7 @@ def get_ssl_version(sock):
 
 
 def con(sock, host, port, sslenabled, write_fds, nntp):
-    if 0: assert isinstance(nntp, NNTP) # Assert only for debug purposes
+    if 0: assert isinstance(nntp, NNTP) # Assert only for debug purposes @IgnorePep8
     try:
         sock.connect((host, port))
         sock.setblocking(0)
@@ -148,8 +149,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
             nntp.error(e)
 
 
-
-
 def probablyipv4(ip):
     if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
         return True
@@ -167,7 +166,7 @@ def probablyipv6(ip):
 class NNTP(object):
 
     def __init__(self, host, port, info, sslenabled, send_group, nw, user=None, password=None, block=False, write_fds=None):
-        if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
+        if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes @IgnorePep8
         self.host = host
         self.port = port
         self.nw = nw
@@ -247,7 +246,6 @@ class NNTP(object):
                     pass
             finally:
                 self.error(e)
-
 
     def error(self, error):
         if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
@@ -419,7 +417,7 @@ class NewsWrapper(object):
             # Append so we can do 1 join(), much faster than multiple!
             self.data.append(chunk)
 
-            # Offical end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
+            # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
             chunk_len = len(chunk)
             if chunk[-5:] == '\r\n.\r\n':
                 return (chunk_len, True, False)
@@ -464,10 +462,10 @@ class NewsWrapper(object):
         self.data = []
         self.lines = []
 
-    def hard_reset(self, wait=True, quit=True):
+    def hard_reset(self, wait=True, resetConnection=True):
         if self.nntp:
             try:
-                if quit:
+                if resetConnection:
                     self.nntp.sock.sendall('QUIT\r\n')
                     time.sleep(0.1)
                 self.nntp.sock.close()
@@ -484,11 +482,11 @@ class NewsWrapper(object):
             # Reset for internal reasons, just wait 5 sec
             self.timeout = time.time() + 5
 
-    def terminate(self, quit=False):
+    def terminate(self, quitConnection=False):
         """ Close connection and remove nntp object """
         if self.nntp:
             try:
-                if quit:
+                if quitConnection:
                     self.nntp.sock.sendall('QUIT\r\n')
                     time.sleep(0.1)
                 self.nntp.sock.close()

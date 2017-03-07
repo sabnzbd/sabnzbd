@@ -22,7 +22,6 @@ sabnzbd.bpsmeter - bpsmeter
 import time
 import logging
 import re
-from math import floor
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD, KIBI
@@ -333,15 +332,15 @@ class BPSMeter(object):
             return None
 
         # Calculate the variance in the speed
-        avg = sum(self.bps_list[-timespan:])/timespan
+        avg = sum(self.bps_list[-timespan:]) / timespan
         vari = 0
         for bps in self.bps_list[-timespan:]:
             vari += abs(bps - avg)
-        vari = vari/timespan
+        vari = vari / timespan
 
         try:
             # See if the variance is less than 5%
-            if (vari / (self.bps/KIBI)) < 0.05:
+            if (vari / (self.bps / KIBI)) < 0.05:
                 return avg
             else:
                 return False
@@ -349,7 +348,6 @@ class BPSMeter(object):
             # Probably one of the values was 0
             pass
         return None
-
 
     def reset_quota(self, force=False):
         """ Check if it's time to reset the quota, optionally resuming

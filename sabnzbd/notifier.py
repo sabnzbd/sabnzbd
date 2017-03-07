@@ -53,7 +53,7 @@ try:
     # PyNotify will not work with Python 2.5 (due to next three lines)
     with warnings.catch_warnings():
         warnings.simplefilter("error")
-        import pynotify
+        import pynotify  # @UnresolvedImport
     _HAVE_NTFOSD = True
 except:
     _HAVE_NTFOSD = False
@@ -120,6 +120,7 @@ def check_classes(gtype, section):
         logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
         return False
 
+
 def get_prio(gtype, section):
     """ Check if `gtype` is enabled in `section` """
     try:
@@ -176,6 +177,7 @@ def send_notification(title, msg, gtype):
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
         send_notify_osd(title, msg)
+
 
 def reset_growl():
     """ Reset Growl (after changing language) """
@@ -249,7 +251,7 @@ def send_growl(title, msg, gtype, test=None):
         if not _GROWL:
             _GROWL, error = register_growl(growl_server, growl_password)
         if _GROWL:
-            if 0: assert isinstance(_GROWL, GrowlNotifier) # Assert only for debug purposes
+            if 0: assert isinstance(_GROWL, GrowlNotifier) # Assert only for debug purposes @IgnorePep8
             _GROWL_REG = True
             if isinstance(msg, unicode):
                 msg = msg.decode('utf-8')
@@ -516,6 +518,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
         else:
             return T('Notification script "%s" does not exist') % script_path
     return ''
+
 
 def send_windows(title, msg, gtype):
     if sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:

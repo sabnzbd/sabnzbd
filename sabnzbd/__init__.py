@@ -217,7 +217,6 @@ def connect_db(thread_index=0):
     return cherrypy.thread_data.history_db
 
 
-
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0):
     global __INITIALIZED__, __SHUTTING_DOWN__,\
@@ -441,7 +440,6 @@ def halt():
         except:
             logging.error(T('Fatal error at saving state'), exc_info=True)
 
-
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
         # needed to stop the scheduler.
@@ -516,6 +514,7 @@ def guard_quota_dp():
 def guard_fsys_type():
     """ Callback for change of file system naming type """
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
+
 
 def set_https_verification(value):
     prev = False
@@ -1148,11 +1147,12 @@ def wait_for_download_folder():
         logging.debug('Waiting for "incomplete" folder')
         time.sleep(2.0)
 
+
 def check_old_queue():
     """ Check for old queue (when a new queue is not present) """
     old = False
     if not os.path.exists(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME)):
-        for ver in (QUEUE_VERSION -1 , QUEUE_VERSION - 2, QUEUE_VERSION - 3):
+        for ver in (QUEUE_VERSION - 1, QUEUE_VERSION - 2, QUEUE_VERSION - 3):
             data = load_admin(QUEUE_FILE_TMPL % str(ver))
             if data:
                 break
@@ -1160,8 +1160,7 @@ def check_old_queue():
             old = bool(data and isinstance(data, tuple) and len(data[1]))
         except (TypeError, IndexError):
             pass
-        if old and sabnzbd.WIN32 and ver < 10 and sabnzbd.DIR_LCLDATA != sabnzbd.DIR_HOME \
-            and misc.is_relative_path(cfg.download_dir()):
+        if old and sabnzbd.WIN32 and ver < 10 and sabnzbd.DIR_LCLDATA != sabnzbd.DIR_HOME and misc.is_relative_path(cfg.download_dir()):
             # For Windows and when version < 10: adjust old default location
             cfg.download_dir.set('Documents/' + cfg.download_dir())
     return old
