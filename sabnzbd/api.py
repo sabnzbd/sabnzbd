@@ -98,6 +98,7 @@ else:
 # Flag for using the fast json encoder, unless it fails
 FAST_JSON = True
 
+
 def api_handler(kwargs):
     """ API Dispatcher """
     mode = kwargs.get('mode', '')
@@ -106,7 +107,7 @@ def api_handler(kwargs):
     callback = kwargs.get('callback', '')
 
     # Extend the timeout of API calls to 10minutes
-    cherrypy.response.timeout = 60*10
+    cherrypy.response.timeout = 600
 
     if isinstance(mode, list):
         mode = mode[0]
@@ -139,6 +140,7 @@ def _api_set_config(name, output, kwargs):
     config.save_config()
     res, data = config.get_dconfig(kwargs.get('section'), kwargs.get('keyword'))
     return report(output, keyword='config', data=data)
+
 
 def _api_set_config_default(name, output, kwargs):
     """ API: Reset requested config variables back to defaults. Currently only for misc-section """
@@ -386,6 +388,7 @@ def _api_retry(name, output, kwargs):
     else:
         return report(output, _MSG_NO_ITEM)
 
+
 def _api_cancel_pp(name, output, kwargs):
     """ API: accepts name, output, value(=nzo_id) """
     nzo_id = kwargs.get('value')
@@ -393,6 +396,7 @@ def _api_cancel_pp(name, output, kwargs):
         return report(output, keyword='', data={'status': True, 'nzo_id': nzo_id})
     else:
         return report(output, _MSG_NO_ITEM)
+
 
 def _api_addlocalfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
@@ -758,11 +762,13 @@ def _api_test_email(name, output, kwargs):
         res = None
     return report(output, error=res)
 
+
 def _api_test_windows(name, output, kwargs):
     """ API: send a test to Windows, return result """
     logging.info("Sending test notification")
     res = sabnzbd.notifier.send_windows('SABnzbd', T('Test Notification'), 'other')
     return report(output, error=res)
+
 
 def _api_test_notif(name, output, kwargs):
     """ API: send a test to Notification Center, return result """
@@ -805,11 +811,13 @@ def _api_test_pushbullet(name, output, kwargs):
     res = sabnzbd.notifier.send_pushbullet('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
 
+
 def _api_test_nscript(name, output, kwargs):
     """ API: execute a test notification script, return result """
     logging.info("Executing notification script")
     res = sabnzbd.notifier.send_nscript('SABnzbd', T('Test Notification'), 'other', force=True, test=kwargs)
     return report(output, error=res)
+
 
 def _api_undefined(name, output, kwargs):
     """ API: accepts output """
@@ -1297,6 +1305,7 @@ def build_status(skip_dashboard=False, output=None):
 
     return info
 
+
 def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     if output:
         converter = unicoder
@@ -1368,7 +1377,8 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
                 slot['status'] = Status.DOWNLOADING
         else:
             # ensure compatibility of API status
-            if status in (Status.DELETED, ): status = Status.DOWNLOADING
+            if status in (Status.DELETED, ):
+                status = Status.DOWNLOADING
             slot['status'] = "%s" % (status)
 
         if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \
@@ -1518,6 +1528,7 @@ def build_file_list(nzo_id):
 
     return jobs
 
+
 def rss_qstatus():
     """ Return a RSS feed with the queue status """
     qnfo = NzbQueue.do.queue_info()
@@ -1597,7 +1608,8 @@ def retry_job(job, new_nzb, password):
         history_db = sabnzbd.connect_db()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
-            if pp == 'X': pp = None
+            if pp == 'X':
+                pp = None
             sabnzbd.add_url(url, pp, script, cat)
             history_db.remove_history(job)
         else:
@@ -1737,7 +1749,6 @@ def build_header(webdir=''):
         header['new_rel_url'] = ''
 
     return header
-
 
 
 def build_queue_header(search=None, start=0, limit=0):
@@ -1986,8 +1997,8 @@ def get_active_history(queue=None, items=None):
     return items
 
 
-def format_bytes(bytes):
-    b = to_units(bytes)
+def format_bytes(rawbytes):
+    b = to_units(rawbytes)
     if b == '':
         return b
     else:
