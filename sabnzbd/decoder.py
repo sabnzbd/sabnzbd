@@ -213,16 +213,16 @@ def decode(article, data, raw_data):
     if sabnzbd.decoder.HAVE_SABYENC:
         decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
 
-        # CRC check
-        if not crc_correct:
-            raise CrcError(crc_expected, crc, decoded_data)
-
         # Assume it is yenc
         article.nzf.type = 'yenc'
 
         # Only set the name if it was found
         if output_filename:
             article.nzf.filename = output_filename
+
+        # CRC check
+        if not crc_correct:
+            raise CrcError(crc_expected, crc, decoded_data)
 
         return decoded_data
 
