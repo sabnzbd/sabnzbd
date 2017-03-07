@@ -281,7 +281,7 @@ class NzbQueue:
     @synchronized(NZBQUEUE_LOCK)
     def insert_future(self, future, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
         """ Refresh a placeholder nzo with an actual nzo """
-        if 0: assert isinstance(future, NzbObject) # Assert only for debug purposes
+        if 0: assert isinstance(future, NzbObject) # Assert only for debug purposes @IgnorePep8
         if nzo_info is None:
             nzo_info = {}
         nzo_id = future.nzo_id
@@ -380,7 +380,7 @@ class NzbQueue:
 
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, save=True, quiet=False):
-        if 0: assert isinstance(nzo, NzbObject)  # Assert only for debug purposes
+        if 0: assert isinstance(nzo, NzbObject)  # Assert only for debug purposes @IgnorePep8
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.workpath, self.__nzo_table)
 
@@ -440,7 +440,7 @@ class NzbQueue:
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
-            if cleanup and nzo.status not in (Status.COMPLETED, Status.FAILED):
+            if cleanup and nzo.is_gone():
                 nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
 
@@ -900,7 +900,7 @@ class NzbQueue:
                     bytes_left_previous_page += b_left
 
             if (not search) or search in nzo.final_name_pw_clean.lower():
-                if (not limit) or (start <= n < start+limit):
+                if (not limit) or (start <= n < start + limit):
                     pnfo_list.append(nzo.gather_info())
                 n += 1
 
