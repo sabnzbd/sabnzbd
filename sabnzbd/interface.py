@@ -758,7 +758,7 @@ class NzoPage(object):
         if priority is not None and nzo.priority != int(priority):
             NzbQueue.do.set_priority(nzo_id, priority)
 
-        raise Raiser(cherrypy.lib.httputil.urljoin(self.__root, '../queue/'), {})
+        raise Raiser(cherrypy.lib.httputil.urljoin(self.__root, '../queue/'))
 
     def bulk_operation(self, nzo_id, kwargs):
         self.__cached_selection = kwargs
