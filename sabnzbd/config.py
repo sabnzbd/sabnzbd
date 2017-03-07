@@ -93,6 +93,7 @@ class Option(object):
 
     def set_dict(self, dict):
         """ Set value based on dictionary """
+        # TODO: Review if `dict` is actually correct or typo
         if self.__protect:
             return False
         try:
@@ -377,7 +378,7 @@ class ConfigServer(object):
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
-        self.ssl_verify = OptionNumber(name, 'ssl_verify', 2, add=False) # 0=No, 1=Normal, 2=Strict (hostname verification)
+        self.ssl_verify = OptionNumber(name, 'ssl_verify', 2, add=False)  # 0=No, 1=Normal, 2=Strict (hostname verification)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
@@ -813,9 +814,11 @@ def save_config(force=False):
                 except KeyError:
                     CFG[sec] = {}
                 value = database[section][option]()
-                if type(value) == type(True):
+                # bool is a subclass of int, check first
+                if isinstance(value, bool):
+                    # convert bool to int when saving so we store 0 or 1
                     CFG[sec][kw] = str(int(value))
-                elif type(value) == type(0):
+                elif isinstance(value, int):
                     CFG[sec][kw] = str(value)
                 else:
                     CFG[sec][kw] = value
