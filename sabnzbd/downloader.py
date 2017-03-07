@@ -852,10 +852,10 @@ class Downloader(Thread):
         article.add_to_try_list(article.fetcher)
         for server in self.servers:
             if server.active and not article.server_in_try_list(server):
-                if not sabnzbd.highest_server(server):
+                if server.priority >= article.fetcher.priority:
                     article.fetcher = None
                     article.tries = 0
-                    # Allow all servers to iterate over this nzo and nzf again
+                    # Allow all servers for this nzo and nzf again (but not for this article)
                     sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
                     return True
 
