@@ -93,7 +93,6 @@ class Option(object):
 
     def set_dict(self, dict):
         """ Set value based on dictionary """
-        # TODO: Review if `dict` is actually correct or typo
         if self.__protect:
             return False
         try:

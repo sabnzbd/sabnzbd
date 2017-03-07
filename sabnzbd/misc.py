@@ -780,7 +780,7 @@ def exit_sab(value):
     sys.stdout.flush()
     if getattr(sys, 'frozen', None) == 'macosx_app':
         sabnzbd.SABSTOP = True
-        from PyObjCTools import AppHelper  # @UnresolvedImport
+        from PyObjCTools import AppHelper
         AppHelper.stopEventLoop()
     sys.exit(value)
 

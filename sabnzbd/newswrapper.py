@@ -49,6 +49,7 @@ socket.setdefaulttimeout(DEF_TIMEOUT)
 # to delayed starts and timeouts on connections.
 # Because of this, the results will be cached in the server object.
 
+
 def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
     info = GetServerParms(server.host, server.port)
@@ -148,8 +149,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
             nntp.error(e)
 
 
-
-
 def probablyipv4(ip):
     if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
         return True
@@ -247,7 +246,6 @@ class NNTP(object):
                     pass
             finally:
                 self.error(e)
-
 
     def error(self, error):
         if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
@@ -419,7 +417,7 @@ class NewsWrapper(object):
             # Append so we can do 1 join(), much faster than multiple!
             self.data.append(chunk)
 
-            # Offical end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
+            # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
             chunk_len = len(chunk)
             if chunk[-5:] == '\r\n.\r\n':
                 return (chunk_len, True, False)

@@ -90,7 +90,7 @@ class Server(object):
         self.errormsg = ''
         self.warning = ''
         self.info = None     # Will hold getaddrinfo() list
-        self.ssl_info = '' # Will hold the type and cipher of SSL connection
+        self.ssl_info = ''  # Will hold the type and cipher of SSL connection
         self.request = False  # True if a getaddrinfo() request is pending
         self.have_body = 'free.xsusenet.com' not in host
         self.have_stat = True  # Assume server has "STAT", until proven otherwise
@@ -107,7 +107,7 @@ class Server(object):
             2 - and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
             In case of problems: return the host name itself
         """
-        # Check if already a succesfull ongoing connection
+        # Check if already a successful ongoing connection
         if self.busy_threads and self.busy_threads[0].nntp:
             # Re-use that IP
             logging.debug('%s: Re-using address %s', self.host, self.busy_threads[0].nntp.host)
@@ -531,17 +531,17 @@ class Downloader(Thread):
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
 
-                # Why check so often when so few things happend?
+                # Why check so often when so few things happened?
                 if self.can_be_slowed and len(readkeys) >= 8 and len(read) <= 2:
                     time.sleep(0.05)
 
-                # Need to initalize the check during first 20 seconds
+                # Need to initialize the check during first 20 seconds
                 if self.can_be_slowed is None or self.can_be_slowed_timer:
                     # Wait for stable speed to start testing
                     if not self.can_be_slowed_timer and BPSMeter.do.get_stable_speed(timespan=10):
                         self.can_be_slowed_timer = time.time()
 
-                    # Check 10 seconds after enabeling slowdown
+                    # Check 10 seconds after enabling slowdown
                     if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
                         # Now let's check if it was stable in the last 10 seconds
                         self.can_be_slowed = (BPSMeter.do.get_stable_speed(timespan=10) > 0)

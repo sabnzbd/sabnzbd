@@ -120,6 +120,7 @@ def check_classes(gtype, section):
         logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
         return False
 
+
 def get_prio(gtype, section):
     """ Check if `gtype` is enabled in `section` """
     try:
@@ -176,6 +177,7 @@ def send_notification(title, msg, gtype):
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
         send_notify_osd(title, msg)
+
 
 def reset_growl():
     """ Reset Growl (after changing language) """
@@ -516,6 +518,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
         else:
             return T('Notification script "%s" does not exist') % script_path
     return ''
+
 
 def send_windows(title, msg, gtype):
     if sabnzbd.WINTRAY and not sabnzbd.WINTRAY.terminate:

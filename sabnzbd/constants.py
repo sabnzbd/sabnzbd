@@ -102,7 +102,7 @@ PAUSED_PRIORITY = -2
 DUP_PRIORITY = -3
 STOP_PRIORITY = -4
 
-STAGES = { 'Source' : 0, 'Download' : 1, 'Servers' : 2, 'Repair' : 3, 'Filejoin' : 4, 'Unpack' : 5, 'Script' : 6 }
+STAGES = {'Source': 0, 'Download': 1, 'Servers': 2, 'Repair': 3, 'Filejoin': 4, 'Unpack': 5, 'Script': 6}
 
 VALID_ARCHIVES = ('.zip', '.rar', '.7z')
 
@@ -134,7 +134,7 @@ class Status():
     COMPLETED = 'Completed'         # PP: Job is finished
     CHECKING = 'Checking'           # Q:  Pre-check is running
     DOWNLOADING = 'Downloading'     # Q:  Normal downloading
-    EXTRACTING = 'Extracting'       # PP: Archives are being extraced
+    EXTRACTING = 'Extracting'       # PP: Archives are being extracted
     FAILED = 'Failed'               # PP: Job has failed, now in History
     FETCHING = 'Fetching'           # Q:  Job is downloading extra par2 files
     GRABBING = 'Grabbing'           # Q:  Getting an NZB from an external site

@@ -513,7 +513,6 @@ def process_job(nzo):
                 # No '(more)' button needed
                 nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line), unique=True)
 
-
         # Cleanup again, including NZB files
         if all_ok:
             cleanup_list(workdir_complete, False)
@@ -679,7 +678,7 @@ def parring(nzo, workdir):
                         par2_filename = nzf_path
 
                     # Rename so handle_par2() picks it up
-                    newpath = '%s.vol%d+%d.par2' % (par2_filename, par2_vol, par2_vol+1)
+                    newpath = '%s.vol%d+%d.par2' % (par2_filename, par2_vol, par2_vol + 1)
                     renamer(nzf_path, newpath)
                     nzf_try.filename = os.path.split(newpath)[1]
 
@@ -792,7 +791,7 @@ def try_rar_check(nzo, workdir, setname):
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
-            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n',' ')))
+            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n', ' ')))
             nzo.set_unpack_info('Repair', msg, set=setname)
             logging.info(msg)
             return False

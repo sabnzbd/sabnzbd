@@ -909,7 +909,6 @@ class NzbObject(TryList):
             # Raise error, so it's not added
             raise TypeError
 
-
     def check_for_dupe(self, nzf):
         filename = nzf.filename
 
@@ -935,7 +934,6 @@ class NzbObject(TryList):
         else:
             self.servercount[serverid] = bytes
         self.bytes_downloaded += bytes
-
 
     @synchronized(IO_LOCK)
     def remove_nzf(self, nzf):
@@ -1034,7 +1032,7 @@ class NzbObject(TryList):
                 # set the nzo status to return "Queued"
                 self.status = Status.QUEUED
                 self.set_download_report()
-                self.fail_msg = T('Aborted, cannot be completed') +  ' - https://sabnzbd.org/not-complete'
+                self.fail_msg = T('Aborted, cannot be completed') + ' - https://sabnzbd.org/not-complete'
                 self.set_unpack_info('Download', self.fail_msg, unique=False)
                 logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
                 # Update the last check time
@@ -1153,8 +1151,8 @@ class NzbObject(TryList):
             if dif > 0:
                 prefix += T('WAIT %s sec') % dif + ' / '  # : Queue indicator for waiting URL fetch
         if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
-            wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time())/60 + 0.5)
-            prefix += T('PROPAGATING %s min') % wait_time + ' / '  # : Queue indicator while waiting for propagtion of post
+            wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time()) / 60 + 0.5)
+            prefix += T('PROPAGATING %s min') % wait_time + ' / '  # : Queue indicator while waiting for propagation of post
         return '%s%s' % (prefix, self.final_name)
 
     @property
@@ -1222,7 +1220,6 @@ class NzbObject(TryList):
 
     __re_quick_par2_check = re.compile(r'\.par2\W*', re.I)
 
-
     @synchronized(IO_LOCK)
     def prospective_add(self, nzf):
         """ Add par2 files to compensate for missing articles
@@ -1257,7 +1254,6 @@ class NzbObject(TryList):
                         logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
                     # Reset all try lists
                     self.reset_all_try_lists()
-
 
     def check_quality(self, req_ratio=0):
         """ Determine amount of articles present on servers
@@ -1817,7 +1813,7 @@ def scan_password(name):
         # Is it maybe in 'name / password' notation?
         if slash == name.find(' / ') + 1:
             # Remove the extra space after name and before password
-            return name[:slash-1].strip('. '), name[slash + 2:]
+            return name[:slash - 1].strip('. '), name[slash + 2:]
         return name[:slash].strip('. '), name[slash + 1:]
 
     # Look for "name password=password"

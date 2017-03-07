@@ -1997,8 +1997,8 @@ def get_active_history(queue=None, items=None):
     return items
 
 
-def format_bytes(rawbytes):
-    b = to_units(rawbytes)
+def format_bytes(bytes):
+    b = to_units(bytes)
     if b == '':
         return b
     else:

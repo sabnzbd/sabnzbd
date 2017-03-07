@@ -440,7 +440,7 @@ class NzbQueue:
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
-            if cleanup and nzo.status not in (Status.COMPLETED, Status.FAILED):
+            if cleanup and nzo.is_gone():
                 nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
 
@@ -900,7 +900,7 @@ class NzbQueue:
                     bytes_left_previous_page += b_left
 
             if (not search) or search in nzo.final_name_pw_clean.lower():
-                if (not limit) or (start <= n < start+limit):
+                if (not limit) or (start <= n < start + limit):
                     pnfo_list.append(nzo.gather_info())
                 n += 1
 
