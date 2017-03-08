@@ -80,6 +80,7 @@ ZIP_COMMAND = None
 SEVEN_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
+PAR2_MT = True
 RAR_VERSION = 0
 
 
@@ -144,12 +145,16 @@ def find_programs(curdir):
         sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+        # Run check on rar version
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < 380
         sabnzbd.newsunpack.RAR_VERSION = version
         logging.debug('UNRAR binary version %.2f', (float(version) / 100))
         if sabnzbd.newsunpack.RAR_PROBLEM:
             logging.info('Problematic UNRAR')
+
+        # Run check on par2-multicore
+        sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)
 
 
 ENV_NZO_FIELDS = ['bytes', 'bytes_downloaded', 'bytes_tried', 'cat', 'duplicate', 'encrypted',
@@ -1842,6 +1847,18 @@ def unrar_check(rar):
         else:
             version = 0
     return version, original
+
+
+def par2_mt_check(par2_path):
+    """ Detect if we have multicore par2 variants """
+    try:
+        par2_version = run_simple([par2_path, '-V'])
+        # We look either for par2-tbb or par2-mt
+        if 'par2cmdline-mt' in par2_version or 'Thread Building Blocks' in par2_version:
+            return True
+    except:
+        pass
+    return False
 
 
 def sfv_check(sfv_path):

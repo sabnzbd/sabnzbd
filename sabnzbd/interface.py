@@ -1241,6 +1241,7 @@ class ConfigPage(object):
         conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
         conf['have_yenc'] = HAVE_YENC
         conf['have_sabyenc'] = HAVE_SABYENC
+        conf['have_mt_par2'] = sabnzbd.newsunpack.PAR2_MT
 
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
         conf['ssl_version'] = ssl_version()

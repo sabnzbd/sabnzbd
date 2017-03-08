@@ -312,6 +312,7 @@ SKIN_TEXT = {
     'opt-enable_unzip' : TT('Enable Unzip'),
     'opt-enable_7zip' : TT('Enable 7zip'),
     'explain-nosslcontext' : TT('Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server\'s identity using its certificates is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-date local CA certificates are required.'),
+    'explain-getpar2mt': TT('Speed up repairs by installing multicore Par2, it is available for many platforms.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
     'backup' : TT('Backup'), #: Indicates that server is Backup server in Status page
