@@ -646,6 +646,8 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         elif line.startswith('Cannot create') and sabnzbd.WIN32 and extraction_path.startswith('\\\\?\\'):
             # Can be due to Unicode problems on Windows, let's retry
             fail = 4
+            # Kill the process (can stay in endless loop on Windows Server)
+            p.kill()
 
         elif line.startswith('Cannot create'):
             line2 = proc.readline()
