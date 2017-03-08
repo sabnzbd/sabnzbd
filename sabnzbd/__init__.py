@@ -453,8 +453,13 @@ def halt():
         __INITIALIZED__ = False
 
 
-def trigger_restart():
+def trigger_restart(timeout=None):
     """ Trigger a restart by setting a flag an shutting down CP """
+    # Sometimes we need to wait a bit to send good-bye to the browser
+    if timeout:
+        time.sleep(timeout)
+
+    # Add extra arguments
     if sabnzbd.downloader.Downloader.do.paused:
         sabnzbd.RESTART_ARGS.append('-p')
     sys.argv = sabnzbd.RESTART_ARGS

@@ -28,6 +28,7 @@ import urllib
 import json
 import re
 import hashlib
+from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
 
@@ -449,14 +450,13 @@ class MainPage(object):
             msg = "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
 
         if msg:
-            yield msg
+            return msg
         else:
             logging.info('Shutdown requested by interface')
-            yield "Initiating shutdown..."
             sabnzbd.halt()
-            yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
             cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
+            return T('SABnzbd shutdown finished')
 
     @cherrypy.expose
     def pause(self, **kwargs):
@@ -912,14 +912,13 @@ class QueuePage(object):
     def shutdown(self, **kwargs):
         msg = check_session(kwargs)
         if msg:
-            yield msg
+            return msg
         else:
             logging.info('Shutdown requested by interface')
-            yield "Initiating shutdown..."
             sabnzbd.halt()
-            yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
             cherrypy.engine.exit()
             sabnzbd.SABSTOP = True
+            return T('SABnzbd shutdown finished')
 
     @cherrypy.expose
     def pause(self, **kwargs):
@@ -1258,24 +1257,25 @@ class ConfigPage(object):
     def restart(self, **kwargs):
         msg = check_session(kwargs)
         if msg:
-            yield msg
+            return msg
         else:
             logging.info('Restart requested by interface')
-            yield T('Initiating restart...<br />')
-            yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
-            sabnzbd.trigger_restart()
+            # Do the shutdown async to still send goodbye to browser
+            Thread(target=sabnzbd.trigger_restart, kwargs={'timeout': 1}).start()
+            return T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
 
     @cherrypy.expose
     def repair(self, **kwargs):
         msg = check_session(kwargs)
         if msg:
-            yield msg
+            return msg
         else:
             logging.info('Queue repair requested by interface')
             sabnzbd.request_repair()
-            yield T('Initiating restart...<br />')
-            yield T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
-            sabnzbd.trigger_restart()
+            # Do the shutdown async to still send goodbye to browser
+            Thread(target=sabnzbd.trigger_restart, kwargs={'timeout': 1}).start()
+            return T('&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />')
+
 
     @cherrypy.expose
     def delete(self, **kwargs):

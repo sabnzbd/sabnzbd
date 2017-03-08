@@ -28,6 +28,7 @@ import json
 import cherrypy
 import locale
 import socket
+from threading import Thread
 try:
     locale.setlocale(locale.LC_ALL, "")
 except:
@@ -662,7 +663,8 @@ def _api_auth(name, output, kwargs):
 def _api_restart(name, output, kwargs):
     """ API: accepts output """
     logging.info('Restart requested by API')
-    sabnzbd.trigger_restart()
+    # Do the shutdown async to still send goodbye to browser
+    Thread(target=sabnzbd.trigger_restart, kwargs={'timeout': 1}).start()
     return report(output)
 
 
