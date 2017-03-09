@@ -1640,9 +1640,7 @@ class ConfigGeneral(object):
             set_language(language)
             sabnzbd.api.clear_trans_cache()
 
-        # See if actually a password was set or to reset
-        if kwargs.get('password').strip('*') or (cfg.password() and not kwargs.get('password')):
-            cfg.password.set(kwargs.get('password'))
+        cfg.password.set(kwargs.get('password'))
 
         web_dir = kwargs.get('web_dir')
         change_web_dir(web_dir)
