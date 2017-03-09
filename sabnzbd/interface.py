@@ -587,7 +587,7 @@ class LoginPage(object):
             # Save login cookie
             set_login_cookie(remember_me=kwargs.get('remember_me', False))
             # Log the succes
-            logging.info('Succesfull login from %s', cherrypy.request.remote.ip)
+            logging.info('Successful login from %s', cherrypy.request.remote.ip)
             # Redirect
             raise Raiser(cherrypy.request.script_name + '/')
         elif kwargs.get('username') or kwargs.get('password'):
