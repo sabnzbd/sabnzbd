@@ -1524,7 +1524,7 @@ class ConfigSpecial(object):
 
 ##############################################################################
 GENERAL_LIST = (
-    'host', 'port', 'username', 'password', 'refresh_rate', 'cache_limit',
+    'host', 'port', 'username', 'refresh_rate', 'cache_limit',
     'local_ranges', 'inet_exposure', 'enable_https', 'https_port',
     'https_cert', 'https_key', 'https_chain', 'enable_https_verification',
     'auto_browser', 'check_new_rel'
@@ -1597,6 +1597,7 @@ class ConfigGeneral(object):
                     wlist.append(rweb)
         conf['web_list'] = wlist
         conf['web_dir'] = add_color(cfg.web_dir(), cfg.web_color())
+        conf['password'] = cfg.password.get_stars()
 
         conf['language'] = cfg.language()
         lang_list = list_languages()
@@ -1639,10 +1640,9 @@ class ConfigGeneral(object):
             set_language(language)
             sabnzbd.api.clear_trans_cache()
 
-        cleanup_list = kwargs.get('cleanup_list')
-        if cleanup_list and sabnzbd.WIN32:
-            cleanup_list = cleanup_list.lower()
-        cfg.cleanup_list.set(cleanup_list)
+        # See if actually a password was set or to reset
+        if kwargs.get('password').strip('*') or (cfg.password() and not kwargs.get('password')):
+            cfg.password.set(kwargs.get('password'))
 
         web_dir = kwargs.get('web_dir')
         change_web_dir(web_dir)
