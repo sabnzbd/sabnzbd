@@ -1,9 +1,31 @@
-Release Notes  -  SABnzbd 2.0.0 Alpha 1
+Release Notes  -  SABnzbd 2.0.0 Beta 1
 =========================================================
+
+## Changes since Alpha 1
+- Windows and macOS releases now also come in 64bit versions.
+  The installers will install the appropriate version automatically.
+  Therefore, on 64bit Windows the installation directory will change to
+  'Program Files' instead of 'Program Files (x86)'.
+  On Windows our tests showed an additional 5-10% gain in download speed
+  when using 64bit SABnzbd on 64bit Windows.
+- Linux: Detect if Multicore Par2 is installed.
+  Multicore Par2 is now easily available through the PPA and other channels:
+  https://sabnzbd.org/wiki/installation/multicore-par2
+
+## Bug fixes since Alpha 1
+- Not all servers with same priority were tried
+- Unzip on Windows was not working
+- Unrar on Windows could hang
+- Restarting SABnzbd sometimes failed
+- Reported 'Unknown encoding' warnings for some downloads
+- Error on renaming a job in Plush
+- Always show Queue search box when multi-editing
+- SABnzbd password not displayed in plain text in the Config
+
 
 ## New in 2.0.0: SABYenc
   To improve SABnzbd's performance on systems where CPU power is limiting
-  download speed, we developed a new module called SABYenc to accelerate the
+  download speed, we developed a new C-module called SABYenc to accelerate the
   decoding of usenet articles. Depending on the hardware, download speed can
   greatly increase.
   The Windows and macOS releases automatically include this module, for other
@@ -33,7 +55,7 @@ Release Notes  -  SABnzbd 2.0.0 Alpha 1
   long paths (>255), you might need to alter them to long-path notation (\\?\).
 - Schedule items are converted when upgrading to 2.x.x and will break when
   reverted back to pre-2.x.x releases.
-- The organization of the download queue is different from pre-1.x.x releases.
+- The organization of the download queue is different from 0.7.x releases.
   So 2.x.x will not see the existing queue, but you can go to Status->QueueRepair
   and "Repair" the old queue.
 
