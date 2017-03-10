@@ -342,7 +342,8 @@ def sanitize_foldername(name, limit=True):
 
     maxlen = cfg.folder_max_length()
     if limit and len(name) > maxlen:
-        name = name[:maxlen]
+        # Folders can't end on a dot in Windows
+        name = name[:maxlen].strip('.')
 
     return name
 
