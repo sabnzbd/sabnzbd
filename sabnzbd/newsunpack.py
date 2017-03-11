@@ -1852,9 +1852,9 @@ def unrar_check(rar):
 def par2_mt_check(par2_path):
     """ Detect if we have multicore par2 variants """
     try:
-        par2_version = run_simple([par2_path, '-V'])
-        # We look either for par2-tbb or par2-mt
-        if 'par2cmdline-mt' in par2_version or 'Thread Building Blocks' in par2_version:
+        par2_version = run_simple([par2_path, '-h'])
+        # Look for a threads option
+        if '-t<' in par2_version:
             return True
     except:
         pass
