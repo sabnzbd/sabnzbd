@@ -53,7 +53,7 @@ try:
     # PyNotify will not work with Python 2.5 (due to next three lines)
     with warnings.catch_warnings():
         warnings.simplefilter("error")
-        import pynotify
+        import pynotify  # @UnresolvedImport
     _HAVE_NTFOSD = True
 except:
     _HAVE_NTFOSD = False
@@ -251,7 +251,7 @@ def send_growl(title, msg, gtype, test=None):
         if not _GROWL:
             _GROWL, error = register_growl(growl_server, growl_password)
         if _GROWL:
-            if 0: assert isinstance(_GROWL, GrowlNotifier) # Assert only for debug purposes
+            if 0: assert isinstance(_GROWL, GrowlNotifier) # Assert only for debug purposes @IgnorePep8
             _GROWL_REG = True
             if isinstance(msg, unicode):
                 msg = msg.decode('utf-8')

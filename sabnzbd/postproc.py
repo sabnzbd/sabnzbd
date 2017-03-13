@@ -176,7 +176,7 @@ class PostProcessor(Thread):
 
             try:
                 nzo = self.queue.get(timeout=1)
-                if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
+                if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # debug purpose @IgnorePep8
             except Queue.Empty:
                 if check_eoq:
                     check_eoq = False
@@ -220,7 +220,7 @@ class PostProcessor(Thread):
 
 def process_job(nzo):
     """ Process one job """
-    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
+    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes @IgnorePep8
     start = time.time()
 
     # keep track of whether we can continue
@@ -612,7 +612,7 @@ def is_parfile(fn):
 
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
-    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
+    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes @IgnorePep8
     filename = nzo.final_name
     notifier.send_notification(T('Post-processing'), filename, 'pp')
     logging.info('Starting verification and repair of %s', filename)

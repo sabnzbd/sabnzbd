@@ -114,7 +114,7 @@ def get_ssl_version(sock):
 
 
 def con(sock, host, port, sslenabled, write_fds, nntp):
-    if 0: assert isinstance(nntp, NNTP) # Assert only for debug purposes
+    if 0: assert isinstance(nntp, NNTP) # Assert only for debug purposes @IgnorePep8
     try:
         sock.connect((host, port))
         sock.setblocking(0)
@@ -166,7 +166,7 @@ def probablyipv6(ip):
 class NNTP(object):
 
     def __init__(self, host, port, info, sslenabled, send_group, nw, user=None, password=None, block=False, write_fds=None):
-        if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
+        if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes @IgnorePep8
         self.host = host
         self.port = port
         self.nw = nw

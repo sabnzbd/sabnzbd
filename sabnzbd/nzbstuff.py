@@ -344,7 +344,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
     def __init__(self, nzo, remove_samples=False):
         self.nzo = nzo
-        if 0: assert isinstance(self.nzo, NzbObject) # Assert only for debug purposes
+        if 0: assert isinstance(self.nzo, NzbObject) # Assert only for debug purposes @IgnorePep8
         self.in_nzb = False
         self.in_file = False
         self.in_groups = False
@@ -1265,7 +1265,7 @@ class NzbObject(TryList):
         anypars = False
         for nzf_id in self.files_table:
             nzf = self.files_table[nzf_id]
-            if 0: assert isinstance(nzf, NzbFile) # Assert only for debug purposes
+            if 0: assert isinstance(nzf, NzbFile) # Assert only for debug purposes @IgnorePep8
             if nzf.deleted:
                 short += nzf.bytes_left
             if self.__re_quick_par2_check.search(nzf.subject):
@@ -1346,7 +1346,7 @@ class NzbObject(TryList):
         nzf_remove_list = []
 
         for nzf in self.files:
-            if 0: assert isinstance(nzf, NzbFile) # Assert only for debug purposes
+            if 0: assert isinstance(nzf, NzbFile) # Assert only for debug purposes @IgnorePep8
             if nzf.deleted:
                 logging.debug('Skipping existing file %s', nzf.filename or nzf.subject)
             else:
