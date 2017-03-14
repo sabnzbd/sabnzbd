@@ -50,6 +50,7 @@ import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
+import sabnzbd.utils.checkdir
 
 
 class PostProcessor(Thread):
@@ -164,9 +165,16 @@ class PostProcessor(Thread):
         return None
 
     def run(self):
-        """ Actual processing """
-        check_eoq = False
+        """ Postprocessor loop """
+        # First we do a dircheck
+        complete_dir = sabnzbd.cfg.complete_dir.get_path()
+        if sabnzbd.utils.checkdir.isFAT(complete_dir):
+            logging.warning(T('Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB') % complete_dir)
+        else:
+            logging.info("Completed Download Folder %s is not on FAT", complete_dir)
 
+        # Start looping
+        check_eoq = False
         while not self.__stop:
             self.__busy = False
 
