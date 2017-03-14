@@ -440,7 +440,7 @@ class NzbQueue:
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
-            if cleanup and nzo.is_gone():
+            if cleanup and not nzo.is_gone():
                 nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
 
