@@ -111,6 +111,12 @@ class HistoryDB(object):
             _ = self.execute('PRAGMA user_version = 1;') and \
                 self.execute('ALTER TABLE "history" ADD COLUMN series TEXT;') and \
                 self.execute('ALTER TABLE "history" ADD COLUMN md5sum TEXT;')
+        if version < 2:
+            # Add any missing columns added since second DB version
+            # Use "and" to stop when database has been reset due to corruption
+            _ = self.execute('PRAGMA user_version = 2;') and \
+                self.execute('ALTER TABLE "history" ADD COLUMN password TEXT;')
+
 
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
@@ -184,10 +190,11 @@ class HistoryDB(object):
             "bytes" INTEGER,
             "meta" TEXT,
             "series" TEXT,
-            "md5sum" TEXT
+            "md5sum" TEXT,
+            "password" TEXT
         )
         """)
-        self.execute('PRAGMA user_version = 1;')
+        self.execute('PRAGMA user_version = 2;')
 
     def save(self):
         """ Save database to disk """
@@ -238,14 +245,14 @@ class HistoryDB(object):
 
         self.save()
 
-    def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
+    def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line, password=''):
         """ Add a new job entry to the database """
         t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
 
         if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
         url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-        downloaded, completeness, fail_message, url_info, bytes, series, md5sum)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
+        downloaded, completeness, fail_message, url_info, bytes, series, md5sum, password)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
