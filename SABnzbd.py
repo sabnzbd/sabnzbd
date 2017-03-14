@@ -100,6 +100,7 @@ from sabnzbd.encoding import unicoder, deunicode
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 import sabnzbd.utils.sslinfo
+import sabnzbd.utils.checkdir
 
 from threading import Thread
 
@@ -1253,6 +1254,13 @@ def main():
                 sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
             except:
                 logging.info("pygtk2 not found. No SysTray.")
+
+    complete_dir = sabnzbd.cfg.complete_dir.get_path()
+    if sabnzbd.utils.checkdir.isFAT(complete_dir):
+        logging.warning(T('Completed Download Folder %s is on FAT, limiting maximum file size to 4GB') % complete_dir)
+    else:
+        logging.info("OK: Completed Download Folder %s is not on FAT", complete_dir)
+
 
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
