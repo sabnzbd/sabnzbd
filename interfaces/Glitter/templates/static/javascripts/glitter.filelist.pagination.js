@@ -55,15 +55,10 @@ function Fileslisting(parent) {
             $.each(response.files, function(index, slot) {
                 // Existing or updating?
                 var existingItem = ko.utils.arrayFirst(self.fileItems(), function(i) {
-                    return i.filename() == slot.filename;
+                    return i.nzf_id() == slot.nzf_id;
                 });
 
                 if(existingItem) {
-                    // We skip queued files!
-                    // They cause problems because they can have the same filename
-                    // as files that we do want to be updated.. The slot.id is not unique!
-                    if(slot.status == "queued") return false;
-
                     // Update the rest
                     existingItem.updateFromData(slot);
                 } else {
@@ -203,7 +198,7 @@ function FileslistingModel(parent, data) {
     self.file_age = ko.observable(data.age);
     self.mb = ko.observable(data.mb);
     self.percentage = ko.observable(fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
-    self.canselect = ko.observable(data.nzf_id !== undefined);
+    self.canselect = ko.observable(data.status != "finished" && data.status != "queued");
     self.isdone =  ko.observable(data.status == "finished");
 
     // Update internally
@@ -213,7 +208,7 @@ function FileslistingModel(parent, data) {
         self.file_age(data.age)
         self.mb(data.mb)
         self.percentage(fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
-        self.canselect(data.nzf_id !== undefined)
+        self.canselect(data.status != "finished" && data.status != "queued")
         self.isdone(data.status == "finished")
     }
 }

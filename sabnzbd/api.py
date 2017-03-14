@@ -1493,27 +1493,23 @@ def build_file_list(nzo_id):
         active_files = pnfo.active_files
         queued_files = pnfo.queued_files
 
-        n = 0
         for nzf in finished_files:
             jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
                          'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
                          'age': calc_age(nzf.date),
-                         'id': str(n),
+                         'nzf_id': nzf.nzf_id,
                          'status': 'finished'})
-            n += 1
 
         for nzf in active_files:
             jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
                          'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
-                         'nzf_id': nzf.nzf_id,
                          'age': calc_age(nzf.date),
-                         'id': str(n),
+                         'nzf_id': nzf.nzf_id,
                          'status': 'active'})
-            n += 1
 
         for nzf in queued_files:
             jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
@@ -1522,9 +1518,8 @@ def build_file_list(nzo_id):
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
                          'age': calc_age(nzf.date),
-                         'id': str(n),
+                         'nzf_id': nzf.nzf_id,
                          'status': 'queued'})
-            n += 1
 
     return jobs
 
