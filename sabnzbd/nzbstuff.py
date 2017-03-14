@@ -233,7 +233,6 @@ class NzbFile(TryList):
     def finish_import(self):
         """ Load the article objects from disk """
         logging.debug("Finishing import on %s", self.subject)
-
         article_db = sabnzbd.load_data(self.nzf_id, self.nzo.workpath, remove=False)
         if article_db:
             for partnum in article_db:
@@ -245,8 +244,6 @@ class NzbFile(TryList):
                 self.articles.append(article)
                 self.decodetable[partnum] = article
 
-            # Look for article with lowest number
-            self.initial_article = self.decodetable[self.lowest_partnum]
             self.import_finished = True
 
     def remove_article(self, article, found):
@@ -257,18 +254,7 @@ class NzbFile(TryList):
                 self.bytes_left -= article.bytes
             self.nzo.bytes_tried += article.bytes
 
-        reset = False
-        if article.partnum == self.lowest_partnum and self.articles:
-            # Issue reset
-            self.initial_article = None
-            self.reset_try_list()
-            reset = True
-
-        done = True
-        if self.articles:
-            done = False
-
-        return (done, reset)
+        return (not self.articles)
 
     def set_par2(self, setname, vol, blocks):
         """ Designate this this file as a par2 file """
@@ -279,16 +265,10 @@ class NzbFile(TryList):
 
     def get_article(self, server, servers):
         """ Get next article to be downloaded """
-        if self.initial_article:
-            article = self.initial_article.get_article(server, servers)
+        for article in self.articles:
+            article = article.get_article(server, servers)
             if article:
                 return article
-
-        else:
-            for article in self.articles:
-                article = article.get_article(server, servers)
-                if article:
-                    return article
 
         self.add_to_try_list(server)
 
@@ -302,11 +282,6 @@ class NzbFile(TryList):
     def completed(self):
         """ Is this file completed? """
         return self.import_finished and not bool(self.articles)
-
-    @property
-    def lowest_partnum(self):
-        """ Get lowest article number of this file """
-        return min(self.decodetable)
 
     def remove_admin(self):
         """ Remove article database from disk (sabnzbd_nzf_<id>)"""
@@ -1024,7 +999,7 @@ class NzbObject(TryList):
     @synchronized(IO_LOCK)
     def remove_article(self, article, found):
         nzf = article.nzf
-        file_done, reset = nzf.remove_article(article, found)
+        file_done = nzf.remove_article(article, found)
 
         if file_done:
             self.remove_nzf(nzf)
@@ -1037,15 +1012,12 @@ class NzbObject(TryList):
                 logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
                 # Update the last check time
                 sabnzbd.LAST_HISTORY_UPDATE = time.time()
-                return True, True, True
+                return True, True
 
         if not found:
             # Add extra parfiles when there was a damaged article and not pre-checking
             if cfg.prospective_par_download() and self.extrapars and not self.precheck:
                 self.prospective_add(nzf)
-
-        if reset:
-            self.reset_try_list()
 
         if file_done:
             self.handle_par2(nzf, file_done)
@@ -1057,7 +1029,7 @@ class NzbObject(TryList):
             self.status = Status.QUEUED
             self.set_download_report()
 
-        return (file_done, post_done, reset)
+        return (file_done, post_done)
 
     @synchronized(IO_LOCK)
     def remove_saved_article(self, article):

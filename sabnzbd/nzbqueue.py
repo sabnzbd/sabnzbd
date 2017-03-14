@@ -809,7 +809,7 @@ class NzbQueue:
             logging.debug("Discarding article %s, no longer in queue", article.article)
             return
 
-        file_done, post_done, reset = nzo.remove_article(article, found)
+        file_done, post_done = nzo.remove_article(article, found)
 
         filename = nzf.filename
 
