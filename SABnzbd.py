@@ -760,7 +760,7 @@ def commandline_handler(frozen=True):
     info.extend(sys.argv[slice:])
 
     try:
-        opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
+        opts, args = getopt.getopt(info, "phdvncwl:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging', 'server=', 'templates', 'ipv6_hosting=',
                                     'template2', 'browser=', 'config-file=', 'force',
