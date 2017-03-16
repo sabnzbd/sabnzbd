@@ -207,7 +207,7 @@
                                 <div class="row" data-bind="visible: servererror()">
                                     <div class="col-sm-12">
                                         <div class="alert alert-danger">
-                                            <a href="#" data-bind="visible: !serveractive(), click: function() { \$parent.unblockServer(servername()) }" class="btn btn-default"><span class="glyphicon glyphicon-share-alt"></span> $T('Glitter-unblockServer')</a>
+                                            <a href="#" data-bind="visible: !serveractive(), click: function() { \$parent.unblockServer(servername) }" class="btn btn-default"><span class="glyphicon glyphicon-share-alt"></span> $T('Glitter-unblockServer')</a>
                                             <span class="glyphicon glyphicon-exclamation-sign"></span>
                                             <span data-bind="text: servererror()"></span>
                                         </div>
