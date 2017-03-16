@@ -13,7 +13,7 @@
   <!--#end if#-->
   <link href="rss?mode=history&apikey=$session" rel="alternate" type="application/rss+xml" title="SABnzbd History" />
   <link rel="shortcut icon" href="./staticcfg/ico/favicon.ico?v=1.1.0" />
-
+  
   <meta name="apple-mobile-web-app-title" content="SABnzbd" />
   <link rel="apple-touch-icon" sizes="76x76" href="./staticcfg/ico/apple-touch-icon-76x76-precomposed.png" />
   <link rel="apple-touch-icon" sizes="120x120" href="./staticcfg/ico/apple-touch-icon-120x120-precomposed.png" />
@@ -973,14 +973,14 @@ function loadingJSON(){
   clearTimeout ( jsontimeout );
   jsontimeout = setTimeout("loadingJSON();", RefreshTime*1000);
   }
-  var url = "tapi?mode=queue&output=json&_dc="+Math.random()+"&session="+session;
+  var url = "tapi?mode=qstatus&output=json&_dc="+Math.random()+"&session="+session;
   var d = loadJSONDoc(url);
   var gotMetadata = function (info)
   {
     //alert(info["kbpersec"]);
-  info = info["queue"]
+
   speed = info["speed"];
-  kbpersec = info["kbpersec"];
+  kbpersec = info["kbpersec"].toFixed(0);
   var paused = info["paused"];
   var pause_int = info["pause_int"];
   //if (paused==true) speed = '';
@@ -1017,10 +1017,10 @@ function loadingJSON(){
   }
 
   document.getElementById("speed").innerHTML = speed;
-  document.getElementById("mbleft").innerHTML = info["mbleft"];
-  document.getElementById("mbtotal").innerHTML = info["mb"];
-  document.getElementById("ds1").innerHTML = info["diskspace1"];
-  document.getElementById("ds2").innerHTML = info["diskspace2"];
+  document.getElementById("mbleft").innerHTML = info["mbleft"].toFixed(2);
+  document.getElementById("mbtotal").innerHTML = info["mb"].toFixed(2);
+  document.getElementById("ds1").innerHTML = info["diskspace1"].toFixed(2);
+  document.getElementById("ds2").innerHTML = info["diskspace2"].toFixed(2);
   document.getElementById("have_warnings").innerHTML = info["have_warnings"];
   load = document.getElementById("loadavg")
   if (load) load.innerHTML = info["loadavg"];
