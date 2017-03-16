@@ -266,11 +266,6 @@ def check_apikey(kwargs, nokey=False):
     name = kwargs.get('name', '')
     callback = kwargs.get('callback')
 
-    # Don't give a visible warning: these commands are used by some
-    # external utilities to detect if username/password is required
-    # The cfg item can suppress all visible warnings
-    special = mode in ('get_scripts', 'qstatus') or not cfg.api_warnings.get()
-
     # Lookup required access level
     req_access = sabnzbd.api.api_level(mode, name)
 
@@ -286,7 +281,7 @@ def check_apikey(kwargs, nokey=False):
         if not key:
             key = kwargs.get('session')
         if not key:
-            if not special:
+            if cfg.api_warnings():
                 log_warning(T('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required', callback=callback)
         elif req_access == 1 and key == cfg.nzb_key():
@@ -302,7 +297,7 @@ def check_apikey(kwargs, nokey=False):
         if check_login() or (kwargs.get('ma_username') == cfg.username() and kwargs.get('ma_password') == cfg.password()):
             pass
         else:
-            if not special:
+            if cfg.api_warnings():
                 log_warning(T('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
             return report(output, 'Missing authentication', callback=callback)
     return None
