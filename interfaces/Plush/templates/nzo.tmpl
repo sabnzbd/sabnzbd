@@ -15,9 +15,9 @@
     <option value=$i <!--#if $i == $index then "selected" else ""#-->>$i</option>
   <!--#end for#-->
   </select>
-  <!--#if $cat_list#-->
+  <!--#if $categories#-->
   <select name="cat"><optgroup label="$T('category')">
-    <!--#for $ct in $cat_list#-->
+    <!--#for $ct in $categories#-->
     <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
     <!--#end for#-->
   </optgroup></select>
@@ -35,9 +35,9 @@
     <option value="2" <!--#if $slot.unpackopts == "2" then "selected" else ""#-->>$T('pp-unpack')</option>
     <option value="3" <!--#if $slot.unpackopts == "3" then "selected" else ""#-->>$T('pp-delete')</option>
   </optgroup></select>
-  <!--#if $script_list#-->
+  <!--#if $scripts#-->
   <select name="script"><optgroup label="$T('script')">
-    <!--#for $sc in $script_list#-->
+    <!--#for $sc in $scripts#-->
     <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
     <!--#end for#-->
   </optgroup></select>

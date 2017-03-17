@@ -269,8 +269,6 @@ def _api_queue_default(output, value, kwargs):
 
     if output in ('xml', 'json'):
         info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
-        info['categories'] = info.pop('cat_list')
-        info['scripts'] = info.pop('script_list')
         return report(output, keyword='queue', data=remove_callable(info))
     elif output == 'rss':
         return rss_qstatus()
@@ -1302,8 +1300,8 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     start = int_conv(start)
 
     info['refresh_rate'] = str(cfg.refresh_rate()) if cfg.refresh_rate() > 0 else ''
-    info['script_list'] = list_scripts()
-    info['cat_list'] = list_cats(output is None)
+    info['scripts'] = list_scripts()
+    info['categories'] = list_cats(output is None)
     info['rating_enable'] = bool(cfg.rating_enable())
     info['noofslots'] = q_size
     info['start'] = start

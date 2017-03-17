@@ -58,7 +58,7 @@
                     <div class="field-pair">
                         <label class="config" for="pre_script">$T('opt-pre_script')</label>
                         <select name="pre_script" id="pre_script">
-                        <!--#for $sc in $script_list#-->
+                        <!--#for $sc in $scripts#-->
                             <!--#if $sc.lower() == $pre_script.lower()#-->
                                 <option value="$sc" selected="selected">$Tspec($sc)</option>
                             <!--#else#-->

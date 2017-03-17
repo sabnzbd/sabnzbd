@@ -340,11 +340,11 @@ class MainPage(object):
         if kwargs.get('skip_wizard') or config.get_servers():
             info = build_header()
 
-            info['script_list'] = list_scripts(default=True)
+            info['scripts'] = list_scripts(default=True)
             info['script'] = 'Default'
 
             info['cat'] = 'Default'
-            info['cat_list'] = list_cats(True)
+            info['categories'] = list_cats(True)
             info['have_rss_defined'] = bool(config.get_rss())
             info['have_watched_dir'] = bool(cfg.dirscan_dir())
 
@@ -371,8 +371,6 @@ class MainPage(object):
             if 'Glitter' in sabnzbd.WEB_DIR:
                 # Queue
                 queue = build_queue(limit=cfg.queue_limit(), output='json')[0]
-                queue['categories'] = info.pop('cat_list')
-                queue['scripts'] = info.pop('script_list')
 
                 # History
                 history = {}
@@ -692,8 +690,8 @@ class NzoPage(object):
             n += 1
 
         info['slot'] = slot
-        info['script_list'] = list_scripts()
-        info['cat_list'] = list_cats()
+        info['scripts'] = list_scripts()
+        info['categories'] = list_cats()
         info['noofslots'] = len(pnfo_list)
 
         return info
@@ -1424,7 +1422,7 @@ class ConfigSwitches(object):
             conf[kw] = config.get_config('misc', kw)()
         conf['unwanted_extensions'] = cfg.unwanted_extensions.get_string()
 
-        conf['script_list'] = list_scripts() or ['None']
+        conf['scripts'] = list_scripts() or ['None']
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_switches.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1880,11 +1878,11 @@ class ConfigRss(object):
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf['script_list'] = list_scripts(default=True)
-        pick_script = conf['script_list'] != []
+        conf['scripts'] = list_scripts(default=True)
+        pick_script = conf['scripts'] != []
 
-        conf['cat_list'] = list_cats(default=True)
-        pick_cat = conf['cat_list'] != []
+        conf['categories'] = list_cats(default=True)
+        pick_cat = conf['categories'] != []
 
         conf['rss_rate'] = cfg.rss_rate()
 
@@ -2403,7 +2401,7 @@ class ConfigCats(object):
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf['script_list'] = list_scripts(default=True)
+        conf['scripts'] = list_scripts(default=True)
         conf['defdir'] = cfg.complete_dir.get_path()
 
         categories = config.get_ordered_categories()
@@ -2481,7 +2479,7 @@ class ConfigSorting(object):
 
         for kw in SORT_LIST:
             conf[kw] = config.get_config('misc', kw)()
-        conf['cat_list'] = list_cats(False)
+        conf['categories'] = list_cats(False)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_sorting.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2871,7 +2869,7 @@ class ConfigNotify(object):
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.notifier.have_ntfosd()
         conf['have_ncenter'] = sabnzbd.DARWIN_VERSION > 7 and bool(sabnzbd.notifier.ncenter_path())
-        conf['script_list'] = list_scripts(default=False, none=True)
+        conf['scripts'] = list_scripts(default=False, none=True)
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()

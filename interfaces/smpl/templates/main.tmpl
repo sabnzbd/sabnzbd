@@ -1155,10 +1155,10 @@ function loadingJSON(){
 <div id="addNew" class="centerLinks" style="overflow: hidden; display: none;">
   <form action="addID" method="get">
     <input type="text" style="width:218px;" name="id" value="$T('enterURL')" onfocus="clearForm(this, 'Enter URL')" onblur="setForm(this, 'Enter URL')">
-    <!--#if $cat_list#-->
+    <!--#if $categories#-->
       <select name="cat" >
         <optgroup label="$T('category')">
-          <!--#for $ct in $cat_list#-->
+          <!--#for $ct in $categories#-->
             <option value="$ct">$Tspec($ct)</option>
           <!--#end for#-->
         </optgroup>
@@ -1166,17 +1166,17 @@ function loadingJSON(){
     <!--#end if#-->
     <select name="pp">
       <optgroup label="$T('pp')">
-        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>$T('default')</option>
+        <option value="-1" <!--#if $categories then "selected" else ""#-->>$T('default')</option>
         <option value="0">$T('none')</option>
         <option value="1">$T('pp-repair')</option>
         <option value="2">$T('pp-unpack')</option>
-        <option value="3" <!--#if $cat_list then "" else "selected"#-->>$T('pp-delete')</option>
+        <option value="3" <!--#if $categories then "" else "selected"#-->>$T('pp-delete')</option>
       </optgroup>
     </select>
-    <!--#if $script_list#-->
+    <!--#if $scripts#-->
       <select name="script">
         <optgroup label="$T('script')">
-          <!--#for $sc in $script_list#-->
+          <!--#for $sc in $scripts#-->
             <option value="$sc">$Tspec($sc)</option>
           <!--#end for#-->
         </optgroup>
@@ -1196,10 +1196,10 @@ function loadingJSON(){
   </form>
   <form action="addFile" method="post" enctype="multipart/form-data">
     <input type="file" style="width:221px" name="nzbfile">
-    <!--#if $cat_list#-->
+    <!--#if $categories#-->
       <select name="cat">
         <optgroup label="$T('category')">
-          <!--#for $ct in $cat_list#-->
+          <!--#for $ct in $categories#-->
             <option value="$ct">$Tspec($ct)</option>
           <!--#end for#-->
         </optgroup>
@@ -1207,17 +1207,17 @@ function loadingJSON(){
     <!--#end if#-->
     <select name="pp">
       <optgroup label="$T('pp')">
-        <option value="-1" <!--#if $cat_list then "selected" else ""#-->>$T('default')</option>
+        <option value="-1" <!--#if $categories then "selected" else ""#-->>$T('default')</option>
         <option value="0">$T('none')</option>
         <option value="1">$T('pp-repair')</option>
         <option value="2">$T('pp-unpack')</option>
-        <option value="3" <!--#if $cat_list then "" else "selected"#-->>$T('pp-delete')</option>
+        <option value="3" <!--#if $categories then "" else "selected"#-->>$T('pp-delete')</option>
       </optgroup>
     </select>
-    <!--#if $script_list#-->
+    <!--#if $scripts#-->
       <select name="script">
         <optgroup label="$T('script')">
-          <!--#for $sc in $script_list#-->
+          <!--#for $sc in $scripts#-->
             <option value="$sc">$Tspec($sc)</option>
           <!--#end for#-->
         </optgroup>

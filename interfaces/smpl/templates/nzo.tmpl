@@ -30,20 +30,20 @@
     </select>
   <!--#end if#-->
 
-  <!--#if $script_list#-->
+  <!--#if $scripts#-->
     <br class="clear" />
     <label class="label">$T('script'):</label>
     <select name="script">
-      <!--#for $sc in $script_list#-->
+      <!--#for $sc in $scripts#-->
       <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
       <!--#end for#-->
     </select>
   <!--#end if#-->
-  <!--#if $cat_list#-->
+  <!--#if $categories#-->
     <br class="clear" />
     <label class="label">$T('category'):</label>
     <select name="cat">
-      <!--#for $ct in $cat_list#-->
+      <!--#for $ct in $categories#-->
       <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
       <!--#end for#-->
     </select>
