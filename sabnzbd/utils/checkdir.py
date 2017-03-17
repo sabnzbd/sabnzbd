@@ -1,11 +1,15 @@
 #!/usr/bin/env python
 
-# Functions to do checking on a directory:
-# is directory on a FAT filesystem?
+"""
+Functions to check if the path filesystem uses FAT
+"""
 
-import sys, os, subprocess
+import sys
+import os
+import subprocess
 
 debug = False
+
 
 def isFAT(dir):
 
@@ -30,7 +34,7 @@ def isFAT(dir):
             cmd = "df -T " + dir + " 2>&1"
             for thisline in os.popen(cmd).readlines():
                 #print thisline
-                if thisline.find('/')==0:
+                if thisline.find('/') == 0:
                     # Starts with /, so a real, local device
                     fstype = thisline.split()[1]
                     if debug: print "File system type:", fstype
@@ -39,40 +43,17 @@ def isFAT(dir):
                         if debug: print "FAT found"
                         break
         elif 'win32' in sys.platform:
-            dir = dir.upper()    # input could be in lower case like "e:\", so to upper first
-            # On Windows:
-            '''
-            C:\>wmic logicaldisk get name,filesystem
-            FileSystem  Name
-            NTFS        C:
-                        D:
-            FAT         E:
-            FAT         F:
-            NTFS        G:
-            NTFS        H:
-            NTFS        M:
-            NTFS        Q:
-            NTFS        X:
-
-            We now can see dir "E:\other\dir\something" is on FAT (just like F:\bla),
-            and "Q:\dome\dir\bla" is not on FAT.
-            '''
-            windowscmd = "wmic logicaldisk get name,filesystem".split()
-            CREATE_NO_WINDOW = 0x08000000
-            for line in subprocess.check_output(windowscmd,creationflags=CREATE_NO_WINDOW).replace('\r','').split('\n'):
-                if 'FAT' in line:
-                    # I'm quite sure if 'FAT' is there, there is always a space before the drive letter,
-                    # and thus a split() is possible, but to be sure put it in a try/except:
-                    try:
-                        driveletter = line.split()[-1]
-                        # We have found a drive letter which is FAT
-                        # Now check if that drive letter is in the dir to be checked (somewhere in the beginning of the path)
-                        # ... because can be '\\?\C:\Media\...'
-                        if dir.find(driveletter) >=0 and dir.find(driveletter) <= 5 :
-                            FAT = True
-                            break    # we're done
-                    except:
-                        continue
+            import win32api
+            if '?' in dir:
+                #  Remove \\?\ or \\?\UNC\ prefix from Windows path
+                dir = dir.replace(u'\\\\?\\UNC\\', u'\\\\', 1).replace(u'\\\\?\\', u'', 1)
+            try:
+                result = win32api.GetVolumeInformation(os.path.splitdrive(dir)[0])
+                if debug: print result
+                if(result[4].startswith("FAT")):
+                    FAT = True
+            except:
+                pass
         elif 'darwin' in sys.platform:
             # MacOS formerly known as OSX
             '''
