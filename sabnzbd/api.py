@@ -263,19 +263,12 @@ def _api_queue_sort(output, value, kwargs):
 
 def _api_queue_default(output, value, kwargs):
     """ API: accepts output, sort, dir, start, limit """
-    sort = kwargs.get('sort')
-    direction = kwargs.get('dir', '')
     start = int_conv(kwargs.get('start'))
     limit = int_conv(kwargs.get('limit'))
-    trans = kwargs.get('trans')
     search = kwargs.get('search')
 
     if output in ('xml', 'json'):
-        if sort and sort != 'index':
-            reverse = direction.lower() == 'desc'
-            sort_queue(sort, reverse)
-
-        info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, trans=trans, search=search)
+        info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
         info['categories'] = info.pop('cat_list')
         info['scripts'] = info.pop('script_list')
         return report(output, keyword='queue', data=remove_callable(info))
