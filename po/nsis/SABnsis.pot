@@ -13,71 +13,71 @@ msgstr ""
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
 
-#: NSIS_Installer.nsi:450
-msgid "Go to the SABnzbd Wiki"
-msgstr ""
-
-#: NSIS_Installer.nsi:452
+#: NSIS_Installer.nsi:473
 msgid "Show Release Notes"
 msgstr ""
 
-#: NSIS_Installer.nsi:454
+#: NSIS_Installer.nsi:475
+msgid "Start SABnzbd"
+msgstr ""
+
+#: NSIS_Installer.nsi:477
 msgid "Support the project, Donate!"
 msgstr ""
 
-#: NSIS_Installer.nsi:456
+#: NSIS_Installer.nsi:479
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr ""
 
-#: NSIS_Installer.nsi:458
+#: NSIS_Installer.nsi:481
 msgid "The installation directory has changed (now in \"Program Files\"). \\nIf you run SABnzbd as a service, you need to update the service settings."
 msgstr ""
 
-#: NSIS_Installer.nsi:460
+#: NSIS_Installer.nsi:483
 msgid "This will uninstall SABnzbd from your system"
 msgstr ""
 
-#: NSIS_Installer.nsi:462
+#: NSIS_Installer.nsi:485
 msgid "Run at startup"
 msgstr ""
 
-#: NSIS_Installer.nsi:464
+#: NSIS_Installer.nsi:487
 msgid "Desktop Icon"
 msgstr ""
 
-#: NSIS_Installer.nsi:466
+#: NSIS_Installer.nsi:489
 msgid "NZB File association"
 msgstr ""
 
-#: NSIS_Installer.nsi:468
+#: NSIS_Installer.nsi:491
 msgid "Delete Program"
 msgstr ""
 
-#: NSIS_Installer.nsi:470
+#: NSIS_Installer.nsi:493
 msgid "Delete Settings"
 msgstr ""
 
-#: NSIS_Installer.nsi:472
+#: NSIS_Installer.nsi:495
 msgid "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
 msgstr ""
 
-#: NSIS_Installer.nsi:474
+#: NSIS_Installer.nsi:497
 msgid "Downloading Microsoft runtime installer..."
 msgstr ""
 
-#: NSIS_Installer.nsi:476
+#: NSIS_Installer.nsi:499
 msgid "Download error, retry?"
 msgstr ""
 
-#: NSIS_Installer.nsi:478
+#: NSIS_Installer.nsi:501
 msgid "Cannot install without runtime library, retry?"
 msgstr ""
 
-#: NSIS_Installer.nsi:480
+#: NSIS_Installer.nsi:503
 msgid "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
 
-#: NSIS_Installer.nsi:482
+#: NSIS_Installer.nsi:505
 msgid "Your settings and data will be preserved."
 msgstr ""
 
