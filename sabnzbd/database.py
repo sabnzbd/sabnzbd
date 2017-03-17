@@ -246,7 +246,7 @@ class HistoryDB(object):
 
         self.save()
 
-    def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line, password=''):
+    def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
         """ Add a new job entry to the database """
         t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
 
