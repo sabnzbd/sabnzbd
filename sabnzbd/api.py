@@ -171,7 +171,8 @@ def _api_qstatus(name, output, kwargs):
         keyword = ''
     else:
         keyword = 'queue'
-    return report(output, keyword=keyword, data=qstatus_data())
+    info, pnfo_list, bytespersec = build_queue()
+    return report(output, keyword='', data=remove_callable(info))
 
 
 def _api_queue(name, output, kwargs):
@@ -1416,60 +1417,6 @@ def fast_queue():
     bpsnow = BPSMeter.do.get_bps()
     time_left = calc_timeleft(bytes_left, bpsnow)
     return paused, bytes_left, bpsnow, time_left
-
-
-def qstatus_data():
-    """ Build up the queue status as a nested object and output as a JSON object """
-
-    qnfo = NzbQueue.do.queue_info()
-    pnfo_list = qnfo.list
-
-    jobs = []
-    bytesleftprogess = 0
-    bpsnow = BPSMeter.do.get_bps()
-    for pnfo in pnfo_list:
-        filename = pnfo.filename
-        bytesleft = pnfo.bytes_left / MEBI
-        bytesleftprogess += pnfo.bytes_left
-        bytes = pnfo.bytes / MEBI
-        nzo_id = pnfo.nzo_id
-        jobs.append({"id": nzo_id,
-                        "mb": bytes,
-                        "mbleft": bytesleft,
-                        "filename": unicoder(filename),
-                        "timeleft": calc_timeleft(bytesleftprogess, bpsnow)})
-
-    state = "IDLE"
-    if Downloader.do.paused:
-        state = Status.PAUSED
-    elif qnfo.bytes_left / MEBI > 0:
-        state = Status.DOWNLOADING
-
-    speed_limit = Downloader.do.get_limit()
-    if speed_limit <= 0:
-        speed_limit = 100
-
-    status = {
-        "state": state,
-        "pp_active": not PostProcessor.do.empty(),
-        "paused": Downloader.do.paused,
-        "pause_int": scheduler.pause_int(),
-        "kbpersec": bpsnow / KIBI,
-        "speed": to_units(bpsnow, dec_limit=1),
-        "mbleft": qnfo.bytes_left / MEBI,
-        "mb": qnfo.bytes / MEBI,
-        "noofslots": len(pnfo_list),
-        "noofslots_total": qnfo.q_fullsize,
-        "have_warnings": str(sabnzbd.GUIHANDLER.count()),
-        "diskspace1": diskspace(cfg.download_dir.get_path())[1],
-        "diskspace2": diskspace(cfg.complete_dir.get_path())[1],
-        "timeleft": calc_timeleft(qnfo.bytes_left, bpsnow),
-        "loadavg": loadavg(),
-        "speedlimit": "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit),
-        "speedlimit_abs": str(Downloader.do.get_limit_abs() or ''),
-        "jobs": jobs
-    }
-    return status
 
 
 def build_file_list(nzo_id):
