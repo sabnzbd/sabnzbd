@@ -1884,7 +1884,7 @@ def get_active_history(queue=None, items=None):
             item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
             item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
             item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'], \
-            dummy, dummy = history
+            dummy, dummy, item['password'] = history
         item['action_line'] = nzo.action_line
         item = unpack_history_info(item)
 

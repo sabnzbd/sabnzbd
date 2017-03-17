@@ -356,10 +356,17 @@ function HistoryModel(parent, data) {
         return displayDateTime(self.completed(), parent.parent.dateFormat(), 'X')
     });
 
+    // Subscribe to retryEvent so we can load the password
+    self.canRetry.subscribe(function() {
+        self.updateAllHistory = true;
+    })
+
     // Re-try button
     self.retry = function() {
         // Set JOB-id
         $('#modal-retry-job input[name="retry_job_id"]').val(self.nzo_id)
+        // Set password
+        $('#retry_job_password').val(self.historyStatus.password())
         // Open modal
         $('#modal-retry-job').modal("show")
     };
