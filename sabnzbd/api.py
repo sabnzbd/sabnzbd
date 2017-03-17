@@ -1870,21 +1870,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     return (items, fetched_items, total_items)
 
 
-def format_history_for_queue():
-    """ Retrieves the information on currently active history items, and formats them for displaying in the queue """
-    slotinfo = []
-    history_items = get_active_history()
-
-    for item in history_items:
-        slot = {'nzo_id': item['nzo_id'],
-                'bookmark': '', 'filename': xml_name(item['name']), 'loaded': False,
-                'stages': item['stage_log'], 'status': item['status'], 'bytes': item['bytes'],
-                'size': item['size']}
-        slotinfo.append(slot)
-
-    return slotinfo
-
-
 def get_active_history(queue=None, items=None):
     """ Get the currently in progress and active history queue. """
     if items is None:
