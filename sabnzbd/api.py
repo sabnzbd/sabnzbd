@@ -530,9 +530,7 @@ def _api_history(name, output, kwargs):
         else:
             return report(output, _MSG_NO_VALUE)
     elif not name:
-        history = build_header()
-        if 'noofslots_total' in history:
-            del history['noofslots_total']
+        history = {}
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
                to_units(grand), to_units(month), to_units(week), to_units(day)
@@ -1305,7 +1303,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         converter = xml_name
 
     # build up header full of basic information
-    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(search=search, start=start, limit=limit)
+    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(search=search, start=start, limit=limit, output=output)
 
     datestart = datetime.datetime.now()
     priorities = {TOP_PRIORITY: 'Force', REPAIR_PRIORITY: 'Repair', HIGH_PRIORITY: 'High', NORMAL_PRIORITY: 'Normal', LOW_PRIORITY: 'Low'}
@@ -1615,17 +1613,13 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(webdir=''):
+def build_header(webdir='', output=None):
     """ Build the basic header """
     try:
         uptime = calc_age(sabnzbd.START)
     except:
         uptime = "-"
 
-    header = {'T': Ttemplate, 'Tspec': Tspec, 'Tx': Ttemplate, 'version': sabnzbd.__version__,
-               'paused': Downloader.do.paused or Downloader.do.postproc,
-               'pause_int': scheduler.pause_int(), 'paused_all': sabnzbd.PAUSED_ALL,
-               'uptime': uptime, 'color_scheme': sabnzbd.WEB_COLOR or ''}
     speed_limit = Downloader.do.get_limit()
     if speed_limit <= 0:
         speed_limit = 100
@@ -1636,7 +1630,42 @@ def build_header(webdir=''):
     disk_total1, disk_free1 = diskspace(cfg.download_dir.get_path())
     disk_total2, disk_free2 = diskspace(cfg.complete_dir.get_path())
 
-    header['helpuri'] = 'https://sabnzbd.org/wiki/'
+    header = {}
+
+    # We don't output everything for API
+    if not output:
+        header['T'] = Ttemplate
+        header['Tspec'] = Tspec
+        header['Tx'] = Ttemplate
+        header['uptime'] = uptime
+        header['color_scheme'] = sabnzbd.WEB_COLOR or ''
+        header['helpuri'] = 'https://sabnzbd.org/wiki/'
+
+        header['restart_req'] = sabnzbd.RESTART_REQ
+        header['pid'] = os.getpid()
+
+        header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', ('WARNING:')).replace('ERROR', T('ERROR:'))
+        header['active_lang'] = cfg.language()
+
+        header['my_lcldata'] = sabnzbd.DIR_LCLDATA
+        header['my_home'] = sabnzbd.DIR_HOME
+        header['webdir'] = webdir or sabnzbd.WEB_DIR
+
+        header['nt'] = sabnzbd.WIN32
+        header['darwin'] = sabnzbd.DARWIN
+
+        header['power_options'] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
+        header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
+
+        header['session'] = cfg.api_key()
+        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
+
+
+    header['version'] = sabnzbd.__version__
+    header['paused'] = Downloader.do.paused or Downloader.do.postproc
+    header['pause_int'] = scheduler.pause_int()
+    header['paused_all'] = sabnzbd.PAUSED_ALL
+
     header['diskspace1'] = "%.2f" % disk_free1
     header['diskspace2'] = "%.2f" % disk_free2
     header['diskspace1_norm'] = to_units(disk_free1 * GIGI)
@@ -1644,25 +1673,11 @@ def build_header(webdir=''):
     header['diskspacetotal1'] = "%.2f" % disk_total1
     header['diskspacetotal2'] = "%.2f" % disk_total2
     header['loadavg'] = loadavg()
-    # Special formatting so only decimal points when needed
     header['speedlimit'] = "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit)
     header['speedlimit_abs'] = "%s" % speed_limit_abs
-    header['restart_req'] = sabnzbd.RESTART_REQ
+
     header['have_warnings'] = str(sabnzbd.GUIHANDLER.count())
-    header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', ('WARNING:')).replace('ERROR', T('ERROR:'))
-    header['active_lang'] = cfg.language()
-    header['my_lcldata'] = sabnzbd.DIR_LCLDATA
-    header['my_home'] = sabnzbd.DIR_HOME
-
-    header['webdir'] = webdir or sabnzbd.WEB_DIR
-    header['pid'] = os.getpid()
-
     header['finishaction'] = sabnzbd.QUEUECOMPLETE
-    header['nt'] = sabnzbd.WIN32
-    header['darwin'] = sabnzbd.DARWIN
-    header['power_options'] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
-
-    header['session'] = cfg.api_key()
 
     header['quota'] = to_units(BPSMeter.do.quota)
     header['have_quota'] = bool(BPSMeter.do.quota > 0.0)
@@ -1673,21 +1688,13 @@ def build_header(webdir=''):
     header['cache_size'] = format_bytes(anfo.cache_size)
     header['cache_max'] = str(anfo.cache_limit)
 
-    header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
-
-    if sabnzbd.NEW_VERSION:
-        header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
-    else:
-        header['new_release'] = ''
-        header['new_rel_url'] = ''
-
     return header
 
 
-def build_queue_header(search=None, start=0, limit=0):
+def build_queue_header(search=None, start=0, limit=0, output=None):
     """ Build full queue header """
 
-    header = build_header()
+    header = build_header(output=output)
 
     bytespersec = BPSMeter.do.get_bps()
     qnfo = NzbQueue.do.queue_info(search=search, start=start, limit=limit)
