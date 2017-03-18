@@ -646,6 +646,8 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         elif line.startswith('Cannot create') and sabnzbd.WIN32 and extraction_path.startswith('\\\\?\\'):
             # Can be due to Unicode problems on Windows, let's retry
             fail = 4
+            # Kill the process (can stay in endless loop on Windows Server)
+            p.kill()
 
         elif line.startswith('Cannot create'):
             line2 = proc.readline()
@@ -804,12 +806,11 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
 
 def ZIP_Extract(zipfile, extraction_path, one_folder):
     """ Unzip single zip set 'zipfile' to 'extraction_path' """
-    if one_folder or cfg.flat_unpack():
-        option = '-j'  # Unpack without folders
-    else:
-        option = '-qq'  # Dummy option
-    command = ['%s' % ZIP_COMMAND, '-o', '-qq', option, '-Pnone', '%s' % zipfile,
+    command = ['%s' % ZIP_COMMAND, '-o', '-Pnone', '%s' % clip_path(zipfile),
                '-d%s' % extraction_path]
+
+    if one_folder or cfg.flat_unpack():
+        command.insert(3, '-j')  # Unpack without folders
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting unzip: %s', command)

@@ -651,7 +651,7 @@ def attach_server(host, port, cert=None, key=None, chain=None):
         http_server = cherrypy._cpserver.Server()
         http_server.bind_addr = (host, port)
         if cert and key:
-            http_server.ssl_provider = 'builtin'
+            http_server.ssl_module = 'builtin'
             http_server.ssl_certificate = cert
             http_server.ssl_private_key = key
             http_server.ssl_certificate_chain = chain
@@ -778,7 +778,7 @@ def commandline_handler(frozen=True):
     info.extend(sys.argv[slice:])
 
     try:
-        opts, args = getopt.getopt(info, "phdvncw:l:s:f:t:b:2:",
+        opts, args = getopt.getopt(info, "phdvncwl:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging=', 'server=', 'templates', 'ipv6_hosting=',
                                     'template2', 'browser=', 'config-file=', 'force',
@@ -1360,7 +1360,7 @@ def main():
             cherryport = https_port
         elif multilocal:
             # Extra HTTPS port for secondary localhost
-            attach_server(hosts[1], cherryport, https_cert, https_key)
+            attach_server(hosts[1], cherryport, https_cert, https_key, https_chain)
 
         cherrypy.config.update({'server.ssl_module': 'builtin',
                                 'server.ssl_certificate': https_cert,
