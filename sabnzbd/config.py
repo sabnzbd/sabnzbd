@@ -26,7 +26,6 @@ import threading
 import shutil
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
-from sabnzbd.utils import listquote
 from sabnzbd.utils import configobj
 from sabnzbd.decorators import synchronized
 
@@ -42,6 +41,8 @@ database = {}               # Holds the option dictionary
 
 modified = False            # Signals a change in option dictionary
                             # Should be reset after saving to settings file
+
+paramfinder = re.compile(r'''(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)''')
 
 
 class Option(object):
@@ -260,7 +261,7 @@ class OptionList(Option):
                 if '"' not in value and ',' not in value:
                     value = value.split()
                 else:
-                    value = listquote.simplelist(value)
+                    value = paramfinder.findall(value)
             if self.__validation:
                 error, value = self.__validation(value)
             if not error:
@@ -542,7 +543,7 @@ class OptionFilters(Option):
                 if isinstance(val, list):
                     filters.append(val)
                 else:
-                    filters.append(listquote.simplelist(val))
+                    filters.append(paramfinder.findall(val))
                 while len(filters[-1]) < 7:
                     filters[-1].append('1')
                 if not filters[-1][6]:
