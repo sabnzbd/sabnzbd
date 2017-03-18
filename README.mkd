@@ -1,5 +1,13 @@
-Release Notes  -  SABnzbd 1.2.2
+Release Notes  -  SABnzbd 1.2.3
 ==============================================
+
+## Bug fixes in 1.2.3
+- Fix crashing Downloader when Quota were set
+- Windows: Fix hanging Unrar
+- Windows: Unzip was not working
+- Windows: Incomplete folders would sometimes end in a dot
+- Starting with "-w" parameter fail
+- Unblock Server button did not work
 
 ## Bug fix in 1.2.2
 - Windows: job-directory incorrectly passed to PostProcessing-script
