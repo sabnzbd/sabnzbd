@@ -244,7 +244,7 @@ class BPSMeter(object):
             if self.have_quota and self.quota_enabled:
                 self.left -= amount
                 if self.left <= 0.0:
-                    if sabnzbd.downloader.Downloader.do and not Downloader.do.paused:
+                    if sabnzbd.downloader.Downloader.do and not sabnzbd.downloader.Downloader.do.paused:
                         sabnzbd.downloader.Downloader.do.pause()
                         logging.warning(T('Quota spent, pausing downloading'))
 
