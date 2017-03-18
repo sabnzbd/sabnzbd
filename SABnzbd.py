@@ -1360,7 +1360,7 @@ def main():
             cherryport = https_port
         elif multilocal:
             # Extra HTTPS port for secondary localhost
-            attach_server(hosts[1], cherryport, https_cert, https_key)
+            attach_server(hosts[1], cherryport, https_cert, https_key, https_chain)
 
         cherrypy.config.update({'server.ssl_module': 'builtin',
                                 'server.ssl_certificate': https_cert,
