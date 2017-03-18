@@ -3,6 +3,7 @@ Release Notes  -  SABnzbd 1.2.3
 
 ## Bug fixes in 1.2.3
 - Fix crashing Downloader when Quota were set
+- Fix broken webserver HTTPS for extra bound ports (e.g. IPv6)
 - Windows: Fix hanging Unrar
 - Windows: Unzip was not working
 - Windows: Incomplete folders would sometimes end in a dot
