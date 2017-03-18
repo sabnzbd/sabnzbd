@@ -633,7 +633,7 @@ def attach_server(host, port, cert=None, key=None, chain=None):
         http_server = cherrypy._cpserver.Server()
         http_server.bind_addr = (host, port)
         if cert and key:
-            http_server.ssl_provider = 'builtin'
+            http_server.ssl_module = 'builtin'
             http_server.ssl_certificate = cert
             http_server.ssl_private_key = key
             http_server.ssl_certificate_chain = chain
