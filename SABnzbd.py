@@ -408,7 +408,7 @@ def print_modules():
     if sabnzbd.decoder.HAVE_SABYENC:
         logging.info("SABYenc module (v%s)... found!", sabnzbd.constants.SABYENC_VERSION)
     else:
-        logging.error("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc", sabnzbd.constants.SABYENC_VERSION)
+        logging.warning("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc", sabnzbd.constants.SABYENC_VERSION)
         # Only now we care about old-yEnc
         if sabnzbd.decoder.HAVE_YENC:
             logging.info("_yenc module... found!")
