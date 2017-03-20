@@ -432,7 +432,7 @@ def print_modules():
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
 
         # Report problematic unrar
-        if sabnzbd.newsunpack.RAR_PROBLEM and not cfg.ignore_wrong_unrar():
+        if sabnzbd.newsunpack.RAR_PROBLEM and not sabnzbd.cfg.ignore_wrong_unrar():
             have_str = '%.2f' % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = '%.2f' % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
             logging.warning(T('Your UNRAR version is %s, we recommend version %s or higher.<br />') % (have_str, want_str))

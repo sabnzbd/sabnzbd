@@ -147,7 +147,7 @@ def find_programs(curdir):
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
         # Run check on rar version
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
-        sabnzbd.newsunpack.RAR_PROBLEM = not original or version < 380
+        sabnzbd.newsunpack.RAR_PROBLEM = not original or version < sabnzbd.constants.REC_RAR_VERSION
         sabnzbd.newsunpack.RAR_VERSION = version
 
         # Run check on par2-multicore
