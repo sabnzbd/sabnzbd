@@ -654,6 +654,14 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             logging.warning(T('ERROR: CRC failed in "%s"'), setname)
             fail = 2  # Older unrar versions report a wrong password as a CRC error
 
+        elif line.startswith('File too large'):
+            nzo.fail_msg = T('Unpacking failed, file too large for filesystem (FAT?)')
+            msg = (u'[%s] ' + T('Unpacking failed, file too large for filesystem (FAT?)')) % setname
+            nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
+            # ERROR: File too large for file system (bigfile-5000MB)
+            logging.error(T('ERROR: File too large for filesystem (%s)'), setname)
+            fail = 1
+
         elif line.startswith('Write error'):
             nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
             msg = (u'[%s] ' + T('Unpacking failed, write error or disk is full?')) % setname
