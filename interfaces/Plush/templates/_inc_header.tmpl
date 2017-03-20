@@ -102,7 +102,6 @@
         <span id="warning_box"><b><a href="${path}status/#tabs-warnings" id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> $T('warnings')</a></b></span>
         #if $pane=="Main"#
           #if $new_release#&sdot; <a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a>#end if#
-          #if $warning#&sdot; <a id="warning_message">$warning.replace(' ','&nbsp;')</a>#end if#
         #end if#
       </div>
     </div>

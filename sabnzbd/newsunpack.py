@@ -149,9 +149,6 @@ def find_programs(curdir):
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
         sabnzbd.newsunpack.RAR_PROBLEM = not original or version < 380
         sabnzbd.newsunpack.RAR_VERSION = version
-        logging.debug('UNRAR binary version %.2f', (float(version) / 100))
-        if sabnzbd.newsunpack.RAR_PROBLEM:
-            logging.info('Problematic UNRAR')
 
         # Run check on par2-multicore
         sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)

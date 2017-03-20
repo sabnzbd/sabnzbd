@@ -61,8 +61,7 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 
 from sabnzbd.constants import \
-    REC_RAR_VERSION, NORMAL_PRIORITY, \
-    MEBI, DEF_SKIN_COLORS, DEF_STDINTF, DEF_STDCONFIG, DEF_MAIN_TMPL, \
+    NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, DEF_STDINTF, DEF_STDCONFIG, DEF_MAIN_TMPL, \
     DEFAULT_PRIORITY
 
 from sabnzbd.lang import list_languages, set_language
@@ -353,19 +352,6 @@ class MainPage(object):
 
             bytespersec_list = BPSMeter.do.get_bps_list()
             info['bytespersec_list'] = ','.join([str(bps) for bps in bytespersec_list])
-
-            info['warning'] = ''
-            if cfg.enable_unrar():
-                version = sabnzbd.newsunpack.RAR_VERSION
-                if version and version < REC_RAR_VERSION and not cfg.ignore_wrong_unrar():
-                    have_str = '%.2f' % (float(version) / 100)
-                    want_str = '%.2f' % (float(REC_RAR_VERSION) / 100)
-                    info['warning'] = T('Your UNRAR version is %s, we recommend version %s or higher.<br />') % \
-                                         (have_str, want_str)
-                if not sabnzbd.newsunpack.RAR_COMMAND:
-                    info['warning'] = T('No UNRAR program found, unpacking RAR files is not possible<br />')
-            if not sabnzbd.newsunpack.PAR2_COMMAND:
-                info['warning'] = T('No PAR2 program found, repairs not possible<br />')
 
             # For Glitter we pre-load the JSON output
             if 'Glitter' in sabnzbd.WEB_DIR:
