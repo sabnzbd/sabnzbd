@@ -1,5 +1,27 @@
-Release Notes  -  SABnzbd 2.0.0 Beta 1
+Release Notes  -  SABnzbd 2.0.0 RC 1
 =========================================================
+
+## Changes since Beta 1
+- API changes: `history` and `queue` calls now only contain History/Queue
+  information. All other information can still be found in `fullstatus`.
+  `qstatus` is now identical to `queue` call.
+  `get_files` now reports unique `nzf_id` for each file.
+- Windows: improved Windows installer, now detects if service is running
+  and will remove the correct previous installation.
+
+## Bug fixes since Beta 1
+- Fix crashing Downloader when Quota were set
+- Top-only switch now really only downloads top job
+- Fix broken webserver HTTPS for extra bound ports (e.g. IPv6)
+- Remove listquote module dependency
+- Starting with "-w" parameter would fail
+- Previously set password shown on Retry
+- Unblock Server button did not work
+- Warn if Complete folder is on FAT filesystem (4GB size limit)
+- Deleting a downloading job could produce write errors
+- Windows: Incomplete folders would sometimes end in a dot
+- Linux: Detect Multicore Par2 more generally
+
 
 ## Changes since Alpha 1
 - Windows and macOS releases now also come in 64bit versions.
