@@ -540,6 +540,7 @@ def _api_history(name, output, kwargs):
                                                                               categories=categories,
                                                                               output=output)
         history['last_history_update'] = int(sabnzbd.LAST_HISTORY_UPDATE)
+        history['version'] = sabnzbd.__version__
         return report(output, keyword='history', data=remove_callable(history))
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
