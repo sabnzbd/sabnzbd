@@ -482,7 +482,7 @@ def _api_change_opts(name, output, kwargs):
 
 def _api_fullstatus(name, output, kwargs):
     """ API: full history status"""
-    status = build_status(skip_dashboard=kwargs.get('skip_dashboard'), output=output)
+    status = build_status(skip_dashboard=kwargs.get('skip_dashboard', 1), output=output)
     return report(output, keyword='status', data=remove_callable(status))
 
 
