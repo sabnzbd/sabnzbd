@@ -330,20 +330,20 @@ def sanitize_foldername(name, limit=True):
         else:
             lst.append(ch)
     name = ''.join(lst)
-
     name = name.strip()
-    if name != '.' and name != '..':
-        name = name.rstrip('.')
-    if not name:
-        name = 'unknown'
 
     if sabnzbd.WIN32 or cfg.sanitize_safe():
         name = replace_win_devices(name)
 
     maxlen = cfg.folder_max_length()
     if limit and len(name) > maxlen:
-        # Folders can't end on a dot in Windows
-        name = name[:maxlen].strip('.')
+        name = name[:maxlen]
+
+    # And finally, make sure it doesn't end in a dot
+    if name != '.' and name != '..':
+        name = name.rstrip('.')
+    if not name:
+        name = 'unknown'
 
     return name
 
