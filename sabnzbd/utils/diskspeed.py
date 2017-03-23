@@ -39,7 +39,7 @@ def diskspeedmeasure(dirname):
         # On Windows, this crazy action is needed to
         # avoid a "permission denied" error
         try:
-            os.system('echo Hi >%s' % filename)
+            os.popen('echo Hi >%s' % filename)
         except:
             pass
 
