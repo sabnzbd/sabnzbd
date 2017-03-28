@@ -622,8 +622,7 @@ class Downloader(Thread):
                             nw.finish_connect(nw.status_code)
                             if sabnzbd.LOG_ALL:
                                 logging.debug("%s@%s last message -> %s", nw.thrdnum, nw.server.id, nntp_to_msg(nw.data))
-                            nw.lines = []
-                            nw.data = []
+                            nw.clear_data()
                         except NNTPPermanentError, error:
                             # Handle login problems
                             block = False
@@ -713,8 +712,7 @@ class Downloader(Thread):
                         done = False
                         logging.debug("group command ok -> %s", nntp_to_msg(nw.data))
                         nw.group = nw.article.nzf.nzo.group
-                        nw.lines = []
-                        nw.data = []
+                        nw.clear_data()
                         self.__request_article(nw)
 
                     elif nw.status_code in ('411', '423', '430'):
@@ -744,8 +742,7 @@ class Downloader(Thread):
                             # Assume "BODY" command is not supported
                             server.have_body = False
                             logging.debug('Server %s does not support BODY', server.id)
-                        nw.lines = []
-                        nw.data = []
+                        nw.clear_data()
                         self.__request_article(nw)
 
                 if done:

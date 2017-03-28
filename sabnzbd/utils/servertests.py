@@ -82,8 +82,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         nw = NewsWrapper(s, -1, block=True)
         nw.init_connect(None)
         while not nw.connected:
-            nw.lines = []
-            nw.data = []
+            nw.clear_data()
             nw.recv_chunk(block=True)
             #more ssl related: handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
             read_sockets, _, _ = select.select([nw.nntp.sock], [], [], 0.1)
@@ -117,8 +116,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
     if not username or not password:
         nw.nntp.sock.sendall('ARTICLE <test@home>\r\n')
         try:
-            nw.lines = []
-            nw.data = []
+            nw.clear_data()
             nw.recv_chunk(block=True)
         except:
             return False, unicode(sys.exc_info()[1])

@@ -281,6 +281,7 @@ class NewsWrapper(object):
         self.article = None
         self.data = []
         self.lines = []
+        self.last_line = ''
 
         self.nntp = None
         self.recv = None
@@ -431,27 +432,28 @@ class NewsWrapper(object):
             # Still in middle of data, so continue!
             return (chunk_len, False, False)
         else:
-            # Perform manditory splitting
-            new_lines = chunk.split('\n')
+            self.last_line += chunk
+            new_lines = self.last_line.split('\r\n')
+            # See if incorrect newline-only was used
+            # Do this as a special case to prevent using extra memory
+            # for normal articles
+            if len(new_lines) == 1 and '\r' not in self.last_line:
+                new_lines = self.last_line.split('\n')
+
+            self.last_line = new_lines.pop()
 
             # Already remove the starting dots
             for i in xrange(len(new_lines)):
                 if new_lines[i][:2] == '..':
                     new_lines[i] = new_lines[i][1:]
-                # Old Yenc can't handle newlines in it's data
-                if not sabnzbd.decoder.HAVE_YENC and new_lines[i]:
-                    if new_lines[i][0] == '\n':
-                        new_lines[i] = new_lines[i][1:]
-                    if new_lines[i][-1] == '\r':
-                        new_lines[i] = new_lines[i][:-1]
-
             self.lines.extend(new_lines)
 
             # For status-code purposes
             if not self.data:
                 self.data.append(chunk)
 
-            if self.lines and (self.lines[-1] == '.' or self.lines[-2] == '.\r' or self.lines[-2] == '.'):
+            if self.lines and self.lines[-1] == '.':
+                self.lines = self.lines[1:-1]
                 return (len(chunk), True, False)
             else:
                 return (len(chunk), False, False)
@@ -459,8 +461,12 @@ class NewsWrapper(object):
     def soft_reset(self):
         self.timeout = None
         self.article = None
+        self.clear_data()
+
+    def clear_data(self):
         self.data = []
         self.lines = []
+        self.last_line = ''
 
     def hard_reset(self, wait=True, quit=True):
         if self.nntp:
