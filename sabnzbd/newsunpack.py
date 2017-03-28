@@ -1794,13 +1794,17 @@ def QuickCheck(set, nzo):
 
             # Now lets do obfuscation check
             if nzf.md5sum == md5pack[file]:
-                renames[file_platform] = nzf.filename
-                logging.debug('Quick-check renamed %s to %s', nzf.filename, file_platform)
-                renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file_platform))
-                nzf.filename = file_platform
-                result = True
-                found = True
-                break
+                try:
+                    logging.debug('Quick-check will rename %s to %s', nzf.filename, file_platform)
+                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file_platform))
+                    renames[file_platform] = nzf.filename
+                    nzf.filename = file_platform
+                    result = True
+                    found = True
+                    break
+                except IOError:
+                    # Renamed failed for some reason, probably already done
+                    break
 
         if not found:
             logging.info('Cannot Quick-check missing file %s!', file)
