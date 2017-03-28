@@ -313,6 +313,8 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
 
             # Is it even a rarfile?
             if rarfile.is_rarfile(filepath):
+                # Open the rar
+                rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
                 zf = rarfile.RarFile(filepath, all_names=True)
 
                 # Check for encryption
@@ -333,7 +335,6 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                     elif sabnzbd.HAVE_CRYPTOGRAPHY:
                         # Lets test if any of the password work
                         password_hit = False
-                        rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
 
                         for password in passwords:
                             if password:
