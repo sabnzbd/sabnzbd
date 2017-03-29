@@ -1,5 +1,13 @@
-Release Notes  -  SABnzbd 2.0.0 RC 1
+Release Notes  -  SABnzbd 2.0.0 RC 2
 =========================================================
+
+## Bug fixes since RC 1
+- SABYenc updated to version 2.8.0 due to failure to decode some articles
+- If SABYenc was missing it could result in crashes
+- Checking for encryption during downloading could fail
+- QuickCheck could crash when renaming already renamed files
+- `skip_dashboard` set to 1 by default in `fullstatus` API-call
+
 
 ## Changes since Beta 1
 - API changes: `history` and `queue` calls now only contain History/Queue
