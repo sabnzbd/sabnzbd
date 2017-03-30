@@ -284,7 +284,7 @@ def decode(article, data, raw_data):
                 crcname = 'crc32'
 
             if crcname in yend:
-                _partcrc = '0' * (8 - len(yend[crcname])) + yend[crcname].upper()
+                _partcrc = yenc_name_fixer('0' * (8 - len(yend[crcname])) + yend[crcname].upper())
             else:
                 _partcrc = None
                 logging.debug("Corrupt header detected => yend: %s", yend)
