@@ -2506,7 +2506,7 @@ LOG_API_RE = re.compile(r"(apikey|api)(=|:)[\w]+", re.I)
 LOG_API_JSON_RE = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
 LOG_USER_RE = re.compile(r"(user|username)\s?=\s?[\S]+", re.I)
 LOG_PASS_RE = re.compile(r"(password)\s?=\s?[\S]+", re.I)
-LOG_INI_HIDE_RE = re.compile(r"(email_pwd|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server)\s?=\s?[\S]+", re.I)
+LOG_INI_HIDE_RE = re.compile(r"(email_pwd|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+", re.I)
 LOG_HASH_RE = re.compile(r"([a-fA-F\d]{25})", re.I)
 
 class Status(object):
