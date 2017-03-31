@@ -1245,43 +1245,34 @@ def get_all_passwords(nzo):
     """ Get all passwords, from the NZB, meta and password file """
     if nzo.password:
         logging.info('Found a password that was set by the user: %s', nzo.password)
-        passwords = [nzo.password.strip()]
-    else:
-        passwords = []
+        yield nzo.password.strip()
+
+    # Add retry if the user has supplied the passord or
+    # if we're not sure about encryption.
+    if nzo.password or nzo.encrypted < 1:
+        yield ''
 
     meta_passwords = nzo.meta.get('password', [])
     pw = nzo.nzo_info.get('password')
-    if pw:
-        meta_passwords.append(pw)
-    if meta_passwords:
-        if nzo.password == meta_passwords[0]:
-            # this nzo.password came from meta, so don't use it twice
-            passwords.extend(meta_passwords[1:])
-        else:
-            passwords.extend(meta_passwords)
-        logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
+    if pw not in meta_passwords:
+        yield pw
+
+    for mp in meta_passwords:
+        yield mp
+
+    logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
     pw_file = cfg.password_file.get_path()
     if pw_file:
-        try:
-            pwf = open(pw_file, 'r')
-            lines = pwf.read().split('\n')
-            # Remove empty lines and space-only passwords and remove surrounding spaces
-            pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
-            logging.debug('Read these passwords from file: %s', pws)
-            passwords.extend(pws)
-            pwf.close()
-            logging.info('Read %s passwords from file %s', len(pws), pw_file)
-        except IOError:
-            logging.info('Failed to read the passwords file %s', pw_file)
+        pw_size = os.path.getsize(pw_file)
+        if pw_size >= 10000000:  # 10 Mb
+            logging.warning('The password file is %sB so this might take a while..', to_units(pw_size, 1))
 
-    if nzo.password:
-        # If an explicit password was set, add a retry without password, just in case.
-        passwords.append('')
-    elif not passwords or nzo.encrypted < 1:
-        # If we're not sure about encryption, start with empty password
-        # and make sure we have at least the empty password
-        passwords.insert(0, '')
-    return passwords
+        with open(pw_file, 'rU') as f:
+            for line in f:
+                yield line.rstrip('\n')
+
+    # make sure we have atleast one empty password
+    yield ''
 
 
 def find_on_path(targets):

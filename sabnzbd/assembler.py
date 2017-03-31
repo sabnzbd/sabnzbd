@@ -19,6 +19,7 @@
 sabnzbd.assembler - threaded assembly/decoding of files
 """
 
+from itertools import islice
 import os
 import Queue
 import logging
@@ -326,14 +327,15 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                     if is_cloaked(filepath, zf.namelist()):
                         nzo.encrypted = 1
                         encrypted = True
-                    elif not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
-                        # if no cryptography installed, only error when no password was set
+
+                    elif not sabnzbd.HAVE_CRYPTOGRAPHY and any(slice(passwords, 2)) is False:
+                        # if cryptography isn't installed, only emit log when no passwords exists.
                         logging.info(T('%s missing'), 'Python Cryptography')
                         nzo.encrypted = 1
                         encrypted = True
 
                     elif sabnzbd.HAVE_CRYPTOGRAPHY:
-                        # Lets test if any of the password work
+                        # Lets test if any of the passwords work
                         password_hit = False
 
                         for password in passwords:
