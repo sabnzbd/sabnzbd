@@ -12,9 +12,6 @@ and offers a complete API for third-party applications to hook into.
 There is an extensive Wiki on the use of SABnzbd.
 https://sabnzbd.org/wiki/
 
-IMPORTANT INFORMATION about release 1.x.x:
-https://sabnzbd.org/wiki/new-features-and-changes
-
 Please also read the file "ISSUES.txt"
 
 The organization of the download queue is different from 0.7.x (and older).
