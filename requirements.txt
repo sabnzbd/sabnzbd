@@ -1,0 +1,8 @@
+Cheetah>=2.0.1.0
+feedparser
+gntp
+pyOpenSSL>=0.11
+configobj
+pydbus
+support
+-e hg+https://bitbucket.org/dual75/yenc#egg=yenc
