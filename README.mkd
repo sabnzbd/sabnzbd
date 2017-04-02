@@ -1,37 +1,17 @@
-Release Notes  -  SABnzbd 2.0.0 RC 2
+Release Notes  -  SABnzbd 2.0.0
 =========================================================
 
-## Bug fixes since RC 1
-- SABYenc updated to version 2.8.0 due to failure to decode some articles
-- If SABYenc was missing it could result in crashes
-- Checking for encryption during downloading could fail
-- QuickCheck could crash when renaming already renamed files
-- `skip_dashboard` set to 1 by default in `fullstatus` API-call
+## New in 2.0.0: SABYenc
+- To improve SABnzbd's performance on systems where CPU power is limiting
+  download speed, we developed a new C-module called SABYenc to accelerate the
+  decoding of usenet articles.
+  Not only low-powered systems like NAS's or Raspberry Pi's benefit, with this
+  new module speeds can increase up to 2x compared to 1.x.x releases on any
+  system where the connection/newsserver capacity was not fully used.
+  The Windows and macOS releases automatically include this module, for other
+  platforms an installation guide can be found here: https://sabnzbd.org/sabyenc
 
-
-## Changes since Beta 1
-- API changes: `history` and `queue` calls now only contain History/Queue
-  information. All other information can still be found in `fullstatus`.
-  `qstatus` is now identical to `queue` call.
-  `get_files` now reports unique `nzf_id` for each file.
-- Windows: improved Windows installer, now detects if service is running
-  and will remove the correct previous installation.
-
-## Bug fixes since Beta 1
-- Fix crashing Downloader when Quota were set
-- Top-only switch now really only downloads top job
-- Fix broken webserver HTTPS for extra bound ports (e.g. IPv6)
-- Remove listquote module dependency
-- Starting with "-w" parameter would fail
-- Previously set password shown on Retry
-- Unblock Server button did not work
-- Warn if Complete folder is on FAT filesystem (4GB size limit)
-- Deleting a downloading job could produce write errors
-- Windows: Incomplete folders would sometimes end in a dot
-- Linux: Detect Multicore Par2 more generally
-
-
-## Changes since Alpha 1
+## Changes/improvements in 2.0.0:
 - Windows and macOS releases now also come in 64bit versions.
   The installers will install the appropriate version automatically.
   Therefore, on 64bit Windows the installation directory will change to
@@ -41,43 +21,32 @@ Release Notes  -  SABnzbd 2.0.0 RC 2
 - Linux: Detect if Multicore Par2 is installed.
   Multicore Par2 is now easily available through the PPA and other channels:
   https://sabnzbd.org/wiki/installation/multicore-par2
-
-## Bug fixes since Alpha 1
-- Not all servers with same priority were tried
-- Unzip on Windows was not working
-- Unrar on Windows could hang
-- Restarting SABnzbd sometimes failed
-- Reported 'Unknown encoding' warnings for some downloads
-- Error on renaming a job in Plush
-- Always show Queue search box when multi-editing
-- SABnzbd password not displayed in plain text in the Config
-
-
-## New in 2.0.0: SABYenc
-  To improve SABnzbd's performance on systems where CPU power is limiting
-  download speed, we developed a new C-module called SABYenc to accelerate the
-  decoding of usenet articles. Depending on the hardware, download speed can
-  greatly increase.
-  The Windows and macOS releases automatically include this module, for other
-  platforms you can read more on: https://sabnzbd.org/sabyenc
-  If you experience issues, please report them on our Forums!
-  The module is not mandatory, the _yenc module will continue to work and
-  its performance will be similar.
-
-## What's new in 2.0.0
-- Post-processing scripts now get additional job information via SAB_*
-  environment variables - See: https://github.com/sabnzbd/sabnzbd/issues/785
+- Post-processing scripts now get additional job information via SAB* environment
+  variables. https://sabnzbd.org/wiki/scripts/post-processing-scripts
 - Certificate Validation set to Strict for newly added newsservers
+  In case of problems, see: https://sabnzbd.org/certificate-errors
+- Removed Secondary Web Interface option
+
+## Smaller changes/improvements in 2.0.0
 - Schedule items can now be enabled and disabled
-- Remove Secondary Web Interface option
 - HTTP-redirects in interface are now relative URL's
 - Moved some lesser used settings to Config->Specials
 - Cache usage is now updated continuously in the Status Window
 - On macOS SABnzbd was set to have low IO-priority, this is now set to normal
+- Previously set password is now shown on Retry
+- Remove listquote module dependency
+- Warn if Complete folder is on FAT filesystem (4GB size limit)
 
 ## Bug fixes in 2.0.0
+- Malformed articles could break the Downloader
 - Warn in case encoding is not set to UTF-8
 - Retry ADMIN-data saving 3x before giving error
+- Checking for encryption during downloading could fail
+- QuickCheck could crash when renaming already renamed files
+- `skip_dashboard` set to 1 by default in `fullstatus` API-call
+- Top-only switch now really only downloads top job
+- Unblock Server button did not work
+- Windows: Incomplete folders would sometimes end in a dot
 
 ## Upgrade notices
 - Windows: When starting the Post-Processing script, the path to the job folder
@@ -100,6 +69,9 @@ Release Notes  -  SABnzbd 2.0.0 RC 2
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
+
+## Translations
+- Numerous translations updated, thanks to our translators!
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
