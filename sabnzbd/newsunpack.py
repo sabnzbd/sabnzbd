@@ -1772,20 +1772,19 @@ def QuickCheck(set, nzo):
     ignore_ext = cfg.quick_check_ext_ignore()
 
     for file in md5pack:
-        # Ignore these files
-        if os.path.splitext(file)[1].lower().replace('.', '') in ignore_ext:
-            logging.debug('Quick-check ignoring file %s', file)
-            result = True
-            continue
-
         found = False
         file_platform = platform_encode(file)
+        file_to_ignore = os.path.splitext(file_platform)[1].lower().replace('.', '') in ignore_ext
         for nzf in nzf_list:
             # Do a simple filename based check
             if file_platform == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
+                    result = True
+                elif file_to_ignore:
+                    # We don't care about these files
+                    logging.debug('Quick-check ignoring file %s', file)
                     result = True
                 else:
                     logging.info('Quick-check of file %s failed!', file)
@@ -1807,6 +1806,11 @@ def QuickCheck(set, nzo):
                     break
 
         if not found:
+            if file_to_ignore:
+                # We don't care about these files
+                logging.debug('Quick-check ignoring missing file %s', file)
+                continue
+
             logging.info('Cannot Quick-check missing file %s!', file)
             return False  # Missing file is failure
 
