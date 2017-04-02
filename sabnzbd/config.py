@@ -276,6 +276,14 @@ class OptionList(Option):
         else:
             return ', '.join(lst)
 
+    def default_string(self):
+        """ Return the default list as a comma-separated string """
+        lst = self.default()
+        if isinstance(lst, basestring):
+            return lst
+        else:
+            return ', '.join(lst)
+
 
 class OptionStr(Option):
     """ String class """

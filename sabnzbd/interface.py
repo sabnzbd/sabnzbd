@@ -1478,7 +1478,7 @@ class ConfigSpecial(object):
 
         conf['switches'] = [(kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_BOOL_LIST]
         conf['entries'] = [(kw, config.get_config('misc', kw)(), config.get_config('misc', kw).default()) for kw in SPECIAL_VALUE_LIST]
-        conf['entries'].extend([(kw, config.get_config('misc', kw).get_string(), '') for kw in SPECIAL_LIST_LIST])
+        conf['entries'].extend([(kw, config.get_config('misc', kw).get_string(), config.get_config('misc', kw).default_string()) for kw in SPECIAL_LIST_LIST])
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_special.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
