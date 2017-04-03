@@ -545,7 +545,7 @@ SKIN_TEXT = {
     'opt-ssl_verify' : TT('Certificate verification'),
     'explain-ssl_verify' : TT('Default: when SSL is enabled, verify the identity of the server using its certificates. Strict: verify and enforce matching hostname.'),
     'ssl_verify-disabled' : TT('Disabled'),
-    'ssl_verify-normal' : TT('Default'),
+    'ssl_verify-normal' : TT('Minimal'),
     'ssl_verify-strict' : TT('Strict'),
     'srv-priority' : TT('Priority'), #: Server priority
     'explain-svrprio' : TT('0 is highest priority, 100 is the lowest priority'), #: Explain server priority
