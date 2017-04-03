@@ -543,7 +543,7 @@ SKIN_TEXT = {
     'srv-ssl' : TT('SSL'), #: Server SSL tickbox
     'explain-ssl' : TT('Secure connection to server'), #: Server SSL tickbox
     'opt-ssl_verify' : TT('Certificate verification'),
-    'explain-ssl_verify' : TT('Default: when SSL is enabled, verify the identity of the server using its certificates. Strict: verify and enforce matching hostname.'),
+    'explain-ssl_verify' : TT('Minimal: when SSL is enabled, verify the identity of the server using its certificates. Strict: verify and enforce matching hostname.'),
     'ssl_verify-disabled' : TT('Disabled'),
     'ssl_verify-normal' : TT('Minimal'),
     'ssl_verify-strict' : TT('Strict'),
