@@ -1345,18 +1345,29 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.status = Status.FAILED
 
             elif line.startswith('You need'):
+                # Because par2cmdline doesn't handle split files correctly
+                # if there are joinables, let's join them first and try again
+                # Only when in the par2-detection also only 1 output-file was mentioned
+                if joinables and len(datafiles) == 1:
+                    error, newf = file_join(nzo, parfolder, parfolder, True, joinables)
+                    # Only do it again if we had a good join
+                    if newf:
+                        retry_classic = True
+                        # Save the renames in case of retry
+                        for jn in joinables:
+                            renames[datafiles[0]] = os.path.split(jn)[1]
+                        joinables = []
+                        # Need to set it to 1 so the renames get saved
+                        finished = 1
+                        break
+
                 chunks = line.split()
-
                 needed_blocks = int(chunks[2])
-
+                avail_blocks = 0
                 logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-                avail_blocks = 0
-
                 extrapars = parfile_nzf.extrapars
-
                 block_table = {}
-
                 for nzf in extrapars:
                     # Don't count extrapars that are completed already
                     if nzf.completed:
@@ -1384,16 +1395,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.status = Status.FETCHING
                     needed_blocks = avail_blocks
                     force = True
-
-                # There are joinables, let's join them first and try again
-                # Only when in the par2-detection only 1 output-file was mentioned
-                if joinables and len(datafiles) == 1:
-                    error, newf = file_join(nzo, parfolder, parfolder, True, joinables)
-                    # Only do it again if we had a good join
-                    if newf:
-                        joinables = []
-                        retry_classic = True
-                    break
 
                 if avail_blocks >= needed_blocks:
                     added_blocks = 0
