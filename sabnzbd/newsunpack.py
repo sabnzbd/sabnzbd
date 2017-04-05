@@ -1385,6 +1385,13 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     needed_blocks = avail_blocks
                     force = True
 
+                # There are joinables, let's join them first and try again
+                # Only when in the par2-detection only 1 output-file was mentioned
+                if joinables and len(datafiles) == 1:
+                    file_join(nzo, parfolder, parfolder, True, joinables)
+                    retry_classic = True
+                    break
+
                 if avail_blocks >= needed_blocks:
                     added_blocks = 0
                     readd = True
@@ -1456,8 +1463,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                         reconstructed.append(os.path.join(workdir, old_name))
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
-                # Hit a bug in par2-tbb, retry with par2-classic
-                retry_classic = sabnzbd.WIN32
+                # If there are joinables, this error will only happen in case of 100% complete files
+                # We can just skip the retry, because par2cmdline will fail in those cases
+                # becauses it refuses to scan the ".001" file
+                if joinables:
+                    finished = 1
+                    used_joinables = []
+                else:
+                    # Hit a bug in par2-tbb, retry with par2-classic
+                    retry_classic = sabnzbd.WIN32
 
             elif ' cannot be renamed to ' in line:
                 if not classic and sabnzbd.WIN32:
