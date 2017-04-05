@@ -1388,8 +1388,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 # There are joinables, let's join them first and try again
                 # Only when in the par2-detection only 1 output-file was mentioned
                 if joinables and len(datafiles) == 1:
-                    file_join(nzo, parfolder, parfolder, True, joinables)
-                    retry_classic = True
+                    error, newf = file_join(nzo, parfolder, parfolder, True, joinables)
+                    # Only do it again if we had a good join
+                    if newf:
+                        joinables = []
+                        retry_classic = True
                     break
 
                 if avail_blocks >= needed_blocks:
