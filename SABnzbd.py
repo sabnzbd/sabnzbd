@@ -405,11 +405,19 @@ def GetProfileInfo(vista_plus):
 
 def print_modules():
     """ Log all detected optional or external modules """
-    if sabnzbd.decoder.HAVE_SABYENC:
-        logging.info("SABYenc module (v%s)... found!", sabnzbd.constants.SABYENC_VERSION)
+    if sabnzbd.decoder.SABYENC_ENABLED:
+        # Yes, we have SABYenc, and it's the correct version, so it's enabled
+        logging.info("SABYenc module (v%s)... found!", sabnzbd.constants.SABYENC_VERSION_REQUIRED)
     else:
-        logging.warning("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc", sabnzbd.constants.SABYENC_VERSION)
-        # Only now we care about old-yEnc
+        # Something wrong with SABYenc, so let's determine and print what:
+        if sabnzbd.decoder.SABYENC_VERSION:
+            # We have a VERSION, thus a SABYenc module, but it's not the correct version
+            logging.warning(T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)" % (sabnzbd.decoder.SABYENC_VERSION, sabnzbd.constants.SABYENC_VERSION_REQUIRED)))
+        else:
+            # No SABYenc module at all
+            logging.warning(T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc", sabnzbd.constants.SABYENC_VERSION_REQUIRED))
+
+        # No correct SABYenc version or no SABYenc at all, so now we care about old-yEnc
         if sabnzbd.decoder.HAVE_YENC:
             logging.info("_yenc module... found!")
         else:

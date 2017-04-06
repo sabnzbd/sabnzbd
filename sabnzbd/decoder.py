@@ -27,7 +27,7 @@ from time import sleep
 from threading import Thread
 
 import sabnzbd
-from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION
+from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION_REQUIRED
 import sabnzbd.articlecache
 import sabnzbd.downloader
 import sabnzbd.nzbqueue
@@ -43,12 +43,13 @@ except ImportError:
 
 try:
     import sabyenc
-    HAVE_SABYENC = True
+    SABYENC_ENABLED = True
+    SABYENC_VERSION = sabyenc.__version__
     # Verify version
-    if sabyenc.__version__ != SABYENC_VERSION:
+    if SABYENC_VERSION != SABYENC_VERSION_REQUIRED:
         raise ImportError
 except ImportError:
-    HAVE_SABYENC = False
+    SABYENC_ENABLED = False
 
 class CrcError(Exception):
 
@@ -210,7 +211,7 @@ class Decoder(Thread):
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 def decode(article, data, raw_data):
     # Do we have SABYenc? Let it do all the work
-    if sabnzbd.decoder.HAVE_SABYENC:
+    if sabnzbd.decoder.SABYENC_ENABLED:
         decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
 
         # Assume it is yenc
