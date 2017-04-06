@@ -412,10 +412,10 @@ def print_modules():
         # Something wrong with SABYenc, so let's determine and print what:
         if sabnzbd.decoder.SABYENC_VERSION:
             # We have a VERSION, thus a SABYenc module, but it's not the correct version
-            logging.warning(T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)" % (sabnzbd.decoder.SABYENC_VERSION, sabnzbd.constants.SABYENC_VERSION_REQUIRED)))
+            logging.warning(T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)") % (sabnzbd.decoder.SABYENC_VERSION, sabnzbd.constants.SABYENC_VERSION_REQUIRED))
         else:
             # No SABYenc module at all
-            logging.warning(T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc", sabnzbd.constants.SABYENC_VERSION_REQUIRED))
+            logging.warning(T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc") % sabnzbd.constants.SABYENC_VERSION_REQUIRED)
 
         # No correct SABYenc version or no SABYenc at all, so now we care about old-yEnc
         if sabnzbd.decoder.HAVE_YENC:

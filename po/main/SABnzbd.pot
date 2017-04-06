@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-04-03 15:24+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-04-06 08:55+W. Europe Daylight Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -24,71 +24,79 @@ msgstr ""
 msgid "Cannot find web template: %s, trying standard template"
 msgstr ""
 
-#: SABnzbd.py:416 [Error message]
+#: SABnzbd.py:415 [Warning message]
+msgid "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
+msgstr ""
+
+#: SABnzbd.py:418 [Warning message]
+msgid "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
+msgstr ""
+
+#: SABnzbd.py:424 [Error message]
 msgid "_yenc module... NOT found!"
 msgstr ""
 
-#: SABnzbd.py:426 [Error message]
+#: SABnzbd.py:434 [Error message]
 msgid "par2 binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py:438 [Warning message]
+#: SABnzbd.py:446 [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 
-#: SABnzbd.py:442 [Error message]
+#: SABnzbd.py:450 [Error message]
 msgid "unrar binary... NOT found"
 msgstr ""
 
-#: SABnzbd.py:447
+#: SABnzbd.py:455
 msgid "unzip binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py:452
+#: SABnzbd.py:460
 msgid "7za binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py:602 [Warning message]
+#: SABnzbd.py:610 [Warning message]
 msgid "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"
 msgstr ""
 
-#: SABnzbd.py:632 [Error message]
+#: SABnzbd.py:640 [Error message]
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr ""
 
-#: SABnzbd.py:1190 [Warning message]
+#: SABnzbd.py:1198 [Warning message]
 msgid "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
 msgstr ""
 
-#: SABnzbd.py:1284 [Warning message]
+#: SABnzbd.py:1292 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr ""
 
-#: SABnzbd.py:1383 [Warning message]
+#: SABnzbd.py:1391 [Warning message]
 msgid "Could not bind to configured port. Port changed to %s"
 msgstr ""
 
-#: SABnzbd.py:1392 [Error message]
+#: SABnzbd.py:1400 [Error message]
 msgid "Failed to start web-interface: "
 msgstr ""
 
-#: SABnzbd.py:1413 [Error message]
+#: SABnzbd.py:1421 [Error message]
 msgid "Cannot reach the SABHelper service"
 msgstr ""
 
-#: SABnzbd.py:1449
+#: SABnzbd.py:1457
 msgid "SABnzbd %s started"
 msgstr ""
 
-#: SABnzbd.py:1460 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
+#: SABnzbd.py:1468 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
 msgid "Warning"
 msgstr ""
 
-#: SABnzbd.py:1464 # sabnzbd/notifier.py:72 [Notification]
+#: SABnzbd.py:1472 # sabnzbd/notifier.py:72 [Notification]
 msgid "Error"
 msgstr ""
 
-#: SABnzbd.py:1563 # sabnzbd/interface.py:438 # sabnzbd/interface.py:904
+#: SABnzbd.py:1571 # sabnzbd/interface.py:438 # sabnzbd/interface.py:904
 #: sabnzbd/osxmenu.py:772
 msgid "SABnzbd shutdown finished"
 msgstr ""
@@ -381,27 +389,27 @@ msgstr ""
 msgid "Invalid stage logging in history for %s"
 msgstr ""
 
-#: sabnzbd/decoder.py:118
+#: sabnzbd/decoder.py:119
 msgid "Decoding %s failed"
 msgstr ""
 
-#: sabnzbd/decoder.py:128
+#: sabnzbd/decoder.py:129
 msgid "Decoder failure: Out of memory"
 msgstr ""
 
-#: sabnzbd/decoder.py:140
+#: sabnzbd/decoder.py:141
 msgid "CRC Error in %s (%s -> %s)"
 msgstr ""
 
-#: sabnzbd/decoder.py:172
+#: sabnzbd/decoder.py:173
 msgid "Badly formed yEnc article in %s"
 msgstr ""
 
-#: sabnzbd/decoder.py:182
+#: sabnzbd/decoder.py:183
 msgid "Unknown Error while decoding %s"
 msgstr ""
 
-#: sabnzbd/decoder.py:250
+#: sabnzbd/decoder.py:251
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
@@ -900,32 +908,32 @@ msgstr ""
 msgid "Invalid par2 files, cannot verify or repair"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1380 # sabnzbd/newsunpack.py:1415
+#: sabnzbd/newsunpack.py:1391 # sabnzbd/newsunpack.py:1426
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1410
+#: sabnzbd/newsunpack.py:1421
 msgid "Fetching %s blocks..."
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1412
+#: sabnzbd/newsunpack.py:1423
 msgid "Fetching"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1423 # sabnzbd/newsunpack.py:1428
+#: sabnzbd/newsunpack.py:1434 # sabnzbd/newsunpack.py:1439
 msgid "Repairing"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1432
+#: sabnzbd/newsunpack.py:1443
 msgid "[%s] Repaired in %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1485 # sabnzbd/newsunpack.py:1500
-#: sabnzbd/newsunpack.py:1518
+#: sabnzbd/newsunpack.py:1503 # sabnzbd/newsunpack.py:1518
+#: sabnzbd/newsunpack.py:1536
 msgid "Verifying"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1622 [Error message]
+#: sabnzbd/newsunpack.py:1640 [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
