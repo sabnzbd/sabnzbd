@@ -1,10 +1,19 @@
-Release Notes  -  SABnzbd 2.0.0
+Release Notes  -  SABnzbd 2.0.0RC3
 =========================================================
+
+## Bugfixes since RC2
+- SABYenc incorrectly gave CRC errors on some articles, fixed in SABYenc v3.0.2
+- par2cmdline would fail to repair jobs with split posts (.001, etc)
+- The insecure Certificate Verification level 'Default' is now called 'Minimal'
+- Show warning if job is paused because it appears cloaked
+- Fixed QuickCheck renaming issues
+- Unexpected characters in CRC part of an article could crash the Decoder
+
 
 ## New in 2.0.0: SABYenc
 - To improve SABnzbd's performance on systems where CPU power is limiting
   download speed, we developed a new C-module called SABYenc to accelerate the
-  decoding of usenet articles.
+  decoding of usenet articles that can use multiple threads and is more efficient.
   Not only low-powered systems like NAS's or Raspberry Pi's benefit, with this
   new module speeds can increase up to 2x compared to 1.x.x releases on any
   system where the connection/newsserver capacity was not fully used.
@@ -21,7 +30,7 @@ Release Notes  -  SABnzbd 2.0.0
 - Linux: Detect if Multicore Par2 is installed.
   Multicore Par2 is now easily available through the PPA and other channels:
   https://sabnzbd.org/wiki/installation/multicore-par2
-- Post-processing scripts now get additional job information via SAB* environment
+- Post-processing scripts now get additional job information via SAB environment
   variables. https://sabnzbd.org/wiki/scripts/post-processing-scripts
 - Certificate Validation set to Strict for newly added newsservers
   In case of problems, see: https://sabnzbd.org/certificate-errors
@@ -39,13 +48,13 @@ Release Notes  -  SABnzbd 2.0.0
 
 ## Bug fixes in 2.0.0
 - Malformed articles could break the Downloader
-- Warn in case encoding is not set to UTF-8
 - Retry ADMIN-data saving 3x before giving error
 - Checking for encryption during downloading could fail
 - QuickCheck could crash when renaming already renamed files
 - `skip_dashboard` set to 1 by default in `fullstatus` API-call
 - Top-only switch now really only downloads top job
 - Unblock Server button did not work
+- Linux: Warn in case encoding is not set to UTF-8
 - Windows: Incomplete folders would sometimes end in a dot
 
 ## Upgrade notices
