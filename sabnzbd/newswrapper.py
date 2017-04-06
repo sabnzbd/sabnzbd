@@ -414,7 +414,7 @@ class NewsWrapper(object):
                     return (0, False, True)
 
         # Data is processed differently depending on C-yEnc version
-        if sabnzbd.decoder.HAVE_SABYENC:
+        if sabnzbd.decoder.SABYENC_ENABLED:
             # Append so we can do 1 join(), much faster than multiple!
             self.data.append(chunk)
 
