@@ -35,12 +35,15 @@ import sabnzbd.cfg as cfg
 from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
 
+# Check for basic-yEnc
 try:
     import _yenc
     HAVE_YENC = True
 except ImportError:
     HAVE_YENC = False
 
+# Check for correct SABYenc version
+SABYENC_VERSION = None
 try:
     import sabyenc
     SABYENC_ENABLED = True
@@ -50,7 +53,7 @@ try:
         raise ImportError
 except ImportError:
     SABYENC_ENABLED = False
-    SABYENC_VERSION = None
+
 
 class CrcError(Exception):
 
