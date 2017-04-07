@@ -50,6 +50,7 @@ try:
         raise ImportError
 except ImportError:
     SABYENC_ENABLED = False
+    SABYENC_VERSION = None
 
 class CrcError(Exception):
 
