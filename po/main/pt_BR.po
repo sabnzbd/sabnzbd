@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-03-11 09:00+0000\n"
+"POT-Creation-Date: 2017-04-02 15:51+0000\n"
 "PO-Revision-Date: 2016-01-01 22:58+0000\n"
 "Last-Translator: lrrosa <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-03-14 07:09+0000\n"
-"X-Generator: Launchpad (build 18331)\n"
+"X-Launchpad-Export-Date: 2017-04-05 07:19+0000\n"
+"X-Generator: Launchpad (build 18335)\n"
 
 #: SABnzbd.py:257 [Error message]
 msgid "Failed to start web-interface"
@@ -34,19 +34,24 @@ msgstr "módulo _yenc... NÃO encontrado!"
 msgid "par2 binary... NOT found!"
 msgstr "aplicativo par2... NÃO encontrado!"
 
-#: SABnzbd.py:435 [Warning message]
+#: SABnzbd.py:438 [Warning message]
+msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
+msgstr ""
+"Sua versão UNRAR é %s, nós recomendamos a versão %s ou superior.<br />"
+
+#: SABnzbd.py:442 [Error message]
 msgid "unrar binary... NOT found"
 msgstr "aplicativo unrar... NÃO encontrado!"
 
-#: SABnzbd.py:440
+#: SABnzbd.py:447
 msgid "unzip binary... NOT found!"
 msgstr "aplicativo unzip... NÃO encontrado!"
 
-#: SABnzbd.py:445
+#: SABnzbd.py:452
 msgid "7za binary... NOT found!"
 msgstr "aplicativo 7za... NÃO encontrado!"
 
-#: SABnzbd.py:595 [Warning message]
+#: SABnzbd.py:602 [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
 "access"
@@ -54,45 +59,45 @@ msgstr ""
 "Esteja ciente de que o nome de host 0.0.0.0 vai precisar de um endereço IPv6 "
 "para acesso externo"
 
-#: SABnzbd.py:625 [Error message]
+#: SABnzbd.py:632 [Error message]
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Portas HTTP e HTTPS não podem ser iguais"
 
-#: SABnzbd.py:1183 [Warning message]
+#: SABnzbd.py:1190 [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
 msgstr ""
 
-#: SABnzbd.py:1277 [Warning message]
+#: SABnzbd.py:1284 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS desabilitado pela falta de arquivos CERT e KEY"
 
-#: SABnzbd.py:1376 [Warning message]
+#: SABnzbd.py:1383 [Warning message]
 msgid "Could not bind to configured port. Port changed to %s"
 msgstr ""
 
-#: SABnzbd.py:1385 [Error message]
+#: SABnzbd.py:1392 [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Falha ao iniciar a interface web "
 
-#: SABnzbd.py:1406 [Error message]
+#: SABnzbd.py:1413 [Error message]
 msgid "Cannot reach the SABHelper service"
 msgstr "Não foi possível localizar o serviço SABHelper"
 
-#: SABnzbd.py:1442
+#: SABnzbd.py:1449
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s iniciado"
 
-#: SABnzbd.py:1453 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
+#: SABnzbd.py:1460 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
 msgid "Warning"
 msgstr "Alerta"
 
-#: SABnzbd.py:1457 # sabnzbd/notifier.py:72 [Notification]
+#: SABnzbd.py:1464 # sabnzbd/notifier.py:72 [Notification]
 msgid "Error"
 msgstr "Erro"
 
-#: SABnzbd.py:1556 # sabnzbd/interface.py:459 # sabnzbd/interface.py:925
+#: SABnzbd.py:1563 # sabnzbd/interface.py:438 # sabnzbd/interface.py:904
 #: sabnzbd/osxmenu.py:772
 msgid "SABnzbd shutdown finished"
 msgstr "Encerramento do SABnzbd concluído"
@@ -113,47 +118,47 @@ msgstr "Senha mascarada em ******, digite novamente"
 msgid "Invalid server details"
 msgstr "Detalhes inválidos do servidor"
 
-#: sabnzbd/utils/servertests.py:96
+#: sabnzbd/utils/servertests.py:95
 msgid "Timed out: Try enabling SSL or connecting on a different port."
 msgstr ""
 "Tempo esgotado: Tente habilitar o SSL ou conectar em uma porta diferente."
 
-#: sabnzbd/utils/servertests.py:98
+#: sabnzbd/utils/servertests.py:97
 msgid "Timed out"
 msgstr "Tempo esgotado"
 
-#: sabnzbd/utils/servertests.py:103
+#: sabnzbd/utils/servertests.py:102
 msgid ""
 "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
 msgstr ""
 
-#: sabnzbd/utils/servertests.py:108
+#: sabnzbd/utils/servertests.py:107
 msgid "Invalid server address."
 msgstr "Endereço do servidor inválido."
 
-#: sabnzbd/utils/servertests.py:112
+#: sabnzbd/utils/servertests.py:111
 msgid "Server quit during login sequence."
 msgstr "Servidor parou durante a sequência de login."
 
-#: sabnzbd/utils/servertests.py:127
+#: sabnzbd/utils/servertests.py:125
 msgid "Server requires username and password."
 msgstr "Servidor requer usuário e senha."
 
-#: sabnzbd/utils/servertests.py:130
+#: sabnzbd/utils/servertests.py:128
 msgid "Connection Successful!"
 msgstr "Conexão com Sucesso!"
 
-#: sabnzbd/utils/servertests.py:133 # sabnzbd/interface.py:594
-#: sabnzbd/newswrapper.py:326
+#: sabnzbd/utils/servertests.py:131 # sabnzbd/interface.py:573
+#: sabnzbd/newswrapper.py:327
 msgid "Authentication failed, check username/password."
 msgstr "Falha de autenticação, verifique usuário / senha."
 
-#: sabnzbd/utils/servertests.py:136
+#: sabnzbd/utils/servertests.py:134
 msgid "Too many connections, please pause downloading or try again later"
 msgstr ""
 "Excesso de conexões, por favor pause o download ou tente novamente mais tarde"
 
-#: sabnzbd/utils/servertests.py:139
+#: sabnzbd/utils/servertests.py:137
 msgid "Could not determine connection result (%s)"
 msgstr "Não foi possível determinar o resultado da conexão (%s)"
 
@@ -197,39 +202,39 @@ msgstr "Falha ao carregar %s"
 msgid "Loading %s failed with error %s"
 msgstr "Carga de %s falhou com os seguintes erros: %s"
 
-#: sabnzbd/api.py:769 # sabnzbd/api.py:776 # sabnzbd/api.py:783 # sabnzbd/api.py:790
-#: sabnzbd/api.py:797 # sabnzbd/api.py:804 # sabnzbd/api.py:811 # sabnzbd/api.py:818
+#: sabnzbd/api.py:760 # sabnzbd/api.py:767 # sabnzbd/api.py:774 # sabnzbd/api.py:781
+#: sabnzbd/api.py:788 # sabnzbd/api.py:795 # sabnzbd/api.py:802 # sabnzbd/api.py:809
 #: sabnzbd/skintext.py:636
 msgid "Test Notification"
 msgstr "Notificação de teste"
 
-#: sabnzbd/api.py:1280
+#: sabnzbd/api.py:1271
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Resolvendo endereço"
 
-#: sabnzbd/api.py:1302 # sabnzbd/api.py:1719 # sabnzbd/interface.py:2727
+#: sabnzbd/api.py:1293 # sabnzbd/api.py:1648 # sabnzbd/interface.py:2706
 #: sabnzbd/skintext.py:791
 msgid "ERROR:"
 msgstr "ERRO:"
 
-#: sabnzbd/api.py:1302 # sabnzbd/skintext.py:783
+#: sabnzbd/api.py:1293 # sabnzbd/skintext.py:783
 msgid "WARNING:"
 msgstr "AVISO:"
 
-#: sabnzbd/api.py:1656 # sabnzbd/skintext.py:91 [No value, used in dropdown menus] # sabnzbd/skintext.py:749 [Job details page, select no files]
+#: sabnzbd/api.py:1588 # sabnzbd/skintext.py:91 [No value, used in dropdown menus] # sabnzbd/skintext.py:749 [Job details page, select no files]
 msgid "None"
 msgstr "Nenhum"
 
-#: sabnzbd/api.py:1658 # sabnzbd/interface.py:118 # sabnzbd/skintext.py:90 [Default value, used in dropdown menus]
+#: sabnzbd/api.py:1590 # sabnzbd/interface.py:117 # sabnzbd/skintext.py:90 [Default value, used in dropdown menus]
 #: sabnzbd/skintext.py:548
 msgid "Default"
 msgstr "Padrão"
 
-#: sabnzbd/api.py:1789
+#: sabnzbd/api.py:1730
 msgid "unknown"
 msgstr "desconhecido"
 
-#: sabnzbd/api.py:1817 [Error message]
+#: sabnzbd/api.py:1758 [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Falha ao compilar a expressão para o termo pesquisado: %s"
 
@@ -288,31 +293,40 @@ msgstr "ATENÇÃO: Tarefa \"%s\" interrompida em razão de pontuação (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Interrompido, filtro de pontuação encontrado (%s)"
 
-#: sabnzbd/assembler.py:175 # sabnzbd/assembler.py:329 # sabnzbd/misc.py:1226 [Error message]
+#: sabnzbd/assembler.py:175 # sabnzbd/assembler.py:336 # sabnzbd/misc.py:1227 [Error message]
 msgid "%s missing"
 msgstr "faltando %s"
 
-#: sabnzbd/assembler.py:419
+#: sabnzbd/assembler.py:296 [Warning message]
+msgid ""
+"Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
+msgstr ""
+
+#: sabnzbd/assembler.py:302 [Warning message]
+msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
+msgstr ""
+
+#: sabnzbd/assembler.py:425
 msgid "video"
 msgstr "vídeo"
 
-#: sabnzbd/assembler.py:421
+#: sabnzbd/assembler.py:427
 msgid "audio"
 msgstr "áudio"
 
-#: sabnzbd/assembler.py:423
+#: sabnzbd/assembler.py:429
 msgid "spam"
 msgstr "spam"
 
-#: sabnzbd/assembler.py:425
+#: sabnzbd/assembler.py:431
 msgid "passworded"
 msgstr "protegido por senha"
 
-#: sabnzbd/assembler.py:427
+#: sabnzbd/assembler.py:433
 msgid "downvoted"
 msgstr "votos negativos recebido"
 
-#: sabnzbd/assembler.py:429
+#: sabnzbd/assembler.py:435
 msgid "keywords"
 msgstr "palavras chave"
 
@@ -324,69 +338,69 @@ msgstr "Quota esgotada, pausando o download"
 msgid "%s is not a valid email address"
 msgstr "%s não é um endereço de e-mail válido"
 
-#: sabnzbd/cfg.py:53 # sabnzbd/interface.py:1810
+#: sabnzbd/cfg.py:53 # sabnzbd/interface.py:1789
 msgid "Server address required"
 msgstr "Endereço do servidor necessário"
 
-#: sabnzbd/config.py:236
+#: sabnzbd/config.py:237
 msgid "Cannot create %s folder %s"
 msgstr "Não foi possível criar %s pasta %s"
 
-#: sabnzbd/config.py:831 [Error message] # sabnzbd/config.py:851 [Error message]
+#: sabnzbd/config.py:840 [Error message] # sabnzbd/config.py:860 [Error message]
 msgid "Cannot write to INI file %s"
 msgstr "Não é possível gravar no arquivo INI %s"
 
-#: sabnzbd/config.py:840 [Error message]
+#: sabnzbd/config.py:849 [Error message]
 msgid "Cannot create backup file for %s"
 msgstr "Não é possível criar um arquivo de backup para %s"
 
-#: sabnzbd/config.py:1011 [Error message]
+#: sabnzbd/config.py:1020 [Error message]
 msgid "Incorrectly encoded password %s"
 msgstr "Senha %s codificada incorretamente"
 
-#: sabnzbd/config.py:1035
+#: sabnzbd/config.py:1044
 msgid "%s is not a correct octal value"
 msgstr "%s não é um valor octal correto"
 
-#: sabnzbd/config.py:1044
+#: sabnzbd/config.py:1053
 msgid "UNC path \"%s\" not allowed here"
 msgstr "O caminho UNC \"%s\" não é permitido aqui"
 
-#: sabnzbd/config.py:1052
+#: sabnzbd/config.py:1061
 msgid "Error: Path length should be below %s."
 msgstr "Erro: Tamanho do caminho deve ser menor que %s."
 
-#: sabnzbd/config.py:1056
+#: sabnzbd/config.py:1065
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Erro: A fila não está vazia. Não será possível mudar de pasta."
 
-#: sabnzbd/config.py:1065
+#: sabnzbd/config.py:1074
 msgid "Folder \"%s\" does not exist"
 msgstr "A pasta \"%s\" não existe"
 
-#: sabnzbd/database.py:133 [Error message]
+#: sabnzbd/database.py:140 [Error message]
 msgid "Cannot write to History database, check access rights!"
 msgstr ""
 "Não é possível gravar os dados de histórico, verifique as permissões de "
 "acesso!"
 
-#: sabnzbd/database.py:137 [Error message]
+#: sabnzbd/database.py:144 [Error message]
 msgid "Damaged History database, created empty replacement"
 msgstr "Dados de histórico danificados, criado um substituto vazio"
 
-#: sabnzbd/database.py:149 [Error message]
+#: sabnzbd/database.py:156 [Error message]
 msgid "SQL Command Failed, see log"
 msgstr "O comando SQL falhou. Consulte o log"
 
-#: sabnzbd/database.py:197 [Error message]
+#: sabnzbd/database.py:205 [Error message]
 msgid "SQL Commit Failed, see log"
 msgstr "O commit do SQL falhou. Consulte o log"
 
-#: sabnzbd/database.py:206 [Error message]
+#: sabnzbd/database.py:214 [Error message]
 msgid "Failed to close database, see log"
 msgstr "Falha ao fechar o banco de dados. Consulte o log"
 
-#: sabnzbd/database.py:488 [Error message] # sabnzbd/database.py:505 [Error message]
+#: sabnzbd/database.py:502 [Error message] # sabnzbd/database.py:519 [Error message]
 msgid "Invalid stage logging in history for %s"
 msgstr "Registro inválido de etapa no histórico para %s"
 
@@ -436,7 +450,7 @@ msgstr "Continuar"
 msgid "Paused"
 msgstr "Pausado"
 
-#: sabnzbd/downloader.py:320 [Warning message] # sabnzbd/interface.py:1656 [Warning message] # sabnzbd/skintext.py:765
+#: sabnzbd/downloader.py:320 [Warning message] # sabnzbd/interface.py:1635 [Warning message] # sabnzbd/skintext.py:765
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Você deve definir a largura de banda máxima antes de definir um limite de "
@@ -450,40 +464,40 @@ msgstr "O servidor %s será ignorado por %s minutos"
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Falha ao iniciar %s@%s devido as seguintes razões: %s"
 
-#: sabnzbd/downloader.py:639 # sabnzbd/downloader.py:642 [Warning message]
+#: sabnzbd/downloader.py:638 # sabnzbd/downloader.py:641 [Warning message]
 msgid "Too many connections to server %s"
 msgstr "Excesso de conexões ao servidor %s"
 
-#: sabnzbd/downloader.py:649 # sabnzbd/downloader.py:653 [Warning message]
+#: sabnzbd/downloader.py:648 # sabnzbd/downloader.py:652 [Warning message]
 msgid "Probable account sharing"
 msgstr "Provável compartilhamento de conta"
 
-#: sabnzbd/downloader.py:658 # sabnzbd/downloader.py:661 [Error message]
+#: sabnzbd/downloader.py:657 # sabnzbd/downloader.py:660 [Error message]
 msgid "Failed login for server %s"
 msgstr "Falha de logon ao servidor %s"
 
-#: sabnzbd/downloader.py:667 # sabnzbd/downloader.py:670 [Warning message]
-#: sabnzbd/downloader.py:685 # sabnzbd/downloader.py:688 [Warning message]
+#: sabnzbd/downloader.py:666 # sabnzbd/downloader.py:669 [Warning message]
+#: sabnzbd/downloader.py:684 # sabnzbd/downloader.py:687 [Warning message]
 msgid "Cannot connect to server %s [%s]"
 msgstr "Não é possível conectar ao servidor %s [%s]"
 
-#: sabnzbd/downloader.py:699 [Error message]
+#: sabnzbd/downloader.py:698 [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "A conexão a %s@%s falhou. Mensagem=%s"
 
-#: sabnzbd/downloader.py:732 # sabnzbd/downloader.py:735
+#: sabnzbd/downloader.py:730 # sabnzbd/downloader.py:733
 msgid "Server %s requires user/password"
 msgstr "Servidor %s requer usuário/senha"
 
-#: sabnzbd/downloader.py:846 [Error message]
+#: sabnzbd/downloader.py:843 [Error message]
 msgid "Suspect error in downloader"
 msgstr "Erro suspeito no downloader"
 
-#: sabnzbd/downloader.py:862
+#: sabnzbd/downloader.py:859
 msgid "%s => missing from all servers, discarding"
 msgstr "%s => faltando em todos os servidores. Descartando"
 
-#: sabnzbd/downloader.py:948 # sabnzbd/skintext.py:852
+#: sabnzbd/downloader.py:945 # sabnzbd/skintext.py:852
 msgid "Shutting down"
 msgstr "Encerrando"
 
@@ -563,35 +577,35 @@ msgstr ""
 "Por favor, arrume espaço e continue SABnzbd manualmente.\n"
 "\n"
 
-#: sabnzbd/interface.py:91
+#: sabnzbd/interface.py:90
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr "Atenção: LOCALHOST é ambíguo, use endereço IP numérico."
 
-#: sabnzbd/interface.py:96
+#: sabnzbd/interface.py:95
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Endereço de servidor \"%s:%s\" não é válido."
 
-#: sabnzbd/interface.py:201
+#: sabnzbd/interface.py:200
 msgid "User logged in to the web interface"
 msgstr ""
 
-#: sabnzbd/interface.py:201 # sabnzbd/notifier.py:75 [Notification]
+#: sabnzbd/interface.py:200 # sabnzbd/notifier.py:75 [Notification]
 msgid "User logged in"
 msgstr ""
 
-#: sabnzbd/interface.py:248 [Warning message]
+#: sabnzbd/interface.py:247 [Warning message]
 msgid "Missing Session key"
 msgstr "Faltando chave de sessão"
 
-#: sabnzbd/interface.py:249
+#: sabnzbd/interface.py:248
 msgid "Error: Session Key Required"
 msgstr "Erro: chave de sessão obrigatória"
 
-#: sabnzbd/interface.py:251 [Warning message] # sabnzbd/interface.py:252
+#: sabnzbd/interface.py:250 [Warning message] # sabnzbd/interface.py:251
 msgid "Error: Session Key Incorrect"
 msgstr "Erro: chave de sessão incorreta"
 
-#: sabnzbd/interface.py:290
+#: sabnzbd/interface.py:284
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -599,7 +613,7 @@ msgstr ""
 "Chave de API faltando. Por favor insira a chave de API de Configuração-"
 ">Geral em seu programa de terceiros:"
 
-#: sabnzbd/interface.py:297
+#: sabnzbd/interface.py:291
 msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
@@ -607,7 +621,7 @@ msgstr ""
 "Chave de API incorreta. Use a chave de API de Configuração->Geral em seu "
 "programa de terceiros:"
 
-#: sabnzbd/interface.py:306
+#: sabnzbd/interface.py:300
 msgid ""
 "Authentication missing, please enter username/password from Config->General "
 "into your 3rd party program:"
@@ -615,7 +629,7 @@ msgstr ""
 "Autenticação faltando. Por favor insira usuário/senha de Configuração->Geral "
 "em seu programa de terceiros:"
 
-#: sabnzbd/interface.py:340 [Warning message]
+#: sabnzbd/interface.py:334 [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -623,31 +637,15 @@ msgstr ""
 "Teste a nossa nova skin Glitter! Novo design otimizado para desktop e "
 "aparelhos móveis. Vá em Configurações -> Geral para mudar a sua skin"
 
-#: sabnzbd/interface.py:368
-msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
-msgstr ""
-"Sua versão UNRAR é %s, nós recomendamos a versão %s ou superior.<br />"
-
-#: sabnzbd/interface.py:371
-msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
-msgstr ""
-"Nenhum programa UNRAR foi encontrado. Não será possível descompactar "
-"arquivos RAR<br />"
-
-#: sabnzbd/interface.py:373
-msgid "No PAR2 program found, repairs not possible<br />"
-msgstr ""
-"Nenhum programa PAR2 foi encontrado. Reparos não serão possíveis<br />"
-
-#: sabnzbd/interface.py:596 [Warning message]
+#: sabnzbd/interface.py:575 [Warning message]
 msgid "Unsuccessful login attempt from %s"
 msgstr ""
 
-#: sabnzbd/interface.py:1042 # sabnzbd/skintext.py:94 [Bytes (used as postfix, as in "GB", "TB")]
+#: sabnzbd/interface.py:1021 # sabnzbd/skintext.py:94 [Bytes (used as postfix, as in "GB", "TB")]
 msgid "B"
 msgstr "B"
 
-#: sabnzbd/interface.py:1270 # sabnzbd/interface.py:1282
+#: sabnzbd/interface.py:1249 # sabnzbd/interface.py:1261
 msgid ""
 "&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
 "click the button below.<br /><br /><strong><a "
@@ -657,63 +655,63 @@ msgstr ""
 "segundos e, em seguida, clique no botão abaixo.<br /><br /><strong><a "
 "href=\"..\">Atualizar</a></strong><br />"
 
-#: sabnzbd/interface.py:1944 # sabnzbd/skintext.py:582 [Config->RSS, tab header]
+#: sabnzbd/interface.py:1923 # sabnzbd/skintext.py:582 [Config->RSS, tab header]
 msgid "Feed"
 msgstr "Feed"
 
-#: sabnzbd/interface.py:2228
+#: sabnzbd/interface.py:2207
 msgid "Daily"
 msgstr "Diariamente"
 
-#: sabnzbd/interface.py:2229 # sabnzbd/skintext.py:106
+#: sabnzbd/interface.py:2208 # sabnzbd/skintext.py:106
 msgid "Monday"
 msgstr "segunda-feira"
 
-#: sabnzbd/interface.py:2230 # sabnzbd/skintext.py:107
+#: sabnzbd/interface.py:2209 # sabnzbd/skintext.py:107
 msgid "Tuesday"
 msgstr "terça-feira"
 
-#: sabnzbd/interface.py:2231 # sabnzbd/skintext.py:108
+#: sabnzbd/interface.py:2210 # sabnzbd/skintext.py:108
 msgid "Wednesday"
 msgstr "quarta-feira"
 
-#: sabnzbd/interface.py:2232 # sabnzbd/skintext.py:109
+#: sabnzbd/interface.py:2211 # sabnzbd/skintext.py:109
 msgid "Thursday"
 msgstr "quinta-feira"
 
-#: sabnzbd/interface.py:2233 # sabnzbd/skintext.py:110
+#: sabnzbd/interface.py:2212 # sabnzbd/skintext.py:110
 msgid "Friday"
 msgstr "sexta-feira"
 
-#: sabnzbd/interface.py:2234 # sabnzbd/skintext.py:111
+#: sabnzbd/interface.py:2213 # sabnzbd/skintext.py:111
 msgid "Saturday"
 msgstr "sábado"
 
-#: sabnzbd/interface.py:2235 # sabnzbd/skintext.py:112
+#: sabnzbd/interface.py:2214 # sabnzbd/skintext.py:112
 msgid "Sunday"
 msgstr "domingo"
 
-#: sabnzbd/interface.py:2266 # sabnzbd/skintext.py:119
+#: sabnzbd/interface.py:2245 # sabnzbd/skintext.py:119
 msgid "off"
 msgstr "desligado"
 
-#: sabnzbd/interface.py:2278
+#: sabnzbd/interface.py:2257
 msgid "Undefined server!"
 msgstr "Servidor não definido!"
 
-#: sabnzbd/interface.py:2727
+#: sabnzbd/interface.py:2706
 msgid "Incorrect parameter"
 msgstr "Parâmetro incorreto"
 
-#: sabnzbd/interface.py:2727 # sabnzbd/interface.py:2749
+#: sabnzbd/interface.py:2706 # sabnzbd/interface.py:2728
 msgid "Back"
 msgstr "Voltar"
 
-#: sabnzbd/interface.py:2919 # sabnzbd/interface.py:2923
-#: sabnzbd/interface.py:2927 # sabnzbd/interface.py:2931
-#: sabnzbd/interface.py:2935 # sabnzbd/interface.py:2939
-#: sabnzbd/interface.py:2943 # sabnzbd/interface.py:2947
-#: sabnzbd/interface.py:2951
+#: sabnzbd/interface.py:2898 # sabnzbd/interface.py:2902
+#: sabnzbd/interface.py:2906 # sabnzbd/interface.py:2910
+#: sabnzbd/interface.py:2914 # sabnzbd/interface.py:2918
+#: sabnzbd/interface.py:2922 # sabnzbd/interface.py:2926
+#: sabnzbd/interface.py:2930
 msgid "Incorrect value for %s: %s"
 msgstr "Valor incorreto para %s: %s"
 
@@ -729,256 +727,264 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py:498 [Error message] # sabnzbd/tvsort.py:170 [Error message]
+#: sabnzbd/misc.py:499 [Error message] # sabnzbd/tvsort.py:170 [Error message]
 msgid "Cannot create directory %s"
 msgstr "Não é possível criar a pasta %s"
 
-#: sabnzbd/misc.py:505 [Error message]
+#: sabnzbd/misc.py:506 [Error message]
 msgid "%s directory: %s error accessing"
 msgstr "pasta %s: %s erro de acesso"
 
-#: sabnzbd/misc.py:892 [Error message]
+#: sabnzbd/misc.py:893 [Error message]
 msgid "Failed making (%s)"
 msgstr "Falha ao criar (%s)"
 
-#: sabnzbd/misc.py:933 [Error message] # sabnzbd/postproc.py:403
+#: sabnzbd/misc.py:934 [Error message] # sabnzbd/postproc.py:411
 msgid "Failed moving %s to %s"
 msgstr "Falha ao mover %s para %s"
 
-#: sabnzbd/misc.py:1236 [Error message]
+#: sabnzbd/misc.py:1237 [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Erro ao criar chave SSL e certificado"
 
-#: sabnzbd/misc.py:1472 [Error message]
+#: sabnzbd/misc.py:1473 [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Não é possível alterar permissões de %s"
 
-#: sabnzbd/newsunpack.py:223 [Warning message]
+#: sabnzbd/newsunpack.py:220 [Warning message]
 msgid "Unpack nesting too deep [%s]"
 msgstr "Aninhamento de descompactação com muitos níveis [%s]"
 
-#: sabnzbd/newsunpack.py:404
+#: sabnzbd/newsunpack.py:401
 msgid "Joining"
 msgstr "Unindo"
 
-#: sabnzbd/newsunpack.py:422
+#: sabnzbd/newsunpack.py:419
 msgid "Incomplete sequence of joinable files"
 msgstr "Sequência de arquivos multiparte incompleta"
 
-#: sabnzbd/newsunpack.py:423 # sabnzbd/newsunpack.py:431
+#: sabnzbd/newsunpack.py:420 # sabnzbd/newsunpack.py:428
 msgid "File join of %s failed"
 msgstr "A união de arquivos de %s falhou"
 
-#: sabnzbd/newsunpack.py:424 # sabnzbd/newsunpack.py:432
+#: sabnzbd/newsunpack.py:421 # sabnzbd/newsunpack.py:429
 msgid "[%s] Error \"%s\" while joining files"
 msgstr "[%s] Erro \"%s\" na união de arquivos"
 
-#: sabnzbd/newsunpack.py:425 [Error message] # sabnzbd/newsunpack.py:433 [Error message]
+#: sabnzbd/newsunpack.py:422 [Error message] # sabnzbd/newsunpack.py:430 [Error message]
 msgid "Error \"%s\" while running file_join on %s"
 msgstr "Erro \"%s\" ao executar file_join em %s"
 
-#: sabnzbd/newsunpack.py:427
+#: sabnzbd/newsunpack.py:424
 msgid "[%s] Joined %s files"
 msgstr "[%s] Unidos %s arquivos"
 
-#: sabnzbd/newsunpack.py:487 # sabnzbd/newsunpack.py:823
+#: sabnzbd/newsunpack.py:484 # sabnzbd/newsunpack.py:828
 msgid "Unpacking failed, %s"
 msgstr "A descompactação falhou. %s"
 
-#: sabnzbd/newsunpack.py:489
+#: sabnzbd/newsunpack.py:486
 msgid "[%s] Error \"%s\" while unpacking RAR files"
 msgstr "[%s] Erro \"%s\" ao descompactar os arquivos RAR"
 
-#: sabnzbd/newsunpack.py:491 [Error message]
+#: sabnzbd/newsunpack.py:488 [Error message]
 msgid "Error \"%s\" while running rar_unpack on %s"
 msgstr "Erro \"%s\" ao executar rar_unpack em %s"
 
-#: sabnzbd/newsunpack.py:507 [Warning message] # sabnzbd/newsunpack.py:517 [Warning message]
-#: sabnzbd/newsunpack.py:808 [Warning message] # sabnzbd/newsunpack.py:818 [Warning message]
-#: sabnzbd/newsunpack.py:970 [Warning message] # sabnzbd/newsunpack.py:975 [Warning message]
-#: sabnzbd/newsunpack.py:1080 [Warning message] # sabnzbd/newsunpack.py:1090 [Warning message]
-#: sabnzbd/newsunpack.py:1097 [Warning message] # sabnzbd/newsunpack.py:1104 [Warning message]
-#: sabnzbd/newsunpack.py:1122 [Warning message]
+#: sabnzbd/newsunpack.py:504 [Warning message] # sabnzbd/newsunpack.py:514 [Warning message]
+#: sabnzbd/newsunpack.py:813 [Warning message] # sabnzbd/newsunpack.py:823 [Warning message]
+#: sabnzbd/newsunpack.py:975 [Warning message] # sabnzbd/newsunpack.py:980 [Warning message]
+#: sabnzbd/newsunpack.py:1085 [Warning message] # sabnzbd/newsunpack.py:1095 [Warning message]
+#: sabnzbd/newsunpack.py:1102 [Warning message] # sabnzbd/newsunpack.py:1109 [Warning message]
+#: sabnzbd/newsunpack.py:1127 [Warning message]
 msgid "Deleting %s failed!"
 msgstr "A exclusão de %s falhou!"
 
-#: sabnzbd/newsunpack.py:536
+#: sabnzbd/newsunpack.py:533
 msgid "Trying unrar with password \"%s\""
 msgstr "Tentando descompactar com a senha \"%s\""
 
-#: sabnzbd/newsunpack.py:544 [Error message] # sabnzbd/newsunpack.py:707
-#: sabnzbd/newsunpack.py:708 # sabnzbd/newsunpack.py:918 [Error message]
+#: sabnzbd/newsunpack.py:541 [Error message] # sabnzbd/newsunpack.py:712
+#: sabnzbd/newsunpack.py:713 # sabnzbd/newsunpack.py:923 [Error message]
 msgid "Unpacking failed, archive requires a password"
 msgstr "A descompactação falhou. O arquivo exige uma senha"
 
-#: sabnzbd/newsunpack.py:602 # sabnzbd/newsunpack.py:634
-#: sabnzbd/newsunpack.py:783 # sabnzbd/newsunpack.py:878
+#: sabnzbd/newsunpack.py:599 # sabnzbd/newsunpack.py:631
+#: sabnzbd/newsunpack.py:788 # sabnzbd/newsunpack.py:883
 msgid "Unpacking"
 msgstr "Descompactando"
 
-#: sabnzbd/newsunpack.py:620 # sabnzbd/newsunpack.py:1258
-#: sabnzbd/postproc.py:547
+#: sabnzbd/newsunpack.py:617 # sabnzbd/newsunpack.py:1263
+#: sabnzbd/postproc.py:555
 msgid "PostProcessing was aborted (%s)"
 msgstr "O pós-processamento foi cancelado (%s)"
 
-#: sabnzbd/newsunpack.py:620 # sabnzbd/skintext.py:29 [PP phase "unpack"]
+#: sabnzbd/newsunpack.py:617 # sabnzbd/skintext.py:29 [PP phase "unpack"]
 msgid "Unpack"
 msgstr "Descompactar"
 
-#: sabnzbd/newsunpack.py:646 # sabnzbd/newsunpack.py:647
+#: sabnzbd/newsunpack.py:643 # sabnzbd/newsunpack.py:644
 msgid "Unpacking failed, unable to find %s"
 msgstr "A descompactação falhou. Não foi possível encontrar %s"
 
-#: sabnzbd/newsunpack.py:649 [Warning message]
+#: sabnzbd/newsunpack.py:646 [Warning message]
 msgid "ERROR: unable to find \"%s\""
 msgstr "ERRO: Não foi possível encontrar \"%s\""
 
-#: sabnzbd/newsunpack.py:654
+#: sabnzbd/newsunpack.py:651
 msgid "Unpacking failed, CRC error"
 msgstr "A descompactação falhou. Erro de CRC"
 
-#: sabnzbd/newsunpack.py:655 # sabnzbd/newsunpack.py:657 [Warning message]
+#: sabnzbd/newsunpack.py:652 # sabnzbd/newsunpack.py:654 [Warning message]
 msgid "ERROR: CRC failed in \"%s\""
 msgstr "ERRO: CRC falhou em \"%s\""
 
-#: sabnzbd/newsunpack.py:661 # sabnzbd/newsunpack.py:662
-#: sabnzbd/newsunpack.py:680 # sabnzbd/newsunpack.py:681
+#: sabnzbd/newsunpack.py:658 # sabnzbd/newsunpack.py:659
+msgid "Unpacking failed, file too large for filesystem (FAT?)"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:662 [Error message]
+msgid "ERROR: File too large for filesystem (%s)"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:666 # sabnzbd/newsunpack.py:667
+#: sabnzbd/newsunpack.py:685 # sabnzbd/newsunpack.py:686
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "A descompactação falhou. Erro de escrita ou disco cheio?"
 
-#: sabnzbd/newsunpack.py:664 [Error message] # sabnzbd/newsunpack.py:682 [Error message]
+#: sabnzbd/newsunpack.py:669 [Error message] # sabnzbd/newsunpack.py:687 [Error message]
 msgid "ERROR: write error (%s)"
 msgstr "ERRO: erro de escrita (%s)"
 
-#: sabnzbd/newsunpack.py:676 # sabnzbd/newsunpack.py:677
+#: sabnzbd/newsunpack.py:681 # sabnzbd/newsunpack.py:682
 msgid "Unpacking failed, path is too long"
 msgstr "Descompactação falhou, o caminho é muito extenso"
 
-#: sabnzbd/newsunpack.py:678 [Error message]
+#: sabnzbd/newsunpack.py:683 [Error message]
 msgid "ERROR: path too long (%s)"
 msgstr "ERRO: caminho muito extenso (%s)"
 
-#: sabnzbd/newsunpack.py:687
+#: sabnzbd/newsunpack.py:692
 msgid "Unpacking failed, see log"
 msgstr "A descompactação falhou. Veja o log"
 
-#: sabnzbd/newsunpack.py:688 [Warning message] # sabnzbd/newsunpack.py:689
+#: sabnzbd/newsunpack.py:693 [Warning message] # sabnzbd/newsunpack.py:694
 msgid "ERROR: %s"
 msgstr "ERRO: %s"
 
-#: sabnzbd/newsunpack.py:719 # sabnzbd/newsunpack.py:720
+#: sabnzbd/newsunpack.py:724 # sabnzbd/newsunpack.py:725
 msgid "Unusable RAR file"
 msgstr "Arquivo RAR inutilizável"
 
-#: sabnzbd/newsunpack.py:732 # sabnzbd/newsunpack.py:733
+#: sabnzbd/newsunpack.py:737 # sabnzbd/newsunpack.py:738
 msgid "Corrupt RAR file"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:761
+#: sabnzbd/newsunpack.py:766
 msgid "Unpacked %s files/folders in %s"
 msgstr "Descompactados %s arquivos/pastas em %s"
 
-#: sabnzbd/newsunpack.py:795 # sabnzbd/newsunpack.py:893
+#: sabnzbd/newsunpack.py:800 # sabnzbd/newsunpack.py:898
 msgid "%s files in %s"
 msgstr "%s arquivos em %s"
 
-#: sabnzbd/newsunpack.py:824 [Error message]
+#: sabnzbd/newsunpack.py:829 [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
 msgstr "Erro \"%s\" ao executar unzip() em %s"
 
-#: sabnzbd/newsunpack.py:909
+#: sabnzbd/newsunpack.py:914
 msgid "Trying 7zip with password \"%s\""
 msgstr "Testando 7zip com a senha \"%s\""
 
-#: sabnzbd/newsunpack.py:947
+#: sabnzbd/newsunpack.py:952
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr "O arquivo 7ZIP \"%s\" está incompleto, impossível descompactar"
 
-#: sabnzbd/newsunpack.py:978
+#: sabnzbd/newsunpack.py:983
 msgid "Could not unpack %s"
 msgstr "Não foi possível descompactar %s"
 
-#: sabnzbd/newsunpack.py:1010
+#: sabnzbd/newsunpack.py:1015
 msgid "Quick Checking"
 msgstr "Verificação Rápida"
 
-#: sabnzbd/newsunpack.py:1010 # sabnzbd/newsunpack.py:1036
-#: sabnzbd/newsunpack.py:1258 # sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:307
+#: sabnzbd/newsunpack.py:1015 # sabnzbd/newsunpack.py:1041
+#: sabnzbd/newsunpack.py:1263 # sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:307
 msgid "Repair"
 msgstr "Reparar"
 
-#: sabnzbd/newsunpack.py:1014
+#: sabnzbd/newsunpack.py:1019
 msgid "[%s] Quick Check OK"
 msgstr "[%s] Verificação Rápida OK"
 
-#: sabnzbd/newsunpack.py:1036
+#: sabnzbd/newsunpack.py:1041
 msgid "Starting Repair"
 msgstr "Iniciando reparação"
 
-#: sabnzbd/newsunpack.py:1053 [Warning message]
+#: sabnzbd/newsunpack.py:1058 [Warning message]
 msgid "Par verify failed on %s, while QuickCheck succeeded!"
 msgstr "Validação de par falhou em %s, enquanto QuickCheck foi completo!"
 
-#: sabnzbd/newsunpack.py:1063 # sabnzbd/newsunpack.py:1125
+#: sabnzbd/newsunpack.py:1068 # sabnzbd/newsunpack.py:1130
 msgid "Repairing failed, %s"
 msgstr "Reparação falhou, %s"
 
-#: sabnzbd/newsunpack.py:1064 [Error message]
+#: sabnzbd/newsunpack.py:1069 [Error message]
 msgid "Error %s while running par2_repair on set %s"
 msgstr "Erro %s ao executar par2_repair no conjunto %s"
 
-#: sabnzbd/newsunpack.py:1126 [Error message]
+#: sabnzbd/newsunpack.py:1131 [Error message]
 msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "Erro \"%s\" ao executar par2_repair no conjunto %s"
 
-#: sabnzbd/newsunpack.py:1283
+#: sabnzbd/newsunpack.py:1288
 msgid ""
 "[%s] PAR2 received incorrect options, check your Config->Switches settings"
 msgstr ""
 "[%s] PAR2 recebeu opções incorretas. Verifique em Configuração->Opções"
 
-#: sabnzbd/newsunpack.py:1288
+#: sabnzbd/newsunpack.py:1293
 msgid "[%s] Verified in %s, all files correct"
 msgstr "[%s] Verificado em %s. Todos os arquivos corretos"
 
-#: sabnzbd/newsunpack.py:1295
+#: sabnzbd/newsunpack.py:1300
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Verificado em %s. É necessário reparar"
 
-#: sabnzbd/newsunpack.py:1310
+#: sabnzbd/newsunpack.py:1315
 msgid "Main packet not found..."
 msgstr "Pacote principal não encontrado..."
 
-#: sabnzbd/newsunpack.py:1336
+#: sabnzbd/newsunpack.py:1341
 msgid "Invalid par2 files, cannot verify or repair"
 msgstr "Arquivos PAR2 inválidos. Não é possível verificar ou reparar"
 
-#: sabnzbd/newsunpack.py:1375 # sabnzbd/newsunpack.py:1410
+#: sabnzbd/newsunpack.py:1380 # sabnzbd/newsunpack.py:1415
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr "Reparação falhou. Blocos de reparação insuficientes (faltam %s)"
 
-#: sabnzbd/newsunpack.py:1405
+#: sabnzbd/newsunpack.py:1410
 msgid "Fetching %s blocks..."
 msgstr "Obtendo %s blocos..."
 
-#: sabnzbd/newsunpack.py:1407
+#: sabnzbd/newsunpack.py:1412
 msgid "Fetching"
 msgstr "Obtendo"
 
-#: sabnzbd/newsunpack.py:1418 # sabnzbd/newsunpack.py:1423
+#: sabnzbd/newsunpack.py:1423 # sabnzbd/newsunpack.py:1428
 msgid "Repairing"
 msgstr "Reparando"
 
-#: sabnzbd/newsunpack.py:1427
+#: sabnzbd/newsunpack.py:1432
 msgid "[%s] Repaired in %s"
 msgstr "[%s] Reparado em %s"
 
-#: sabnzbd/newsunpack.py:1480 # sabnzbd/newsunpack.py:1495
-#: sabnzbd/newsunpack.py:1513
+#: sabnzbd/newsunpack.py:1485 # sabnzbd/newsunpack.py:1500
+#: sabnzbd/newsunpack.py:1518
 msgid "Verifying"
 msgstr "Verificando"
 
-#: sabnzbd/newsunpack.py:1617 [Error message]
+#: sabnzbd/newsunpack.py:1622 [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
@@ -1063,7 +1069,7 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
-#: sabnzbd/nzbqueue.py:78 [Warning message] # sabnzbd/postproc.py:99 [Warning message]
+#: sabnzbd/nzbqueue.py:78 [Warning message] # sabnzbd/postproc.py:100 [Warning message]
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 "Fila antiga detectada, use \"Situação -> Reparação da fila\" para converter "
@@ -1093,107 +1099,107 @@ msgstr "NZB adicionado à fila"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Codificação desconhecida"
 
-#: sabnzbd/nzbstuff.py:463 [Warning message]
+#: sabnzbd/nzbstuff.py:438 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Arquivo %s está vazio. Pulando"
 
-#: sabnzbd/nzbstuff.py:528 [Warning message]
+#: sabnzbd/nzbstuff.py:503 [Warning message]
 msgid "Failed to import %s files from %s"
 msgstr "Falha ao importar %s arquivos de %s"
 
-#: sabnzbd/nzbstuff.py:732 [Warning message]
+#: sabnzbd/nzbstuff.py:707 [Warning message]
 msgid "Incomplete NZB file %s"
 msgstr "Arquivo NZB incompleto %s"
 
-#: sabnzbd/nzbstuff.py:734 [Warning message] # sabnzbd/nzbstuff.py:738 [Warning message]
+#: sabnzbd/nzbstuff.py:709 [Warning message] # sabnzbd/nzbstuff.py:713 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Arquivo NZB %s inválido. Pulando (razão=%s, linha=%s)"
 
-#: sabnzbd/nzbstuff.py:757 # sabnzbd/nzbstuff.py:759
+#: sabnzbd/nzbstuff.py:732 # sabnzbd/nzbstuff.py:734
 msgid "Empty NZB file %s"
 msgstr "Arquivo NZB %s vazio"
 
-#: sabnzbd/nzbstuff.py:814
+#: sabnzbd/nzbstuff.py:789
 msgid "Pre-queue script marked job as failed"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:832 [Warning message]
+#: sabnzbd/nzbstuff.py:807 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignorando NZB duplicado \"%s\""
 
-#: sabnzbd/nzbstuff.py:838 [Warning message]
+#: sabnzbd/nzbstuff.py:813 [Warning message]
 msgid "Failing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:840
+#: sabnzbd/nzbstuff.py:815
 msgid "Duplicate NZB"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:846 [Warning message]
+#: sabnzbd/nzbstuff.py:821 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pausando NZB duplicado \"%s\""
 
-#: sabnzbd/nzbstuff.py:1035
+#: sabnzbd/nzbstuff.py:1010
 msgid "Aborted, cannot be completed"
 msgstr "Cancelado, não é possível concluir"
 
-#: sabnzbd/nzbstuff.py:1138 # sabnzbd/skintext.py:786
+#: sabnzbd/nzbstuff.py:1110 # sabnzbd/skintext.py:786
 msgid "DUPLICATE"
 msgstr "DUPLICADO"
 
-#: sabnzbd/nzbstuff.py:1140 [Queue indicator for encrypted job] # sabnzbd/skintext.py:784
+#: sabnzbd/nzbstuff.py:1112 [Queue indicator for encrypted job] # sabnzbd/skintext.py:784
 msgid "ENCRYPTED"
 msgstr "CRIPTOGRAFADO"
 
-#: sabnzbd/nzbstuff.py:1142 # sabnzbd/skintext.py:788
+#: sabnzbd/nzbstuff.py:1114 # sabnzbd/skintext.py:788
 msgid "TOO LARGE"
 msgstr "MUITO GRANDE"
 
-#: sabnzbd/nzbstuff.py:1144 # sabnzbd/skintext.py:785
+#: sabnzbd/nzbstuff.py:1116 # sabnzbd/skintext.py:785
 msgid "INCOMPLETE"
 msgstr "INCOMPLETO"
 
-#: sabnzbd/nzbstuff.py:1146 # sabnzbd/skintext.py:787
+#: sabnzbd/nzbstuff.py:1118 # sabnzbd/skintext.py:787
 msgid "UNWANTED"
 msgstr "INDESEJADO"
 
-#: sabnzbd/nzbstuff.py:1148 # sabnzbd/skintext.py:789
+#: sabnzbd/nzbstuff.py:1120 # sabnzbd/skintext.py:789
 msgid "FILTERED"
 msgstr "FILTRADO"
 
-#: sabnzbd/nzbstuff.py:1152 # sabnzbd/skintext.py:790
+#: sabnzbd/nzbstuff.py:1124 # sabnzbd/skintext.py:790
 msgid "WAIT %s sec"
 msgstr "Espere %s segundo(s)"
 
-#: sabnzbd/nzbstuff.py:1155
+#: sabnzbd/nzbstuff.py:1127
 msgid "PROPAGATING %s min"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:1301
+#: sabnzbd/nzbstuff.py:1273
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Baixado em %s a uma média de %sB/s"
 
-#: sabnzbd/nzbstuff.py:1302 # sabnzbd/skintext.py:753 [Job details page, file age column header] # sabnzbd/skintext.py:954
+#: sabnzbd/nzbstuff.py:1274 # sabnzbd/skintext.py:753 [Job details page, file age column header] # sabnzbd/skintext.py:954
 msgid "Age"
 msgstr "Idade"
 
-#: sabnzbd/nzbstuff.py:1310
+#: sabnzbd/nzbstuff.py:1282
 msgid "%s articles were malformed"
 msgstr "%s artigos estavam malformados"
 
-#: sabnzbd/nzbstuff.py:1312
+#: sabnzbd/nzbstuff.py:1284
 msgid "%s articles were missing"
 msgstr "%s artigos estavam faltando"
 
-#: sabnzbd/nzbstuff.py:1314
+#: sabnzbd/nzbstuff.py:1286
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artigos tinham duplicatas não-correspondentes"
 
-#: sabnzbd/nzbstuff.py:1316
+#: sabnzbd/nzbstuff.py:1288
 msgid "%s articles were removed"
 msgstr "%s artigos foram removidos"
 
-#: sabnzbd/nzbstuff.py:1362 [Error message]
+#: sabnzbd/nzbstuff.py:1334 [Error message]
 msgid "Error importing %s"
 msgstr "Erro ao importar %s"
 
@@ -1496,124 +1502,130 @@ msgstr "Acesso negado"
 msgid "Error %s: You need to provide a valid username and password."
 msgstr "Erro %s: Você precisa fornecer um nome de usuário e senha válidos."
 
-#: sabnzbd/postproc.py:285
+#: sabnzbd/postproc.py:172 [Warning message]
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+
+#: sabnzbd/postproc.py:293
 msgid "Download might fail, only %s of required %s available"
 msgstr ""
 "O download pode falhar. Somente %s de %s necessários estão disponíveis"
 
-#: sabnzbd/postproc.py:287
+#: sabnzbd/postproc.py:295
 msgid "Download failed - Not on your server(s)"
 msgstr "O download falhou - Não está em seu(s) servidor(s)"
 
-#: sabnzbd/postproc.py:360
+#: sabnzbd/postproc.py:368
 msgid "Cannot create final folder %s"
 msgstr "Não é possível criar a pasta final %s"
 
-#: sabnzbd/postproc.py:385
+#: sabnzbd/postproc.py:393
 msgid "No post-processing because of failed verification"
 msgstr "Sem pós-processamento por causa de falha na verificação"
 
-#: sabnzbd/postproc.py:393
+#: sabnzbd/postproc.py:401
 msgid "Moving"
 msgstr "Movendo"
 
-#: sabnzbd/postproc.py:425
+#: sabnzbd/postproc.py:433
 msgid "Sent %s to queue"
 msgstr "Enviados %s para a fila"
 
-#: sabnzbd/postproc.py:439 [Error message]
+#: sabnzbd/postproc.py:447 [Error message]
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Erro ao renomear \"%s\" para \"%s\""
 
-#: sabnzbd/postproc.py:464
+#: sabnzbd/postproc.py:472
 msgid "Failed to move files"
 msgstr "Falha ao mover arquivos"
 
-#: sabnzbd/postproc.py:472
+#: sabnzbd/postproc.py:480
 msgid "Running script"
 msgstr "Executando script"
 
-#: sabnzbd/postproc.py:473
+#: sabnzbd/postproc.py:481
 msgid "Running user script %s"
 msgstr "Executando script de usuário %s"
 
-#: sabnzbd/postproc.py:482
+#: sabnzbd/postproc.py:490
 msgid "Ran %s"
 msgstr "%s executado"
 
-#: sabnzbd/postproc.py:492
+#: sabnzbd/postproc.py:500
 msgid "Script exit code is %s"
 msgstr "Código de saída do script é %s"
 
-#: sabnzbd/postproc.py:511 # sabnzbd/skintext.py:824
+#: sabnzbd/postproc.py:519 # sabnzbd/skintext.py:824
 msgid "More"
 msgstr "Mais"
 
-#: sabnzbd/postproc.py:536
+#: sabnzbd/postproc.py:544
 msgid "Download Completed"
 msgstr "Download concluído"
 
-#: sabnzbd/postproc.py:539 # sabnzbd/postproc.py:548
+#: sabnzbd/postproc.py:547 # sabnzbd/postproc.py:556
 msgid "Download Failed"
 msgstr "O download falhou"
 
-#: sabnzbd/postproc.py:543 [Error message]
+#: sabnzbd/postproc.py:551 [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "O pós-processamento falhou para %s (%s)"
 
-#: sabnzbd/postproc.py:546
+#: sabnzbd/postproc.py:554
 msgid "see logfile"
 msgstr "veja o arquivo de log"
 
-#: sabnzbd/postproc.py:578 [Error message]
+#: sabnzbd/postproc.py:586 [Error message]
 msgid "Cleanup of %s failed."
 msgstr "A limpeza de %s falhou."
 
-#: sabnzbd/postproc.py:588 [Error message]
+#: sabnzbd/postproc.py:596 [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Erro ao remover a pasta de trabalho (%s)"
 
-#: sabnzbd/postproc.py:617
+#: sabnzbd/postproc.py:625
 msgid "Post-processing"
 msgstr "Pós-processamento"
 
-#: sabnzbd/postproc.py:696
+#: sabnzbd/postproc.py:704
 msgid "[%s] No par2 sets"
 msgstr "[%s] Nenhum conjunto par2"
 
-#: sabnzbd/postproc.py:732 # sabnzbd/postproc.py:733
+#: sabnzbd/postproc.py:740 # sabnzbd/postproc.py:741
 msgid "Trying SFV verification"
 msgstr "Tentando verificação SFV"
 
-#: sabnzbd/postproc.py:737
+#: sabnzbd/postproc.py:745
 msgid "Some files failed to verify against \"%s\""
 msgstr "Alguns arquivos falharam na verificação de \"%s\""
 
-#: sabnzbd/postproc.py:743
+#: sabnzbd/postproc.py:751
 msgid "Verified successfully using SFV files"
 msgstr "Verificado com sucesso. Usando arquivos SFV."
 
-#: sabnzbd/postproc.py:771 # sabnzbd/postproc.py:772
+#: sabnzbd/postproc.py:779 # sabnzbd/postproc.py:780
 msgid "Trying RAR-based verification"
 msgstr ""
 
-#: sabnzbd/postproc.py:781 # sabnzbd/postproc.py:794
+#: sabnzbd/postproc.py:789 # sabnzbd/postproc.py:802
 msgid "[%s] RAR-based verification failed: %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:781 # sabnzbd/skintext.py:257 # sabnzbd/skintext.py:521
+#: sabnzbd/postproc.py:789 # sabnzbd/skintext.py:257 # sabnzbd/skintext.py:521
 msgid "Passworded"
 msgstr "com senha"
 
-#: sabnzbd/postproc.py:788
+#: sabnzbd/postproc.py:796
 msgid "RAR files verified successfully"
 msgstr ""
 
-#: sabnzbd/postproc.py:793
+#: sabnzbd/postproc.py:801
 msgid "RAR files failed to verify"
 msgstr ""
 
-#: sabnzbd/postproc.py:851 [Error message] # sabnzbd/postproc.py:932 [Error message]
+#: sabnzbd/postproc.py:859 [Error message] # sabnzbd/postproc.py:940 [Error message]
 msgid "Removing %s failed"
 msgstr "A remoção de %s falhou"
 
@@ -4874,8 +4886,17 @@ msgstr "A busca da URL falhou; %s"
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Erro: Nenhuma interface secundária definida."
 
+#~ msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
+#~ msgstr ""
+#~ "Nenhum programa UNRAR foi encontrado. Não será possível descompactar "
+#~ "arquivos RAR<br />"
+
 #~ msgid "Initiating restart...<br />"
 #~ msgstr "Fazendo o reinício...<br />"
+
+#~ msgid "No PAR2 program found, repairs not possible<br />"
+#~ msgstr ""
+#~ "Nenhum programa PAR2 foi encontrado. Reparos não serão possíveis<br />"
 
 #~ msgid "Not matched"
 #~ msgstr "Não correspondido"
