@@ -1,5 +1,5 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configuration/1.2/servers"#-->
+<!--#set global $help_uri="configuration/2.0/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -29,9 +29,9 @@
                     <label class="config" for="port">$T('srv-port')</label>
                     <input type="number" name="port" id="port" size="8" value="119" />
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                <div class="field-pair">
                     <label class="config" for="ssl">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl" value="1" <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <input type="checkbox" name="ssl" id="ssl" value="1" />
                     <span class="desc">$T('explain-ssl')</span>
                 </div>
                 <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
@@ -62,9 +62,9 @@
                 <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
                     <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
                     <select name="ssl_verify" id="ssl_verify" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
-                          <option value="0">$T('ssl_verify-disabled')</option>
-                          <option value="1" selected>$T('ssl_verify-normal')</option>
-                          <option value="2">$T('ssl_verify-strict')</option>
+                        <option value="2" selected>$T('ssl_verify-strict')</option>
+                        <option value="1">$T('ssl_verify-normal')</option>
+                        <option value="0">$T('ssl_verify-disabled')</option>
                     </select>
                     <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
                 </div>
@@ -149,9 +149,9 @@
                     <label class="config" for="port$cur">$T('srv-port')</label>
                     <input type="number" name="port" id="port$cur" value="$server['port']" size="8" />
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                <div class="field-pair">
                     <label class="config" for="ssl$cur">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 and int($have_ssl) == 1 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 then 'checked="checked"' else ""#--> />
                     <span class="desc">$T('explain-ssl')</span>
                 </div>
                 <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
@@ -183,9 +183,9 @@
                 <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
                     <label class="config" for="ssl_verify$cur">$T('opt-ssl_verify')</label>
                     <select name="ssl_verify" id="ssl_verify$cur" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
-                          <option value="0" <!--#if $server['ssl_verify'] == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>
-                          <option value="1" <!--#if $server['ssl_verify'] == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-normal')</option>
-                          <option value="2" <!--#if $server['ssl_verify'] == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
+                        <option value="2" <!--#if $server['ssl_verify'] == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
+                        <option value="1" <!--#if $server['ssl_verify'] == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-normal')</option>
+                        <option value="0" <!--#if $server['ssl_verify'] == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>
                     </select>
                     <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
                 </div>

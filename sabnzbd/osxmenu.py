@@ -721,6 +721,7 @@ class SABnzbdDelegate(NSObject):
 
     def restartAction_(self, sender):
         self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
+        logging.info('Restart requested by tray')
         sabnzbd.trigger_restart()
         self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
 

@@ -1,5 +1,5 @@
 <!--#set global $pane="Sorting"#-->
-<!--#set global $help_uri="configuration/1.2/sorting"#-->
+<!--#set global $help_uri="configuration/2.0/sorting"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -12,7 +12,7 @@
                 <p>
                     <b>$T('affectedCat')</b><br/>
                     <select name="tv_cat" multiple="multiple" class="multiple_cats">
-                        <!--#for $ct in $cat_list#-->
+                        <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $tv_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>
@@ -165,7 +165,7 @@
                 <p>
                     <b>$T('affectedCat')</b><br/>
                     <select name="movie_cat" multiple="multiple" class="multiple_cats">
-                        <!--#for $ct in $cat_list#-->
+                        <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $movie_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>
@@ -303,7 +303,7 @@
                 <p>
                     <b>$T('affectedCat')</b><br/>
                     <select name="date_cat" multiple="multiple" class="multiple_cats">
-                        <!--#for $ct in $cat_list#-->
+                        <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $date_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>

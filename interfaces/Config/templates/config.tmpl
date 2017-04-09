@@ -1,5 +1,5 @@
 <!--#set global $pane="Config"#-->
-<!--#set global $help_uri="configuration/1.2/configure"#-->
+<!--#set global $help_uri="configuration/2.0/configure"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#from locale import getpreferredencoding#-->
@@ -34,12 +34,7 @@
                 <tr>
                     <th scope="row">OpenSSL:</th>
                     <td>
-                        <!--#if $have_ssl#-->
-                            $ssl_version &nbsp; [$ssl_protocols]
-                        <!--#else#-->
-                            <span class="label label-danger">$T('notAvailable')</span>
-                            <a href="$helpuri$help_uri#no_ssl" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-                        <!--#end if#-->
+                        $ssl_version &nbsp; [$ssl_protocols]
                     </td>
                 </tr>
                 <!--#if not $have_ssl_context#-->
@@ -47,6 +42,15 @@
                     <th scope="row"></th>
                     <td>
                         <span class="label label-danger">$T('warning')</span> $T('explain-nosslcontext')
+                    </td>
+                </tr>
+                <!--#end if#-->
+                <!--#if not $have_mt_par2#-->
+                <tr>
+                    <th scope="row">Multicore Par2</th>
+                    <td>
+                        <span class="label label-warning">$T('notAvailable')</span> $T('explain-getpar2mt')
+                        <a href="${helpuri}installation/multicore-par2" target="_blank">${helpuri}installation/multicore-par2</a>
                     </td>
                 </tr>
                 <!--#end if#-->
@@ -59,12 +63,21 @@
                     </td>
                 </tr>
                 <!--#end if#-->
-                <!--#if not $have_yenc#-->
+                <!--#if not $have_yenc and not $have_sabyenc#-->
                 <tr>
                     <th scope="row">yEnc:</th>
                     <td>
                         <span class="label label-danger">$T('notAvailable')</span>
                         <a href="$helpuri$help_uri#no_yenc" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
+                    </td>
+                </tr>
+                <!--#end if#-->
+                <!--#if not $have_sabyenc#-->
+                <tr>
+                    <th scope="row">SABYenc:</th>
+                    <td>
+                        <span class="label label-danger">$T('notAvailable')</span>
+                        <a href="$helpuri$help_uri#no_sabyenc" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
                     </td>
                 </tr>
                 <!--#end if#-->

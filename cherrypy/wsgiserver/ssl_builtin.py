@@ -85,8 +85,8 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
 
                 # Check if it's one of the known errors
                 # Errors that are caught by PyOpenSSL, but thrown by built-in ssl
-                _block_errors = ('unknown protocol', 'unknown ca', 'unknown_ca',
-                                 'inappropriate fallback', 'wrong version number',
+                _block_errors = ('unknown protocol', 'unknown ca', 'unknown_ca', 'unknown error',
+                                 'https proxy request', 'inappropriate fallback', 'wrong version number',
                                  'no shared cipher', 'certificate unknown', 'ccs received early')
                 for error_text in _block_errors:
                     if error_text in e.args[1].lower():

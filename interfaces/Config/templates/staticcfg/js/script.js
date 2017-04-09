@@ -273,7 +273,7 @@ function do_restart() {
                     error: function(status, text) {
                         failureCounter = failureCounter+1;
                         // Too many failuers and we give up
-                        if(failureCounter >= 7) {
+                        if(failureCounter >= 6) {
                             // If the port has changed 'Access-Control-Allow-Origin' header will not allow
                             // us to check if the server is back up. So after 7 failures we redirect
                             // anyway in the hopes it works anyway..
@@ -281,7 +281,7 @@ function do_restart() {
                         }
                     }
                 })
-            }, 3000)
+            }, 4000)
 
             // Exception if we go from HTTPS to HTTP
             // (this is not allowed by browsers and all of the above will be ignored)

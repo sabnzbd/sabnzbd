@@ -64,6 +64,7 @@ else:
 ##############################################################################
 quick_check = OptionBool('misc', 'quick_check', True)
 sfv_check = OptionBool('misc', 'sfv_check', True)
+quick_check_ext_ignore = OptionList('misc', 'quick_check_ext_ignore', ['nfo', 'sfv', 'srr'])
 
 email_server = OptionStr('misc', 'email_server', validation=validate_server)
 email_to = OptionList('misc', 'email_to', validation=validate_email)
@@ -112,7 +113,6 @@ req_completion_rate = OptionNumber('misc', 'req_completion_rate', 100.2, 100, 20
 rating_enable = OptionBool('misc', 'rating_enable', False)
 rating_host = OptionStr('misc', 'rating_host', 'api.oznzb.com')
 rating_api_key = OptionStr('misc', 'rating_api_key')
-rating_feedback = OptionBool('misc', 'rating_feedback', True)
 rating_filter_enable = OptionBool('misc', 'rating_filter_enable', False)
 rating_filter_abort_audio = OptionNumber('misc', 'rating_filter_abort_audio', 0)
 rating_filter_abort_video = OptionNumber('misc', 'rating_filter_abort_video', 0)
@@ -212,9 +212,7 @@ refresh_rate = OptionNumber('misc', 'refresh_rate', 0)
 rss_rate = OptionNumber('misc', 'rss_rate', 60, 15, 24 * 60)
 cache_limit = OptionStr('misc', 'cache_limit')
 web_dir = OptionStr('misc', 'web_dir', DEF_STDINTF)
-web_dir2 = OptionStr('misc', 'web_dir2')
 web_color = OptionStr('misc', 'web_color', '')
-web_color2 = OptionStr('misc', 'web_color2')
 cleanup_list = OptionList('misc', 'cleanup_list')
 warned_old_queue = OptionBool('misc', 'warned_old_queue9', False)
 notified_new_skin = OptionNumber('misc', 'notified_new_skin', 0)
@@ -392,6 +390,9 @@ enable_bonjour = OptionBool('misc', 'enable_bonjour', True)
 allow_duplicate_files = OptionBool('misc', 'allow_duplicate_files', False)
 warn_dupl_jobs = OptionBool('misc', 'warn_dupl_jobs', True)
 new_nzb_on_failure = OptionBool('misc', 'new_nzb_on_failure', False)
+
+# TEMP
+nr_decoders = OptionNumber('misc', 'nr_decoders', 2)
 
 
 ##############################################################################

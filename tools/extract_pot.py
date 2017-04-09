@@ -130,15 +130,16 @@ if not os.path.exists(PO_DIR):
 path, exe = os.path.split(sys.executable)
 if os.name == 'nt':
     TOOL = os.path.join(path, r'Tools\i18n\pygettext.py')
+    TOOL = 'python ' + TOOL
 else:
     TOOL = os.path.join(path, 'pygettext.py')
-if not os.path.exists(TOOL):
-    TOOL = 'pygettext'
+    if not os.path.exists(TOOL):
+        TOOL = 'pygettext'
 
 
 cmd = '%s %s %s' % (TOOL, PARMS, FILES)
 print 'Create POT file'
-# print cmd
+#print cmd
 os.system(cmd)
 
 print 'Post-process the POT file'

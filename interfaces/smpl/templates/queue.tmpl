@@ -14,9 +14,9 @@ $T('onQueueFinish'):
     <!--#end if#-->
     <option value="shutdown_program" <!--#if $finishaction == 'shutdown_program' then 'selected' else ''#-->>Shutdown SABnzbd</option>
   </optgroup>
-<!--#if $script_list#-->
+<!--#if $scripts#-->
   <optgroup label="$T('eoq-scripts')">
-  <!--#for $sc in $script_list#-->
+  <!--#for $sc in $scripts#-->
     <!--#if $sc != 'None'#-->
     <option value="script_$sc" <!--#if $finishaction == 'script_'+$sc then 'selected' else ''#-->>$sc</option>
     <!--#end if#-->
@@ -90,20 +90,20 @@ $T('smpl-timeleft'): <strong>$timeleft</strong> $T('eta'): <strong>$eta</strong>
     </optgroup>
   </select>
   <!--#end if#-->
-<!--#if $script_list#-->
+<!--#if $scripts#-->
   <select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_script?nzo_id=$slot.nzo_id&script='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
   <optgroup label="$T('script')">
-  <!--#for $sc in $script_list#-->
+  <!--#for $sc in $scripts#-->
     <option value="$sc" <!--#if $slot.script.lower() == $sc.lower() then "selected" else ""#-->>$Tspec($sc)</option>
   <!--#end for#-->
   </optgroup>
   </select>
 <!--#end if#-->
 
-  <!--#if $cat_list#-->
+  <!--#if $categories#-->
   <select onfocus="pauseQueueDeferer(this.parentNode.parentNode.id)" onblur="javascript:lr('queue/','limit=$limit&start=$start', 1,-1, this.parentNode.parentNode.id);" onchange="javascript:changequeuedetails('queue/change_cat?nzo_id=$slot.nzo_id&cat='+this.options[this.selectedIndex].value, 'limit=$limit&start=$start');">
     <optgroup label="$T('category')">
-    <!--#for $ct in $cat_list#-->
+    <!--#for $ct in $categories#-->
       <option value="$ct" <!--#if $slot.cat.lower() == $ct.lower() then "selected" else ""#-->>$Tspec($ct)</option>
     <!--#end for#-->
     </optgroup>

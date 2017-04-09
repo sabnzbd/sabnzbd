@@ -26,7 +26,6 @@ import threading
 import shutil
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
-from sabnzbd.utils import listquote
 from sabnzbd.utils import configobj
 from sabnzbd.decorators import synchronized
 
@@ -42,6 +41,8 @@ database = {}               # Holds the option dictionary
 
 modified = False            # Signals a change in option dictionary
                             # Should be reset after saving to settings file
+
+paramfinder = re.compile(r'''(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)''')
 
 
 class Option(object):
@@ -260,7 +261,7 @@ class OptionList(Option):
                 if '"' not in value and ',' not in value:
                     value = value.split()
                 else:
-                    value = listquote.simplelist(value)
+                    value = paramfinder.findall(value)
             if self.__validation:
                 error, value = self.__validation(value)
             if not error:
@@ -270,6 +271,14 @@ class OptionList(Option):
     def get_string(self):
         """ Return the list as a comma-separated string """
         lst = self.get()
+        if isinstance(lst, basestring):
+            return lst
+        else:
+            return ', '.join(lst)
+
+    def default_string(self):
+        """ Return the default list as a comma-separated string """
+        lst = self.default()
         if isinstance(lst, basestring):
             return lst
         else:
@@ -377,7 +386,7 @@ class ConfigServer(object):
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
-        self.ssl_verify = OptionNumber(name, 'ssl_verify', 1, add=False) # 0=No, 1=Normal, 2=Strict (hostname verification)
+        self.ssl_verify = OptionNumber(name, 'ssl_verify', 2, add=False)  # 0=No, 1=Normal, 2=Strict (hostname verification)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
@@ -542,7 +551,7 @@ class OptionFilters(Option):
                 if isinstance(val, list):
                     filters.append(val)
                 else:
-                    filters.append(listquote.simplelist(val))
+                    filters.append(paramfinder.findall(val))
                 while len(filters[-1]) < 7:
                     filters[-1].append('1')
                 if not filters[-1][6]:
@@ -813,9 +822,11 @@ def save_config(force=False):
                 except KeyError:
                     CFG[sec] = {}
                 value = database[section][option]()
-                if type(value) == type(True):
+                # bool is a subclass of int, check first
+                if isinstance(value, bool):
+                    # convert bool to int when saving so we store 0 or 1
                     CFG[sec][kw] = str(int(value))
-                elif type(value) == type(0):
+                elif isinstance(value, int):
                     CFG[sec][kw] = str(value)
                 else:
                     CFG[sec][kw] = value

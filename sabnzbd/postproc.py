@@ -50,6 +50,7 @@ import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
+import sabnzbd.utils.checkdir
 
 
 class PostProcessor(Thread):
@@ -164,9 +165,16 @@ class PostProcessor(Thread):
         return None
 
     def run(self):
-        """ Actual processing """
-        check_eoq = False
+        """ Postprocessor loop """
+        # First we do a dircheck
+        complete_dir = sabnzbd.cfg.complete_dir.get_path()
+        if sabnzbd.utils.checkdir.isFAT(complete_dir):
+            logging.warning(T('Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB') % complete_dir)
+        else:
+            logging.info("Completed Download Folder %s is not on FAT", complete_dir)
 
+        # Start looping
+        check_eoq = False
         while not self.__stop:
             self.__busy = False
 
@@ -467,20 +475,12 @@ def process_job(nzo):
             # Run the user script
             script_path = make_script_path(script)
             if (all_ok or not cfg.safe_postproc()) and (not nzb_list) and script_path:
-                # For windows, we use Short-Paths until 2.0.0 for compatibility
-                if sabnzbd.WIN32:
-                    import win32api
-                    workdir_complete = clip_path(workdir_complete)
-                    if len(workdir_complete) > 259:
-                        workdir_complete = win32api.GetShortPathName(workdir_complete)
-
-                # set the current nzo status to "Ext Script...". Used in History
+                # Set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
                 nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
-                script_log, script_ret = external_processing(script_path, workdir_complete, nzo.filename,
-                                                             dirname, cat, nzo.group, job_result,
-                                                             nzo.nzo_info.get('failure', ''))
+                script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete),
+                                                             dirname, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
@@ -520,7 +520,6 @@ def process_job(nzo):
             else:
                 # No '(more)' button needed
                 nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line), unique=True)
-
 
         # Cleanup again, including NZB files
         if all_ok:
@@ -687,7 +686,7 @@ def parring(nzo, workdir):
                         par2_filename = nzf_path
 
                     # Rename so handle_par2() picks it up
-                    newpath = '%s.vol%d+%d.par2' % (par2_filename, par2_vol, par2_vol+1)
+                    newpath = '%s.vol%d+%d.par2' % (par2_filename, par2_vol, par2_vol + 1)
                     renamer(nzf_path, newpath)
                     nzf_try.filename = os.path.split(newpath)[1]
 
@@ -800,7 +799,7 @@ def try_rar_check(nzo, workdir, setname):
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
-            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n',' ')))
+            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n', ' ')))
             nzo.set_unpack_info('Repair', msg, set=setname)
             logging.info(msg)
             return False

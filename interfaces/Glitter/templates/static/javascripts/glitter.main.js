@@ -40,6 +40,8 @@ function ViewModel() {
     self.quotaLimit = ko.observable();
     self.quotaLimitLeft = ko.observable();
     self.systemLoad = ko.observable();
+    self.cacheSize = ko.observable();
+    self.cacheArticles = ko.observable();
     self.nrWarnings = ko.observable(0);
     self.allWarnings = ko.observableArray([]);
     self.allMessages = ko.observableArray([]);
@@ -48,7 +50,7 @@ function ViewModel() {
 
     // Statusinfo container
     self.hasStatusInfo = ko.observable(false);
-    self.hasDiskStatusInfo = ko.observable(false);
+    self.hasPerformanceInfo = ko.observable(false);
     self.statusInfo = {};
     self.statusInfo.folders = ko.observableArray([]);
     self.statusInfo.servers = ko.observableArray([]);
@@ -59,8 +61,6 @@ function ViewModel() {
     self.statusInfo.pystone = ko.observable();
     self.statusInfo.cpumodel = ko.observable();
     self.statusInfo.loglevel = ko.observable();
-    self.statusInfo.cache_size = ko.observable();
-    self.statusInfo.cache_art = ko.observable();
     self.statusInfo.downloaddir = ko.observable();
     self.statusInfo.downloaddirspeed = ko.observable();
     self.statusInfo.completedir = ko.observable();
@@ -182,6 +182,10 @@ function ViewModel() {
 
         // System load
         self.systemLoad(response.queue.loadavg)
+
+        // Cache
+        self.cacheSize(response.queue.cache_size)
+        self.cacheArticles(response.queue.cache_art)
 
         // Warnings (new warnings will trigger an update of allMessages)
         self.nrWarnings(response.queue.have_warnings)
@@ -749,8 +753,6 @@ function ViewModel() {
         callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {
             // Update basic
             self.statusInfo.loglevel(data.status.loglevel)
-            self.statusInfo.cache_art(data.status.cache_art)
-            self.statusInfo.cache_size(data.status.cache_size)
             self.statusInfo.folders(data.status.folders)
 
             // Update the full set
@@ -766,7 +768,7 @@ function ViewModel() {
                 self.statusInfo.publicipv4(data.status.publicipv4)
                 self.statusInfo.ipv6(data.status.ipv6 || glitterTranslate.noneText)
                 // Loaded disk info
-                self.hasDiskStatusInfo(true)
+                self.hasPerformanceInfo(true)
             }
 
             // Update the servers
@@ -816,7 +818,7 @@ function ViewModel() {
 
     // Do a disk-speedtest
     self.testDiskSpeed = function(item, event) {
-        self.hasDiskStatusInfo(false)
+        self.hasPerformanceInfo(false)
 
         // Run it and then display it
         callSpecialAPI('./status/dashrefresh/').then(function() {

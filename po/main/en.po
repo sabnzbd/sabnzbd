@@ -120,15 +120,6 @@ msgstr "Web interface"
 msgid "Script returned exit code %s and output \"%s\""
 msgstr "Notification script returned exit code %s and output \"%s\""
 
-#: sabnzbd/skintext.py:521
-msgid ""
-"Enhanced functionality including ratings and extra status information is "
-"available when connected to OZnzb indexer."
-msgstr ""
-"Indexers can supply information when a job is added <strong>or</strong> "
-"using the settings below to provide ratings and extra status information. "
-"<br>The Server address and API key settings can be left blank, depending on your indexer. "
-
 #: sabnzbd/skintext.py:333
 msgid "If empty, the standard port will only listen to HTTPS."
 msgstr "If empty, the SABnzbd Port set above will listen to HTTPS."

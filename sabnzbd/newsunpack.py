@@ -34,7 +34,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     flag_file, real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
-    has_win_device
+    has_win_device, calc_age
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
@@ -80,6 +80,7 @@ ZIP_COMMAND = None
 SEVEN_COMMAND = None
 IONICE_COMMAND = None
 RAR_PROBLEM = False
+PAR2_MT = True
 RAR_VERSION = 0
 
 
@@ -144,26 +145,43 @@ def find_programs(curdir):
         sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+        # Run check on rar version
         version, original = unrar_check(sabnzbd.newsunpack.RAR_COMMAND)
-        sabnzbd.newsunpack.RAR_PROBLEM = not original or version < 380
+        sabnzbd.newsunpack.RAR_PROBLEM = not original or version < sabnzbd.constants.REC_RAR_VERSION
         sabnzbd.newsunpack.RAR_VERSION = version
-        logging.debug('UNRAR binary version %.2f', (float(version) / 100))
-        if sabnzbd.newsunpack.RAR_PROBLEM:
-            logging.info('Problematic UNRAR')
 
-def external_processing(extern_proc, complete_dir, filename, nicename, cat, group, status, failure_url):
+        # Run check on par2-multicore
+        sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)
+
+
+ENV_NZO_FIELDS = ['bytes', 'bytes_downloaded', 'bytes_tried', 'cat', 'duplicate', 'encrypted',
+     'fail_msg', 'filename', 'final_name', 'group', 'nzo_id', 'oversized', 'password', 'pp',
+     'priority', 'repair', 'script', 'status', 'unpack', 'unwanted_ext', 'url']
+
+def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     """ Run a user postproc script, return console output and exit value """
-    command = [str(extern_proc), str(complete_dir), str(filename),
-               str(nicename), '', str(cat), str(group), str(status)]
+    command = [str(extern_proc), str(complete_dir), str(nzo.filename),
+               str(nicename), '', str(nzo.cat), str(nzo.group), str(status)]
 
+    failure_url = nzo.nzo_info.get('failure', '')
     if failure_url:
         command.append(str(failure_url))
 
+    # Fields not in the NZO directly
+    extra_env_fields = {'failure_url': failure_url,
+                        'complete_dir': complete_dir,
+                        'pp_status': status,
+                        'download_time': nzo.nzo_info.get('download_time', ''),
+                        'avg_bps': int(nzo.avg_bps_total / nzo.avg_bps_freq),
+                        'age': calc_age(nzo.avg_date),
+                        'version': sabnzbd.__version__}
+
     try:
         stup, need_shell, command, creationflags = build_command(command)
-        env = fix_env()
+        env = create_env(nzo, extra_env_fields)
+
         logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
-                     extern_proc, complete_dir, filename, nicename, '', cat, group, status, failure_url)
+                     extern_proc, complete_dir, nzo.filename, nicename, '', nzo.cat, nzo.group, status, failure_url)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
@@ -182,7 +200,7 @@ def external_script(script, p1, p2, p3=None, p4=None):
 
     try:
         stup, need_shell, command, creationflags = build_command(command)
-        env = fix_env()
+        env = create_env()
         logging.info('Running user script %s(%s, %s)', script, p1, p2)
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -636,6 +654,14 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             logging.warning(T('ERROR: CRC failed in "%s"'), setname)
             fail = 2  # Older unrar versions report a wrong password as a CRC error
 
+        elif line.startswith('File too large'):
+            nzo.fail_msg = T('Unpacking failed, file too large for filesystem (FAT?)')
+            msg = (u'[%s] ' + T('Unpacking failed, file too large for filesystem (FAT?)')) % setname
+            nzo.set_unpack_info('Unpack', unicoder(msg), set=setname)
+            # ERROR: File too large for file system (bigfile-5000MB)
+            logging.error(T('ERROR: File too large for filesystem (%s)'), setname)
+            fail = 1
+
         elif line.startswith('Write error'):
             nzo.fail_msg = T('Unpacking failed, write error or disk is full?')
             msg = (u'[%s] ' + T('Unpacking failed, write error or disk is full?')) % setname
@@ -819,7 +845,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
                          startupinfo=stup, creationflags=creationflags)
 
     output = p.stdout.read()
-    logging.debug('unzip output: %s', output)
+    logging.debug('unzip output: \n%s', output)
 
     ret = p.wait()
 
@@ -1319,18 +1345,29 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.status = Status.FAILED
 
             elif line.startswith('You need'):
+                # Because par2cmdline doesn't handle split files correctly
+                # if there are joinables, let's join them first and try again
+                # Only when in the par2-detection also only 1 output-file was mentioned
+                if joinables and len(datafiles) == 1:
+                    error, newf = file_join(nzo, parfolder, parfolder, True, joinables)
+                    # Only do it again if we had a good join
+                    if newf:
+                        retry_classic = True
+                        # Save the renames in case of retry
+                        for jn in joinables:
+                            renames[datafiles[0]] = os.path.split(jn)[1]
+                        joinables = []
+                        # Need to set it to 1 so the renames get saved
+                        finished = 1
+                        break
+
                 chunks = line.split()
-
                 needed_blocks = int(chunks[2])
-
+                avail_blocks = 0
                 logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-                avail_blocks = 0
-
                 extrapars = parfile_nzf.extrapars
-
                 block_table = {}
-
                 for nzf in extrapars:
                     # Don't count extrapars that are completed already
                     if nzf.completed:
@@ -1430,8 +1467,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                         reconstructed.append(os.path.join(workdir, old_name))
 
             elif 'Could not write' in line and 'at offset 0:' in line and not classic:
-                # Hit a bug in par2-tbb, retry with par2-classic
-                retry_classic = sabnzbd.WIN32
+                # If there are joinables, this error will only happen in case of 100% complete files
+                # We can just skip the retry, because par2cmdline will fail in those cases
+                # becauses it refuses to scan the ".001" file
+                if joinables:
+                    finished = 1
+                    used_joinables = []
+                else:
+                    # Hit a bug in par2-tbb, retry with par2-classic
+                    retry_classic = sabnzbd.WIN32
 
             elif ' cannot be renamed to ' in line:
                 if not classic and sabnzbd.WIN32:
@@ -1528,19 +1572,46 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         return finished, readd, pars, datafiles, used_joinables, used_par2
 
 
-def fix_env():
-    """ OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
+def create_env(nzo=None, extra_env_fields=None):
+    """ Modify the environment for pp-scripts with extra information
+        OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
         other: return None
     """
+    env = os.environ.copy()
+
+    # Are we adding things?
+    if nzo:
+        for field in ENV_NZO_FIELDS:
+            try:
+                field_value = getattr(nzo, field)
+                # Special filters for Python types
+                if field_value is None:
+                    env['SAB_' + field.upper()] = ''
+                elif isinstance(field_value, bool):
+                    env['SAB_' + field.upper()] = str(field_value*1)
+                else:
+                    env['SAB_' + field.upper()] = str(deunicode(field_value))
+            except:
+                # Catch key/unicode errors
+                pass
+
+        for field in extra_env_fields:
+            try:
+                env['SAB_' + field.upper()] = str(deunicode(extra_env_fields[field]))
+            except:
+                # Catch key/unicode errors
+                pass
+
     if sabnzbd.DARWIN:
-        env = os.environ.copy()
         if 'PYTHONPATH' in env:
             del env['PYTHONPATH']
         if 'PYTHONHOME' in env:
             del env['PYTHONHOME']
-        return env
-    else:
+    elif not nzo:
+        # No modification
         return None
+    return env
+
 
 def userxbit(filename):
     # Returns boolean if the x-bit for user is set on the given file
@@ -1715,15 +1786,23 @@ def QuickCheck(set, nzo):
     nzf_list = nzo.finished_files
     renames = {}
 
+    # Files to ignore
+    ignore_ext = cfg.quick_check_ext_ignore()
+
     for file in md5pack:
         found = False
         file_platform = platform_encode(file)
+        file_to_ignore = os.path.splitext(file_platform)[1].lower().replace('.', '') in ignore_ext
         for nzf in nzf_list:
             # Do a simple filename based check
             if file_platform == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
+                    result = True
+                elif file_to_ignore:
+                    # We don't care about these files
+                    logging.debug('Quick-check ignoring file %s', file)
                     result = True
                 else:
                     logging.info('Quick-check of file %s failed!', file)
@@ -1732,15 +1811,24 @@ def QuickCheck(set, nzo):
 
             # Now lets do obfuscation check
             if nzf.md5sum == md5pack[file]:
-                renames[file_platform] = nzf.filename
-                logging.debug('Quick-check renamed %s to %s', nzf.filename, file_platform)
-                renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file_platform))
-                nzf.filename = file_platform
-                result = True
-                found = True
-                break
+                try:
+                    logging.debug('Quick-check will rename %s to %s', nzf.filename, file_platform)
+                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file_platform))
+                    renames[file_platform] = nzf.filename
+                    nzf.filename = file_platform
+                    result = True
+                    found = True
+                    break
+                except IOError:
+                    # Renamed failed for some reason, probably already done
+                    break
 
         if not found:
+            if file_to_ignore:
+                # We don't care about these files
+                logging.debug('Quick-check ignoring missing file %s', file)
+                continue
+
             logging.info('Cannot Quick-check missing file %s!', file)
             return False  # Missing file is failure
 
@@ -1790,6 +1878,18 @@ def unrar_check(rar):
         else:
             version = 0
     return version, original
+
+
+def par2_mt_check(par2_path):
+    """ Detect if we have multicore par2 variants """
+    try:
+        par2_version = run_simple([par2_path, '-h'])
+        # Look for a threads option
+        if '-t<' in par2_version:
+            return True
+    except:
+        pass
+    return False
 
 
 def sfv_check(sfv_path):
@@ -1874,7 +1974,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
 
         try:
             stup, need_shell, command, creationflags = build_command(command)
-            env = fix_env()
+            env = create_env()
             logging.info('Running pre-queue script %s', command)
             p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,

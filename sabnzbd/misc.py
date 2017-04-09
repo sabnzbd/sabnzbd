@@ -330,12 +330,7 @@ def sanitize_foldername(name, limit=True):
         else:
             lst.append(ch)
     name = ''.join(lst)
-
     name = name.strip()
-    if name != '.' and name != '..':
-        name = name.rstrip('.')
-    if not name:
-        name = 'unknown'
 
     if sabnzbd.WIN32 or cfg.sanitize_safe():
         name = replace_win_devices(name)
@@ -344,6 +339,12 @@ def sanitize_foldername(name, limit=True):
     if limit and len(name) > maxlen:
         # Folders can't end on a dot in Windows
         name = name[:maxlen].strip('.')
+
+    # And finally, make sure it doesn't end in a dot
+    if name != '.' and name != '..':
+        name = name.rstrip('.')
+    if not name:
+        name = 'unknown'
 
     return name
 
@@ -781,7 +782,7 @@ def exit_sab(value):
     sys.stdout.flush()
     if getattr(sys, 'frozen', None) == 'macosx_app':
         sabnzbd.SABSTOP = True
-        from PyObjCTools import AppHelper  # @UnresolvedImport
+        from PyObjCTools import AppHelper
         AppHelper.stopEventLoop()
     sys.exit(value)
 
@@ -1428,15 +1429,6 @@ def is_writable(path):
         return True
 
 
-def format_source_url(url):
-    """ Format URL suitable for 'Source' stage """
-    if sabnzbd.HAVE_SSL:
-        prot = 'https'
-    else:
-        prot = 'http:'
-    return url
-
-
 def get_base_url(url):
     """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
         But also api.althub.co.za -> althub.co.za
@@ -1550,3 +1542,11 @@ def get_urlbase(url):
     """ Return the base URL (like http://server.domain.com/) """
     parsed_uri = urlparse(url)
     return '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
+
+
+def nntp_to_msg(text):
+    """ Format raw NNTP data for display """
+    if isinstance(text, list):
+        text = text[0]
+    lines = text.split('\r\n')
+    return lines[0]

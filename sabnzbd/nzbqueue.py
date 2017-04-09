@@ -431,7 +431,7 @@ class NzbQueue:
             if not (quiet or nzo.status in ('Fetching',)):
                 notifier.send_notification(T('NZB added to queue'), nzo.filename, 'download')
 
-        if cfg.auto_sort():
+        if not quiet and cfg.auto_sort():
             self.sort_by_avg_age()
         return nzo.nzo_id
 
@@ -440,7 +440,7 @@ class NzbQueue:
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
             nzo.deleted = True
-            if cleanup and nzo.status not in (Status.COMPLETED, Status.FAILED):
+            if cleanup and not nzo.is_gone():
                 nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
 
@@ -791,13 +791,13 @@ class NzbQueue:
                 # Check if past propagation delay, or forced
                 if not cfg.propagation_delay() or nzo.priority == TOP_PRIORITY or (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) < time.time():
                     # Don't try to get an article if server is in try_list of nzo and category allowed by server
-                    if nzo.server_allowed(server) and not nzo.server_in_try_list(server):
-                        article = nzo.get_article(server, servers)
-                        if article:
-                            return article
+                    if nzo.server_allowed(server):
+                        if not nzo.server_in_try_list(server):
+                            article = nzo.get_article(server, servers)
+                            if article:
+                                return article
                     # Stop after first job that wasn't paused/propagating/etc
-                    # But make sure not to get stuck behind bad category
-                    if self.__top_only and not nzo.server_allowed(server):
+                    if self.__top_only:
                         return
 
     @synchronized(NZBQUEUE_LOCK)
@@ -809,7 +809,7 @@ class NzbQueue:
             logging.debug("Discarding article %s, no longer in queue", article.article)
             return
 
-        file_done, post_done, reset = nzo.remove_article(article, found)
+        file_done, post_done = nzo.remove_article(article, found)
 
         filename = nzf.filename
 
@@ -900,7 +900,7 @@ class NzbQueue:
                     bytes_left_previous_page += b_left
 
             if (not search) or search in nzo.final_name_pw_clean.lower():
-                if (not limit) or (start <= n < start+limit):
+                if (not limit) or (start <= n < start + limit):
                     pnfo_list.append(nzo.gather_info())
                 n += 1
 

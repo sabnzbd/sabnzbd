@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configuration/1.2/switches"#-->
+<!--#set global $help_uri="configuration/2.0/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -20,9 +20,9 @@
                         </select>
                         <span class="desc">$T('explain-load_balancing')</span>
                     </div>
-                    <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                    <div class="field-pair">
                         <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
-                        <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$ssl_ciphers"<!--#if int($have_ssl) == 0 then "disabled=\"disabled\"" else ""#--> />
+                        <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$ssl_ciphers" />
                         <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
                         <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
                     </div>
@@ -58,7 +58,7 @@
                     <div class="field-pair">
                         <label class="config" for="pre_script">$T('opt-pre_script')</label>
                         <select name="pre_script" id="pre_script">
-                        <!--#for $sc in $script_list#-->
+                        <!--#for $sc in $scripts#-->
                             <!--#if $sc.lower() == $pre_script.lower()#-->
                                 <option value="$sc" selected="selected">$Tspec($sc)</option>
                             <!--#else#-->
@@ -159,11 +159,6 @@
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
-                    <div class="field-pair">
-                        <label class="config" for="quick_check">$T('opt-quick_check')</label>
-                        <input type="checkbox" name="quick_check" id="quick_check" value="1" <!--#if int($quick_check) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-quick_check')</span>
-                    </div>
                     <!--#if $have_multicore#-->
                     <div class="field-pair">
                         <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
@@ -195,11 +190,6 @@
                         <label class="config" for="flat_unpack">$T('opt-flat_unpack')</label>
                         <input type="checkbox" name="flat_unpack" id="flat_unpack" value="1" <!--#if int($flat_unpack) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-flat_unpack')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="overwrite_files">$T('opt-overwrite_files')</label>
-                        <input type="checkbox" name="overwrite_files" id="overwrite_files" value="1" <!--#if int($overwrite_files) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-overwrite_files')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="script_can_fail">$T('opt-script_can_fail')</label>
@@ -274,11 +264,6 @@
                     </div>
                     <!--#end if#-->
                     <div class="field-pair">
-                        <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
-                        <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_meta')</span>
-                    </div>
-                    <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                         <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
                     </div>
@@ -331,16 +316,7 @@
                     <div class="field-pair">
                         <label class="config" for="rating_enable">$T('opt-rating_enable')</label>
                         <input type="checkbox" name="rating_enable" id="rating_enable" value="1" <!--#if int($rating_enable) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-rating_enable')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="rating_feedback">$T('opt-rating_feedback')</label>
-                        <input type="checkbox" name="rating_feedback" id="rating_feedback" value="1" <!--#if int($rating_feedback) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-rating_feedback')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="rating_host">$T('opt-rating_host')</label>
-                        <input type="text" name="rating_host" id="rating_host" value="$rating_host" />
+                        <span class="desc">$T('explain-rating_enable').replace('. ', '.<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="rating_api_key">$T('opt-rating_api_key')</label>

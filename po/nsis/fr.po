@@ -7,57 +7,66 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2015-04-25 09:51+0000\n"
-"PO-Revision-Date: 2015-12-07 07:47+0000\n"
+"POT-Creation-Date: 2017-03-18 21:42+0000\n"
+"PO-Revision-Date: 2017-03-21 08:58+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2015-12-08 05:47+0000\n"
-"X-Generator: Launchpad (build 17862)\n"
+"X-Launchpad-Export-Date: 2017-03-22 06:58+0000\n"
+"X-Generator: Launchpad (build 18334)\n"
 
-#: NSIS_Installer.nsi:416
-msgid "Go to the SABnzbd Wiki"
-msgstr "Aller sur le Wiki de SABnzbd"
-
-#: NSIS_Installer.nsi:418
+#: NSIS_Installer.nsi:473
 msgid "Show Release Notes"
 msgstr "Afficher les notes de version"
 
-#: NSIS_Installer.nsi:420
+#: NSIS_Installer.nsi:475
+msgid "Start SABnzbd"
+msgstr "Démarrer SABnzbd"
+
+#: NSIS_Installer.nsi:477
 msgid "Support the project, Donate!"
 msgstr "Soutenez le projet, faites un don !"
 
-#: NSIS_Installer.nsi:422
+#: NSIS_Installer.nsi:479
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Merci de fermer \"SABnzbd.exe\" avant l'installation"
 
-#: NSIS_Installer.nsi:424
+#: NSIS_Installer.nsi:481
+msgid ""
+"The installation directory has changed (now in \"Program Files\"). \\nIf you "
+"run SABnzbd as a service, you need to update the service settings."
+msgstr ""
+"Le répertoire d'installation a changé (maintenant dans \"Program Files\"). \\"
+"nSi vous exécutez SABnzbd en tant que service, vous devez mettre à jour les "
+"paramètres du service."
+
+#: NSIS_Installer.nsi:483
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Ceci désinstallera SABnzbd de votre système"
 
-#: NSIS_Installer.nsi:426
+#: NSIS_Installer.nsi:485
 msgid "Run at startup"
 msgstr "Lancer au démarrage"
 
-#: NSIS_Installer.nsi:428
+#: NSIS_Installer.nsi:487
 msgid "Desktop Icon"
 msgstr "Icône sur le Bureau"
 
-#: NSIS_Installer.nsi:430
+#: NSIS_Installer.nsi:489
 msgid "NZB File association"
 msgstr "Association des fichiers NZB"
 
-#: NSIS_Installer.nsi:432
+#: NSIS_Installer.nsi:491
 msgid "Delete Program"
 msgstr "Supprimer le programme"
 
-#: NSIS_Installer.nsi:434
+#: NSIS_Installer.nsi:493
 msgid "Delete Settings"
 msgstr "Supprimer les paramètres"
 
-#: NSIS_Installer.nsi:436
+#: NSIS_Installer.nsi:495
 msgid ""
 "This system requires the Microsoft runtime library VC90 to be installed "
 "first. Do you want to do that now?"
@@ -65,19 +74,19 @@ msgstr ""
 "Ce système nécessite que la bibliothèque d'exécution Microsoft vc90 soit "
 "installée en premier. Voulez-vous le faire maintenant?"
 
-#: NSIS_Installer.nsi:438
+#: NSIS_Installer.nsi:497
 msgid "Downloading Microsoft runtime installer..."
 msgstr "Téléchargement de Microsoft runtime installer..."
 
-#: NSIS_Installer.nsi:440
+#: NSIS_Installer.nsi:499
 msgid "Download error, retry?"
 msgstr "Erreur de téléchargement, réessayer ?"
 
-#: NSIS_Installer.nsi:442
+#: NSIS_Installer.nsi:501
 msgid "Cannot install without runtime library, retry?"
 msgstr "Impossible d'installer sans moteur d'exécution, réessayer?"
 
-#: NSIS_Installer.nsi:444
+#: NSIS_Installer.nsi:503
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
@@ -86,7 +95,7 @@ msgstr ""
 "pour supprimer la version précédente ou `Annuler` pour annuler cette mise à "
 "niveau."
 
-#: NSIS_Installer.nsi:446
+#: NSIS_Installer.nsi:505
 msgid "Your settings and data will be preserved."
 msgstr "Vos paramètres et données seront conservés."
 
@@ -97,3 +106,6 @@ msgstr "Vos paramètres et données seront conservés."
 #~ "                  >>>> AVERTISSEMENT <<<<\\r\\n\\r\\nS'il vous plaît, "
 #~ "vérifiez d'abord les notes de version ou consultez "
 #~ "http://wiki.sabnzbd.org/introducing-0-7-0 !"
+
+#~ msgid "Go to the SABnzbd Wiki"
+#~ msgstr "Aller sur le Wiki de SABnzbd"

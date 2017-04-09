@@ -76,9 +76,9 @@ def is_archive(path):
             return -1, None, ''
     elif rarfile.is_rarfile(path):
         try:
-            zf = rarfile.RarFile(path)
             # Set path to tool to open it
             rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
+            zf = rarfile.RarFile(path)
             return 0, zf, '.rar'
         except:
             return -1, None, ''

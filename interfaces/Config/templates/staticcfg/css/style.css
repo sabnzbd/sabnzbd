@@ -865,9 +865,15 @@ input[type="checkbox"] {
     max-width: 150px !important;
 }
 
-.Scheduling input[type="checkbox"] {
+.Scheduling form[action="addSchedule"] input[type="checkbox"] {
     margin-top: 0px;
     margin-left: -20px;
+}
+
+.Scheduling form[action="delSchedule"] input[type="checkbox"] {
+    position: initial;
+    float: left;
+    margin: 9px 10px 0px 5px;
 }
 
 .navbar .container {

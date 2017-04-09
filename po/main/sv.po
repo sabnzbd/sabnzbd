@@ -7,120 +7,192 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-02-17 21:34+0000\n"
+"POT-Creation-Date: 2017-04-02 15:51+0000\n"
 "PO-Revision-Date: 2016-02-20 20:34+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-02-18 05:51+0000\n"
-"X-Generator: Launchpad (build 18326)\n"
+"X-Launchpad-Export-Date: 2017-04-05 07:19+0000\n"
+"X-Generator: Launchpad (build 18335)\n"
 
-#: SABnzbd.py:275 [Error message]
+#: SABnzbd.py:257 [Error message]
 msgid "Failed to start web-interface"
 msgstr "Det gick inte att starta webbgränssnittet"
 
-#: SABnzbd.py:311 [Warning message]
+#: SABnzbd.py:290 [Warning message]
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Hittar inte webbmall: %s, försöker med standardmall"
 
-#: SABnzbd.py:434 [Warning message]
+#: SABnzbd.py:416 [Error message]
 msgid "_yenc module... NOT found!"
 msgstr "_yenc modul... EJ funnen!"
 
-#: SABnzbd.py:444 [Error message]
+#: SABnzbd.py:426 [Error message]
 msgid "par2 binary... NOT found!"
 msgstr "par2 binär... EJ funnen!"
 
-#: SABnzbd.py:453 [Warning message]
+#: SABnzbd.py:438 [Warning message]
+msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
+msgstr ""
+"Din UNRAR version är %s, vi rekommenderar version %s eller högre.<br />"
+
+#: SABnzbd.py:442 [Error message]
 msgid "unrar binary... NOT found"
 msgstr "unrar binär... EJ funnen!"
 
-#: SABnzbd.py:458
+#: SABnzbd.py:447
 msgid "unzip binary... NOT found!"
 msgstr "unzip binär... EJ funnen!"
 
-#: SABnzbd.py:463
+#: SABnzbd.py:452
 msgid "7za binary... NOT found!"
 msgstr "7za binär... EJ funnen!"
 
-#: SABnzbd.py:613 [Warning message]
+#: SABnzbd.py:602 [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
 "access"
 msgstr ""
 "Tänk på att värdnamnet 0.0.0.0 behöver en IPv6-adress för extern åtkomst"
 
-#: SABnzbd.py:643 [Error message]
+#: SABnzbd.py:632 [Error message]
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP och HTTPS portar kan inte vara likadana"
 
-#: SABnzbd.py:1336 [Warning message]
+#: SABnzbd.py:1190 [Warning message]
+msgid ""
+"SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
+"with Unicoded file and directory names in downloads."
+msgstr ""
+
+#: SABnzbd.py:1284 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "Avaktiverade HTTPS då CERT och KEY -filer saknas"
 
-#: SABnzbd.py:1442 [Warning message]
+#: SABnzbd.py:1383 [Warning message]
 msgid "Could not bind to configured port. Port changed to %s"
 msgstr ""
 
-#: SABnzbd.py:1451 [Error message]
+#: SABnzbd.py:1392 [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Misslyckades att starta webbgränsnitt: "
 
-#: SABnzbd.py:1472 [Error message]
+#: SABnzbd.py:1413 [Error message]
 msgid "Cannot reach the SABHelper service"
 msgstr "Kan inte nå SABHelper tjänsten"
 
-#: SABnzbd.py:1508
+#: SABnzbd.py:1449
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s startad"
 
-#: SABnzbd.py:1519 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
+#: SABnzbd.py:1460 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
 msgid "Warning"
 msgstr "Varning"
 
-#: SABnzbd.py:1523 # sabnzbd/notifier.py:72 [Notification]
+#: SABnzbd.py:1464 # sabnzbd/notifier.py:72 [Notification]
 msgid "Error"
 msgstr "Fel"
 
-#: SABnzbd.py:1622 # sabnzbd/osxmenu.py:771
+#: SABnzbd.py:1563 # sabnzbd/interface.py:438 # sabnzbd/interface.py:904
+#: sabnzbd/osxmenu.py:772
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd nedstängning utförd."
 
-#: sabnzbd/__init__.py:193 [Warning message]
+#: sabnzbd/utils/servertests.py:36
+msgid "The hostname is not set."
+msgstr "Adressen är inte angiven."
+
+#: sabnzbd/utils/servertests.py:42
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Inga anslutningar är aktiverade. Var vänlig aktivera minst en anslutning."
+
+#: sabnzbd/utils/servertests.py:75
+msgid "Password masked in ******, please re-enter"
+msgstr "Lösenordet är dolt med ******, försök igen"
+
+#: sabnzbd/utils/servertests.py:79
+msgid "Invalid server details"
+msgstr "Ogiltiga serverdetaljer"
+
+#: sabnzbd/utils/servertests.py:95
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Timeout: Försök aktivera SSL eller anslut via en annan port."
+
+#: sabnzbd/utils/servertests.py:97
+msgid "Timed out"
+msgstr "Timeout"
+
+#: sabnzbd/utils/servertests.py:102
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py:107
+msgid "Invalid server address."
+msgstr "Ogiltig serveradress"
+
+#: sabnzbd/utils/servertests.py:111
+msgid "Server quit during login sequence."
+msgstr "Servern avslutades under inloggning"
+
+#: sabnzbd/utils/servertests.py:125
+msgid "Server requires username and password."
+msgstr "Servern kräver användarnamn och lösenord."
+
+#: sabnzbd/utils/servertests.py:128
+msgid "Connection Successful!"
+msgstr "Anslutning lyckades!"
+
+#: sabnzbd/utils/servertests.py:131 # sabnzbd/interface.py:573
+#: sabnzbd/newswrapper.py:327
+msgid "Authentication failed, check username/password."
+msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
+
+#: sabnzbd/utils/servertests.py:134
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"För många anslutningar, pausa en nedladdning eller försök igen senare"
+
+#: sabnzbd/utils/servertests.py:137
+msgid "Could not determine connection result (%s)"
+msgstr "Det gick inte att ansluta (%s)"
+
+#: sabnzbd/__init__.py:190 [Warning message]
 msgid "Signal %s caught, saving and exiting..."
 msgstr "Signal %s mottagen, sparar och stänger..."
 
-#: sabnzbd/__init__.py:443 [Error message]
+#: sabnzbd/__init__.py:441 [Error message]
 msgid "Fatal error at saving state"
 msgstr "Kritiskt fel vid sparande av läge"
 
-#: sabnzbd/__init__.py:552
+#: sabnzbd/__init__.py:555
 msgid "Trying to fetch NZB from %s"
 msgstr "Försöker att hämta NZB från %s"
 
-#: sabnzbd/__init__.py:624 [Error message] # sabnzbd/__init__.py:916 [Error message] # sabnzbd/__init__.py:985 [Error message]
+#: sabnzbd/__init__.py:627 [Error message] # sabnzbd/__init__.py:916 [Error message] # sabnzbd/__init__.py:984 [Error message]
 msgid "Saving %s failed"
 msgstr "Sparar %s misslyckades"
 
-#: sabnzbd/__init__.py:692 [Error message]
+#: sabnzbd/__init__.py:695 [Error message]
 msgid "Cannot create temp file for %s"
 msgstr "Kan inte skapa temp -fil för %s"
 
-#: sabnzbd/__init__.py:711 [Warning message] # sabnzbd/__init__.py:722 [Warning message]
+#: sabnzbd/__init__.py:714 [Warning message] # sabnzbd/__init__.py:725 [Warning message]
 msgid "Trying to set status of non-existing server %s"
 msgstr "Försöker att sätta status på icke existerande server %s"
 
-#: sabnzbd/__init__.py:861 [Warning message]
+#: sabnzbd/__init__.py:864 [Warning message]
 msgid "Too little diskspace forcing PAUSE"
 msgstr "För lite diskutrymme pausar systemet"
 
-#: sabnzbd/__init__.py:886 [Error message]
+#: sabnzbd/__init__.py:889 [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Fel i tempfile.mkstemp"
 
-#: sabnzbd/__init__.py:946 [Error message]
+#: sabnzbd/__init__.py:948 [Error message]
 msgid "Loading %s failed"
 msgstr "Laddning av %s misslyckades"
 
@@ -128,125 +200,134 @@ msgstr "Laddning av %s misslyckades"
 msgid "Loading %s failed with error %s"
 msgstr "Laddning av %s misslyckades med fel %s"
 
-#: sabnzbd/api.py:758 # sabnzbd/api.py:764 # sabnzbd/api.py:771 # sabnzbd/api.py:778
-#: sabnzbd/api.py:785 # sabnzbd/api.py:792 # sabnzbd/api.py:799 # sabnzbd/api.py:805
-#: sabnzbd/skintext.py:646
+#: sabnzbd/api.py:760 # sabnzbd/api.py:767 # sabnzbd/api.py:774 # sabnzbd/api.py:781
+#: sabnzbd/api.py:788 # sabnzbd/api.py:795 # sabnzbd/api.py:802 # sabnzbd/api.py:809
+#: sabnzbd/skintext.py:636
 msgid "Test Notification"
 msgstr "Testa notifikation"
 
-#: sabnzbd/api.py:1285
+#: sabnzbd/api.py:1271
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Lösa adress"
 
-#: sabnzbd/api.py:1307 # sabnzbd/api.py:1728 # sabnzbd/interface.py:2770
-#: sabnzbd/skintext.py:801
+#: sabnzbd/api.py:1293 # sabnzbd/api.py:1648 # sabnzbd/interface.py:2706
+#: sabnzbd/skintext.py:791
 msgid "ERROR:"
 msgstr "FEL:"
 
-#: sabnzbd/api.py:1307 # sabnzbd/skintext.py:793
+#: sabnzbd/api.py:1293 # sabnzbd/skintext.py:783
 msgid "WARNING:"
 msgstr "VARNING:"
 
-#: sabnzbd/api.py:1658 # sabnzbd/skintext.py:91 [No value, used in dropdown menus] # sabnzbd/skintext.py:759 [Job details page, select no files]
+#: sabnzbd/api.py:1588 # sabnzbd/skintext.py:91 [No value, used in dropdown menus] # sabnzbd/skintext.py:749 [Job details page, select no files]
 msgid "None"
 msgstr "Ingen"
 
-#: sabnzbd/api.py:1660 # sabnzbd/interface.py:115 # sabnzbd/skintext.py:90 [Default value, used in dropdown menus]
-#: sabnzbd/skintext.py:558
+#: sabnzbd/api.py:1590 # sabnzbd/interface.py:117 # sabnzbd/skintext.py:90 [Default value, used in dropdown menus]
+#: sabnzbd/skintext.py:548
 msgid "Default"
 msgstr "Standard"
 
-#: sabnzbd/api.py:1799
+#: sabnzbd/api.py:1730
 msgid "unknown"
 msgstr "okänd"
 
-#: sabnzbd/api.py:1827 [Error message]
+#: sabnzbd/api.py:1758 [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Det gick inte att kompilera regex för sök-sträng: %s"
 
-#: sabnzbd/assembler.py:98 [Error message]
+#: sabnzbd/assembler.py:92 [Error message]
 msgid "Disk full! Forcing Pause"
 msgstr "Disken är full! Pausar..."
 
-#: sabnzbd/assembler.py:100 [Error message]
+#: sabnzbd/assembler.py:94 [Error message]
 msgid "Disk error on creating file %s"
 msgstr "Diskfel vid skapande av fil %s"
 
-#: sabnzbd/assembler.py:104 [Error message]
+#: sabnzbd/assembler.py:98 [Error message]
 msgid "Fatal error in Assembler"
 msgstr "Kritiskt  fel i Assembler"
 
-#: sabnzbd/assembler.py:118 [Warning message]
+#: sabnzbd/assembler.py:112 [Warning message]
 msgid ""
 "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 
-#: sabnzbd/assembler.py:121 [Warning message]
+#: sabnzbd/assembler.py:115 [Warning message]
 msgid ""
 "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 
-#: sabnzbd/assembler.py:122
+#: sabnzbd/assembler.py:116
 msgid "Aborted, encryption detected"
 msgstr "Avbruten, kryptering detekterad."
 
-#: sabnzbd/assembler.py:126 [Warning message]
+#: sabnzbd/assembler.py:120 [Warning message]
 msgid ""
 "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
 "Varning: I \"%s\" otillåten filändelse i RAR-filen. Otillåtna filen är %s "
 
-#: sabnzbd/assembler.py:127
+#: sabnzbd/assembler.py:121
 msgid "Unwanted extension is in rar file %s"
 msgstr "Oönskad filändelse i RAR-fil %s"
 
-#: sabnzbd/assembler.py:134
+#: sabnzbd/assembler.py:128
 msgid "Aborted, unwanted extension detected"
 msgstr "Avbruten, oönskad filändelse detekterad"
 
-#: sabnzbd/assembler.py:139 [Warning message]
+#: sabnzbd/assembler.py:133 [Warning message]
 msgid "WARNING: Paused job \"%s\" because of rating (%s)"
 msgstr "VARNING: Pausat jobb \"%s\" pga betyg (%s)"
 
-#: sabnzbd/assembler.py:142 [Warning message]
+#: sabnzbd/assembler.py:136 [Warning message]
 msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
 msgstr "VARNING: Avbrutet jobb \"%s\" pga betyg (%s)"
 
-#: sabnzbd/assembler.py:143
+#: sabnzbd/assembler.py:137
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Avbrutet, betyget matchade (%s)"
 
-#: sabnzbd/assembler.py:181 # sabnzbd/assembler.py:338 # sabnzbd/misc.py:1247 [Error message]
+#: sabnzbd/assembler.py:175 # sabnzbd/assembler.py:336 # sabnzbd/misc.py:1227 [Error message]
 msgid "%s missing"
 msgstr "%s saknas"
 
-#: sabnzbd/assembler.py:428
+#: sabnzbd/assembler.py:296 [Warning message]
+msgid ""
+"Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
+msgstr ""
+
+#: sabnzbd/assembler.py:302 [Warning message]
+msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
+msgstr ""
+
+#: sabnzbd/assembler.py:425
 msgid "video"
 msgstr "video"
 
-#: sabnzbd/assembler.py:430
+#: sabnzbd/assembler.py:427
 msgid "audio"
 msgstr "ljud"
 
-#: sabnzbd/assembler.py:432
+#: sabnzbd/assembler.py:429
 msgid "spam"
 msgstr "spam"
 
-#: sabnzbd/assembler.py:434
+#: sabnzbd/assembler.py:431
 msgid "passworded"
 msgstr "lösenordskyddad"
 
-#: sabnzbd/assembler.py:436
+#: sabnzbd/assembler.py:433
 msgid "downvoted"
 msgstr "nedröstad"
 
-#: sabnzbd/assembler.py:438
+#: sabnzbd/assembler.py:435
 msgid "keywords"
 msgstr "nyckelord"
 
-#: sabnzbd/bpsmeter.py:249 [Warning message]
+#: sabnzbd/bpsmeter.py:248 [Warning message]
 msgid "Quota spent, pausing downloading"
 msgstr "Din kvot är uppnådd, pausar nerladdning"
 
@@ -254,96 +335,92 @@ msgstr "Din kvot är uppnådd, pausar nerladdning"
 msgid "%s is not a valid email address"
 msgstr "%s är inte en godkänd e-mail adress"
 
-#: sabnzbd/cfg.py:53 # sabnzbd/interface.py:1868
+#: sabnzbd/cfg.py:53 # sabnzbd/interface.py:1789
 msgid "Server address required"
 msgstr "Kräver serveradress"
 
-#: sabnzbd/config.py:236
+#: sabnzbd/config.py:237
 msgid "Cannot create %s folder %s"
 msgstr "Kan inte skapa %s mapp %s"
 
-#: sabnzbd/config.py:829 [Error message] # sabnzbd/config.py:849 [Error message]
+#: sabnzbd/config.py:840 [Error message] # sabnzbd/config.py:860 [Error message]
 msgid "Cannot write to INI file %s"
 msgstr "Kan inte skriva till INI filen %s"
 
-#: sabnzbd/config.py:838 [Error message]
+#: sabnzbd/config.py:849 [Error message]
 msgid "Cannot create backup file for %s"
 msgstr "Kan inte skapa backup-fil för %s"
 
-#: sabnzbd/config.py:1009 [Error message]
+#: sabnzbd/config.py:1020 [Error message]
 msgid "Incorrectly encoded password %s"
 msgstr "Felaktigt kodat lösenord %s"
 
-#: sabnzbd/config.py:1033
+#: sabnzbd/config.py:1044
 msgid "%s is not a correct octal value"
 msgstr "%s är inte rätt siffervärde"
 
-#: sabnzbd/config.py:1042
+#: sabnzbd/config.py:1053
 msgid "UNC path \"%s\" not allowed here"
 msgstr "UNC sökväg \"%s\" är inte tillåten här"
 
-#: sabnzbd/config.py:1050
+#: sabnzbd/config.py:1061
 msgid "Error: Path length should be below %s."
 msgstr "Fel: Sökvägen skall vara under %s."
 
-#: sabnzbd/config.py:1054
+#: sabnzbd/config.py:1065
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Fel: Kön är inte tom, kan inte byta mapp."
 
-#: sabnzbd/config.py:1063
+#: sabnzbd/config.py:1074
 msgid "Folder \"%s\" does not exist"
 msgstr "Mappen \"%s\" finns inte"
 
-#: sabnzbd/database.py:133 [Error message]
+#: sabnzbd/database.py:140 [Error message]
 msgid "Cannot write to History database, check access rights!"
 msgstr ""
 "Kan inte skriva till historikdatabasen, kontrollera åtkomsträttigheter!"
 
-#: sabnzbd/database.py:137 [Error message]
+#: sabnzbd/database.py:144 [Error message]
 msgid "Damaged History database, created empty replacement"
 msgstr "Skadad hitsotrikdatabas, skapade en tom ersättare"
 
-#: sabnzbd/database.py:149 [Error message]
+#: sabnzbd/database.py:156 [Error message]
 msgid "SQL Command Failed, see log"
 msgstr "SQL Kommando misslyckades, se logg"
 
-#: sabnzbd/database.py:197 [Error message]
+#: sabnzbd/database.py:205 [Error message]
 msgid "SQL Commit Failed, see log"
 msgstr "SQL Commit misslyckades, se logg"
 
-#: sabnzbd/database.py:206 [Error message]
+#: sabnzbd/database.py:214 [Error message]
 msgid "Failed to close database, see log"
 msgstr "Det gick inte att stänga databasen, se logg"
 
-#: sabnzbd/database.py:488 [Error message] # sabnzbd/database.py:505 [Error message]
+#: sabnzbd/database.py:502 [Error message] # sabnzbd/database.py:519 [Error message]
 msgid "Invalid stage logging in history for %s"
 msgstr "Felaktig loggning i historiken av %s"
 
-#: sabnzbd/decoder.py:115
+#: sabnzbd/decoder.py:118
 msgid "Decoding %s failed"
 msgstr "Avkodning av %s misslyckades"
 
-#: sabnzbd/decoder.py:125
+#: sabnzbd/decoder.py:128
 msgid "Decoder failure: Out of memory"
 msgstr ""
 
-#: sabnzbd/decoder.py:137
+#: sabnzbd/decoder.py:140
 msgid "CRC Error in %s (%s -> %s)"
 msgstr "CRC Fel i %s (%s -> %s)"
 
-#: sabnzbd/decoder.py:168
+#: sabnzbd/decoder.py:172
 msgid "Badly formed yEnc article in %s"
 msgstr "Felaktigt utformad yEnc artikel i %s"
 
-#: sabnzbd/decoder.py:178
+#: sabnzbd/decoder.py:182
 msgid "Unknown Error while decoding %s"
 msgstr "Okänt fel under avkodning av %s"
 
-#: sabnzbd/decoder.py:245
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => saknas från alla servrar, kastar"
-
-#: sabnzbd/decoder.py:274
+#: sabnzbd/decoder.py:250
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
@@ -359,58 +436,62 @@ msgstr "Kan ej läsa %s"
 msgid "Cannot read Watched Folder %s"
 msgstr "Kan ej läsa övervakad mapp %s"
 
-#: sabnzbd/downloader.py:256
+#: sabnzbd/downloader.py:265
 msgid "Resuming"
 msgstr "Fortsätter"
 
-#: sabnzbd/downloader.py:266 # sabnzbd/osxmenu.py:457 # sabnzbd/sabtray.py:87
+#: sabnzbd/downloader.py:275 # sabnzbd/osxmenu.py:457 # sabnzbd/sabtray.py:87
 #: sabnzbd/sabtraylinux.py:85 # sabnzbd/skintext.py:38 [PP status] # sabnzbd/skintext.py:202 [Priority pick list]
-#: sabnzbd/skintext.py:942
+#: sabnzbd/skintext.py:932
 msgid "Paused"
 msgstr "Pausad"
 
-#: sabnzbd/downloader.py:311 [Warning message] # sabnzbd/interface.py:1711 [Warning message] # sabnzbd/skintext.py:775
+#: sabnzbd/downloader.py:320 [Warning message] # sabnzbd/interface.py:1635 [Warning message] # sabnzbd/skintext.py:765
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "Du måste ange maximal bandbredd innan du kan ange bandbreddsgräns"
 
-#: sabnzbd/downloader.py:367 # sabnzbd/downloader.py:368 [Warning message]
+#: sabnzbd/downloader.py:376 # sabnzbd/downloader.py:377 [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s kommer att ignoreras i %s minuter"
 
-#: sabnzbd/downloader.py:477 [Error message]
+#: sabnzbd/downloader.py:494 [Error message]
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Misslyckades att initiera %s@%s med orsak %s"
 
-#: sabnzbd/downloader.py:620 # sabnzbd/downloader.py:623 [Warning message]
+#: sabnzbd/downloader.py:638 # sabnzbd/downloader.py:641 [Warning message]
 msgid "Too many connections to server %s"
 msgstr "För många anslutningar till servern %s"
 
-#: sabnzbd/downloader.py:630 # sabnzbd/downloader.py:634 [Warning message]
+#: sabnzbd/downloader.py:648 # sabnzbd/downloader.py:652 [Warning message]
 msgid "Probable account sharing"
 msgstr "Misstänkt kontodelning"
 
-#: sabnzbd/downloader.py:639 # sabnzbd/downloader.py:642 [Error message]
+#: sabnzbd/downloader.py:657 # sabnzbd/downloader.py:660 [Error message]
 msgid "Failed login for server %s"
 msgstr "Det gick inte att logga in på server %s"
 
-#: sabnzbd/downloader.py:648 # sabnzbd/downloader.py:651 [Warning message]
 #: sabnzbd/downloader.py:666 # sabnzbd/downloader.py:669 [Warning message]
+#: sabnzbd/downloader.py:684 # sabnzbd/downloader.py:687 [Warning message]
 msgid "Cannot connect to server %s [%s]"
 msgstr "Kan ej ansluta till server %s [%s]"
 
-#: sabnzbd/downloader.py:680 [Error message]
+#: sabnzbd/downloader.py:698 [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Anslutning %s@%s misslyckades, meddelande=%s"
 
-#: sabnzbd/downloader.py:715 # sabnzbd/downloader.py:718
+#: sabnzbd/downloader.py:730 # sabnzbd/downloader.py:733
 msgid "Server %s requires user/password"
 msgstr "Server %s kräver användarnamn/lösenord"
 
-#: sabnzbd/downloader.py:826 [Error message]
+#: sabnzbd/downloader.py:843 [Error message]
 msgid "Suspect error in downloader"
 msgstr "Misstänker fel i nedladdare"
 
-#: sabnzbd/downloader.py:911 # sabnzbd/skintext.py:862
+#: sabnzbd/downloader.py:859
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => saknas från alla servrar, kastar"
+
+#: sabnzbd/downloader.py:945 # sabnzbd/skintext.py:852
 msgid "Shutting down"
 msgstr "Påbörjar nedstängning av SABnzbd.."
 
@@ -491,35 +572,35 @@ msgstr ""
 "Frigör utrymme och återuppta nerladdningen manuellt.\n"
 "\n"
 
-#: sabnzbd/interface.py:88
+#: sabnzbd/interface.py:90
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr "Varning: LOCALHOST är tvetydigt, använda numerisk IP-adress ."
 
-#: sabnzbd/interface.py:93
+#: sabnzbd/interface.py:95
 msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradressen \"%s:%s\" är ej giltig."
 
-#: sabnzbd/interface.py:195
+#: sabnzbd/interface.py:200
 msgid "User logged in to the web interface"
 msgstr ""
 
-#: sabnzbd/interface.py:195 # sabnzbd/notifier.py:75 [Notification]
+#: sabnzbd/interface.py:200 # sabnzbd/notifier.py:75 [Notification]
 msgid "User logged in"
 msgstr ""
 
-#: sabnzbd/interface.py:239 [Warning message]
+#: sabnzbd/interface.py:247 [Warning message]
 msgid "Missing Session key"
 msgstr "Saknar sessionsnyckel"
 
-#: sabnzbd/interface.py:240
+#: sabnzbd/interface.py:248
 msgid "Error: Session Key Required"
 msgstr "Fel: Kräver sessionsnyckel"
 
-#: sabnzbd/interface.py:242 [Warning message] # sabnzbd/interface.py:243
+#: sabnzbd/interface.py:250 [Warning message] # sabnzbd/interface.py:251
 msgid "Error: Session Key Incorrect"
 msgstr "Fel: Fel sessionsnyckel"
 
-#: sabnzbd/interface.py:281
+#: sabnzbd/interface.py:284
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -527,7 +608,7 @@ msgstr ""
 "API-nyckel saknas, skriv in api-nyckeln från Konfiguration-> Allmänt i ditt "
 "tredjepartsprogram:"
 
-#: sabnzbd/interface.py:288
+#: sabnzbd/interface.py:291
 msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
@@ -535,7 +616,7 @@ msgstr ""
 "API-nyckel felaktig, använd api-nyckeln från Konfiguration-> Allmänt i ditt "
 "tredjepartsprogram:"
 
-#: sabnzbd/interface.py:297
+#: sabnzbd/interface.py:300
 msgid ""
 "Authentication missing, please enter username/password from Config->General "
 "into your 3rd party program:"
@@ -543,11 +624,7 @@ msgstr ""
 "Autentisering saknas, ange användarnamn / lösenord från Konfiguration-> "
 "Allmänt i ditt tredjepartsprogram:"
 
-#: sabnzbd/interface.py:309
-msgid "Error: No secondary interface defined."
-msgstr "Fel: Inget andrainterface definierat."
-
-#: sabnzbd/interface.py:349 [Warning message]
+#: sabnzbd/interface.py:334 [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -556,33 +633,15 @@ msgstr ""
 "stationära och mobila enheter. Gå till Inställningar -> Allmänt för att byta "
 "tema."
 
-#: sabnzbd/interface.py:377
-msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
+#: sabnzbd/interface.py:575 [Warning message]
+msgid "Unsuccessful login attempt from %s"
 msgstr ""
-"Din UNRAR version är %s, vi rekommenderar version %s eller högre.<br />"
 
-#: sabnzbd/interface.py:380
-msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
-msgstr "Inget UNRAR program funnet, uppackning ej möjlig<br />"
-
-#: sabnzbd/interface.py:382
-msgid "No PAR2 program found, repairs not possible<br />"
-msgstr "Inget PAR2 program funnet, reparation ej möjlig<br />"
-
-#: sabnzbd/interface.py:613 # sabnzbd/newswrapper.py:340
-#: sabnzbd/utils/servertests.py:138
-msgid "Authentication failed, check username/password."
-msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
-
-#: sabnzbd/interface.py:1066 # sabnzbd/skintext.py:94 [Bytes (used as postfix, as in "GB", "TB")]
+#: sabnzbd/interface.py:1021 # sabnzbd/skintext.py:94 [Bytes (used as postfix, as in "GB", "TB")]
 msgid "B"
 msgstr "B"
 
-#: sabnzbd/interface.py:1296 # sabnzbd/interface.py:1307
-msgid "Initiating restart...<br />"
-msgstr "Förbereder omstart...<br />"
-
-#: sabnzbd/interface.py:1297 # sabnzbd/interface.py:1308
+#: sabnzbd/interface.py:1249 # sabnzbd/interface.py:1261
 msgid ""
 "&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
 "click the button below.<br /><br /><strong><a "
@@ -592,63 +651,63 @@ msgstr ""
 "klicka sedan på knappen under..<br /><br /><strong><a href=\"..\">Ladda "
 "om</a></strong><br />"
 
-#: sabnzbd/interface.py:2004 # sabnzbd/skintext.py:592 [Config->RSS, tab header]
+#: sabnzbd/interface.py:1923 # sabnzbd/skintext.py:582 [Config->RSS, tab header]
 msgid "Feed"
 msgstr "Flöde"
 
-#: sabnzbd/interface.py:2290
+#: sabnzbd/interface.py:2207
 msgid "Daily"
 msgstr "Dagligen"
 
-#: sabnzbd/interface.py:2291 # sabnzbd/skintext.py:106
+#: sabnzbd/interface.py:2208 # sabnzbd/skintext.py:106
 msgid "Monday"
 msgstr "Måndag"
 
-#: sabnzbd/interface.py:2292 # sabnzbd/skintext.py:107
+#: sabnzbd/interface.py:2209 # sabnzbd/skintext.py:107
 msgid "Tuesday"
 msgstr "Tisdag"
 
-#: sabnzbd/interface.py:2293 # sabnzbd/skintext.py:108
+#: sabnzbd/interface.py:2210 # sabnzbd/skintext.py:108
 msgid "Wednesday"
 msgstr "Onsdag"
 
-#: sabnzbd/interface.py:2294 # sabnzbd/skintext.py:109
+#: sabnzbd/interface.py:2211 # sabnzbd/skintext.py:109
 msgid "Thursday"
 msgstr "Torsdag"
 
-#: sabnzbd/interface.py:2295 # sabnzbd/skintext.py:110
+#: sabnzbd/interface.py:2212 # sabnzbd/skintext.py:110
 msgid "Friday"
 msgstr "Fredag"
 
-#: sabnzbd/interface.py:2296 # sabnzbd/skintext.py:111
+#: sabnzbd/interface.py:2213 # sabnzbd/skintext.py:111
 msgid "Saturday"
 msgstr "Lördag"
 
-#: sabnzbd/interface.py:2297 # sabnzbd/skintext.py:112
+#: sabnzbd/interface.py:2214 # sabnzbd/skintext.py:112
 msgid "Sunday"
 msgstr "Söndag"
 
-#: sabnzbd/interface.py:2328 # sabnzbd/skintext.py:119
+#: sabnzbd/interface.py:2245 # sabnzbd/skintext.py:119
 msgid "off"
 msgstr "av"
 
-#: sabnzbd/interface.py:2340
+#: sabnzbd/interface.py:2257
 msgid "Undefined server!"
 msgstr "Odefinerad server!"
 
-#: sabnzbd/interface.py:2770
+#: sabnzbd/interface.py:2706
 msgid "Incorrect parameter"
 msgstr "Fel parameter"
 
-#: sabnzbd/interface.py:2770 # sabnzbd/interface.py:2792
+#: sabnzbd/interface.py:2706 # sabnzbd/interface.py:2728
 msgid "Back"
 msgstr "Bakåt"
 
-#: sabnzbd/interface.py:2964 # sabnzbd/interface.py:2968
-#: sabnzbd/interface.py:2972 # sabnzbd/interface.py:2976
-#: sabnzbd/interface.py:2980 # sabnzbd/interface.py:2984
-#: sabnzbd/interface.py:2988 # sabnzbd/interface.py:2992
-#: sabnzbd/interface.py:2996
+#: sabnzbd/interface.py:2898 # sabnzbd/interface.py:2902
+#: sabnzbd/interface.py:2906 # sabnzbd/interface.py:2910
+#: sabnzbd/interface.py:2914 # sabnzbd/interface.py:2918
+#: sabnzbd/interface.py:2922 # sabnzbd/interface.py:2926
+#: sabnzbd/interface.py:2930
 msgid "Incorrect value for %s: %s"
 msgstr "Fel värde för %s: %s"
 
@@ -664,160 +723,168 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py:498 [Error message] # sabnzbd/tvsort.py:170 [Error message]
+#: sabnzbd/misc.py:499 [Error message] # sabnzbd/tvsort.py:170 [Error message]
 msgid "Cannot create directory %s"
 msgstr "Kan ej skapa mapp %s"
 
-#: sabnzbd/misc.py:505 [Error message]
+#: sabnzbd/misc.py:506 [Error message]
 msgid "%s directory: %s error accessing"
 msgstr "%s mapp: %s åtkomst misslyckad"
 
-#: sabnzbd/misc.py:892 [Error message]
+#: sabnzbd/misc.py:893 [Error message]
 msgid "Failed making (%s)"
 msgstr "Skapande av (%s) misslyckades"
 
-#: sabnzbd/misc.py:933 [Error message] # sabnzbd/postproc.py:403
+#: sabnzbd/misc.py:934 [Error message] # sabnzbd/postproc.py:411
 msgid "Failed moving %s to %s"
 msgstr "Det gick inte att flyta %s till %s"
 
-#: sabnzbd/misc.py:1257 [Error message]
+#: sabnzbd/misc.py:1237 [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Det gick inte att skapa SSL-nyckel eller certifikat."
 
-#: sabnzbd/misc.py:1502 [Error message]
+#: sabnzbd/misc.py:1473 [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Det gick inte att ändra rättigheter på %s"
 
-#: sabnzbd/newsunpack.py:202 [Warning message]
+#: sabnzbd/newsunpack.py:220 [Warning message]
 msgid "Unpack nesting too deep [%s]"
 msgstr "Nästling för djup [%s]"
 
-#: sabnzbd/newsunpack.py:383
+#: sabnzbd/newsunpack.py:401
 msgid "Joining"
 msgstr "Slår ihop"
 
-#: sabnzbd/newsunpack.py:401
+#: sabnzbd/newsunpack.py:419
 msgid "Incomplete sequence of joinable files"
 msgstr "Ej komplett sekvens av filer för ihopläggning"
 
-#: sabnzbd/newsunpack.py:402 # sabnzbd/newsunpack.py:410
+#: sabnzbd/newsunpack.py:420 # sabnzbd/newsunpack.py:428
 msgid "File join of %s failed"
 msgstr "Filsammanslagning av %s misslyckades"
 
-#: sabnzbd/newsunpack.py:403 # sabnzbd/newsunpack.py:411
+#: sabnzbd/newsunpack.py:421 # sabnzbd/newsunpack.py:429
 msgid "[%s] Error \"%s\" while joining files"
 msgstr "[%s] Fel \"%s\" under filsammanslagning"
 
-#: sabnzbd/newsunpack.py:404 [Error message] # sabnzbd/newsunpack.py:412 [Error message]
+#: sabnzbd/newsunpack.py:422 [Error message] # sabnzbd/newsunpack.py:430 [Error message]
 msgid "Error \"%s\" while running file_join on %s"
 msgstr "Fel \"%s\" när du kör file_join på %s"
 
-#: sabnzbd/newsunpack.py:406
+#: sabnzbd/newsunpack.py:424
 msgid "[%s] Joined %s files"
 msgstr "[%s] Slår ihop %s filer"
 
-#: sabnzbd/newsunpack.py:466 # sabnzbd/newsunpack.py:800
+#: sabnzbd/newsunpack.py:484 # sabnzbd/newsunpack.py:828
 msgid "Unpacking failed, %s"
 msgstr "Uppackning misslyckades, %s"
 
-#: sabnzbd/newsunpack.py:468
+#: sabnzbd/newsunpack.py:486
 msgid "[%s] Error \"%s\" while unpacking RAR files"
 msgstr "[%s] Fel \"%s\" under uppackning av RAR fil(er)"
 
-#: sabnzbd/newsunpack.py:470 [Error message]
+#: sabnzbd/newsunpack.py:488 [Error message]
 msgid "Error \"%s\" while running rar_unpack on %s"
 msgstr "Fel \"%s\" när du kör rar_unpack på %s"
 
-#: sabnzbd/newsunpack.py:486 [Warning message] # sabnzbd/newsunpack.py:496 [Warning message]
-#: sabnzbd/newsunpack.py:785 [Warning message] # sabnzbd/newsunpack.py:795 [Warning message]
-#: sabnzbd/newsunpack.py:948 [Warning message] # sabnzbd/newsunpack.py:953 [Warning message]
-#: sabnzbd/newsunpack.py:1058 [Warning message] # sabnzbd/newsunpack.py:1068 [Warning message]
-#: sabnzbd/newsunpack.py:1075 [Warning message] # sabnzbd/newsunpack.py:1082 [Warning message]
-#: sabnzbd/newsunpack.py:1100 [Warning message]
+#: sabnzbd/newsunpack.py:504 [Warning message] # sabnzbd/newsunpack.py:514 [Warning message]
+#: sabnzbd/newsunpack.py:813 [Warning message] # sabnzbd/newsunpack.py:823 [Warning message]
+#: sabnzbd/newsunpack.py:975 [Warning message] # sabnzbd/newsunpack.py:980 [Warning message]
+#: sabnzbd/newsunpack.py:1085 [Warning message] # sabnzbd/newsunpack.py:1095 [Warning message]
+#: sabnzbd/newsunpack.py:1102 [Warning message] # sabnzbd/newsunpack.py:1109 [Warning message]
+#: sabnzbd/newsunpack.py:1127 [Warning message]
 msgid "Deleting %s failed!"
 msgstr "Borttagning av %s misslyckades!"
 
-#: sabnzbd/newsunpack.py:515
+#: sabnzbd/newsunpack.py:533
 msgid "Trying unrar with password \"%s\""
 msgstr "Försöker att packa upp med lösenord %s"
 
-#: sabnzbd/newsunpack.py:523 [Error message] # sabnzbd/newsunpack.py:684
-#: sabnzbd/newsunpack.py:685 # sabnzbd/newsunpack.py:896 [Error message]
+#: sabnzbd/newsunpack.py:541 [Error message] # sabnzbd/newsunpack.py:712
+#: sabnzbd/newsunpack.py:713 # sabnzbd/newsunpack.py:923 [Error message]
 msgid "Unpacking failed, archive requires a password"
 msgstr "Uppackning misslyckades, arkivet kräver lösenord"
 
-#: sabnzbd/newsunpack.py:581 # sabnzbd/newsunpack.py:613
-#: sabnzbd/newsunpack.py:760 # sabnzbd/newsunpack.py:856
+#: sabnzbd/newsunpack.py:599 # sabnzbd/newsunpack.py:631
+#: sabnzbd/newsunpack.py:788 # sabnzbd/newsunpack.py:883
 msgid "Unpacking"
 msgstr "Packar upp"
 
-#: sabnzbd/newsunpack.py:599 # sabnzbd/newsunpack.py:1236
-#: sabnzbd/postproc.py:554
+#: sabnzbd/newsunpack.py:617 # sabnzbd/newsunpack.py:1263
+#: sabnzbd/postproc.py:555
 msgid "PostProcessing was aborted (%s)"
 msgstr "Efterbehandling avbröts (%s)"
 
-#: sabnzbd/newsunpack.py:599 # sabnzbd/skintext.py:29 [PP phase "unpack"]
+#: sabnzbd/newsunpack.py:617 # sabnzbd/skintext.py:29 [PP phase "unpack"]
 msgid "Unpack"
 msgstr "Packa upp"
 
-#: sabnzbd/newsunpack.py:625 # sabnzbd/newsunpack.py:626
+#: sabnzbd/newsunpack.py:643 # sabnzbd/newsunpack.py:644
 msgid "Unpacking failed, unable to find %s"
 msgstr "Uppackning misslyckades, gick inte att hitta %s"
 
-#: sabnzbd/newsunpack.py:628 [Warning message]
+#: sabnzbd/newsunpack.py:646 [Warning message]
 msgid "ERROR: unable to find \"%s\""
 msgstr "FEL: gick inte att hitta \"%s\""
 
-#: sabnzbd/newsunpack.py:633
+#: sabnzbd/newsunpack.py:651
 msgid "Unpacking failed, CRC error"
 msgstr "Uppackning misslyckades, CRC-fel"
 
-#: sabnzbd/newsunpack.py:634 # sabnzbd/newsunpack.py:636 [Warning message]
+#: sabnzbd/newsunpack.py:652 # sabnzbd/newsunpack.py:654 [Warning message]
 msgid "ERROR: CRC failed in \"%s\""
 msgstr "FEL: CRC misslyckades i \"%s\""
 
-#: sabnzbd/newsunpack.py:640 # sabnzbd/newsunpack.py:641
-#: sabnzbd/newsunpack.py:657 # sabnzbd/newsunpack.py:658
+#: sabnzbd/newsunpack.py:658 # sabnzbd/newsunpack.py:659
+msgid "Unpacking failed, file too large for filesystem (FAT?)"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:662 [Error message]
+msgid "ERROR: File too large for filesystem (%s)"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:666 # sabnzbd/newsunpack.py:667
+#: sabnzbd/newsunpack.py:685 # sabnzbd/newsunpack.py:686
 msgid "Unpacking failed, write error or disk is full?"
 msgstr "Uppackning misslyckades, skrivfel eller disken full?"
 
-#: sabnzbd/newsunpack.py:643 [Error message] # sabnzbd/newsunpack.py:659 [Error message]
+#: sabnzbd/newsunpack.py:669 [Error message] # sabnzbd/newsunpack.py:687 [Error message]
 msgid "ERROR: write error (%s)"
 msgstr "FEL: skrivningsfel (%s)"
 
-#: sabnzbd/newsunpack.py:653 # sabnzbd/newsunpack.py:654
+#: sabnzbd/newsunpack.py:681 # sabnzbd/newsunpack.py:682
 msgid "Unpacking failed, path is too long"
 msgstr "Uppackning misslyckades, sökvägen är för lång"
 
-#: sabnzbd/newsunpack.py:655 [Error message]
+#: sabnzbd/newsunpack.py:683 [Error message]
 msgid "ERROR: path too long (%s)"
 msgstr "FEL: sökvägen är för lång (%s)"
 
-#: sabnzbd/newsunpack.py:664
+#: sabnzbd/newsunpack.py:692
 msgid "Unpacking failed, see log"
 msgstr "Uppackning misslyckades, se logg"
 
-#: sabnzbd/newsunpack.py:665 [Warning message] # sabnzbd/newsunpack.py:666
+#: sabnzbd/newsunpack.py:693 [Warning message] # sabnzbd/newsunpack.py:694
 msgid "ERROR: %s"
 msgstr "FEL: %s"
 
-#: sabnzbd/newsunpack.py:696 # sabnzbd/newsunpack.py:697
+#: sabnzbd/newsunpack.py:724 # sabnzbd/newsunpack.py:725
 msgid "Unusable RAR file"
 msgstr "Oanvändbar RAR-fil"
 
-#: sabnzbd/newsunpack.py:709 # sabnzbd/newsunpack.py:710
+#: sabnzbd/newsunpack.py:737 # sabnzbd/newsunpack.py:738
 msgid "Corrupt RAR file"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:738
+#: sabnzbd/newsunpack.py:766
 msgid "Unpacked %s files/folders in %s"
 msgstr "Uppackad %s filer/mappar i %s"
 
-#: sabnzbd/newsunpack.py:772 # sabnzbd/newsunpack.py:871
+#: sabnzbd/newsunpack.py:800 # sabnzbd/newsunpack.py:898
 msgid "%s files in %s"
 msgstr "%s filer i %s"
 
-#: sabnzbd/newsunpack.py:801 [Error message]
+#: sabnzbd/newsunpack.py:829 [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
 msgstr "Fel \"%s\" när du kör unzip() på %s"
 
@@ -833,101 +900,97 @@ msgstr "7ZIP set \"%s\" är inte komplett, kan inte packa upp"
 msgid "Could not unpack %s"
 msgstr "Kunde inte packa upp %s"
 
-#: sabnzbd/newsunpack.py:988
+#: sabnzbd/newsunpack.py:1015
 msgid "Quick Checking"
 msgstr "Snabbkontrollerar"
 
-#: sabnzbd/newsunpack.py:988 # sabnzbd/newsunpack.py:1014
-#: sabnzbd/newsunpack.py:1236 # sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:307
+#: sabnzbd/newsunpack.py:1015 # sabnzbd/newsunpack.py:1041
+#: sabnzbd/newsunpack.py:1263 # sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:307
 msgid "Repair"
 msgstr "Reparera"
 
-#: sabnzbd/newsunpack.py:992
+#: sabnzbd/newsunpack.py:1019
 msgid "[%s] Quick Check OK"
 msgstr "[%s] Snabbkontroll OK"
 
-#: sabnzbd/newsunpack.py:1014
+#: sabnzbd/newsunpack.py:1041
 msgid "Starting Repair"
 msgstr "Startar reparation"
 
-#: sabnzbd/newsunpack.py:1031 [Warning message]
+#: sabnzbd/newsunpack.py:1058 [Warning message]
 msgid "Par verify failed on %s, while QuickCheck succeeded!"
 msgstr "Par verifiering misslyckades på %s, medans QuickCheck lyckades!"
 
-#: sabnzbd/newsunpack.py:1041 # sabnzbd/newsunpack.py:1103
+#: sabnzbd/newsunpack.py:1068 # sabnzbd/newsunpack.py:1130
 msgid "Repairing failed, %s"
 msgstr "Reparation misslyckades, %s"
 
-#: sabnzbd/newsunpack.py:1042 [Error message]
+#: sabnzbd/newsunpack.py:1069 [Error message]
 msgid "Error %s while running par2_repair on set %s"
 msgstr "Fel %s när du kör par2_repair på %s"
 
-#: sabnzbd/newsunpack.py:1104 [Error message]
+#: sabnzbd/newsunpack.py:1131 [Error message]
 msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr "Fel \"%s\" medans par2_repair kördes på %s"
 
-#: sabnzbd/newsunpack.py:1261
+#: sabnzbd/newsunpack.py:1288
 msgid ""
 "[%s] PAR2 received incorrect options, check your Config->Switches settings"
 msgstr ""
 "[%s] PAR2 har fått felaktiga alternativ, ändra dessa via Config->Switches "
 "inställningarna"
 
-#: sabnzbd/newsunpack.py:1266
+#: sabnzbd/newsunpack.py:1293
 msgid "[%s] Verified in %s, all files correct"
 msgstr "[%s] Verifierad i %s, alla filer är ok"
 
-#: sabnzbd/newsunpack.py:1273
+#: sabnzbd/newsunpack.py:1300
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Verifiering i %s, kräver reparation"
 
-#: sabnzbd/newsunpack.py:1288
+#: sabnzbd/newsunpack.py:1315
 msgid "Main packet not found..."
 msgstr "Huvudarkiv saknas..."
 
-#: sabnzbd/newsunpack.py:1314
+#: sabnzbd/newsunpack.py:1341
 msgid "Invalid par2 files, cannot verify or repair"
 msgstr "Korrupta par2 filer, kan inte verifiera eller reparera"
 
-#: sabnzbd/newsunpack.py:1353 # sabnzbd/newsunpack.py:1388
+#: sabnzbd/newsunpack.py:1380 # sabnzbd/newsunpack.py:1415
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr ""
 "Misslyckad reparation, finns ej tillräckligt med reparationsblock (%s saknas)"
 
-#: sabnzbd/newsunpack.py:1383
+#: sabnzbd/newsunpack.py:1410
 msgid "Fetching %s blocks..."
 msgstr "Hämtar %s block..."
 
-#: sabnzbd/newsunpack.py:1385
+#: sabnzbd/newsunpack.py:1412
 msgid "Fetching"
 msgstr "Hämtar"
 
-#: sabnzbd/newsunpack.py:1396 # sabnzbd/newsunpack.py:1401
+#: sabnzbd/newsunpack.py:1423 # sabnzbd/newsunpack.py:1428
 msgid "Repairing"
 msgstr "Reparerar"
 
-#: sabnzbd/newsunpack.py:1405
+#: sabnzbd/newsunpack.py:1432
 msgid "[%s] Repaired in %s"
 msgstr "[%s] Reparerad i %s"
 
-#: sabnzbd/newsunpack.py:1458 # sabnzbd/newsunpack.py:1473
-#: sabnzbd/newsunpack.py:1491
+#: sabnzbd/newsunpack.py:1485 # sabnzbd/newsunpack.py:1500
+#: sabnzbd/newsunpack.py:1518
 msgid "Verifying"
 msgstr "Verifierar"
 
-#: sabnzbd/newsunpack.py:1568 [Error message]
+#: sabnzbd/newsunpack.py:1622 [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
-#: sabnzbd/newswrapper.py:233 [Error message]
-msgid "Error importing OpenSSL module. Connecting with NON-SSL"
-msgstr "Misslyckades med importering av OpenSSL modul. Ansluter utan SSL"
-
-#: sabnzbd/newswrapper.py:274
+#: sabnzbd/newswrapper.py:252
 msgid "This server does not allow SSL on this port"
 msgstr "Den här servern tillåter in SSL på denna port"
 
-#: sabnzbd/newswrapper.py:278
+#: sabnzbd/newswrapper.py:256
 msgid "Server %s uses an untrusted certificate [%s]"
 msgstr ""
 
@@ -935,7 +998,7 @@ msgstr ""
 msgid "Startup/Shutdown"
 msgstr "Starta/Stäng"
 
-#: sabnzbd/notifier.py:67 [Notification] # sabnzbd/skintext.py:611 [Config->RSS after adding to queue]
+#: sabnzbd/notifier.py:67 [Notification] # sabnzbd/skintext.py:601 [Config->RSS after adding to queue]
 msgid "Added NZB"
 msgstr "NZB tillagd"
 
@@ -963,48 +1026,48 @@ msgstr "Kön färdig"
 msgid "Other Messages"
 msgstr "Andra meddelanden"
 
-#: sabnzbd/notifier.py:320 # sabnzbd/notifier.py:351 # sabnzbd/skintext.py:122
+#: sabnzbd/notifier.py:322 # sabnzbd/notifier.py:353 # sabnzbd/skintext.py:122
 msgid "Not available"
 msgstr "Ej tillgänglig"
 
-#: sabnzbd/notifier.py:393 # sabnzbd/notifier.py:428 # sabnzbd/notifier.py:468
-#: sabnzbd/notifier.py:504
+#: sabnzbd/notifier.py:395 # sabnzbd/notifier.py:430 # sabnzbd/notifier.py:470
+#: sabnzbd/notifier.py:506
 msgid "Cannot send, missing required data"
 msgstr "Kunde inte skicka, saknar nödvändig data"
 
-#: sabnzbd/notifier.py:410 [Warning message] # sabnzbd/notifier.py:412
+#: sabnzbd/notifier.py:412 [Warning message] # sabnzbd/notifier.py:414
 msgid "Failed to send Prowl message"
 msgstr "Misslyckades att skicka Prowlmeddelande"
 
-#: sabnzbd/notifier.py:449 [Error message]
+#: sabnzbd/notifier.py:451 [Error message]
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Dålig respons från Pushover (%s): %s"
 
-#: sabnzbd/notifier.py:452 [Warning message] # sabnzbd/notifier.py:454
+#: sabnzbd/notifier.py:454 [Warning message] # sabnzbd/notifier.py:456
 msgid "Failed to send pushover message"
 msgstr "Misslyckades att skicka pushovermeddelande"
 
-#: sabnzbd/notifier.py:484 [Error message]
+#: sabnzbd/notifier.py:486 [Error message]
 msgid "Bad response from Pushbullet (%s): %s"
 msgstr "Dålig respons från Pushbullet (%s): %s"
 
-#: sabnzbd/notifier.py:489 [Warning message] # sabnzbd/notifier.py:491
+#: sabnzbd/notifier.py:491 [Warning message] # sabnzbd/notifier.py:493
 msgid "Failed to send pushbullet message"
 msgstr "Misslyckades att skicka pushbulletmeddelande"
 
-#: sabnzbd/notifier.py:512 [Error message] # sabnzbd/notifier.py:513
+#: sabnzbd/notifier.py:514 [Error message] # sabnzbd/notifier.py:515
 msgid "Script returned exit code %s and output \"%s\""
 msgstr ""
 
-#: sabnzbd/notifier.py:517
+#: sabnzbd/notifier.py:519
 msgid "Notification script \"%s\" does not exist"
 msgstr ""
 
-#: sabnzbd/notifier.py:525 # sabnzbd/notifier.py:527
+#: sabnzbd/notifier.py:528 # sabnzbd/notifier.py:530
 msgid "Failed to send Windows notification"
 msgstr ""
 
-#: sabnzbd/nzbqueue.py:78 [Warning message] # sabnzbd/postproc.py:99 [Warning message]
+#: sabnzbd/nzbqueue.py:78 [Warning message] # sabnzbd/postproc.py:100 [Warning message]
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Gammal kö hittad, använd Status -> Reparera för att konvertera kön"
 
@@ -1032,117 +1095,117 @@ msgstr "NZB tillagd i kön"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Okänd kodning"
 
-#: sabnzbd/nzbstuff.py:471 [Warning message]
+#: sabnzbd/nzbstuff.py:438 [Warning message]
 msgid "File %s is empty, skipping"
 msgstr "Fil %s är tom, hoppar över"
 
-#: sabnzbd/nzbstuff.py:536 [Warning message]
+#: sabnzbd/nzbstuff.py:503 [Warning message]
 msgid "Failed to import %s files from %s"
 msgstr "Det gick inte att importera %s filer från %s"
 
-#: sabnzbd/nzbstuff.py:740 [Warning message]
+#: sabnzbd/nzbstuff.py:707 [Warning message]
 msgid "Incomplete NZB file %s"
 msgstr "NZB filen %s är inte komplett"
 
-#: sabnzbd/nzbstuff.py:742 [Warning message] # sabnzbd/nzbstuff.py:746 [Warning message]
+#: sabnzbd/nzbstuff.py:709 [Warning message] # sabnzbd/nzbstuff.py:713 [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Felaktig NZB fil %s, hoppar över (orsak=%s, linje=%s)"
 
-#: sabnzbd/nzbstuff.py:765 # sabnzbd/nzbstuff.py:767
+#: sabnzbd/nzbstuff.py:732 # sabnzbd/nzbstuff.py:734
 msgid "Empty NZB file %s"
 msgstr "NZB filen %s är tom"
 
-#: sabnzbd/nzbstuff.py:822
+#: sabnzbd/nzbstuff.py:789
 msgid "Pre-queue script marked job as failed"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:840 [Warning message]
+#: sabnzbd/nzbstuff.py:807 [Warning message]
 msgid "Ignoring duplicate NZB \"%s\""
 msgstr "Ignorerar dubblett för NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:846 [Warning message]
+#: sabnzbd/nzbstuff.py:813 [Warning message]
 msgid "Failing duplicate NZB \"%s\""
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:848
+#: sabnzbd/nzbstuff.py:815
 msgid "Duplicate NZB"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:854 [Warning message]
+#: sabnzbd/nzbstuff.py:821 [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pausar dubblett för NZB \"%s\""
 
-#: sabnzbd/nzbstuff.py:1045
+#: sabnzbd/nzbstuff.py:1010
 msgid "Aborted, cannot be completed"
 msgstr "Avbrutet, kan inte slutföras"
 
-#: sabnzbd/nzbstuff.py:1143 # sabnzbd/skintext.py:796
+#: sabnzbd/nzbstuff.py:1110 # sabnzbd/skintext.py:786
 msgid "DUPLICATE"
 msgstr "DUBLETT"
 
-#: sabnzbd/nzbstuff.py:1145 [Queue indicator for encrypted job] # sabnzbd/skintext.py:794
+#: sabnzbd/nzbstuff.py:1112 [Queue indicator for encrypted job] # sabnzbd/skintext.py:784
 msgid "ENCRYPTED"
 msgstr "KRYPTERAT"
 
-#: sabnzbd/nzbstuff.py:1147 # sabnzbd/skintext.py:798
+#: sabnzbd/nzbstuff.py:1114 # sabnzbd/skintext.py:788
 msgid "TOO LARGE"
 msgstr "FÖR STOR"
 
-#: sabnzbd/nzbstuff.py:1149 # sabnzbd/skintext.py:795
+#: sabnzbd/nzbstuff.py:1116 # sabnzbd/skintext.py:785
 msgid "INCOMPLETE"
 msgstr "INKOMPLETT"
 
-#: sabnzbd/nzbstuff.py:1151 # sabnzbd/skintext.py:797
+#: sabnzbd/nzbstuff.py:1118 # sabnzbd/skintext.py:787
 msgid "UNWANTED"
 msgstr "OÖNSKAD"
 
-#: sabnzbd/nzbstuff.py:1153 # sabnzbd/skintext.py:799
+#: sabnzbd/nzbstuff.py:1120 # sabnzbd/skintext.py:789
 msgid "FILTERED"
 msgstr "FILTRERAD"
 
-#: sabnzbd/nzbstuff.py:1157 # sabnzbd/skintext.py:800
+#: sabnzbd/nzbstuff.py:1124 # sabnzbd/skintext.py:790
 msgid "WAIT %s sec"
 msgstr "VÄNTA %s SEKUNDER"
 
-#: sabnzbd/nzbstuff.py:1160
+#: sabnzbd/nzbstuff.py:1127
 msgid "PROPAGATING %s min"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py:1308
+#: sabnzbd/nzbstuff.py:1273
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Hämtade i %s vid ett genomsnitt på %sB/s"
 
-#: sabnzbd/nzbstuff.py:1309 # sabnzbd/skintext.py:763 [Job details page, file age column header] # sabnzbd/skintext.py:964
+#: sabnzbd/nzbstuff.py:1274 # sabnzbd/skintext.py:753 [Job details page, file age column header] # sabnzbd/skintext.py:954
 msgid "Age"
 msgstr "Ålder"
 
-#: sabnzbd/nzbstuff.py:1317
+#: sabnzbd/nzbstuff.py:1282
 msgid "%s articles were malformed"
 msgstr "%s artiklar var felaktiga"
 
-#: sabnzbd/nzbstuff.py:1319
+#: sabnzbd/nzbstuff.py:1284
 msgid "%s articles were missing"
 msgstr "%s artiklar saknades"
 
-#: sabnzbd/nzbstuff.py:1321
+#: sabnzbd/nzbstuff.py:1286
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artiklar hade icke-matchande dubletter"
 
-#: sabnzbd/nzbstuff.py:1323
+#: sabnzbd/nzbstuff.py:1288
 msgid "%s articles were removed"
 msgstr "%s artiklar borttagna"
 
-#: sabnzbd/nzbstuff.py:1369 [Error message]
+#: sabnzbd/nzbstuff.py:1334 [Error message]
 msgid "Error importing %s"
 msgstr "Det gick inte att importera %s"
 
 #: sabnzbd/osxmenu.py:132 # sabnzbd/osxmenu.py:436 # sabnzbd/osxmenu.py:444
-#: sabnzbd/skintext.py:280 [Footer: indicator of warnings] # sabnzbd/skintext.py:954
+#: sabnzbd/skintext.py:280 [Footer: indicator of warnings] # sabnzbd/skintext.py:944
 msgid "Warnings"
 msgstr "Varningar"
 
 #: sabnzbd/osxmenu.py:144 # sabnzbd/osxmenu.py:480 # sabnzbd/sabtray.py:86
-#: sabnzbd/sabtraylinux.py:91 # sabnzbd/skintext.py:944
+#: sabnzbd/sabtraylinux.py:91 # sabnzbd/skintext.py:934
 msgid "Idle"
 msgstr "Inaktiv"
 
@@ -1150,7 +1213,7 @@ msgstr "Inaktiv"
 msgid "Configuration"
 msgstr "Konfiguration"
 
-#: sabnzbd/osxmenu.py:162 # sabnzbd/skintext.py:149 [Main menu item] # sabnzbd/skintext.py:495
+#: sabnzbd/osxmenu.py:162 # sabnzbd/skintext.py:149 [Main menu item] # sabnzbd/skintext.py:488
 msgid "Queue"
 msgstr "Kö"
 
@@ -1162,7 +1225,7 @@ msgstr "Rensa kö"
 msgid "History"
 msgstr "Historik"
 
-#: sabnzbd/osxmenu.py:188 # sabnzbd/skintext.py:239 [History page button] # sabnzbd/skintext.py:836
+#: sabnzbd/osxmenu.py:188 # sabnzbd/skintext.py:239 [History page button] # sabnzbd/skintext.py:826
 msgid "Purge History"
 msgstr "Töm historik"
 
@@ -1171,8 +1234,8 @@ msgid "Limit Speed"
 msgstr "Hastighetsbegränsning"
 
 #: sabnzbd/osxmenu.py:221 # sabnzbd/sabtray.py:81 # sabnzbd/sabtraylinux.py:110
-#: sabnzbd/skintext.py:57 [#: Config->Scheduler] # sabnzbd/skintext.py:182 [Pause downloading] # sabnzbd/skintext.py:439 [Three way switch for duplicates]
-#: sabnzbd/skintext.py:586 [Config->Scheduling]
+#: sabnzbd/skintext.py:57 [#: Config->Scheduler] # sabnzbd/skintext.py:182 [Pause downloading] # sabnzbd/skintext.py:434 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:576 [Config->Scheduling]
 msgid "Pause"
 msgstr "Pausa"
 
@@ -1181,7 +1244,7 @@ msgid "min."
 msgstr "min."
 
 #: sabnzbd/osxmenu.py:238 # sabnzbd/sabtray.py:83 # sabnzbd/sabtraylinux.py:108
-#: sabnzbd/skintext.py:56 [#: Config->Scheduler] # sabnzbd/skintext.py:183 [Resume downloading] # sabnzbd/skintext.py:585 [Config->Scheduling]
+#: sabnzbd/skintext.py:56 [#: Config->Scheduler] # sabnzbd/skintext.py:183 [Resume downloading] # sabnzbd/skintext.py:575 [Config->Scheduling]
 msgid "Resume"
 msgstr "Återuppta"
 
@@ -1207,7 +1270,7 @@ msgstr "Felsök"
 
 #: sabnzbd/osxmenu.py:288 # sabnzbd/osxmenu.py:289 # sabnzbd/sabtray.py:84
 #: sabnzbd/sabtraylinux.py:111 # sabnzbd/sabtraylinux.py:167
-#: sabnzbd/skintext.py:59 [#: Config->Scheduler] # sabnzbd/skintext.py:305 # sabnzbd/skintext.py:588 [Config->Scheduling]
+#: sabnzbd/skintext.py:59 [#: Config->Scheduler] # sabnzbd/skintext.py:305 # sabnzbd/skintext.py:578 [Config->Scheduling]
 msgid "Restart"
 msgstr "Starta om"
 
@@ -1239,9 +1302,9 @@ msgstr "Ny utgåva tillgänglig"
 msgid "Go to wizard"
 msgstr "Gå till guiden"
 
-#: sabnzbd/osxmenu.py:723 # sabnzbd/osxmenu.py:725 # sabnzbd/osxmenu.py:732
-#: sabnzbd/osxmenu.py:734 # sabnzbd/osxmenu.py:740 # sabnzbd/osxmenu.py:742
-#: sabnzbd/osxmenu.py:763
+#: sabnzbd/osxmenu.py:723 # sabnzbd/osxmenu.py:726 # sabnzbd/osxmenu.py:733
+#: sabnzbd/osxmenu.py:735 # sabnzbd/osxmenu.py:741 # sabnzbd/osxmenu.py:743
+#: sabnzbd/osxmenu.py:764
 msgid "Stopping..."
 msgstr "Stänger..."
 
@@ -1435,124 +1498,130 @@ msgstr "Åtkomst nekades"
 msgid "Error %s: You need to provide a valid username and password."
 msgstr "Error %s: Du måste ange ett giltigt användarnamn och lösenord."
 
-#: sabnzbd/postproc.py:285
+#: sabnzbd/postproc.py:172 [Warning message]
+msgid ""
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
+msgstr ""
+
+#: sabnzbd/postproc.py:293
 msgid "Download might fail, only %s of required %s available"
 msgstr ""
 "Nerladdningen kan misslyckas, bara %s av krävda %s finns tillgängligt"
 
-#: sabnzbd/postproc.py:287
+#: sabnzbd/postproc.py:295
 msgid "Download failed - Not on your server(s)"
 msgstr "Nerladdning misslyckades - Inte på din server eller servrar"
 
-#: sabnzbd/postproc.py:360
+#: sabnzbd/postproc.py:368
 msgid "Cannot create final folder %s"
 msgstr "Kan inte skapa slutgiltig mapp %s"
 
-#: sabnzbd/postproc.py:385
+#: sabnzbd/postproc.py:393
 msgid "No post-processing because of failed verification"
 msgstr "Ingen efterbehandling på grund av misslyckad verifiering"
 
-#: sabnzbd/postproc.py:393
+#: sabnzbd/postproc.py:401
 msgid "Moving"
 msgstr "Flyttar"
 
-#: sabnzbd/postproc.py:425
+#: sabnzbd/postproc.py:433
 msgid "Sent %s to queue"
 msgstr "Skickat %s till kö"
 
-#: sabnzbd/postproc.py:439 [Error message]
+#: sabnzbd/postproc.py:447 [Error message]
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Det gick inte att döpa om \"%s\" till \"%s\""
 
-#: sabnzbd/postproc.py:464
+#: sabnzbd/postproc.py:472
 msgid "Failed to move files"
 msgstr "Misslyckades med att flytta filer"
 
-#: sabnzbd/postproc.py:477
+#: sabnzbd/postproc.py:480
 msgid "Running script"
 msgstr "Kör skript"
 
-#: sabnzbd/postproc.py:478
+#: sabnzbd/postproc.py:481
 msgid "Running user script %s"
 msgstr "Kör användarskript %s"
 
-#: sabnzbd/postproc.py:488
+#: sabnzbd/postproc.py:490
 msgid "Ran %s"
 msgstr "Körde %s"
 
-#: sabnzbd/postproc.py:498
+#: sabnzbd/postproc.py:500
 msgid "Script exit code is %s"
 msgstr "Skriptets utgångskod är %s"
 
-#: sabnzbd/postproc.py:517 # sabnzbd/skintext.py:834
+#: sabnzbd/postproc.py:519 # sabnzbd/skintext.py:824
 msgid "More"
 msgstr "Mer"
 
-#: sabnzbd/postproc.py:543
+#: sabnzbd/postproc.py:544
 msgid "Download Completed"
 msgstr "Hämtningen slutfördes"
 
-#: sabnzbd/postproc.py:546 # sabnzbd/postproc.py:555
+#: sabnzbd/postproc.py:547 # sabnzbd/postproc.py:556
 msgid "Download Failed"
 msgstr "Hämtning misslyckades"
 
-#: sabnzbd/postproc.py:550 [Error message]
+#: sabnzbd/postproc.py:551 [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Efterbehandling misslyckades för %s (%s)"
 
-#: sabnzbd/postproc.py:553
+#: sabnzbd/postproc.py:554
 msgid "see logfile"
 msgstr "se loggfil"
 
-#: sabnzbd/postproc.py:585 [Error message]
+#: sabnzbd/postproc.py:586 [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Rensning av %s misslyckades."
 
-#: sabnzbd/postproc.py:595 [Error message]
+#: sabnzbd/postproc.py:596 [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Det gick inte att ta bort arbetsmapp (%s)"
 
-#: sabnzbd/postproc.py:624
+#: sabnzbd/postproc.py:625
 msgid "Post-processing"
 msgstr "Efterbehandling"
 
-#: sabnzbd/postproc.py:703
+#: sabnzbd/postproc.py:704
 msgid "[%s] No par2 sets"
 msgstr "[%s] Ingen par2 sats"
 
-#: sabnzbd/postproc.py:739 # sabnzbd/postproc.py:740
+#: sabnzbd/postproc.py:740 # sabnzbd/postproc.py:741
 msgid "Trying SFV verification"
 msgstr "Försöker verifiera SFV"
 
-#: sabnzbd/postproc.py:744
+#: sabnzbd/postproc.py:745
 msgid "Some files failed to verify against \"%s\""
 msgstr "Some files failed to verify against \"%s\""
 
-#: sabnzbd/postproc.py:750
+#: sabnzbd/postproc.py:751
 msgid "Verified successfully using SFV files"
 msgstr "Verifieringen lyckades med SFV-filer"
 
-#: sabnzbd/postproc.py:778 # sabnzbd/postproc.py:779
+#: sabnzbd/postproc.py:779 # sabnzbd/postproc.py:780
 msgid "Trying RAR-based verification"
 msgstr ""
 
-#: sabnzbd/postproc.py:788 # sabnzbd/postproc.py:801
+#: sabnzbd/postproc.py:789 # sabnzbd/postproc.py:802
 msgid "[%s] RAR-based verification failed: %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:788 # sabnzbd/skintext.py:257 # sabnzbd/skintext.py:531
+#: sabnzbd/postproc.py:789 # sabnzbd/skintext.py:257 # sabnzbd/skintext.py:521
 msgid "Passworded"
 msgstr "Lösenordskyddad"
 
-#: sabnzbd/postproc.py:795
+#: sabnzbd/postproc.py:796
 msgid "RAR files verified successfully"
 msgstr ""
 
-#: sabnzbd/postproc.py:800
+#: sabnzbd/postproc.py:801
 msgid "RAR files failed to verify"
 msgstr ""
 
-#: sabnzbd/postproc.py:858 [Error message] # sabnzbd/postproc.py:939 [Error message]
+#: sabnzbd/postproc.py:859 [Error message] # sabnzbd/postproc.py:940 [Error message]
 msgid "Removing %s failed"
 msgstr "Borttagning av %s misslyckades"
 
@@ -1568,11 +1637,7 @@ msgstr "Det gick inte att sätta systemet i viloläge"
 msgid "Error while shutting down system"
 msgstr "Fel uppstod då systemet skulle stängas"
 
-#: sabnzbd/rating.py:137 [Warning message]
-msgid "Ratings server requires secure connection"
-msgstr "Betygsserver kräver säker anslutning"
-
-#: sabnzbd/rating.py:206 [Warning message]
+#: sabnzbd/rating.py:203 [Warning message]
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Index id (%s) inte hittad för betygsfil"
 
@@ -1618,31 +1683,31 @@ msgstr "Öppna färdig mapp"
 
 #: sabnzbd/sabtray.py:82 # sabnzbd/sabtraylinux.py:112
 #: sabnzbd/sabtraylinux.py:171 # sabnzbd/skintext.py:58 [#: Config->Scheduler] # sabnzbd/skintext.py:181 [Shutdown SABnzbd]
-#: sabnzbd/skintext.py:587 [Config->Scheduling]
+#: sabnzbd/skintext.py:577 [Config->Scheduling]
 msgid "Shutdown"
 msgstr "Stäng Av"
 
-#: sabnzbd/sabtray.py:88 # sabnzbd/sabtraylinux.py:88 # sabnzbd/skintext.py:917
+#: sabnzbd/sabtray.py:88 # sabnzbd/sabtraylinux.py:88 # sabnzbd/skintext.py:907
 msgid "Remaining"
 msgstr "Återstår"
 
-#: sabnzbd/sabtraylinux.py:102 # sabnzbd/skintext.py:768 # sabnzbd/skintext.py:873
+#: sabnzbd/sabtraylinux.py:102 # sabnzbd/skintext.py:758 # sabnzbd/skintext.py:863
 msgid "Add NZB"
 msgstr "Lägg till NZB"
 
-#: sabnzbd/scheduler.py:85 [Warning message]
+#: sabnzbd/scheduler.py:90 [Warning message]
 msgid "Bad schedule %s at %s:%s"
 msgstr "Fel schema %s vid %s:%s"
 
-#: sabnzbd/scheduler.py:152 [Warning message]
+#: sabnzbd/scheduler.py:157 [Warning message]
 msgid "Unknown action: %s"
 msgstr "Okänd åtgärd: %s"
 
-#: sabnzbd/scheduler.py:346 [Warning message] # sabnzbd/scheduler.py:351 [Warning message]
+#: sabnzbd/scheduler.py:358 [Warning message] # sabnzbd/scheduler.py:363 [Warning message]
 msgid "Schedule for non-existing server %s"
 msgstr "Schema för icke existerande server %s"
 
-#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:191 [Post processing pick list] # sabnzbd/skintext.py:612 [Config->RSS button "download item"]
+#: sabnzbd/skintext.py:26 [Queue status "download"] # sabnzbd/skintext.py:191 [Post processing pick list] # sabnzbd/skintext.py:602 [Config->RSS button "download item"]
 msgid "Download"
 msgstr "Nedladdning"
 
@@ -1650,7 +1715,7 @@ msgstr "Nedladdning"
 msgid "Join files"
 msgstr "Slår ihop filer"
 
-#: sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:189 # sabnzbd/skintext.py:673 [Notification Script settings]
+#: sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:189 # sabnzbd/skintext.py:663 [Notification Script settings]
 msgid "Script"
 msgstr "Skript"
 
@@ -1670,7 +1735,7 @@ msgstr "Misslyckades"
 msgid "Completed"
 msgstr "Färdig"
 
-#: sabnzbd/skintext.py:36 [PP status] # sabnzbd/skintext.py:949
+#: sabnzbd/skintext.py:36 [PP status] # sabnzbd/skintext.py:939
 msgid "Failed"
 msgstr "Misslyckades"
 
@@ -1706,11 +1771,11 @@ msgstr "Snabbkontroll..."
 msgid "Verifying..."
 msgstr "Verifierar..."
 
-#: sabnzbd/skintext.py:46 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:943
+#: sabnzbd/skintext.py:46 [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py:933
 msgid "Downloading"
 msgstr "Laddar ner"
 
-#: sabnzbd/skintext.py:47 # sabnzbd/skintext.py:470
+#: sabnzbd/skintext.py:47 # sabnzbd/skintext.py:463
 msgid "Propagation delay"
 msgstr ""
 
@@ -1718,15 +1783,15 @@ msgstr ""
 msgid "Checking"
 msgstr "Kontrollerar"
 
-#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:580 [Config->Scheduling]
+#: sabnzbd/skintext.py:50 [#: Config->Scheduler] # sabnzbd/skintext.py:570 [Config->Scheduling]
 msgid "Frequency"
 msgstr "Förekomst"
 
-#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:581 [Config->Scheduling] # sabnzbd/skintext.py:765 [Job details page, section header]
+#: sabnzbd/skintext.py:51 [#: Config->Scheduler] # sabnzbd/skintext.py:571 [Config->Scheduling] # sabnzbd/skintext.py:755 [Job details page, section header]
 msgid "Action"
 msgstr "Åtgärd"
 
-#: sabnzbd/skintext.py:52 [#: Config->Scheduler] # sabnzbd/skintext.py:582 [Config->Scheduling]
+#: sabnzbd/skintext.py:52 [#: Config->Scheduler] # sabnzbd/skintext.py:572 [Config->Scheduling]
 msgid "Arguments"
 msgstr "Argument"
 
@@ -1802,8 +1867,8 @@ msgstr "Aktivera kvothantering"
 msgid "Disable quota management"
 msgstr "Avaktivera kvothantering"
 
-#: sabnzbd/skintext.py:77 [Prowl priority] # sabnzbd/skintext.py:84 [Prowl priority] # sabnzbd/skintext.py:437 [Three way switch for duplicates]
-#: sabnzbd/skintext.py:489
+#: sabnzbd/skintext.py:77 [Prowl priority] # sabnzbd/skintext.py:84 [Prowl priority] # sabnzbd/skintext.py:432 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:482
 msgid "Off"
 msgstr "Av"
 
@@ -1895,15 +1960,15 @@ msgstr "Månadsdag"
 msgid "This week"
 msgstr "Denna vecka"
 
-#: sabnzbd/skintext.py:115 # sabnzbd/skintext.py:788
+#: sabnzbd/skintext.py:115 # sabnzbd/skintext.py:778
 msgid "This month"
 msgstr "Denna månad"
 
-#: sabnzbd/skintext.py:116 # sabnzbd/skintext.py:787
+#: sabnzbd/skintext.py:116 # sabnzbd/skintext.py:777
 msgid "Today"
 msgstr "I dag"
 
-#: sabnzbd/skintext.py:117 # sabnzbd/skintext.py:789
+#: sabnzbd/skintext.py:117 # sabnzbd/skintext.py:779
 msgid "Total"
 msgstr "Totalt"
 
@@ -1911,7 +1976,7 @@ msgstr "Totalt"
 msgid "on"
 msgstr "den"
 
-#: sabnzbd/skintext.py:120 [Config: startup parameters of SABnzbd] # sabnzbd/skintext.py:674 [Notification Script settings]
+#: sabnzbd/skintext.py:120 [Config: startup parameters of SABnzbd] # sabnzbd/skintext.py:664 [Notification Script settings]
 msgid "Parameters"
 msgstr "Parametrar"
 
@@ -1927,7 +1992,7 @@ msgstr "Webbplats"
 msgid "or"
 msgstr "eller"
 
-#: sabnzbd/skintext.py:126 # sabnzbd/skintext.py:546 [Server hostname or IP]
+#: sabnzbd/skintext.py:126 # sabnzbd/skintext.py:536 [Server hostname or IP]
 msgid "Host"
 msgstr "Adress"
 
@@ -1991,8 +2056,8 @@ msgstr "Spara"
 msgid "Queued"
 msgstr "Köad"
 
-#: sabnzbd/skintext.py:144 [Used in confirmation popups] # sabnzbd/skintext.py:837 # sabnzbd/skintext.py:838
-#: sabnzbd/skintext.py:839 # sabnzbd/skintext.py:866
+#: sabnzbd/skintext.py:144 [Used in confirmation popups] # sabnzbd/skintext.py:827 # sabnzbd/skintext.py:828
+#: sabnzbd/skintext.py:829 # sabnzbd/skintext.py:856
 msgid "Are you sure?"
 msgstr "Är du säker?"
 
@@ -2032,7 +2097,7 @@ msgstr "IRC"
 msgid "Issues"
 msgstr ""
 
-#: sabnzbd/skintext.py:158 [Main menu item] # sabnzbd/skintext.py:493
+#: sabnzbd/skintext.py:158 [Main menu item] # sabnzbd/skintext.py:486
 msgid "General"
 msgstr "Allmänt"
 
@@ -2040,7 +2105,7 @@ msgstr "Allmänt"
 msgid "Folders"
 msgstr "Mappar"
 
-#: sabnzbd/skintext.py:160 [Main menu item] # sabnzbd/skintext.py:747
+#: sabnzbd/skintext.py:160 [Main menu item] # sabnzbd/skintext.py:737
 msgid "Switches"
 msgstr "Switchar"
 
@@ -2060,7 +2125,7 @@ msgstr "Meddelanden"
 msgid "Email"
 msgstr "E-post"
 
-#: sabnzbd/skintext.py:166 [Main menu item] # sabnzbd/skintext.py:573
+#: sabnzbd/skintext.py:166 [Main menu item] # sabnzbd/skintext.py:563
 msgid "Categories"
 msgstr "Kategorier"
 
@@ -2072,7 +2137,7 @@ msgstr "Sortering"
 msgid "Special"
 msgstr "Speciell"
 
-#: sabnzbd/skintext.py:169 [Main menu item] # sabnzbd/skintext.py:779
+#: sabnzbd/skintext.py:169 [Main menu item] # sabnzbd/skintext.py:769
 msgid "Search"
 msgstr "Sök"
 
@@ -2120,7 +2185,7 @@ msgstr "Kategori"
 msgid "Processing"
 msgstr "Bearbetar"
 
-#: sabnzbd/skintext.py:190 # sabnzbd/skintext.py:560 [Server priority]
+#: sabnzbd/skintext.py:190 # sabnzbd/skintext.py:550 [Server priority]
 msgid "Priority"
 msgstr "Prioritet"
 
@@ -2168,7 +2233,7 @@ msgstr "Göm filer"
 msgid "Show files"
 msgstr "Visa filer"
 
-#: sabnzbd/skintext.py:209 [Queue page selection menu] # sabnzbd/skintext.py:784
+#: sabnzbd/skintext.py:209 [Queue page selection menu] # sabnzbd/skintext.py:774
 msgid "On queue finish"
 msgstr "När kön är färdig"
 
@@ -2196,11 +2261,11 @@ msgstr "Hastighetsgräns"
 msgid "Pause for"
 msgstr "Pausa för"
 
-#: sabnzbd/skintext.py:217 [Queue page table column header] # sabnzbd/skintext.py:596 [Config->RSS table column header]
+#: sabnzbd/skintext.py:217 [Queue page table column header] # sabnzbd/skintext.py:586 [Config->RSS table column header]
 msgid "Order"
 msgstr "Ordning"
 
-#: sabnzbd/skintext.py:218 [Queue page table column header] # sabnzbd/skintext.py:752 [Job details page]
+#: sabnzbd/skintext.py:218 [Queue page table column header] # sabnzbd/skintext.py:742 [Job details page]
 msgid "Name"
 msgstr "Namn"
 
@@ -2216,7 +2281,7 @@ msgstr "År"
 msgid "Del"
 msgstr "Ta bort"
 
-#: sabnzbd/skintext.py:222 [Queue page button] # sabnzbd/skintext.py:833
+#: sabnzbd/skintext.py:222 [Queue page button] # sabnzbd/skintext.py:823
 msgid "Retry"
 msgstr "Försök igen"
 
@@ -2248,7 +2313,7 @@ msgstr "Starta om alla misslyckade jobb"
 msgid "Remove NZB"
 msgstr "Ta bort NZB"
 
-#: sabnzbd/skintext.py:231 [Queue page button] # sabnzbd/skintext.py:821
+#: sabnzbd/skintext.py:231 [Queue page button] # sabnzbd/skintext.py:811
 msgid "Remove NZB & Delete Files"
 msgstr "Ta bort NZB och filer"
 
@@ -2292,7 +2357,7 @@ msgstr "Visa Misslyckade"
 msgid "Show All"
 msgstr "Visa alla"
 
-#: sabnzbd/skintext.py:246 [History table header] # sabnzbd/skintext.py:500 [Size of the download quota] # sabnzbd/skintext.py:932
+#: sabnzbd/skintext.py:246 [History table header] # sabnzbd/skintext.py:493 [Size of the download quota] # sabnzbd/skintext.py:922
 msgid "Size"
 msgstr "Storlek"
 
@@ -2316,7 +2381,7 @@ msgstr ""
 msgid "Optional Supplemental NZB"
 msgstr "Valfri Kompletterande NZB"
 
-#: sabnzbd/skintext.py:253 [Path as displayed in History details] # sabnzbd/skintext.py:933
+#: sabnzbd/skintext.py:253 [Path as displayed in History details] # sabnzbd/skintext.py:923
 msgid "Path"
 msgstr "Sökväg"
 
@@ -2372,7 +2437,7 @@ msgstr "+ Info"
 msgid "+ Debug"
 msgstr "+ Debug"
 
-#: sabnzbd/skintext.py:270 [Status page tab header] # sabnzbd/skintext.py:551 [Server: amount of connections]
+#: sabnzbd/skintext.py:270 [Status page tab header] # sabnzbd/skintext.py:541 [Server: amount of connections]
 msgid "Connections"
 msgstr "Anslutningar"
 
@@ -2388,7 +2453,7 @@ msgstr "Senaste Varningar"
 msgid "clear"
 msgstr "rensa"
 
-#: sabnzbd/skintext.py:274 [Status page button] # sabnzbd/skintext.py:816
+#: sabnzbd/skintext.py:274 [Status page button] # sabnzbd/skintext.py:806
 msgid "Unblock"
 msgstr "Ta bort blockering"
 
@@ -2404,7 +2469,7 @@ msgstr "Filuppsättning"
 msgid "When"
 msgstr "När"
 
-#: sabnzbd/skintext.py:278 [Status page, table column header, type of message] # sabnzbd/skintext.py:597 [Config->RSS table column header]
+#: sabnzbd/skintext.py:278 [Status page, table column header, type of message] # sabnzbd/skintext.py:587 [Config->RSS table column header]
 msgid "Type"
 msgstr "Typ"
 
@@ -2512,7 +2577,7 @@ msgstr ""
 "/>reconstruction of the queue content, preserving already downloaded "
 "files.<br />This will modify the queue order."
 
-#: sabnzbd/skintext.py:309 # sabnzbd/skintext.py:865
+#: sabnzbd/skintext.py:309 # sabnzbd/skintext.py:855
 msgid "Changes have not been saved, and will be lost."
 msgstr "Ändringarna har inte sparats och kommer att försvinna."
 
@@ -2538,148 +2603,146 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py:315
+msgid ""
+"Speed up repairs by installing multicore Par2, it is available for many "
+"platforms."
+msgstr ""
+
+#: sabnzbd/skintext.py:316
 msgid "Version"
 msgstr "Version"
 
-#: sabnzbd/skintext.py:316
+#: sabnzbd/skintext.py:317
 msgid "Uptime"
 msgstr "Upptid"
 
-#: sabnzbd/skintext.py:317 [Indicates that server is Backup server in Status page]
+#: sabnzbd/skintext.py:318 [Indicates that server is Backup server in Status page]
 msgid "Backup"
 msgstr "Säkerhetskopiera"
 
-#: sabnzbd/skintext.py:318 # sabnzbd/skintext.py:459 # sabnzbd/skintext.py:461
-#: sabnzbd/skintext.py:463 # sabnzbd/skintext.py:465 # sabnzbd/skintext.py:677 [Notification Script settings]
+#: sabnzbd/skintext.py:319 # sabnzbd/skintext.py:452 # sabnzbd/skintext.py:454
+#: sabnzbd/skintext.py:456 # sabnzbd/skintext.py:458 # sabnzbd/skintext.py:667 [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Läs Wiki Help för detta!"
 
-#: sabnzbd/skintext.py:319
+#: sabnzbd/skintext.py:320
 msgid "Restarting SABnzbd..."
 msgstr "Startar om SABnzbd..."
 
-#: sabnzbd/skintext.py:322
+#: sabnzbd/skintext.py:323
 msgid "Changes will require a SABnzbd restart!"
 msgstr "Ändringar kräver omstart av SABnzbd!"
 
-#: sabnzbd/skintext.py:323
+#: sabnzbd/skintext.py:324
 msgid "SABnzbd Web Server"
 msgstr "SABnzbd Webbserver"
 
-#: sabnzbd/skintext.py:324
+#: sabnzbd/skintext.py:325
 msgid "SABnzbd Host"
 msgstr "SABnzbd Adress"
 
-#: sabnzbd/skintext.py:325
+#: sabnzbd/skintext.py:326
 msgid "Host SABnzbd should listen on."
 msgstr "Adress som SABnzbd ska lyssna på."
 
-#: sabnzbd/skintext.py:326
+#: sabnzbd/skintext.py:327
 msgid "SABnzbd Port"
 msgstr "SABnzbd-port"
 
-#: sabnzbd/skintext.py:327
+#: sabnzbd/skintext.py:328
 msgid "Port SABnzbd should listen on."
 msgstr "Port som SABnzbd ska lyssna på."
 
-#: sabnzbd/skintext.py:328 # sabnzbd/skintext.py:802
+#: sabnzbd/skintext.py:329 # sabnzbd/skintext.py:792
 msgid "Web Interface"
 msgstr "Webbkontrollsutseende"
 
-#: sabnzbd/skintext.py:329
+#: sabnzbd/skintext.py:330
 msgid "Choose a skin."
 msgstr "Välj ett skin."
 
-#: sabnzbd/skintext.py:330
-msgid "Secondary Web Interface"
-msgstr "Andra Webbkontrollsutseende"
-
 #: sabnzbd/skintext.py:331
-msgid "Activate an alternative skin."
-msgstr "Aktivera ett alternativt skin."
-
-#: sabnzbd/skintext.py:332
 msgid "SABnzbd Username"
 msgstr "SABnzbd Användarnamn"
 
-#: sabnzbd/skintext.py:333
+#: sabnzbd/skintext.py:332
 msgid "Optional authentication username."
 msgstr "Väljbart autentiserings användarnamn."
 
-#: sabnzbd/skintext.py:334
+#: sabnzbd/skintext.py:333
 msgid "SABnzbd Password"
 msgstr "SABnzbd Lösenord"
 
-#: sabnzbd/skintext.py:335
+#: sabnzbd/skintext.py:334
 msgid "Optional authentication password."
 msgstr "Väljbart autentiserings lösenord."
 
-#: sabnzbd/skintext.py:336
+#: sabnzbd/skintext.py:335
 msgid "Security"
 msgstr ""
 
-#: sabnzbd/skintext.py:337
+#: sabnzbd/skintext.py:336
 msgid "HTTPS Support"
 msgstr "HTTPS Stöd"
 
-#: sabnzbd/skintext.py:338
+#: sabnzbd/skintext.py:337
 msgid "Enable HTTPS"
 msgstr "HTTPS Aktivera"
 
-#: sabnzbd/skintext.py:339
+#: sabnzbd/skintext.py:338
 msgid "not installed"
 msgstr "inte installerad"
 
-#: sabnzbd/skintext.py:340
+#: sabnzbd/skintext.py:339
 msgid "Enable accessing the interface from a HTTPS address."
 msgstr "Aktivera åtkomst till webbkontrollen med HTTPS adress."
 
-#: sabnzbd/skintext.py:341
+#: sabnzbd/skintext.py:340
 msgid "HTTPS Port"
 msgstr "HTTPS-port"
 
-#: sabnzbd/skintext.py:342
+#: sabnzbd/skintext.py:341
 msgid "If empty, the standard port will only listen to HTTPS."
 msgstr "Om tom kommer standardporten endast lyssna till HTTPS."
 
-#: sabnzbd/skintext.py:343
+#: sabnzbd/skintext.py:342
 msgid "HTTPS Certificate"
 msgstr "HTTPS Certifikat"
 
-#: sabnzbd/skintext.py:344
+#: sabnzbd/skintext.py:343
 msgid "File name or path to HTTPS Certificate."
 msgstr "Filnamn eller sökväg till HTTPS Certifikat."
 
-#: sabnzbd/skintext.py:345
+#: sabnzbd/skintext.py:344
 msgid ""
 "Generate new self-signed certificate and key. Requires SABnzbd restart!"
 msgstr ""
 
-#: sabnzbd/skintext.py:346
+#: sabnzbd/skintext.py:345
 msgid "HTTPS Key"
 msgstr "HTTPS Nyckel"
 
-#: sabnzbd/skintext.py:347
+#: sabnzbd/skintext.py:346
 msgid "File name or path to HTTPS Key."
 msgstr "Filnamn eller sökväg till HTTPS Nyckel."
 
-#: sabnzbd/skintext.py:348
+#: sabnzbd/skintext.py:347
 msgid "HTTPS Chain Certifcates"
 msgstr "HTTPS-kedjecertifikat"
 
-#: sabnzbd/skintext.py:349
+#: sabnzbd/skintext.py:348
 msgid "File name or path to HTTPS Chain."
 msgstr "Filnamn eller sökväg till HTTPS-kedja"
 
-#: sabnzbd/skintext.py:350
+#: sabnzbd/skintext.py:349
 msgid "Tuning"
 msgstr "Optimering"
 
-#: sabnzbd/skintext.py:351
+#: sabnzbd/skintext.py:350
 msgid "RSS Checking Interval"
 msgstr "RSS Uppdateringsintervall"
 
-#: sabnzbd/skintext.py:352
+#: sabnzbd/skintext.py:351
 msgid ""
 "Checking interval (in minutes, at least 15). Not active when you use the "
 "Scheduler!"
@@ -2687,23 +2750,23 @@ msgstr ""
 "Kontrollintervall (i minuter, minst 15). Ej aktiv om du använder "
 "Schemaläggaren!"
 
-#: sabnzbd/skintext.py:353
+#: sabnzbd/skintext.py:352
 msgid "Maximum line speed"
 msgstr "Maximal linjehastighet"
 
-#: sabnzbd/skintext.py:354
+#: sabnzbd/skintext.py:353
 msgid "Percentage of line speed"
 msgstr "Procent av linjehastighet"
 
-#: sabnzbd/skintext.py:355
+#: sabnzbd/skintext.py:354
 msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
 msgstr "Vilken procent av linjehastigheten ska SABnzbd använda, te.x 50"
 
-#: sabnzbd/skintext.py:356
+#: sabnzbd/skintext.py:355
 msgid "Article Cache Limit"
 msgstr "Cachestorlek för artiklar"
 
-#: sabnzbd/skintext.py:357
+#: sabnzbd/skintext.py:356
 msgid ""
 "Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally "
 "follow with K,M,G. For example: \"64M\" or \"128M\"</i>"
@@ -2711,11 +2774,11 @@ msgstr ""
 "Sparar artiklar i minnet för att reducera diskåtkomst.<br /><i>I bytes, "
 "följt av K,M,G. Till exempel: \"64M\" eller \"128M\"</i>"
 
-#: sabnzbd/skintext.py:358
+#: sabnzbd/skintext.py:357
 msgid "Cleanup List"
 msgstr "Rensa lista"
 
-#: sabnzbd/skintext.py:359
+#: sabnzbd/skintext.py:358
 msgid ""
 "List of file extensions that should be deleted after download.<br />For "
 "example: <b>nfo</b> or <b>nfo, sfv</b>"
@@ -2723,103 +2786,103 @@ msgstr ""
 "Lista av filändelser som skall bli borttagna efter nerladdning.<br/> Till "
 "exempel: <b>nfo</b> or <b>nfo, sfv</b>"
 
-#: sabnzbd/skintext.py:360
+#: sabnzbd/skintext.py:359
 msgid "Save Changes"
 msgstr "Spara ändringar"
 
-#: sabnzbd/skintext.py:361
+#: sabnzbd/skintext.py:360
 msgid "Restore Defaults"
 msgstr ""
 
-#: sabnzbd/skintext.py:362 # sabnzbd/skintext.py:901
+#: sabnzbd/skintext.py:361 # sabnzbd/skintext.py:891
 msgid "Reset"
 msgstr "Återställ"
 
-#: sabnzbd/skintext.py:363
+#: sabnzbd/skintext.py:362
 msgid "Language"
 msgstr "Språk"
 
-#: sabnzbd/skintext.py:364
+#: sabnzbd/skintext.py:363
 msgid "Select a web interface language."
 msgstr "Välj språk till webbkontrollen."
 
-#: sabnzbd/skintext.py:365
+#: sabnzbd/skintext.py:364
 msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
 
-#: sabnzbd/skintext.py:366 # sabnzbd/skintext.py:520
+#: sabnzbd/skintext.py:365 # sabnzbd/skintext.py:513
 msgid "API Key"
 msgstr "API-nyckel"
 
-#: sabnzbd/skintext.py:367
+#: sabnzbd/skintext.py:366
 msgid "This key will give 3rd party programs full access to SABnzbd."
 msgstr "Denna nyckel ger tredjepartsprogram full tillgång till SABnzbd."
 
-#: sabnzbd/skintext.py:368
+#: sabnzbd/skintext.py:367
 msgid "NZB Key"
 msgstr "NZB-nyckel"
 
-#: sabnzbd/skintext.py:369
+#: sabnzbd/skintext.py:368
 msgid "This key will allow 3rd party programs to add NZBs to SABnzbd."
 msgstr ""
 "Denna nyckel ger tredjepartsprogram möjlighet att lägga till NZB:er i "
 "SABnzbd."
 
-#: sabnzbd/skintext.py:370
+#: sabnzbd/skintext.py:369
 msgid "Generate New Key"
 msgstr "Generera Ny Nyckel"
 
-#: sabnzbd/skintext.py:371 [Explanation for QR code of APIKEY]
+#: sabnzbd/skintext.py:370 [Explanation for QR code of APIKEY]
 msgid "API Key QR Code"
 msgstr "API- eller QR-kod"
 
-#: sabnzbd/skintext.py:372
+#: sabnzbd/skintext.py:371
 msgid "List of local network ranges"
 msgstr "Lista av lokala nätverksomfång"
 
-#: sabnzbd/skintext.py:373
+#: sabnzbd/skintext.py:372
 msgid ""
 "All local network addresses start with these prefixes (often \"192.168.1.\")"
 msgstr ""
 "Alla lokala nätverksadresser startar med dessa prefixer (ofta \"192.168.1.\")"
 
-#: sabnzbd/skintext.py:374
+#: sabnzbd/skintext.py:373
 msgid "External internet access"
 msgstr "Extern internetåtkomst"
 
-#: sabnzbd/skintext.py:375
+#: sabnzbd/skintext.py:374
 msgid ""
 "You can set access rights for systems outside your local network. Requires "
 "List of local network ranges to be defined."
 msgstr ""
 
-#: sabnzbd/skintext.py:376
+#: sabnzbd/skintext.py:375
 msgid "No access"
 msgstr "Ingen åtkomst"
 
-#: sabnzbd/skintext.py:377
+#: sabnzbd/skintext.py:376
 msgid "Add NZB files "
 msgstr "Lägg till NZB-filer "
 
-#: sabnzbd/skintext.py:378
+#: sabnzbd/skintext.py:377
 msgid "API (no Config)"
 msgstr "API (ingen Konfigurering)"
 
-#: sabnzbd/skintext.py:379
+#: sabnzbd/skintext.py:378
 msgid "Full API"
 msgstr "Full API"
 
-#: sabnzbd/skintext.py:380
+#: sabnzbd/skintext.py:379
 msgid "Full Web interface"
 msgstr "Fullt Webgränsnitt"
 
-#: sabnzbd/skintext.py:381
+#: sabnzbd/skintext.py:380
 msgid "Only external access requires login"
 msgstr ""
 
-#: sabnzbd/skintext.py:384
+#: sabnzbd/skintext.py:383
 msgid ""
 "<em>NOTE:</em> Folders will be created automatically when Saving. You may "
 "use absolute paths to save outside of the default folders."
@@ -2827,23 +2890,23 @@ msgstr ""
 "<em>OBS:</em> Mappar kommer att skapas automatiskt när du Sparar. Du måste "
 "ange exakta sökvägar till dina mappar för att spara utanför standardmapparna."
 
-#: sabnzbd/skintext.py:385
+#: sabnzbd/skintext.py:384
 msgid "User Folders"
 msgstr "Användarmappar"
 
-#: sabnzbd/skintext.py:386 # sabnzbd/skintext.py:824
+#: sabnzbd/skintext.py:385 # sabnzbd/skintext.py:814
 msgid "Browse"
 msgstr "Bläddra"
 
-#: sabnzbd/skintext.py:387
+#: sabnzbd/skintext.py:386
 msgid "In"
 msgstr "I"
 
-#: sabnzbd/skintext.py:388
+#: sabnzbd/skintext.py:387
 msgid "Temporary Download Folder"
 msgstr "Temporär nedladdningsmapp"
 
-#: sabnzbd/skintext.py:389
+#: sabnzbd/skintext.py:388
 msgid ""
 "Location to store unprocessed downloads.<br /><i>Can only be changed when "
 "queue is empty.</i>"
@@ -2851,11 +2914,11 @@ msgstr ""
 "Plats för att lagra ej bearbetade nedladdningar.<br /><i>Kan endast ändras "
 "när kön är tom.</i>"
 
-#: sabnzbd/skintext.py:390
+#: sabnzbd/skintext.py:389
 msgid "Minimum Free Space for Temporary Download Folder"
 msgstr "Minimal fri plats för temporär nedladdningsmapp"
 
-#: sabnzbd/skintext.py:391
+#: sabnzbd/skintext.py:390
 msgid ""
 "Auto-pause when free space is beneath this value.<br /><i>In bytes, "
 "optionally follow with K,M,G,T. For example: \"800M\" or \"8G\"</i>"
@@ -2863,11 +2926,11 @@ msgstr ""
 "Auto-pausa när fri plats är nära sin gräns.<br /><i>I bytes, följt av "
 "K,M,G,T. Till exempel: \"800M\" or \"8G\"</i>"
 
-#: sabnzbd/skintext.py:392
+#: sabnzbd/skintext.py:391
 msgid "Completed Download Folder"
 msgstr "Färdig nedladdningsmapp"
 
-#: sabnzbd/skintext.py:393
+#: sabnzbd/skintext.py:392
 msgid ""
 "Location to store finished, fully processed downloads.<br /><i>Can be "
 "overruled by user-defined categories.</i>"
@@ -2875,11 +2938,11 @@ msgstr ""
 "Plats för att lagra bearbetade och färdiga nedladdningar.<br /><i>Kan "
 "åsidosättas av användar-definierade kategorier.</i>"
 
-#: sabnzbd/skintext.py:394
+#: sabnzbd/skintext.py:393
 msgid "Permissions for completed downloads"
 msgstr "Rättigheter för färdiga nedladdningar"
 
-#: sabnzbd/skintext.py:395
+#: sabnzbd/skintext.py:394
 msgid ""
 "Set permissions pattern for completed files/folders.<br /><i>In octal "
 "notation. For example: \"755\" or \"777\"</i>"
@@ -2887,11 +2950,11 @@ msgstr ""
 "Sätt rättigheter för färdiga filer och mappar.<br /><i>Använd siffror. Till "
 "exempel: \"755\" or \"777\"</i>"
 
-#: sabnzbd/skintext.py:396
+#: sabnzbd/skintext.py:395
 msgid "Watched Folder"
 msgstr "Övervakad Mapp"
 
-#: sabnzbd/skintext.py:397
+#: sabnzbd/skintext.py:396
 msgid ""
 "Folder to monitor for .nzb files.<br /><i>Also scans .zip .rar and .tar.gz "
 "archives for .nzb files.</i>"
@@ -2899,48 +2962,48 @@ msgstr ""
 "Mapp som igenomsöks automatiskt efter .nzb filer.<br /><i>Skannar även "
 "igenom .zip .rar och .tar.gz arkiv efter .nzb filer.</i>"
 
-#: sabnzbd/skintext.py:398
+#: sabnzbd/skintext.py:397
 msgid "Watched Folder Scan Speed"
 msgstr "Skanningsintervall för Övervakade mappar"
 
-#: sabnzbd/skintext.py:399
+#: sabnzbd/skintext.py:398
 msgid "Number of seconds between scans for .nzb files."
 msgstr "Sekunder mellan skanningar för .nzb filer."
 
-#: sabnzbd/skintext.py:400
+#: sabnzbd/skintext.py:399
 msgid "Scripts Folder"
 msgstr ""
 
-#: sabnzbd/skintext.py:401
+#: sabnzbd/skintext.py:400
 msgid "Folder containing user scripts."
 msgstr ""
 
-#: sabnzbd/skintext.py:402
+#: sabnzbd/skintext.py:401
 msgid "Email Templates Folder"
 msgstr "Mapp för E-mail mallar"
 
-#: sabnzbd/skintext.py:403
+#: sabnzbd/skintext.py:402
 msgid "Folder containing user-defined email templates."
 msgstr "Mapp som innehåller användar-definierade e-mail mallar."
 
-#: sabnzbd/skintext.py:404
+#: sabnzbd/skintext.py:403
 msgid "Password file"
 msgstr "Lösenordsfil"
 
-#: sabnzbd/skintext.py:405
+#: sabnzbd/skintext.py:404
 msgid "File containing all passwords to be tried on encrypted RAR files."
 msgstr ""
 "Fil som innehåller alla lösenord som ska prövas på krypterade RAR-filer."
 
-#: sabnzbd/skintext.py:406
+#: sabnzbd/skintext.py:405
 msgid "System Folders"
 msgstr "Systemmappar"
 
-#: sabnzbd/skintext.py:407
+#: sabnzbd/skintext.py:406
 msgid "Administrative Folder"
 msgstr "Administrativ mapp"
 
-#: sabnzbd/skintext.py:408
+#: sabnzbd/skintext.py:407
 msgid ""
 "Location for queue admin and history database.<br /><i>Can only be changed "
 "when queue is empty.</i>"
@@ -2948,85 +3011,63 @@ msgstr ""
 "Plats för köadministration och historiedatabas.<br /><i>Kan bara ändras när "
 "kön är tom.</i>"
 
-#: sabnzbd/skintext.py:409
+#: sabnzbd/skintext.py:408
 msgid "<i>Data will <b>not</b> be moved. Requires SABnzbd restart!</i>"
 msgstr "<i>Data kommer <b>inte</b> tas bort. Kräver omstart av SABnzbd!</i>"
 
-#: sabnzbd/skintext.py:410
+#: sabnzbd/skintext.py:409
 msgid "Log Folder"
 msgstr "Loggmapp"
 
-#: sabnzbd/skintext.py:411
+#: sabnzbd/skintext.py:410
 msgid ""
 "Location of log files for SABnzbd.<br /><i>Requires SABnzbd restart!</i>"
 msgstr ""
 "Plats för sparade loggfiler från SABnzbd.<br /><i>Kräver omstart av "
 "SABnzbd!</i>"
 
-#: sabnzbd/skintext.py:412
+#: sabnzbd/skintext.py:411
 msgid ".nzb Backup Folder"
 msgstr ".nzb Reservmapp"
 
-#: sabnzbd/skintext.py:413
+#: sabnzbd/skintext.py:412
 msgid "Location where .nzb files will be stored."
 msgstr "Plats där .nzb filer sparas."
 
-#: sabnzbd/skintext.py:414
+#: sabnzbd/skintext.py:413
 msgid "Default Base Folder"
 msgstr "Standard basmapp"
 
-#: sabnzbd/skintext.py:417
-msgid "Enable Quick Check"
-msgstr "Aktivera Snabbkoll"
-
-#: sabnzbd/skintext.py:418
-msgid "Skip par2 checking when files are 100% valid."
-msgstr "Strunta i par2 kontroll när filerna är 100% giltiga."
-
-#: sabnzbd/skintext.py:419
+#: sabnzbd/skintext.py:416
 msgid "Download all par2 files"
 msgstr "Ladda ner alla par2 filer"
 
-#: sabnzbd/skintext.py:420
+#: sabnzbd/skintext.py:417
 msgid ""
-"This prevents multiple repair runs. QuickCheck on: download all par2 files "
-"when needed. QuickCheck off: always download all par2 files."
+"This prevents multiple repair runs by downloading all par2 files when needed."
 msgstr ""
-"Det här förhindrar multipla reparationskörningar. QuickCheck på: ladda ner "
-"alla par2 filer när det behövs. QuickCheck Av: Ladda ner alla par2 filer."
 
-#: sabnzbd/skintext.py:421
+#: sabnzbd/skintext.py:418
 msgid "Enable recursive unpacking"
 msgstr "Aktivera rekursiv uppackning"
 
-#: sabnzbd/skintext.py:422
+#: sabnzbd/skintext.py:419
 msgid "Unpack archives (rar, zip, 7z) within archives."
 msgstr "Packa upp arkiv (rar,zip,7z) inuti arkiven."
 
-#: sabnzbd/skintext.py:423
+#: sabnzbd/skintext.py:420
 msgid "Ignore any folders inside archives"
 msgstr "Ignorera alla mappar i arkiven"
 
-#: sabnzbd/skintext.py:424
+#: sabnzbd/skintext.py:421
 msgid "All files will go into a single folder."
 msgstr "Alla filer kommer hamna i en mapp."
 
-#: sabnzbd/skintext.py:425
-msgid "When unpacking, overwrite existing files"
-msgstr "Under uppackning, skriv över existerande filer"
-
-#: sabnzbd/skintext.py:426
-msgid ""
-"This will overwrite existing files instead of creating an alternative name."
-msgstr ""
-"Detta kommer skriva över existerande filer istället för att skapa "
-"alternativa namn."
-
-#: sabnzbd/skintext.py:427
+#: sabnzbd/skintext.py:422
 msgid "Only Get Articles for Top of Queue"
 msgstr "Bara artiklarna för början av kön"
 
-#: sabnzbd/skintext.py:428
+#: sabnzbd/skintext.py:423
 msgid ""
 "Enable for less memory usage. Disable to prevent slow jobs from blocking the "
 "queue."
@@ -3034,87 +3075,87 @@ msgstr ""
 "Aktivera för lägre minnesanvändning. Avaktivera för att förhindra långsamma "
 "jobb att blockera kön."
 
-#: sabnzbd/skintext.py:429
+#: sabnzbd/skintext.py:424
 msgid "Post-Process Only Verified Jobs"
 msgstr "Efterbehandla endast verifierade jobb"
 
-#: sabnzbd/skintext.py:430
+#: sabnzbd/skintext.py:425
 msgid "Only perform post-processing on jobs that passed all PAR2 checks."
 msgstr "Efterbehandla enbart jobb som passerat PAR2 kontrollen."
 
-#: sabnzbd/skintext.py:431
+#: sabnzbd/skintext.py:426
 msgid "Action when encrypted RAR is downloaded"
 msgstr "Händelse när krypterade RAR är nerladdad"
 
-#: sabnzbd/skintext.py:432
+#: sabnzbd/skintext.py:427
 msgid ""
 "In case of \"Pause\", you'll need to set a password and resume the job."
 msgstr ""
 "Om \"Pausad\", så behöver du ange ett lösenord för att återuppta jobbet."
 
-#: sabnzbd/skintext.py:433
+#: sabnzbd/skintext.py:428
 msgid "Detect Duplicate Downloads"
 msgstr "Upptäck dubbletter av nedladdningar"
 
-#: sabnzbd/skintext.py:434
+#: sabnzbd/skintext.py:429
 msgid ""
 "Detect identical NZB files (based on items in your History or files in .nzb "
 "Backup Folder)"
 msgstr ""
 
-#: sabnzbd/skintext.py:435
+#: sabnzbd/skintext.py:430
 msgid "Detect duplicate episodes in series"
 msgstr "Hitta dublettavsnitt i serier"
 
-#: sabnzbd/skintext.py:436
+#: sabnzbd/skintext.py:431
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
 msgstr ""
 
-#: sabnzbd/skintext.py:438 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:433 [Three way switch for duplicates]
 msgid "Discard"
 msgstr "Kasta"
 
-#: sabnzbd/skintext.py:440 [Three way switch for duplicates]
+#: sabnzbd/skintext.py:435 [Three way switch for duplicates]
 msgid "Fail job (move to History)"
 msgstr ""
 
-#: sabnzbd/skintext.py:441 [Three way switch for encrypted posts]
+#: sabnzbd/skintext.py:436 [Three way switch for encrypted posts]
 msgid "Abort"
 msgstr "Avbryt"
 
-#: sabnzbd/skintext.py:442
+#: sabnzbd/skintext.py:437
 msgid "Action when unwanted extension detected"
 msgstr "Händelse när oönskad filändelse hittad"
 
-#: sabnzbd/skintext.py:443
+#: sabnzbd/skintext.py:438
 msgid "Action when an unwanted extension is detected in RAR files"
 msgstr "Händelse när en oönskad filändelse är hittad i RAR-filer."
 
-#: sabnzbd/skintext.py:444
+#: sabnzbd/skintext.py:439
 msgid "Unwanted extensions"
 msgstr "Oönskade filändelser"
 
-#: sabnzbd/skintext.py:445
+#: sabnzbd/skintext.py:440
 msgid ""
 "List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
 msgstr ""
 "Lista alla oönskade filändelser. Till Exempel: <b>exe</b> or <b>exe, com</b>"
 
-#: sabnzbd/skintext.py:446
+#: sabnzbd/skintext.py:441
 msgid "Enable SFV-based checks"
 msgstr "Använd SFV-baserade kontroller"
 
-#: sabnzbd/skintext.py:447
+#: sabnzbd/skintext.py:442
 msgid "Do an extra verification based on SFV files."
 msgstr "Gör en extra kontroll med SFV filer"
 
-#: sabnzbd/skintext.py:448
+#: sabnzbd/skintext.py:443
 msgid "User script can flag job as failed"
 msgstr "Användarskript kan flagga jobb som misslyckat"
 
-#: sabnzbd/skintext.py:449
+#: sabnzbd/skintext.py:444
 msgid ""
 "When the user script returns a non-zero exit code, the job will be flagged "
 "as failed."
@@ -3122,32 +3163,20 @@ msgstr ""
 "När ett användarskript returnerar ett icke-nollutgångsvärde, så kommer "
 "jobbet att flaggas som misslyckat"
 
-#: sabnzbd/skintext.py:450
+#: sabnzbd/skintext.py:445
 msgid "On failure, try alternative NZB"
 msgstr "När misslyckat, prova en alternativ NZB"
 
-#: sabnzbd/skintext.py:451
+#: sabnzbd/skintext.py:446
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 "Vissa servrar kan förse en alternativ NZB när en nerladdning misslyckas"
 
-#: sabnzbd/skintext.py:452
-msgid "Use tags from indexer"
-msgstr "Använd taggar från indexern"
-
-#: sabnzbd/skintext.py:453
-msgid ""
-"Use tags from indexer for title, season, episode, etc. Otherwise all naming "
-"is derived from the NZB name."
-msgstr ""
-"Använda taggar från indexerns titel, säsong, avsnitt, osv. Annars kommer all "
-"namngivning utgå från NZB-namn."
-
-#: sabnzbd/skintext.py:454
+#: sabnzbd/skintext.py:447
 msgid "Enable folder rename"
 msgstr "Döp om mappar"
 
-#: sabnzbd/skintext.py:455
+#: sabnzbd/skintext.py:448
 msgid ""
 "Use temporary names during post processing. Disable when your system doesn't "
 "handle that properly."
@@ -3155,167 +3184,167 @@ msgstr ""
 "Använd temporära namn under efterbehandling. Avslaget när ditt system inte "
 "stöder det."
 
-#: sabnzbd/skintext.py:456
+#: sabnzbd/skintext.py:449
 msgid "Pre-queue user script"
 msgstr "Kö-specifika användarskript"
 
-#: sabnzbd/skintext.py:457
+#: sabnzbd/skintext.py:450
 msgid "Used before an NZB enters the queue."
 msgstr "Används innan en NZB tas in i kön."
 
-#: sabnzbd/skintext.py:458
+#: sabnzbd/skintext.py:451
 msgid "Enable MultiCore Par2"
 msgstr "Aktivera MultiCore Par2"
 
-#: sabnzbd/skintext.py:460
+#: sabnzbd/skintext.py:453
 msgid "Extra PAR2 Parameters"
 msgstr "Extra PAR2 parametrar"
 
-#: sabnzbd/skintext.py:462
+#: sabnzbd/skintext.py:455
 msgid "Nice Parameters"
 msgstr "Bra parametrar"
 
-#: sabnzbd/skintext.py:464
+#: sabnzbd/skintext.py:457
 msgid "IONice Parameters"
 msgstr "IONice parametrar"
 
-#: sabnzbd/skintext.py:466
+#: sabnzbd/skintext.py:459
 msgid "Disconnect on Empty Queue"
 msgstr "Koppla ifrån när kön är tom"
 
-#: sabnzbd/skintext.py:467
+#: sabnzbd/skintext.py:460
 msgid "Disconnect from Usenet server(s) when queue is empty or paused."
 msgstr "Koppla ifrån usenet servrarna när kön är tom eller pausad."
 
-#: sabnzbd/skintext.py:468
+#: sabnzbd/skintext.py:461
 msgid "Sort by Age"
 msgstr "Sortera efter ålder"
 
-#: sabnzbd/skintext.py:469
+#: sabnzbd/skintext.py:462
 msgid "Automatically sort items by (average) age."
 msgstr "Sortera automatiskt efter (medel) ålder."
 
-#: sabnzbd/skintext.py:471
+#: sabnzbd/skintext.py:464
 msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
 msgstr ""
 
-#: sabnzbd/skintext.py:472
+#: sabnzbd/skintext.py:465
 msgid "Check for New Release"
 msgstr "Kolla efter ny utgåva"
 
-#: sabnzbd/skintext.py:473
+#: sabnzbd/skintext.py:466
 msgid "Weekly check for new SABnzbd release."
 msgstr "Kolla efter ny utgåva av SABnzbd varje vecka."
 
-#: sabnzbd/skintext.py:474 [Pick list for weekly test for new releases]
+#: sabnzbd/skintext.py:467 [Pick list for weekly test for new releases]
 msgid "Also test releases"
 msgstr "Även testutgåvor"
 
-#: sabnzbd/skintext.py:475
+#: sabnzbd/skintext.py:468
 msgid "Replace Spaces in Foldername"
 msgstr "Ersätt mellanslag i mappnamn"
 
-#: sabnzbd/skintext.py:476
+#: sabnzbd/skintext.py:469
 msgid "Replace spaces with underscores in folder names."
 msgstr "Ersätt mellanslag med understreck i mappnamn."
 
-#: sabnzbd/skintext.py:477
+#: sabnzbd/skintext.py:470
 msgid "Replace dots in Foldername"
 msgstr "Ersätt punkter i mappnamn"
 
-#: sabnzbd/skintext.py:478
+#: sabnzbd/skintext.py:471
 msgid "Replace dots with spaces in folder names."
 msgstr "Ersätt punkter med mellanslag i mappnamn"
 
-#: sabnzbd/skintext.py:479
+#: sabnzbd/skintext.py:472
 msgid "Replace Illegal Characters in Folder Names"
 msgstr "Ersätt otillåtna tecken i mappnamn."
 
-#: sabnzbd/skintext.py:480
+#: sabnzbd/skintext.py:473
 msgid ""
 "Replace illegal characters in folder names by equivalents (otherwise remove)."
 msgstr ""
 "Ersätt otillåtna tecken i mappnamn med motsvarande tecken (annars ta bort)."
 
-#: sabnzbd/skintext.py:481
+#: sabnzbd/skintext.py:474
 msgid "Make Windows compatible"
 msgstr "Gör Windows-kompatibel"
 
-#: sabnzbd/skintext.py:482
+#: sabnzbd/skintext.py:475
 msgid "For servers: make sure names are compatible with Windows."
 msgstr "För servrar: Gör att namn är kompatibla med Windows."
 
-#: sabnzbd/skintext.py:483
+#: sabnzbd/skintext.py:476
 msgid "Launch Browser on Startup"
 msgstr "Starta webbläsare vid uppstart"
 
-#: sabnzbd/skintext.py:484
+#: sabnzbd/skintext.py:477
 msgid "Launch the default web browser when starting SABnzbd."
 msgstr "Startar standard webbläsaren när SABnzbd startar."
 
-#: sabnzbd/skintext.py:485
+#: sabnzbd/skintext.py:478
 msgid "Pause Downloading During Post-Processing"
 msgstr "Pausa nedladdning under efterbehandling"
 
-#: sabnzbd/skintext.py:486
+#: sabnzbd/skintext.py:479
 msgid ""
 "Pauses downloading at the start of post processing and resumes when finished."
 msgstr ""
 "Pausas nedladdning när efterbehandling börjar och återupptar nedladdning när "
 "efterbehandling är klar."
 
-#: sabnzbd/skintext.py:487
+#: sabnzbd/skintext.py:480
 msgid "Ignore Samples"
 msgstr "Ignorera Sample-filer"
 
-#: sabnzbd/skintext.py:488
+#: sabnzbd/skintext.py:481
 msgid "Filter out sample files (e.g. video samples)."
 msgstr "Filtrera ut sample-filer (ex. video samplingar)."
 
-#: sabnzbd/skintext.py:490
+#: sabnzbd/skintext.py:483
 msgid "Delete after download"
 msgstr "Ta bort efter nedladdning"
 
-#: sabnzbd/skintext.py:491
+#: sabnzbd/skintext.py:484
 msgid "HTTPS certificate verification"
 msgstr ""
 
-#: sabnzbd/skintext.py:492
+#: sabnzbd/skintext.py:485
 msgid ""
 "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
 msgstr ""
 
-#: sabnzbd/skintext.py:494
+#: sabnzbd/skintext.py:487
 msgid "Server"
 msgstr "Server"
 
-#: sabnzbd/skintext.py:496
+#: sabnzbd/skintext.py:489
 msgid "Post processing"
 msgstr "Efterbehandling"
 
-#: sabnzbd/skintext.py:497
+#: sabnzbd/skintext.py:490
 msgid "Naming"
 msgstr "Döpning"
 
-#: sabnzbd/skintext.py:498
+#: sabnzbd/skintext.py:491
 msgid "Quota"
 msgstr "Kvot"
 
-#: sabnzbd/skintext.py:499
+#: sabnzbd/skintext.py:492
 msgid "Indexing"
 msgstr "Indexerar"
 
-#: sabnzbd/skintext.py:501
+#: sabnzbd/skintext.py:494
 msgid "How much can be downloaded this month (K/M/G)"
 msgstr "Hur mycket kan laddas ner denna månad (K/M/G)"
 
-#: sabnzbd/skintext.py:502 [Reset day of the download quota]
+#: sabnzbd/skintext.py:495 [Reset day of the download quota]
 msgid "Reset day"
 msgstr "Nollställ dag"
 
-#: sabnzbd/skintext.py:503
+#: sabnzbd/skintext.py:496
 msgid ""
 "On which day of the month or week (1=Monday) does your ISP reset the quota? "
 "(Optionally with hh:mm)"
@@ -3323,285 +3352,269 @@ msgstr ""
 "På vilken dag i månaden eller veckan (1=Måndag) nollställer din ISP din "
 "kvot? (Alternativt med hh:mm)"
 
-#: sabnzbd/skintext.py:504 [Auto-resume download on the reset day]
+#: sabnzbd/skintext.py:497 [Auto-resume download on the reset day]
 msgid "Auto resume"
 msgstr "Autoåterupptagning"
 
-#: sabnzbd/skintext.py:505
+#: sabnzbd/skintext.py:498
 msgid "Should downloading resume after the quota is reset?"
 msgstr "Skall nerladdning återupptas efter att kvot är nollställd?"
 
-#: sabnzbd/skintext.py:506 [Does the quota get reset every day, week or month?]
+#: sabnzbd/skintext.py:499 [Does the quota get reset every day, week or month?]
 msgid "Quota period"
 msgstr "Kvotperiod"
 
-#: sabnzbd/skintext.py:507
+#: sabnzbd/skintext.py:500
 msgid "Does the quota get reset each day, week or month?"
 msgstr "Nollställs kvoten varje dag, vecka eller månad?"
 
-#: sabnzbd/skintext.py:508
+#: sabnzbd/skintext.py:501
 msgid "Check before download"
 msgstr "Kontrollera innan nerladdning"
 
-#: sabnzbd/skintext.py:509
+#: sabnzbd/skintext.py:502
 msgid "Try to predict successful completion before actual download (slower!)"
 msgstr ""
 "Försök att förutspå lyckad överföring innan nerladdningen påbörjas (saktare!)"
 
-#: sabnzbd/skintext.py:510
+#: sabnzbd/skintext.py:503
 msgid "SSL Ciphers"
 msgstr ""
 
-#: sabnzbd/skintext.py:511
+#: sabnzbd/skintext.py:504
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py:512
+#: sabnzbd/skintext.py:505
 msgid "Maximum retries"
 msgstr "Max antal omförsök"
 
-#: sabnzbd/skintext.py:513
+#: sabnzbd/skintext.py:506
 msgid "Maximum number of retries per server"
 msgstr "Max antal omförsök per server"
 
-#: sabnzbd/skintext.py:514
+#: sabnzbd/skintext.py:507
 msgid "Only for optional servers"
 msgstr "Endast för vissa servers"
 
-#: sabnzbd/skintext.py:515
+#: sabnzbd/skintext.py:508
 msgid "Apply maximum retries only to optional servers"
 msgstr "Applicera endast max antal omförsök till vissa servers"
 
-#: sabnzbd/skintext.py:516
+#: sabnzbd/skintext.py:509
 msgid "Abort jobs that cannot be completed"
 msgstr "Avbryt jobb som inte kan kompletteras"
 
-#: sabnzbd/skintext.py:517
+#: sabnzbd/skintext.py:510
 msgid ""
 "When during download it becomes clear that too much data is missing, abort "
 "the job"
 msgstr ""
 "Under nerladdning och det märks att för mycket data saknas, avbryt jobbet"
 
-#: sabnzbd/skintext.py:518
+#: sabnzbd/skintext.py:511
 msgid "Enable Indexer Integration"
 msgstr ""
 
-#: sabnzbd/skintext.py:519
+#: sabnzbd/skintext.py:512
 msgid ""
-"Enhanced functionality including ratings and extra status information is "
-"available when connected to OZnzb indexer."
+"Indexers can supply rating information when a job is added and SABnzbd can "
+"report to the indexer if a job couldn't be completed. Depending on your "
+"indexer, the API key setting can be left blank."
 msgstr ""
-"Förbättrad funktionalitet, inklusive betyg och extra statusinformation finns "
-"tillgänglig när den är ansluten till OZnzb indexe."
 
-#: sabnzbd/skintext.py:521 # sabnzbd/skintext.py:637 [Address of Growl server]
-msgid "Server address"
-msgstr "Serveradress"
-
-#: sabnzbd/skintext.py:522
+#: sabnzbd/skintext.py:514
 msgid ""
 "This key provides identity to indexer. Check your profile on the indexer's "
 "website."
 msgstr ""
 
-#: sabnzbd/skintext.py:523
-msgid "Automatic Feedback"
-msgstr "Automatisk Feedback"
-
-#: sabnzbd/skintext.py:524
-msgid ""
-"Send automatically calculated validation results for downloads to indexer."
-msgstr ""
-"Skicka automatiskt beräknade valideringsresultat för nedladdningar till "
-"indexe."
-
-#: sabnzbd/skintext.py:525
+#: sabnzbd/skintext.py:515
 msgid "Enable Filtering"
 msgstr "Aktivera Filtrering"
 
-#: sabnzbd/skintext.py:526
+#: sabnzbd/skintext.py:516
 msgid "Action downloads according to filtering rules."
 msgstr "Action nedladdningar enligt filtreringsregler."
 
-#: sabnzbd/skintext.py:527
+#: sabnzbd/skintext.py:517
 msgid "Abort If"
 msgstr "Avbryt Om"
 
-#: sabnzbd/skintext.py:528
+#: sabnzbd/skintext.py:518
 msgid "Else Pause If"
 msgstr "Annars Pausa Om"
 
-#: sabnzbd/skintext.py:529
+#: sabnzbd/skintext.py:519
 msgid "Video rating"
 msgstr "Videobetyg"
 
-#: sabnzbd/skintext.py:530
+#: sabnzbd/skintext.py:520
 msgid "Audio rating"
 msgstr "Audiobetyg"
 
-#: sabnzbd/skintext.py:532
+#: sabnzbd/skintext.py:522
 msgid "Spam"
 msgstr "Spam"
 
-#: sabnzbd/skintext.py:533
+#: sabnzbd/skintext.py:523
 msgid "Confirmed"
 msgstr "Bekräftad"
 
-#: sabnzbd/skintext.py:534
+#: sabnzbd/skintext.py:524
 msgid "More thumbs down than up"
 msgstr "Fler tummar ner än upp"
 
-#: sabnzbd/skintext.py:535
+#: sabnzbd/skintext.py:525
 msgid "Title keywords"
 msgstr "Titelns nyckelord"
 
-#: sabnzbd/skintext.py:536
+#: sabnzbd/skintext.py:526
 msgid "Comma separated list"
 msgstr "Kommaseparerad lista"
 
-#: sabnzbd/skintext.py:537
+#: sabnzbd/skintext.py:527
 msgid "Server load-balancing"
 msgstr "Serverbelastad-balansering"
 
-#: sabnzbd/skintext.py:538
+#: sabnzbd/skintext.py:528
 msgid "Prevent load-balancing"
 msgstr "Undvik belastningsbalansering"
 
-#: sabnzbd/skintext.py:539
+#: sabnzbd/skintext.py:529
 msgid "Allow load-balancing"
 msgstr "Tillåt belastningsbalansering"
 
-#: sabnzbd/skintext.py:540
+#: sabnzbd/skintext.py:530
 msgid "Allow load-balancing with optimization for IPv6"
 msgstr "Tillåt bellastningsbalansering med optimering för IPv6"
 
-#: sabnzbd/skintext.py:541
+#: sabnzbd/skintext.py:531
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
 msgstr "Användbar om en newsserver har fler val än en IPv4/IPv6adress"
 
-#: sabnzbd/skintext.py:544 [Caption] # sabnzbd/skintext.py:565 [Button: Add server]
+#: sabnzbd/skintext.py:534 [Caption] # sabnzbd/skintext.py:555 [Button: Add server]
 msgid "Add Server"
 msgstr "Lägg till server"
 
-#: sabnzbd/skintext.py:545 [User defined name for server]
+#: sabnzbd/skintext.py:535 [User defined name for server]
 msgid "Server description"
 msgstr "Serverbeskrivning"
 
-#: sabnzbd/skintext.py:547 [Server port]
+#: sabnzbd/skintext.py:537 [Server port]
 msgid "Port"
 msgstr "Port"
 
-#: sabnzbd/skintext.py:548 [Server username]
+#: sabnzbd/skintext.py:538 [Server username]
 msgid "Username"
 msgstr "Användarnamn"
 
-#: sabnzbd/skintext.py:549 [Server password]
+#: sabnzbd/skintext.py:539 [Server password]
 msgid "Password"
 msgstr "Lösenord"
 
-#: sabnzbd/skintext.py:550 [Server timeout]
+#: sabnzbd/skintext.py:540 [Server timeout]
 msgid "Timeout"
 msgstr "Tidsgräns"
 
-#: sabnzbd/skintext.py:552 [Server's retention time in days]
+#: sabnzbd/skintext.py:542 [Server's retention time in days]
 msgid "Retention time"
 msgstr "Retensionstid"
 
-#: sabnzbd/skintext.py:553 [Server SSL tickbox]
+#: sabnzbd/skintext.py:543 [Server SSL tickbox]
 msgid "SSL"
 msgstr "SSL"
 
-#: sabnzbd/skintext.py:554 [Server SSL tickbox]
+#: sabnzbd/skintext.py:544 [Server SSL tickbox]
 msgid "Secure connection to server"
 msgstr ""
 
-#: sabnzbd/skintext.py:555
+#: sabnzbd/skintext.py:545
 msgid "Certificate verification"
 msgstr ""
 
-#: sabnzbd/skintext.py:556
+#: sabnzbd/skintext.py:546
 msgid ""
 "Default: when SSL is enabled, verify the identity of the server using its "
 "certificates. Strict: verify and enforce matching hostname."
 msgstr ""
 
-#: sabnzbd/skintext.py:557 # sabnzbd/skintext.py:792 # sabnzbd/skintext.py:905
+#: sabnzbd/skintext.py:547 # sabnzbd/skintext.py:782 # sabnzbd/skintext.py:895
 msgid "Disabled"
 msgstr "Avaktiverad"
 
-#: sabnzbd/skintext.py:559
+#: sabnzbd/skintext.py:549
 msgid "Strict"
 msgstr ""
 
-#: sabnzbd/skintext.py:561 [Explain server priority]
+#: sabnzbd/skintext.py:551 [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 är högst prioritet, 100 är lägst prioritet"
 
-#: sabnzbd/skintext.py:562 [Server optional tickbox]
+#: sabnzbd/skintext.py:552 [Server optional tickbox]
 msgid "Optional"
 msgstr "Valfri"
 
-#: sabnzbd/skintext.py:563 [Explain server optional tickbox]
+#: sabnzbd/skintext.py:553 [Explain server optional tickbox]
 msgid "For unreliable servers, will be ignored longer in case of failures"
 msgstr ""
 
-#: sabnzbd/skintext.py:564 [Enable server tickbox]
+#: sabnzbd/skintext.py:554 [Enable server tickbox]
 msgid "Enable"
 msgstr "Aktivera"
 
-#: sabnzbd/skintext.py:566 [Button: Remove server]
+#: sabnzbd/skintext.py:556 [Button: Remove server]
 msgid "Remove Server"
 msgstr "Ta bort server"
 
-#: sabnzbd/skintext.py:567 [Button: Test server] # sabnzbd/skintext.py:978 [Wizard step]
+#: sabnzbd/skintext.py:557 [Button: Test server] # sabnzbd/skintext.py:968 [Wizard step]
 msgid "Test Server"
 msgstr "Testserver"
 
-#: sabnzbd/skintext.py:568 [Button: Clear server's byte counters]
+#: sabnzbd/skintext.py:558 [Button: Clear server's byte counters]
 msgid "Clear Counters"
 msgstr "Nollställ räknare"
 
-#: sabnzbd/skintext.py:569
+#: sabnzbd/skintext.py:559
 msgid "Testing server details..."
 msgstr "Testar serverdetaljer..."
 
-#: sabnzbd/skintext.py:570
+#: sabnzbd/skintext.py:560
 msgid "Bandwidth"
 msgstr "Bandbredd"
 
-#: sabnzbd/skintext.py:571
+#: sabnzbd/skintext.py:561
 msgid "Send Group"
 msgstr "Skicka grupp"
 
-#: sabnzbd/skintext.py:572
+#: sabnzbd/skintext.py:562
 msgid "Send group command before requesting articles."
 msgstr "Skicka gruppkommando innan du begär artiklar."
 
-#: sabnzbd/skintext.py:574
+#: sabnzbd/skintext.py:564
 msgid "Only use this server for these categories."
 msgstr "Använd endast denna server för dessa kategorier."
 
-#: sabnzbd/skintext.py:575
+#: sabnzbd/skintext.py:565
 msgid ""
 "None of the enabled servers have the 'Default' category selected. Jobs in "
 "the queue that are not assigned to one of the server's categories will not "
 "be downloaded."
 msgstr ""
 
-#: sabnzbd/skintext.py:576
+#: sabnzbd/skintext.py:566
 msgid "Personal notes"
 msgstr "Personliga noteringar"
 
-#: sabnzbd/skintext.py:579 [Config->Scheduling] # sabnzbd/skintext.py:583 [Config->Scheduling]
+#: sabnzbd/skintext.py:569 [Config->Scheduling] # sabnzbd/skintext.py:573 [Config->Scheduling]
 msgid "Add Schedule"
 msgstr "Lägg till schema"
 
-#: sabnzbd/skintext.py:584 [Config->Scheduling]
+#: sabnzbd/skintext.py:574 [Config->Scheduling]
 msgid "Current Schedules"
 msgstr "Aktuella scheman"
 
-#: sabnzbd/skintext.py:591
+#: sabnzbd/skintext.py:581
 msgid ""
 "The checkbox next to the feed name should be ticked for the feed to be "
 "enabled and be automatically checked for new items.<br />When a feed is "
@@ -3613,299 +3626,303 @@ msgstr ""
 "att välja nya objekt och inte allt som redan finns i RSS-flöded så länge du "
 "inte klickar på \"Tvinga nedladdning\"."
 
-#: sabnzbd/skintext.py:593 [Config->RSS, placeholder (cannot be too long)]
+#: sabnzbd/skintext.py:583 [Config->RSS, placeholder (cannot be too long)]
 msgid "Seperate multiple URLs by a comma"
 msgstr ""
 
-#: sabnzbd/skintext.py:594 [Config->RSS button]
+#: sabnzbd/skintext.py:584 [Config->RSS button]
 msgid "Read Feed"
 msgstr "Läs flöde"
 
-#: sabnzbd/skintext.py:595 [Config->RSS button]
+#: sabnzbd/skintext.py:585 [Config->RSS button]
 msgid "Force Download"
 msgstr "Tvinga nedladdning"
 
-#: sabnzbd/skintext.py:598 [Config->RSS table column header]
+#: sabnzbd/skintext.py:588 [Config->RSS table column header]
 msgid "Filter"
 msgstr "Filter"
 
-#: sabnzbd/skintext.py:599 [Config->RSS table column header]
+#: sabnzbd/skintext.py:589 [Config->RSS table column header]
 msgid "Skip"
 msgstr "Hoppa över"
 
-#: sabnzbd/skintext.py:600 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:590 [Config->RSS filter-type selection menu]
 msgid "Accept"
 msgstr "Acceptera"
 
-#: sabnzbd/skintext.py:601 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:591 [Config->RSS filter-type selection menu]
 msgid "Reject"
 msgstr "Avvisa"
 
-#: sabnzbd/skintext.py:602 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:592 [Config->RSS filter-type selection menu]
 msgid "Requires"
 msgstr "Kräver"
 
-#: sabnzbd/skintext.py:603 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:593 [Config->RSS filter-type selection menu]
 msgid "RequiresCat"
 msgstr "KräverKat"
 
-#: sabnzbd/skintext.py:604 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:594 [Config->RSS filter-type selection menu]
 msgid "At least"
 msgstr "Minst"
 
-#: sabnzbd/skintext.py:605 [Config->RSS filter-type selection menu]
+#: sabnzbd/skintext.py:595 [Config->RSS filter-type selection menu]
 msgid "At most"
 msgstr "Högst"
 
-#: sabnzbd/skintext.py:606 [Config->RSS filter-type selection menu "From Season/Episode"]
+#: sabnzbd/skintext.py:596 [Config->RSS filter-type selection menu "From Season/Episode"]
 msgid "From SxxEyy"
 msgstr "Från SxxEyy"
 
-#: sabnzbd/skintext.py:607 [Config->RSS filter-type selection menu "From Show Season/Episode"]
+#: sabnzbd/skintext.py:597 [Config->RSS filter-type selection menu "From Show Season/Episode"]
 msgid "From Show SxxEyy"
 msgstr ""
 
-#: sabnzbd/skintext.py:608 [Config->RSS section header]
+#: sabnzbd/skintext.py:598 [Config->RSS section header]
 msgid "Matched"
 msgstr "Matchade"
 
-#: sabnzbd/skintext.py:609 [Config->RSS section header]
+#: sabnzbd/skintext.py:599 [Config->RSS section header]
 msgid "Not Matched"
 msgstr "Inte Matchade"
 
-#: sabnzbd/skintext.py:610 [Config->RSS section header]
+#: sabnzbd/skintext.py:600 [Config->RSS section header]
 msgid "Downloaded"
 msgstr "Nedladdad"
 
-#: sabnzbd/skintext.py:613 [Config->RSS button]
+#: sabnzbd/skintext.py:603 [Config->RSS button]
 msgid "Read All Feeds Now"
 msgstr "Läsa Alla Flöden Nu"
 
-#: sabnzbd/skintext.py:616
+#: sabnzbd/skintext.py:606
 msgid "Email Notification On Job Completion"
 msgstr "E-post notifiering när jobb är slutfört"
 
-#: sabnzbd/skintext.py:617 [When to send email]
+#: sabnzbd/skintext.py:607 [When to send email]
 msgid "Never"
 msgstr "Aldrig"
 
-#: sabnzbd/skintext.py:618 [When to send email]
+#: sabnzbd/skintext.py:608 [When to send email]
 msgid "Always"
 msgstr "Alltid"
 
-#: sabnzbd/skintext.py:619 [When to send email]
+#: sabnzbd/skintext.py:609 [When to send email]
 msgid "Error-only"
 msgstr "Bara vid fel"
 
-#: sabnzbd/skintext.py:620
+#: sabnzbd/skintext.py:610
 msgid "Disk Full Notifications"
 msgstr "Full hårddisk notifiering"
 
-#: sabnzbd/skintext.py:621
+#: sabnzbd/skintext.py:611
 msgid "Send email when disk is full and SABnzbd is paused."
 msgstr "Skicka e-mail när hårddisken är full och SABnzbd har pausat."
 
-#: sabnzbd/skintext.py:622
+#: sabnzbd/skintext.py:612
 msgid "Send RSS notifications"
 msgstr "Skicka RSS-notiser"
 
-#: sabnzbd/skintext.py:623
+#: sabnzbd/skintext.py:613
 msgid "Send email when an RSS feed adds jobs to the queue."
 msgstr "Skicka E-post när ett RSS-flöde lägger till jobb till kön."
 
-#: sabnzbd/skintext.py:624
+#: sabnzbd/skintext.py:614
 msgid "SMTP Server"
 msgstr "SMTP-server"
 
-#: sabnzbd/skintext.py:625
+#: sabnzbd/skintext.py:615
 msgid "Set your ISP's server for outgoing email."
 msgstr "Ställ in din ISP's server för utgående e-mail."
 
-#: sabnzbd/skintext.py:626
+#: sabnzbd/skintext.py:616
 msgid "Email Recipient"
 msgstr "E-post mottagare"
 
-#: sabnzbd/skintext.py:627
+#: sabnzbd/skintext.py:617
 msgid "Email address to send the email to."
 msgstr "E-postadress att skicka e-post till."
 
-#: sabnzbd/skintext.py:628
+#: sabnzbd/skintext.py:618
 msgid "Email Sender"
 msgstr "E-post avsändare"
 
-#: sabnzbd/skintext.py:629
+#: sabnzbd/skintext.py:619
 msgid "Who should we say sent the email?"
 msgstr "Vem ska vi skicka e-posten från?"
 
-#: sabnzbd/skintext.py:630
+#: sabnzbd/skintext.py:620
 msgid "OPTIONAL Account Username"
 msgstr "VALFRITT Kontoanvändarnamn"
 
-#: sabnzbd/skintext.py:631
+#: sabnzbd/skintext.py:621
 msgid "For authenticated email, account name."
 msgstr "Användarnamn för e-post som kräver autentisering."
 
-#: sabnzbd/skintext.py:632
+#: sabnzbd/skintext.py:622
 msgid "OPTIONAL Account Password"
 msgstr "VALFRITT Användarlösenord"
 
-#: sabnzbd/skintext.py:633
+#: sabnzbd/skintext.py:623
 msgid "For authenticated email, password."
 msgstr "Lösenord för e-post som kräver autentisering."
 
-#: sabnzbd/skintext.py:634 [Header Growl section]
+#: sabnzbd/skintext.py:624 [Header Growl section]
 msgid "Growl"
 msgstr "Growl"
 
-#: sabnzbd/skintext.py:635 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:625 [Don't translate "Growl"]
 msgid "Enable Growl"
 msgstr "Aktivera Growl"
 
-#: sabnzbd/skintext.py:636 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:626 [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Skicka notis till Growl"
 
-#: sabnzbd/skintext.py:638 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:627 [Address of Growl server]
+msgid "Server address"
+msgstr "Serveradress"
+
+#: sabnzbd/skintext.py:628 [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Använd endast för extern Growl.server (host:port)"
 
-#: sabnzbd/skintext.py:639 [Growl server password]
+#: sabnzbd/skintext.py:629 [Growl server password]
 msgid "Server password"
 msgstr "Serverlösenord"
 
-#: sabnzbd/skintext.py:640 [Don't translate "Growl"]
+#: sabnzbd/skintext.py:630 [Don't translate "Growl"]
 msgid "Optional password for Growl server"
 msgstr "Valfritt lösenord för Growl-server"
 
-#: sabnzbd/skintext.py:641 [Don't translate "NotifyOSD"]
+#: sabnzbd/skintext.py:631 [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "Aktivera NotifyOSD"
 
-#: sabnzbd/skintext.py:642 [Don't translate "NotifyOSD"]
+#: sabnzbd/skintext.py:632 [Don't translate "NotifyOSD"]
 msgid "Send notifications to NotifyOSD"
 msgstr "Skicka notiser till NotifyOSD"
 
-#: sabnzbd/skintext.py:643 # sabnzbd/skintext.py:647 [Header for OSX Notfication Center section]
+#: sabnzbd/skintext.py:633 # sabnzbd/skintext.py:637 [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Meddelandecenter"
 
-#: sabnzbd/skintext.py:644
+#: sabnzbd/skintext.py:634
 msgid "Send notifications to Notification Center"
 msgstr "Skicka notiser till Meddelandecenter"
 
-#: sabnzbd/skintext.py:645
+#: sabnzbd/skintext.py:635
 msgid "Enable Windows Notifications"
 msgstr "Aktivera Windows-notiser"
 
-#: sabnzbd/skintext.py:648
+#: sabnzbd/skintext.py:638
 msgid "Windows Notifications"
 msgstr "Windows-notiser"
 
-#: sabnzbd/skintext.py:649 [Header for Ubuntu's NotifyOSD notifications section]
+#: sabnzbd/skintext.py:639 [Header for Ubuntu's NotifyOSD notifications section]
 msgid "NotifyOSD"
 msgstr "NotifyOSD"
 
-#: sabnzbd/skintext.py:650 [Header for Prowl notification section]
+#: sabnzbd/skintext.py:640 [Header for Prowl notification section]
 msgid "Prowl"
 msgstr "Prowl"
 
-#: sabnzbd/skintext.py:651 [Prowl settings]
+#: sabnzbd/skintext.py:641 [Prowl settings]
 msgid "Enable Prowl notifications"
 msgstr "Aktivera Prowl-notiser"
 
-#: sabnzbd/skintext.py:652 [Prowl settings]
+#: sabnzbd/skintext.py:642 [Prowl settings]
 msgid "Requires a Prowl account"
 msgstr "Kräver ett Prowl-konto"
 
-#: sabnzbd/skintext.py:653 [Prowl settings]
+#: sabnzbd/skintext.py:643 [Prowl settings]
 msgid "API key for Prowl"
 msgstr "API-nyckel för Prowl"
 
-#: sabnzbd/skintext.py:654 [Prowl settings]
+#: sabnzbd/skintext.py:644 [Prowl settings]
 msgid "Personal API key for Prowl (required)"
 msgstr "Personlig API-nyckel för Prowl (krävs)"
 
-#: sabnzbd/skintext.py:655 [Header for Pushover notification section]
+#: sabnzbd/skintext.py:645 [Header for Pushover notification section]
 msgid "Pushover"
 msgstr "Pushover"
 
-#: sabnzbd/skintext.py:656 [Pushover settings]
+#: sabnzbd/skintext.py:646 [Pushover settings]
 msgid "Enable Pushover notifications"
 msgstr "Aktivera Pushover-notiser"
 
-#: sabnzbd/skintext.py:657 [Pushoversettings]
+#: sabnzbd/skintext.py:647 [Pushoversettings]
 msgid "Requires a Pushover account"
 msgstr "Kräver ett Pushover-konto"
 
-#: sabnzbd/skintext.py:658 [Pushover settings]
+#: sabnzbd/skintext.py:648 [Pushover settings]
 msgid "Application Token"
 msgstr "Applikations Token"
 
-#: sabnzbd/skintext.py:659 [Pushover settings]
+#: sabnzbd/skintext.py:649 [Pushover settings]
 msgid "Application token (required)"
 msgstr "Applikations token (krav)"
 
-#: sabnzbd/skintext.py:660 [Pushover settings]
+#: sabnzbd/skintext.py:650 [Pushover settings]
 msgid "User Key"
 msgstr "Användarnyckel"
 
-#: sabnzbd/skintext.py:661 [Pushover settings]
+#: sabnzbd/skintext.py:651 [Pushover settings]
 msgid "User Key (required)"
 msgstr "Användarnyckel (krävs)"
 
-#: sabnzbd/skintext.py:662 [Pushover settings]
+#: sabnzbd/skintext.py:652 [Pushover settings]
 msgid "Device(s)"
 msgstr "Enhet(er)"
 
-#: sabnzbd/skintext.py:663 [Pushover settings]
+#: sabnzbd/skintext.py:653 [Pushover settings]
 msgid "Device(s) to which message should be sent"
 msgstr "Enhet(er) där medellandet skall skickas"
 
-#: sabnzbd/skintext.py:664 [Header for Pushbullet notification section]
+#: sabnzbd/skintext.py:654 [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
 
-#: sabnzbd/skintext.py:665 [Pushbullet settings]
+#: sabnzbd/skintext.py:655 [Pushbullet settings]
 msgid "Enable Pushbullet notifications"
 msgstr "Aktivera Pushbullet-notiser"
 
-#: sabnzbd/skintext.py:666 [Pushbulletsettings]
+#: sabnzbd/skintext.py:656 [Pushbulletsettings]
 msgid "Requires a Pushbullet account"
 msgstr "Kräver ett Pushbullet-konto"
 
-#: sabnzbd/skintext.py:667 [Pushbullet settings]
+#: sabnzbd/skintext.py:657 [Pushbullet settings]
 msgid "Personal API key"
 msgstr "Personlig API-nyckel"
 
-#: sabnzbd/skintext.py:668 [Pushbullet settings]
+#: sabnzbd/skintext.py:658 [Pushbullet settings]
 msgid "Your personal Pushbullet API key (required)"
 msgstr "Din personliga API-nyckel (krävs)"
 
-#: sabnzbd/skintext.py:669 [Pushbullet settings]
+#: sabnzbd/skintext.py:659 [Pushbullet settings]
 msgid "Device"
 msgstr "Enhet"
 
-#: sabnzbd/skintext.py:670 [Pushbullet settings]
+#: sabnzbd/skintext.py:660 [Pushbullet settings]
 msgid "Device to which message should be sent"
 msgstr "Enheter där meddelande skall skickas"
 
-#: sabnzbd/skintext.py:671 [Header for Notification Script notification section]
+#: sabnzbd/skintext.py:661 [Header for Notification Script notification section]
 msgid "Notification Script"
 msgstr ""
 
-#: sabnzbd/skintext.py:672 [Notification Script settings]
+#: sabnzbd/skintext.py:662 [Notification Script settings]
 msgid "Enable notification script"
 msgstr ""
 
-#: sabnzbd/skintext.py:675 [Notification Scriptsettings]
+#: sabnzbd/skintext.py:665 [Notification Scriptsettings]
 msgid "Executes a custom script"
 msgstr ""
 
-#: sabnzbd/skintext.py:676 [Notification Scriptsettings]
+#: sabnzbd/skintext.py:666 [Notification Scriptsettings]
 msgid "Which script should we execute for notification?"
 msgstr ""
 
-#: sabnzbd/skintext.py:680
+#: sabnzbd/skintext.py:670
 msgid ""
 "Indexers can supply a category inside the NZB which SABnzbd will try to "
 "match to the categories defined below. Additionally, you can add terms to "
@@ -3914,237 +3931,237 @@ msgid ""
 "can be found on the Wiki."
 msgstr ""
 
-#: sabnzbd/skintext.py:681
+#: sabnzbd/skintext.py:671
 msgid ""
 "Ending the path with an asterisk * will prevent creation of job folders."
 msgstr ""
 "Avsluta sökvägen med en asterisk * kommer förhindra jobb att skapa mappar"
 
-#: sabnzbd/skintext.py:682
+#: sabnzbd/skintext.py:672
 msgid "Relative folders are based on"
 msgstr "Relativa mappar är baserade på"
 
-#: sabnzbd/skintext.py:683
+#: sabnzbd/skintext.py:673
 msgid "Folder/Path"
 msgstr "Mapp/Sökväg"
 
-#: sabnzbd/skintext.py:684
+#: sabnzbd/skintext.py:674
 msgid "Indexer Categories / Groups"
 msgstr ""
 
-#: sabnzbd/skintext.py:685 [Small delete button]
+#: sabnzbd/skintext.py:675 [Small delete button]
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py:688
+#: sabnzbd/skintext.py:678
 msgid "Series Sorting"
 msgstr "Seriesortering"
 
-#: sabnzbd/skintext.py:689
+#: sabnzbd/skintext.py:679
 msgid "Enable TV Sorting"
 msgstr "Aktivera TV sortering"
 
-#: sabnzbd/skintext.py:690
+#: sabnzbd/skintext.py:680
 msgid "Pattern Key"
 msgstr "Hjälp till Sorteringssträng"
 
-#: sabnzbd/skintext.py:691
+#: sabnzbd/skintext.py:681
 msgid "Clear"
 msgstr "Rensa"
 
-#: sabnzbd/skintext.py:692
+#: sabnzbd/skintext.py:682
 msgid "Apply filters"
 msgstr ""
 
-#: sabnzbd/skintext.py:693
+#: sabnzbd/skintext.py:683
 msgid "Presets"
 msgstr "Förinställningar"
 
-#: sabnzbd/skintext.py:694
+#: sabnzbd/skintext.py:684
 msgid "Example"
 msgstr "Exempel"
 
-#: sabnzbd/skintext.py:695
+#: sabnzbd/skintext.py:685
 msgid "Movie Sorting"
 msgstr ""
 
-#: sabnzbd/skintext.py:696
+#: sabnzbd/skintext.py:686
 msgid "Enable Movie Sorting"
 msgstr "Aktivera filmsortering"
 
-#: sabnzbd/skintext.py:697
+#: sabnzbd/skintext.py:687
 msgid "Keep loose downloads in extra folders"
 msgstr "Låt nedladdning i extramapp vara"
 
-#: sabnzbd/skintext.py:698
+#: sabnzbd/skintext.py:688
 msgid "Affected Categories"
 msgstr "Påverkade kategorier"
 
-#: sabnzbd/skintext.py:699
+#: sabnzbd/skintext.py:689
 msgid "Meaning"
 msgstr "Betyder"
 
-#: sabnzbd/skintext.py:700
+#: sabnzbd/skintext.py:690
 msgid "Pattern"
 msgstr "Mönster"
 
-#: sabnzbd/skintext.py:701
+#: sabnzbd/skintext.py:691
 msgid "Result"
 msgstr "Resultat"
 
-#: sabnzbd/skintext.py:702
+#: sabnzbd/skintext.py:692
 msgid "1x05 Season Folder"
 msgstr "1x05 Säsongsmapp"
 
-#: sabnzbd/skintext.py:703
+#: sabnzbd/skintext.py:693
 msgid "S01E05 Season Folder"
 msgstr "S01E05 Säsongsmapp"
 
-#: sabnzbd/skintext.py:704
+#: sabnzbd/skintext.py:694
 msgid "1x05 Episode Folder"
 msgstr "1x05 Episodmapp"
 
-#: sabnzbd/skintext.py:705
+#: sabnzbd/skintext.py:695
 msgid "S01E05 Episode Folder"
 msgstr "S01E05 Episodmapp"
 
-#: sabnzbd/skintext.py:706
+#: sabnzbd/skintext.py:696
 msgid "Title"
 msgstr "Titel"
 
-#: sabnzbd/skintext.py:707
+#: sabnzbd/skintext.py:697
 msgid "Movie Name"
 msgstr "Film Namn"
 
-#: sabnzbd/skintext.py:708
+#: sabnzbd/skintext.py:698
 msgid "Movie.Name"
 msgstr "Film.Namn"
 
-#: sabnzbd/skintext.py:709
+#: sabnzbd/skintext.py:699
 msgid "Movie_Name"
 msgstr "Film_Namn"
 
-#: sabnzbd/skintext.py:710 # sabnzbd/skintext.py:711
+#: sabnzbd/skintext.py:700 # sabnzbd/skintext.py:701
 msgid "Show Name"
 msgstr "Show Namn"
 
-#: sabnzbd/skintext.py:712
+#: sabnzbd/skintext.py:702
 msgid "Show.Name"
 msgstr "Show.Namn"
 
-#: sabnzbd/skintext.py:713
+#: sabnzbd/skintext.py:703
 msgid "Show_Name"
 msgstr "Show_Namn"
 
-#: sabnzbd/skintext.py:714
+#: sabnzbd/skintext.py:704
 msgid "Season Number"
 msgstr "Säsongsnummer"
 
-#: sabnzbd/skintext.py:715
+#: sabnzbd/skintext.py:705
 msgid "Episode Number"
 msgstr "Episodnummer"
 
-#: sabnzbd/skintext.py:716 # sabnzbd/skintext.py:717
+#: sabnzbd/skintext.py:706 # sabnzbd/skintext.py:707
 msgid "Episode Name"
 msgstr "Episodnamn"
 
-#: sabnzbd/skintext.py:718
+#: sabnzbd/skintext.py:708
 msgid "Episode.Name"
 msgstr "Episod.Namn"
 
-#: sabnzbd/skintext.py:719
+#: sabnzbd/skintext.py:709
 msgid "Episode_Name"
 msgstr "Episod_Namn"
 
-#: sabnzbd/skintext.py:720
+#: sabnzbd/skintext.py:710
 msgid "File Extension"
 msgstr "Filändelse"
 
-#: sabnzbd/skintext.py:721
+#: sabnzbd/skintext.py:711
 msgid "Extension"
 msgstr "Filändelse"
 
-#: sabnzbd/skintext.py:722
+#: sabnzbd/skintext.py:712
 msgid "Part Number"
 msgstr "Delnummer"
 
-#: sabnzbd/skintext.py:723
+#: sabnzbd/skintext.py:713
 msgid "Decade"
 msgstr "Årtionde"
 
-#: sabnzbd/skintext.py:724
+#: sabnzbd/skintext.py:714
 msgid "Original Filename"
 msgstr "Originalfilnamn"
 
-#: sabnzbd/skintext.py:725
+#: sabnzbd/skintext.py:715
 msgid "Original Foldername"
 msgstr "Ursprungliga mappnamnet"
 
-#: sabnzbd/skintext.py:726
+#: sabnzbd/skintext.py:716
 msgid "Lower Case"
 msgstr "Små bokstäver"
 
-#: sabnzbd/skintext.py:727
+#: sabnzbd/skintext.py:717
 msgid "TEXT"
 msgstr "TEXT"
 
-#: sabnzbd/skintext.py:728
+#: sabnzbd/skintext.py:718
 msgid "text"
 msgstr "text"
 
-#: sabnzbd/skintext.py:729
+#: sabnzbd/skintext.py:719
 msgid "file"
 msgstr "fil"
 
-#: sabnzbd/skintext.py:730
+#: sabnzbd/skintext.py:720
 msgid "folder"
 msgstr "mapp"
 
-#: sabnzbd/skintext.py:731
+#: sabnzbd/skintext.py:721
 msgid "Sort String"
 msgstr "Sorteringssträng"
 
-#: sabnzbd/skintext.py:732
+#: sabnzbd/skintext.py:722
 msgid "Multi-part label"
 msgstr "Multi-del etikett"
 
-#: sabnzbd/skintext.py:733
+#: sabnzbd/skintext.py:723
 msgid "In folders"
 msgstr "In mapp"
 
-#: sabnzbd/skintext.py:734
+#: sabnzbd/skintext.py:724
 msgid "No folders"
 msgstr "Ingen mapp"
 
-#: sabnzbd/skintext.py:735
+#: sabnzbd/skintext.py:725
 msgid "Date Sorting"
 msgstr "Datum sortering"
 
-#: sabnzbd/skintext.py:736
+#: sabnzbd/skintext.py:726
 msgid "Enable Date Sorting"
 msgstr "Aktivera datumssortering"
 
-#: sabnzbd/skintext.py:737
+#: sabnzbd/skintext.py:727
 msgid "Show Name folder"
 msgstr "Visa Namn på mapp"
 
-#: sabnzbd/skintext.py:738
+#: sabnzbd/skintext.py:728
 msgid "Year-Month Folders"
 msgstr "År-Månads mappar"
 
-#: sabnzbd/skintext.py:739
+#: sabnzbd/skintext.py:729
 msgid "Daily Folders"
 msgstr "Dagliga mappar"
 
-#: sabnzbd/skintext.py:740 [Note for title expression in Sorting that does case adjustment]
+#: sabnzbd/skintext.py:730 [Note for title expression in Sorting that does case adjustment]
 msgid "case-adjusted"
 msgstr "versal-justerade"
 
-#: sabnzbd/skintext.py:741
+#: sabnzbd/skintext.py:731
 msgid "Processed Result"
 msgstr "Hanterade resultat"
 
-#: sabnzbd/skintext.py:744
+#: sabnzbd/skintext.py:734
 msgid ""
 "Rarely used options. For their meaning and explanation, click on the Help "
 "button to go to the Wiki page.<br>Don't change these without checking the "
@@ -4156,421 +4173,421 @@ msgstr ""
 "kolla med Wiki först, då vissa kan ha seriösa "
 "sidoeffekter.<br>Standardvärdet är mellan paranteser."
 
-#: sabnzbd/skintext.py:748
+#: sabnzbd/skintext.py:738
 msgid "Values"
 msgstr "Värden"
 
-#: sabnzbd/skintext.py:751 [Job details page]
+#: sabnzbd/skintext.py:741 [Job details page]
 msgid "Edit NZB Details"
 msgstr "Ändra NZB detaljer"
 
-#: sabnzbd/skintext.py:753 [Job details page, delete button]
+#: sabnzbd/skintext.py:743 [Job details page, delete button]
 msgid "Delete"
 msgstr "Ta bort"
 
-#: sabnzbd/skintext.py:754 [Job details page, move file to top]
+#: sabnzbd/skintext.py:744 [Job details page, move file to top]
 msgid "Top"
 msgstr "Topp"
 
-#: sabnzbd/skintext.py:755 [Job details page, move file one place up]
+#: sabnzbd/skintext.py:745 [Job details page, move file one place up]
 msgid "Up"
 msgstr "Upp"
 
-#: sabnzbd/skintext.py:756 [Job details page, move file one place down]
+#: sabnzbd/skintext.py:746 [Job details page, move file one place down]
 msgid "Down"
 msgstr "Ner"
 
-#: sabnzbd/skintext.py:757 [Job details page, move file to bottom]
+#: sabnzbd/skintext.py:747 [Job details page, move file to bottom]
 msgid "Bottom"
 msgstr "Botten"
 
-#: sabnzbd/skintext.py:758 [Job details page, select all files]
+#: sabnzbd/skintext.py:748 [Job details page, select all files]
 msgid "All"
 msgstr "Alla"
 
-#: sabnzbd/skintext.py:760 [Job details page, invert file selection]
+#: sabnzbd/skintext.py:750 [Job details page, invert file selection]
 msgid "Invert"
 msgstr "Invertera"
 
-#: sabnzbd/skintext.py:761 [Job details page, filename column header]
+#: sabnzbd/skintext.py:751 [Job details page, filename column header]
 msgid "Filename"
 msgstr "Filnamn"
 
-#: sabnzbd/skintext.py:762 [Job details page, subject column header]
+#: sabnzbd/skintext.py:752 [Job details page, subject column header]
 msgid "Subject"
 msgstr "Ämne"
 
-#: sabnzbd/skintext.py:764 [Job details page, section header]
+#: sabnzbd/skintext.py:754 [Job details page, section header]
 msgid "Selection"
 msgstr "Urval"
 
-#: sabnzbd/skintext.py:769 # sabnzbd/skintext.py:877
+#: sabnzbd/skintext.py:759 # sabnzbd/skintext.py:867
 msgid "Pause for 5 minutes"
 msgstr "Pausa 5 minuter"
 
-#: sabnzbd/skintext.py:770 # sabnzbd/skintext.py:878
+#: sabnzbd/skintext.py:760 # sabnzbd/skintext.py:868
 msgid "Pause for 15 minutes"
 msgstr "Pause 15 minuter"
 
-#: sabnzbd/skintext.py:771 # sabnzbd/skintext.py:879
+#: sabnzbd/skintext.py:761 # sabnzbd/skintext.py:869
 msgid "Pause for 30 minutes"
 msgstr "Pausa 30 minuter"
 
-#: sabnzbd/skintext.py:772 # sabnzbd/skintext.py:880
+#: sabnzbd/skintext.py:762 # sabnzbd/skintext.py:870
 msgid "Pause for 1 hour"
 msgstr "Pausa 1 timme"
 
-#: sabnzbd/skintext.py:773 # sabnzbd/skintext.py:881
+#: sabnzbd/skintext.py:763 # sabnzbd/skintext.py:871
 msgid "Pause for 3 hours"
 msgstr "Pausa 3 timmar"
 
-#: sabnzbd/skintext.py:774 # sabnzbd/skintext.py:882
+#: sabnzbd/skintext.py:764 # sabnzbd/skintext.py:872
 msgid "Pause for 6 hours"
 msgstr "Pausa 6 timmar"
 
-#: sabnzbd/skintext.py:776 # sabnzbd/skintext.py:898
+#: sabnzbd/skintext.py:766 # sabnzbd/skintext.py:888
 msgid "left"
 msgstr "kvar"
 
-#: sabnzbd/skintext.py:777 # sabnzbd/skintext.py:919
+#: sabnzbd/skintext.py:767 # sabnzbd/skintext.py:909
 msgid "Free Space"
 msgstr "Ledigt diskutrymme"
 
-#: sabnzbd/skintext.py:778
+#: sabnzbd/skintext.py:768
 msgid "Temp Folder"
 msgstr "Temporär Mapp"
 
-#: sabnzbd/skintext.py:780 # sabnzbd/skintext.py:885
+#: sabnzbd/skintext.py:770 # sabnzbd/skintext.py:875
 msgid "Multi-Operations"
 msgstr "Multi-operationer"
 
-#: sabnzbd/skintext.py:781
+#: sabnzbd/skintext.py:771
 msgid "Hold shift key to select a range"
 msgstr "Håll in shiftknappen för att välja omfång"
 
-#: sabnzbd/skintext.py:782
+#: sabnzbd/skintext.py:772
 msgid "Check all"
 msgstr "Markera alla"
 
-#: sabnzbd/skintext.py:783
+#: sabnzbd/skintext.py:773
 msgid "Restart SABnzbd"
 msgstr "Starta om SABnzbd"
 
-#: sabnzbd/skintext.py:785
+#: sabnzbd/skintext.py:775
 msgid "Status and interface options"
 msgstr "Status och gränsnittsinställningar"
 
-#: sabnzbd/skintext.py:786
+#: sabnzbd/skintext.py:776
 msgid "Or drag and drop files in the window!"
 msgstr "Eller dra och släpp filer i fönstret!"
 
-#: sabnzbd/skintext.py:790
+#: sabnzbd/skintext.py:780
 msgid "Lost connection to SABnzbd.."
 msgstr "Förlorade förbindelse till SABnzbd.."
 
-#: sabnzbd/skintext.py:791
+#: sabnzbd/skintext.py:781
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "Om SABnzbd startar om kommer denna skärm att försvinna automatiskt!"
 
-#: sabnzbd/skintext.py:803 # sabnzbd/skintext.py:957
+#: sabnzbd/skintext.py:793 # sabnzbd/skintext.py:947
 msgid "Refresh rate"
 msgstr "Uppdateringsfrekvens"
 
-#: sabnzbd/skintext.py:804
+#: sabnzbd/skintext.py:794
 msgid "Use global interface settings"
 msgstr "Använda globala gränsnittsinställningar"
 
-#: sabnzbd/skintext.py:805
+#: sabnzbd/skintext.py:795
 msgid "Queue item limit"
 msgstr "Kö artikelgräns"
 
-#: sabnzbd/skintext.py:806
+#: sabnzbd/skintext.py:796
 msgid "History item limit"
 msgstr "Historik artikelgräns"
 
-#: sabnzbd/skintext.py:807
+#: sabnzbd/skintext.py:797
 msgid "Date format"
 msgstr "Datumformat"
 
-#: sabnzbd/skintext.py:808
+#: sabnzbd/skintext.py:798
 msgid "Extra queue column"
 msgstr "Extra kökolumn"
 
-#: sabnzbd/skintext.py:809
+#: sabnzbd/skintext.py:799
 msgid "Extra history column"
 msgstr ""
 
-#: sabnzbd/skintext.py:810 # sabnzbd/skintext.py:903
+#: sabnzbd/skintext.py:800 # sabnzbd/skintext.py:893
 msgid "page"
 msgstr "sida"
 
-#: sabnzbd/skintext.py:811 # sabnzbd/skintext.py:904
+#: sabnzbd/skintext.py:801 # sabnzbd/skintext.py:894
 msgid "Everything"
 msgstr "Allt"
 
-#: sabnzbd/skintext.py:812
+#: sabnzbd/skintext.py:802
 msgid "Loading"
 msgstr "Laddar"
 
-#: sabnzbd/skintext.py:813
+#: sabnzbd/skintext.py:803
 msgid "articles"
 msgstr "artiklar"
 
-#: sabnzbd/skintext.py:814 # sabnzbd/skintext.py:923
+#: sabnzbd/skintext.py:804 # sabnzbd/skintext.py:913
 msgid "Queue repair"
 msgstr "Köreparation"
 
-#: sabnzbd/skintext.py:815
+#: sabnzbd/skintext.py:805
 msgid "Show active connections"
 msgstr "Visa aktiva anslutningar"
 
-#: sabnzbd/skintext.py:817
+#: sabnzbd/skintext.py:807
 msgid "Orphaned jobs"
 msgstr "Övergivna jobb"
 
-#: sabnzbd/skintext.py:818
+#: sabnzbd/skintext.py:808
 msgid "Send back to queue"
 msgstr "Skicka tillbaka i kön"
 
-#: sabnzbd/skintext.py:819 # sabnzbd/skintext.py:958
+#: sabnzbd/skintext.py:809 # sabnzbd/skintext.py:948
 msgid "Delete All"
 msgstr "Ta bort alla"
 
-#: sabnzbd/skintext.py:820 # sabnzbd/skintext.py:930 [Link in SMPL for "Retry all failed jobs"]
+#: sabnzbd/skintext.py:810 # sabnzbd/skintext.py:920 [Link in SMPL for "Retry all failed jobs"]
 msgid "Retry all"
 msgstr "Starta om alla"
 
-#: sabnzbd/skintext.py:822
+#: sabnzbd/skintext.py:812
 msgid "Fetch NZB from URL"
 msgstr "Hämta NZB från URL"
 
-#: sabnzbd/skintext.py:823
+#: sabnzbd/skintext.py:813
 msgid "Upload NZB"
 msgstr "Ladda upp NZB"
 
-#: sabnzbd/skintext.py:825 # sabnzbd/skintext.py:915
+#: sabnzbd/skintext.py:815 # sabnzbd/skintext.py:905
 msgid "Optionally specify a filename"
 msgstr "Alternativt ange ett filnamn"
 
-#: sabnzbd/skintext.py:826
+#: sabnzbd/skintext.py:816
 msgid "Formats: .nzb, .rar, .zip, .gz, .bz2"
 msgstr "Format: .nzb, .rar, .zip, .gz, .bz2"
 
-#: sabnzbd/skintext.py:827
+#: sabnzbd/skintext.py:817
 msgid "Submit"
 msgstr "Skicka"
 
-#: sabnzbd/skintext.py:828 # sabnzbd/skintext.py:867
+#: sabnzbd/skintext.py:818 # sabnzbd/skintext.py:857
 msgid "Open Informational URL"
 msgstr "Öppen informations URL"
 
-#: sabnzbd/skintext.py:829
+#: sabnzbd/skintext.py:819
 msgid "Submitted. Thank you!"
 msgstr "Skickat. Tack!"
 
-#: sabnzbd/skintext.py:830
+#: sabnzbd/skintext.py:820
 msgid "Nothing selected!"
 msgstr "Inget markerat!"
 
-#: sabnzbd/skintext.py:831
+#: sabnzbd/skintext.py:821
 msgid "Remove all selected files"
 msgstr "Ta bort alla markerade filer"
 
-#: sabnzbd/skintext.py:832
+#: sabnzbd/skintext.py:822
 msgid "Hide/show completed files"
 msgstr "Visa/göm färdiga filer"
 
-#: sabnzbd/skintext.py:835 # sabnzbd/skintext.py:868
+#: sabnzbd/skintext.py:825 # sabnzbd/skintext.py:858
 msgid "View Script Log"
 msgstr "Visa skriptlogg"
 
-#: sabnzbd/skintext.py:840 # sabnzbd/skintext.py:876
+#: sabnzbd/skintext.py:830 # sabnzbd/skintext.py:866
 msgid "Update Available!"
 msgstr "Uppdatering tillgänglig"
 
-#: sabnzbd/skintext.py:841 [Don't translate LocalStorage]
+#: sabnzbd/skintext.py:831 [Don't translate LocalStorage]
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
 msgstr ""
 
-#: sabnzbd/skintext.py:842
+#: sabnzbd/skintext.py:832
 msgid "Glitter has some (new) features you might like!"
 msgstr ""
 
-#: sabnzbd/skintext.py:843 # sabnzbd/skintext.py:955
+#: sabnzbd/skintext.py:833 # sabnzbd/skintext.py:945
 msgid "Custom"
 msgstr "Anpassa"
 
-#: sabnzbd/skintext.py:844
+#: sabnzbd/skintext.py:834
 msgid "Compact layout"
 msgstr ""
 
-#: sabnzbd/skintext.py:845
+#: sabnzbd/skintext.py:835
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr ""
 
-#: sabnzbd/skintext.py:846 # sabnzbd/skintext.py:950
+#: sabnzbd/skintext.py:836 # sabnzbd/skintext.py:940
 msgid "Speed"
 msgstr "Hastighet"
 
-#: sabnzbd/skintext.py:847 # sabnzbd/skintext.py:908
+#: sabnzbd/skintext.py:837 # sabnzbd/skintext.py:898
 msgid "Confirm Queue Deletions"
 msgstr "Bekräfta Kö-borttagningar"
 
-#: sabnzbd/skintext.py:848 # sabnzbd/skintext.py:909
+#: sabnzbd/skintext.py:838 # sabnzbd/skintext.py:899
 msgid "Confirm History Deletions"
 msgstr "Bekräfta Historik-borttagningar"
 
-#: sabnzbd/skintext.py:849
+#: sabnzbd/skintext.py:839
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Hur lång tid eller tills då vill du pausa? (på engelska!)"
 
-#: sabnzbd/skintext.py:850
+#: sabnzbd/skintext.py:840
 msgid "Sorry, we could not interpret that. Try again."
 msgstr "Tyvärr, vi kunde inte tolka det. Försök igen."
 
-#: sabnzbd/skintext.py:851 # sabnzbd/skintext.py:884
+#: sabnzbd/skintext.py:841 # sabnzbd/skintext.py:874
 msgid "Pause for..."
 msgstr "Pausa i..."
 
-#: sabnzbd/skintext.py:852
+#: sabnzbd/skintext.py:842
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Sortera efter ålder <small>Äldst&rarr;Nyast</small>"
 
-#: sabnzbd/skintext.py:853
+#: sabnzbd/skintext.py:843
 msgid "Sort by Age <small>Newest&rarr;Oldest</small>"
 msgstr "Sortera efter ålder <small>Nyast&rarr;Äldst</small>"
 
-#: sabnzbd/skintext.py:854
+#: sabnzbd/skintext.py:844
 msgid "Sort by Name <small>A&rarr;Z</small>"
 msgstr "Sortera efter namn <small>A&rarr;Z</small>"
 
-#: sabnzbd/skintext.py:855
+#: sabnzbd/skintext.py:845
 msgid "Sort by Name <small>Z&rarr;A</small>"
 msgstr "Sortera efter namn <small>Z&rarr;A</small>"
 
-#: sabnzbd/skintext.py:856
+#: sabnzbd/skintext.py:846
 msgid "Sort by Size <small>Smallest&rarr;Largest</small>"
 msgstr "Sortera efter storlek <small>Minst&rarr;Störst</small>"
 
-#: sabnzbd/skintext.py:857
+#: sabnzbd/skintext.py:847
 msgid "Sort by Size <small>Largest&rarr;Smallest</small>"
 msgstr "Sortera efter storlek <small>Störst&rarr;Minst</small>"
 
-#: sabnzbd/skintext.py:858
+#: sabnzbd/skintext.py:848
 msgid "Uploading"
 msgstr ""
 
-#: sabnzbd/skintext.py:859
+#: sabnzbd/skintext.py:849
 msgid "Forcing disconnect"
 msgstr ""
 
-#: sabnzbd/skintext.py:860
+#: sabnzbd/skintext.py:850
 msgid "Removing job"
 msgstr ""
 
-#: sabnzbd/skintext.py:861
+#: sabnzbd/skintext.py:851
 msgid "Removing jobs"
 msgstr ""
 
-#: sabnzbd/skintext.py:869 # sabnzbd/skintext.py:938
+#: sabnzbd/skintext.py:859 # sabnzbd/skintext.py:928
 msgid "Prev"
 msgstr "Föregående"
 
-#: sabnzbd/skintext.py:870 # sabnzbd/skintext.py:939 # sabnzbd/skintext.py:970 [Button to go to next Wizard page]
+#: sabnzbd/skintext.py:860 # sabnzbd/skintext.py:929 # sabnzbd/skintext.py:960 [Button to go to next Wizard page]
 msgid "Next"
 msgstr "Nästa"
 
-#: sabnzbd/skintext.py:871
+#: sabnzbd/skintext.py:861
 msgid "Purge the History?"
 msgstr "Vill du verkligen tömma historiken?"
 
-#: sabnzbd/skintext.py:872
+#: sabnzbd/skintext.py:862
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "Du måste aktivera JavaScript för Plush ska fungera!"
 
-#: sabnzbd/skintext.py:874
+#: sabnzbd/skintext.py:864
 msgid "Refresh"
 msgstr "Uppdatera"
 
-#: sabnzbd/skintext.py:875
+#: sabnzbd/skintext.py:865
 msgid "Options"
 msgstr "Alternativ"
 
-#: sabnzbd/skintext.py:883 # sabnzbd/skintext.py:941
+#: sabnzbd/skintext.py:873 # sabnzbd/skintext.py:931
 msgid "Pause for how many minutes?"
 msgstr "Pausa hur många minuter?"
 
-#: sabnzbd/skintext.py:886
+#: sabnzbd/skintext.py:876
 msgid "Top Menu"
 msgstr "Menyrad"
 
-#: sabnzbd/skintext.py:887
+#: sabnzbd/skintext.py:877
 msgid "On Finish"
 msgstr "Vid slut"
 
-#: sabnzbd/skintext.py:888
+#: sabnzbd/skintext.py:878
 msgid "Sort"
 msgstr "Sortera"
 
-#: sabnzbd/skintext.py:889
+#: sabnzbd/skintext.py:879
 msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
 msgstr "Sortera efter Ålder <small>(Äldst&rarr;Nyast)</small>"
 
-#: sabnzbd/skintext.py:890
+#: sabnzbd/skintext.py:880
 msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
 msgstr "Sortera efter Ålder <small>(Nyast&rarr;Äldst)</small>"
 
-#: sabnzbd/skintext.py:891
+#: sabnzbd/skintext.py:881
 msgid "Sort by Name <small>(A&rarr;Z)</small>"
 msgstr "Sortera efter Namn <small>(A&rarr;Z)</small>"
 
-#: sabnzbd/skintext.py:892
+#: sabnzbd/skintext.py:882
 msgid "Sort by Name <small>(Z&rarr;A)</small>"
 msgstr "Sortera efter Namn <small>(Z&rarr;A)</small>"
 
-#: sabnzbd/skintext.py:893
+#: sabnzbd/skintext.py:883
 msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
 msgstr "Sortera efter Storlek <small>(Minst&rarr;Störst)</small>"
 
-#: sabnzbd/skintext.py:894
+#: sabnzbd/skintext.py:884
 msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
 msgstr "Sortera efter Storlek <small>(Störst&rarr;Minst)</small>"
 
-#: sabnzbd/skintext.py:895
+#: sabnzbd/skintext.py:885
 msgid "Purge the Queue?"
 msgstr "Töm kön?"
 
-#: sabnzbd/skintext.py:896
+#: sabnzbd/skintext.py:886
 msgid "Retry all failed jobs in History?"
 msgstr "Starta om alla misslyckade jobb i historik?"
 
-#: sabnzbd/skintext.py:897
+#: sabnzbd/skintext.py:887
 msgid "Purge"
 msgstr "Rensa"
 
-#: sabnzbd/skintext.py:899 [Used in speed menu. Split in two lines if too long.]
+#: sabnzbd/skintext.py:889 [Used in speed menu. Split in two lines if too long.]
 msgid "Max Speed"
 msgstr "Max hastighet"
 
-#: sabnzbd/skintext.py:900
+#: sabnzbd/skintext.py:890
 msgid "Range"
 msgstr "Omfång"
 
-#: sabnzbd/skintext.py:902
+#: sabnzbd/skintext.py:892
 msgid "Apply to Selected"
 msgstr "Applicera på valda"
 
-#: sabnzbd/skintext.py:906
+#: sabnzbd/skintext.py:896
 msgid "Refresh Rate"
 msgstr "Uppdateringsintervall"
 
-#: sabnzbd/skintext.py:907
+#: sabnzbd/skintext.py:897
 msgid "Container Width"
 msgstr "Bredd av webbplats"
 
-#: sabnzbd/skintext.py:910
+#: sabnzbd/skintext.py:900
 msgid ""
 "This will prevent refreshing content when your mouse cursor is hovering over "
 "the queue."
@@ -4578,185 +4595,185 @@ msgstr ""
 "Detta kommer förhindra uppdaterande av innehåll när din muspekare svävar "
 "ovanför kön"
 
-#: sabnzbd/skintext.py:911
+#: sabnzbd/skintext.py:901
 msgid "Block Refreshes on Hover"
 msgstr "Block uppdaterar vid svävande"
 
-#: sabnzbd/skintext.py:912 [Fetch from URL button in "Add NZB" dialog box]
+#: sabnzbd/skintext.py:902 [Fetch from URL button in "Add NZB" dialog box]
 msgid "Fetch"
 msgstr "Hämta"
 
-#: sabnzbd/skintext.py:913 [Upload button in "Add NZB" dialog box]
+#: sabnzbd/skintext.py:903 [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "Ladda upp"
 
-#: sabnzbd/skintext.py:914
+#: sabnzbd/skintext.py:904
 msgid "Upload: .nzb .rar .zip .gz, .bz2"
 msgstr "Ladda upp: .nzb .rar .zip .gz, .bz2"
 
-#: sabnzbd/skintext.py:916 # sabnzbd/skintext.py:962
+#: sabnzbd/skintext.py:906 # sabnzbd/skintext.py:952
 msgid "Progress"
 msgstr "Förlopp"
 
-#: sabnzbd/skintext.py:918
+#: sabnzbd/skintext.py:908
 msgid "Not enough disk space to complete downloads!"
 msgstr "Inte tillräckligt med diskutrymme för att kunna fortsätta ladda ned."
 
-#: sabnzbd/skintext.py:920
+#: sabnzbd/skintext.py:910
 msgid "Free (Temp)"
 msgstr "Ledigt temputrymme"
 
-#: sabnzbd/skintext.py:921
+#: sabnzbd/skintext.py:911
 msgid "IDLE"
 msgstr "Väntar"
 
-#: sabnzbd/skintext.py:922
+#: sabnzbd/skintext.py:912
 msgid "Downloads"
 msgstr "Hämtningar"
 
-#: sabnzbd/skintext.py:926
+#: sabnzbd/skintext.py:916
 msgid "Delete Completed"
 msgstr "Borttagning färdig"
 
-#: sabnzbd/skintext.py:927
+#: sabnzbd/skintext.py:917
 msgid "Delete the all failed items from the history?"
 msgstr "Ta bort alla felaktiga saker från historiken?"
 
-#: sabnzbd/skintext.py:928
+#: sabnzbd/skintext.py:918
 msgid "Delete Failed"
 msgstr "Borttagning Misslyckades"
 
-#: sabnzbd/skintext.py:929
+#: sabnzbd/skintext.py:919
 msgid "Retry all failed jobs?"
 msgstr "Starta om alla misslyckade jobb?"
 
-#: sabnzbd/skintext.py:931
+#: sabnzbd/skintext.py:921
 msgid "Links"
 msgstr "Länkar"
 
-#: sabnzbd/skintext.py:934
+#: sabnzbd/skintext.py:924
 msgid "Showing %s to %s out of %s results"
 msgstr "Visar %s till %s av %s resultat"
 
-#: sabnzbd/skintext.py:935
+#: sabnzbd/skintext.py:925
 msgid "No results"
 msgstr "Inga träffar"
 
-#: sabnzbd/skintext.py:936
+#: sabnzbd/skintext.py:926
 msgid "Showing one result"
 msgstr "Visar ett resultat"
 
-#: sabnzbd/skintext.py:937
+#: sabnzbd/skintext.py:927
 msgid "First"
 msgstr "Första"
 
-#: sabnzbd/skintext.py:940
+#: sabnzbd/skintext.py:930
 msgid "Last"
 msgstr "Sista"
 
-#: sabnzbd/skintext.py:945
+#: sabnzbd/skintext.py:935
 msgid "Email Sent!"
 msgstr "Skickat E-mail!"
 
-#: sabnzbd/skintext.py:946
+#: sabnzbd/skintext.py:936
 msgid "Notification Sent!"
 msgstr "Notis skickad!"
 
-#: sabnzbd/skintext.py:947
+#: sabnzbd/skintext.py:937
 msgid "Saving.."
 msgstr "Sparar.."
 
-#: sabnzbd/skintext.py:948
+#: sabnzbd/skintext.py:938
 msgid "Saved"
 msgstr "Sparad"
 
-#: sabnzbd/skintext.py:951
+#: sabnzbd/skintext.py:941
 msgid "Toggle Add NZB"
 msgstr "Visa/Dölj Lägg till NZB"
 
-#: sabnzbd/skintext.py:952
+#: sabnzbd/skintext.py:942
 msgid "DualView1"
 msgstr "Flerskärm1"
 
-#: sabnzbd/skintext.py:953
+#: sabnzbd/skintext.py:943
 msgid "DualView2"
 msgstr "Flerskärm2"
 
-#: sabnzbd/skintext.py:956
+#: sabnzbd/skintext.py:946
 msgid "Are you sure you want to restart SABnzbd?"
 msgstr "Är du säker på att du vill starta om SABnzbd?"
 
-#: sabnzbd/skintext.py:959
+#: sabnzbd/skintext.py:949
 msgid "Hide Edit Options"
 msgstr "Dölj Redigeringsalternativ"
 
-#: sabnzbd/skintext.py:960
+#: sabnzbd/skintext.py:950
 msgid "Show Edit Options"
 msgstr "Visa Redigeringsalternativ"
 
-#: sabnzbd/skintext.py:961
+#: sabnzbd/skintext.py:951
 msgid "Edit"
 msgstr "Ändra"
 
-#: sabnzbd/skintext.py:963
+#: sabnzbd/skintext.py:953
 msgid "Timeleft"
 msgstr "Återstående tid"
 
-#: sabnzbd/skintext.py:967
+#: sabnzbd/skintext.py:957
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd Snabbstart Guide"
 
-#: sabnzbd/skintext.py:968
+#: sabnzbd/skintext.py:958
 msgid "SABnzbd Version"
 msgstr "SABnzbd Version"
 
-#: sabnzbd/skintext.py:969 [Button to go to previous Wizard page]
+#: sabnzbd/skintext.py:959 [Button to go to previous Wizard page]
 msgid "Previous"
 msgstr "Föregående"
 
-#: sabnzbd/skintext.py:971
+#: sabnzbd/skintext.py:961
 msgid "Server Details"
 msgstr "Serveruppgifter"
 
-#: sabnzbd/skintext.py:972
+#: sabnzbd/skintext.py:962
 msgid "Please enter in the details of your primary usenet provider."
 msgstr "Fyll i uppgifter om din primära usenet leverantör."
 
-#: sabnzbd/skintext.py:973
+#: sabnzbd/skintext.py:963
 msgid "The number of connections allowed by your provider"
 msgstr "Antalet anslutningar som tillåts av din leverantör"
 
-#: sabnzbd/skintext.py:974 [Wizard: examples of amount of connections]
+#: sabnzbd/skintext.py:964 [Wizard: examples of amount of connections]
 msgid "E.g. 8 or 20"
 msgstr "Te.x 8 eller 20"
 
-#: sabnzbd/skintext.py:975
+#: sabnzbd/skintext.py:965
 msgid "Select only if your provider allows SSL connections."
 msgstr "Välj bara om din leverantör tillåter SSL-anslutningar."
 
-#: sabnzbd/skintext.py:976
+#: sabnzbd/skintext.py:966
 msgid "Click to test the entered details."
 msgstr "Klicka här för att testa dina angivna serveruppgifter."
 
-#: sabnzbd/skintext.py:977 [Abbreviation for "for example"]
+#: sabnzbd/skintext.py:967 [Abbreviation for "for example"]
 msgid "E.g."
 msgstr "T.ex."
 
-#: sabnzbd/skintext.py:979 [Wizard step]
+#: sabnzbd/skintext.py:969 [Wizard step]
 msgid "Setup is now complete!"
 msgstr "Installationen är nu utförd!"
 
-#: sabnzbd/skintext.py:980 [Wizard tip]
+#: sabnzbd/skintext.py:970 [Wizard tip]
 msgid "SABnzbd will now be running in the background."
 msgstr "SABnzbd kommer nu att köras i bakgrunden."
 
-#: sabnzbd/skintext.py:981 [Wizard tip]
+#: sabnzbd/skintext.py:971 [Wizard tip]
 msgid "Closing any browser windows/tabs will NOT close SABnzbd."
 msgstr ""
 "SABnzbd kommer inte att stängas av om du stänger ett fönster eller en tab i "
 "webbläsaren."
 
-#: sabnzbd/skintext.py:982 [Wizard tip]
+#: sabnzbd/skintext.py:972 [Wizard tip]
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
@@ -4764,23 +4781,23 @@ msgstr ""
 "Det är rekommenderat att du sparar denna plats som ett bokmärke för att "
 "komma åt SABnzbd när det körs i bakgrunden."
 
-#: sabnzbd/skintext.py:983 [Will be appended with a wiki-link, adjust word order accordingly]
+#: sabnzbd/skintext.py:973 [Will be appended with a wiki-link, adjust word order accordingly]
 msgid "Further help can be found on our"
 msgstr "Övrig hjälp kan du hitta på våran"
 
-#: sabnzbd/skintext.py:984 [Wizard step]
+#: sabnzbd/skintext.py:974 [Wizard step]
 msgid "Go to SABnzbd"
 msgstr "Gå till SABnzbd"
 
-#: sabnzbd/skintext.py:985 [Wizard EXIT button on first page]
+#: sabnzbd/skintext.py:975 [Wizard EXIT button on first page]
 msgid "Exit SABnzbd"
 msgstr "Avsluta SABnzbd"
 
-#: sabnzbd/skintext.py:986 [Wizard START button on first page]
+#: sabnzbd/skintext.py:976 [Wizard START button on first page]
 msgid "Start Wizard"
 msgstr "Starta guide"
 
-#: sabnzbd/skintext.py:989
+#: sabnzbd/skintext.py:979
 msgid ""
 "\n"
 "SABnzbd comes with ABSOLUTELY NO WARRANTY.\n"
@@ -4837,60 +4854,8 @@ msgstr "Oanvändbar NZB fil"
 msgid "URL Fetching failed; %s"
 msgstr "URL hämtning misslyckades; %s"
 
-#: sabnzbd/utils/servertests.py:36
-msgid "The hostname is not set."
-msgstr "Adressen är inte angiven."
-
-#: sabnzbd/utils/servertests.py:42
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Inga anslutningar är aktiverade. Var vänlig aktivera minst en anslutning."
-
-#: sabnzbd/utils/servertests.py:75
-msgid "Password masked in ******, please re-enter"
-msgstr "Lösenordet är dolt med ******, försök igen"
-
-#: sabnzbd/utils/servertests.py:79
-msgid "Invalid server details"
-msgstr "Ogiltiga serverdetaljer"
-
-#: sabnzbd/utils/servertests.py:95
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Timeout: Försök aktivera SSL eller anslut via en annan port."
-
-#: sabnzbd/utils/servertests.py:97
-msgid "Timed out"
-msgstr "Timeout"
-
-#: sabnzbd/utils/servertests.py:102
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py:107
-msgid "Invalid server address."
-msgstr "Ogiltig serveradress"
-
-#: sabnzbd/utils/servertests.py:111
-msgid "Server quit during login sequence."
-msgstr "Servern avslutades under inloggning"
-
-#: sabnzbd/utils/servertests.py:132
-msgid "Server requires username and password."
-msgstr "Servern kräver användarnamn och lösenord."
-
-#: sabnzbd/utils/servertests.py:135
-msgid "Connection Successful!"
-msgstr "Anslutning lyckades!"
-
-#: sabnzbd/utils/servertests.py:141
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"För många anslutningar, pausa en nedladdning eller försök igen senare"
-
-#: sabnzbd/utils/servertests.py:144
-msgid "Could not determine connection result (%s)"
-msgstr "Det gick inte att ansluta (%s)"
+#~ msgid "Error: No secondary interface defined."
+#~ msgstr "Fel: Inget andrainterface definierat."
 
 #~ msgid ""
 #~ "Your UNRAR version is not recommended, get it from "
@@ -4898,6 +4863,15 @@ msgstr "Det gick inte att ansluta (%s)"
 #~ msgstr ""
 #~ "Din version av UNRAR rekommenderas inte, få UNRAR från "
 #~ "http://www.rarlab.com/rar_add.htm<br />"
+
+#~ msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
+#~ msgstr "Inget UNRAR program funnet, uppackning ej möjlig<br />"
+
+#~ msgid "No PAR2 program found, repairs not possible<br />"
+#~ msgstr "Inget PAR2 program funnet, reparation ej möjlig<br />"
+
+#~ msgid "Initiating restart...<br />"
+#~ msgstr "Förbereder omstart...<br />"
 
 #~ msgid "Job \"%s\" was re-added to the queue"
 #~ msgstr "Jobb \"%s\" är återinlagt i kön"
@@ -4934,6 +4908,9 @@ msgstr "Det gick inte att ansluta (%s)"
 
 #~ msgid "Unpacking failed, an expected file was not unpacked"
 #~ msgstr "Uppackning misslyckades, en väntad fil är inte uppackad"
+
+#~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
+#~ msgstr "Misslyckades med importering av OpenSSL modul. Ansluter utan SSL"
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr "Det gick inte att ta bort nzo från efterbehandlings kön (id)"
@@ -4977,6 +4954,12 @@ msgstr "Det gick inte att ansluta (%s)"
 #~ msgid "General configuration"
 #~ msgstr "Allmän konfiguration"
 
+#~ msgid "Secondary Web Interface"
+#~ msgstr "Andra Webbkontrollsutseende"
+
+#~ msgid "Activate an alternative skin."
+#~ msgstr "Aktivera ett alternativt skin."
+
 #~ msgid "Web server authentication"
 #~ msgstr "Webbserver autentiserng"
 
@@ -5009,6 +4992,12 @@ msgstr "Det gick inte att ansluta (%s)"
 
 #~ msgid "Processing Switches"
 #~ msgstr "Bearbetar parametrar"
+
+#~ msgid "Enable Quick Check"
+#~ msgstr "Aktivera Snabbkoll"
+
+#~ msgid "Skip par2 checking when files are 100% valid."
+#~ msgstr "Strunta i par2 kontroll när filerna är 100% giltiga."
 
 #~ msgid "Enable Unrar"
 #~ msgstr "Aktivera Unrar"
@@ -5271,6 +5260,9 @@ msgstr "Det gick inte att ansluta (%s)"
 #~ msgid "Enable OZnzb Integration"
 #~ msgstr "Aktivera OZnzb-integration"
 
+#~ msgid "Automatic Feedback"
+#~ msgstr "Automatisk Feedback"
+
 #~ msgid ""
 #~ "This key provides identity to indexer. Refer to "
 #~ "https://www.oznzb.com/profile."
@@ -5289,3 +5281,16 @@ msgstr "Det gick inte att ansluta (%s)"
 
 #~ msgid "Use 12 hour clock (AM/PM)"
 #~ msgstr "Använd 12-timmarsklocka (AM/PM)"
+
+#~ msgid ""
+#~ "Send automatically calculated validation results for downloads to indexer."
+#~ msgstr ""
+#~ "Skicka automatiskt beräknade valideringsresultat för nedladdningar till "
+#~ "indexe."
+
+#~ msgid ""
+#~ "Enhanced functionality including ratings and extra status information is "
+#~ "available when connected to OZnzb indexer."
+#~ msgstr ""
+#~ "Förbättrad funktionalitet, inklusive betyg och extra statusinformation finns "
+#~ "tillgänglig när den är ansluten till OZnzb indexe."

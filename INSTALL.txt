@@ -1,4 +1,4 @@
-                                SABnzbd 1.2.3
+                                SABnzbd 2.0.0
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -21,7 +21,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 -------------------------------------------------------------------------------
-1) INSTALL with the Win32 installer
+1) INSTALL with the Windows installer
 -------------------------------------------------------------------------------
 Just run the downloaded EXE file and the installer will start.
 It's just a simple standard installer.
@@ -32,7 +32,7 @@ Use the "Help" button in the web-interface to be directed to the Help Wiki.
 
 
 -------------------------------------------------------------------------------
-2) INSTALL pre-built Win32 binaries
+2) INSTALL pre-built Windows binaries
 -------------------------------------------------------------------------------
 Unzip pre-built version to any folder of your liking.
 Start the SABnzbd.exe program.
@@ -41,11 +41,11 @@ Use the "Help" button in the web-interface to be directed to the Help Wiki.
 
 
 -------------------------------------------------------------------------------
-3) INSTALL pre-built OSX binaries
+3) INSTALL pre-built macOS binaries
 -------------------------------------------------------------------------------
 Download the DMG file, mount and drag the SABnzbd icon to Programs.
 Just like you do with so many apps.
-Make sure you pick the right folder, depending on your OSX version.
+Make sure you pick the right folder, depending on your macOS version.
 
 
 -------------------------------------------------------------------------------
@@ -55,11 +55,8 @@ Make sure you pick the right folder, depending on your OSX version.
 You need to have Python installed plus some non-standard Python modules
 and a few tools.
 
-Unix/Linux/OSX
+Unix/Linux/macOS
     Python-2.7.latest       http://www.python.org (2.7.9+ recommended)
-
-OSX Mavericks or newer
-    Apple Python 2.7        Included in OSX (default)
 
 Windows
     Python-2.7.latest       http://www.python.org (2.7.9+ recommended)
@@ -68,20 +65,20 @@ Windows
 Essential modules
     cheetah-2.0.1+          use "pip install cheetah"
     par2cmdline >= 0.4      http://parchive.sourceforge.net/
-                            Note: https://sabnzbd.org/wiki/configuration/1.2/switches#par2cmdline
+                            Note: https://sabnzbd.org/wiki/configuration/2.0/switches#par2cmdline
+                            And: https://sabnzbd.org/wiki/installation/multicore-par2
     unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
 
 Optional modules
     unzip >= 6.00           http://www.info-zip.org/
     7zip >= 9.20            http://www.7zip.org/
-    yenc module >= 0.4      use "pip install yenc"
-                            https://sabnzbd.org/wiki/installation/yenc-0.4_py2.7.rar (Win32-only)
-    openssl => 1.0.0        http://www.openssl.org/
+    sabyenc == 3.0.2        use "pip install sabyenc" - https://sabnzbd.org/sabyenc
+    openssl >= 1.0.0        http://www.openssl.org/
                             v0.9.8 will work, but limits certificate validation
     cryptography >= 1.0     use "pip install cryptography"
                             Enables certificate generation and detection of encrypted RAR-files
 
-Optional modules Unix/Linux/OSX
+Optional modules Unix/Linux/macOS
     pynotify                Should be part of GTK for Python support on Debian/Ubuntu
                             If not, you cannot use the NotifyOSD feature.
     python-dbus             Enable option to Shutdown/Restart/Standby PC on queue finish.

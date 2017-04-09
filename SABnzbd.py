@@ -130,24 +130,6 @@ def guard_loglevel():
     LOG_FLAG = True
 
 
-class FilterCP3:
-    # Filter out all CherryPy3-Access logging that we receive,
-    # because we have the root logger
-
-    def __init__(self):
-        pass
-
-    def filter(self, record):
-        _cplogging = record.module == '_cplogging'
-        # Python2.4 fix
-        # record has no attribute called funcName under python 2.4
-        if hasattr(record, 'funcName'):
-            access = record.funcName == 'access'
-        else:
-            access = True
-        return not (_cplogging and access)
-
-
 class guiHandler(logging.Handler):
     """ Logging handler collects the last warnings/errors/exceptions
         to be displayed in the web-gui
@@ -205,7 +187,7 @@ def print_help():
     print "  -2  --template2 <templ>  Secondary template dir [*]"
     print
     print "  -l  --logging <0..2>     Set logging level (-1=off, 0= least, 2= most) [*]"
-    print "  -w  --weblogging <0..2>  Set cherrypy logging (0= off, 1= on, 2= file-only) [*]"
+    print "  -w  --weblogging         Enable cherrypy access logging"
     print
     print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
     if sabnzbd.WIN32:
@@ -304,9 +286,6 @@ def Web_Template(key, defweb, wdir):
     logging.info("Web dir is %s", full_dir)
 
     if not os.path.exists(full_main):
-        # Temporarily fix that allows missing Config
-        if defweb == DEF_STDCONFIG:
-            return ''
         # end temp fix
         logging.warning(T('Cannot find web template: %s, trying standard template'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
@@ -315,8 +294,6 @@ def Web_Template(key, defweb, wdir):
             logging.exception('Cannot find standard template: %s', full_dir)
             panic_tmpl(full_dir)
             exit_sab(1)
-
-    # sabnzbd.lang.install_language(real_path(full_dir, DEF_INT_LANGUAGE), sabnzbd.cfg.language(), wdir)
 
     return real_path(full_dir, "templates")
 
@@ -428,10 +405,23 @@ def GetProfileInfo(vista_plus):
 
 def print_modules():
     """ Log all detected optional or external modules """
-    if sabnzbd.decoder.HAVE_YENC:
-        logging.info("_yenc module... found!")
+    if sabnzbd.decoder.SABYENC_ENABLED:
+        # Yes, we have SABYenc, and it's the correct version, so it's enabled
+        logging.info("SABYenc module (v%s)... found!", sabnzbd.constants.SABYENC_VERSION_REQUIRED)
     else:
-        logging.warning(T('_yenc module... NOT found!'))
+        # Something wrong with SABYenc, so let's determine and print what:
+        if sabnzbd.decoder.SABYENC_VERSION:
+            # We have a VERSION, thus a SABYenc module, but it's not the correct version
+            logging.warning(T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)") % (sabnzbd.decoder.SABYENC_VERSION, sabnzbd.constants.SABYENC_VERSION_REQUIRED))
+        else:
+            # No SABYenc module at all
+            logging.warning(T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc") % sabnzbd.constants.SABYENC_VERSION_REQUIRED)
+
+        # No correct SABYenc version or no SABYenc at all, so now we care about old-yEnc
+        if sabnzbd.decoder.HAVE_YENC:
+            logging.info("_yenc module... found!")
+        else:
+            logging.error(T('_yenc module... NOT found!'))
 
     if sabnzbd.HAVE_CRYPTOGRAPHY:
         logging.info('Cryptography module (v%s)... found!', sabnzbd.HAVE_CRYPTOGRAPHY)
@@ -449,8 +439,15 @@ def print_modules():
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
 
+        # Report problematic unrar
+        if sabnzbd.newsunpack.RAR_PROBLEM and not sabnzbd.cfg.ignore_wrong_unrar():
+            have_str = '%.2f' % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
+            want_str = '%.2f' % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
+            logging.warning(T('Your UNRAR version is %s, we recommend version %s or higher.<br />') % (have_str, want_str))
+        elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
+            logging.debug('UNRAR binary version %.2f', (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
-        logging.warning(T('unrar binary... NOT found'))
+        logging.error(T('unrar binary... NOT found'))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
@@ -780,7 +777,7 @@ def commandline_handler(frozen=True):
     try:
         opts, args = getopt.getopt(info, "phdvncwl:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
-                                    'weblogging=', 'server=', 'templates', 'ipv6_hosting=',
+                                    'weblogging', 'server=', 'templates', 'ipv6_hosting=',
                                     'template2', 'browser=', 'config-file=', 'force',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     'log-all', 'no-login', 'pid=', 'new', 'console', 'pidfile=',
@@ -845,7 +842,6 @@ def main():
     clean_up = False
     logging_level = None
     web_dir = None
-    web_dir2 = None
     vista_plus = False
     vista64 = False
     force_web = False
@@ -879,8 +875,6 @@ def main():
             exit_sab(0)
         elif opt in ('-t', '--templates'):
             web_dir = arg
-        elif opt in ('-2', '--template2'):
-            web_dir2 = arg
         elif opt in ('-s', '--server'):
             (cherryhost, cherryport) = split_host(arg)
         elif opt in ('-n', '--nobrowser'):
@@ -895,13 +889,7 @@ def main():
         elif opt in ('-c', '--clean'):
             clean_up = True
         elif opt in ('-w', '--weblogging'):
-            try:
-                cherrypylogging = int(arg)
-            except:
-                cherrypylogging = -1
-            if cherrypylogging < 0 or cherrypylogging > 2:
-                print_help()
-                exit_sab(1)
+            cherrypylogging = True
         elif opt in ('-l', '--logging'):
             try:
                 logging_level = int(arg)
@@ -1139,7 +1127,6 @@ def main():
 
         logformat = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
         rollover_log.setFormatter(logging.Formatter(logformat))
-        rollover_log.addFilter(FilterCP3())
         sabnzbd.LOGHANDLER = rollover_log
         logger.addHandler(rollover_log)
         logger.setLevel(LOGLEVELS[logging_level + 1])
@@ -1169,7 +1156,6 @@ def main():
 
             if consoleLogging:
                 console = logging.StreamHandler()
-                console.addFilter(FilterCP3())
                 console.setLevel(LOGLEVELS[logging_level + 1])
                 console.setFormatter(logging.Formatter(logformat))
                 logger.addHandler(console)
@@ -1198,11 +1184,18 @@ def main():
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
+
+    # Find encoding; relevant for unrar activities
     try:
-        logging.info('Preferred encoding = %s', locale.getpreferredencoding())
+        preferredencoding = locale.getpreferredencoding()
+        logging.info('Preferred encoding = %s', preferredencoding)
     except:
         logging.info('Preferred encoding = ERROR')
+        preferredencoding = ''
 
+    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in preferredencoding.lower() and '8' in preferredencoding.lower()):
+        logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % preferredencoding)
 
     if sabnzbd.cfg.log_level() > 1:
         from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
@@ -1236,17 +1229,6 @@ def main():
         if cpumodel:
             logging.debug('CPU model name is %s', cpumodel)
 
-    # OSX 10.5 I/O priority setting
-    if sabnzbd.DARWIN:
-        logging.info('[osx] IO priority setting')
-        try:
-            from ctypes import cdll
-            libc = cdll.LoadLibrary('/usr/lib/libc.dylib')
-            boolSetResult = libc.setiopolicy_np(0, 1, 3)
-            logging.info('[osx] IO priority set to throttle for process scope')
-        except:
-            logging.info('[osx] IO priority setting not supported')
-
     logging.info('Read INI file %s', inifile)
 
     if autobrowser is not None:
@@ -1262,21 +1244,12 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    web_dir = Web_Template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
-    web_dir2 = Web_Template(sabnzbd.cfg.web_dir2, '', fix_webname(web_dir2))
-    web_dirc = Web_Template(None, DEF_STDCONFIG, '')
+    sabnzbd.WEB_DIR = Web_Template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
+    sabnzbd.WEB_DIR_CONFIG = Web_Template(None, DEF_STDCONFIG, '')
+    sabnzbd.WIZARD_DIR = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
 
-    wizard_dir = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
-
-    sabnzbd.WEB_DIR = web_dir
-    sabnzbd.WEB_DIR2 = web_dir2
-    sabnzbd.WEB_DIRC = web_dirc
-    sabnzbd.WIZARD_DIR = wizard_dir
-
-    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(), web_dir)
+    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
-    sabnzbd.WEB_COLOR2 = CheckColor(sabnzbd.cfg.web_color2(), web_dir2)
-    sabnzbd.cfg.web_color2.set(sabnzbd.WEB_COLOR2)
 
     if fork and not sabnzbd.WIN32:
         daemonize()
@@ -1303,23 +1276,6 @@ def main():
 
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
     logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
-
-    cherrylogtoscreen = False
-    sabnzbd.WEBLOGFILE = None
-
-    if cherrypylogging:
-        if logdir:
-            sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
-        # Define our custom logger for cherrypy errors
-        cherrypy_logging(sabnzbd.WEBLOGFILE, logging.handlers.RotatingFileHandler)
-        if not fork:
-            try:
-                x = sys.stderr.fileno
-                x = sys.stdout.fileno
-                if cherrypylogging == 1:
-                    cherrylogtoscreen = True
-            except:
-                pass
 
     https_cert = sabnzbd.cfg.https_cert.get_path()
     https_key = sabnzbd.cfg.https_key.get_path()
@@ -1387,52 +1343,45 @@ def main():
                             'server.socket_host': cherryhost,
                             'server.socket_port': cherryport,
                             'server.shutdown_timeout': 0,
-                            'log.screen': cherrylogtoscreen,
+                            'log.screen': False,
                             'engine.autoreload.on': False,
                             'tools.encode.on': True,
                             'tools.gzip.on': True,
                             'tools.gzip.mime_types': mime_gzip,
                             'request.show_tracebacks': True,
-                            'checker.check_localhost': bool(consoleLogging),
                             'error_page.401': sabnzbd.panic.error_page_401,
                             'error_page.404': sabnzbd.panic.error_page_404
                             })
 
-    forced_mime_types = {'css': 'text/css', 'js': 'application/javascript'}
-    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
-    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dirc, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
-    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(wizard_dir, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
-    appconfig = {'/sabnzbd/api': {'tools.basic_auth.on': False},
-                 '/api': {'tools.basic_auth.on': False},
-                 '/m/api': {'tools.basic_auth.on': False},
+    # Do we want CherryPy Logging? Cannot be done via the config
+    if cherrypylogging:
+        sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
+        cherrypy.log.screen = True
+        cherrypy.log.access_log.propagate = True
+        cherrypy.log.access_file = str(sabnzbd.WEBLOGFILE)
+    else:
+        cherrypy.log.access_log.propagate = False
+
+    # Force mimetypes (OS might overwrite them)
+    forced_mime_types = {'css': 'text/css', 'js': 'application/javascript'}
+
+    static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WEB_DIR, 'static'), 'tools.staticdir.content_types': forced_mime_types}
+    staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
+    wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WIZARD_DIR, 'static'), 'tools.staticdir.content_types': forced_mime_types}
+
+    appconfig = {'/api': {'tools.basic_auth.on': False},
                  '/rss': {'tools.basic_auth.on': False},
-                 '/sabnzbd/rss': {'tools.basic_auth.on': False},
-                 '/m/rss': {'tools.basic_auth.on': False},
-                 '/sabnzbd/shutdown': {'streamResponse': True},
-                 '/sabnzbd/static': static,
                  '/static': static,
-                 '/sabnzbd/wizard/static': wizard_static,
                  '/wizard/static': wizard_static,
-                 '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(web_dirc, 'staticcfg', 'ico', 'favicon.ico')},
-                 '/sabnzbd/staticcfg': staticcfg,
+                 '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg', 'ico', 'favicon.ico')},
                  '/staticcfg': staticcfg
                  }
 
-    if web_dir2:
-        static2 = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(web_dir2, 'static'), 'tools.staticdir.content_types': forced_mime_types}
-        appconfig['/sabnzbd/m/api'] = {'tools.basic_auth.on': False}
-        appconfig['/sabnzbd/m/rss'] = {'tools.basic_auth.on': False}
-        appconfig['/sabnzbd/m/shutdown'] = {'streamResponse': True}
-        appconfig['/sabnzbd/m/static'] = static2
-        appconfig['/m/static'] = static2
-        appconfig['/sabnzbd/m/wizard/static'] = wizard_static
-        appconfig['/m/wizard/static'] = wizard_static
-        appconfig['/sabnzbd/m/staticcfg'] = staticcfg
-        appconfig['/m/staticcfg'] = staticcfg
-
-    login_page = sabnzbd.interface.MainPage(web_dir, '/', web_dir2, '/m/', web_dirc, first=2)
-    cherrypy.tree.mount(login_page, '/', config=appconfig)
+    # Make available from both URLs
+    main_page = sabnzbd.interface.MainPage()
+    cherrypy.tree.mount(main_page, '/', config=appconfig)
+    cherrypy.tree.mount(main_page, '/sabnzbd/', config=appconfig)
 
     # Set authentication for CherryPy
     sabnzbd.interface.set_auth(cherrypy.config)

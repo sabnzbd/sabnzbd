@@ -1,5 +1,5 @@
 <!--#set global $pane="General"#-->
-<!--#set global $help_uri="configuration/1.2/general"#-->
+<!--#set global $help_uri="configuration/2.0/general"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -23,9 +23,9 @@
                     <input type="number" name="port" id="port" value="$port" size="8" data-original="$port" />
                     <span class="desc">$T('explain-port')</span>
                 </div>
-                <div class="field-pair <!--#if int($have_ssl) == 0 then "disabled" else ""#-->">
+                <div class="field-pair">
                     <label class="config" for="enable_https">$T('opt-enable_https')</label>
-                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl) == 0 then "disabled" else ""#--> />
+                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#-->/>
                     <span class="desc">$T('explain-enable_https')</span>
                 </div>
                 <div class="field-pair">
@@ -39,21 +39,7 @@
                         <!--#end if#-->
                     <!--#end for#-->
                     </select>
-                    <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url1">$caller_url1</a></span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="web_dir2">$T('opt-web_dir2')</label>
-                    <select name="web_dir2" id="web_dir2">
-                        <option value="None" selected="selected">$T("None")</option>
-                        <!--#for $webline in $web_list#-->
-                            <!--#if $webline.lower() == $web_dir2.lower()#-->
-                                <option value="$webline" selected="selected">$webline</option>
-                            <!--#else#-->
-                                <option value="$webline">$webline</option>
-                            <!--#end if#-->
-                        <!--#end for#-->
-                    </select>
-                    <span class="desc">$T('explain-web_dir2')&nbsp;&nbsp;<a href="$caller_url2">$caller_url2</a></span>
+                    <span class="desc">$T('explain-web_dir')&nbsp;&nbsp;<a href="$caller_url">$caller_url</a></span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="language">$T('opt-language')</label>

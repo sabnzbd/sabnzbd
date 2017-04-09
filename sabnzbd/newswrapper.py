@@ -27,43 +27,28 @@ import time
 import logging
 import re
 import select
+import ssl
 
 import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
+from sabnzbd.misc import nntp_to_msg
 
-import threading
-_RLock = threading.RLock
-del threading
-
-# Import SSL if available
-if sabnzbd.HAVE_SSL:
-    import ssl
-    if sabnzbd.HAVE_SSL_CONTEXT:
-        WantReadError = ssl.SSLWantReadError
-        CertificateError = ssl.CertificateError
-    else:
-        WantReadError = ssl.SSLError
-        CertificateError = ssl.SSLError
+# Have to make errors available under Python <2.7.9
+if sabnzbd.HAVE_SSL_CONTEXT:
+    WantReadError = ssl.SSLWantReadError
+    CertificateError = ssl.CertificateError
 else:
-    # Dummy class so this exception is ignored by clients without ssl installed
-    class WantReadError(Exception):
-        def __init__(self, value):
-            self.parameter = value
-        def __str__(self):
-            return repr(self.parameter)
-    class CertificateError(Exception):
-        def __init__(self, value):
-            self.parameter = value
-        def __str__(self):
-            return repr(self.parameter)
+    WantReadError = ssl.SSLError
+    CertificateError = ssl.SSLError
 
-
+# Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
 
 # getaddrinfo() can be very slow. In some situations this can lead
 # to delayed starts and timeouts on connections.
 # Because of this, the results will be cached in the server object.
+
 
 def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
@@ -133,7 +118,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     try:
         sock.connect((host, port))
         sock.setblocking(0)
-        if sslenabled and sabnzbd.HAVE_SSL:
+        if sslenabled:
             # Log SSL/TLS info
             logging.info("%s@%s: Connected using %s (%s)",
                                               nntp.nw.thrdnum, nntp.nw.server.host, get_ssl_version(sock), sock.cipher()[0])
@@ -162,8 +147,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
                 pass
         finally:
             nntp.error(e)
-
-
 
 
 def probablyipv4(ip):
@@ -204,7 +187,7 @@ class NNTP(object):
         if probablyipv6(host):
             af = socket.AF_INET6
 
-        if sslenabled and sabnzbd.HAVE_SSL:
+        if sslenabled:
             # Use context or just wrapper
             if sabnzbd.HAVE_SSL_CONTEXT:
                 # Setup the SSL socket
@@ -228,10 +211,6 @@ class NNTP(object):
                 ciphers = sabnzbd.cfg.ssl_ciphers() if sabnzbd.cfg.ssl_ciphers() else None
                 # Use a regular wrapper, no certificate validation
                 self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=ciphers)
-
-        elif sslenabled and not sabnzbd.HAVE_SSL:
-            logging.error(T('Error importing OpenSSL module. Connecting with NON-SSL'))
-            self.sock = socket.socket(af, socktype, proto)
         else:
             self.sock = socket.socket(af, socktype, proto)
 
@@ -244,7 +223,7 @@ class NNTP(object):
                 # if blocking (server test) only wait for 15 seconds during connect until timeout
                 self.sock.settimeout(15)
                 self.sock.connect((self.host, self.port))
-                if sslenabled and sabnzbd.HAVE_SSL:
+                if sslenabled:
                     # Log SSL/TLS info
                     logging.info("%s@%s: Connected using %s (%s)",
                                               self.nw.thrdnum, self.nw.server.host, get_ssl_version(self.sock), self.sock.cipher()[0])
@@ -267,7 +246,6 @@ class NNTP(object):
                     pass
             finally:
                 self.error(e)
-
 
     def error(self, error):
         if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
@@ -301,8 +279,9 @@ class NewsWrapper(object):
 
         self.timeout = None
         self.article = None
-        self.data = ''
+        self.data = []
         self.lines = []
+        self.last_line = ''
 
         self.nntp = None
         self.recv = None
@@ -317,6 +296,14 @@ class NewsWrapper(object):
         self.user_ok = False
         self.pass_ok = False
         self.force_login = False
+
+    @property
+    def status_code(self):
+        """ Shorthand to get the code """
+        try:
+            return self.data[0][:3]
+        except:
+            return ''
 
     def init_connect(self, write_fds):
         self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
@@ -337,7 +324,7 @@ class NewsWrapper(object):
         if code in ('501',) and self.user_sent:
             # Change to a sensible text
             code = '481'
-            self.lines[0] = T('Authentication failed, check username/password.')
+            self.data[0] = T('Authentication failed, check username/password.')
             self.user_ok = True
             self.pass_sent = True
 
@@ -350,10 +337,11 @@ class NewsWrapper(object):
             self.pass_ok = False
 
         if code in ('400', '502'):
-            raise NNTPPermanentError(self.lines[0])
+            raise NNTPPermanentError(nntp_to_msg(self.data))
         elif not self.user_sent:
             command = 'authinfo user %s\r\n' % self.server.username
             self.nntp.sock.sendall(command)
+            self.data = []
             self.user_sent = True
         elif not self.user_ok:
             if code == '381':
@@ -368,11 +356,12 @@ class NewsWrapper(object):
         if self.user_ok and not self.pass_sent:
             command = 'authinfo pass %s\r\n' % self.server.password
             self.nntp.sock.sendall(command)
+            self.data = []
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
             if code != '281':
                 # Assume that login failed (code 481 or other)
-                raise NNTPPermanentError(self.lines[0])
+                raise NNTPPermanentError(nntp_to_msg(self.data))
             else:
                 self.connected = True
 
@@ -390,11 +379,13 @@ class NewsWrapper(object):
         else:
             command = 'ARTICLE <%s>\r\n' % (self.article.article)
         self.nntp.sock.sendall(command)
+        self.data = []
 
     def send_group(self, group):
         self.timeout = time.time() + self.server.timeout
         command = 'GROUP %s\r\n' % (group)
         self.nntp.sock.sendall(command)
+        self.data = []
 
     def recv_chunk(self, block=False):
         """ Receive data, return #bytes, done, skip """
@@ -422,33 +413,60 @@ class NewsWrapper(object):
                 else:
                     return (0, False, True)
 
-        self.data += chunk
-        new_lines = self.data.split('\r\n')
-        # See if incorrect newline-only was used
-        # Do this as a special case to prevent using extra memory
-        # for normal articles
-        if len(new_lines) == 1 and '\r' not in self.data:
-            new_lines = self.data.split('\n')
+        # Data is processed differently depending on C-yEnc version
+        if sabnzbd.decoder.SABYENC_ENABLED:
+            # Append so we can do 1 join(), much faster than multiple!
+            self.data.append(chunk)
 
-        self.data = new_lines.pop()
+            # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
+            chunk_len = len(chunk)
+            if chunk[-5:] == '\r\n.\r\n':
+                return (chunk_len, True, False)
+            elif chunk_len < 5 and len(self.data) > 1:
+                # We need to make sure the end is not split over 2 chunks
+                # This is faster than join()
+                combine_chunk = self.data[-2][-5:] + chunk
+                if combine_chunk[-5:] == '\r\n.\r\n':
+                    return (chunk_len, True, False)
 
-        # Already remove the starting dots
-        for i in xrange(len(new_lines)):
-            if new_lines[i][:2] == '..':
-                new_lines[i] = new_lines[i][1:]
-        self.lines.extend(new_lines)
-
-        if self.lines and self.lines[-1] == '.':
-            self.lines = self.lines[1:-1]
-            return (len(chunk), True, False)
+            # Still in middle of data, so continue!
+            return (chunk_len, False, False)
         else:
-            return (len(chunk), False, False)
+            self.last_line += chunk
+            new_lines = self.last_line.split('\r\n')
+            # See if incorrect newline-only was used
+            # Do this as a special case to prevent using extra memory
+            # for normal articles
+            if len(new_lines) == 1 and '\r' not in self.last_line:
+                new_lines = self.last_line.split('\n')
+
+            self.last_line = new_lines.pop()
+
+            # Already remove the starting dots
+            for i in xrange(len(new_lines)):
+                if new_lines[i][:2] == '..':
+                    new_lines[i] = new_lines[i][1:]
+            self.lines.extend(new_lines)
+
+            # For status-code purposes
+            if not self.data:
+                self.data.append(chunk)
+
+            if self.lines and self.lines[-1] == '.':
+                self.lines = self.lines[1:-1]
+                return (len(chunk), True, False)
+            else:
+                return (len(chunk), False, False)
 
     def soft_reset(self):
         self.timeout = None
         self.article = None
-        self.data = ''
+        self.clear_data()
+
+    def clear_data(self):
+        self.data = []
         self.lines = []
+        self.last_line = ''
 
     def hard_reset(self, wait=True, quit=True):
         if self.nntp:

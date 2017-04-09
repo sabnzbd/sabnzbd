@@ -1,5 +1,5 @@
 <!--#set global $pane="Email"#-->
-<!--#set global $help_uri="configuration/1.2/notifications"#-->
+<!--#set global $help_uri="configuration/2.0/notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#def show_notify_checkboxes($section_label)#-->
@@ -340,7 +340,7 @@
                 <div class="field-pair">
                     <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
                     <select name="nscript_script">
-                        <!--#for $sc in $script_list#-->
+                        <!--#for $sc in $scripts#-->
                         <option value="$sc" <!--#if $nscript_script == $sc then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
                         <!--#end for#-->
                     </select>

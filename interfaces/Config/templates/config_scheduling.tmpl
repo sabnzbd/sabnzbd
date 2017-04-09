@@ -1,5 +1,5 @@
 <!--#set global $pane="Scheduling"#-->
-<!--#set global $help_uri="configuration/1.2/scheduling"#-->
+<!--#set global $help_uri="configuration/2.0/scheduling"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <%
@@ -80,21 +80,20 @@ else:
         <div class="col1">
             <fieldset>
                 <!--#if $schedlines#-->
-                        <!--#set $schednum = 0#-->
                         <!--#set $odd = True#-->
-                        <!--#for $line in $schedlines#-->
+                        <!--#for $schednum, $line in enumerate($schedlines)#-->
                             <!--#set $odd = not $odd#-->
                             <form action="delSchedule" method="post">
                                 <input type="hidden" name="session" value="$session"/>
                                 <input type="hidden" name="line" id="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
+                                    <input type="checkbox" name="schedenabled" value="$line" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
                                     <button class="btn btn-default float-left"><span class="glyphicon glyphicon-trash"></span></button>
                                     <div class="scheduleEntry">
                                         <span class="time">$taskinfo[$schednum][1]:$taskinfo[$schednum][2]</span><span class="frequency">$taskinfo[$schednum][3]</span> <span class="darkred">$taskinfo[$schednum][4]</span>
                                     </div>
                                 </div>
                             </form>
-                            <!--#set $schednum = $schednum+1#-->
                         <!--#end for#-->
                 <!--#else#-->
                     <div class="field-pair">
@@ -126,5 +125,18 @@ else:
             \$('#hidden_arguments').show()
         }*/
     })
+
+    \$('[name="schedenabled"]').click(function() {
+        \$.ajax({
+            type: "POST",
+            url: "toggleSchedule",
+            data: {line: \$(this).val(), session: "$session" }
+        }).done(function() {
+            // Let us leave!
+            formWasSubmitted = true;
+            formHasChanged = false;
+            location.reload();
+        });
+    });
 </script>
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->

@@ -26,12 +26,7 @@ import struct
 import re
 from threading import Thread
 from time import sleep
-try:
-    import hashlib
-    new_md5 = hashlib.md5
-except:
-    import md5
-    new_md5 = md5.new
+import hashlib
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
@@ -65,7 +60,6 @@ class Assembler(Thread):
         self.queue.put(job)
 
     def run(self):
-        import sabnzbd.nzbqueue
         while 1:
             job = self.queue.get()
             if not job:
@@ -160,7 +154,7 @@ def _assemble(nzf, path, dupe):
     fout = open(path, 'ab')
 
     if cfg.quick_check():
-        md5 = new_md5()
+        md5 = hashlib.md5()
     else:
         md5 = None
 
@@ -172,7 +166,7 @@ def _assemble(nzf, path, dupe):
             break
 
         # Sleep to allow decoder/assembler switching
-        sleep(0.001)
+        sleep(0.0001)
         article = decodetable[articlenum]
 
         data = ArticleCache.do.load_article(article)
@@ -265,7 +259,7 @@ def ParseFilePacket(f, header):
 
     # Read and check the data
     data = f.read(len - 32)
-    md5 = new_md5()
+    md5 = hashlib.md5()
     md5.update(data)
     if md5sum != md5.digest():
         return nothing
@@ -289,7 +283,7 @@ def ParseFilePacket(f, header):
 
 
 RE_SUBS = re.compile(r'\W+sub|subs|subpack|subtitle|subtitles(?![a-z])', re.I)
-def is_cloaked(path, names):
+def is_cloaked(nzo, path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = unicoder(os.path.split(path)[1]).lower()
     fname = os.path.splitext(fname)[0]
@@ -297,10 +291,16 @@ def is_cloaked(path, names):
         name = os.path.split(name.lower())[1]
         name, ext = os.path.splitext(unicoder(name))
         if ext == u'.rar' and fname.startswith(name) and (len(fname) - len(name)) < 8 and len(names) < 3 and not RE_SUBS.search(fname):
-            logging.debug('File %s is probably encrypted due to RAR with same name inside this RAR', fname)
+            # Only warn once
+            if nzo.encrypted == 0:
+                logging.warning(T('Job "%s" is probably encrypted due to RAR with same name inside this RAR'), nzo.final_name)
+                nzo.encrypted = 1
             return True
         elif 'password' in name:
-            logging.debug('RAR %s is probably encrypted: "password" in filename %s', fname, name)
+            # Only warn once
+            if nzo.encrypted == 0:
+                logging.warning(T('Job "%s" is probably encrypted: "password" in filename "%s"'), nzo.final_name, name)
+                nzo.encrypted = 1
             return True
     return False
 
@@ -319,16 +319,17 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
 
             # Is it even a rarfile?
             if rarfile.is_rarfile(filepath):
+                # Open the rar
+                rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
                 zf = rarfile.RarFile(filepath, all_names=True)
 
                 # Check for encryption
-                if nzo.encrypted == 0 and cfg.pause_on_pwrar() and (zf.needs_password() or is_cloaked(filepath, zf.namelist())):
+                if nzo.encrypted == 0 and cfg.pause_on_pwrar() and (zf.needs_password() or is_cloaked(nzo, filepath, zf.namelist())):
                     # Load all passwords
                     passwords = get_all_passwords(nzo)
 
                     # Cloaked job?
-                    if is_cloaked(filepath, zf.namelist()):
-                        nzo.encrypted = 1
+                    if is_cloaked(nzo, filepath, zf.namelist()):
                         encrypted = True
                     elif not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
                         # if no cryptography installed, only error when no password was set
@@ -339,7 +340,6 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                     elif sabnzbd.HAVE_CRYPTOGRAPHY:
                         # Lets test if any of the password work
                         password_hit = False
-                        rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
 
                         for password in passwords:
                             if password:

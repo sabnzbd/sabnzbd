@@ -24,7 +24,7 @@ $(document).ready(function() {
                 } else {
                     r = '<span class="failed"><span class="glyphicon glyphicon-minus-sign"></span> ' + result.value.message + '</span>';
                 }
-
+                r = r.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="failed" target="_blank">https://sabnzbd.org/certificate-errors</a>')
                 $('#serverResponse').html(r);
             }
         );

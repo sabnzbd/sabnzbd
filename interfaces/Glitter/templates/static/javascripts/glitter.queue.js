@@ -171,7 +171,7 @@ function QueueListModel(parent) {
 
     // Do we show search box. So it doesn't dissapear when nothing is found
     self.hasQueueSearch = ko.pureComputed(function() {
-        return (self.pagination.hasPagination() || self.searchTerm())
+        return (self.pagination.hasPagination() || self.searchTerm() || (self.parent.hasQueue() && self.isMultiEditing()))
     })
 
     // Searching in queue (rate-limited in decleration)
@@ -652,7 +652,7 @@ function QueueModel(parent, data) {
     }
     self.changeScript = function(item) {
         // Not on empty handlers
-        if(!item.script()) return;
+        if(!item.script() || parent.scriptsList().length <= 1) return;
         callAPI({
             mode: 'change_script',
             value: item.id,

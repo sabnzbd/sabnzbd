@@ -25,20 +25,34 @@ import logging
 import re
 from time import sleep
 from threading import Thread
-try:
-    import _yenc
-    HAVE_YENC = True
-
-except ImportError:
-    HAVE_YENC = False
 
 import sabnzbd
-from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
-from sabnzbd.articlecache import ArticleCache
+from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION_REQUIRED
+import sabnzbd.articlecache
 import sabnzbd.downloader
+import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
+
+# Check for basic-yEnc
+try:
+    import _yenc
+    HAVE_YENC = True
+except ImportError:
+    HAVE_YENC = False
+
+# Check for correct SABYenc version
+SABYENC_VERSION = None
+try:
+    import sabyenc
+    SABYENC_ENABLED = True
+    SABYENC_VERSION = sabyenc.__version__
+    # Verify version
+    if SABYENC_VERSION != SABYENC_VERSION_REQUIRED:
+        raise ImportError
+except ImportError:
+    SABYENC_ENABLED = False
 
 
 class CrcError(Exception):
@@ -58,33 +72,26 @@ class BadYenc(Exception):
 
 class Decoder(Thread):
 
-    def __init__(self, servers):
+    def __init__(self, servers, queue):
         Thread.__init__(self)
 
-        self.queue = Queue.Queue()
+        self.queue = queue
         self.servers = servers
 
-    def decode(self, article, lines):
-        self.queue.put((article, lines))
-        # See if there's space left in cache, pause otherwise
-        # But do allow some articles to enter queue, in case of full cache
-        qsize = self.queue.qsize()
-        if (not ArticleCache.do.reserve_space(lines) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
-            sabnzbd.downloader.Downloader.do.delay()
-
     def stop(self):
+        # Put multiple to stop all decoders
+        self.queue.put(None)
         self.queue.put(None)
 
     def run(self):
-        from sabnzbd.nzbqueue import NzbQueue
         while 1:
             # Sleep to allow decoder/assembler switching
-            sleep(0.001)
+            sleep(0.0001)
             art_tup = self.queue.get()
             if not art_tup:
                 break
 
-            article, lines = art_tup
+            article, lines, raw_data = art_tup
             nzf = article.nzf
             nzo = nzf.nzo
             art_id = article.article
@@ -92,7 +99,8 @@ class Decoder(Thread):
 
             # Check if the space that's now free can let us continue the queue?
             qsize = self.queue.qsize()
-            if (ArticleCache.do.free_reserve_space(lines) or qsize < MAX_DECODE_QUEUE) and (qsize < LIMIT_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
+            if (sabnzbd.articlecache.ArticleCache.do.free_reserve_space(lines) or qsize < MAX_DECODE_QUEUE) and \
+               (qsize < LIMIT_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
                 sabnzbd.downloader.Downloader.do.undelay()
 
             data = None
@@ -100,14 +108,14 @@ class Decoder(Thread):
             found = False    # Proper article found
             logme = None
 
-            if lines:
+            if lines or raw_data:
                 try:
                     if nzo.precheck:
                         raise BadYenc
                     register = True
                     logging.debug("Decoding %s", art_id)
 
-                    data = decode(article, lines)
+                    data = decode(article, lines, raw_data)
                     nzf.article_count += 1
                     found = True
 
@@ -118,7 +126,7 @@ class Decoder(Thread):
 
                     sabnzbd.downloader.Downloader.do.pause()
                     article.fetcher = None
-                    NzbQueue.do.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
                     register = False
 
                 except MemoryError, e:
@@ -130,7 +138,7 @@ class Decoder(Thread):
 
                     sabnzbd.downloader.Downloader.do.pause()
                     article.fetcher = None
-                    NzbQueue.do.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
                     register = False
 
                 except CrcError, e:
@@ -139,17 +147,18 @@ class Decoder(Thread):
 
                     data = e.data
 
-                except BadYenc:
+                except (BadYenc, ValueError):
                     # Handles precheck and badly formed articles
                     killed = False
                     found = False
-                    if nzo.precheck and lines and lines[0].startswith('223 '):
+                    data_to_check = lines or raw_data
+                    if nzo.precheck and data_to_check and data_to_check[0].startswith('223 '):
                         # STAT was used, so we only get a status code
                         found = True
                     else:
                         # Examine headers (for precheck) or body (for download)
                         # And look for DMCA clues (while skipping "X-" headers)
-                        for line in lines:
+                        for line in data_to_check:
                             lline = line.lower()
                             if 'message-id:' in lline:
                                 found = True
@@ -162,14 +171,14 @@ class Decoder(Thread):
                     if nzo.precheck:
                         if found and not killed:
                             # Pre-check, proper article found, just register
-                            logging.debug('Server has article %s', art_id)
+                            logging.debug('Server %s has article %s', article.fetcher, art_id)
                             register = True
                     elif not killed and not found:
                         logme = T('Badly formed yEnc article in %s') % art_id
                         logging.info(logme)
 
                     if not found or killed:
-                        new_server_found = self.__search_new_server(article)
+                        new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
                         if new_server_found:
                             register = False
                             logme = None
@@ -178,8 +187,7 @@ class Decoder(Thread):
                     logme = T('Unknown Error while decoding %s') % art_id
                     logging.info(logme)
                     logging.info("Traceback: ", exc_info=True)
-
-                    new_server_found = self.__search_new_server(article)
+                    new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
                     if new_server_found:
                         register = False
                         logme = None
@@ -191,66 +199,39 @@ class Decoder(Thread):
                         nzo.inc_log('bad_art_log', art_id)
 
             else:
-                new_server_found = self.__search_new_server(article)
+                new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
                 if new_server_found:
                     register = False
                 elif nzo.precheck:
                     found = False
 
-            if logme or not found:
-                # Add extra parfiles when there was a damaged article
-                if cfg.prospective_par_download() and nzo.extrapars:
-                    nzo.prospective_add(nzf)
-
             if data:
-                ArticleCache.do.save_article(article, data)
+                sabnzbd.articlecache.ArticleCache.do.save_article(article, data)
 
             if register:
-                NzbQueue.do.register_article(article, found)
-
-    def __search_new_server(self, article):
-        from sabnzbd.nzbqueue import NzbQueue
-        article.add_to_try_list(article.fetcher)
-
-        nzf = article.nzf
-        nzo = nzf.nzo
-
-        new_server_found = False
-        fill_server_found = False
-
-        for server in self.servers:
-            if server.active and not article.server_in_try_list(server):
-                if not sabnzbd.highest_server(server):
-                    fill_server_found = True
-                else:
-                    new_server_found = True
-                    break
-
-        # Only found one (or more) fill server(s)
-        if not new_server_found and fill_server_found:
-            article.allow_fill_server = True
-            new_server_found = True
-
-        if new_server_found:
-            article.fetcher = None
-            article.tries = 0
-
-            # Allow all servers to iterate over this nzo and nzf again
-            NzbQueue.do.reset_try_lists(nzf, nzo)
-
-            if sabnzbd.LOG_ALL:
-                logging.debug('%s => found at least one untested server', article)
-
-        else:
-            msg = T('%s => missing from all servers, discarding') % article
-            logging.info(msg)
-            article.nzf.nzo.inc_log('missing_art_log', msg)
-
-        return new_server_found
+                sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found)
 
 
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
-def decode(article, data):
+def decode(article, data, raw_data):
+    # Do we have SABYenc? Let it do all the work
+    if sabnzbd.decoder.SABYENC_ENABLED:
+        decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
+
+        # Assume it is yenc
+        article.nzf.type = 'yenc'
+
+        # Only set the name if it was found
+        if output_filename:
+            article.nzf.filename = output_filename
+
+        # CRC check
+        if not crc_correct:
+            raise CrcError(crc_expected, crc, decoded_data)
+
+        return decoded_data
+
+    # Continue for _yenc or Python-yEnc
     # Filter out empty ones
     data = filter(None, data)
     # No point in continuing if we don't have any data left
@@ -308,7 +289,7 @@ def decode(article, data):
                 crcname = 'crc32'
 
             if crcname in yend:
-                _partcrc = '0' * (8 - len(yend[crcname])) + yend[crcname].upper()
+                _partcrc = yenc_name_fixer('0' * (8 - len(yend[crcname])) + yend[crcname].upper())
             else:
                 _partcrc = None
                 logging.debug("Corrupt header detected => yend: %s", yend)
