@@ -315,13 +315,13 @@ msgstr "%s manquant(s)"
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
 msgstr ""
-"La tâche \"% est probablement chiffrée en raison d'un RAR ayant le même nom "
+"La tâche \"%s\" est probablement chiffrée en raison d'un RAR ayant le même nom "
 "à l'intérieur de ce RAR"
 
 #: sabnzbd/assembler.py:302 [Warning message]
 msgid "Job \"%s\" is probably encrypted: \"password\" in filename \"%s\""
 msgstr ""
-"La tâche \"% est probablement chiffrée : \"password\" dans le nom de fichier "
+"La tâche \"%s\" est probablement chiffrée : \"password\" dans le nom de fichier "
 "\"%s\""
 
 #: sabnzbd/assembler.py:425
