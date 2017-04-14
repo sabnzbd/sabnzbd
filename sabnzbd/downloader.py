@@ -270,7 +270,6 @@ class Downloader(Thread):
         """ Pause the downloader, optionally saving admin """
         if not self.paused:
             self.paused = True
-            self.can_be_slowed = None
             logging.info("Pausing")
             notifier.send_notification("SABnzbd", T('Paused'), 'download')
             if self.is_paused():
@@ -327,7 +326,6 @@ class Downloader(Thread):
         else:
             self.speed_set()
         logging.info("Speed limit set to %s B/s", self.bandwidth_limit)
-        self.can_be_slowed = None
 
     def get_limit(self):
         return self.bandwidth_perc
@@ -533,7 +531,7 @@ class Downloader(Thread):
 
                 # Why check so often when so few things happened?
                 if self.can_be_slowed and len(readkeys) >= 8 and len(read) <= 2:
-                    time.sleep(0.05)
+                    time.sleep(0.01)
 
                 # Need to initialize the check during first 20 seconds
                 if self.can_be_slowed is None or self.can_be_slowed_timer:
