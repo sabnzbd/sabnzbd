@@ -83,10 +83,8 @@ class Assembler(Thread):
                     try:
                         filepath = _assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
-                        if nzo.is_gone():
-                            # Job was deleted, ignore error
-                            pass
-                        else:
+                        # If job was deleted, ignore error
+                        if not nzo.is_gone():
                             # 28 == disk full => pause downloader
                             if errno == 28:
                                 logging.error(T('Disk full! Forcing Pause'))
@@ -94,6 +92,7 @@ class Assembler(Thread):
                                 logging.error(T('Disk error on creating file %s'), clip_path(filepath))
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
+                        continue
                     except:
                         logging.error(T('Fatal error in Assembler'), exc_info=True)
                         break
