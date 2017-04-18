@@ -75,7 +75,6 @@ class Article(TryList):
 
     def __init__(self, article, bytes, partnum, nzf):
         TryList.__init__(self)
-
         self.fetcher = None
         self.article = article
         self.art_id = None

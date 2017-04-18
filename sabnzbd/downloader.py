@@ -611,7 +611,6 @@ class Downloader(Thread):
                     if nzo:
                         nzo.update_download_stats(BPSMeter.do.get_bps(), server.id, bytes)
 
-                to_decoder = True
                 if not done and nw.status_code != '222':
                     if not nw.connected or nw.status_code == '480':
                         done = False
@@ -715,12 +714,9 @@ class Downloader(Thread):
 
                     elif nw.status_code in ('411', '423', '430'):
                         done = True
-                        to_decoder = False
-                        logging.debug('Thread %s@%s: Article %s missing (error=%s)',
+                        logging.info('Thread %s@%s: Article %s missing (error=%s)',
                                         nw.thrdnum, nw.server.id, article.article, nw.status_code)
-                        # Search for new article
-                        if not self.search_new_server(article):
-                            sabnzbd.nzbqueue.NzbQueue.do.register_article(article, False)
+                        nw.clear_data()
 
                     elif nw.status_code == '480':
                         if server.active:
@@ -748,10 +744,7 @@ class Downloader(Thread):
                     server.errormsg = server.warning = ''
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s: %s done', nw.thrdnum, server.id, article.article)
-
-                    # Missing articles are not decoded
-                    if to_decoder:
-                        self.decode(article, nw.lines, nw.data)
+                    self.decode(article, nw.lines, nw.data)
 
                     nw.soft_reset()
                     server.busy_threads.remove(nw)
@@ -841,23 +834,6 @@ class Downloader(Thread):
             logging.error(T('Suspect error in downloader'))
             logging.info("Traceback: ", exc_info=True)
             self.__reset_nw(nw, "server broke off connection", quit=False)
-
-    def search_new_server(self, article):
-        # Search new server
-        article.add_to_try_list(article.fetcher)
-        for server in self.servers:
-            if server.active and not article.server_in_try_list(server):
-                if server.priority >= article.fetcher.priority:
-                    article.fetcher = None
-                    article.tries = 0
-                    # Allow all servers for this nzo and nzf again (but not for this article)
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
-                    return True
-
-        msg = T('%s => missing from all servers, discarding') % article
-        logging.debug(msg)
-        article.nzf.nzo.inc_log('missing_art_log', msg)
-        return False
 
     #------------------------------------------------------------------------------
     # Timed restart of servers admin.

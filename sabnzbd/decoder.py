@@ -178,7 +178,7 @@ class Decoder(Thread):
                         logging.info(logme)
 
                     if not found or killed:
-                        new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
+                        new_server_found = self.__search_new_server(article)
                         if new_server_found:
                             register = False
                             logme = None
@@ -187,7 +187,7 @@ class Decoder(Thread):
                     logme = T('Unknown Error while decoding %s') % art_id
                     logging.info(logme)
                     logging.info("Traceback: ", exc_info=True)
-                    new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
+                    new_server_found = self.__search_new_server(article)
                     if new_server_found:
                         register = False
                         logme = None
@@ -199,7 +199,7 @@ class Decoder(Thread):
                         nzo.inc_log('bad_art_log', art_id)
 
             else:
-                new_server_found = sabnzbd.downloader.Downloader.do.search_new_server(article)
+                new_server_found = self.__search_new_server(article)
                 if new_server_found:
                     register = False
                 elif nzo.precheck:
@@ -210,6 +210,23 @@ class Decoder(Thread):
 
             if register:
                 sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found)
+
+    def __search_new_server(self, article):
+        # Search new server
+        article.add_to_try_list(article.fetcher)
+        for server in self.servers:
+            if server.active and not article.server_in_try_list(server):
+                if server.priority >= article.fetcher.priority:
+                    article.fetcher = None
+                    article.tries = 0
+                    # Allow all servers for this nzo and nzf again (but not for this article)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
+                    return True
+
+        msg = T('%s => missing from all servers, discarding') % article
+        logging.debug(msg)
+        article.nzf.nzo.inc_log('missing_art_log', msg)
+        return False
 
 
 YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
