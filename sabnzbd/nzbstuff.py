@@ -1013,13 +1013,13 @@ class NzbObject(TryList):
                 sabnzbd.LAST_HISTORY_UPDATE = time.time()
                 return True, True
 
-        if not found:
-            # Add extra parfiles when there was a damaged article and not pre-checking
-            if cfg.prospective_par_download() and self.extrapars and not self.precheck:
-                self.prospective_add(nzf)
-
         if file_done:
             self.handle_par2(nzf, file_done)
+
+        if not found:
+            # Add extra parfiles when there was a damaged article and not pre-checking
+            if self.extrapars and not self.precheck:
+                self.prospective_add(nzf)
 
         post_done = False
         if not self.files:

@@ -1463,7 +1463,7 @@ SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files', 'create_group_folders',
               'queue_complete_pers', 'quick_check', 'api_warnings', 'allow_64bit_tools', 'ampm',
               'enable_unrar', 'enable_unzip', 'enable_7zip', 'enable_filejoin', 'enable_tsjoin',
-              'prospective_par_download', 'never_repair', 'allow_streaming', 'ignore_unrar_dates',
+              'never_repair', 'allow_streaming', 'ignore_unrar_dates',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
               'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files',
