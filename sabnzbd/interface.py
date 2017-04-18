@@ -257,7 +257,12 @@ def check_apikey(kwargs, nokey=False):
         Return None when OK, otherwise an error message
     """
     def log_warning(txt):
-        txt = '%s %s>%s' % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get('User-Agent', '??'))
+        # Was it proxy forwarded?
+        xff = cherrypy.request.headers.get('X-Forwarded-For')
+        if xff:
+            txt = '%s %s (X-Forwarded-For: %s)>%s' % (txt, cherrypy.request.remote.ip, xff, cherrypy.request.headers.get('User-Agent', '??'))
+        else:
+            txt = '%s %s>%s' % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get('User-Agent', '??'))
         logging.warning('%s', txt)
 
     output = kwargs.get('output')
@@ -482,8 +487,14 @@ class MainPage(object):
     def api(self, **kwargs):
         """ Handler for API over http, with explicit authentication parameters """
         if cfg.api_logging():
-            logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
-                          cherrypy.request.headers.get('User-Agent', '??'), kwargs)
+            # Was it proxy forwarded?
+            xff = cherrypy.request.headers.get('X-Forwarded-For')
+            if xff:
+                logging.debug('API-call from %s (X-Forwarded-For: %s) [%s] %s', cherrypy.request.remote.ip,
+                              xff, cherrypy.request.headers.get('User-Agent', '??'), kwargs)
+            else:
+                logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
+                              cherrypy.request.headers.get('User-Agent', '??'), kwargs)
         mode = kwargs.get('mode', '')
         if isinstance(mode, list):
             mode = mode[0]
@@ -561,18 +572,27 @@ class LoginPage(object):
         if check_login():
             raise Raiser(cherrypy.request.script_name + '/')
 
+        # Was it proxy forwarded?
+        xff = cherrypy.request.headers.get('X-Forwarded-For')
+
         # Check login info
         if kwargs.get('username') == cfg.username() and kwargs.get('password') == cfg.password():
             # Save login cookie
             set_login_cookie(remember_me=kwargs.get('remember_me', False))
             # Log the succes
-            logging.info('Successful login from %s', cherrypy.request.remote.ip)
+            if xff:
+                logging.info('Successful login from %s (X-Forwarded-For: %s)', cherrypy.request.remote.ip, xff)
+            else:
+                logging.info('Successful login from %s', cherrypy.request.remote.ip)
             # Redirect
             raise Raiser(cherrypy.request.script_name + '/')
         elif kwargs.get('username') or kwargs.get('password'):
             info['error'] = T('Authentication failed, check username/password.')
             # Warn about the potential security problem
-            logging.warning(T('Unsuccessful login attempt from %s') % cherrypy.request.remote.ip)
+            fail_msg = T('Unsuccessful login attempt from %s') % cherrypy.request.remote.ip
+            if xff:
+                fail_msg = '%s (X-Forwarded-For: %s)' % (fail_msg, xff)
+            logging.warning(fail_msg)
 
         # Show login
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'login', 'main.tmpl'),
