@@ -252,11 +252,11 @@ def has_win_device(p):
 
 if sabnzbd.WIN32:
     # the colon should be here too, but we'll handle that separately
-    CH_ILLEGAL = r'\/<>?*|"'
-    CH_LEGAL = r'++{}!@#`'
+    CH_ILLEGAL = '\/<>?*|"\t'
+    CH_LEGAL = '++{}!@#`+'
 else:
-    CH_ILLEGAL = r'/'
-    CH_LEGAL = r'+'
+    CH_ILLEGAL = '/'
+    CH_LEGAL = '+'
 
 
 def sanitize_filename(name, allow_win_devices=False):
