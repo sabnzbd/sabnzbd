@@ -936,6 +936,10 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
         case = '-ssc-'  # Case insensitive
     else:
         case = '-ssc'  # Case sensitive
+    if cfg.overwrite_files():
+        overwrite = '-aoa'
+    else:
+        overwrite = '-aou'
     if password:
         password = '-p%s' % password
     else:
@@ -951,7 +955,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     if not os.path.exists(name):
         return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % unicoder(sevenset)
 
-    command = [SEVEN_COMMAND, method, '-y', '-aou', parm, case, password,
+    command = [SEVEN_COMMAND, method, '-y', overwrite, parm, case, password,
                '-o%s' % extraction_path, name]
 
     stup, need_shell, command, creationflags = build_command(command)
