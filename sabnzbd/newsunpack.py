@@ -285,6 +285,10 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             nzo.set_action_line()
             rerun = not error
 
+    # During a Retry we might miss files that failed during recursive unpack
+    if nzo.reuse and depth == 1 and any(build_filelists(workdir, workdir_complete)):
+        rerun = True
+
     if rerun and (cfg.enable_recursive() or new_ts or new_joins):
         z, y = unpack_magic(nzo, workdir, workdir_complete, dele, one_folder,
                             xjoinables, xzips, xrars, xsevens, xts, depth)
