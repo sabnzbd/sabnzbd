@@ -880,7 +880,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
     for seven in sets:
         extensions = sets[seven]
         logging.info("Starting extract on 7zip set/file: %s ", seven)
-        nzo.set_action_line(T('Unpacking'), '%s' % unicoder(seven))
+        nzo.set_action_line(T('Unpacking'), '%s' % unicoder(os.path.basename(seven)))
 
         if workdir_complete and seven.startswith(workdir):
             extraction_path = workdir_complete
@@ -920,7 +920,9 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
 
     nzo.fail_msg = ''
     if fail == 2:
-        logging.error(u'%s (%s)', T('Unpacking failed, archive requires a password'), os.path.split(sevenset)[1])
+        msg = '%s (%s)' % (T('Unpacking failed, archive requires a password'), os.path.basename(sevenset))
+        nzo.fail_msg = msg
+        logging.error(msg)
     return fail, msg
 
 
