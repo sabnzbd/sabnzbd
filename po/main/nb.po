@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-04-02 15:51+0000\n"
+"POT-Creation-Date: 2017-04-08 07:51+0000\n"
 "PO-Revision-Date: 2016-07-16 16:44+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-04-05 07:18+0000\n"
-"X-Generator: Launchpad (build 18335)\n"
+"X-Launchpad-Export-Date: 2017-04-14 05:47+0000\n"
+"X-Generator: Launchpad (build 18352)\n"
 
 #: SABnzbd.py:257 [Error message]
 msgid "Failed to start web-interface"
@@ -25,77 +25,87 @@ msgstr "Kunne ikke starte webgrensesnittet"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Kan ikke finne webmal: %s, prøver standardmal"
 
-#: SABnzbd.py:416 [Error message]
+#: SABnzbd.py:415 [Warning message]
+msgid ""
+"SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
+msgstr ""
+
+#: SABnzbd.py:418 [Warning message]
+msgid ""
+"SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
+msgstr ""
+
+#: SABnzbd.py:424 [Error message]
 msgid "_yenc module... NOT found!"
 msgstr "_yenc-modul... IKKE funnet!"
 
-#: SABnzbd.py:426 [Error message]
+#: SABnzbd.py:434 [Error message]
 msgid "par2 binary... NOT found!"
 msgstr "par2-binærfil... IKKE funnet!"
 
-#: SABnzbd.py:438 [Warning message]
+#: SABnzbd.py:446 [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Din Unrar-versjon er %s, vi anbefaler versjon %s eller høyere. <br />"
 
-#: SABnzbd.py:442 [Error message]
+#: SABnzbd.py:450 [Error message]
 msgid "unrar binary... NOT found"
 msgstr "unrar-binærfil... IKKE funnet!"
 
-#: SABnzbd.py:447
+#: SABnzbd.py:455
 msgid "unzip binary... NOT found!"
 msgstr "unzip-binærfil... IKKE funnet!"
 
-#: SABnzbd.py:452
+#: SABnzbd.py:460
 msgid "7za binary... NOT found!"
 msgstr "7za-binærfil... IKKE funnet!"
 
-#: SABnzbd.py:602 [Warning message]
+#: SABnzbd.py:610 [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
 "access"
 msgstr ""
 "Husk at vertsnavnet 0.0.0.0 krever en IPv6-adresse for ekstern tilgang"
 
-#: SABnzbd.py:632 [Error message]
+#: SABnzbd.py:640 [Error message]
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP og HTTPS-portene kan ikke være det samme"
 
-#: SABnzbd.py:1190 [Warning message]
+#: SABnzbd.py:1198 [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
 msgstr ""
 
-#: SABnzbd.py:1284 [Warning message]
+#: SABnzbd.py:1292 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "Deaktiverte HTTPS på grunn av manglende CERT- og KEY-filer."
 
-#: SABnzbd.py:1383 [Warning message]
+#: SABnzbd.py:1391 [Warning message]
 msgid "Could not bind to configured port. Port changed to %s"
 msgstr ""
 
-#: SABnzbd.py:1392 [Error message]
+#: SABnzbd.py:1400 [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Kunne ikke starte webgrensesnittet: "
 
-#: SABnzbd.py:1413 [Error message]
+#: SABnzbd.py:1421 [Error message]
 msgid "Cannot reach the SABHelper service"
 msgstr "Kan ikke nå SABHelper-tjenesten"
 
-#: SABnzbd.py:1449
+#: SABnzbd.py:1457
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s startet"
 
-#: SABnzbd.py:1460 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
+#: SABnzbd.py:1468 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
 msgid "Warning"
 msgstr "Advarsel"
 
-#: SABnzbd.py:1464 # sabnzbd/notifier.py:72 [Notification]
+#: SABnzbd.py:1472 # sabnzbd/notifier.py:72 [Notification]
 msgid "Error"
 msgstr "Feil"
 
-#: SABnzbd.py:1563 # sabnzbd/interface.py:438 # sabnzbd/interface.py:904
+#: SABnzbd.py:1571 # sabnzbd/interface.py:438 # sabnzbd/interface.py:904
 #: sabnzbd/osxmenu.py:772
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd er nå avsluttet"
@@ -223,7 +233,6 @@ msgid "None"
 msgstr "Ingen"
 
 #: sabnzbd/api.py:1590 # sabnzbd/interface.py:117 # sabnzbd/skintext.py:90 [Default value, used in dropdown menus]
-#: sabnzbd/skintext.py:548
 msgid "Default"
 msgstr "Standard"
 
@@ -397,27 +406,27 @@ msgstr "Kunne ikke stenge databasen, se logg"
 msgid "Invalid stage logging in history for %s"
 msgstr "Ugyldig scenen logging i historien for %s"
 
-#: sabnzbd/decoder.py:118
+#: sabnzbd/decoder.py:119
 msgid "Decoding %s failed"
 msgstr "Dekoding av %s mislyktes"
 
-#: sabnzbd/decoder.py:128
+#: sabnzbd/decoder.py:129
 msgid "Decoder failure: Out of memory"
 msgstr ""
 
-#: sabnzbd/decoder.py:140
+#: sabnzbd/decoder.py:141
 msgid "CRC Error in %s (%s -> %s)"
 msgstr "CRC-feil i %s (%s -> %s)"
 
-#: sabnzbd/decoder.py:172
+#: sabnzbd/decoder.py:173
 msgid "Badly formed yEnc article in %s"
 msgstr "Feilaktigt utformet yEnc artikkel i %s"
 
-#: sabnzbd/decoder.py:182
+#: sabnzbd/decoder.py:183
 msgid "Unknown Error while decoding %s"
 msgstr "Ukjent feil oppstod under dekoding av %s"
 
-#: sabnzbd/decoder.py:250
+#: sabnzbd/decoder.py:251
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
@@ -951,33 +960,33 @@ msgstr "Hovedarkiv mangler..."
 msgid "Invalid par2 files, cannot verify or repair"
 msgstr "Ugyldige par2-filer, kan ikke kontrollere eller reparere"
 
-#: sabnzbd/newsunpack.py:1380 # sabnzbd/newsunpack.py:1415
+#: sabnzbd/newsunpack.py:1391 # sabnzbd/newsunpack.py:1426
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr ""
 "Mislykket reparasjon, finner ikke nødvendige reparasjonsblokker (%s mangler)"
 
-#: sabnzbd/newsunpack.py:1410
+#: sabnzbd/newsunpack.py:1421
 msgid "Fetching %s blocks..."
 msgstr "Henter %s blokker..."
 
-#: sabnzbd/newsunpack.py:1412
+#: sabnzbd/newsunpack.py:1423
 msgid "Fetching"
 msgstr "Henter"
 
-#: sabnzbd/newsunpack.py:1423 # sabnzbd/newsunpack.py:1428
+#: sabnzbd/newsunpack.py:1434 # sabnzbd/newsunpack.py:1439
 msgid "Repairing"
 msgstr "Reparerer"
 
-#: sabnzbd/newsunpack.py:1432
+#: sabnzbd/newsunpack.py:1443
 msgid "[%s] Repaired in %s"
 msgstr "[%s] Reparert på %s"
 
-#: sabnzbd/newsunpack.py:1485 # sabnzbd/newsunpack.py:1500
-#: sabnzbd/newsunpack.py:1518
+#: sabnzbd/newsunpack.py:1503 # sabnzbd/newsunpack.py:1518
+#: sabnzbd/newsunpack.py:1536
 msgid "Verifying"
 msgstr "Verifiserer"
 
-#: sabnzbd/newsunpack.py:1622 [Error message]
+#: sabnzbd/newsunpack.py:1640 [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
@@ -3529,13 +3538,17 @@ msgstr ""
 
 #: sabnzbd/skintext.py:546
 msgid ""
-"Default: when SSL is enabled, verify the identity of the server using its "
+"Minimal: when SSL is enabled, verify the identity of the server using its "
 "certificates. Strict: verify and enforce matching hostname."
 msgstr ""
 
 #: sabnzbd/skintext.py:547 # sabnzbd/skintext.py:782 # sabnzbd/skintext.py:895
 msgid "Disabled"
 msgstr "Deaktivert"
+
+#: sabnzbd/skintext.py:548
+msgid "Minimal"
+msgstr ""
 
 #: sabnzbd/skintext.py:549
 msgid "Strict"
