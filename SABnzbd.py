@@ -184,7 +184,6 @@ def print_help():
     print "  -f  --config-file <ini>  Location of config file"
     print "  -s  --server <srv:port>  Listen on server:port [*]"
     print "  -t  --templates <templ>  Template directory [*]"
-    print "  -2  --template2 <templ>  Secondary template dir [*]"
     print
     print "  -l  --logging <0..2>     Set logging level (-1=off, 0= least, 2= most) [*]"
     print "  -w  --weblogging         Enable cherrypy access logging"
@@ -197,7 +196,6 @@ def print_help():
         print "      --pid <path>         Create a PID file in the given folder (full path)"
         print "      --pidfile <path>     Create a PID file with the given name (full path)"
     print
-    print "      --force              Discard web-port timeout (see Wiki!)"
     print "  -h  --help               Print this message"
     print "  -v  --version            Print version information"
     print "  -c  --clean              Remove queue, cache and logs"
@@ -206,6 +204,7 @@ def print_help():
     print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
+    print "      --no-login           Start with username and password reset"
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
@@ -848,7 +847,6 @@ def main():
     web_dir = None
     vista_plus = False
     vista64 = False
-    force_web = False
     repair = 0
     api_url = None
     no_login = False
@@ -907,9 +905,6 @@ def main():
             exit_sab(0)
         elif opt in ('-p', '--pause'):
             pause = True
-        elif opt in ('--force',):
-            force_web = True
-            sabnzbd.RESTART_ARGS.append(opt)
         elif opt in ('--https',):
             https_port = int(arg)
             sabnzbd.RESTART_ARGS.append(opt)
