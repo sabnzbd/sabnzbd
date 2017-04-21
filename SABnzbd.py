@@ -669,7 +669,11 @@ def is_sabnzbd_running(url):
 
 
 def find_free_port(host, currentport):
-    """ Return a free port, 0 when nothing is free """
+    """ Return a free port if allowed, 0 when nothing is free """
+    if sabnzbd.cfg.fixed_ports():
+        # Port found before, so we bail out
+        raise IOError
+
     n = 0
     while n < 10 and currentport <= 49151:
         try:
@@ -1042,51 +1046,48 @@ def main():
         if url and check_for_sabnzbd(url, upload_nzbs, autobrowser):
             exit_sab(0)
 
-    # We only performe the free-port check on first start-up
-    # because we want to be sure we can bind to something!
-    if not sabnzbd.cfg.fixed_ports():
-        # SSL
-        if enable_https:
-            port = https_port or cherryport
-            try:
-                cherrypy.process.servers.check_port(browserhost, port, timeout=0.05)
-            except IOError, error:
-                if str(error) == 'Port not bound.':
-                    pass
-                else:
-                    if not url:
-                        url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
-                    if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                        newport = find_free_port(browserhost, port)
-                        if newport > 0:
-                            # Save the new port
-                            if https_port:
-                                https_port = newport
-                                sabnzbd.cfg.https_port.set(newport)
-                            else:
-                                # In case HTTPS == HTTP port
-                                http_port = newport
-                                sabnzbd.cfg.port.set(newport)
-            except:
-                Bail_Out(browserhost, cherryport, '49')
+    # SSL
+    if enable_https:
+        port = https_port or cherryport
+        try:
+            cherrypy.process.servers.check_port(browserhost, port, timeout=0.05)
+        except IOError, error:
+            if str(error) == 'Port not bound.':
+                pass
+            else:
+                if not url:
+                    url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
+                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                    newport = find_free_port(browserhost, port)
+                    if newport > 0:
+                        # Save the new port
+                        if https_port:
+                            https_port = newport
+                            sabnzbd.cfg.https_port.set(newport)
+                        else:
+                            # In case HTTPS == HTTP port
+                            http_port = newport
+                            sabnzbd.cfg.port.set(newport)
+        except:
+            Bail_Out(browserhost, cherryport, '49')
 
-        # NonSSL check if there's no HTTPS or we only use 1 port
-        if not (enable_https and not https_port):
-            try:
-                cherrypy.process.servers.check_port(browserhost, cherryport, timeout=0.05)
-            except IOError, error:
-                if str(error) == 'Port not bound.':
-                    pass
-                else:
-                    if not url:
-                        url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
-                    if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
-                        port = find_free_port(browserhost, cherryport)
-                        if port > 0:
-                            sabnzbd.cfg.cherryport.set(port)
-                            cherryport = port
-            except:
-                Bail_Out(browserhost, cherryport, '49')
+    # NonSSL check if there's no HTTPS or we only use 1 port
+    if not (enable_https and not https_port):
+        try:
+            cherrypy.process.servers.check_port(browserhost, cherryport, timeout=0.05)
+        except IOError, error:
+            if str(error) == 'Port not bound.':
+                pass
+            else:
+                if not url:
+                    url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
+                if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                    port = find_free_port(browserhost, cherryport)
+                    if port > 0:
+                        sabnzbd.cfg.cherryport.set(port)
+                        cherryport = port
+        except:
+            Bail_Out(browserhost, cherryport, '49')
 
     # We found a port, now we never check again
     sabnzbd.cfg.fixed_ports.set(True)
