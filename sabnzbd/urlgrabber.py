@@ -213,7 +213,7 @@ class URLGrabber(Thread):
                 if not data:
                     try:
                         data = fn.read()
-                    except IncompleteRead, e:
+                    except (IncompleteRead, IOError):
                         bad_fetch(future_nzo, url, T('Server could not complete request'))
                 fn.close()
 
