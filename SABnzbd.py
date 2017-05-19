@@ -91,7 +91,7 @@ from sabnzbd.misc import real_path, \
     split_host, get_ext, create_https_certificates, \
     windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic_fwall, \
-    panic_sqlite, panic, launch_a_browser, panic_xport
+    panic_sqlite, panic, launch_a_browser
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -255,9 +255,7 @@ def Bail_Out(browserhost, cherryport, err=''):
     """ Abort program because of CherryPy troubles """
     logging.error(T('Failed to start web-interface') + ' : ' + str(err))
     if not sabnzbd.DAEMON:
-        if '13' in err:
-            panic_xport(browserhost, cherryport)
-        elif '49' in err:
+        if '49' in err:
             panic_host(browserhost, cherryport)
         else:
             panic_port(browserhost, cherryport)
