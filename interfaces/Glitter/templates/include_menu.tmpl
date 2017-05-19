@@ -101,7 +101,7 @@
                     <li class="divider"></li>
                     <li class="dropdown-header"><span class="glyphicon glyphicon-off"></span> $T('Glitter-onFinish'):</li>
                     <li>
-                        <select data-bind="value: onQueueFinish" class="form-control">
+                        <select data-bind="value: onQueueFinish, event: { change: setOnQueueFinish }" class="form-control">
                             <option value=""></option>
                             <optgroup label="$T('eoq-actions')">
                                 <option value="shutdown_program">$T('shutdownSab')</option>
@@ -111,9 +111,11 @@
                                 <option value="hibernate_pc">$T('hibernatePc')</option>
                                 <!--#end if#-->
                             </optgroup>
-                            <optgroup label="$T('eoq-scripts')">
+                            <optgroup label="$T('eoq-scripts')" data-bind="visible: queue.scriptsList().length > 1">
                                 <!-- ko foreach: queue.scriptsList -->
-                                    <option data-bind="text: \$data, attr: { value: 'script_'+\$data } " ></option>
+                                    <!-- ko if: \$data != glitterTranslate.noneText -->
+                                        <option data-bind="text: \$data, attr: { value: 'script_'+\$data } " ></option>
+                                    <!-- /ko -->
                                 <!-- /ko -->
                             </optgroup>
                         </select>
