@@ -670,8 +670,8 @@ class NzbObject(TryList):
             duplicate = series = 0
 
         if reuse:
-            remove_all(adir, 'SABnzbd_nz?_*')
-            remove_all(adir, 'SABnzbd_article_*')
+            remove_all(adir, 'SABnzbd_nz?_*', True)
+            remove_all(adir, 'SABnzbd_article_*', True)
         else:
             wdir = trim_win_path(wdir)
             wdir = get_unique_path(wdir, create_dir=True)
