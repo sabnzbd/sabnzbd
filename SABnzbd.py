@@ -671,7 +671,8 @@ def find_free_port(host, currentport):
     """ Return a free port if allowed, 0 when nothing is free """
     if sabnzbd.cfg.fixed_ports():
         # Port found before, so we bail out
-        raise IOError
+        panic('Initialization Error', 'Unable to bind to ' + str(host) + ':' + str(currentport))
+        exit_sab(1)
 
     n = 0
     while n < 10 and currentport <= 49151:
