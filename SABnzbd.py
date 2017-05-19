@@ -666,11 +666,7 @@ def is_sabnzbd_running(url):
 
 
 def find_free_port(host, currentport):
-    """ Return a free port if allowed, 0 when nothing is free """
-    if sabnzbd.cfg.fixed_ports():
-        # Port found before, so we bail out
-        raise IOError
-
+    """ Return a free port, 0 when nothing is free """
     n = 0
     while n < 10 and currentport <= 49151:
         try:
@@ -1051,6 +1047,10 @@ def main():
                 if not url:
                     url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                    # Bail out if we have fixed our ports after first start-up
+                    if sabnzbd.cfg.fixed_ports():
+                        Bail_Out(browserhost, cherryport)
+                    # Find free port to bind
                     newport = find_free_port(browserhost, port)
                     if newport > 0:
                         # Save the new port
@@ -1062,6 +1062,7 @@ def main():
                             http_port = newport
                             sabnzbd.cfg.port.set(newport)
         except:
+            # Something else wrong, probably badly specified host
             Bail_Out(browserhost, cherryport, '49')
 
     # NonSSL check if there's no HTTPS or we only use 1 port
@@ -1075,11 +1076,16 @@ def main():
                 if not url:
                     url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
+                    # Bail out if we have fixed our ports after first start-up
+                    if sabnzbd.cfg.fixed_ports():
+                        Bail_Out(browserhost, cherryport)
+                    # Find free port to bind
                     port = find_free_port(browserhost, cherryport)
                     if port > 0:
                         sabnzbd.cfg.cherryport.set(port)
                         cherryport = port
         except:
+            # Something else wrong, probably badly specified host
             Bail_Out(browserhost, cherryport, '49')
 
     # We found a port, now we never check again

@@ -194,6 +194,7 @@ def panic_fwall(vista):
 
 
 def panic_port(host, port):
+    print "\n%s:\n  %s" % (T('Fatal error'), T('Unable to bind to port %s on %s. Some other software uses the port or SABnzbd is already running.') % (port, host))
     launch_a_browser(panic_message(PANIC_PORT, host, port))
 
 
