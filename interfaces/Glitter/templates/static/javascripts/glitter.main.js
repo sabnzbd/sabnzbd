@@ -471,12 +471,12 @@ function ViewModel() {
             return;
         }
 
-        // Fix DateJS bug where sometimes >12 minutes/hours/days (ex. "13 hours") converts into the wrong timestamp 
+        // Fix DateJS bug it has some strange problem with the current day-of-month + 1
         // Removing the space makes DateJS work properly
-        newValue = newValue.replace(/\s*hour|\s*minute|\s*min|\s*day/g, function(match) {
+        newValue = newValue.replace(/\s*h|\s*m|\s*d/g, function(match) {
             return match.trim()
         });
-      
+
         // Parse
         var pauseParsed = Date.parse(newValue);
 
