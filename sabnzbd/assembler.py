@@ -104,6 +104,11 @@ class Assembler(Thread):
                         if pack:
                             nzo.md5packs[setname] = pack
                             logging.debug('Got md5pack for set %s', setname)
+                            # Valid md5pack, so use this par2-file as main par2 file for the set
+                            if setname in nzo.partable:
+                                # First copy the set of extrapars, we need them later
+                                nzf.extrapars = nzo.partable[setname].extrapars
+                                nzo.partable[setname] = nzf
 
                     rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
                     if rar_encrypted:
