@@ -1,5 +1,13 @@
-Release Notes  -  SABnzbd 2.0.1 RC 1
+Release Notes  -  SABnzbd 2.0.1 RC 2
 =========================================================
+
+## Bugfixes since 2.0.0RC1
+- Queue-finish-action picker in Glitter more stable.
+- Custom Pause interpreter in Glitter more reliable.
+- Handle occupied port on startup better.
+- Pre-check would fail if download was on SMBv3 share.
+- Handle more URLGrabber exceptions.
+- Command-line parameters were not listed correctly.
 
 ## Bugfixes since 2.0.0
 - Some users experienced slower download speeds.
@@ -27,9 +35,6 @@ Release Notes  -  SABnzbd 2.0.1 RC 1
 - Stop SABnzbd
 - Install new version
 - Start SABnzbd
-
-## IMPORTANT INFORMATION about release 2.x.x
-<https://sabnzbd.org/wiki/new-features-and-changes>
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
