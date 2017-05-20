@@ -1784,12 +1784,13 @@ def build_filelists(workdir, workdir_complete=None, check_rar=True):
 
 def QuickCheck(set, nzo):
     """ Check all on-the-fly md5sums of a set """
-
     md5pack = nzo.md5packs.get(set)
     if md5pack is None:
         return False
 
-    result = False
+    # We use bitwise assigment (&=) so False always wins in case of failure
+    # This way the renames always get saved!
+    result = True
     nzf_list = nzo.finished_files
     renames = {}
 
@@ -1806,14 +1807,14 @@ def QuickCheck(set, nzo):
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
-                    result = True
+                    result &= True
                 elif file_to_ignore:
                     # We don't care about these files
                     logging.debug('Quick-check ignoring file %s', file)
-                    result = True
+                    result &= True
                 else:
                     logging.info('Quick-check of file %s failed!', file)
-                    return False  # When any file fails, just stop
+                    result = False
                 break
 
             # Now lets do obfuscation check
@@ -1823,7 +1824,7 @@ def QuickCheck(set, nzo):
                     renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file_platform))
                     renames[file_platform] = nzf.filename
                     nzf.filename = file_platform
-                    result = True
+                    result &= True
                     found = True
                     break
                 except IOError:
@@ -1837,7 +1838,7 @@ def QuickCheck(set, nzo):
                 continue
 
             logging.info('Cannot Quick-check missing file %s!', file)
-            return False  # Missing file is failure
+            result = False
 
     # Save renames
     if renames:
