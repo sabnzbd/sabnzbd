@@ -356,6 +356,9 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 perc = (100.0 / size) * n
                 logging.debug("Processing %s", joinable)
                 nzo.set_action_line(T('Joining'), '%.0f%%' % perc)
+                if joinable.count(".000") == 1 and os.path.getsize(joinable)<1000 :
+                    logging.debug('Skipping: %s', joinable)
+                    continue
                 f = open(joinable, 'rb')
                 shutil.copyfileobj(f, joined_file, bufsize)
                 f.close()
