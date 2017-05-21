@@ -656,10 +656,6 @@ def parring(nzo, workdir):
                         break
 
                     re_add = re_add or need_re_add
-                    if not res and not need_re_add and cfg.sfv_check():
-                        res = try_sfv_check(nzo, workdir, setname)
-                    if not res and not need_re_add and cfg.enable_unrar():
-                        res = try_rar_check(nzo, workdir, setname)
                     verified[setname] = res
                 else:
                     continue
