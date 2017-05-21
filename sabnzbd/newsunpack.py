@@ -575,6 +575,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         # See: https://github.com/sabnzbd/sabnzbd/pull/771
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
                    '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+
+        # If this is the retry without leading \\.\, we need to remove the \ at the end (yes..)
+        if not extraction_path.startswith('\\\\?\\'):
+            command[-1] = command[-1][:-1]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password_command,
