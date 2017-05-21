@@ -823,14 +823,16 @@ def handle_empty_queue():
     """ Check if empty queue calls for action """
     if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
         sabnzbd.save_state()
-        logging.info("Queue has finished, launching: %s (%s)",
-                     sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
-        if sabnzbd.QUEUECOMPLETEARG:
-            sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
-        else:
-            Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
 
-        sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
+        # Perform end-of-queue action when one is set
+        if sabnzbd.QUEUECOMPLETEACTION:
+            logging.info("Queue has finished, launching: %s (%s)",
+                         sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
+            if sabnzbd.QUEUECOMPLETEARG:
+                sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
+            else:
+                Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
+            sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
 
 def cleanup_list(wdir, skip_nzb):
