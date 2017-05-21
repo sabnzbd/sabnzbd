@@ -59,7 +59,7 @@
             glitterTranslate.minutes = "$T('mins')"
             glitterTranslate.shutdown = "$T('shutdownOK?')";
             glitterTranslate.restart = "$T('explain-Restart')".replace(/<br \/>/g, "\n");
-            glitterTranslate.repair = "$T('explain-Repair')".replace(/<br \/>/g, "\n");
+            glitterTranslate.repair = "$T('explain-Repair')".replace(/<br \/>/g, "\n").replace(/&quot;/g,'"');
             glitterTranslate.removeDown = "$T('Glitter-confirmClearDownloads')";
             glitterTranslate.removeDow1 = "$T('Glitter-confirmClear1Download')";
             glitterTranslate.encrypted = "$T('Glitter-encrypted')";
