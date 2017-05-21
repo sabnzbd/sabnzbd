@@ -1007,7 +1007,7 @@ class NzbObject(TryList):
                 self.status = Status.QUEUED
                 self.set_download_report()
                 self.fail_msg = T('Aborted, cannot be completed') + ' - https://sabnzbd.org/not-complete'
-                self.set_unpack_info('Download', self.fail_msg, unique=False)
+                self.set_unpack_info('Download', self.fail_msg)
                 logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
                 # Update the last check time
                 sabnzbd.LAST_HISTORY_UPDATE = time.time()
@@ -1286,13 +1286,13 @@ class NzbObject(TryList):
             if killed:
                 msg5 = (u'<br/>' + T('%s articles were removed')) % len(killed)
             msg = u''.join((msg1, msg2, msg3, msg4, msg5, ))
-            self.set_unpack_info('Download', msg, unique=True)
+            self.set_unpack_info('Download', msg)
             if self.url:
-                self.set_unpack_info('Source', self.url, unique=True)
+                self.set_unpack_info('Source', self.url)
             servers = config.get_servers()
             if len(self.servercount) > 0:
                 msgs = ['%s=%sB' % (servers[server].displayname(), to_units(self.servercount[server])) for server in self.servercount if server in servers]
-                self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
+                self.set_unpack_info('Servers', ', '.join(msgs))
 
     @synchronized(IO_LOCK)
     def inc_log(self, log, txt):
@@ -1525,18 +1525,12 @@ class NzbObject(TryList):
             return self.files_table[nzf_id]
 
     @synchronized(IO_LOCK)
-    def set_unpack_info(self, key, msg, unique=False):
+    def set_unpack_info(self, key, msg):
         """ Builds a dictionary containing the stage name (key) and a message
-            If unique is present, it will only have a single line message
         """
-        found = False
-        # Unique messages allow only one line per stage(key)
-        if not unique:
-            if key not in self.unpack_info:
-                self.unpack_info[key] = []
-            self.unpack_info[key].append(msg)
-        else:
-            self.unpack_info[key] = [msg]
+        if key not in self.unpack_info:
+            self.unpack_info[key] = []
+        self.unpack_info[key].append(msg)
 
     @synchronized(IO_LOCK)
     def set_action_line(self, action=None, msg=None):

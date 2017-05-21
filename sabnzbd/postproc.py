@@ -478,16 +478,16 @@ def process_job(nzo):
                 # Set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
-                nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
+                nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script))
                 script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete),
                                                              dirname, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
                 if script_line:
-                    nzo.set_unpack_info('Script', unicoder(script_line), unique=True)
+                    nzo.set_unpack_info('Script', unicoder(script_line))
                 else:
-                    nzo.set_unpack_info('Script', T('Ran %s') % unicoder(script), unique=True)
+                    nzo.set_unpack_info('Script', T('Ran %s') % unicoder(script))
             else:
                 script = ""
                 script_line = ""
@@ -516,10 +516,10 @@ def process_job(nzo):
             if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
                                     u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line,
-                                    xml.sax.saxutils.escape(script_output), T('More')), unique=True)
+                                    xml.sax.saxutils.escape(script_output), T('More')))
             else:
                 # No '(more)' button needed
-                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line), unique=True)
+                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line))
 
         # Cleanup again, including NZB files
         if all_ok:
@@ -620,20 +620,13 @@ def is_parfile(fn):
 
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
-    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
     filename = nzo.final_name
     notifier.send_notification(T('Post-processing'), filename, 'pp')
     logging.info('Starting verification and repair of %s', filename)
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
-
-    # Collect the par files
-    if nzo.partable:
-        par_table = nzo.partable.copy()
-    else:
-        par_table = {}
-    repair_sets = par_table.keys()
+    repair_sets = nzo.partable.keys()
 
     re_add = False
     par_error = False
@@ -645,7 +638,7 @@ def parring(nzo, workdir):
                 continue
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
-                parfile_nzf = par_table[setname]
+                parfile_nzf = nzo.partable[setname]
                 if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
 
