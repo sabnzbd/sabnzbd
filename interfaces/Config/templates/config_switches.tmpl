@@ -159,16 +159,18 @@
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
+                    <!--#if $nt#-->
+                    <div class="field-pair">
+                        <label class="config" for="multipar">$T('opt-par2_multipar')</label>
+                        <input type="checkbox" name="multipar" id="multipar" value="1" <!--#if int($multipar) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-par2_multipar')</span>
+                    </div>
+                    <!--#end if#-->
                     <!--#if $have_multicore#-->
                     <div class="field-pair">
                         <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
                         <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#-->  />
                         <span class="desc">$T('explain-par2_multicore')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="multipar">$T('opt-par2_multipar')</label>
-                        <input type="checkbox" name="multipar" id="multipar" value="1" <!--#if int($multipar) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-par2_multipar')</span>
                     </div>
                     <!--#end if#-->
                     <div class="field-pair">
@@ -454,6 +456,14 @@
             \$("#rating_filter_pause").hide();
         }
     });
+
+    // Hide/show multicore par2 parms if Multipar is checked
+    \$('#multipar').on('change', function() {
+        \$('#par2_multicore').parent().toggle()
+    })
+    if(\$('#multipar')[0].checked) {
+        \$('#par2_multicore').parent().hide()
+    }
 
     \$('.restoreDefaults').click(function(e) {
         // Get section name

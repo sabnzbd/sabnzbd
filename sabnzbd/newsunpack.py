@@ -575,6 +575,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     else:
         overwrite = '-o-'  # Disable overwrite
         rename = '-or'    # Auto renaming
+
     if sabnzbd.WIN32:
         # Use all flags
         # See: https://github.com/sabnzbd/sabnzbd/pull/771
