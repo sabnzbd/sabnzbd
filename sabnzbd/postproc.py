@@ -480,16 +480,16 @@ def process_job(nzo):
                 # Set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING
                 nzo.set_action_line(T('Running script'), unicoder(script))
-                nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script))
+                nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
                 script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete),
                                                              dirname, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
                 if script_line:
-                    nzo.set_unpack_info('Script', unicoder(script_line))
+                    nzo.set_unpack_info('Script', unicoder(script_line), unique=True)
                 else:
-                    nzo.set_unpack_info('Script', T('Ran %s') % unicoder(script))
+                    nzo.set_unpack_info('Script', T('Ran %s') % unicoder(script), unique=True)
             else:
                 script = ""
                 script_line = ""
@@ -518,10 +518,10 @@ def process_job(nzo):
             if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
                                     u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line,
-                                    xml.sax.saxutils.escape(script_output), T('More')))
+                                    xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
                 # No '(more)' button needed
-                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line))
+                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line), unique=True)
 
         # Cleanup again, including NZB files
         if all_ok:
