@@ -1525,9 +1525,8 @@ class NzbObject(TryList):
             return self.files_table[nzf_id]
 
     @synchronized(IO_LOCK)
-    def set_unpack_info(self, key, msg, set='', unique=False):
+    def set_unpack_info(self, key, msg, unique=False):
         """ Builds a dictionary containing the stage name (key) and a message
-            If set is present, it will overwrite any other messages from the set of the same stage
             If unique is present, it will only have a single line message
         """
         found = False
@@ -1535,15 +1534,7 @@ class NzbObject(TryList):
         if not unique:
             if key not in self.unpack_info:
                 self.unpack_info[key] = []
-            # If set is present, look for previous message from that set and replace
-            if set:
-                set = unicoder('[%s]' % set)
-                for x in xrange(len(self.unpack_info[key])):
-                    if set in self.unpack_info[key][x]:
-                        self.unpack_info[key][x] = msg
-                        found = True
-            if not found:
-                self.unpack_info[key].append(msg)
+            self.unpack_info[key].append(msg)
         else:
             self.unpack_info[key] = [msg]
 

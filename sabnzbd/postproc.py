@@ -772,7 +772,7 @@ def try_rar_check(nzo, workdir, setname):
     # Test
     if rars:
         nzo.status = Status.VERIFYING
-        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'), set=setname)
+        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'))
         nzo.set_action_line(T('Trying RAR-based verification'), '...')
         try:
             # Set path to unrar and open the file
@@ -783,20 +783,20 @@ def try_rar_check(nzo, workdir, setname):
             # Skip if it's encrypted
             if zf.needs_password():
                 msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), T('Passworded'))
-                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.set_unpack_info('Repair', msg)
                 return True
 
             # Will throw exception if something is wrong
             zf.testrar()
             # Success!
             msg = T('RAR files verified successfully')
-            nzo.set_unpack_info('Repair', msg, set=setname)
+            nzo.set_unpack_info('Repair', msg)
             logging.info(msg)
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
             msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n', ' ')))
-            nzo.set_unpack_info('Repair', msg, set=setname)
+            nzo.set_unpack_info('Repair', msg)
             logging.info(msg)
             return False
     else:
