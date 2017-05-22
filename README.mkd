@@ -1,24 +1,31 @@
-Release Notes  -  SABnzbd 2.0.1 RC 2
+Release Notes  -  SABnzbd 2.0.1
 =========================================================
-
-## Bugfixes since 2.0.0RC1
-- Queue-finish-action picker in Glitter more stable.
-- Custom Pause interpreter in Glitter more reliable.
-- Handle occupied port on startup better.
-- Pre-check would fail if download was on SMBv3 share.
-- Handle more URLGrabber exceptions.
-- Command-line parameters were not listed correctly.
 
 ## Bugfixes since 2.0.0
 - Some users experienced slower download speeds.
 - Revert changes to handling of missing articles introduced in 2.0.0 that
   turned out to be slow for some users.
-- Log X-Forwarded-For of API calls and logins.
-- Better handling of 7zip unpacking.
 - No longer change ports if the configured port is not available during startup.
+- More repair/unpack info is retained in the History information.
+- Missing first par2-file would cause repair to be skipped.
+- Redundant SFV and RAR checks no longer performed if par2 verification failed.
+- Better handling of 7zip unpacking.
+- Log X-Forwarded-For of API calls and logins.
+- Handle more URLGrabber exceptions.
+- Command-line parameters were not listed correctly.
+- Queue-finish-action picker in Glitter more stable.
+- Custom Pause interpreter in Glitter more reliable.
+- Pre-check would fail if download was on SMBv3 share.
 - Windows: remove option to start SABnzbd from installer, it would start the
   program as administrator.
 - Windows: NZB-icon association lost sometimes.
+- Windows: Unrar could fail on some archives containing very long paths.
+
+## Upgrading from 0.7.x and older
+- Finish queue
+- Stop SABnzbd
+- Install new version
+- Start SABnzbd
 
 ## Upgrade notices
 - Windows: When starting the Post-Processing script, the path to the job folder
@@ -27,14 +34,8 @@ Release Notes  -  SABnzbd 2.0.1 RC 2
 - Schedule items are converted when upgrading to 2.x.x and will break when
   reverted back to pre-2.x.x releases.
 - The organization of the download queue is different from 0.7.x releases.
-  So 2.x.x will not see the existing queue, but you can go to Status->QueueRepair
+  So 2.x.x will not see the existing queue, but you can go to Status->Queue Repair
   and "Repair" the old queue.
-
-## Upgrading from 0.7.x and older
-- Finish queue
-- Stop SABnzbd
-- Install new version
-- Start SABnzbd
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
