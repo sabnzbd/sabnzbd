@@ -52,6 +52,8 @@ import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.utils.checkdir
 
+# Match samples
+RE_SAMPLE = re.compile(sample_match, re.I)
 
 class PostProcessor(Thread):
     """ PostProcessor thread, designed as Singleton """
@@ -641,7 +643,7 @@ def parring(nzo, workdir):
 
     if repair_sets:
         for setname in repair_sets:
-            if cfg.ignore_samples() and 'sample' in setname.lower():
+            if cfg.ignore_samples() and RE_SAMPLE.search(setname.lower()):
                 continue
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
@@ -926,7 +928,6 @@ def get_last_line(txt):
 
 def remove_samples(path):
     """ Remove all files that match the sample pattern """
-    RE_SAMPLE = re.compile(sample_match, re.I)
     for root, _dirs, files in os.walk(path):
         for file_ in files:
             if RE_SAMPLE.search(file_):
