@@ -1,14 +1,19 @@
 Release Notes  -  SABnzbd 2.0.1
 =========================================================
 
+## Changes since 2.0.0
+- No longer change ports if the configured port is not available during startup.
+- 'Proof' files also ignored when Ignore Samples is enabled.
+- Redundant SFV and RAR checks no longer performed if par2 verification failed.
+- More repair/unpack info is retained in the History information.
+- Windows: remove option to start SABnzbd from installer, it would start the
+  program as administrator.
+
 ## Bugfixes since 2.0.0
 - Some users experienced slower download speeds.
 - Revert changes to handling of missing articles introduced in 2.0.0 that
   turned out to be slow for some users.
-- No longer change ports if the configured port is not available during startup.
-- More repair/unpack info is retained in the History information.
 - Missing first par2-file would cause repair to be skipped.
-- Redundant SFV and RAR checks no longer performed if par2 verification failed.
 - Better handling of 7zip unpacking.
 - Log X-Forwarded-For of API calls and logins.
 - Handle more URLGrabber exceptions.
@@ -16,8 +21,6 @@ Release Notes  -  SABnzbd 2.0.1
 - Queue-finish-action picker in Glitter more stable.
 - Custom Pause interpreter in Glitter more reliable.
 - Pre-check would fail if download was on SMBv3 share.
-- Windows: remove option to start SABnzbd from installer, it would start the
-  program as administrator.
 - Windows: NZB-icon association lost sometimes.
 - Windows: Unrar could fail on some archives containing very long paths.
 
