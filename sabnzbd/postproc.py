@@ -52,6 +52,8 @@ import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.utils.checkdir
 
+# Match samples
+RE_SAMPLE = re.compile(sample_match, re.I)
 
 class PostProcessor(Thread):
     """ PostProcessor thread, designed as Singleton """
@@ -641,7 +643,7 @@ def parring(nzo, workdir):
 
     if repair_sets:
         for setname in repair_sets:
-            if cfg.ignore_samples() and 'sample' in setname.lower():
+            if cfg.ignore_samples() and RE_SAMPLE.search(setname.lower()):
                 continue
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
@@ -656,10 +658,6 @@ def parring(nzo, workdir):
                         break
 
                     re_add = re_add or need_re_add
-                    if not res and not need_re_add and cfg.sfv_check():
-                        res = try_sfv_check(nzo, workdir, setname)
-                    if not res and not need_re_add and cfg.enable_unrar():
-                        res = try_rar_check(nzo, workdir, setname)
                     verified[setname] = res
                 else:
                     continue
@@ -776,7 +774,7 @@ def try_rar_check(nzo, workdir, setname):
     # Test
     if rars:
         nzo.status = Status.VERIFYING
-        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'), set=setname)
+        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'))
         nzo.set_action_line(T('Trying RAR-based verification'), '...')
         try:
             # Set path to unrar and open the file
@@ -787,20 +785,20 @@ def try_rar_check(nzo, workdir, setname):
             # Skip if it's encrypted
             if zf.needs_password():
                 msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), T('Passworded'))
-                nzo.set_unpack_info('Repair', msg, set=setname)
+                nzo.set_unpack_info('Repair', msg)
                 return True
 
             # Will throw exception if something is wrong
             zf.testrar()
             # Success!
             msg = T('RAR files verified successfully')
-            nzo.set_unpack_info('Repair', msg, set=setname)
+            nzo.set_unpack_info('Repair', msg)
             logging.info(msg)
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
             msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n', ' ')))
-            nzo.set_unpack_info('Repair', msg, set=setname)
+            nzo.set_unpack_info('Repair', msg)
             logging.info(msg)
             return False
     else:
@@ -827,14 +825,16 @@ def handle_empty_queue():
     """ Check if empty queue calls for action """
     if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
         sabnzbd.save_state()
-        logging.info("Queue has finished, launching: %s (%s)",
-                     sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
-        if sabnzbd.QUEUECOMPLETEARG:
-            sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
-        else:
-            Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
 
-        sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
+        # Perform end-of-queue action when one is set
+        if sabnzbd.QUEUECOMPLETEACTION:
+            logging.info("Queue has finished, launching: %s (%s)",
+                         sabnzbd.QUEUECOMPLETEACTION, sabnzbd.QUEUECOMPLETEARG)
+            if sabnzbd.QUEUECOMPLETEARG:
+                sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
+            else:
+                Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
+            sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
 
 def cleanup_list(wdir, skip_nzb):
@@ -928,7 +928,6 @@ def get_last_line(txt):
 
 def remove_samples(path):
     """ Remove all files that match the sample pattern """
-    RE_SAMPLE = re.compile(sample_match, re.I)
     for root, _dirs, files in os.walk(path):
         for file_ in files:
             if RE_SAMPLE.search(file_):

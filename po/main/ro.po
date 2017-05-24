@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-04-02 15:51+0000\n"
+"POT-Creation-Date: 2017-04-08 07:51+0000\n"
 "PO-Revision-Date: 2016-07-29 16:20+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-04-05 07:19+0000\n"
-"X-Generator: Launchpad (build 18335)\n"
+"X-Launchpad-Export-Date: 2017-04-14 05:47+0000\n"
+"X-Generator: Launchpad (build 18352)\n"
 
 #: SABnzbd.py:257 [Error message]
 msgid "Failed to start web-interface"
@@ -25,33 +25,43 @@ msgstr "Pornirea interfeţei-web nereuşită"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Nu se poate găsi şablon web:%s, se încearcă şablon standard"
 
-#: SABnzbd.py:416 [Error message]
+#: SABnzbd.py:415 [Warning message]
+msgid ""
+"SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
+msgstr ""
+
+#: SABnzbd.py:418 [Warning message]
+msgid ""
+"SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
+msgstr ""
+
+#: SABnzbd.py:424 [Error message]
 msgid "_yenc module... NOT found!"
 msgstr "modulul _yenc ... Negăsit!"
 
-#: SABnzbd.py:426 [Error message]
+#: SABnzbd.py:434 [Error message]
 msgid "par2 binary... NOT found!"
 msgstr "binar par2 ... Negăsit!"
 
-#: SABnzbd.py:438 [Warning message]
+#: SABnzbd.py:446 [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Versiunea ta de UNRAR este %s,  noi recomandăm versiunea %s sau mai mare.<br "
 "/>"
 
-#: SABnzbd.py:442 [Error message]
+#: SABnzbd.py:450 [Error message]
 msgid "unrar binary... NOT found"
 msgstr "binar unrar... Negăsit!"
 
-#: SABnzbd.py:447
+#: SABnzbd.py:455
 msgid "unzip binary... NOT found!"
 msgstr "binar unzip... Negăsit!"
 
-#: SABnzbd.py:452
+#: SABnzbd.py:460
 msgid "7za binary... NOT found!"
 msgstr "Fişier executabil 7za ... Indisponibil!"
 
-#: SABnzbd.py:602 [Warning message]
+#: SABnzbd.py:610 [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
 "access"
@@ -59,45 +69,45 @@ msgstr ""
 "Vă rugăm să fiţi conştienţi că numele gazdei 0.0.0.0 va avea nevoie de o "
 "adresa IPv6 pentru acces extern"
 
-#: SABnzbd.py:632 [Error message]
+#: SABnzbd.py:640 [Error message]
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Porturile HTTP și HTTPS nu pot fi aceleași"
 
-#: SABnzbd.py:1190 [Warning message]
+#: SABnzbd.py:1198 [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
 msgstr ""
 
-#: SABnzbd.py:1284 [Warning message]
+#: SABnzbd.py:1292 [Warning message]
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "Dezactivează HTTPS din cauza lipsei fişierelor CERT şi KEY"
 
-#: SABnzbd.py:1383 [Warning message]
+#: SABnzbd.py:1391 [Warning message]
 msgid "Could not bind to configured port. Port changed to %s"
 msgstr ""
 
-#: SABnzbd.py:1392 [Error message]
+#: SABnzbd.py:1400 [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Nu am putu porni interfața web: "
 
-#: SABnzbd.py:1413 [Error message]
+#: SABnzbd.py:1421 [Error message]
 msgid "Cannot reach the SABHelper service"
 msgstr "Nu pot contacta serviciul SABHelper"
 
-#: SABnzbd.py:1449
+#: SABnzbd.py:1457
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s pornit"
 
-#: SABnzbd.py:1460 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
+#: SABnzbd.py:1468 # sabnzbd/notifier.py:71 [Notification] # sabnzbd/skintext.py:279 [Status page, table column header, actual message]
 msgid "Warning"
 msgstr "Avertisment"
 
-#: SABnzbd.py:1464 # sabnzbd/notifier.py:72 [Notification]
+#: SABnzbd.py:1472 # sabnzbd/notifier.py:72 [Notification]
 msgid "Error"
 msgstr "Eroare"
 
-#: SABnzbd.py:1563 # sabnzbd/interface.py:438 # sabnzbd/interface.py:904
+#: SABnzbd.py:1571 # sabnzbd/interface.py:438 # sabnzbd/interface.py:904
 #: sabnzbd/osxmenu.py:772
 msgid "SABnzbd shutdown finished"
 msgstr "Închidere SABnzbd terminată"
@@ -229,7 +239,6 @@ msgid "None"
 msgstr "Niciunul"
 
 #: sabnzbd/api.py:1590 # sabnzbd/interface.py:117 # sabnzbd/skintext.py:90 [Default value, used in dropdown menus]
-#: sabnzbd/skintext.py:548
 msgid "Default"
 msgstr "Implicit"
 
@@ -406,27 +415,27 @@ msgstr "Închidere bază de date nereuşită, vedeţi jurnal"
 msgid "Invalid stage logging in history for %s"
 msgstr "Jurnal istoric stagii invalid pentru %s"
 
-#: sabnzbd/decoder.py:118
+#: sabnzbd/decoder.py:119
 msgid "Decoding %s failed"
 msgstr "Decodarea %s nereuşită"
 
-#: sabnzbd/decoder.py:128
+#: sabnzbd/decoder.py:129
 msgid "Decoder failure: Out of memory"
 msgstr ""
 
-#: sabnzbd/decoder.py:140
+#: sabnzbd/decoder.py:141
 msgid "CRC Error in %s (%s -> %s)"
 msgstr "Eroare CRC în %s (%s -> %s)"
 
-#: sabnzbd/decoder.py:172
+#: sabnzbd/decoder.py:173
 msgid "Badly formed yEnc article in %s"
 msgstr "Articoul yEnc invalid în %s"
 
-#: sabnzbd/decoder.py:182
+#: sabnzbd/decoder.py:183
 msgid "Unknown Error while decoding %s"
 msgstr "Eroare Necunoscută în timpul decodării %s"
 
-#: sabnzbd/decoder.py:250
+#: sabnzbd/decoder.py:251
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
@@ -963,32 +972,32 @@ msgstr "Pachet principal negăsit..."
 msgid "Invalid par2 files, cannot verify or repair"
 msgstr "Fișier par2 invalid, nu pot verifica sau repara"
 
-#: sabnzbd/newsunpack.py:1380 # sabnzbd/newsunpack.py:1415
+#: sabnzbd/newsunpack.py:1391 # sabnzbd/newsunpack.py:1426
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr "Reparare nereuşită, blocuri reparare insuficiente (%s mai puţin)"
 
-#: sabnzbd/newsunpack.py:1410
+#: sabnzbd/newsunpack.py:1421
 msgid "Fetching %s blocks..."
 msgstr "Descărcare %s blocuri..."
 
-#: sabnzbd/newsunpack.py:1412
+#: sabnzbd/newsunpack.py:1423
 msgid "Fetching"
 msgstr "Descărcare"
 
-#: sabnzbd/newsunpack.py:1423 # sabnzbd/newsunpack.py:1428
+#: sabnzbd/newsunpack.py:1434 # sabnzbd/newsunpack.py:1439
 msgid "Repairing"
 msgstr "Se repară"
 
-#: sabnzbd/newsunpack.py:1432
+#: sabnzbd/newsunpack.py:1443
 msgid "[%s] Repaired in %s"
 msgstr "[%s] Reparat în %s"
 
-#: sabnzbd/newsunpack.py:1485 # sabnzbd/newsunpack.py:1500
-#: sabnzbd/newsunpack.py:1518
+#: sabnzbd/newsunpack.py:1503 # sabnzbd/newsunpack.py:1518
+#: sabnzbd/newsunpack.py:1536
 msgid "Verifying"
 msgstr "Se verifică"
 
-#: sabnzbd/newsunpack.py:1622 [Error message]
+#: sabnzbd/newsunpack.py:1640 [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
@@ -3555,13 +3564,17 @@ msgstr ""
 
 #: sabnzbd/skintext.py:546
 msgid ""
-"Default: when SSL is enabled, verify the identity of the server using its "
+"Minimal: when SSL is enabled, verify the identity of the server using its "
 "certificates. Strict: verify and enforce matching hostname."
 msgstr ""
 
 #: sabnzbd/skintext.py:547 # sabnzbd/skintext.py:782 # sabnzbd/skintext.py:895
 msgid "Disabled"
 msgstr "Dezactivat"
+
+#: sabnzbd/skintext.py:548
+msgid "Minimal"
+msgstr ""
 
 #: sabnzbd/skintext.py:549
 msgid "Strict"

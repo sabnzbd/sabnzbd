@@ -75,7 +75,6 @@ class Article(TryList):
 
     def __init__(self, article, bytes, partnum, nzf):
         TryList.__init__(self)
-
         self.fetcher = None
         self.article = article
         self.art_id = None
@@ -671,8 +670,8 @@ class NzbObject(TryList):
             duplicate = series = 0
 
         if reuse:
-            remove_all(adir, 'SABnzbd_nz?_*')
-            remove_all(adir, 'SABnzbd_article_*')
+            remove_all(adir, 'SABnzbd_nz?_*', True)
+            remove_all(adir, 'SABnzbd_article_*', True)
         else:
             wdir = trim_win_path(wdir)
             wdir = get_unique_path(wdir, create_dir=True)
@@ -1014,13 +1013,13 @@ class NzbObject(TryList):
                 sabnzbd.LAST_HISTORY_UPDATE = time.time()
                 return True, True
 
-        if not found:
-            # Add extra parfiles when there was a damaged article and not pre-checking
-            if cfg.prospective_par_download() and self.extrapars and not self.precheck:
-                self.prospective_add(nzf)
-
         if file_done:
             self.handle_par2(nzf, file_done)
+
+        if not found:
+            # Add extra parfiles when there was a damaged article and not pre-checking
+            if self.extrapars and not self.precheck:
+                self.prospective_add(nzf)
 
         post_done = False
         if not self.files:
@@ -1526,9 +1525,8 @@ class NzbObject(TryList):
             return self.files_table[nzf_id]
 
     @synchronized(IO_LOCK)
-    def set_unpack_info(self, key, msg, set='', unique=False):
+    def set_unpack_info(self, key, msg, unique=False):
         """ Builds a dictionary containing the stage name (key) and a message
-            If set is present, it will overwrite any other messages from the set of the same stage
             If unique is present, it will only have a single line message
         """
         found = False
@@ -1536,15 +1534,7 @@ class NzbObject(TryList):
         if not unique:
             if key not in self.unpack_info:
                 self.unpack_info[key] = []
-            # If set is present, look for previous message from that set and replace
-            if set:
-                set = unicoder('[%s]' % set)
-                for x in xrange(len(self.unpack_info[key])):
-                    if set in self.unpack_info[key][x]:
-                        self.unpack_info[key][x] = msg
-                        found = True
-            if not found:
-                self.unpack_info[key].append(msg)
+            self.unpack_info[key].append(msg)
         else:
             self.unpack_info[key] = [msg]
 

@@ -471,6 +471,12 @@ function ViewModel() {
             return;
         }
 
+        // Fix DateJS bug it has some strange problem with the current day-of-month + 1
+        // Removing the space makes DateJS work properly
+        newValue = newValue.replace(/\s*h|\s*m|\s*d/g, function(match) {
+            return match.trim()
+        });
+
         // Parse
         var pauseParsed = Date.parse(newValue);
 
@@ -593,7 +599,7 @@ function ViewModel() {
     }
 
     // Shutdown options
-    self.onQueueFinish.subscribe(function(newValue) {
+    self.setOnQueueFinish = function(model, event) {
         // Ignore updates before the page is done
         if(!self.hasStatusInfo()) return;
 
@@ -601,9 +607,12 @@ function ViewModel() {
         callAPI({
             mode: 'queue',
             name: 'change_complete_action',
-            value: newValue
+            value: $(event.target).val()
         })
-    })
+
+        // Top stop blinking while the API is calling
+        self.onQueueFinish($(event.target).val())
+    }
 
     // Use global settings or device-specific?
     self.useGlobalOptions.subscribe(function(newValue) {

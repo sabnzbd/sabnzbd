@@ -265,6 +265,11 @@ function do_restart() {
 
             // Now we try untill we can connect
             var refreshInterval = setInterval(function() {
+                // We skip the first one
+                if(failureCounter == 0) {
+                    failureCounter = failureCounter+1;
+                    return
+                }
                 $.ajax({ url: urlTotal,
                     success: function() {
                         // Back to base

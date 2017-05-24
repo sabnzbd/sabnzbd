@@ -17,9 +17,7 @@
                             <th>$T('category')</th>
                             <th>$T('priority')</th>
                             <th>$T('mode')</th>
-                            <!--#if $scripts#-->
                             <th>$T('script')</th>
-                            <!--#end if#-->
                             <th>$T('catFolderPath')</th>
                             <th colspan="2">$T('catTags')</th>
                         </tr>
@@ -61,8 +59,8 @@
                                     <option value="3" <!--#if $slot.pp=="3" then 'selected="selected"' else ""#-->>$T('pp-delete')</option>
                                 </select>
                             </td>
-                            <!--#if $scripts#-->
                             <td>
+                                <!--#if $scripts#-->
                                 <select name="script">
                                     <!--#for $sc in $scripts#-->
                                         <!--#if not ($sc == 'Default' and $slot.name == '*')#-->
@@ -70,8 +68,12 @@
                                         <!--#end if#-->
                                     <!--#end for#-->
                                 </select>
+                                <!--#else#-->
+                                <select name="script" disabled>
+
+                                </select>
+                                <!--#end if#-->
                             </td>
-                            <!--#end if#-->
                             <td class="nowrap">
                                 <input type="text" name="dir" class="fileBrowserSmall" value="$slot.dir" size="20" data-initialdir="$defdir" data-title="$T('catFolderPath')" title="$T('explain-catTags2')" />
                             </td>
