@@ -189,11 +189,32 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
         p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
+
+        # Follow the output, so we can abort it
+        proc = p.stdout
+        if p.stdin:
+            p.stdin.close()
+        line = ''
+        lines = []
+        while 1:
+            line = proc.readline()
+            if not line:
+                break
+            line = line.strip()
+            lines.append(line)
+
+            # Check if we should still continue
+            if not nzo.pp_active:
+                p.kill()
+                lines.append(T('PostProcessing was aborted (%s)') % T('Script'))
+                # Print at least what we got
+                output = '\n'.join(lines)
+                return output, 1
     except:
         logging.debug("Failed script %s, Traceback: ", extern_proc, exc_info=True)
         return "Cannot run script %s\r\n" % extern_proc, -1
 
-    output = p.stdout.read()
+    output = '\n'.join(lines)
     ret = p.wait()
     return output, ret
 
