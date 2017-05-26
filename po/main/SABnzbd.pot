@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-05-22 22:39+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-05-27 01:14+W. Europe Daylight Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -686,7 +686,7 @@ msgstr ""
 msgid "Failed making (%s)"
 msgstr ""
 
-#: sabnzbd/misc.py:934 [Error message] # sabnzbd/postproc.py:411
+#: sabnzbd/misc.py:934 [Error message] # sabnzbd/postproc.py:413
 msgid "Failed moving %s to %s"
 msgstr ""
 
@@ -698,252 +698,258 @@ msgstr ""
 msgid "Cannot change permissions of %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:224 [Warning message]
-msgid "Unpack nesting too deep [%s]"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:409 # sabnzbd/newsunpack.py:1922
-msgid "Joining"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:427
-msgid "Incomplete sequence of joinable files"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:428 # sabnzbd/newsunpack.py:436
-msgid "File join of %s failed"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:429 # sabnzbd/newsunpack.py:437
-msgid "[%s] Error \"%s\" while joining files"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:430 [Error message] # sabnzbd/newsunpack.py:438 [Error message]
-msgid "Error \"%s\" while running file_join on %s"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:432
-msgid "[%s] Joined %s files"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:492 # sabnzbd/newsunpack.py:841
-msgid "Unpacking failed, %s"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:494
-msgid "[%s] Error \"%s\" while unpacking RAR files"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:496 [Error message]
-msgid "Error \"%s\" while running rar_unpack on %s"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:512 [Warning message] # sabnzbd/newsunpack.py:522 [Warning message]
-#: sabnzbd/newsunpack.py:826 [Warning message] # sabnzbd/newsunpack.py:836 [Warning message]
-#: sabnzbd/newsunpack.py:994 [Warning message] # sabnzbd/newsunpack.py:999 [Warning message]
-#: sabnzbd/newsunpack.py:1109 [Warning message] # sabnzbd/newsunpack.py:1119 [Warning message]
-#: sabnzbd/newsunpack.py:1126 [Warning message] # sabnzbd/newsunpack.py:1133 [Warning message]
-#: sabnzbd/newsunpack.py:1151 [Warning message]
-msgid "Deleting %s failed!"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:541
-msgid "Trying unrar with password \"%s\""
-msgstr ""
-
-#: sabnzbd/newsunpack.py:549 [Error message] # sabnzbd/newsunpack.py:725
-#: sabnzbd/newsunpack.py:726 # sabnzbd/newsunpack.py:936
-msgid "Unpacking failed, archive requires a password"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:612 # sabnzbd/newsunpack.py:644
-#: sabnzbd/newsunpack.py:801 # sabnzbd/newsunpack.py:896
-msgid "Unpacking"
-msgstr ""
-
-#: sabnzbd/newsunpack.py:630 # sabnzbd/newsunpack.py:1285
-#: sabnzbd/newsunpack.py:1672 # sabnzbd/postproc.py:555
+#: sabnzbd/newsunpack.py:209 # sabnzbd/newsunpack.py:651
+#: sabnzbd/newsunpack.py:1306 # sabnzbd/newsunpack.py:1693
+#: sabnzbd/postproc.py:557
 msgid "PostProcessing was aborted (%s)"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:630 # sabnzbd/skintext.py:29 [PP phase "unpack"]
+#: sabnzbd/newsunpack.py:209 # sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:189
+#: sabnzbd/skintext.py:665 [Notification Script settings]
+msgid "Script"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:245 [Warning message]
+msgid "Unpack nesting too deep [%s]"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:430 # sabnzbd/newsunpack.py:1943
+msgid "Joining"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:448
+msgid "Incomplete sequence of joinable files"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:449 # sabnzbd/newsunpack.py:457
+msgid "File join of %s failed"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:450 # sabnzbd/newsunpack.py:458
+msgid "[%s] Error \"%s\" while joining files"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:451 [Error message] # sabnzbd/newsunpack.py:459 [Error message]
+msgid "Error \"%s\" while running file_join on %s"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:453
+msgid "[%s] Joined %s files"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:513 # sabnzbd/newsunpack.py:862
+msgid "Unpacking failed, %s"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:515
+msgid "[%s] Error \"%s\" while unpacking RAR files"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:517 [Error message]
+msgid "Error \"%s\" while running rar_unpack on %s"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:533 [Warning message] # sabnzbd/newsunpack.py:543 [Warning message]
+#: sabnzbd/newsunpack.py:847 [Warning message] # sabnzbd/newsunpack.py:857 [Warning message]
+#: sabnzbd/newsunpack.py:1015 [Warning message] # sabnzbd/newsunpack.py:1020 [Warning message]
+#: sabnzbd/newsunpack.py:1130 [Warning message] # sabnzbd/newsunpack.py:1140 [Warning message]
+#: sabnzbd/newsunpack.py:1147 [Warning message] # sabnzbd/newsunpack.py:1154 [Warning message]
+#: sabnzbd/newsunpack.py:1172 [Warning message]
+msgid "Deleting %s failed!"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:562
+msgid "Trying unrar with password \"%s\""
+msgstr ""
+
+#: sabnzbd/newsunpack.py:570 [Error message] # sabnzbd/newsunpack.py:746
+#: sabnzbd/newsunpack.py:747 # sabnzbd/newsunpack.py:957
+msgid "Unpacking failed, archive requires a password"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:633 # sabnzbd/newsunpack.py:665
+#: sabnzbd/newsunpack.py:822 # sabnzbd/newsunpack.py:917
+msgid "Unpacking"
+msgstr ""
+
+#: sabnzbd/newsunpack.py:651 # sabnzbd/skintext.py:29 [PP phase "unpack"]
 msgid "Unpack"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:656 # sabnzbd/newsunpack.py:657
+#: sabnzbd/newsunpack.py:677 # sabnzbd/newsunpack.py:678
 msgid "Unpacking failed, unable to find %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:659 [Warning message]
+#: sabnzbd/newsunpack.py:680 [Warning message]
 msgid "ERROR: unable to find \"%s\""
 msgstr ""
 
-#: sabnzbd/newsunpack.py:664
+#: sabnzbd/newsunpack.py:685
 msgid "Unpacking failed, CRC error"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:665 # sabnzbd/newsunpack.py:667 [Warning message]
+#: sabnzbd/newsunpack.py:686 # sabnzbd/newsunpack.py:688 [Warning message]
 msgid "ERROR: CRC failed in \"%s\""
 msgstr ""
 
-#: sabnzbd/newsunpack.py:671 # sabnzbd/newsunpack.py:672
+#: sabnzbd/newsunpack.py:692 # sabnzbd/newsunpack.py:693
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:675 [Error message]
+#: sabnzbd/newsunpack.py:696 [Error message]
 msgid "ERROR: File too large for filesystem (%s)"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:679 # sabnzbd/newsunpack.py:680
-#: sabnzbd/newsunpack.py:698 # sabnzbd/newsunpack.py:699
+#: sabnzbd/newsunpack.py:700 # sabnzbd/newsunpack.py:701
+#: sabnzbd/newsunpack.py:719 # sabnzbd/newsunpack.py:720
 msgid "Unpacking failed, write error or disk is full?"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:682 [Error message] # sabnzbd/newsunpack.py:700 [Error message]
+#: sabnzbd/newsunpack.py:703 [Error message] # sabnzbd/newsunpack.py:721 [Error message]
 msgid "ERROR: write error (%s)"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:694 # sabnzbd/newsunpack.py:695
+#: sabnzbd/newsunpack.py:715 # sabnzbd/newsunpack.py:716
 msgid "Unpacking failed, path is too long"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:696 [Error message]
+#: sabnzbd/newsunpack.py:717 [Error message]
 msgid "ERROR: path too long (%s)"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:705
+#: sabnzbd/newsunpack.py:726
 msgid "Unpacking failed, see log"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:706 [Warning message] # sabnzbd/newsunpack.py:707
+#: sabnzbd/newsunpack.py:727 [Warning message] # sabnzbd/newsunpack.py:728
 msgid "ERROR: %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:737 # sabnzbd/newsunpack.py:738
+#: sabnzbd/newsunpack.py:758 # sabnzbd/newsunpack.py:759
 msgid "Unusable RAR file"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:750 # sabnzbd/newsunpack.py:751
+#: sabnzbd/newsunpack.py:771 # sabnzbd/newsunpack.py:772
 msgid "Corrupt RAR file"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:779
+#: sabnzbd/newsunpack.py:800
 msgid "Unpacked %s files/folders in %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:813 # sabnzbd/newsunpack.py:911
+#: sabnzbd/newsunpack.py:834 # sabnzbd/newsunpack.py:932
 msgid "%s files in %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:842 [Error message]
+#: sabnzbd/newsunpack.py:863 [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:927
+#: sabnzbd/newsunpack.py:948
 msgid "Trying 7zip with password \"%s\""
 msgstr ""
 
-#: sabnzbd/newsunpack.py:971
+#: sabnzbd/newsunpack.py:992
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1002
+#: sabnzbd/newsunpack.py:1023
 msgid "Could not unpack %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1034
+#: sabnzbd/newsunpack.py:1055
 msgid "Quick Checking"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1034 # sabnzbd/newsunpack.py:1060
-#: sabnzbd/newsunpack.py:1285 # sabnzbd/newsunpack.py:1672
+#: sabnzbd/newsunpack.py:1055 # sabnzbd/newsunpack.py:1081
+#: sabnzbd/newsunpack.py:1306 # sabnzbd/newsunpack.py:1693
 #: sabnzbd/skintext.py:27 [PP phase "repair"] # sabnzbd/skintext.py:307
 msgid "Repair"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1038
+#: sabnzbd/newsunpack.py:1059
 msgid "[%s] Quick Check OK"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1060
+#: sabnzbd/newsunpack.py:1081
 msgid "Starting Repair"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1082 [Warning message]
+#: sabnzbd/newsunpack.py:1103 [Warning message]
 msgid "Par verify failed on %s, while QuickCheck succeeded!"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1092 # sabnzbd/newsunpack.py:1154
-#: sabnzbd/newsunpack.py:1728
+#: sabnzbd/newsunpack.py:1113 # sabnzbd/newsunpack.py:1175
+#: sabnzbd/newsunpack.py:1749
 msgid "Repairing failed, %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1093 [Error message]
+#: sabnzbd/newsunpack.py:1114 [Error message]
 msgid "Error %s while running par2_repair on set %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1155 [Error message]
+#: sabnzbd/newsunpack.py:1176 [Error message]
 msgid "Error \"%s\" while running par2_repair on set %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1310 # sabnzbd/newsunpack.py:1691
+#: sabnzbd/newsunpack.py:1331 # sabnzbd/newsunpack.py:1712
 msgid "[%s] PAR2 received incorrect options, check your Config->Switches settings"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1315 # sabnzbd/newsunpack.py:1906
+#: sabnzbd/newsunpack.py:1336 # sabnzbd/newsunpack.py:1927
 msgid "[%s] Verified in %s, all files correct"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1322 # sabnzbd/newsunpack.py:1914
+#: sabnzbd/newsunpack.py:1343 # sabnzbd/newsunpack.py:1935
 msgid "[%s] Verified in %s, repair is required"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1337 # sabnzbd/newsunpack.py:1698
+#: sabnzbd/newsunpack.py:1358 # sabnzbd/newsunpack.py:1719
 msgid "Main packet not found..."
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1363 # sabnzbd/newsunpack.py:1721
+#: sabnzbd/newsunpack.py:1384 # sabnzbd/newsunpack.py:1742
 msgid "Invalid par2 files, cannot verify or repair"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1413 # sabnzbd/newsunpack.py:1448
-#: sabnzbd/newsunpack.py:1864 # sabnzbd/newsunpack.py:1897
+#: sabnzbd/newsunpack.py:1434 # sabnzbd/newsunpack.py:1469
+#: sabnzbd/newsunpack.py:1885 # sabnzbd/newsunpack.py:1918
 msgid "Repair failed, not enough repair blocks (%s short)"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1443 # sabnzbd/newsunpack.py:1892
+#: sabnzbd/newsunpack.py:1464 # sabnzbd/newsunpack.py:1913
 msgid "Fetching %s blocks..."
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1445 # sabnzbd/newsunpack.py:1894
+#: sabnzbd/newsunpack.py:1466 # sabnzbd/newsunpack.py:1915
 msgid "Fetching"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1456 # sabnzbd/newsunpack.py:1461
-#: sabnzbd/newsunpack.py:1929 # sabnzbd/newsunpack.py:1933
+#: sabnzbd/newsunpack.py:1477 # sabnzbd/newsunpack.py:1482
+#: sabnzbd/newsunpack.py:1950 # sabnzbd/newsunpack.py:1954
 msgid "Repairing"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1465 # sabnzbd/newsunpack.py:1937
+#: sabnzbd/newsunpack.py:1486 # sabnzbd/newsunpack.py:1958
 msgid "[%s] Repaired in %s"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1525 # sabnzbd/newsunpack.py:1540
-#: sabnzbd/newsunpack.py:1558 # sabnzbd/newsunpack.py:1814
-#: sabnzbd/newsunpack.py:1816
+#: sabnzbd/newsunpack.py:1546 # sabnzbd/newsunpack.py:1561
+#: sabnzbd/newsunpack.py:1579 # sabnzbd/newsunpack.py:1835
+#: sabnzbd/newsunpack.py:1837
 msgid "Verifying"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1728 # sabnzbd/notifier.py:73 [Notification]
+#: sabnzbd/newsunpack.py:1749 # sabnzbd/notifier.py:73 [Notification]
 msgid "Disk full"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:1757 # sabnzbd/newsunpack.py:1785
+#: sabnzbd/newsunpack.py:1778 # sabnzbd/newsunpack.py:1806
 #: sabnzbd/skintext.py:48 [PP status]
 msgid "Checking"
 msgstr ""
 
-#: sabnzbd/newsunpack.py:2032 [Error message]
+#: sabnzbd/newsunpack.py:2053 [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
@@ -1024,7 +1030,7 @@ msgstr ""
 msgid "Failed to send Windows notification"
 msgstr ""
 
-#: sabnzbd/nzbqueue.py:78 [Warning message] # sabnzbd/postproc.py:100 [Warning message]
+#: sabnzbd/nzbqueue.py:78 [Warning message] # sabnzbd/postproc.py:102 [Warning message]
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 
@@ -1384,127 +1390,127 @@ msgstr ""
 msgid "Error %s: You need to provide a valid username and password."
 msgstr ""
 
-#: sabnzbd/postproc.py:172 [Warning message]
+#: sabnzbd/postproc.py:174 [Warning message]
 msgid "Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB"
 msgstr ""
 
-#: sabnzbd/postproc.py:293
+#: sabnzbd/postproc.py:295
 msgid "Download might fail, only %s of required %s available"
 msgstr ""
 
-#: sabnzbd/postproc.py:295
+#: sabnzbd/postproc.py:297
 msgid "Download failed - Not on your server(s)"
 msgstr ""
 
-#: sabnzbd/postproc.py:368
+#: sabnzbd/postproc.py:370
 msgid "Cannot create final folder %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:393
+#: sabnzbd/postproc.py:395
 msgid "No post-processing because of failed verification"
 msgstr ""
 
-#: sabnzbd/postproc.py:401
+#: sabnzbd/postproc.py:403
 msgid "Moving"
 msgstr ""
 
-#: sabnzbd/postproc.py:433
+#: sabnzbd/postproc.py:435
 msgid "Sent %s to queue"
 msgstr ""
 
-#: sabnzbd/postproc.py:447 [Error message]
+#: sabnzbd/postproc.py:449 [Error message]
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr ""
 
-#: sabnzbd/postproc.py:472
+#: sabnzbd/postproc.py:474
 msgid "Failed to move files"
 msgstr ""
 
-#: sabnzbd/postproc.py:480
+#: sabnzbd/postproc.py:482
 msgid "Running script"
 msgstr ""
 
-#: sabnzbd/postproc.py:481
+#: sabnzbd/postproc.py:483
 msgid "Running user script %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:490
+#: sabnzbd/postproc.py:492
 msgid "Ran %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:500
+#: sabnzbd/postproc.py:502
 msgid "Script exit code is %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:519 # sabnzbd/skintext.py:826
+#: sabnzbd/postproc.py:521 # sabnzbd/skintext.py:826
 msgid "More"
 msgstr ""
 
-#: sabnzbd/postproc.py:544
+#: sabnzbd/postproc.py:546
 msgid "Download Completed"
 msgstr ""
 
-#: sabnzbd/postproc.py:547 # sabnzbd/postproc.py:556
+#: sabnzbd/postproc.py:549 # sabnzbd/postproc.py:558
 msgid "Download Failed"
 msgstr ""
 
-#: sabnzbd/postproc.py:551 [Error message]
+#: sabnzbd/postproc.py:553 [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr ""
 
-#: sabnzbd/postproc.py:554
+#: sabnzbd/postproc.py:556
 msgid "see logfile"
 msgstr ""
 
-#: sabnzbd/postproc.py:586 [Error message]
+#: sabnzbd/postproc.py:588 [Error message]
 msgid "Cleanup of %s failed."
 msgstr ""
 
-#: sabnzbd/postproc.py:596 [Error message]
+#: sabnzbd/postproc.py:598 [Error message]
 msgid "Error removing workdir (%s)"
 msgstr ""
 
-#: sabnzbd/postproc.py:624
+#: sabnzbd/postproc.py:626
 msgid "Post-processing"
 msgstr ""
 
-#: sabnzbd/postproc.py:693
+#: sabnzbd/postproc.py:695
 msgid "[%s] No par2 sets"
 msgstr ""
 
-#: sabnzbd/postproc.py:729 # sabnzbd/postproc.py:730
+#: sabnzbd/postproc.py:731 # sabnzbd/postproc.py:732
 msgid "Trying SFV verification"
 msgstr ""
 
-#: sabnzbd/postproc.py:734
+#: sabnzbd/postproc.py:736
 msgid "Some files failed to verify against \"%s\""
 msgstr ""
 
-#: sabnzbd/postproc.py:740
+#: sabnzbd/postproc.py:742
 msgid "Verified successfully using SFV files"
 msgstr ""
 
-#: sabnzbd/postproc.py:768 # sabnzbd/postproc.py:769
+#: sabnzbd/postproc.py:770 # sabnzbd/postproc.py:771
 msgid "Trying RAR-based verification"
 msgstr ""
 
-#: sabnzbd/postproc.py:778 # sabnzbd/postproc.py:791
+#: sabnzbd/postproc.py:780 # sabnzbd/postproc.py:793
 msgid "[%s] RAR-based verification failed: %s"
 msgstr ""
 
-#: sabnzbd/postproc.py:778 # sabnzbd/skintext.py:257 # sabnzbd/skintext.py:523
+#: sabnzbd/postproc.py:780 # sabnzbd/skintext.py:257 # sabnzbd/skintext.py:523
 msgid "Passworded"
 msgstr ""
 
-#: sabnzbd/postproc.py:785
+#: sabnzbd/postproc.py:787
 msgid "RAR files verified successfully"
 msgstr ""
 
-#: sabnzbd/postproc.py:790
+#: sabnzbd/postproc.py:792
 msgid "RAR files failed to verify"
 msgstr ""
 
-#: sabnzbd/postproc.py:850 [Error message] # sabnzbd/postproc.py:931 [Error message]
+#: sabnzbd/postproc.py:852 [Error message] # sabnzbd/postproc.py:932 [Error message]
 msgid "Removing %s failed"
 msgstr ""
 
@@ -1596,10 +1602,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py:28 [PP phase "filejoin"]
 msgid "Join files"
-msgstr ""
-
-#: sabnzbd/skintext.py:30 [PP phase "script"] # sabnzbd/skintext.py:189 # sabnzbd/skintext.py:665 [Notification Script settings]
-msgid "Script"
 msgstr ""
 
 #: sabnzbd/skintext.py:31 [PP Source of the NZB (path or URL)] # sabnzbd/skintext.py:124 [Where to find the SABnzbd sourcecode]
@@ -2982,7 +2984,7 @@ msgid "Enable MultiPar"
 msgstr ""
 
 #: sabnzbd/skintext.py:454
-msgid "MultiPar is the fasted par2 verification and repair implementation, using multiple cores and the GPU (if available)."
+msgid "MultiPar is the fastest par2 verification and repair implementation, using multiple cores and the GPU (if available)."
 msgstr ""
 
 #: sabnzbd/skintext.py:455
