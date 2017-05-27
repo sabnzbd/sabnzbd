@@ -173,8 +173,8 @@ function ViewModel() {
         }
 
         // Did we exceed the space?
-        self.diskSpaceExceeded1(parseInt(response.queue.mbleft)/1024 > parseInt(response.queue.diskspace1))
-        self.diskSpaceExceeded2(parseInt(response.queue.mbleft)/1024 > parseInt(response.queue.diskspace2))
+        self.diskSpaceExceeded1(parseInt(response.queue.mbleft)/1024 > parseFloat(response.queue.diskspace1))
+        self.diskSpaceExceeded2(parseInt(response.queue.mbleft)/1024 > parseFloat(response.queue.diskspace2))
 
         // Quota
         self.quotaLimit(response.queue.quota)
