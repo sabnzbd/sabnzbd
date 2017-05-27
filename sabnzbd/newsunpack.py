@@ -1186,10 +1186,6 @@ _RE_LOADED_PAR2 = re.compile(r'Loaded (\d+) new packets')
 
 def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
     """ Run par2 on par-set """
-    if cfg.never_repair():
-        cmd = 'v'
-    else:
-        cmd = 'r'
     retry_classic = False
     used_joinables = []
     used_for_repair = []
@@ -1206,12 +1202,12 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     else:
         tbb = False
     if tbb and options:
-        command = [str(PAR2_COMMAND), cmd, options, parfile]
+        command = [str(PAR2_COMMAND), 'r', options, parfile]
     else:
         if classic:
-            command = [str(PAR2C_COMMAND), cmd, parfile]
+            command = [str(PAR2C_COMMAND), 'r', parfile]
         else:
-            command = [str(PAR2_COMMAND), cmd, parfile]
+            command = [str(PAR2_COMMAND), 'r', parfile]
 
         # Allow options if not classic or when classic and non-classic are the same
         if (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
