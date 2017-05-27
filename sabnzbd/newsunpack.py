@@ -1527,6 +1527,14 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.set_unpack_info('Repair', msg)
                     nzo.status = Status.FAILED
 
+            elif 'There is not enough space on the disk' in line:
+                # Oops, disk is full!
+                msg = T('Repairing failed, %s') % T('Disk full')
+                nzo.fail_msg = msg
+                msg = u'[%s] %s' % (unicoder(setname), msg)
+                nzo.set_unpack_info('Repair', msg)
+                nzo.status = Status.FAILED
+
             # File: "oldname.rar" - is a match for "newname.rar".
             elif 'is a match for' in line:
                 m = _RE_IS_MATCH_FOR.search(line)
