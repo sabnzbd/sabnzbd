@@ -61,18 +61,14 @@ elif os.name == 'posix':
     import platform
     if platform.system().lower() == 'darwin':
         DARWIN = True
+        # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
+        DARWIN_VERSION = int(platform.mac_ver()[0].split('.')[1])
         try:
             import Foundation
             FOUNDATION = True
         except:
             pass
 
-if DARWIN:
-    # 12=Sierra, 11=ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
-    DARWIN_VERSION = int(platform.mac_ver()[0].split('.')[1])
-    DARWIN_64 = platform.mac_ver()[2] == 'x86_64'
-else:
-    DARWIN_VERSION = 0
 
 ##############################################################################
 # SSL CHECKS

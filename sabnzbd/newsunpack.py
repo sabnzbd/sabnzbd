@@ -102,10 +102,7 @@ def find_programs(curdir):
 
     if sabnzbd.DARWIN:
         sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'osx/par2/par2-classic')
-        if sabnzbd.DARWIN_64:
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl64')
-        else:
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
+        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl64')
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'osx/unrar/unrar')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'osx/7zip/7za')
 
