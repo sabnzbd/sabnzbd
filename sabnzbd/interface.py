@@ -2874,7 +2874,7 @@ class ConfigNotify(object):
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.notifier.have_ntfosd()
-        conf['have_ncenter'] = sabnzbd.DARWIN_VERSION > 7 and bool(sabnzbd.notifier.ncenter_path())
+        conf['have_ncenter'] = sabnzbd.DARWIN and bool(sabnzbd.notifier.ncenter_path())
         conf['scripts'] = list_scripts(default=False, none=True)
 
         for kw in LIST_EMAIL:

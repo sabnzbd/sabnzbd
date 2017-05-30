@@ -249,7 +249,7 @@ ipv6_hosting = OptionBool('misc', 'ipv6_hosting', False)
 fixed_ports = OptionBool('misc', 'fixed_ports', False)
 
 # [ncenter]
-ncenter_enable = OptionBool('ncenter', 'ncenter_enable', sabnzbd.DARWIN_VERSION > 7)
+ncenter_enable = OptionBool('ncenter', 'ncenter_enable', sabnzbd.DARWIN)
 ncenter_prio_startup = OptionBool('ncenter', 'ncenter_prio_startup', True)
 ncenter_prio_download = OptionBool('ncenter', 'ncenter_prio_download', False)
 ncenter_prio_pp = OptionBool('ncenter', 'ncenter_prio_pp', False)
@@ -291,7 +291,7 @@ ntfosd_prio_queue_done = OptionBool('ntfosd', 'ntfosd_prio_queue_done', True)
 ntfosd_prio_other = OptionBool('ntfosd', 'ntfosd_prio_other', False)
 
 # [growl]
-growl_enable = OptionBool('growl', 'growl_enable', sabnzbd.DARWIN and sabnzbd.DARWIN_VERSION < 8)
+growl_enable = OptionBool('growl', 'growl_enable', False)
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
 growl_prio_startup = OptionBool('growl', 'growl_prio_startup', True)

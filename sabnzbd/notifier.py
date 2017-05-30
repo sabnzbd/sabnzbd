@@ -133,7 +133,7 @@ def get_prio(gtype, section):
 def send_notification(title, msg, gtype):
     """ Send Notification message """
     # Notification Center
-    if sabnzbd.DARWIN_VERSION > 7 and sabnzbd.cfg.ncenter_enable():
+    if sabnzbd.DARWIN and sabnzbd.cfg.ncenter_enable():
         if check_classes(gtype, 'ncenter'):
             send_notification_center(title, msg, gtype)
 
@@ -349,8 +349,6 @@ def ncenter_path():
 
 def send_notification_center(title, msg, gtype):
     """ Send message to Mountain Lion's Notification Center """
-    if sabnzbd.DARWIN_VERSION < 8:
-        return T('Not available')  # : Function is not available on this OS
     tool = ncenter_path()
     if tool:
         try:
