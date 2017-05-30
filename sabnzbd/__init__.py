@@ -43,7 +43,7 @@ except ImportError:
 ##############################################################################
 # Determine platform flags
 ##############################################################################
-WIN32 = DARWIN = DARWIN_INTEL = POSIX = FOUNDATION = WIN64 = False
+WIN32 = DARWIN = POSIX = FOUNDATION = WIN64 = False
 KERNEL32 = None
 
 if os.name == 'nt':
@@ -66,8 +66,6 @@ elif os.name == 'posix':
             FOUNDATION = True
         except:
             pass
-        if '86' in platform.machine():
-            DARWIN_INTEL = True
 
 if DARWIN:
     # 10 = Yosemite, 9 = Mavericks, 8 = MountainLion, 7 = Lion, 6 = SnowLeopard, 5 = Leopard

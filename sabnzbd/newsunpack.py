@@ -102,20 +102,12 @@ def find_programs(curdir):
 
     if sabnzbd.DARWIN:
         sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'osx/par2/par2-classic')
-        if sabnzbd.DARWIN_VERSION >= 6:
-            # par2-sl from Macpar Deluxe 4.1 is only 10.6 and later
-            if sabnzbd.DARWIN_64:
-                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl64')
-            else:
-                sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
+        if sabnzbd.DARWIN_64:
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl64')
         else:
-            sabnzbd.newsunpack.PAR2_COMMAND = sabnzbd.newsunpack.PAR2C_COMMAND
-
-        if sabnzbd.DARWIN_INTEL:
-            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'osx/unrar/unrar')
-            sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'osx/7zip/7za')
-        else:
-            sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'osx/unrar/unrar-ppc')
+            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl')
+        sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'osx/unrar/unrar')
+        sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'osx/7zip/7za')
 
     if sabnzbd.WIN32:
         if sabnzbd.WIN64 and cfg.allow_64bit_tools.get():
