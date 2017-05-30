@@ -166,7 +166,7 @@
                         <span class="desc">$T('explain-par2_multipar')</span>
                     </div>
                     <!--#end if#-->
-                    <!--#if $have_multicore#-->
+                    <!--#if $darwin#-->
                     <div class="field-pair">
                         <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
                         <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#-->  />
@@ -456,14 +456,6 @@
             \$("#rating_filter_pause").hide();
         }
     });
-
-    // Hide/show multicore par2 parms if Multipar is checked
-    \$('#multipar').on('change', function() {
-        \$('#par2_multicore').parent().toggle()
-    })
-    if(\$('#multipar')[0].checked) {
-        \$('#par2_multicore').parent().hide()
-    }
 
     \$('.restoreDefaults').click(function(e) {
         // Get section name

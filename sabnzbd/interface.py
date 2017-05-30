@@ -1419,7 +1419,6 @@ class ConfigSwitches(object):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
-        conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
