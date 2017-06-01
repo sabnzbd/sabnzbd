@@ -1,12 +1,20 @@
-Release Notes  -  SABnzbd 2.1.0 Beta 1
+Release Notes  -  SABnzbd 2.1.0 RC 1
 =========================================================
+
+## Changes since Beta 1
+- Minimal macOS version set to 10.9 (Mavericks)
+- Human readable history date/time made default in Glitter (x hours ago, etc)
+- Post-processing script execution can now be aborted
+- Windows: "Extra Par2 Parameters" are now also passed to MultiPar
+  For example: Set "/lc32" to enable GPU for repair (can also be slower!)
+- Removed Specials setting never_repair
+- Removed Specials setting to disable QuickCheck
 
 ## Changes since 2.0.1
 - Windows-only: Will now use MultiPar for verification and repair. MultiPar uses
-  the latest optimizations, multiple cores and the GPU (if available), resulting in
+  the latest optimizations, multiple cores and can utilize the GPU, resulting in
   repairs often being twice as fast.
   Created by Yutaka Sawada (Windows only): http://hp.vector.co.jp/authors/VA021385/
-- macOS: Updated bundled OpenSSL to 1.0.2k, enabeling TLS v1.1 and v1.2.
 
 ## Upgrading from 0.7.x and older
 - Finish queue
@@ -14,7 +22,7 @@ Release Notes  -  SABnzbd 2.1.0 Beta 1
 - Install new version
 - Start SABnzbd
 
-## Upgrade notices
+## Upgrade notices (from pre-2.x.x)
 - Windows: When starting the Post-Processing script, the path to the job folder
   is no longer in short-path notation but includes the full path. To support
   long paths (>255), you might need to alter them to long-path notation (\\?\).
@@ -26,9 +34,6 @@ Release Notes  -  SABnzbd 2.1.0 Beta 1
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
-
-## Translations
-- Numerous translations updated, thanks to our translators!
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.
