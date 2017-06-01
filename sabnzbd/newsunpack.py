@@ -1618,9 +1618,13 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
     start = time()
-    options = cfg.par_option().strip()
 
     command = [str(MULTIPAR_COMMAND), 'r', parfile]
+
+    # Only add user-options if supplied
+    options = cfg.par_option().strip()
+    if options:
+        command.insert(2, options)
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
