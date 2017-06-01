@@ -1316,6 +1316,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg)
                 nzo.status = Status.FAILED
+                logging.error(msg)
 
             elif line.startswith('All files are correct'):
                 msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
@@ -1705,6 +1706,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
             nzo.set_unpack_info('Repair', msg)
             nzo.status = Status.FAILED
+            logging.error(msg)
 
         elif line.startswith('valid file is not found'):
             # Initialparfile probably didn't decode properly,
