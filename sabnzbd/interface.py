@@ -1460,7 +1460,7 @@ class ConfigSwitches(object):
 ##############################################################################
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files', 'create_group_folders',
-              'queue_complete_pers', 'quick_check', 'api_warnings', 'allow_64bit_tools', 'ampm',
+              'queue_complete_pers', 'api_warnings', 'allow_64bit_tools', 'ampm',
               'enable_unrar', 'enable_unzip', 'enable_7zip', 'enable_filejoin', 'enable_tsjoin',
               'allow_streaming', 'ignore_unrar_dates', 'par2_multicore',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',

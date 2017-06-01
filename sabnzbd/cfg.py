@@ -62,7 +62,6 @@ else:
 ##############################################################################
 # Configuration instances
 ##############################################################################
-quick_check = OptionBool('misc', 'quick_check', True)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 quick_check_ext_ignore = OptionList('misc', 'quick_check_ext_ignore', ['nfo', 'sfv', 'srr'])
 

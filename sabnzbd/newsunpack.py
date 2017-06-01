@@ -1043,7 +1043,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     nzo.status = Status.QUICK_CHECK
     nzo.set_action_line(T('Repair'), T('Quick Checking'))
     qc_result = QuickCheck(setname, nzo)
-    if qc_result and cfg.quick_check():
+    if qc_result:
         logging.info("Quick-check for %s is OK, skipping repair", setname)
         nzo.set_unpack_info('Repair', T('[%s] Quick Check OK') % unicoder(setname))
         pars = setpars
@@ -1619,6 +1619,9 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     nzo.status = Status.VERIFYING
     start = time()
 
+    # Can implement caching of verification by adding:
+    # '-vs2', '-vd%s' % parfolder
+    # But not really required due to prospective-par2
     command = [str(MULTIPAR_COMMAND), 'r', parfile]
 
     # Only add user-options if supplied
@@ -1634,7 +1637,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     else:
         # Normal case, everything is named after set
         wildcard = setname + '*'
-
     command.append(os.path.join(parfolder, wildcard))
 
     stup, need_shell, command, creationflags = build_command(command)

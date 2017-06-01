@@ -928,7 +928,7 @@ class NzbObject(TryList):
     @synchronized(IO_LOCK)
     def postpone_pars(self, nzf, parset):
         """ Move all vol-par files matching 'parset' to the extrapars table """
-        postpone = cfg.quick_check() or not cfg.enable_all_par()
+        postpone = not cfg.enable_all_par()
         self.partable[parset] = nzf
         self.extrapars[parset] = []
         nzf.extrapars = self.extrapars[parset]
