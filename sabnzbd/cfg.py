@@ -218,7 +218,6 @@ log_dir = OptionDir('misc', 'log_dir', 'logs', validation=validate_notempty)
 log_level = OptionNumber('logging', 'log_level', 1, -1, 2)
 log_size = OptionStr('logging', 'max_log_size', '5242880')
 log_backups = OptionNumber('logging', 'log_backups', 5, 1, 1024)
-log_new = OptionBool('logging', 'log_new', False)
 
 https_cert = OptionDir('misc', 'https_cert', 'server.cert', create=False)
 https_key = OptionDir('misc', 'https_key', 'server.key', create=False)
