@@ -107,7 +107,7 @@ def find_programs(curdir):
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'osx/7zip/7za')
 
     if sabnzbd.WIN32:
-        if sabnzbd.WIN64 and cfg.allow_64bit_tools.get():
+        if sabnzbd.WIN64:
             # 64 bit versions
             sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/x64/par2.exe')
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/par2/multipar/par2j64.exe')
