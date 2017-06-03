@@ -74,37 +74,52 @@ class NzbQueue:
                     logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
                     cfg.warned_old_queue.set(QUEUE_VERSION)
                     return
-
-            # Try to process
-            try:
-                queue_vers, nzo_ids, dummy = data
-                if not queue_vers == QUEUE_VERSION:
+            else:
+                # Try to process
+                try:
+                    queue_vers, nzo_ids, dummy = data
+                    if not queue_vers == QUEUE_VERSION:
+                        nzo_ids = []
+                        logging.error(T('Incompatible queuefile found, cannot proceed'))
+                        if not repair:
+                            panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+                            exit_sab(2)
+                except ValueError:
                     nzo_ids = []
-                    logging.error(T('Incompatible queuefile found, cannot proceed'))
+                    logging.error(T('Error loading %s, corrupt file detected'),
+                                  os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
                     if not repair:
-                        panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
-                        exit_sab(2)
-            except ValueError:
-                nzo_ids = []
-                logging.error(T('Error loading %s, corrupt file detected'),
-                              os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
-                if not repair:
-                    return
+                        return
 
         # First handle jobs in the queue file
         folders = []
         for nzo_id in nzo_ids:
             folder, _id = os.path.split(nzo_id)
+            path = get_admin_path(folder, future=False)
+
+            # We need to do a repair in case of old-style pickles
+            # This will update them but preserve queue-order
+            if not cfg.converted_nzo_pickles():
+                if os.path.exists(os.path.join(path, _id)):
+                    self.repair_job(os.path.dirname(path))
+                continue
+
             # Try as normal job
-            path = get_admin_path(folder, False)
             nzo = sabnzbd.load_data(_id, path, remove=False)
             if not nzo:
                 # Try as future job
-                path = get_admin_path(folder, True)
+                path = get_admin_path(folder, future=True)
                 nzo = sabnzbd.load_data(_id, path)
             if nzo:
                 self.add(nzo, save=False, quiet=True)
                 folders.append(folder)
+
+        # Conversion done! Only the future jobs still need to be done
+        if not cfg.converted_nzo_pickles():
+            cfg.converted_nzo_pickles.set(True)
+            # Remove any future-jobs, we can't save those
+            for item in globber_full(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
+                os.remove(item)
 
         # Scan for any folders in "incomplete" that are not yet in the queue
         if repair:
@@ -123,13 +138,13 @@ class NzbQueue:
                         except:
                             pass
 
+
     def scan_jobs(self, all=False, action=True):
         """ Scan "incomplete" for missing folders,
             'all' is True: Include active folders
             'action' is True, do the recovery action
             returns list of orphaned folders
         """
-        from sabnzbd.api import build_history
         result = []
         # Folders from the download queue
         if all:
@@ -138,7 +153,7 @@ class NzbQueue:
             registered = [nzo.work_name for nzo in self.__nzo_list]
 
         # Retryable folders from History
-        items = build_history(output=True)[0]
+        items = sabnzbd.api.build_history(output=True)[0]
         # Anything waiting or active or retryable is a known item
         registered.extend([platform_encode(os.path.basename(item['path']))
                            for item in items if item['retry'] or item['loaded'] or item['status'] == Status.QUEUED])
@@ -158,11 +173,10 @@ class NzbQueue:
 
     def retry_all_jobs(self, history_db):
         """ Retry all retryable jobs in History """
-        from sabnzbd.api import build_history
         result = []
 
         # Retryable folders from History
-        items = build_history()[0]
+        items = sabnzbd.api.build_history()[0]
         registered = [(platform_encode(os.path.basename(item['path'])),
                        item['nzo_id'])
                        for item in items if item['retry']]
