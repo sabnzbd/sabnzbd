@@ -1472,9 +1472,7 @@ SPECIAL_VALUE_LIST = \
               'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload',
               'ipv6_servers', 'selftest_host', 'nr_decoders', 'rating_host'
      )
-SPECIAL_LIST_LIST = \
-    ('rss_odd_titles', 'prio_sort_list', 'quick_check_ext_ignore'
-     )
+SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore')
 
 
 class ConfigSpecial(object):

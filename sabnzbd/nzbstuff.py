@@ -1653,17 +1653,6 @@ def nzf_get_filename(nzf):
     return name.lower()
 
 
-def get_ext_list():
-    """ Return priority extension list, with extensions starting with a period """
-    exts = []
-    for ext in cfg.prio_sort_list():
-        ext = ext.strip()
-        if not ext.startswith('.'):
-            ext = '.' + ext
-        exts.append(ext)
-    return exts
-
-
 def ext_on_list(name, lst):
     """ Return True if `name` contains any extension in `lst` """
     for ext in lst:
@@ -1700,16 +1689,6 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
         return 1
     if is_par2 and not is_par1:
         return -1
-
-    # Anything with a priority extension goes first
-    ext_list = get_ext_list()
-    if ext_list:
-        onlist1 = ext_on_list(name1, ext_list)
-        onlist2 = ext_on_list(name2, ext_list)
-        if onlist1 and not onlist2:
-            return -1
-        if onlist2 and not onlist1:
-            return 1
 
     if name:
         # Prioritize .rar files above any other type of file (other than vol-par)
