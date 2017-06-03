@@ -69,29 +69,27 @@ class NzbQueue:
             # Read the queue from the saved files
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
             if not data:
-                try:
-                    # Try previous queue file
-                    queue_vers, nzo_ids, dummy = sabnzbd.load_admin(QUEUE_FILE_TMPL % '9')
-                except:
-                    nzo_ids = []
-                if nzo_ids:
+                # Warn bout old queue
+                if sabnzbd.OLD_QUEUE and cfg.warned_old_queue() < QUEUE_VERSION:
                     logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
+                    cfg.warned_old_queue.set(QUEUE_VERSION)
+                    return
+
+            # Try to process
+            try:
+                queue_vers, nzo_ids, dummy = data
+                if not queue_vers == QUEUE_VERSION:
                     nzo_ids = []
-            else:
-                try:
-                    queue_vers, nzo_ids, dummy = data
-                    if not queue_vers == QUEUE_VERSION:
-                        nzo_ids = []
-                        logging.error(T('Incompatible queuefile found, cannot proceed'))
-                        if not repair:
-                            panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
-                            exit_sab(2)
-                except ValueError:
-                    nzo_ids = []
-                    logging.error(T('Error loading %s, corrupt file detected'),
-                                  os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+                    logging.error(T('Incompatible queuefile found, cannot proceed'))
                     if not repair:
-                        return
+                        panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+                        exit_sab(2)
+            except ValueError:
+                nzo_ids = []
+                logging.error(T('Error loading %s, corrupt file detected'),
+                              os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+                if not repair:
+                    return
 
         # First handle jobs in the queue file
         folders = []
