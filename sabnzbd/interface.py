@@ -224,7 +224,7 @@ def check_login():
 def set_auth(conf):
     """ Set the authentication for CherryPy """
     if cfg.username() and cfg.password() and not cfg.html_login():
-        conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': cfg.login_realm(),
+        conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': 'SABnzbd',
                      'tools.basic_auth.users': get_users, 'tools.basic_auth.encrypt': encrypt_pwd})
         conf.update({'/api': {'tools.basic_auth.on': False},
                      '/m/api': {'tools.basic_auth.on': False},
