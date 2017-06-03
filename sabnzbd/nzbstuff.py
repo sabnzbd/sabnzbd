@@ -71,6 +71,8 @@ ArticleSaver = (
 
 class Article(TryList):
     """ Representation of one article """
+    # Pre-define attributes to save memory
+    __slots__ = ('fetcher', 'article', 'fetcher_priority', 'art_id', 'bytes', 'partnum', 'tries', 'nzf')
 
     def __init__(self, article, bytes, partnum, nzf):
         TryList.__init__(self)
@@ -152,17 +154,17 @@ class Article(TryList):
         """ Save to pickle file, selecting attributes """
         dict_ = {}
         for item in ArticleSaver:
-            dict_[item] = self.__dict__[item]
+            dict_[item] = getattr(self, item)
         return dict_
 
     def __setstate__(self, dict_):
         """ Load from pickle file, selecting attributes """
         for item in ArticleSaver:
             try:
-                self.__dict__[item] = dict_[item]
+                setattr(self, item, dict_[item])
             except KeyError:
                 # Handle new attributes
-                self.__dict__[item] = None
+                setattr(self, item, None)
         TryList.__init__(self)
         self.fetcher = None
         self.fetcher_priority = 0
@@ -178,14 +180,16 @@ class Article(TryList):
 ##############################################################################
 NzbFileSaver = (
     'date', 'subject', 'filename', 'type', 'is_par2', 'vol', 'blocks', 'setname',
-    'extrapars', 'initial_article', 'articles', 'decodetable', 'bytes', 'bytes_left',
+    'extrapars', 'articles', 'decodetable', 'bytes', 'bytes_left',
     'article_count', 'nzo', 'nzf_id', 'deleted', 'valid', 'import_finished',
-    'md5sum', 'valid', 'completed'
+    'md5sum'
 )
 
 
 class NzbFile(TryList):
     """ Representation of one file consisting of multiple articles """
+     # Pre-define attributes to save memory
+    __slots__ = NzbFileSaver
 
     def __init__(self, date, subject, article_db, bytes, nzo):
         """ Setup object """
@@ -193,9 +197,7 @@ class NzbFile(TryList):
 
         self.date = date
         self.subject = subject
-        self.filename = None
         self.type = None
-
         self.filename = name_extractor(subject)
 
         self.is_par2 = False
@@ -203,8 +205,6 @@ class NzbFile(TryList):
         self.blocks = None
         self.setname = None
         self.extrapars = None
-
-        self.initial_article = None
 
         self.articles = []
         self.decodetable = {}
@@ -216,8 +216,6 @@ class NzbFile(TryList):
         self.nzo = nzo
         self.nzf_id = sabnzbd.get_new_id("nzf", nzo.workpath)
         self.deleted = False
-        self.completed = False
-
         self.valid = False
         self.import_finished = False
 
@@ -292,17 +290,17 @@ class NzbFile(TryList):
         """ Save to pickle file, selecting attributes """
         dict_ = {}
         for item in NzbFileSaver:
-            dict_[item] = self.__dict__[item]
+            dict_[item] = getattr(self, item)
         return dict_
 
     def __setstate__(self, dict_):
         """ Load from pickle file, selecting attributes """
         for item in NzbFileSaver:
             try:
-                self.__dict__[item] = dict_[item]
+                setattr(self, item, dict_[item])
             except KeyError:
                 # Handle new attributes
-                self.__dict__[item] = None
+                setattr(self, item, None)
         TryList.__init__(self)
 
     def __repr__(self):
@@ -1051,7 +1049,6 @@ class NzbObject(TryList):
                 subject = sanitize_filename(name_extractor(nzf.subject))
                 if (nzf.filename == filename) or (subject == filename) or (filename in subject):
                     nzf.filename = filename
-                    nzf.completed = True
                     nzf.bytes_left = 0
                     self.handle_par2(nzf, file_done=True)
                     self.remove_nzf(nzf)
@@ -1070,7 +1067,6 @@ class NzbObject(TryList):
                 self.files_table[nzf.nzf_id] = nzf
                 self.bytes += nzf.bytes
                 nzf.filename = filename
-                nzf.completed = True
                 nzf.bytes_left = 0
                 self.handle_par2(nzf, file_done=True)
                 self.remove_nzf(nzf)
@@ -1331,7 +1327,6 @@ class NzbObject(TryList):
         # Remove all files for which admin could not be read
         for nzf in nzf_remove_list:
             nzf.deleted = True
-            nzf.completed = True
             self.files.remove(nzf)
         # If cleanup emptied the active files list, end this job
         if nzf_remove_list and not self.files:
