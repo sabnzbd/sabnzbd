@@ -1105,60 +1105,59 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             return readd, result
 
     try:
-        if cfg.enable_par_cleanup():
-            new_dir_content = os.listdir(workdir)
+        new_dir_content = os.listdir(workdir)
 
-            for path in new_dir_content:
-                if os.path.splitext(path)[1] == '.1' and path not in old_dir_content:
-                    try:
-                        path = os.path.join(workdir, path)
-
-                        logging.info("Deleting %s", path)
-                        os.remove(path)
-                    except:
-                        logging.warning(T('Deleting %s failed!'), path)
-
-            path = os.path.join(workdir, setname + '.par2')
-            path2 = os.path.join(workdir, setname + '.PAR2')
-
-            if os.path.exists(path):
+        for path in new_dir_content:
+            if os.path.splitext(path)[1] == '.1' and path not in old_dir_content:
                 try:
+                    path = os.path.join(workdir, path)
+
                     logging.info("Deleting %s", path)
                     os.remove(path)
                 except:
                     logging.warning(T('Deleting %s failed!'), path)
 
-            if os.path.exists(path2):
-                try:
-                    logging.info("Deleting %s", path2)
-                    os.remove(path2)
-                except:
-                    logging.warning(T('Deleting %s failed!'), path2)
+        path = os.path.join(workdir, setname + '.par2')
+        path2 = os.path.join(workdir, setname + '.PAR2')
 
-            if os.path.exists(parfile):
+        if os.path.exists(path):
+            try:
+                logging.info("Deleting %s", path)
+                os.remove(path)
+            except:
+                logging.warning(T('Deleting %s failed!'), path)
+
+        if os.path.exists(path2):
+            try:
+                logging.info("Deleting %s", path2)
+                os.remove(path2)
+            except:
+                logging.warning(T('Deleting %s failed!'), path2)
+
+        if os.path.exists(parfile):
+            try:
+                logging.info("Deleting %s", parfile)
+                os.remove(parfile)
+            except OSError:
+                logging.warning(T('Deleting %s failed!'), parfile)
+
+        deletables = []
+        deletables.extend(used_joinables)
+        deletables.extend(used_for_repair)
+
+        # Delete pars of the set and maybe extra ones that par2 found
+        deletables.extend([os.path.join(workdir, f) for f in setpars])
+        deletables.extend([os.path.join(workdir, f) for f in pars])
+
+        for filepath in deletables:
+            if filepath in joinables:
+                joinables.remove(filepath)
+            if os.path.exists(filepath):
+                logging.info("Deleting %s", filepath)
                 try:
-                    logging.info("Deleting %s", parfile)
-                    os.remove(parfile)
+                    os.remove(filepath)
                 except OSError:
-                    logging.warning(T('Deleting %s failed!'), parfile)
-
-            deletables = []
-            deletables.extend(used_joinables)
-            deletables.extend(used_for_repair)
-
-            # Delete pars of the set and maybe extra ones that par2 found
-            deletables.extend([os.path.join(workdir, f) for f in setpars])
-            deletables.extend([os.path.join(workdir, f) for f in pars])
-
-            for filepath in deletables:
-                if filepath in joinables:
-                    joinables.remove(filepath)
-                if os.path.exists(filepath):
-                    logging.info("Deleting %s", filepath)
-                    try:
-                        os.remove(filepath)
-                    except OSError:
-                        logging.warning(T('Deleting %s failed!'), filepath)
+                    logging.warning(T('Deleting %s failed!'), filepath)
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Repairing failed, %s') % msg
