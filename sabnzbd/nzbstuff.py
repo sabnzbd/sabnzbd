@@ -636,8 +636,6 @@ class NzbObject(TryList):
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum = None
 
-        self.create_group_folder = cfg.create_group_folders()
-
         # Remove trailing .nzb and .par(2)
         self.work_name = create_work_name(self.work_name)
 
@@ -739,9 +737,6 @@ class NzbObject(TryList):
                 cat = cat_convert(grp)
                 if cat:
                     break
-
-        if cfg.create_group_folders():
-            self.dirprefix.append(self.group)
 
         # Pickup backed-up attributes when re-using
         if reuse:

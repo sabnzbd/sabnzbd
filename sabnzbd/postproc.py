@@ -338,15 +338,11 @@ def process_job(nzo):
             fix_unix_encoding(workdir)
             one_folder = False
             # Determine class directory
-            if cfg.create_group_folders():
-                complete_dir = addPrefixes(cfg.complete_dir.get_path(), nzo.dirprefix)
-                complete_dir = create_dirs(complete_dir)
-            else:
-                catdir = config.get_categories(cat).dir()
-                if catdir.endswith('*'):
-                    catdir = catdir.strip('*')
-                    one_folder = True
-                complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
+            catdir = config.get_categories(cat).dir()
+            if catdir.endswith('*'):
+                catdir = catdir.strip('*')
+                one_folder = True
+            complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
             complete_dir = long_path(complete_dir)
 
             # TV/Movie/Date Renaming code part 1 - detect and construct paths
