@@ -211,6 +211,7 @@ web_color = OptionStr('misc', 'web_color', '')
 cleanup_list = OptionList('misc', 'cleanup_list')
 warned_old_queue = OptionNumber('misc', 'warned_old_queue', QUEUE_VERSION)
 notified_new_skin = OptionNumber('misc', 'notified_new_skin', 0)
+converted_nzo_pickles = OptionBool('misc', 'converted_nzo_pickles', False)
 
 unwanted_extensions = OptionList('misc', 'unwanted_extensions')
 action_on_unwanted_extensions = OptionNumber('misc', 'action_on_unwanted_extensions', 0)
