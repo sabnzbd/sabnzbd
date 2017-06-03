@@ -330,11 +330,6 @@ class MainPage(object):
         if not check_login():
             raise NeedLogin()
 
-        if sabnzbd.OLD_QUEUE and not cfg.warned_old_queue():
-            cfg.warned_old_queue.set(True)
-            config.save_config()
-            return panic_old_queue()
-
         if not cfg.notified_new_skin() and cfg.web_dir() != 'Glitter':
             logging.warning(T('Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin.'))
         if not cfg.notified_new_skin():

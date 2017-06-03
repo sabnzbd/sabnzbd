@@ -22,7 +22,7 @@ import re
 
 import sabnzbd
 from sabnzbd.constants import DEF_HOST, DEF_PORT, DEF_STDINTF, DEF_ADMIN_DIR, \
-    DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_SCANRATE, DEF_COMPLETE_DIR
+    DEF_DOWNLOAD_DIR, DEF_NZBBACK_DIR, DEF_SCANRATE, DEF_COMPLETE_DIR, QUEUE_VERSION
 
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
     OptionDir, OptionStr, OptionList, no_nonsense, \
@@ -209,7 +209,7 @@ cache_limit = OptionStr('misc', 'cache_limit')
 web_dir = OptionStr('misc', 'web_dir', DEF_STDINTF)
 web_color = OptionStr('misc', 'web_color', '')
 cleanup_list = OptionList('misc', 'cleanup_list')
-warned_old_queue = OptionBool('misc', 'warned_old_queue9', False)
+warned_old_queue = OptionNumber('misc', 'warned_old_queue', QUEUE_VERSION)
 notified_new_skin = OptionNumber('misc', 'notified_new_skin', 0)
 
 unwanted_extensions = OptionList('misc', 'unwanted_extensions')
