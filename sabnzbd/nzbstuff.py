@@ -37,7 +37,7 @@ except ImportError:
 
 # SABnzbd modules
 import sabnzbd
-from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
+from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
     DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
     PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
     RENAMES_FILE, Status, PNFO
@@ -57,7 +57,6 @@ __all__ = ['Article', 'NzbFile', 'NzbObject']
 
 # Name patterns
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
-RE_SAMPLE = re.compile(sample_match, re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
 REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I)  # Reject duplicate par2 files
 RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$')  # Test reasonably sized extension at the end
@@ -316,7 +315,7 @@ class NzbFile(TryList):
 class NzbParser(xml.sax.handler.ContentHandler):
     """ Forgiving parser for NZB's """
 
-    def __init__(self, nzo, remove_samples=False):
+    def __init__(self, nzo):
         self.nzo = nzo
         if 0: assert isinstance(self.nzo, NzbObject) # Assert only for debug purposes
         self.in_nzb = False
@@ -337,7 +336,6 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.nzf_list = []
         self.groups = []
         self.md5 = hashlib.md5()
-        self.filter = remove_samples
         self.now = time.time()
 
     def startDocument(self):
@@ -359,19 +357,15 @@ class NzbParser(xml.sax.handler.ContentHandler):
         elif name == 'file' and self.in_nzb:
             subject = attrs.get('subject', '').strip()
             self.filename = subject
-
-            if self.filter and RE_SAMPLE.search(subject):
-                logging.info('Skipping sample file %s', subject)
-            else:
-                self.in_file = True
-                self.fileSubject = subject
-                try:
-                    self.file_date = int(attrs.get('date'))
-                except:
-                    # NZB has non-standard timestamp, assume now
-                    self.file_date = self.now
-                self.article_db = {}
-                self.file_bytes = 0
+            self.in_file = True
+            self.fileSubject = subject
+            try:
+                self.file_date = int(attrs.get('date'))
+            except:
+                # NZB has non-standard timestamp, assume now
+                self.file_date = self.now
+            self.article_db = {}
+            self.file_bytes = 0
 
         elif name == 'group' and self.in_nzb and self.in_file and self.in_groups:
             self.in_group = True
@@ -691,7 +685,7 @@ class NzbObject(TryList):
             if 'A&A)' in nzb:
                 # Fix needed to compensate for some dumb NZB posters
                 nzb = nzb.replace('A&A)', 'A&amp;A)')
-            handler = NzbParser(self, False)
+            handler = NzbParser(self)
             parser = xml.sax.make_parser()
             parser.setFeature(xml.sax.handler.feature_external_ges, 0)
             parser.setContentHandler(handler)
