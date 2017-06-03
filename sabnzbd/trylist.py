@@ -25,18 +25,14 @@ from threading import Lock
 import sabnzbd
 from sabnzbd.decorators import synchronized
 
-
 # TryList keeps track of which servers have been tried for
 # a specific article
 
-# TryList should be redefined as a new-style class.
-# However, this would break queue compatibility with
-# previous releases (despite the mapping done in nzbstuff).
-
 TRYLIST_LOCK = Lock()
 
-
-class TryList:
+class TryList(object):
+    # Pre-define attributes to save memory
+    __slots__ = ('__try_list', 'fetcher_priority')
 
     def __init__(self):
         self.__try_list = []

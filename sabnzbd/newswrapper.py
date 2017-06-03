@@ -164,6 +164,8 @@ def probablyipv6(ip):
 
 
 class NNTP(object):
+    # Pre-define attributes to save memory
+    __slots__ = ('host', 'port', 'nw', 'blocking', 'error_msg', 'sock')
 
     def __init__(self, host, port, info, sslenabled, send_group, nw, user=None, password=None, block=False, write_fds=None):
         if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
@@ -271,6 +273,9 @@ class NNTP(object):
 
 
 class NewsWrapper(object):
+    # Pre-define attributes to save memory
+    __slots__ = ('server', 'thrdnum', 'blocking', 'timeout', 'article', 'data', 'lines', 'last_line',  'nntp',
+                 'recv', 'connected', 'user_sent', 'pass_sent', 'group', 'user_ok', 'pass_ok', 'force_login')
 
     def __init__(self, server, thrdnum, block=False):
         self.server = server
