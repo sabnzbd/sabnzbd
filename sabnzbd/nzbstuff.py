@@ -507,7 +507,7 @@ NzbObjectSaver = (
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted',
-    'duplicate', 'oversized', 'create_group_folder', 'precheck', 'incomplete', 'reuse', 'meta',
+    'duplicate', 'oversized', 'precheck', 'incomplete', 'reuse', 'meta',
     'md5sum', 'servercount', 'unwanted_ext', 'rating_filtered'
 )
 
