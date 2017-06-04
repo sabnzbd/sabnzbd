@@ -116,6 +116,10 @@ except ImportError:
     HAVE_DBUS = False
 
 
+_IS_NOT_INTERACTIVE = False
+_LOGIND_SUCCESSFUL_RESULT = 'yes'
+
+
 def _get_sessionproxy():
     """ Return (proxy-object, interface), (None, None) if not available """
     name = 'org.freedesktop.PowerManagement'
@@ -145,6 +149,11 @@ def _get_systemproxy(method):
         path = '/org/freedesktop/UPower'
         interface = 'org.freedesktop.UPower'
         pinterface = 'org.freedesktop.DBus.Properties'
+    elif method == 'Logind':
+        name = 'org.freedesktop.login1'
+        path = '/org/freedesktop/login1'
+        interface = 'org.freedesktop.login1.Manager'
+        pinterface = None
     try:
         bus = dbus.SystemBus()
         return bus.get_object(name, path), interface, pinterface
@@ -158,20 +167,26 @@ def linux_shutdown():
     if not HAVE_DBUS:
         os._exit(0)
 
-    proxy, interface = _get_sessionproxy()
-    if proxy:
-        if proxy.CanShutdown():
-            proxy.Shutdown(dbus_interface=interface)
-    else:
-        proxy, interface, _pinterface = _get_systemproxy('ConsoleKit')
+    try:
+        proxy, interface = _get_sessionproxy()
+
         if proxy:
-            if proxy.CanStop(dbus_interface=interface):
-                try:
-                    proxy.Stop(dbus_interface=interface)
-                except dbus.exceptions.DBusException, msg:
-                    logging.info('Received a DBus exception %s', msg)
+            if proxy.CanShutdown():
+                proxy.Shutdown(dbus_interface=interface)
         else:
-            logging.info('DBus does not support Stop (shutdown)')
+            proxy, interface, pinterface = _get_systemproxy('Logind')
+            if proxy:
+                if proxy.CanPowerOff(dbus_interface=interface) == _LOGIND_SUCCESSFUL_RESULT:
+                    proxy.PowerOff(_IS_NOT_INTERACTIVE, dbus_interface=interface)
+            else:
+                proxy, interface, _pinterface = _get_systemproxy('ConsoleKit')
+                if proxy:
+                    if proxy.CanStop(dbus_interface=interface):
+                        proxy.Stop(dbus_interface=interface)
+                else:
+                    logging.info('DBus does not support Stop (shutdown)')
+    except dbus.exceptions.DBusException, msg:
+        logging.error('Received a DBus exception %s', msg)
     os._exit(0)
 
 
@@ -180,23 +195,28 @@ def linux_hibernate():
     if not HAVE_DBUS:
         return
 
-    proxy, interface = _get_sessionproxy()
-    if proxy:
-        if proxy.CanHibernate():
-            proxy.Hibernate(dbus_interface=interface)
-    else:
-        proxy, interface, pinterface = _get_systemproxy('UPower')
-        if not proxy:
-            proxy, interface, pinterface = _get_systemproxy('DeviceKit')
+    try:
+        proxy, interface = _get_sessionproxy()
         if proxy:
-            if proxy.Get(interface, 'can-hibernate', dbus_interface=pinterface):
-                try:
-                    proxy.Hibernate(dbus_interface=interface)
-                except dbus.exceptions.DBusException, msg:
-                    logging.info('Received a DBus exception %s', msg)
+            if proxy.CanHibernate():
+                proxy.Hibernate(dbus_interface=interface)
         else:
-            logging.info('DBus does not support Hibernate')
-    time.sleep(10)
+            proxy, interface, pinterface = _get_systemproxy('Logind')
+            if proxy:
+                if proxy.CanHibernate(dbus_interface=interface) == _LOGIND_SUCCESSFUL_RESULT:
+                    proxy.Hibernate(_IS_NOT_INTERACTIVE, dbus_interface=interface)
+            else:
+                proxy, interface, pinterface = _get_systemproxy('UPower')
+                if not proxy:
+                    proxy, interface, pinterface = _get_systemproxy('DeviceKit')
+                if proxy:
+                    if proxy.Get(interface, 'can-hibernate', dbus_interface=pinterface):
+                        proxy.Hibernate(dbus_interface=interface)
+                else:
+                    logging.info('DBus does not support Hibernate')
+        time.sleep(10)
+    except dbus.exceptions.DBusException, msg:
+        logging.error('Received a DBus exception %s', msg)
 
 
 def linux_standby():
@@ -204,20 +224,25 @@ def linux_standby():
     if not HAVE_DBUS:
         return
 
-    proxy, interface = _get_sessionproxy()
-    if proxy:
-        if proxy.CanSuspend():
-            proxy.Suspend(dbus_interface=interface)
-    else:
-        proxy, interface, pinterface = _get_systemproxy('UPower')
-        if not proxy:
-            proxy, interface, pinterface = _get_systemproxy('DeviceKit')
+    try:
+        proxy, interface = _get_sessionproxy()
         if proxy:
-            if proxy.Get(interface, 'can-suspend', dbus_interface=pinterface):
-                try:
-                    proxy.Suspend(dbus_interface=interface)
-                except dbus.exceptions.DBusException, msg:
-                    logging.info('Received a DBus exception %s', msg)
+            if proxy.CanSuspend():
+                proxy.Suspend(dbus_interface=interface)
         else:
-            logging.info('DBus does not support Suspend (standby)')
-    time.sleep(10)
+            proxy, interface, pinterface = _get_systemproxy('Logind')
+            if proxy:
+                if proxy.CanSuspend(dbus_interface=interface) == _LOGIND_SUCCESSFUL_RESULT:
+                    proxy.Suspend(_IS_NOT_INTERACTIVE, dbus_interface=interface)
+            else:
+                proxy, interface, pinterface = _get_systemproxy('UPower')
+                if not proxy:
+                    proxy, interface, pinterface = _get_systemproxy('DeviceKit')
+                if proxy:
+                    if proxy.Get(interface, 'can-suspend', dbus_interface=pinterface):
+                        proxy.Suspend(dbus_interface=interface)
+                else:
+                    logging.info('DBus does not support Suspend (standby)')
+        time.sleep(10)
+    except dbus.exceptions.DBusException, msg:
+        logging.error('Received a DBus exception %s', msg)
