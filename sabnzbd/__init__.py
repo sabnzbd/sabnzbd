@@ -16,8 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from sabnzbd.version import __version__, __baseline__
-__configversion__ = 18
-__queueversion__ = 8
 
 import os
 import logging
