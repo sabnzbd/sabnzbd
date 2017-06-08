@@ -795,21 +795,6 @@ def try_rar_check(nzo, workdir, setname):
         return True
 
 
-def addPrefixes(path, dirprefix):
-    """ Add list of prefixes as sub folders to path
-        '/my/path' and ['a', 'b', 'c'] will give '/my/path/a/b/c'
-    """
-    for folder in dirprefix:
-        if not folder:
-            continue
-        if not path:
-            break
-        basepath = os.path.basename(os.path.abspath(path))
-        if folder != basepath.lower():
-            path = os.path.join(path, folder)
-    return path
-
-
 def handle_empty_queue():
     """ Check if empty queue calls for action """
     if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:

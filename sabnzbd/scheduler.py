@@ -36,7 +36,6 @@ from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 __SCHED = None  # Global pointer to Scheduler instance
 
-RSSTASK_MINUTE = random.randint(0, 59)
 SCHEDULE_GUARD_FLAG = False
 PP_PAUSE_EVENT = False
 

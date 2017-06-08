@@ -67,7 +67,6 @@ SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
 SEVENZIP_RE = re.compile(r'\.7z$', re.I)
 SEVENMULTI_RE = re.compile(r'\.7z\.\d+$', re.I)
-VOLPAR2_RE = re.compile(r'\.*vol[0-9]+\+[0-9]+\.par2', re.I)
 FULLVOLPAR2_RE = re.compile(r'(.*[^.])(\.*vol[0-9]+\+[0-9]+\.par2)', re.I)
 TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
 
@@ -498,7 +497,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
             success = False
             fail = True
             msg = sys.exc_info()[1]
-            nzo.set_fail = T('Unpacking failed, %s') % msg
+            nzo.fail_msg = T('Unpacking failed, %s') % msg
             setname = nzo.final_name
             nzo.set_unpack_info('Unpack', T('[%s] Error "%s" while unpacking RAR files') % (unicoder(setname), msg))
 
@@ -2109,20 +2108,6 @@ def rar_sort(a, b):
         return cmp(a, b)
 
 
-# Sort the various PAR filename formats properly :\
-def par_sort(a, b):
-    """ Define sort method for par2 file names """
-    aext = a.lower().split('.')[-1]
-    bext = b.lower().split('.')[-1]
-
-    if aext == bext:
-        return cmp(a, b)
-    elif aext == 'par2':
-        return -1
-    elif bext == 'par2':
-        return 1
-
-
 def build_filelists(workdir, workdir_complete=None, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
         Optionally test content to establish RAR-ness
@@ -2262,14 +2247,6 @@ def pars_of_set(wdir, setname):
         if m and m.group(1) == setname and m.group(2):
             list.append(file)
     return list
-
-
-def add_s(i):
-    """ Return an "s" when 'i' > 1 """
-    if i > 1:
-        return 's'
-    else:
-        return ''
 
 
 def unrar_check(rar):

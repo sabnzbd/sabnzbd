@@ -101,7 +101,7 @@ ArticleSaver = (
 class Article(TryList):
     """ Representation of one article """
     # Pre-define attributes to save memory
-    __slots__ = ('fetcher', 'article', 'fetcher_priority', 'art_id', 'bytes', 'partnum', 'tries', 'nzf')
+    __slots__ = ArticleSaver + ('fetcher', 'fetcher_priority', 'tries')
 
     def __init__(self, article, bytes, partnum, nzf):
         TryList.__init__(self)
@@ -529,7 +529,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 ##############################################################################
 NzbObjectSaver = (
     'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'bytes_tried',
-    'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date', 'dirprefix',
+    'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date',
     'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
@@ -596,7 +596,6 @@ class NzbObject(TryList):
         self.groups = []
         self.avg_date = datetime.datetime.fromtimestamp(0.0)
         self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
-        self.dirprefix = []
 
         self.partable = {}          # Holds one parfile-name for each set
         self.extrapars = {}         # Holds the extra parfile names for all sets
@@ -1674,14 +1673,6 @@ def nzf_get_filename(nzf):
     if not name:
         name = ''
     return name.lower()
-
-
-def ext_on_list(name, lst):
-    """ Return True if `name` contains any extension in `lst` """
-    for ext in lst:
-        if name.rfind(ext) >= 0:
-            return True
-    return False
 
 
 def nzf_cmp_date(nzf1, nzf2):
