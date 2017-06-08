@@ -31,11 +31,10 @@ from sabnzbd.misc import exit_sab, cat_to_opts, \
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NZBQUEUE_LOCK, synchronized, synchronized_CV
-from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, JOB_ADMIN, \
-    LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
+from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, \
+    JOB_ADMIN, LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
     REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
-    Status, QUEUE_FILE_TMPL, \
-    IGNORED_FOLDERS, QNFO
+    Status, IGNORED_FOLDERS, QNFO
 
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -68,7 +67,7 @@ class NzbQueue(object):
             # Read the queue from the saved files
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
             if not data:
-                # Warn bout old queue
+                # Warn about old queue
                 if sabnzbd.OLD_QUEUE and cfg.warned_old_queue() < QUEUE_VERSION:
                     logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
                     cfg.warned_old_queue.set(QUEUE_VERSION)
@@ -864,7 +863,6 @@ class NzbQueue(object):
                 enough, _ratio = nzo.check_quality()
                 if enough:
                     # Enough data present, do real download
-                    _workdir = nzo.downpath
                     self.cleanup_nzo(nzo, keep_basic=True)
                     self.send_back(nzo)
                     return

@@ -21,7 +21,6 @@ sabnzbd.interface - webinterface
 
 import os
 import time
-import datetime
 import cherrypy
 import logging
 import urllib
@@ -41,7 +40,6 @@ from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, from_units, \
     time_format, long_path, calc_age, \
     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
-from sabnzbd.panic import panic_old_queue
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
@@ -60,9 +58,8 @@ from sabnzbd.utils.sslinfo import ssl_version, ssl_protocols_labels
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 
-from sabnzbd.constants import \
-    NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, DEF_STDINTF, DEF_STDCONFIG, DEF_MAIN_TMPL, \
-    DEFAULT_PRIORITY
+from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, DEF_STDINTF, \
+    DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY
 
 from sabnzbd.lang import list_languages, set_language
 

@@ -29,8 +29,7 @@ import binascii
 import shutil
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
-    reliable_unpack_names, unicoder, platform_encode, deunicode
+from sabnzbd.encoding import TRANS, UNTRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     flag_file, real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \

@@ -15,6 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Imported to be referenced from other files directly
 from sabnzbd.version import __version__, __baseline__
 
 import os
@@ -23,8 +24,6 @@ import datetime
 import tempfile
 import cPickle
 import pickle
-import zipfile
-import glob
 import gzip
 import subprocess
 import time
@@ -32,7 +31,7 @@ import socket
 import cherrypy
 import sys
 import re
-from threading import RLock, Lock, Condition, Thread
+from threading import Lock, Thread
 try:
     import sleepless
 except ImportError:

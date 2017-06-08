@@ -26,7 +26,6 @@ from nntplib import NNTPPermanentError
 import time
 import logging
 import re
-import select
 import ssl
 
 import sabnzbd

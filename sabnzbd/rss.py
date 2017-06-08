@@ -197,7 +197,6 @@ class RSSQueue(object):
                         continue
                     self.jobs[feed] = {}
                     for link in feeds[feed]:
-                        data = feeds[feed][link]
                         # Consistency check on data
                         try:
                             item = feeds[feed][link]

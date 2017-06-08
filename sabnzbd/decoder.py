@@ -19,7 +19,6 @@
 sabnzbd.decoder - article decoder
 """
 
-import Queue
 import binascii
 import logging
 import re
@@ -31,7 +30,6 @@ from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABY
 import sabnzbd.articlecache
 import sabnzbd.downloader
 import sabnzbd.nzbqueue
-import sabnzbd.cfg as cfg
 from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
 
