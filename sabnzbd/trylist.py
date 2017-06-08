@@ -25,10 +25,8 @@ from threading import Lock
 import sabnzbd
 from sabnzbd.decorators import synchronized
 
-# TryList keeps track of which servers have been tried for
-# a specific article
-
-TRYLIST_LOCK = Lock()
+# TryList keeps track of which servers have been tried for a specific article
+# This used to have a Lock, but it's not needed (all atomic) and faster without
 
 class TryList(object):
     # Pre-define attributes to save memory
@@ -38,22 +36,15 @@ class TryList(object):
         self.__try_list = []
         self.fetcher_priority = 0
 
-    @synchronized(TRYLIST_LOCK)
     def server_in_try_list(self, server):
         """ Return whether specified server has been tried """
         return server in self.__try_list
 
-    @synchronized(TRYLIST_LOCK)
     def add_to_try_list(self, server):
         """ Register server as having been tried already """
-        if server not in self.__try_list:
-            if sabnzbd.LOG_ALL:
-                logging.debug("Appending %s to %s.__try_list", server, self)
-            self.__try_list.append(server)
+        self.__try_list.append(server)
 
-    @synchronized(TRYLIST_LOCK)
     def reset_try_list(self):
         """ Clean the list """
-        if self.__try_list:
-            self.__try_list = []
+        self.__try_list = []
         self.fetcher_priority = 0
