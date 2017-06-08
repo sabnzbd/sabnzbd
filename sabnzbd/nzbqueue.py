@@ -25,7 +25,6 @@ import time
 import datetime
 
 import sabnzbd
-from sabnzbd.trylist import TryList
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, \
     get_admin_path, remove_all, globber_full
@@ -47,7 +46,7 @@ from sabnzbd.encoding import platform_encode
 from sabnzbd.bpsmeter import BPSMeter
 
 
-class NzbQueue:
+class NzbQueue(object):
     """ Singleton NzbQueue """
     do = None
 
@@ -137,7 +136,6 @@ class NzbQueue:
                             os.remove(item)
                         except:
                             pass
-
 
     def scan_jobs(self, all=False, action=True):
         """ Scan "incomplete" for missing folders,
