@@ -1065,15 +1065,6 @@ def validate_safedir(root, value, default):
         return T('Error: Queue not empty, cannot change folder.'), None
 
 
-def validate_dir_exists(root, value, default):
-    """ Check if directory exists """
-    p = sabnzbd.misc.real_path(root, value)
-    if os.path.exists(p):
-        return None, value
-    else:
-        return T('Folder "%s" does not exist') % p, None
-
-
 def validate_notempty(root, value, default):
     """ If value is empty, return default """
     if value:

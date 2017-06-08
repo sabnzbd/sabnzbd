@@ -191,7 +191,6 @@ class SeriesSorter(object):
 
         self.match_obj = None
         self.extras = None
-        self.descmatch = None
 
         self.rename_or_not = False
 

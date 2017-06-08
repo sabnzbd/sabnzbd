@@ -378,31 +378,6 @@ class MainPage(object):
             # Redirect to the setup wizard
             raise cherrypy.HTTPRedirect('/sabnzbd/wizard/')
 
-    def add_handler(self, kwargs):
-        if not check_access():
-            return Protected()
-        url = kwargs.get('url', '')
-        pp = kwargs.get('pp')
-        script = kwargs.get('script')
-        cat = kwargs.get('cat')
-        priority = kwargs.get('priority')
-        redirect = kwargs.get('redirect')
-        nzbname = kwargs.get('nzbname')
-
-        url = Strip(url)
-        if url:
-            sabnzbd.add_url(url, pp, script, cat, priority, nzbname)
-        if not redirect:
-            redirect = self.__root
-        raise cherrypy.HTTPRedirect(redirect)
-
-    @cherrypy.expose
-    def addURL(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        raise self.add_handler(kwargs)
-
     @cherrypy.expose
     def addFile(self, **kwargs):
         msg = check_session(kwargs)
@@ -828,17 +803,6 @@ class QueuePage(object):
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
-    def removeNzf(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        nzo_id = kwargs.get('nzo_id')
-        nzf_id = kwargs.get('nzf_id')
-        if nzo_id and nzf_id:
-            NzbQueue.do.remove_nzf(nzo_id, nzf_id, delete=True)
-        raise queueRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
     def change_queue_complete_action(self, **kwargs):
         """ Action or script to be performed once the queue has been completed
             Scripts are prefixed with 'script_'
@@ -982,22 +946,6 @@ class QueuePage(object):
             return msg
         sabnzbd.nzbqueue.sort_queue('size', kwargs.get('dir'))
         raise queueRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def set_speedlimit(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        Downloader.do.limit_speed(int_conv(kwargs.get('value')))
-        raise Raiser(self.__root)
-
-    @cherrypy.expose
-    def set_pause(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        scheduler.plan_resume(int_conv(kwargs.get('value')))
-        raise Raiser(self.__root)
 
 
 ##############################################################################
@@ -1170,33 +1118,6 @@ class HistoryPage(object):
             sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get('nzbname'))
         del_hist_job(job, del_files=True)
         raise Raiser(self.__root)
-
-    @cherrypy.expose
-    def show_edit_rating(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        self.__edit_rating = kwargs.get('job')
-        raise queueRaiser(self.__root, kwargs)
-
-    @cherrypy.expose
-    def action_edit_rating(self, **kwargs):
-        flag_map = {'spam': Rating.FLAG_SPAM, 'encrypted': Rating.FLAG_ENCRYPTED, 'expired': Rating.FLAG_EXPIRED}
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        try:
-            if kwargs.get('send'):
-                video = kwargs.get('video') if kwargs.get('video') != "-" else None
-                audio = kwargs.get('audio') if kwargs.get('audio') != "-" else None
-                flag = flag_map.get(kwargs.get('rating_flag'))
-                detail = kwargs.get('expired_host') if kwargs.get('expired_host') != '<Host>' else None
-                if cfg.rating_enable():
-                    Rating.do.update_user_rating(kwargs.get('job'), video, audio, flag, detail)
-        except:
-            pass
-        self.__edit_rating = None
-        raise queueRaiser(self.__root, kwargs)
 
 
 ##############################################################################
@@ -1649,28 +1570,6 @@ class ConfigGeneral(object):
             return sabnzbd.api.report('json', data={'success': True, 'restart_req': sabnzbd.RESTART_REQ})
         else:
             raise Raiser(self.__root)
-
-    @cherrypy.expose
-    def generateAPIKey(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-
-        logging.debug('API Key Changed')
-        cfg.api_key.set(config.create_api_key())
-        config.save_config()
-        raise Raiser(self.__root)
-
-    @cherrypy.expose
-    def generateNzbKey(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-
-        logging.debug('NZB Key Changed')
-        cfg.nzb_key.set(config.create_api_key())
-        config.save_config()
-        raise Raiser(self.__root)
 
 
 def change_web_dir(web_dir):
@@ -2595,16 +2494,6 @@ class Status(object):
         cherrypy.response.headers['Content-Type'] = 'application/x-download;charset=utf-8'
         cherrypy.response.headers['Content-Disposition'] = 'attachment;filename="sabnzbd.log"'
         return log_data
-
-    @cherrypy.expose
-    def showweb(self, **kwargs):
-        msg = check_session(kwargs)
-        if msg:
-            return msg
-        if sabnzbd.WEBLOGFILE:
-            return cherrypy.lib.static.serve_file(sabnzbd.WEBLOGFILE, "application/x-download", "attachment")
-        else:
-            return "Web logging is off!"
 
     @cherrypy.expose
     def clearwarnings(self, **kwargs):

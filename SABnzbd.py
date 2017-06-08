@@ -725,24 +725,6 @@ def evaluate_inipath(path):
             return path
 
 
-def cherrypy_logging(log_path, log_handler):
-    """ Setup CherryPy logging """
-    log = cherrypy.log
-    log.access_file = ''
-    log.error_file = ''
-    # Max size of 512KB
-    maxBytes = getattr(log, "rot_maxBytes", 524288)
-    # cherrypy.log cherrypy.log.1 cherrypy.log.2
-    backupCount = getattr(log, "rot_backupCount", 3)
-
-    # Make a new RotatingFileHandler for the error log.
-    fname = getattr(log, "rot_error_file", log_path)
-    h = log_handler(fname, 'a', maxBytes, backupCount)
-    h.setLevel(logging.DEBUG)
-    h.setFormatter(cherrypy._cplogging.logfmt)
-    log.error_log.addHandler(h)
-
-
 def commandline_handler(frozen=True):
     """ Split win32-service commands are true parameters
         Returns:

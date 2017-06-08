@@ -62,22 +62,6 @@ def platform_encode(p):
         return p
 
 
-def name_fixer(p):
-    """ Return Unicode name of 8bit ASCII string, first try UTF-8, then codepage, then cp1252 """
-    if isinstance(p, unicode):
-        return p
-    elif isinstance(p, str):
-        try:
-            return p.decode('utf-8')
-        except:
-            try:
-                return p.decode(codepage)
-            except:
-                return p.decode('cp1252', 'replace').replace('?', '!')
-    else:
-        return p
-
-
 def yenc_name_fixer(p):
     """ Return Unicode name of 8bit ASCII string, first try utf-8, then cp1252 """
     try:
@@ -156,19 +140,6 @@ def xml_name(p, keep_escape=False, encoding=None):
         return p.encode('ascii', 'xmlcharrefreplace')
     else:
         return escape(p).encode('ascii', 'xmlcharrefreplace')
-
-
-def encode_for_xml(ustr, encoding='ascii'):
-    """ Encode unicode_data for use as XML or HTML, with characters outside
-        of the encoding converted to XML numeric character references.
-    """
-    if isinstance(ustr, unicode):
-        pass
-    elif isinstance(ustr, str):
-        ustr = ustr.decode(codepage, 'replace')
-    else:
-        ustr = unicode(str(ustr))
-    return ustr.encode(encoding, 'xmlcharrefreplace')
 
 
 class LatinFilter(Filter):

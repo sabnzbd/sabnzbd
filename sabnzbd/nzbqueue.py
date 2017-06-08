@@ -288,55 +288,6 @@ class NzbQueue(object):
         return future_nzo
 
     @synchronized(NZBQUEUE_LOCK)
-    def insert_future(self, future, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
-        """ Refresh a placeholder nzo with an actual nzo """
-        if 0: assert isinstance(future, NzbObject) # Assert only for debug purposes
-        if nzo_info is None:
-            nzo_info = {}
-        nzo_id = future.nzo_id
-        if nzo_id in self.__nzo_table:
-            try:
-                sabnzbd.remove_data(nzo_id, future.workpath)
-                logging.info("Regenerating item: %s", nzo_id)
-                r, u, d = future.repair_opts
-                if r is not None:
-                    pp = sabnzbd.opts_to_pp(r, u, d)
-                scr = future.script
-                if scr is None:
-                    scr = script
-                categ = future.cat
-                if categ is None:
-                    categ = cat
-                categ, pp, script, priority = cat_to_opts(categ, pp, script, priority)
-
-                # Remember old priority
-                old_prio = future.priority
-
-                try:
-                    future.__init__(filename, pp, scr, nzb=data, futuretype=False, cat=categ, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
-                    future.nzo_id = nzo_id
-                    self.save(future)
-                except ValueError:
-                    self.remove(nzo_id, False)
-                except TypeError:
-                    self.remove(nzo_id, False)
-
-                # Make sure the priority is changed now that we know the category
-                if old_prio != priority:
-                    future.priority = None
-                self.set_priority(future.nzo_id, priority)
-
-                if cfg.auto_sort():
-                    self.sort_by_avg_age()
-            except:
-                logging.error(T('Error while adding %s, removing'), nzo_id)
-                logging.info("Traceback: ", exc_info=True)
-                self.remove(nzo_id, False)
-        else:
-            logging.info("Item %s no longer in queue, omitting",
-                         nzo_id)
-
-    @synchronized(NZBQUEUE_LOCK)
     def change_opts(self, nzo_ids, pp):
         result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
@@ -613,13 +564,6 @@ class NzbQueue(object):
         return (-1, nzo1.priority)
 
     @synchronized(NZBQUEUE_LOCK)
-    def get_position(self, nzb_id):
-        for i in xrange(len(self.__nzo_list)):
-            if nzb_id == self.__nzo_list[i].nzo_id:
-                return i
-        return -1
-
-    @synchronized(NZBQUEUE_LOCK)
     def move_up_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
             for unused in range(size):
@@ -765,22 +709,6 @@ class NzbQueue(object):
     def reset_all_try_lists(self):
         for nzo in self.__nzo_list:
             nzo.reset_all_try_lists()
-
-    @synchronized(NZBQUEUE_LOCK)
-    def has_articles_for(self, server):
-        """ Check whether there are any pending articles for the downloader """
-        if not self.__nzo_list:
-            return False
-        # Check if this server is allowed for any object, then return if we've tried this server.
-        for nzo in self.__nzo_list:
-            # Not when queue paused and not a forced item
-            if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
-                # Check if past propagation delay, or forced
-                if not cfg.propagation_delay() or nzo.priority == TOP_PRIORITY or (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) < time.time():
-                    # Check if category allowed
-                    if nzo.server_allowed(server) or self.__top_only:
-                        return True
-        return False
 
     @synchronized(NZBQUEUE_LOCK)
     def has_forced_items(self):
@@ -1033,13 +961,6 @@ def sort_queue_function(nzo_list, method, reverse):
 @synchronized_CV
 def add_nzo(nzo, quiet=False):
     return NzbQueue.do.add(nzo, quiet=quiet)
-
-
-@synchronized_CV
-def insert_future_nzo(future_nzo, filename, data, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, nzo_info=None):
-    if nzo_info is None:
-        nzo_info = {}
-    NzbQueue.do.insert_future(future_nzo, filename, data, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, nzo_info=nzo_info)
 
 
 @synchronized_CV

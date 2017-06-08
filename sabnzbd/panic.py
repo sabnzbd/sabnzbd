@@ -30,7 +30,6 @@ except ImportError:
 import sabnzbd
 import sabnzbd.cfg as cfg
 
-PANIC_NONE = 0
 PANIC_PORT = 1
 PANIC_TEMPL = 2
 PANIC_QUEUE = 3

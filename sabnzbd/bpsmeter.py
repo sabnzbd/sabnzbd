@@ -73,18 +73,6 @@ def last_month_day(tm):
     return day
 
 
-def this_month_day(t=None):
-    """ Return current day of the week, month 1..31 """
-    t = t or time.localtime(t)
-    return time.localtime(t).tm_mday
-
-
-def this_week_day(t=None):
-    """ Return current day of the week 1..7 """
-    t = t or time.localtime(t)
-    return time.localtime(t).tm_wday + 1
-
-
 def next_month(t):
     """ Return timestamp for start of next month """
     now = time.localtime(t)

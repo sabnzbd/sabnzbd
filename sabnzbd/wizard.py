@@ -226,8 +226,3 @@ class Wizard(object):
             access_url = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.cherryport())
 
         return access_url, urls
-
-    @cherrypy.expose
-    def servertest(self, **kwargs):
-        _result, msg = test_nntp_server_dict(kwargs)
-        return msg

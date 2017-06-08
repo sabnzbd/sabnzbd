@@ -40,7 +40,7 @@ except ImportError:
 ##############################################################################
 # Determine platform flags
 ##############################################################################
-WIN32 = DARWIN = POSIX = FOUNDATION = WIN64 = False
+WIN32 = DARWIN = FOUNDATION = WIN64 = False
 KERNEL32 = None
 
 if os.name == 'nt':
@@ -54,7 +54,6 @@ if os.name == 'nt':
 elif os.name == 'posix':
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
-    POSIX = True
     import platform
     if platform.system().lower() == 'darwin':
         DARWIN = True
