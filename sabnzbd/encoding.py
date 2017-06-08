@@ -51,14 +51,6 @@ def change_fsys(value):
             auto_fsys()
 
 
-def reliable_unpack_names():
-    """ See if it is safe to rely on unrar names """
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        return True
-    else:
-        return gUTF
-
-
 def platform_encode(p):
     """ Return Unicode name, if not already Unicode, decode with UTF-8 or latin1 """
     if isinstance(p, str):
@@ -143,13 +135,6 @@ def unicoder(p, force=False):
         return p.decode(codepage, 'replace')
     else:
         return unicode(str(p))
-
-
-def unicode2local(p):
-    """ Convert Unicode filename to appropriate local encoding
-        Leave ? characters for uncovertible characters
-    """
-    return p
 
 
 def xml_name(p, keep_escape=False, encoding=None):

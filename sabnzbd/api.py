@@ -27,7 +27,7 @@ import time
 import json
 import cherrypy
 import locale
-import socket
+
 from threading import Thread
 try:
     locale.setlocale(locale.LC_ALL, "")
@@ -40,10 +40,9 @@ try:
 except ImportError:
     pass
 
-
 import sabnzbd
 from sabnzbd.constants import VALID_ARCHIVES, Status, \
-     TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
+     TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
      KIBI, MEBI, GIGI, JOB_ADMIN
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -165,14 +164,8 @@ def _api_del_config(name, output, kwargs):
 
 def _api_qstatus(name, output, kwargs):
     """ API: accepts output """
-    if output == 'json':
-        # Compatibility Fix:
-        # Old qstatus did not have a keyword, so do not use one now.
-        keyword = ''
-    else:
-        keyword = 'queue'
     info, pnfo_list, bytespersec = build_queue()
-    return report(output, keyword='', data=remove_callable(info))
+    return report(output, data=remove_callable(info))
 
 
 def _api_queue(name, output, kwargs):
@@ -1340,7 +1333,6 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         priority = pnfo.priority
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
-        missing = pnfo.missing
 
         slot = {'index': n, 'nzo_id': str(nzo_id)}
         slot['unpackopts'] = str(sabnzbd.opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
@@ -1812,9 +1804,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     cookie = cherrypy.request.cookie
     if 'history_verbosity' in cookie:
         k = cookie['history_verbosity'].value
-        c_path = cookie['history_verbosity']['path']
-        c_age = cookie['history_verbosity']['max-age']
-        c_version = cookie['history_verbosity']['version']
 
         if k == 'all':
             details_show_all = True

@@ -56,8 +56,6 @@ if [int(n) for n in cherrypy.__version__.split('.')] < [8, 1, 2]:
     print 'Sorry, requires Python module Cherrypy 8.1.2+ (use the included version)'
     sys.exit(1)
 
-from cherrypy import _cpserver
-
 SQLITE_DLL = True
 try:
     from sqlite3 import version as sqlite3_version
@@ -90,7 +88,7 @@ from sabnzbd.misc import real_path, \
     check_latest_version, exit_sab, \
     split_host, get_ext, create_https_certificates, \
     windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full
-from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic_fwall, \
+from sabnzbd.panic import panic_tmpl, panic_port, panic_host, \
     panic_sqlite, panic, launch_a_browser
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config

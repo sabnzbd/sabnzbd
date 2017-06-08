@@ -43,12 +43,11 @@ from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
     RENAMES_FILE, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
-    sanitize_foldername, int_conv, set_permissions, format_time_string, long_path, \
-    trim_win_path, fix_unix_encoding, calc_age
+    int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
+    fix_unix_encoding, calc_age
 from sabnzbd.decorators import synchronized, IO_LOCK
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.trylist import TryList
 from sabnzbd.encoding import unicoder, platform_encode
 from sabnzbd.database import HistoryDB
 from sabnzbd.rating import Rating
@@ -60,6 +59,36 @@ SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
 REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I)  # Reject duplicate par2 files
 RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$')  # Test reasonably sized extension at the end
+
+
+##############################################################################
+# Trylist
+##############################################################################
+
+class TryList(object):
+    """ TryList keeps track of which servers have been tried for a specific article
+        This used to have a Lock, but it's not needed (all atomic) and faster without
+    """
+    # Pre-define attributes to save memory
+    __slots__ = ('__try_list', 'fetcher_priority')
+
+    def __init__(self):
+        self.__try_list = []
+        self.fetcher_priority = 0
+
+    def server_in_try_list(self, server):
+        """ Return whether specified server has been tried """
+        return server in self.__try_list
+
+    def add_to_try_list(self, server):
+        """ Register server as having been tried already """
+        self.__try_list.append(server)
+
+    def reset_try_list(self):
+        """ Clean the list """
+        self.__try_list = []
+        self.fetcher_priority = 0
+
 
 ##############################################################################
 # Article
@@ -865,7 +894,7 @@ class NzbObject(TryList):
         if accept == 2:
             self.deleted = True
             self.status = Status.FAILED
-            nzo_id = sabnzbd.NzbQueue.do.add(self, quiet=True)
+            sabnzbd.NzbQueue.do.add(self, quiet=True)
             sabnzbd.NzbQueue.do.end_job(self)
             # Raise error, so it's not added
             raise TypeError
@@ -1239,7 +1268,6 @@ class NzbObject(TryList):
 
     @synchronized(IO_LOCK)
     def set_download_report(self):
-        import sabnzbd.api
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:
             # get the deltatime since the download started
             avg_bps = self.avg_bps_total / self.avg_bps_freq

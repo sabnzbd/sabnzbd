@@ -1009,15 +1009,6 @@ def trim_win_path(path):
     return path
 
 
-def check_win_maxpath(folder):
-    """ Return False if any file path in folder exceeds the Windows maximum """
-    if sabnzbd.WIN32:
-        for p in os.listdir(folder):
-            if len(os.path.join(folder, p)) > 259:
-                return False
-    return True
-
-
 def make_script_path(script):
     """ Return full script path, if any valid script exists, else None """
     s_path = None
@@ -1231,7 +1222,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
         private_key = generate_key(key_size=2048, output_file=ssl_key)
-        cert = generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost')
+        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost')
         logging.info('Self-signed certificates generated successfully')
     except:
         logging.error(T('Error creating SSL key and certificate'))
