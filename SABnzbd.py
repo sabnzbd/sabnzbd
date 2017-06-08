@@ -1062,7 +1062,7 @@ def main():
                             sabnzbd.cfg.https_port.set(newport)
                         else:
                             # In case HTTPS == HTTP port
-                            http_port = newport
+                            cherryport = newport
                             sabnzbd.cfg.port.set(newport)
         except:
             # Something else wrong, probably badly specified host
