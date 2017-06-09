@@ -66,41 +66,15 @@ class NzbQueue(object):
         if repair < 2:
             # Read the queue from the saved files
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
-            if not data:
-                # Warn about old queue
-                if sabnzbd.OLD_QUEUE and cfg.warned_old_queue() < QUEUE_VERSION:
-                    logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
-                    cfg.warned_old_queue.set(QUEUE_VERSION)
-                    return
-            else:
-                # Try to process
-                try:
-                    queue_vers, nzo_ids, dummy = data
-                    if not queue_vers == QUEUE_VERSION:
-                        nzo_ids = []
-                        logging.error(T('Incompatible queuefile found, cannot proceed'))
-                        if not repair:
-                            panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
-                            exit_sab(2)
-                except ValueError:
-                    nzo_ids = []
-                    logging.error(T('Error loading %s, corrupt file detected'),
-                                  os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
-                    if not repair:
-                        return
+
+            # Process the data and check compatibility
+            nzo_ids = self.check_compatibility(data)
 
         # First handle jobs in the queue file
         folders = []
         for nzo_id in nzo_ids:
             folder, _id = os.path.split(nzo_id)
             path = get_admin_path(folder, future=False)
-
-            # We need to do a repair in case of old-style pickles
-            # This will update them but preserve queue-order
-            if not cfg.converted_nzo_pickles():
-                if os.path.exists(os.path.join(path, _id)):
-                    self.repair_job(os.path.dirname(path))
-                continue
 
             # Try as normal job
             nzo = sabnzbd.load_data(_id, path, remove=False)
@@ -111,13 +85,6 @@ class NzbQueue(object):
             if nzo:
                 self.add(nzo, save=False, quiet=True)
                 folders.append(folder)
-
-        # Conversion done! Only the future jobs still need to be done
-        if not cfg.converted_nzo_pickles():
-            cfg.converted_nzo_pickles.set(True)
-            # Remove any future-jobs, we can't save those
-            for item in globber_full(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
-                os.remove(item)
 
         # Scan for any folders in "incomplete" that are not yet in the queue
         if repair:
@@ -135,6 +102,48 @@ class NzbQueue(object):
                             os.remove(item)
                         except:
                             pass
+
+    def check_compatibility(self, data):
+        """ Do compatibility checks on the loaded data """
+        nzo_ids = []
+        if not data:
+            # Warn about old queue
+            if sabnzbd.OLD_QUEUE and cfg.warned_old_queue() < QUEUE_VERSION:
+                logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
+                cfg.warned_old_queue.set(QUEUE_VERSION)
+        else:
+            # Try to process
+            try:
+                queue_vers, nzo_ids, dummy = data
+                if not queue_vers == QUEUE_VERSION:
+                    nzo_ids = []
+                    logging.error(T('Incompatible queuefile found, cannot proceed'))
+                    if not repair:
+                        panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+                        exit_sab(2)
+            except ValueError:
+                nzo_ids = []
+                logging.error(T('Error loading %s, corrupt file detected'),
+                              os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+
+        # We need to do a repair in case of old-style pickles
+        if not cfg.converted_nzo_pickles():
+            for nzo_id in nzo_ids:
+                folder, _id = os.path.split(nzo_id)
+                path = get_admin_path(folder, future=False)
+                # This will update them but preserve queue-order
+                if os.path.exists(os.path.join(path, _id)):
+                    self.repair_job(os.path.dirname(path))
+                continue
+
+            # Remove any future-jobs, we can't save those
+            for item in globber_full(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
+                os.remove(item)
+
+            # Done converting
+            cfg.converted_nzo_pickles.set(True)
+            nzo_ids = []
+        return nzo_ids
 
     def scan_jobs(self, all=False, action=True):
         """ Scan "incomplete" for missing folders,
