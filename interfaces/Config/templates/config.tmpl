@@ -41,12 +41,16 @@
                     </td>
                 </tr>
                 <!--#end if#-->
-                <!--#if not $have_mt_par2#-->
+                <!--#if not $nt and not $darwin#-->
                 <tr>
-                    <th scope="row">Multicore Par2</th>
+                    <th scope="row">$T('opt-multicore-par2')</th>
                     <td>
+                        <!--#if $have_mt_par2#-->
+                        <span class="glyphicon glyphicon-ok"></span>
+                        <!--#else#-->
                         <span class="label label-warning">$T('notAvailable')</span> $T('explain-getpar2mt')
                         <a href="${helpuri}installation/multicore-par2" target="_blank">${helpuri}installation/multicore-par2</a>
+                        <!--#end if#-->
                     </td>
                 </tr>
                 <!--#end if#-->
