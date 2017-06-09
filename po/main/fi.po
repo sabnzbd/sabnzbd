@@ -3267,7 +3267,7 @@ msgstr "Järjestelee kohteet (keskimääräisen) iän mukaan."
 
 #: sabnzbd/skintext.py:466
 msgid ""
-"Posts will be paused untill they are at least this age. Setting job priority "
+"Posts will be paused until they are at least this age. Setting job priority "
 "to Force will skip the delay."
 msgstr ""
 "Lähetykset tauotetaan kunnes ne ovat vähintään näin vanhoja. Prioriteetin "
@@ -4503,7 +4503,7 @@ msgid "Confirm History Deletions"
 msgstr "Varmista historian poistot"
 
 #: sabnzbd/skintext.py:841
-msgid "How long or untill when do you want to pause? (in English!)"
+msgid "How long or until when do you want to pause? (in English!)"
 msgstr "Kuinka pitkään tai mihin asti haluat keskeyttää? (englanniksi!)"
 
 #: sabnzbd/skintext.py:842

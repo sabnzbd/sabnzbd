@@ -3321,7 +3321,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py:466
 msgid ""
-"Posts will be paused untill they are at least this age. Setting job priority "
+"Posts will be paused until they are at least this age. Setting job priority "
 "to Force will skip the delay."
 msgstr ""
 "Artikel werden angehalten bis sie mindestens das gewählte alter erreicht "
@@ -4565,7 +4565,7 @@ msgid "Confirm History Deletions"
 msgstr "Löschen von Verlaufeinträgen bestätigen"
 
 #: sabnzbd/skintext.py:841
-msgid "How long or untill when do you want to pause? (in English!)"
+msgid "How long or until when do you want to pause? (in English!)"
 msgstr "Wie lange oder bis wann möchtest du pausieren? (in Englisch!)"
 
 #: sabnzbd/skintext.py:842
