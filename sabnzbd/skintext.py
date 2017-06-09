@@ -463,7 +463,7 @@ SKIN_TEXT = {
     'opt-auto_sort' : TT('Sort by Age'),
     'explain-auto_sort' : TT('Automatically sort items by (average) age.'),
     'opt-propagation_delay' : TT('Propagation delay'),
-    'explain-propagation_delay' : TT('Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay.'),
+    'explain-propagation_delay' : TT('Posts will be paused until they are at least this age. Setting job priority to Force will skip the delay.'),
     'opt-check_new_rel' : TT('Check for New Release'),
     'explain-check_new_rel' : TT('Weekly check for new SABnzbd release.'),
     'also-test' : TT('Also test releases'), #: Pick list for weekly test for new releases
@@ -838,7 +838,7 @@ SKIN_TEXT = {
     'Glitter-speed' : TT('Speed'),
     'Glitter-confirmDeleteQueue' : TT('Confirm Queue Deletions'),
     'Glitter-confirmDeleteHistory' : TT('Confirm History Deletions'),
-    'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'),
+    'Glitter-pausePrompt': TT('How long or until when do you want to pause? (in English!)'),
     'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. Try again.'),
     'Glitter-pauseFor' : TT('Pause for...'),
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
