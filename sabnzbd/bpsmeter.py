@@ -280,10 +280,12 @@ class BPSMeter(object):
         self.bps = 0.0
 
     def add_empty_time(self):
-        nr_diffs = int(time.time() - self.speed_log_time)
+        # Extra zeros, but never more than the maxium!
+        nr_diffs = min(int(time.time() - self.speed_log_time), self.bps_list_max)
         if nr_diffs > 1:
             self.bps_list.extend([0] * nr_diffs)
 
+        # Always trim the list to the max-length
         if len(self.bps_list) > self.bps_list_max:
             self.bps_list = self.bps_list[len(self.bps_list) - self.bps_list_max:]
 

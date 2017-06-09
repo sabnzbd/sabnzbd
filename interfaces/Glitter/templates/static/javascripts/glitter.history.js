@@ -297,11 +297,11 @@ function HistoryModel(parent, data) {
     self.processingDownload = ko.pureComputed(function() {
         var status = self.status();
         // When we can cancel
-        if (status === 'Extracting' || status === 'Verifying' || status == 'Repairing') {
+        if (status === 'Extracting' || status === 'Verifying' || status == 'Repairing' || status === 'Running') {
             return 2
         }
         // These cannot be cancelled
-        if(status === 'Moving' ||  status === 'Running') {
+        if(status === 'Moving') {
             return 1
         }
         return false;

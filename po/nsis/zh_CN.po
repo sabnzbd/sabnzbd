@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-03-18 21:42+0000\n"
-"PO-Revision-Date: 2013-05-05 14:50+0000\n"
-"Last-Translator: XsLiDian <xslidian@gmail.com>\n"
+"PO-Revision-Date: 2017-05-28 17:17+0000\n"
+"Last-Translator: ninjai <ninjai.us@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-03-19 06:37+0000\n"
-"X-Generator: Launchpad (build 18332)\n"
+"X-Launchpad-Export-Date: 2017-05-29 06:02+0000\n"
+"X-Generator: Launchpad (build 18391)\n"
 
 #: NSIS_Installer.nsi:473
 msgid "Show Release Notes"
@@ -23,7 +23,7 @@ msgstr "显示版本说明"
 
 #: NSIS_Installer.nsi:475
 msgid "Start SABnzbd"
-msgstr ""
+msgstr "启动 SABnzbd"
 
 #: NSIS_Installer.nsi:477
 msgid "Support the project, Donate!"
@@ -37,7 +37,7 @@ msgstr "请先关闭 \"SABnzbd.exe\""
 msgid ""
 "The installation directory has changed (now in \"Program Files\"). \\nIf you "
 "run SABnzbd as a service, you need to update the service settings."
-msgstr ""
+msgstr "安装目录已更改（现在位于 \"Program Files\" 目录）。\\n如果以服务模式运行，你需要更新相应服务的设置。"
 
 #: NSIS_Installer.nsi:483
 msgid "This will uninstall SABnzbd from your system"

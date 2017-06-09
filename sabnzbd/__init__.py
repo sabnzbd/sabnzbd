@@ -43,7 +43,7 @@ except ImportError:
 ##############################################################################
 # Determine platform flags
 ##############################################################################
-WIN32 = DARWIN = DARWIN_INTEL = POSIX = FOUNDATION = WIN64 = False
+WIN32 = DARWIN = POSIX = FOUNDATION = WIN64 = False
 KERNEL32 = None
 
 if os.name == 'nt':
@@ -61,20 +61,14 @@ elif os.name == 'posix':
     import platform
     if platform.system().lower() == 'darwin':
         DARWIN = True
+        # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
+        DARWIN_VERSION = int(platform.mac_ver()[0].split('.')[1])
         try:
             import Foundation
             FOUNDATION = True
         except:
             pass
-        if '86' in platform.machine():
-            DARWIN_INTEL = True
 
-if DARWIN:
-    # 10 = Yosemite, 9 = Mavericks, 8 = MountainLion, 7 = Lion, 6 = SnowLeopard, 5 = Leopard
-    DARWIN_VERSION = int(platform.mac_ver()[0].split('.')[1])
-    DARWIN_64 = platform.mac_ver()[2] == 'x86_64'
-else:
-    DARWIN_VERSION = 0
 
 ##############################################################################
 # SSL CHECKS

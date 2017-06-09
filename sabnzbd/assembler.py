@@ -155,13 +155,8 @@ def _assemble(nzf, path, dupe):
         else:
             renamer(path, unique_path)
 
+    md5 = hashlib.md5()
     fout = open(path, 'ab')
-
-    if cfg.quick_check():
-        md5 = hashlib.md5()
-    else:
-        md5 = None
-
     decodetable = nzf.decodetable
 
     for articlenum in decodetable:
@@ -180,15 +175,13 @@ def _assemble(nzf, path, dupe):
         else:
             # yenc data already decoded, flush it out
             fout.write(data)
-            if md5:
-                md5.update(data)
+            md5.update(data)
 
     fout.flush()
     fout.close()
     set_permissions(path)
-    if md5:
-        nzf.md5sum = md5.digest()
-        del md5
+    nzf.md5sum = md5.digest()
+    del md5
 
     return path
 

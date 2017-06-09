@@ -37,7 +37,7 @@ except ImportError:
 
 # SABnzbd modules
 import sabnzbd
-from sabnzbd.constants import sample_match, GIGI, ATTRIB_FILE, JOB_ADMIN, \
+from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
     DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
     PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
     RENAMES_FILE, Status, PNFO
@@ -57,7 +57,6 @@ __all__ = ['Article', 'NzbFile', 'NzbObject']
 
 # Name patterns
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
-RE_SAMPLE = re.compile(sample_match, re.I)
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
 REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I)  # Reject duplicate par2 files
 RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$')  # Test reasonably sized extension at the end
@@ -316,7 +315,7 @@ class NzbFile(TryList):
 class NzbParser(xml.sax.handler.ContentHandler):
     """ Forgiving parser for NZB's """
 
-    def __init__(self, nzo, remove_samples=False):
+    def __init__(self, nzo):
         self.nzo = nzo
         if 0: assert isinstance(self.nzo, NzbObject) # Assert only for debug purposes
         self.in_nzb = False
@@ -337,7 +336,6 @@ class NzbParser(xml.sax.handler.ContentHandler):
         self.nzf_list = []
         self.groups = []
         self.md5 = hashlib.md5()
-        self.filter = remove_samples
         self.now = time.time()
 
     def startDocument(self):
@@ -359,19 +357,15 @@ class NzbParser(xml.sax.handler.ContentHandler):
         elif name == 'file' and self.in_nzb:
             subject = attrs.get('subject', '').strip()
             self.filename = subject
-
-            if self.filter and RE_SAMPLE.search(subject):
-                logging.info('Skipping sample file %s', subject)
-            else:
-                self.in_file = True
-                self.fileSubject = subject
-                try:
-                    self.file_date = int(attrs.get('date'))
-                except:
-                    # NZB has non-standard timestamp, assume now
-                    self.file_date = self.now
-                self.article_db = {}
-                self.file_bytes = 0
+            self.in_file = True
+            self.fileSubject = subject
+            try:
+                self.file_date = int(attrs.get('date'))
+            except:
+                # NZB has non-standard timestamp, assume now
+                self.file_date = self.now
+            self.article_db = {}
+            self.file_bytes = 0
 
         elif name == 'group' and self.in_nzb and self.in_file and self.in_groups:
             self.in_group = True
@@ -513,7 +507,7 @@ NzbObjectSaver = (
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted',
-    'duplicate', 'oversized', 'create_group_folder', 'precheck', 'incomplete', 'reuse', 'meta',
+    'duplicate', 'oversized', 'precheck', 'incomplete', 'reuse', 'meta',
     'md5sum', 'servercount', 'unwanted_ext', 'rating_filtered'
 )
 
@@ -642,8 +636,6 @@ class NzbObject(TryList):
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum = None
 
-        self.create_group_folder = cfg.create_group_folders()
-
         # Remove trailing .nzb and .par(2)
         self.work_name = create_work_name(self.work_name)
 
@@ -691,7 +683,7 @@ class NzbObject(TryList):
             if 'A&A)' in nzb:
                 # Fix needed to compensate for some dumb NZB posters
                 nzb = nzb.replace('A&A)', 'A&amp;A)')
-            handler = NzbParser(self, False)
+            handler = NzbParser(self)
             parser = xml.sax.make_parser()
             parser.setFeature(xml.sax.handler.feature_external_ges, 0)
             parser.setContentHandler(handler)
@@ -745,9 +737,6 @@ class NzbObject(TryList):
                 cat = cat_convert(grp)
                 if cat:
                     break
-
-        if cfg.create_group_folders():
-            self.dirprefix.append(self.group)
 
         # Pickup backed-up attributes when re-using
         if reuse:
@@ -928,7 +917,6 @@ class NzbObject(TryList):
     @synchronized(IO_LOCK)
     def postpone_pars(self, nzf, parset):
         """ Move all vol-par files matching 'parset' to the extrapars table """
-        postpone = cfg.quick_check() or not cfg.enable_all_par()
         self.partable[parset] = nzf
         self.extrapars[parset] = []
         nzf.extrapars = self.extrapars[parset]
@@ -941,7 +929,7 @@ class NzbObject(TryList):
                 if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
                     self.extrapars[parset].append(xnzf)
-                    if postpone and not self.precheck:
+                    if not self.precheck:
                         self.files.remove(xnzf)
 
     @synchronized(IO_LOCK)
@@ -1529,7 +1517,6 @@ class NzbObject(TryList):
         """ Builds a dictionary containing the stage name (key) and a message
             If unique is present, it will only have a single line message
         """
-        found = False
         # Unique messages allow only one line per stage(key)
         if not unique:
             if key not in self.unpack_info:
@@ -1666,17 +1653,6 @@ def nzf_get_filename(nzf):
     return name.lower()
 
 
-def get_ext_list():
-    """ Return priority extension list, with extensions starting with a period """
-    exts = []
-    for ext in cfg.prio_sort_list():
-        ext = ext.strip()
-        if not ext.startswith('.'):
-            ext = '.' + ext
-        exts.append(ext)
-    return exts
-
-
 def ext_on_list(name, lst):
     """ Return True if `name` contains any extension in `lst` """
     for ext in lst:
@@ -1713,16 +1689,6 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
         return 1
     if is_par2 and not is_par1:
         return -1
-
-    # Anything with a priority extension goes first
-    ext_list = get_ext_list()
-    if ext_list:
-        onlist1 = ext_on_list(name1, ext_list)
-        onlist2 = ext_on_list(name2, ext_list)
-        if onlist1 and not onlist2:
-            return -1
-        if onlist2 and not onlist1:
-            return 1
 
     if name:
         # Prioritize .rar files above any other type of file (other than vol-par)

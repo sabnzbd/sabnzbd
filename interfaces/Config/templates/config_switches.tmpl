@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configuration/2.0/switches"#-->
+<!--#set global $help_uri="configuration/2.1/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -159,11 +159,11 @@
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
-                    <!--#if $have_multicore#-->
+                    <!--#if $nt#-->
                     <div class="field-pair">
-                        <label class="config" for="par2_multicore">$T('opt-par2_multicore')</label>
-                        <input type="checkbox" name="par2_multicore" id="par2_multicore" value="1" <!--#if int($par2_multicore) > 0 then 'checked="checked"' else ""#-->  />
-                        <span class="desc">$T('explain-par2_multicore')</span>
+                        <label class="config" for="multipar">$T('opt-par2_multipar')</label>
+                        <input type="checkbox" name="multipar" id="multipar" value="1" <!--#if int($multipar) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-par2_multipar')</span>
                     </div>
                     <!--#end if#-->
                     <div class="field-pair">

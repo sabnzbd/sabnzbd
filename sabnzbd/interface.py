@@ -224,7 +224,7 @@ def check_login():
 def set_auth(conf):
     """ Set the authentication for CherryPy """
     if cfg.username() and cfg.password() and not cfg.html_login():
-        conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': cfg.login_realm(),
+        conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': 'SABnzbd',
                      'tools.basic_auth.users': get_users, 'tools.basic_auth.encrypt': encrypt_pwd})
         conf.update({'/api': {'tools.basic_auth.on': False},
                      '/m/api': {'tools.basic_auth.on': False},
@@ -1385,7 +1385,7 @@ class ConfigFolders(object):
 
 ##############################################################################
 SWITCH_LIST = \
-    ('par2_multicore', 'par_option', 'top_only', 'ssl_ciphers',
+    ('par2_multicore', 'multipar', 'par_option', 'top_only', 'ssl_ciphers',
              'auto_sort', 'propagation_delay', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal',
              'ignore_samples', 'pause_on_post_processing', 'nice', 'ionice',
@@ -1419,7 +1419,6 @@ class ConfigSwitches(object):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
-        conf['have_multicore'] = sabnzbd.WIN32 or sabnzbd.DARWIN_INTEL
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
@@ -1460,24 +1459,20 @@ class ConfigSwitches(object):
 
 ##############################################################################
 SPECIAL_BOOL_LIST = \
-    ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files', 'create_group_folders',
-              'queue_complete_pers', 'quick_check', 'api_warnings', 'allow_64bit_tools', 'ampm',
-              'enable_unrar', 'enable_unzip', 'enable_7zip', 'enable_filejoin', 'enable_tsjoin',
-              'never_repair', 'allow_streaming', 'ignore_unrar_dates',
-              'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
-              'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
-              'wait_for_dfolder', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files',
-              'warn_dupl_jobs', 'backup_for_duplicates', 'enable_par_cleanup', 'disable_api_key',
-              'api_logging', 'enable_meta'
+    ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files',
+              'queue_complete_pers', 'api_warnings', 'ampm', 'enable_unrar', 'enable_unzip', 'enable_7zip',
+              'enable_filejoin', 'enable_tsjoin', 'allow_streaming', 'ignore_unrar_dates', 'par2_multicore',
+              'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb', 'rss_filenames',
+              'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
+              'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files', 'warn_dupl_jobs',
+              'backup_for_duplicates', 'disable_api_key', 'api_logging', 'enable_meta'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
               'req_completion_rate', 'wait_ext_drive', 'history_limit', 'show_sysload',
-              'ipv6_servers', 'selftest_host', 'nr_decoders', 'rating_host'
+              'ipv6_servers', 'selftest_host', 'rating_host'
      )
-SPECIAL_LIST_LIST = \
-    ('rss_odd_titles', 'prio_sort_list', 'quick_check_ext_ignore'
-     )
+SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore')
 
 
 class ConfigSpecial(object):
@@ -2874,7 +2869,7 @@ class ConfigNotify(object):
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.notifier.have_ntfosd()
-        conf['have_ncenter'] = sabnzbd.DARWIN_VERSION > 7 and bool(sabnzbd.notifier.ncenter_path())
+        conf['have_ncenter'] = sabnzbd.DARWIN and bool(sabnzbd.notifier.ncenter_path())
         conf['scripts'] = list_scripts(default=False, none=True)
 
         for kw in LIST_EMAIL:

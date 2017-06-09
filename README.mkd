@@ -1,28 +1,22 @@
-Release Notes  -  SABnzbd 2.0.1
+Release Notes  -  SABnzbd 2.1.0
 =========================================================
 
-## Changes since 2.0.0
-- No longer change ports if the configured port is not available during startup.
-- 'Proof' files also ignored when Ignore Samples is enabled.
-- Redundant SFV and RAR checks no longer performed if par2 verification failed.
-- More repair/unpack info is retained in the History information.
-- Windows: remove option to start SABnzbd from installer, it would start the
-  program as administrator.
+## Changes since 2.0.1
+- Windows-only: Will now use MultiPar for verification and repair. MultiPar uses
+  the latest optimizations, multiple cores and can utilize the GPU, resulting in
+  repairs often being twice as fast. Created by Yutaka Sawada (Windows only)
+  "Extra Par2 Parameters" are also passed to MultiPar
+  For example: Set "/lc32" to enable GPU for repair (can also be slower!)
+- Minimal macOS version set to 10.9 (Mavericks)
+- Human readable history date/time default setting in Glitter (x hours ago, etc)
+- Post-processing script execution can be aborted
+- Removed Specials settings: never_repair, nr_decoders, prio_sort_list,
+  create_group_folder, enable_par_cleanup, enable_quickcheck, allow_64bit_tools
 
-## Bugfixes since 2.0.0
-- Some users experienced slower download speeds.
-- Revert changes to handling of missing articles introduced in 2.0.0 that
-  turned out to be slow for some users.
-- Missing first par2-file would cause repair to be skipped.
-- Better handling of 7zip unpacking.
-- Log X-Forwarded-For of API calls and logins.
-- Handle more URLGrabber exceptions.
-- Command-line parameters were not listed correctly.
-- Queue-finish-action picker in Glitter more stable.
-- Custom Pause interpreter in Glitter more reliable.
-- Pre-check would fail if download was on SMBv3 share.
-- Windows: NZB-icon association lost sometimes.
-- Windows: Unrar could fail on some archives containing very long paths.
+# Bugfixes
+- File join would fail incorrectly
+- Catch and show 'Disk full' messages from PAR2/MultiPar
+- MemoryError occurred when opening the interface after long period of inactivity
 
 ## Upgrading from 0.7.x and older
 - Finish queue
@@ -30,7 +24,7 @@ Release Notes  -  SABnzbd 2.0.1
 - Install new version
 - Start SABnzbd
 
-## Upgrade notices
+## Upgrade notices (from pre-2.x.x)
 - Windows: When starting the Post-Processing script, the path to the job folder
   is no longer in short-path notation but includes the full path. To support
   long paths (>255), you might need to alter them to long-path notation (\\?\).
@@ -42,9 +36,6 @@ Release Notes  -  SABnzbd 2.0.1
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
-
-## Translations
-- Numerous translations updated, thanks to our translators!
 
 ## About
   SABnzbd is an open-source cross-platform binary newsreader.

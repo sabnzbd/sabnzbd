@@ -338,15 +338,11 @@ def process_job(nzo):
             fix_unix_encoding(workdir)
             one_folder = False
             # Determine class directory
-            if cfg.create_group_folders():
-                complete_dir = addPrefixes(cfg.complete_dir.get_path(), nzo.dirprefix)
-                complete_dir = create_dirs(complete_dir)
-            else:
-                catdir = config.get_categories(cat).dir()
-                if catdir.endswith('*'):
-                    catdir = catdir.strip('*')
-                    one_folder = True
-                complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
+            catdir = config.get_categories(cat).dir()
+            if catdir.endswith('*'):
+                catdir = catdir.strip('*')
+                one_folder = True
+            complete_dir = real_path(cfg.complete_dir.get_path(), catdir)
             complete_dir = long_path(complete_dir)
 
             # TV/Movie/Date Renaming code part 1 - detect and construct paths
@@ -622,20 +618,13 @@ def is_parfile(fn):
 
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
-    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
     filename = nzo.final_name
     notifier.send_notification(T('Post-processing'), filename, 'pp')
     logging.info('Starting verification and repair of %s', filename)
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
-
-    # Collect the par files
-    if nzo.partable:
-        par_table = nzo.partable.copy()
-    else:
-        par_table = {}
-    repair_sets = par_table.keys()
+    repair_sets = nzo.partable.keys()
 
     re_add = False
     par_error = False
@@ -647,7 +636,7 @@ def parring(nzo, workdir):
                 continue
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
-                parfile_nzf = par_table[setname]
+                parfile_nzf = nzo.partable[setname]
                 if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
 
