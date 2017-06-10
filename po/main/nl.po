@@ -3274,7 +3274,7 @@ msgstr "Automatisch sorteren op basis van gemiddelde leeftijd."
 
 #: sabnzbd/skintext.py:466
 msgid ""
-"Posts will be paused until they are at least this age. Setting job priority "
+"Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
 msgstr ""
 "Posts zullen gepauzeerd worden tot ze minimaal deze leeftijd hebben. "
@@ -4524,7 +4524,7 @@ msgid "Confirm History Deletions"
 msgstr "Bevestig verwijderen uit geschiedenis"
 
 #: sabnzbd/skintext.py:841
-msgid "How long or until when do you want to pause? (in English!)"
+msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Voor hoe lang of tot wanneer wilt u Pauzeren?"
 
 #: sabnzbd/skintext.py:842

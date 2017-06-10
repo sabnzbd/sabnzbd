@@ -1203,7 +1203,7 @@ class NzbObject(TryList):
             for parset in self.extrapars.keys():
                 if parset in nzf.filename and self.extrapars[parset]:
                     extrapars_sorted = sorted(self.extrapars[parset], key=lambda x: x.blocks, reverse=True)
-                    # Loop until we have enough
+                    # Loop untill we have enough
                     while blocks_already < total_need and extrapars_sorted:
                         # Add the first one
                         new_nzf = extrapars_sorted.pop()

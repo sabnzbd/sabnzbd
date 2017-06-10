@@ -3164,7 +3164,7 @@ msgstr "自动按 (平均) 发布时间排列项目。"
 
 #: sabnzbd/skintext.py:466
 msgid ""
-"Posts will be paused until they are at least this age. Setting job priority "
+"Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
 msgstr "在文章发布时长尚不足该值时暂停下载文章。将任务优先级设为“强制”可跳过此延迟。"
 
@@ -4373,7 +4373,7 @@ msgid "Confirm History Deletions"
 msgstr "确认历史删除"
 
 #: sabnzbd/skintext.py:841
-msgid "How long or until when do you want to pause? (in English!)"
+msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "您希望在多久之后/什么时候暂停? (用英语作答!)"
 
 #: sabnzbd/skintext.py:842

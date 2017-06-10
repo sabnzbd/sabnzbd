@@ -3334,7 +3334,7 @@ msgstr "Trier automatiquement les fichiers par âge (moyen)."
 
 #: sabnzbd/skintext.py:466
 msgid ""
-"Posts will be paused until they are at least this age. Setting job priority "
+"Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
 msgstr ""
 "Les publications seront mises en pause jusqu'à ce qu'elles aient au moins "
@@ -4594,7 +4594,7 @@ msgid "Confirm History Deletions"
 msgstr "Confirmer les suppressions de l'historique"
 
 #: sabnzbd/skintext.py:841
-msgid "How long or until when do you want to pause? (in English!)"
+msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "Combien de temps ou jusqu'à quand souhaitez-vous mettre en pause ?"
 
 #: sabnzbd/skintext.py:842

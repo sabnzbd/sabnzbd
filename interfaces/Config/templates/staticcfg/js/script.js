@@ -263,7 +263,7 @@ function do_restart() {
             // Keep counter of failures
             var failureCounter = 0;
 
-            // Now we try until we can connect
+            // Now we try untill we can connect
             var refreshInterval = setInterval(function() {
                 // We skip the first one
                 if(failureCounter == 0) {
