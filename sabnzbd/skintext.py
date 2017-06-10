@@ -838,7 +838,7 @@ SKIN_TEXT = {
     'Glitter-speed' : TT('Speed'),
     'Glitter-confirmDeleteQueue' : TT('Confirm Queue Deletions'),
     'Glitter-confirmDeleteHistory' : TT('Confirm History Deletions'),
-    'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'),
+    'Glitter-pausePrompt': TT('How long or until when do you want to pause? (in English!)'),
     'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. Try again.'),
     'Glitter-pauseFor' : TT('Pause for...'),
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
