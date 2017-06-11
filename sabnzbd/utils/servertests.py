@@ -124,7 +124,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
     if nw.status_code == '480':
         return False, T('Server requires username and password.')
 
-    elif nw.status_code == '100' or nw.status_code.startswith('2') or nw.status_code.startswith('4'):
+    elif nw.status_code == '100' or nw.status_code.startswith(('2', '4')):
         return True, T('Connection Successful!')
 
     elif nw.status_code == '502' or clues_login(nntp_to_msg(nw.data)):
