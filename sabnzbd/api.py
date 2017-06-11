@@ -1584,6 +1584,7 @@ def Tspec(txt):
     else:
         return txt
 
+
 _SKIN_CACHE = {}    # Stores pre-translated acronyms
 # This special is to be used in interface.py for template processing
 # to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
@@ -1653,7 +1654,6 @@ def build_header(webdir='', output=None):
 
         header['session'] = cfg.api_key()
         header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
-
 
     header['version'] = sabnzbd.__version__
     header['paused'] = Downloader.do.paused or Downloader.do.postproc

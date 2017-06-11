@@ -531,7 +531,7 @@ def unpack_history_info(item):
     if item['script_log']:
         item['script_log'] = ''
     # The action line is only available for items in the postproc queue
-    if not item.has_key('action_line'):
+    if 'action_line' not in item:
         item['action_line'] = ''
     return item
 

@@ -42,7 +42,7 @@ import sabnzbd.notifier as notifier
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
 _RARTING_FIELDS = ('x-rating-id', 'x-rating-url', 'x-rating-host', 'x-rating-video', 'x-rating-videocnt', 'x-rating-audio', 'x-rating-audiocnt',
-                    'x-rating-voteup', 'x-rating-votedown', 'x-rating-spam', 'x-rating-confirmed-spam', 'x-rating-passworded', 'x-rating-confirmed-passworded')
+    'x-rating-voteup', 'x-rating-votedown', 'x-rating-spam', 'x-rating-confirmed-spam', 'x-rating-passworded', 'x-rating-confirmed-passworded')
 
 
 class URLGrabber(Thread):

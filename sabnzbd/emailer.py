@@ -354,7 +354,7 @@ def _prepare_message(txt):
     msg.set_payload('\n'.join(payload), code)
 
     # Check for proper encoding, else call it explicitly
-    if not msg.has_key('Content-Transfer-Encoding'):
+    if 'Content-Transfer-Encoding' not in msg:
         encode_quopri(msg)
 
     return msg.as_string()

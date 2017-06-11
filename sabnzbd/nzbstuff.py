@@ -1128,7 +1128,7 @@ class NzbObject(TryList):
         if self.unwanted_ext and self.status == 'Paused':
             prefix += T('UNWANTED') + ' / '  # : Queue indicator for unwanted extensions
         if self.rating_filtered and self.status == 'Paused':
-            prefix += Ta('FILTERED') + ' / '  # : Queue indicator for filtered
+            prefix += T('FILTERED') + ' / '  # : Queue indicator for filtered
         if isinstance(self.wait, float):
             dif = int(self.wait - time.time() + 0.5)
             if dif > 0:
