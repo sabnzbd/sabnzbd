@@ -237,6 +237,11 @@ def replace_win_devices(name):
             if lname == dev or lname.startswith(dev + '.'):
                 name = '_' + name
                 break
+
+    # Remove special NTFS filename
+    if lname.startswith('$mft'):
+        name = name.replace('$', 'S', 1)
+
     return name
 
 
