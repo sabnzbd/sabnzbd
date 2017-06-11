@@ -902,7 +902,10 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
                     data_file.write(data)
             break
         except:
-            if t == 2:
+            if silent:
+                # This can happen, probably a removed folder
+                pass
+            elif t == 2:
                 logging.error(T('Saving %s failed'), path)
                 logging.info("Traceback: ", exc_info=True)
             else:
