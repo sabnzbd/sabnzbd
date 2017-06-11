@@ -670,12 +670,12 @@ class NzbObject(TryList):
             return
 
         # Apply conversion option to final folder
-        if cfg.replace_dots() and ' ' not in self.final_name:
-            logging.info('Replacing dots with spaces in %s', self.final_name)
-            self.final_name = self.final_name.replace('.', ' ')
         if cfg.replace_spaces():
             logging.info('Replacing spaces with underscores in %s', self.final_name)
             self.final_name = self.final_name.replace(' ', '_')
+        if cfg.replace_dots():
+            logging.info('Replacing dots with spaces in %s', self.final_name)
+            self.final_name = self.final_name.replace('.', ' ')
 
         # Determine "incomplete" folder
         wdir = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
