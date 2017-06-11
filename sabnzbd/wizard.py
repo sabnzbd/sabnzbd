@@ -27,7 +27,6 @@ from Cheetah.Template import Template
 import sabnzbd
 import sabnzbd.api
 from sabnzbd.lang import list_languages, set_language
-from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.api import Ttemplate
 import sabnzbd.interface
 import sabnzbd.config as config

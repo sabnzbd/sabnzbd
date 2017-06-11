@@ -108,7 +108,7 @@ import sabnzbd.lang as lang
 import sabnzbd.api
 from sabnzbd.decorators import synchronized, synchronized_CV, IO_LOCK
 from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
-     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
+    REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
 import sabnzbd.getipaddress as getipaddress
 
 LINUX_POWER = powersup.HAVE_DBUS
@@ -173,10 +173,10 @@ __SHUTTING_DOWN__ = False
 ##############################################################################
 def sig_handler(signum=None, frame=None):
     global SABSTOP, WINTRAY
-    if sabnzbd.WIN32 and type(signum) != type(None) and DAEMON and signum == 5:
+    if sabnzbd.WIN32 and signum is not None and DAEMON and signum == 5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
-    if type(signum) != type(None):
+    if signum is not None:
         logging.warning(T('Signal %s caught, saving and exiting...'), signum)
     try:
         save_state()

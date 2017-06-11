@@ -37,7 +37,6 @@ from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
-load_data = save_data = None
 
 if sabnzbd.WIN32:
     try:
@@ -85,18 +84,12 @@ RAR_VERSION = 0
 
 def find_programs(curdir):
     """ Find external programs """
-    global load_data, save_data
-
     def check(path, program):
         p = os.path.abspath(os.path.join(path, program))
         if os.access(p, os.X_OK):
             return p
         else:
             return None
-
-    # Another crazy Python import bug work-around
-    load_data = sabnzbd.load_data
-    save_data = sabnzbd.save_data
 
     if sabnzbd.DARWIN:
         sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'osx/par2/par2-classic')
@@ -1590,10 +1583,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
     # If successful, add renamed files to the collection
     if finished and renames:
-        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
+        previous = sabnzbd.load_data(RENAMES_FILE, nzo.workpath, remove=False)
         for name in previous or {}:
             renames[name] = previous[name]
-        save_data(renames, RENAMES_FILE, nzo.workpath)
+        sabnzbd.save_data(renames, RENAMES_FILE, nzo.workpath)
 
     # If successful and files were reconstructed, remove incomplete original files
     if finished and reconstructed:
@@ -1969,10 +1962,10 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     # But the ones in 'Finding available slices'-section will only be renamed after succesfull repair
     if renames:
         # Adding to the collection
-        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
+        previous = sabnzbd.load_data(RENAMES_FILE, nzo.workpath, remove=False)
         for name in previous or {}:
             renames[name] = previous[name]
-        save_data(renames, RENAMES_FILE, nzo.workpath)
+        sabnzbd.save_data(renames, RENAMES_FILE, nzo.workpath)
 
         # If succes, we also remove the possibly previously renamed ones
         if finished and previous:
@@ -2233,10 +2226,10 @@ def QuickCheck(set, nzo):
 
     # Save renames
     if renames:
-        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
+        previous = sabnzbd.load_data(RENAMES_FILE, nzo.workpath, remove=False)
         for name in previous or {}:
             renames[name] = previous[name]
-        save_data(renames, RENAMES_FILE, nzo.workpath)
+        sabnzbd.save_data(renames, RENAMES_FILE, nzo.workpath)
     return result
 
 

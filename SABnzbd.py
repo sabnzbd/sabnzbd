@@ -1333,7 +1333,6 @@ def main():
                             'error_page.404': sabnzbd.panic.error_page_404
                             })
 
-
     # Do we want CherryPy Logging? Cannot be done via the config
     if cherrypylogging:
         sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)

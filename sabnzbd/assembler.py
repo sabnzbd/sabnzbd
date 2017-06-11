@@ -134,10 +134,10 @@ class Assembler(Thread):
 
                     filter, reason = nzo_filtered_by_rating(nzo)
                     if filter == 1:
-                        logging.warning(Ta('WARNING: Paused job "%s" because of rating (%s)'), nzo.final_name, reason)
+                        logging.warning(T('WARNING: Paused job "%s" because of rating (%s)'), nzo.final_name, reason)
                         nzo.pause()
                     elif filter == 2:
-                        logging.warning(Ta('WARNING: Aborted job "%s" because of rating (%s)'), nzo.final_name, reason)
+                        logging.warning(T('WARNING: Aborted job "%s" because of rating (%s)'), nzo.final_name, reason)
                         nzo.fail_msg = T('Aborted, rating filter matched (%s)') % reason
                         sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
             else:
