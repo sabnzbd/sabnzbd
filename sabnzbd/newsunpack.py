@@ -1302,7 +1302,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 continue
             extra_par2_name = None
 
-            if line.startswith('Invalid option specified') or line.startswith('Invalid thread option') or line.startswith('Cannot specify recovery file count'):
+            if line.startswith(('Invalid option specified', 'Invalid thread option', 'Cannot specify recovery file count')):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg)
                 nzo.status = Status.FAILED
@@ -1920,7 +1920,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             logging.info('Verified in %s, all files correct',
                         format_time_string(time() - start))
             finished = 1
-        elif line.startswith('Ready to repair') or line.startswith('Ready to rejoin'):
+        elif line.startswith(('Ready to repair', 'Ready to rejoin')):
             # Ready to repair!
             # Or we are re-joining a split file when there's no damage but takes time
             msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time() - start))
