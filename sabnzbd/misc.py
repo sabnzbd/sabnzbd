@@ -851,12 +851,9 @@ def get_cache_limit():
 
 
 ##############################################################################
-# Locked directory operations
+# Directory operations
 ##############################################################################
-DIR_LOCK = threading.RLock()
 
-
-@synchronized(DIR_LOCK)
 def get_unique_path(dirpath, n=0, create_dir=True):
     """ Determine a unique folder or filename """
 
@@ -876,7 +873,6 @@ def get_unique_path(dirpath, n=0, create_dir=True):
         return get_unique_path(dirpath, n=n + 1, create_dir=create_dir)
 
 
-@synchronized(DIR_LOCK)
 def get_unique_filename(path):
     """ Check if path is unique. If not, add number like: "/path/name.NUM.ext". """
     num = 1
@@ -889,7 +885,6 @@ def get_unique_filename(path):
     return path
 
 
-@synchronized(DIR_LOCK)
 def create_dirs(dirpath):
     """ Create directory tree, obeying permissions """
     if not os.path.exists(dirpath):
@@ -900,7 +895,6 @@ def create_dirs(dirpath):
     return dirpath
 
 
-@synchronized(DIR_LOCK)
 def move_to_path(path, new_path):
     """ Move a file to a new path, optionally give unique filename
         Return (ok, new_path)
@@ -942,7 +936,6 @@ def move_to_path(path, new_path):
     return ok, new_path
 
 
-@synchronized(DIR_LOCK)
 def cleanup_empty_directories(path):
     """ Remove all empty folders inside (and including) 'path' """
     path = os.path.normpath(path)
@@ -963,7 +956,6 @@ def cleanup_empty_directories(path):
         pass
 
 
-@synchronized(DIR_LOCK)
 def get_filepath(path, nzo, filename):
     """ Create unique filepath """
     # This procedure is only used by the Assembler thread
