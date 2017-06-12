@@ -30,13 +30,8 @@ from sabnzbd.constants import GIGI, ANFO
 
 ARTICLE_LOCK = threading.Lock()
 
+
 class ArticleCache(object):
-    """ Operations on lists/dicts are atomic enough that we
-        do not have to put locks. Only the cache-size needs
-        a lock since the integer needs to stay synced.
-        With less locking, the decoder and assembler do not
-        have to wait on each other.
-    """
     do = None
 
     def __init__(self):
@@ -47,9 +42,11 @@ class ArticleCache(object):
         self.__article_table = {}   # Dict of buffered articles
         ArticleCache.do = self
 
+    @synchronized(ARTICLE_LOCK)
     def cache_info(self):
         return ANFO(len(self.__article_list), abs(self.__cache_size), self.__cache_limit_org)
 
+    @synchronized(ARTICLE_LOCK)
     def new_limit(self, limit):
         """ Called when cache limit changes """
         self.__cache_limit_org = limit
@@ -59,28 +56,23 @@ class ArticleCache(object):
             self.__cache_limit = min(limit, GIGI)
 
     @synchronized(ARTICLE_LOCK)
-    def increase_cache_size(self, value):
-        self.__cache_size += value
-
-    @synchronized(ARTICLE_LOCK)
-    def decrease_cache_size(self, value):
-        self.__cache_size -= value
-
     def reserve_space(self, data):
         """ Is there space left in the set limit? """
         data_size = sys.getsizeof(data) * 64
-        self.increase_cache_size(data_size)
+        self.__cache_size += data_size
         if self.__cache_size + data_size > self.__cache_limit:
             return False
         else:
             return True
 
+    @synchronized(ARTICLE_LOCK)
     def free_reserve_space(self, data):
         """ Remove previously reserved space """
         data_size = sys.getsizeof(data) * 64
-        self.decrease_cache_size(data_size)
+        self.__cache_size -= data_size
         return self.__cache_size + data_size < self.__cache_limit
 
+    @synchronized(ARTICLE_LOCK)
     def save_article(self, article, data):
         nzf = article.nzf
         nzo = nzf.nzo
@@ -98,6 +90,7 @@ class ArticleCache(object):
         if self.__cache_limit:
             if self.__cache_limit < 0:
                 self.__add_to_cache(article, data)
+
             else:
                 data_size = len(data)
 
@@ -106,7 +99,7 @@ class ArticleCache(object):
                     # Flush oldest article in cache
                     old_article = self.__article_list.pop(0)
                     old_data = self.__article_table.pop(old_article)
-                    self.decrease_cache_size(len(old_data))
+                    self.__cache_size -= len(old_data)
                     # No need to flush if this is a refreshment article
                     if old_article != article:
                         self.__flush_article(old_article, old_data)
@@ -120,6 +113,7 @@ class ArticleCache(object):
         else:
             self.__flush_article(article, data)
 
+    @synchronized(ARTICLE_LOCK)
     def load_article(self, article):
         data = None
         nzo = article.nzf.nzo
@@ -127,7 +121,7 @@ class ArticleCache(object):
         if article in self.__article_list:
             data = self.__article_table.pop(article)
             self.__article_list.remove(article)
-            self.decrease_cache_size(len(data))
+            self.__cache_size -= len(data)
         elif article.art_id:
             data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True,
                                      do_pickle=False, silent=True)
@@ -137,19 +131,21 @@ class ArticleCache(object):
 
         return data
 
+    @synchronized(ARTICLE_LOCK)
     def flush_articles(self):
+        self.__cache_size = 0
         while self.__article_list:
             article = self.__article_list.pop(0)
             data = self.__article_table.pop(article)
             self.__flush_article(article, data)
-        self.__cache_size = 0
 
+    @synchronized(ARTICLE_LOCK)
     def purge_articles(self, articles):
         for article in articles:
             if article in self.__article_list:
                 self.__article_list.remove(article)
                 data = self.__article_table.pop(article)
-                self.decrease_cache_size(len(data))
+                self.__cache_size -= len(data)
             if article.art_id:
                 sabnzbd.remove_data(article.art_id, article.nzf.nzo.workpath)
 
@@ -172,12 +168,11 @@ class ArticleCache(object):
 
     def __add_to_cache(self, article, data):
         if article in self.__article_table:
-            self.decrease_cache_size(len(self.__article_table[article]))
+            self.__cache_size -= len(self.__article_table[article])
         else:
             self.__article_list.append(article)
-
         self.__article_table[article] = data
-        self.increase_cache_size(len(data))
+        self.__cache_size += len(data)
 
 
 # Create the instance
