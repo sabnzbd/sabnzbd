@@ -465,10 +465,11 @@ class Downloader(Thread):
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
-                        # Article too old for the server, treat as missing
-                        if sabnzbd.LOG_ALL:
+                        # Let's get rid of all the articles for this server at once
+                        while article:
                             logging.debug('Article %s too old for %s', article.article, server.id)
-                        self.decode(article, None, None)
+                            self.decode(article, None, None)
+                            article = article.nzf.nzo.get_article(server, self.servers)
                         break
 
                     server.idle_threads.remove(nw)
