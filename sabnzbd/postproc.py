@@ -186,7 +186,6 @@ class PostProcessor(Thread):
 
             try:
                 nzo = self.queue.get(timeout=1)
-                if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
             except Queue.Empty:
                 if check_eoq:
                     check_eoq = False
@@ -230,7 +229,6 @@ class PostProcessor(Thread):
 
 def process_job(nzo):
     """ Process one job """
-    if 0: assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject) # Assert only for debug purposes
     start = time.time()
 
     # keep track of whether we can continue

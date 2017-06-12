@@ -970,11 +970,8 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
-    dirname = nzo.work_name
-    created = nzo.created
-
-    dName = dirname
-    if not created:
+    dName = nzo.work_name
+    if not nzo.created:
         for n in xrange(200):
             dName = dirname
             if n:

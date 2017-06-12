@@ -805,7 +805,6 @@ def change_queue_complete_action(action, new=True):
 
     # keep the name of the action for matching the current select in queue.tmpl
     QUEUECOMPLETE = action
-
     QUEUECOMPLETEACTION = _action
     QUEUECOMPLETEARG = _argument
 
@@ -1167,10 +1166,6 @@ def check_old_queue():
 # Required wrapper because nzbstuff.py cannot import downloader.py
 def highest_server(me):
     return sabnzbd.downloader.Downloader.do.highest_server(me)
-
-
-def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
-    return sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority, size, groups)
 
 
 def test_ipv6():
