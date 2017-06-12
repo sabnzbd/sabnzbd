@@ -729,7 +729,7 @@ class NzbQueue(object):
         filename = nzf.filename
 
         if nzo.is_gone():
-            logging.debug('Discarding file completion %s for deleted job', filename)
+            logging.debug('Discarding article %s for deleted job', filename)
         else:
             if file_done:
                 if nzo.next_save is None or time.time() > nzo.next_save:
