@@ -1300,7 +1300,7 @@ class ConfigFolders(object):
 SWITCH_LIST = \
     ('par2_multicore', 'multipar', 'par_option', 'top_only', 'ssl_ciphers',
              'auto_sort', 'propagation_delay', 'auto_disconnect', 'flat_unpack',
-             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots', 'replace_illegal',
+             'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots',
              'ignore_samples', 'pause_on_post_processing', 'nice', 'ionice',
              'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
              'quota_size', 'quota_day', 'quota_resume', 'quota_period',
@@ -1377,7 +1377,7 @@ SPECIAL_BOOL_LIST = \
               'enable_filejoin', 'enable_tsjoin', 'allow_streaming', 'ignore_unrar_dates', 'par2_multicore',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb', 'rss_filenames',
               'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
-              'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files', 'warn_dupl_jobs',
+              'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files', 'warn_dupl_jobs', 'replace_illegal',
               'backup_for_duplicates', 'disable_api_key', 'api_logging', 'enable_meta'
      )
 SPECIAL_VALUE_LIST = \

@@ -472,8 +472,6 @@ SKIN_TEXT = {
     'explain-replace_spaces' : TT('Replace spaces with underscores in folder names.'),
     'opt-replace_dots' : TT('Replace dots in Foldername'),
     'explain-replace_dots' : TT('Replace dots with spaces in folder names.'),
-    'opt-replace_illegal' : TT('Replace Illegal Characters in Folder Names'),
-    'explain-replace_illegal' : TT('Replace illegal characters in folder names by equivalents (otherwise remove).'),
     'opt-sanitize_safe' : TT('Make Windows compatible'),
     'explain-sanitize_safe' : TT('For servers: make sure names are compatible with Windows.'),
     'opt-auto_browser' : TT('Launch Browser on Startup'),
