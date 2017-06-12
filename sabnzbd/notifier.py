@@ -251,7 +251,6 @@ def send_growl(title, msg, gtype, test=None):
         if not _GROWL:
             _GROWL, error = register_growl(growl_server, growl_password)
         if _GROWL:
-            if 0: assert isinstance(_GROWL, GrowlNotifier) # Assert only for debug purposes
             _GROWL_REG = True
             if isinstance(msg, unicode):
                 msg = msg.decode('utf-8')
