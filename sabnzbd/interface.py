@@ -631,7 +631,7 @@ class NzoPage(object):
         n = 0
         for pnfo in pnfo_list:
             if pnfo.nzo_id == nzo_id:
-                nzo = sabnzbd.nzbqueue.get_nzo(nzo_id)
+                nzo = NzbQueue.do.get_nzo(nzo_id)
                 repair = pnfo.repair
                 unpack = pnfo.unpack
                 delete = pnfo.delete
@@ -704,7 +704,7 @@ class NzoPage(object):
         script = kwargs.get('script', None)
         cat = kwargs.get('cat', None)
         priority = kwargs.get('priority', None)
-        nzo = sabnzbd.nzbqueue.get_nzo(nzo_id)
+        nzo = NzbQueue.do.get_nzo(nzo_id)
 
         if index is not None:
             NzbQueue.do.switch(nzo_id, index)
@@ -752,7 +752,7 @@ class NzoPage(object):
             elif kwargs['action_key'] == 'Bottom':
                 NzbQueue.do.move_bottom_bulk(nzo_id, nzf_ids)
 
-        if sabnzbd.nzbqueue.get_nzo(nzo_id):
+        if NzbQueue.do.get_nzo(nzo_id):
             url = cherrypy.lib.httputil.urljoin(self.__root, nzo_id)
         else:
             url = cherrypy.lib.httputil.urljoin(self.__root, '../queue')

@@ -30,7 +30,7 @@ import sys
 import Queue
 
 import sabnzbd
-from sabnzbd.decorators import synchronized, synchronized_CV, CV
+from sabnzbd.decorators import synchronized, notify_downloader, DOWNLOADER_CV
 from sabnzbd.constants import MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
@@ -252,12 +252,12 @@ class Downloader(Thread):
 
         return
 
-    @synchronized_CV
+    @notify_downloader
     def set_paused_state(self, state):
         """ Set downloader to specified paused state """
         self.paused = state
 
-    @synchronized_CV
+    @notify_downloader
     def resume(self):
         # Do not notify when SABnzbd is still starting
         if self.paused and sabnzbd.WEB_DIR:
@@ -265,7 +265,7 @@ class Downloader(Thread):
             notifier.send_notification("SABnzbd", T('Resuming'), 'download')
         self.paused = False
 
-    @synchronized_CV
+    @notify_downloader
     def pause(self, save=True):
         """ Pause the downloader, optionally saving admin """
         if not self.paused:
@@ -279,22 +279,20 @@ class Downloader(Thread):
             if save:
                 ArticleCache.do.flush_articles()
 
-    @synchronized_CV
     def delay(self):
         logging.debug("Delaying")
         self.delayed = True
 
-    @synchronized_CV
+    @notify_downloader
     def undelay(self):
         logging.debug("Undelaying")
         self.delayed = False
 
-    @synchronized_CV
     def wait_for_postproc(self):
         logging.info("Waiting for post-processing to finish")
         self.postproc = True
 
-    @synchronized_CV
+    @notify_downloader
     def resume_from_postproc(self):
         logging.info("Post-processing finished, resuming download")
         self.postproc = False
@@ -302,7 +300,6 @@ class Downloader(Thread):
     def disconnect(self):
         self.force_disconnect = True
 
-    @synchronized_CV
     def limit_speed(self, value):
         ''' Set the actual download speed in Bytes/sec
             When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a pecentage of the maximum bandwidth
@@ -421,7 +418,6 @@ class Downloader(Thread):
 
         while 1:
             for server in self.servers:
-                if 0: assert isinstance(server, Server) # Assert only for debug purposes
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
                         if nw.nntp and nw.nntp.error_msg:
@@ -445,7 +441,6 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
-                if 0: assert isinstance(server, Server) # Assert only for debug purposes
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
@@ -453,7 +448,6 @@ class Downloader(Thread):
                     continue
 
                 for nw in server.idle_threads[:]:
-                    if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
                     if nw.timeout:
                         if time.time() < nw.timeout:
                             continue
@@ -553,11 +547,11 @@ class Downloader(Thread):
 
                 time.sleep(1.0)
 
-                CV.acquire()
+                DOWNLOADER_CV.acquire()
                 while (sabnzbd.nzbqueue.NzbQueue.do.is_empty() or self.is_paused() or self.delayed or self.postproc) and not \
                        self.shutdown and not self.__restart:
-                    CV.wait()
-                CV.release()
+                    DOWNLOADER_CV.wait()
+                DOWNLOADER_CV.release()
 
                 self.force_disconnect = False
 
@@ -866,7 +860,7 @@ class Downloader(Thread):
                 del self._timers[server_id]
                 self.init_server(server_id, server_id)
 
-    @synchronized_CV
+    @notify_downloader
     @synchronized(TIMER_LOCK)
     def unblock(self, server_id):
         # Remove timer
@@ -885,7 +879,7 @@ class Downloader(Thread):
         for server_id in self._timers.keys():
             self.unblock(server_id)
 
-    @synchronized_CV
+    @notify_downloader
     @synchronized(TIMER_LOCK)
     def check_timers(self):
         """ Make sure every server without a non-expired timer is active """
@@ -905,11 +899,10 @@ class Downloader(Thread):
                     logging.debug('Forcing activation of server %s', server.id)
                     self.init_server(server.id, server.id)
 
-    @synchronized_CV
     def update_server(self, oldserver, newserver):
         self.init_server(oldserver, newserver)
 
-    @synchronized_CV
+    @notify_downloader
     def wakeup(self):
         """ Just rattle the semaphore """
         pass
@@ -920,12 +913,12 @@ class Downloader(Thread):
 
 
 def stop():
-    CV.acquire()
+    DOWNLOADER_CV.acquire()
     try:
         Downloader.do.stop()
     finally:
-        CV.notifyAll()
-        CV.release()
+        DOWNLOADER_CV.notify_all()
+        DOWNLOADER_CV.release()
     try:
         Downloader.do.join()
     except:
