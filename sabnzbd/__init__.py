@@ -106,7 +106,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.api
-from sabnzbd.decorators import synchronized, notify_downloader, IO_LOCK
+from sabnzbd.decorators import synchronized, notify_downloader
 from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
 import sabnzbd.getipaddress as getipaddress
@@ -857,7 +857,6 @@ def CheckFreeSpace():
 # Data IO                                                                      #
 ################################################################################
 
-@synchronized(IO_LOCK)
 def get_new_id(prefix, folder, check_list=None):
     """ Return unique prefixed admin identifier within folder
         optionally making sure that id is not in the check_list.
@@ -878,7 +877,6 @@ def get_new_id(prefix, folder, check_list=None):
     raise IOError
 
 
-@synchronized(IO_LOCK)
 def save_data(data, _id, path, do_pickle=True, silent=False):
     """ Save data to a diskfile """
     if not silent:
@@ -909,7 +907,6 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
                 time.sleep(0.1)
 
 
-@synchronized(IO_LOCK)
 def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     """ Read data from disk file """
     path = os.path.join(path, _id)
@@ -941,7 +938,6 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     return data
 
 
-@synchronized(IO_LOCK)
 def remove_data(_id, path):
     """ Remove admin file """
     path = os.path.join(path, _id)
@@ -953,7 +949,6 @@ def remove_data(_id, path):
         logging.debug("Failed to remove %s", path)
 
 
-@synchronized(IO_LOCK)
 def save_admin(data, _id):
     """ Save data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
@@ -977,7 +972,6 @@ def save_admin(data, _id):
                 time.sleep(0.1)
 
 
-@synchronized(IO_LOCK)
 def load_admin(_id, remove=False, silent=False):
     """ Read data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)

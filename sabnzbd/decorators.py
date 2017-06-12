@@ -21,7 +21,6 @@
 from threading import RLock, Condition
 
 DOWNLOADER_CV = Condition(RLock())
-IO_LOCK = RLock()
 
 def synchronized(lock):
     def wrap(f):

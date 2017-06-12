@@ -25,6 +25,7 @@ import time
 import re
 import logging
 import datetime
+import threading
 import xml.sax
 import xml.sax.handler
 import xml.sax.xmlreader
@@ -45,7 +46,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
     fix_unix_encoding, calc_age
-from sabnzbd.decorators import synchronized, IO_LOCK
+from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, platform_encode
@@ -537,6 +538,9 @@ NzbObjectSaver = (
     'md5sum', 'servercount', 'unwanted_ext', 'rating_filtered'
 )
 
+# Lock to prevent errors when saving the NZO data
+NZO_LOCK = threading.RLock()
+
 
 class NzbObject(TryList):
 
@@ -909,7 +913,7 @@ class NzbObject(TryList):
 
         return dupe
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def update_download_stats(self, bps, serverid, bytes):
         if bps:
             self.avg_bps_total += bps / 1024
@@ -920,7 +924,7 @@ class NzbObject(TryList):
             self.servercount[serverid] = bytes
         self.bytes_downloaded += bytes
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def remove_nzf(self, nzf):
         if nzf in self.files:
             self.files.remove(nzf)
@@ -930,13 +934,13 @@ class NzbObject(TryList):
         nzf.deleted = True
         return not bool(self.files)
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def reset_all_try_lists(self):
         for nzf in self.files:
             nzf.reset_all_try_lists()
         self.reset_try_list()
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def postpone_pars(self, nzf, parset):
         """ Move all vol-par files matching 'parset' to the extrapars table """
         self.partable[parset] = nzf
@@ -954,7 +958,7 @@ class NzbObject(TryList):
                     if not self.precheck:
                         self.files.remove(xnzf)
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def handle_par2(self, nzf, file_done):
         """ Check if file is a par2 and build up par2 collection """
         fn = nzf.filename
@@ -1005,7 +1009,7 @@ class NzbObject(TryList):
         else:
             nzf.filename = nzf.subject
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def remove_article(self, article, found):
         nzf = article.nzf
         file_done = nzf.remove_article(article, found)
@@ -1040,7 +1044,7 @@ class NzbObject(TryList):
 
         return (file_done, post_done)
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def remove_saved_article(self, article):
         self.saved_articles.remove(article)
 
@@ -1176,7 +1180,7 @@ class NzbObject(TryList):
             # If user resumes after "unwanted" warning, no more auto-pauses
             self.unwanted_ext = 2
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def add_parfile(self, parfile):
         if not parfile.completed and parfile not in self.files:
             self.files.append(parfile)
@@ -1184,11 +1188,11 @@ class NzbObject(TryList):
             parfile.extrapars.remove(parfile)
         self.remove_extrapar(parfile)
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def remove_parset(self, setname):
         self.partable.pop(setname)
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def remove_extrapar(self, parfile):
         """ Remove par file from any/all sets """
         for _set in self.extrapars:
@@ -1199,7 +1203,7 @@ class NzbObject(TryList):
 
     __re_quick_par2_check = re.compile(r'\.par2\W*', re.I)
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def prospective_add(self, nzf):
         """ Add par2 files to compensate for missing articles
         """
@@ -1260,7 +1264,7 @@ class NzbObject(TryList):
         logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
         return enough, ratio
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def set_download_report(self):
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:
             # get the deltatime since the download started
@@ -1300,7 +1304,7 @@ class NzbObject(TryList):
                 msgs = ['%s=%sB' % (servers[server].displayname(), to_units(self.servercount[server])) for server in self.servercount if server in servers]
                 self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def inc_log(self, log, txt):
         """ Append string txt to nzo_info element "log" """
         try:
@@ -1358,7 +1362,7 @@ class NzbObject(TryList):
             self.add_to_try_list(server)
         return article
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def move_top_bulk(self, nzf_ids):
         self.cleanup_nzf_ids(nzf_ids)
         if nzf_ids:
@@ -1375,7 +1379,7 @@ class NzbObject(TryList):
                 if target == keys:
                     break
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def move_bottom_bulk(self, nzf_ids):
         self.cleanup_nzf_ids(nzf_ids)
         if nzf_ids:
@@ -1392,7 +1396,7 @@ class NzbObject(TryList):
                 if target == keys:
                     break
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def move_up_bulk(self, nzf_ids, cleanup=True):
         if cleanup:
             self.cleanup_nzf_ids(nzf_ids)
@@ -1409,7 +1413,7 @@ class NzbObject(TryList):
                         self.files[pos - 1] = nzf
                         self.files[pos] = tmp_nzf
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def move_down_bulk(self, nzf_ids, cleanup=True):
         if cleanup:
             self.cleanup_nzf_ids(nzf_ids)
@@ -1428,7 +1432,7 @@ class NzbObject(TryList):
 
     # Determine if rating information (including site identifier so rating can be updated)
     # is present in metadata and if so store it
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def update_rating(self):
         if cfg.rating_enable():
             try:
@@ -1467,7 +1471,7 @@ class NzbObject(TryList):
         else:
             return None
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def purge_data(self, keep_basic=False, del_files=False):
         """ Remove all admin info, 'keep_basic' preserves attribs and nzb """
         wpath = self.workpath
@@ -1528,7 +1532,7 @@ class NzbObject(TryList):
         if nzf_id in self.files_table:
             return self.files_table[nzf_id]
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def set_unpack_info(self, key, msg, unique=False):
         """ Builds a dictionary containing the stage name (key) and a message
             If unique is present, it will only have a single line message
@@ -1541,7 +1545,7 @@ class NzbObject(TryList):
         else:
             self.unpack_info[key] = [msg]
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def set_action_line(self, action=None, msg=None):
         # Update the last check time
         sabnzbd.LAST_HISTORY_UPDATE = time.time()
@@ -1563,7 +1567,7 @@ class NzbObject(TryList):
     def save_attribs(self):
         set_attrib_file(self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name, self.password, self.url))
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def build_pos_nzf_table(self, nzf_ids):
         pos_nzf_table = {}
         for nzf_id in nzf_ids:
@@ -1574,7 +1578,7 @@ class NzbObject(TryList):
 
         return pos_nzf_table
 
-    @synchronized(IO_LOCK)
+    @synchronized(NZO_LOCK)
     def cleanup_nzf_ids(self, nzf_ids):
         for nzf_id in nzf_ids[:]:
             if nzf_id in self.files_table:
@@ -1620,6 +1624,7 @@ class NzbObject(TryList):
         """ Is this job still going somehow? """
         return self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
 
+    @synchronized(NZO_LOCK)
     def __getstate__(self):
         """ Save to pickle file, selecting attributes """
         dict_ = {}
