@@ -106,7 +106,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.api
-from sabnzbd.decorators import synchronized, synchronized_CV, IO_LOCK
+from sabnzbd.decorators import synchronized, notify_downloader, IO_LOCK
 from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
 import sabnzbd.getipaddress as getipaddress
@@ -621,9 +621,9 @@ def save_compressed(folder, filename, data):
 
 
 ##############################################################################
-# CV synchronized (notifies downloader)
+# Unsynchronized methods
 ##############################################################################
-@synchronized_CV
+
 def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False, password=None):
     """ Add disk-based NZB file, optional attributes,
         'reuse' flag will suppress duplicate detection
@@ -693,9 +693,6 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
                                  keep=keep, reuse=reuse, password=password)
 
 
-##############################################################################
-# Unsynchronized methods
-##############################################################################
 def enable_server(server):
     """ Enable server (scheduler only) """
     try:

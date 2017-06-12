@@ -99,7 +99,6 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         returns (status, nzo_ids)
             status: -1==Error/Retry, 0==OK, 1==Ignore
     """
-    from sabnzbd.nzbqueue import add_nzo
     nzo_ids = []
     if catdir is None:
         catdir = cat
@@ -145,7 +144,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                             sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
                             nzo.nzo_id = nzo_id
                             nzo_id = None
-                        nzo_ids.append(add_nzo(nzo))
+                        nzo_ids.append(sabnzbd.nzbqueue.NzbQueue.do.add(nzo))
                         nzo.update_rating()
         zf.close()
         try:
@@ -170,7 +169,6 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         returns (status, nzo_ids)
             status: -2==Error/retry, -1==Error, 0==OK, 1==OK-but-ignorecannot-delete
     """
-    from sabnzbd.nzbqueue import add_nzo
     nzo_ids = []
     if catdir is None:
         catdir = cat
@@ -231,7 +229,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             # Re-use existing nzo_id, when a "future" job gets it payload
             sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
             nzo.nzo_id = nzo_id
-        nzo_ids.append(add_nzo(nzo, quiet=reuse))
+        nzo_ids.append(sabnzbd.nzbqueue.NzbQueue.do.add(nzo, quiet=reuse))
         nzo.update_rating()
     try:
         if not keep:
