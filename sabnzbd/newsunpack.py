@@ -1333,9 +1333,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 # Initialparfile probably didn't decode properly,
                 logging.info(T('Main packet not found...'))
-
                 extrapars = parfile_nzf.extrapars
-
                 logging.info("Extra pars = %s", extrapars)
 
                 # Look for the smallest par2file
@@ -1346,7 +1344,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
                 if block_table:
                     nzf = block_table[min(block_table.keys())]
-
                     logging.info("Found new par2file %s", nzf.filename)
 
                     # Move from extrapar list to files to be downloaded
@@ -1723,7 +1720,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
                 # Move from extrapar list to files to be downloaded
                 nzo.add_parfile(nzf)
-                extrapars.remove(nzf)
                 # Now set new par2 file as primary par2
                 nzo.partable[setname] = nzf
                 nzf.extrapars = extrapars
