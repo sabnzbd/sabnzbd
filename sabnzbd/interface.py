@@ -920,7 +920,7 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg:
             return msg
-        sabnzbd.nzbqueue.set_priority(kwargs.get('nzo_id'), kwargs.get('priority'))
+        NzbQueue.do.set_priority(kwargs.get('nzo_id'), kwargs.get('priority'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -928,7 +928,7 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg:
             return msg
-        sabnzbd.nzbqueue.sort_queue('avg_age', kwargs.get('dir'))
+        NzbQueue.do.sort_queue('avg_age', kwargs.get('dir'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -936,7 +936,7 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg:
             return msg
-        sabnzbd.nzbqueue.sort_queue('name', kwargs.get('dir'))
+        NzbQueue.do.sort_queue('name', kwargs.get('dir'))
         raise queueRaiser(self.__root, kwargs)
 
     @cherrypy.expose
@@ -944,7 +944,7 @@ class QueuePage(object):
         msg = check_session(kwargs)
         if msg:
             return msg
-        sabnzbd.nzbqueue.sort_queue('size', kwargs.get('dir'))
+        NzbQueue.do.sort_queue('size', kwargs.get('dir'))
         raise queueRaiser(self.__root, kwargs)
 
 
@@ -1164,7 +1164,7 @@ class ConfigPage(object):
             new[svr] = {}
         conf['servers'] = new
 
-        conf['folders'] = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
+        conf['folders'] = NzbQueue.do.scan_jobs(all=False, action=False)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1219,7 +1219,7 @@ def orphan_delete(kwargs):
         remove_all(path, recursive=True)
 
 def orphan_delete_all():
-    paths = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
+    paths = NzbQueue.do.scan_jobs(all=False, action=False)
     for path in paths:
         kwargs = {'name': path}
         orphan_delete(kwargs)
@@ -1229,10 +1229,10 @@ def orphan_add(kwargs):
     if path:
         path = platform_encode(path)
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
-        sabnzbd.nzbqueue.repair_job(path, None, None)
+        NzbQueue.do.repair_job(path, None, None)
 
 def orphan_add_all():
-    paths = sabnzbd.nzbqueue.scan_jobs(all=False, action=False)
+    paths = NzbQueue.do.scan_jobs(all=False, action=False)
     for path in paths:
         kwargs = {'name': path}
         orphan_add(kwargs)

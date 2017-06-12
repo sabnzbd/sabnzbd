@@ -924,20 +924,3 @@ def sort_queue_function(nzo_list, method, reverse):
             new_list.append(item)
 
     return new_list
-
-
-# Wrappers
-def set_priority(nzo_ids, priority):
-    return NzbQueue.do.set_priority(nzo_ids, priority)
-
-
-def sort_queue(field, reverse=False):
-    NzbQueue.do.sort_queue(field, reverse)
-
-
-def repair_job(folder, new_nzb, password):
-    return NzbQueue.do.repair_job(folder, new_nzb, password)
-
-
-def scan_jobs(all=False, action=True):
-    return NzbQueue.do.scan_jobs(all, action)
