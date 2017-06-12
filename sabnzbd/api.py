@@ -47,7 +47,7 @@ from sabnzbd.constants import VALID_ARCHIVES, Status, \
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Downloader
-from sabnzbd.nzbqueue import NzbQueue, set_priority, sort_queue, scan_jobs, repair_job
+from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.json import JsonWriter
@@ -246,7 +246,7 @@ def _api_queue_priority(output, value, kwargs):
                 priority = int(value2)
             except:
                 return report(output, _MSG_INT_VALUE)
-            pos = set_priority(value, priority)
+            pos = NzbQueue.do.set_priority(value, priority)
             # Returns the position in the queue, -1 is incorrect job-id
             return report(output, keyword='position', data=pos)
         except:
@@ -260,7 +260,7 @@ def _api_queue_sort(output, value, kwargs):
     sort = kwargs.get('sort')
     direction = kwargs.get('dir', '')
     if sort:
-        sort_queue(sort, direction)
+        NzbQueue.do.sort_queue(sort, direction)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE2)
@@ -679,7 +679,7 @@ def _api_osx_icon(name, output, kwargs):
 
 def _api_rescan(name, output, kwargs):
     """ API: accepts output """
-    scan_jobs(all=False, action=True)
+    NzbQueue.do.scan_jobs(all=False, action=True)
     return report(output)
 
 
@@ -1189,7 +1189,7 @@ def build_status(skip_dashboard=False, output=None):
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
     info['loglevel'] = str(cfg.log_level())
-    info['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
+    info['folders'] = [xml_name(item) for item in NzbQueue.do.scan_jobs(all=False, action=False)]
     info['configfn'] = xml_name(config.get_filename())
 
     # Dashboard: Speed of System
@@ -1540,7 +1540,7 @@ def retry_job(job, new_nzb, password):
         else:
             path = history_db.get_path(job)
             if path:
-                nzo_id = repair_job(platform_encode(path), new_nzb, password)
+                nzo_id = NzbQueue.do.repair_job(platform_encode(path), new_nzb, password)
                 history_db.remove_history(job)
                 return nzo_id
     return None
