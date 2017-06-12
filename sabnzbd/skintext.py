@@ -505,8 +505,6 @@ SKIN_TEXT = {
     'explain-ssl_ciphers' : TT('Increase performance by forcing a lower SSL encryption strength.'),
     'opt-max_art_tries' : TT('Maximum retries'),
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
-    'opt-max_art_opt' : TT('Only for optional servers'),
-    'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
     'opt-fail_hopeless_jobs' : TT('Abort jobs that cannot be completed'),
     'explain-fail_hopeless_jobs' : TT('When during download it becomes clear that too much data is missing, abort the job'),
     'opt-rating_enable' : TT('Enable Indexer Integration'),

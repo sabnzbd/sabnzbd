@@ -1304,7 +1304,7 @@ SWITCH_LIST = \
              'ignore_samples', 'pause_on_post_processing', 'nice', 'ionice',
              'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
              'quota_size', 'quota_day', 'quota_resume', 'quota_period',
-             'pre_check', 'max_art_tries', 'max_art_opt', 'fail_hopeless_jobs', 'enable_all_par',
+             'pre_check', 'max_art_tries', 'fail_hopeless_jobs', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'sanitize_safe',
              'rating_enable', 'rating_api_key', 'rating_filter_enable',
@@ -1376,9 +1376,9 @@ SPECIAL_BOOL_LIST = \
               'queue_complete_pers', 'api_warnings', 'ampm', 'enable_unrar', 'enable_unzip', 'enable_7zip',
               'enable_filejoin', 'enable_tsjoin', 'allow_streaming', 'ignore_unrar_dates', 'par2_multicore',
               'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb', 'rss_filenames',
-              'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
+              'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder', 'max_art_opt',
               'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files', 'warn_dupl_jobs', 'replace_illegal',
-              'backup_for_duplicates', 'disable_api_key', 'api_logging', 'enable_meta'
+              'backup_for_duplicates', 'disable_api_key', 'api_logging', 'enable_meta',
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
