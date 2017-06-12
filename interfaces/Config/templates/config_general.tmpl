@@ -324,14 +324,20 @@
     if(bandwidthLimit) {
         var bandwithLimitNumber = parseFloat(bandwidthLimit)
         var bandwithLimitText = bandwidthLimit.replace(/[^a-zA-Z]+/g, '');
-        \$('#bandwidth_max_value').val(bandwithLimitNumber)
-        \$('#bandwidth_max_dropdown').val(bandwithLimitText)
+        if(bandwithLimitNumber) {
+            \$('#bandwidth_max_value').val(bandwithLimitNumber)
+            \$('#bandwidth_max_dropdown').val(bandwithLimitText)
+        }
     }
 
 
     // Update the value
     \$('#bandwidth_max_value, #bandwidth_max_dropdown').on('change', function() {
-        \$('#bandwidth_max').val(\$('#bandwidth_max_value').val() + \$('#bandwidth_max_dropdown').val())
+        if(\$('#bandwidth_max_value').val()) {
+            \$('#bandwidth_max').val(\$('#bandwidth_max_value').val() + \$('#bandwidth_max_dropdown').val())
+        } else {
+            \$('#bandwidth_max').val('')
+        }
     })
 
 });
