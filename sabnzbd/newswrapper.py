@@ -247,16 +247,26 @@ class NNTP(object):
                 self.error(e)
 
     def error(self, error):
-        if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
+        raw_error_str = str(error)
+        if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in raw_error_str:
             error = T('This server does not allow SSL on this port')
 
         # Catch certificate errors
-        if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
-            error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, str(error))
-            error += ' - https://sabnzbd.org/certificate-errors'
+        if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in raw_error_str:
+            # Try to see if we should catch this message
+            if 'hostname' in raw_error_str:
+                raw_error_str = T('Certificate hostname mismatch: the server hostname is not listed in the certificate')
+            elif 'certificate verify failed' in raw_error_str:
+                raw_error_str = T('Certificate not valid')
+
+            error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, raw_error_str)
+            error = '%s - %s: %s' % (error, T('Wiki'), 'https://sabnzbd.org/certificate-errors')
             # Prevent throwing a lot of errors or when testing server
-            if error not in self.nw.server.warning and self.nw.server.id != -1:
+            if error not in self.nw.server.warning and not self.blocking:
                 logging.error(error)
+            # Pass to server-test
+            if self.blocking:
+                raise CertificateError(error)
 
         # Blocking = server-test, pass directly to display code
         if self.blocking:

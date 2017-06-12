@@ -338,6 +338,7 @@
         }).then(function(data) {
             // Let's replace the link
             msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
+            msg = msg.replace('-', '<br>')
             // Fill the box and enable the button
             resultBox.removeClass('alert-success alert-danger').show()
             resultBox.html(msg)
