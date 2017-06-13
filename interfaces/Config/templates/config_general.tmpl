@@ -240,7 +240,17 @@
             \$('.alert-translate').show()
         }
     }
-    \$('#language').on('change', hideOrShowTranslate)
+    \$('#language').on('change', function() {
+        // Show message
+        hideOrShowTranslate()
+        // Re-load page on submit
+        \$('.fullform').submit(function() {
+            // Skip the fancy stuff, just submit
+            this.submit()
+        })
+        // No JSON reponse
+        \$('#ajax').val('')
+    })
     hideOrShowTranslate()
 
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
