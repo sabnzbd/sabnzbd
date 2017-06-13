@@ -70,6 +70,7 @@ LanguageTable = {
     'fr': ('French', 'Français'),
     'gl': ('Galician', 'Galego'),
     'de': ('German', 'Deutsch'),
+    'he': ('Hebrew', 'עִבְרִית‎'),
     'hz': ('Herero', 'Otjiherero'),
     'ho': ('Hiri Motu', 'Hiri Motu'),
     'hu': ('Hungarian', 'Magyar'),
