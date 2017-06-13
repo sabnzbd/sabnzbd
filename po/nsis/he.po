@@ -1,0 +1,98 @@
+# Hebrew translation for sabnzbd
+# Copyright (c) 2017 Rosetta Contributors and Canonical Ltd 2017
+# This file is distributed under the same license as the sabnzbd package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: sabnzbd\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2017-03-18 21:42+0000\n"
+"PO-Revision-Date: 2017-05-06 09:07+0000\n"
+"Last-Translator: ION IL <Unknown>\n"
+"Language-Team: Hebrew <he@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2017-05-07 05:39+0000\n"
+"X-Generator: Launchpad (build 18366)\n"
+
+#: NSIS_Installer.nsi:473
+msgid "Show Release Notes"
+msgstr "הראה הערות שחרור"
+
+#: NSIS_Installer.nsi:475
+msgid "Start SABnzbd"
+msgstr "התחל את SABnzbd"
+
+#: NSIS_Installer.nsi:477
+msgid "Support the project, Donate!"
+msgstr "תמוך במיזם, תרום!"
+
+#: NSIS_Installer.nsi:479
+msgid "Please close \"SABnzbd.exe\" first"
+msgstr "אנא סגור את \"SABnzbd.exe\" תחילה"
+
+#: NSIS_Installer.nsi:481
+msgid ""
+"The installation directory has changed (now in \"Program Files\"). \\nIf you "
+"run SABnzbd as a service, you need to update the service settings."
+msgstr ""
+"ספרית ההתקנה השתנתה (עכשיו ב-\"Program Files\"). \\nאם תריץ את SABnzbd בתור "
+"שירות, אתה צריך לעדכן את הגדרות השירות."
+
+#: NSIS_Installer.nsi:483
+msgid "This will uninstall SABnzbd from your system"
+msgstr "זה יסיר את SABnzbd ממערכתך"
+
+#: NSIS_Installer.nsi:485
+msgid "Run at startup"
+msgstr "הפעל באתחול"
+
+#: NSIS_Installer.nsi:487
+msgid "Desktop Icon"
+msgstr "צלמית שולחן עבודה"
+
+#: NSIS_Installer.nsi:489
+msgid "NZB File association"
+msgstr "שיוך קבצי NZB"
+
+#: NSIS_Installer.nsi:491
+msgid "Delete Program"
+msgstr "מחק תכנית"
+
+#: NSIS_Installer.nsi:493
+msgid "Delete Settings"
+msgstr "מחק הגדרות"
+
+#: NSIS_Installer.nsi:495
+msgid ""
+"This system requires the Microsoft runtime library VC90 to be installed "
+"first. Do you want to do that now?"
+msgstr ""
+"מערכת זו דורשת את ספרית זמן-אמת VC90 של Microsoft שתהיה מותקנת תחילה. האם "
+"ברצונך להתקין אותה כעת?"
+
+#: NSIS_Installer.nsi:497
+msgid "Downloading Microsoft runtime installer..."
+msgstr "מוריד מתקין זמן-אמת של Microsoft..."
+
+#: NSIS_Installer.nsi:499
+msgid "Download error, retry?"
+msgstr "שגיאת הורדה, לנסות שוב?"
+
+#: NSIS_Installer.nsi:501
+msgid "Cannot install without runtime library, retry?"
+msgstr "לא ניתן להתקין ללא ספרית זמן-אמת, לנסות שוב?"
+
+#: NSIS_Installer.nsi:503
+msgid ""
+"You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
+"the previous version or `Cancel` to cancel this upgrade."
+msgstr ""
+"אינך יכול לדרוס התקנה קיימת.\\n\\nלחץ על `אישור` כדי להסיר את הגרסה הקודמת "
+"או על `ביטול` כדי לבטל שדרוג זה."
+
+#: NSIS_Installer.nsi:505
+msgid "Your settings and data will be preserved."
+msgstr "ההגדרות והנתונים שלך יישמרו."
