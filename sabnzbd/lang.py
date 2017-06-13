@@ -141,6 +141,7 @@ LanguageTable = {
     'fr': ('French', 'Français', 0),
     'gl': ('Galician', 'Galego', 0),
     'de': ('German', 'Deutsch', 0),
+    'he': ('Hebrew', 'עִבְרִית‎', 1255),
     'hz': ('Herero', 'Otjiherero', 0),
     'ho': ('Hiri Motu', 'Hiri Motu', 0),
     'hu': ('Hungarian', 'Magyar', 0),
