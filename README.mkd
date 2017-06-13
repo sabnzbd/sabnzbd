@@ -1,22 +1,10 @@
-Release Notes  -  SABnzbd 2.1.0
+Release Notes  -  SABnzbd 2.2.0
 =========================================================
 
-## Changes since 2.0.1
-- Windows-only: Will now use MultiPar for verification and repair. MultiPar uses
-  the latest optimizations, multiple cores and can utilize the GPU, resulting in
-  repairs often being twice as fast. Created by Yutaka Sawada (Windows only)
-  "Extra Par2 Parameters" are also passed to MultiPar
-  For example: Set "/lc32" to enable GPU for repair (can also be slower!)
-- Minimal macOS version set to 10.9 (Mavericks)
-- Human readable history date/time default setting in Glitter (x hours ago, etc)
-- Post-processing script execution can be aborted
-- Removed Specials settings: never_repair, nr_decoders, prio_sort_list,
-  create_group_folder, enable_par_cleanup, enable_quickcheck, allow_64bit_tools
 
-# Bugfixes
-- File join would fail incorrectly
-- Catch and show 'Disk full' messages from PAR2/MultiPar
-- MemoryError occurred when opening the interface after long period of inactivity
+
+## Translations
+- Added Hebrew translation by ION IL, many other languages updated.
 
 ## Upgrading from 0.7.x and older
 - Finish queue
