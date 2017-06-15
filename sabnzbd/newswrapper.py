@@ -253,14 +253,19 @@ class NNTP(object):
 
         # Catch certificate errors
         if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in raw_error_str:
-            # Try to see if we should catch this message
-            if 'hostname' in raw_error_str:
-                raw_error_str = T('Certificate hostname mismatch: the server hostname is not listed in the certificate')
-            elif 'certificate verify failed' in raw_error_str:
-                raw_error_str = T('Certificate not valid')
+            # Log the raw message for debug purposes
+            logging.info('Certificate error for host %s: %s', self.nw.server.host, raw_error_str)
 
+            # Try to see if we should catch this message and provide better text
+            if 'hostname' in raw_error_str:
+                raw_error_str = T('Certificate hostname mismatch: the server hostname is not listed in the certificate. This is a server issue.')
+            elif 'certificate verify failed' in raw_error_str:
+                raw_error_str = T('Certificate not valid. This is most probably a server issue.')
+
+            # Reformat error
             error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, raw_error_str)
             error = '%s - %s: %s' % (error, T('Wiki'), 'https://sabnzbd.org/certificate-errors')
+
             # Prevent throwing a lot of errors or when testing server
             if error not in self.nw.server.warning and not self.blocking:
                 logging.error(error)
