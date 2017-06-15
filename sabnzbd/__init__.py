@@ -576,12 +576,9 @@ def unpause_all():
 
 
 ##############################################################################
-# NZB_LOCK Methods
+# NZB Saving Methods
 ##############################################################################
-NZB_LOCK = Lock()
 
-
-@synchronized(NZB_LOCK)
 def backup_exists(filename):
     """ Return True if backup exists and no_dupes is set """
     path = cfg.nzb_backup_dir.get_path()
@@ -595,7 +592,6 @@ def backup_nzb(filename, data):
         save_compressed(path, filename, data)
 
 
-@synchronized(NZB_LOCK)
 def save_compressed(folder, filename, data):
     """ Save compressed NZB file in folder """
     # Need to go to the save folder to
