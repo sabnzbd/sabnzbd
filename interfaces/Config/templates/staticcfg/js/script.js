@@ -401,7 +401,7 @@ $(document).ready(function () {
     $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')
     })
-    if(!$(checkDisabled).is(':checked')) {
+    if($(checkDisabled).is(':checked')) {
         $(checkDisabled).parent().nextAll().addClass('disabled')
     }
 
@@ -409,6 +409,9 @@ $(document).ready(function () {
     $('#enable_https').on('change', function() {
         $('.enable_https_options').toggle()
     })
+    if(!$('#enable_https').is(':checked')) {
+        $('.enable_https_options').hide()
+    }
 
     $('.advancedButton').click(function(event){
         $('.advanced-settings').toggle()
