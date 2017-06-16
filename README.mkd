@@ -1,7 +1,23 @@
-Release Notes  -  SABnzbd 2.2.0
+Release Notes  -  SABnzbd 2.2.0 Alpha 1
 =========================================================
 
+NOTE: Due to changes in this release, the queue will be converted when 2.2.0
+is started for the first time. Job order, settings and data will be preserved,
+but URL's that did finished fetching before the upgrade will be lost!
 
+## Changes in 2.2.0
+- Reduced memory usage, especially with larger queues
+- Slight improvement in download performance by removing internal locks
+- Smoother animations in Firefox (disabled previously due to FF high-CPU usage)
+- If enabled, replace dots in filenames also when there are spaces already
+- Jobs outside server retention are processed faster
+- max_art_opt and replace_illegal moved from Switches to Specials
+
+## Bugfixes in 2.2.0
+- Shutdown/suspend did not work on some Linux systems
+- Deleting a job could result in write errors
+- Display warning if custom par2 parameters are wrong
+- Windows: Fix error in MultiPar-code when first par2-file was damaged
 
 ## Translations
 - Added Hebrew translation by ION IL, many other languages updated.
