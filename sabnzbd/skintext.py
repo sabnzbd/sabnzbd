@@ -299,7 +299,7 @@ SKIN_TEXT = {
 # Configuration
     'confgFile' : TT('Config File'),
     'cache' : TT('Used cache'), #: Main config page, how much cache is in use
-    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.') + TT('<br />If authentication is enabled, you will need to login again.'),
+    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
     'explain-needNewLogin' : TT('<br />If authentication is enabled, you will need to login again.'),
     'button-advanced' : TT('Advanced'),
     'button-restart' : TT('Restart'),
