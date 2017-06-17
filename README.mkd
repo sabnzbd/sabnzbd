@@ -17,6 +17,7 @@ but URL's that did finished fetching before the upgrade will be lost!
 - Shutdown/suspend did not work on some Linux systems
 - Deleting a job could result in write errors
 - Display warning if custom par2 parameters are wrong
+- macOS: Catch 'Protocol wrong type for socket' errors
 - Windows: Fix error in MultiPar-code when first par2-file was damaged
 
 ## Translations
