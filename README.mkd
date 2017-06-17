@@ -2,8 +2,9 @@ Release Notes  -  SABnzbd 2.2.0 Alpha 1
 =========================================================
 
 NOTE: Due to changes in this release, the queue will be converted when 2.2.0
-is started for the first time. Job order, settings and data will be preserved,
-but URL's that did finished fetching before the upgrade will be lost!
+is started for the first time. Job order, settings and data will be
+preserved, but all jobs will be unpaused and URL's that did not finish
+fetching before the upgrade will be lost!
 
 ## Changes in 2.2.0
 - Reduced memory usage, especially with larger queues
