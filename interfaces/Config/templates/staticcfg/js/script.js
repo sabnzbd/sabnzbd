@@ -401,7 +401,7 @@ $(document).ready(function () {
     $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')
     })
-    if($(checkDisabled).is(':checked')) {
+    if(!$(checkDisabled).is(':checked')) {
         $(checkDisabled).parent().nextAll().addClass('disabled')
     }
 
