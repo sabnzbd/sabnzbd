@@ -253,8 +253,6 @@ function do_restart() {
         // We cannot make a good guess for the IP, so at least we assume that stays the same
         var urlTotal = urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlPath;
     }
-    console.log(urlTotal)
-    return
 
     // Show where we are going to connect
     $('.main-restarting .restarting-url').text(urlTotal)
