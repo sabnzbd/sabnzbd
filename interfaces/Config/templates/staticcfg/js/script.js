@@ -228,16 +228,13 @@ function do_restart() {
     // What template
     var arrPath = window.location.pathname.split('/');
     var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
-    var switchedHTTPS = (!$('#enable_https').is(':checked') && window.location.protocol == 'https:') || ($('#enable_https').is(':checked') && window.location.protocol == 'http:')
+    var switchedHTTPS = ($('#enable_https').is(':checked') == ($('#enable_https').data('original') === undefined))
+    var portsUnchanged  = ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))
 
-    // Are we on settings page?
-    if(!$('body').hasClass('General')) {
-        // Same as before, with fall-back in case location.origin is not supported (<IE9)
-        var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
-    } else if (!switchedHTTPS && ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))) {
-        // If the http/https port config didn't change, don't try and guess the URL/port to redirect to
-        // This solves some incorrect behavior if running behind a reverse proxy
-        var urlTotal = window.location.origin ? (window.location.origin + urlPath) : window.location;
+    // Are we on settings page or did nothing change?
+    if(!$('body').hasClass('General') || (!switchedHTTPS && !portsUnchanged)) {
+        // Same as before
+        var urlTotal = window.location.origin + urlPath
     } else {
         // Protocol and port depend on http(s) setting
         if($('#enable_https').is(':checked') && (window.location.protocol == 'https:' || !$('#https_port').val())) {
