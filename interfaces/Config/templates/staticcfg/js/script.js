@@ -228,7 +228,7 @@ function do_restart() {
     // What template
     var arrPath = window.location.pathname.split('/');
     var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
-    var switchedHTTPS = !$('#enable_https').is(':checked') && window.location.protocol == 'https:'
+    var switchedHTTPS = (!$('#enable_https').is(':checked') && window.location.protocol == 'https:') || ($('#enable_https').is(':checked') && window.location.protocol == 'http:')
 
     // Are we on settings page?
     if(!$('body').hasClass('General')) {
@@ -253,6 +253,8 @@ function do_restart() {
         // We cannot make a good guess for the IP, so at least we assume that stays the same
         var urlTotal = urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlPath;
     }
+    console.log(urlTotal)
+    return
 
     // Show where we are going to connect
     $('.main-restarting .restarting-url').text(urlTotal)
