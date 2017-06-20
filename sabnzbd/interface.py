@@ -2857,7 +2857,7 @@ def rss_history(url, limit=50, search=None):
     rss = RSS()
     rss.channel.title = "SABnzbd History"
     rss.channel.description = "Overview of completed downloads"
-    rss.channel.link = "http://sabnzbd.org/"
+    rss.channel.link = "https://sabnzbd.org/"
     rss.channel.language = "en"
 
     items, _fetched_items, _max_items = build_history(limit=limit, search=search)
@@ -2904,7 +2904,7 @@ def rss_warnings():
     rss = RSS()
     rss.channel.title = "SABnzbd Warnings"
     rss.channel.description = "Overview of warnings/errors"
-    rss.channel.link = "http://sabnzbd.org/"
+    rss.channel.link = "https://sabnzbd.org/"
     rss.channel.language = "en"
 
     for warn in sabnzbd.GUIHANDLER.content():
