@@ -1784,14 +1784,18 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         elif line.startswith('Complete file count'):
             in_check = False
             verifynum = 0
+            old_name = None
         elif line.startswith('Verifying Input File'):
             in_check = True
             nzo.status = Status.VERIFYING
         elif in_check:
             m = _RE_FILENAME.search(line)
             if m:
-                verifynum += 1
+                # Only increase counter if it was a new name
+                if old_name != TRANS(m.group(1)):
+                    verifynum += 1
                 nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
+                old_name = TRANS(m.group(1))
 
         # Actual verification
         elif line.startswith('Input File Slice found'):
