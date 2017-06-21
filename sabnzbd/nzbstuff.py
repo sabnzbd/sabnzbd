@@ -934,7 +934,6 @@ class NzbObject(TryList):
         nzf.deleted = True
         return not bool(self.files)
 
-    @synchronized(NZO_LOCK)
     def reset_all_try_lists(self):
         for nzf in self.files:
             nzf.reset_all_try_lists()
@@ -1162,7 +1161,7 @@ class NzbObject(TryList):
         self.status = Status.PAUSED
         # Prevent loss of paused state when terminated
         if self.nzo_id and not self.is_gone():
-            sabnzbd.save_data(self, self.nzo_id, self.workpath)
+            self.save_to_disk()
 
     def resume(self):
         self.status = Status.QUEUED
@@ -1545,7 +1544,6 @@ class NzbObject(TryList):
         else:
             self.unpack_info[key] = [msg]
 
-    @synchronized(NZO_LOCK)
     def set_action_line(self, action=None, msg=None):
         # Update the last check time
         sabnzbd.LAST_HISTORY_UPDATE = time.time()
@@ -1558,6 +1556,7 @@ class NzbObject(TryList):
     def repair_opts(self):
         return self.repair, self.unpack, self.delete
 
+    @synchronized(NZO_LOCK)
     def save_to_disk(self):
         """ Save job's admin to disk """
         self.save_attribs()
@@ -1624,7 +1623,6 @@ class NzbObject(TryList):
         """ Is this job still going somehow? """
         return self.status in (Status.COMPLETED, Status.DELETED, Status.FAILED)
 
-    @synchronized(NZO_LOCK)
     def __getstate__(self):
         """ Save to pickle file, selecting attributes """
         dict_ = {}

@@ -733,7 +733,7 @@ class NzbQueue(object):
         else:
             if file_done:
                 if nzo.next_save is None or time.time() > nzo.next_save:
-                    sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
+                    nzo.save_to_disk()
                     BPSMeter.do.save()
                     if nzo.save_timeout is None:
                         nzo.next_save = None
