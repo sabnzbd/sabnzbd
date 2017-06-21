@@ -215,6 +215,8 @@ class URLGrabber(Thread):
                         data = fn.read()
                     except (IncompleteRead, IOError):
                         bad_fetch(future_nzo, url, T('Server could not complete request'))
+                        fn.close()
+                        continue
                 fn.close()
 
                 if '<nzb' in data and misc.get_ext(filename) != '.nzb':
