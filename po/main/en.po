@@ -129,10 +129,6 @@ msgid "Posts will be paused untill they are at least this age. Setting job prior
 msgstr "Posts will be paused until they are at least this age. Setting job priority to Force will skip the delay."
 
 #: sabnzbd/skintext.py:841
-msgid "How long or until when do you want to pause? (in English!)"
-msgstr "How long or untill when do you want to pause? (in English!)"
-
-#: sabnzbd/skintext.py:841
 msgid "Support the project, Donate!"
 msgstr "Support the project, donate!"
 
