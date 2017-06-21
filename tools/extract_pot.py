@@ -104,6 +104,9 @@ def get_context(line):
                 context = 'Error message'
             elif 'logging.warning(' in srcline:
                 context = 'Warning message'
+        # Remove line-number
+        item = item.split(':')[0];
+
         if context:
             newlines.append('%s [%s]' % (item, context))
         else:
