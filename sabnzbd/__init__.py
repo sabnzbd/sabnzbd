@@ -885,9 +885,9 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
             with open(path, 'wb') as data_file:
                 if do_pickle:
                     if cfg.use_pickle():
-                        cPickle.dump(data, data_file)
-                    else:
                         pickle.dump(data, data_file)
+                    else:
+                        cPickle.dump(data, data_file)
                 else:
                     data_file.write(data)
             break
