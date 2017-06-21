@@ -155,6 +155,7 @@ SKIN_TEXT = {
     'menu-forums' : TT('Forum'), #: Main menu item
     'menu-irc' : TT('IRC'), #: Main menu item
     'menu-issues' : TT('Issues'), #: Main menu item
+    'menu-donate' : TT('Support the project, Donate!'), #: Main menu item
     'cmenu-general' : TT('General'), #: Main menu item
     'cmenu-folders' : TT('Folders'), #: Main menu item
     'cmenu-switches' : TT('Switches'), #: Main menu item
