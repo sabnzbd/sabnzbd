@@ -1740,7 +1740,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             nzo.set_unpack_info('Repair', msg)
             nzo.status = Status.FAILED
 
-        # ----------------- Verify stage
+        # ----------------- Start check/verify stage
         # List of Par2 files we will use today
         if line.startswith('PAR File list'):
             in_parlist = True
@@ -1753,6 +1753,11 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                 used_for_repair.append(os.path.join(nzo.downpath, TRANS(m.group(1))))
                 pars.append(TRANS(m.group(1)))
 
+        # How many files will it try to find?
+        elif line.startswith('Input File total count'):
+            verifytotal = int(line.split()[-1])
+
+        # ----------------- Misnamed-detection stage
         # Misnamed files
         elif line.startswith('Searching misnamed file'):
             # We are in the misnamed files block
@@ -1776,10 +1781,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                 datafiles.append(new_name)
                 reconstructed.append(old_name)
 
-        # How many files will it try to find?
-        elif line.startswith('Input File total count'):
-            verifytotal = int(line.split()[-1])
-
+        # ----------------- Checking stage
         # Checking input files
         elif line.startswith('Complete file count'):
             in_check = False
@@ -1791,11 +1793,19 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         elif in_check:
             m = _RE_FILENAME.search(line)
             if m:
-                # Only increase counter if it was a new name
-                if old_name != TRANS(m.group(1)):
+                # Only increase counter if it was really the detection line
+                if line.startswith('= ') or '%' not in line:
                     verifynum += 1
                 nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
                 old_name = TRANS(m.group(1))
+
+        # ----------------- Verify stage
+        # Which files need extra verification?
+        elif line.startswith('Damaged file count'):
+            verifytotal = int(line.split()[-1])
+
+        elif line.startswith('Missing file count'):
+            verifytotal += int(line.split()[-1])
 
         # Actual verification
         elif line.startswith('Input File Slice found'):
@@ -1921,6 +1931,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             logging.info('Verified in %s, all files correct',
                         format_time_string(time() - start))
             finished = 1
+
         elif line.startswith(('Ready to repair', 'Ready to rejoin')):
             # Ready to repair!
             # Or we are re-joining a split file when there's no damage but takes time
