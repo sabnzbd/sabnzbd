@@ -452,8 +452,6 @@ SKIN_TEXT = {
     'explain-pre_script' : TT('Used before an NZB enters the queue.'),
     'opt-par2_multicore' : TT('Enable MultiCore Par2'),
     'explain-par2_multicore' : TT('Read the Wiki Help on this!'),
-    'opt-par2_multipar' : TT('Enable MultiPar'),
-    'explain-par2_multipar' : TT('MultiPar is the fastest par2 verification and repair implementation, using multiple cores and the GPU (if available).'),
     'opt-par_option' : TT('Extra PAR2 Parameters'),
     'explain-par_option' : TT('Read the Wiki Help on this!'),
     'opt-nice' : TT('Nice Parameters'),

@@ -1298,7 +1298,7 @@ class ConfigFolders(object):
 
 ##############################################################################
 SWITCH_LIST = \
-    ('par2_multicore', 'multipar', 'par_option', 'top_only', 'ssl_ciphers',
+    ('par2_multicore', 'par_option', 'top_only', 'ssl_ciphers',
              'auto_sort', 'propagation_delay', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots',
              'ignore_samples', 'pause_on_post_processing', 'nice', 'ionice',
@@ -1375,10 +1375,10 @@ SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files', 'enable_par_cleanup',
               'queue_complete_pers', 'api_warnings', 'ampm', 'enable_unrar', 'enable_unzip', 'enable_7zip',
               'enable_filejoin', 'enable_tsjoin', 'allow_streaming', 'ignore_unrar_dates', 'par2_multicore',
-              'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb', 'rss_filenames',
-              'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder', 'max_art_opt',
-              'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files', 'warn_dupl_jobs', 'replace_illegal',
-              'backup_for_duplicates', 'disable_api_key', 'api_logging', 'enable_meta',
+              'multipar', 'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
+              'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
+              'max_art_opt', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files', 'warn_dupl_jobs',
+              'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging', 'enable_meta',
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',

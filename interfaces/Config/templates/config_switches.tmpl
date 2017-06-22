@@ -153,13 +153,6 @@
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
-                    <!--#if $nt#-->
-                    <div class="field-pair">
-                        <label class="config" for="multipar">$T('opt-par2_multipar')</label>
-                        <input type="checkbox" name="multipar" id="multipar" value="1" <!--#if int($multipar) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-par2_multipar')</span>
-                    </div>
-                    <!--#end if#-->
                     <div class="field-pair">
                         <label class="config" for="par_option">$T('opt-par_option')</label>
                         <input type="text" name="par_option" id="par_option" value="$par_option" />
