@@ -1182,9 +1182,9 @@ def test_ipv6():
         return False
 
 
-def increase_last_history_update():
+def history_updated():
     """ To make sure we always have a fresh history """
     sabnzbd.LAST_HISTORY_UPDATE += 1
     # Never go over the limit
     if sabnzbd.LAST_HISTORY_UPDATE+1 >= sys.maxint:
-        sabnzbd.LAST_HISTORY_UPDATE = 0
+        sabnzbd.LAST_HISTORY_UPDATE = 1

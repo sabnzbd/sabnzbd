@@ -410,6 +410,7 @@ class NzbQueue(object):
                 # Other information is obtained from the nzo
                 history_db.add_history_db(nzo, '', '', 0, '', '')
                 history_db.close()
+                sabnzbd.history_updated()
 
             elif cleanup:
                 self.cleanup_nzo(nzo, keep_basic, del_files)
@@ -420,10 +421,6 @@ class NzbQueue(object):
                 self.save(nzo)
         else:
             nzo_id = None
-
-        # Update the last check time, since history was updated
-        sabnzbd.increase_last_history_update()
-
         return nzo_id
 
     def remove_multiple(self, nzo_ids, del_files=False):

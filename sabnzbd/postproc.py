@@ -125,8 +125,7 @@ class PostProcessor(Thread):
             self.history_queue.append(nzo)
         self.queue.put(nzo)
         self.save()
-        # Update the last check time
-        sabnzbd.increase_last_history_update()
+        sabnzbd.history_updated()
 
     def remove(self, nzo):
         """ Remove given nzo from the queue """
@@ -135,8 +134,7 @@ class PostProcessor(Thread):
         except:
             pass
         self.save()
-        # Update the last check time
-        sabnzbd.increase_last_history_update()
+        sabnzbd.history_updated()
 
     def stop(self):
         """ Stop thread after finishing running job """
@@ -573,6 +571,7 @@ def process_job(nzo):
     history_db.add_history_db(nzo, clip_path(workdir_complete), nzo.downpath, postproc_time, script_log, script_line)
     # The connection is only used once, so close it here
     history_db.close()
+    sabnzbd.history_updated()
 
     # Clean up the NZO
     try:
@@ -595,9 +594,6 @@ def process_job(nzo):
     # Use automatic retry link on par2 errors and encrypted/bad RARs
     if par_error or unpack_error in (2, 3):
         try_alt_nzb(nzo)
-
-    # Update the last check time
-    sabnzbd.increase_last_history_update()
 
     return True
 

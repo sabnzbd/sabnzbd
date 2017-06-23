@@ -484,13 +484,14 @@ def _api_history(name, output, kwargs):
     value = kwargs.get('value', '')
     start = int_conv(kwargs.get('start'))
     limit = int_conv(kwargs.get('limit'))
+    last_history_update = int_conv(kwargs.get('last_history_update', 0))
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
     categories = kwargs.get('category')
-    last_history_update = kwargs.get('last_history_update', 0)
+
 
     # Do we need to send anything?
-    if int(last_history_update) == int(sabnzbd.LAST_HISTORY_UPDATE):
+    if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
         return report(output, keyword='history', data=False)
 
     if categories and not isinstance(categories, list):
@@ -510,15 +511,13 @@ def _api_history(name, output, kwargs):
                 history_db.remove_failed(search)
             if special in ('all', 'completed'):
                 history_db.remove_completed(search)
-            # Update the last check time
-            sabnzbd.increase_last_history_update()
+            sabnzbd.history_updated()
             return report(output)
         elif value:
             jobs = value.split(',')
             for job in jobs:
                 del_hist_job(job, del_files)
-            # Update the last check time
-            sabnzbd.increase_last_history_update()
+            sabnzbd.history_updated()
             return report(output)
         else:
             return report(output, _MSG_NO_VALUE)
@@ -532,7 +531,7 @@ def _api_history(name, output, kwargs):
                                                                               search=search, failed_only=failed_only,
                                                                               categories=categories,
                                                                               output=output)
-        history['last_history_update'] = int(sabnzbd.LAST_HISTORY_UPDATE)
+        history['last_history_update'] = sabnzbd.LAST_HISTORY_UPDATE
         history['version'] = sabnzbd.__version__
         return report(output, keyword='history', data=remove_callable(history))
     else:
