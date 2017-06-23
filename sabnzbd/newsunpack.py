@@ -1658,6 +1658,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     in_check = False
     in_verify = False
     in_repair = False
+    in_verify_repaired = False
     misnamed_files = False
     old_name = None
 
@@ -1687,8 +1688,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
         # Skip empty lines
         if line == '':
-            # Empty lines also end every section
-            in_repair = False
             continue
 
         # Save it all
@@ -1951,6 +1950,14 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             start = time()
             in_repair = True
             nzo.set_action_line(T('Repairing'), '%2d%%' % (0))
+
+        elif in_repair and line.startswith('Verifying repair'):
+            in_repair = False
+            in_verify_repaired = True
+            # How many will be checked?
+            verifytotal = int(line.split()[-1])
+            verifynum = 0
+
         elif in_repair:
             # Line with percentage of repair (nothing else)
             per = float(line[:-1])
@@ -1962,6 +1969,12 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             nzo.set_unpack_info('Repair', msg)
             logging.info('Repaired in %s', format_time_string(time() - start))
             finished = 1
+
+        elif in_verify_repaired and line.startswith('Repaired :'):
+            # Track verification of repaired files (can sometimes take a while)
+            verifynum += 1
+            nzo.set_action_line(T('Verifying repair'), '%02d/%02d' % (verifynum, verifytotal))
+
 
     p.wait()
 
