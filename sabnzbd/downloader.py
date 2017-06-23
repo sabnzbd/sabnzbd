@@ -708,7 +708,7 @@ class Downloader(Thread):
 
                     elif nw.status_code in ('411', '423', '430'):
                         done = True
-                        logging.info('Thread %s@%s: Article %s missing (error=%s)',
+                        logging.debug('Thread %s@%s: Article %s missing (error=%s)',
                                         nw.thrdnum, nw.server.id, article.article, nw.status_code)
                         nw.clear_data()
 

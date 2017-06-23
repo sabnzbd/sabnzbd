@@ -1135,7 +1135,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
 
             deletables = []
             deletables.extend(used_joinables)
-            deletables.extend(used_for_repair)
+            deletables.extend([os.path.join(workdir, f) for f in used_for_repair])
 
             # Delete pars of the set and maybe extra ones that par2 found
             deletables.extend([os.path.join(workdir, f) for f in setpars])
@@ -1298,7 +1298,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             if extra_par2_name and line.startswith('Loaded '):
                 m = _RE_LOADED_PAR2.search(line)
                 if m and int(m.group(1)) > 0:
-                    used_for_repair.append(os.path.join(nzo.downpath, extra_par2_name))
+                    used_for_repair.append(extra_par2_name)
                 extra_par2_name = None
                 continue
             extra_par2_name = None
@@ -1600,6 +1600,7 @@ _RE_FILENAME = re.compile(r'"([^"]+)"')
 
 def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
     """ Run par2 on par-set """
+    parfolder = os.path.split(parfile)[0]
     used_joinables = []
     used_for_repair = []
 
@@ -1607,10 +1608,9 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     nzo.status = Status.VERIFYING
     start = time()
 
-    # Can implement caching of verification by adding:
-    # '-vs2', '-vd%s' % parfolder
+    # Caching of verification implemented by adding:
     # But not really required due to prospective-par2
-    command = [str(MULTIPAR_COMMAND), 'r', parfile]
+    command = [str(MULTIPAR_COMMAND), 'r', '-vs2', '-vd%s' % parfolder, parfile]
 
     # Only add user-options if supplied
     options = cfg.par_option().strip()
@@ -1618,7 +1618,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         command.insert(2, options)
 
     # Append the wildcard for this set
-    parfolder = os.path.split(parfile)[0]
     if single or len(globber(parfolder, setname + '*')) < 2:
         # Support bizarre naming conventions
         wildcard = '*'
@@ -1749,11 +1748,17 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         elif in_parlist:
             m = _RE_FILENAME.search(line)
             if m:
-                used_for_repair.append(os.path.join(nzo.downpath, TRANS(m.group(1))))
+                used_for_repair.append(TRANS(m.group(1)))
                 pars.append(TRANS(m.group(1)))
 
-        # How many files will it try to find?
+        elif line.startswith('Recovery Set ID'):
+            # Remove files were MultiPar stores verification result when repaired succesfull
+            recovery_id = line.split()[-1]
+            used_for_repair.append('2_%s.bin' % recovery_id)
+            used_for_repair.append('2_%s.ini' % recovery_id)
+
         elif line.startswith('Input File total count'):
+            # How many files will it try to find?
             verifytotal = int(line.split()[-1])
 
         # ----------------- Misnamed-detection stage
@@ -1846,7 +1851,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                     datafiles.pop()
                     datafiles.append(new_name)
                     # Need to remove the old file after repair (Multipar keeps it)
-                    used_for_repair.append(os.path.join(parfolder, old_name))
+                    used_for_repair.append(old_name)
                     # Need to reset it to avoid collision
                     old_name = None
 

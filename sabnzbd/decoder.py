@@ -222,7 +222,7 @@ class Decoder(Thread):
                     return True
 
         msg = T('%s => missing from all servers, discarding') % article
-        logging.debug(msg)
+        logging.info(msg)
         article.nzf.nzo.inc_log('missing_art_log', msg)
         return False
 
