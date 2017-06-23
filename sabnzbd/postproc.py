@@ -126,7 +126,7 @@ class PostProcessor(Thread):
         self.queue.put(nzo)
         self.save()
         # Update the last check time
-        sabnzbd.LAST_HISTORY_UPDATE = time.time()
+        sabnzbd.increase_last_history_update()
 
     def remove(self, nzo):
         """ Remove given nzo from the queue """
@@ -136,7 +136,7 @@ class PostProcessor(Thread):
             pass
         self.save()
         # Update the last check time
-        sabnzbd.LAST_HISTORY_UPDATE = time.time()
+        sabnzbd.increase_last_history_update()
 
     def stop(self):
         """ Stop thread after finishing running job """
@@ -597,7 +597,7 @@ def process_job(nzo):
         try_alt_nzb(nzo)
 
     # Update the last check time
-    sabnzbd.LAST_HISTORY_UPDATE = time.time()
+    sabnzbd.increase_last_history_update()
 
     return True
 

@@ -353,7 +353,6 @@ class Downloader(Thread):
         """ Return True when this server has the highest priority of the active ones
             0 is the highest priority
         """
-
         for server in self.servers:
             if server is not me and server.active and server.priority < me.priority:
                 return False

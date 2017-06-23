@@ -511,14 +511,14 @@ def _api_history(name, output, kwargs):
             if special in ('all', 'completed'):
                 history_db.remove_completed(search)
             # Update the last check time
-            sabnzbd.LAST_HISTORY_UPDATE = time.time()
+            sabnzbd.increase_last_history_update()
             return report(output)
         elif value:
             jobs = value.split(',')
             for job in jobs:
                 del_hist_job(job, del_files)
             # Update the last check time
-            sabnzbd.LAST_HISTORY_UPDATE = time.time()
+            sabnzbd.increase_last_history_update()
             return report(output)
         else:
             return report(output, _MSG_NO_VALUE)

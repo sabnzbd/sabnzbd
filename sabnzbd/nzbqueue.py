@@ -422,7 +422,7 @@ class NzbQueue(object):
             nzo_id = None
 
         # Update the last check time, since history was updated
-        sabnzbd.LAST_HISTORY_UPDATE = time.time()
+        sabnzbd.increase_last_history_update()
 
         return nzo_id
 

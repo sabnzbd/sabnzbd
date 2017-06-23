@@ -157,7 +157,7 @@ WEBUI_READY = False
 LAST_WARNING = None
 LAST_ERROR = None
 EXTERNAL_IPV6 = False
-LAST_HISTORY_UPDATE = time.time()
+LAST_HISTORY_UPDATE = 1
 
 # Performance measure for dashboard
 PYSTONE_SCORE = 0
@@ -1180,3 +1180,11 @@ def test_ipv6():
     except:
         logging.debug('Test IPv6: Problem during IPv6 connect. Disabling IPv6. Reason: %s', sys.exc_info()[0])
         return False
+
+
+def increase_last_history_update():
+    """ To make sure we always have a fresh history """
+    sabnzbd.LAST_HISTORY_UPDATE += 1
+    # Never go over the limit
+    if sabnzbd.LAST_HISTORY_UPDATE+1 >= sys.maxint:
+        sabnzbd.LAST_HISTORY_UPDATE = 0

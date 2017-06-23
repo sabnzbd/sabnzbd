@@ -1023,7 +1023,7 @@ class NzbObject(TryList):
                 self.set_unpack_info('Download', self.fail_msg, unique=False)
                 logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
                 # Update the last check time
-                sabnzbd.LAST_HISTORY_UPDATE = time.time()
+                sabnzbd.increase_last_history_update()
                 return True, True
 
         if file_done:
@@ -1546,7 +1546,7 @@ class NzbObject(TryList):
 
     def set_action_line(self, action=None, msg=None):
         # Update the last check time
-        sabnzbd.LAST_HISTORY_UPDATE = time.time()
+        sabnzbd.increase_last_history_update()
         if action and msg:
             self.action_line = '%s: %s' % (action, msg)
         else:
