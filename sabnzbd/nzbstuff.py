@@ -1226,14 +1226,15 @@ class NzbObject(TryList):
                     extrapars_sorted = sorted(self.extrapars[parset], key=lambda x: x.blocks, reverse=True)
                     # Loop until we have enough
                     while blocks_already < total_need and extrapars_sorted:
-                        # Add the first one
                         new_nzf = extrapars_sorted.pop()
+                        # Reset NZF TryList, in case something was on it before it became extrapar
+                        new_nzf.reset_try_list()
                         self.add_parfile(new_nzf)
                         self.extrapars[parset] = extrapars_sorted
                         blocks_already = blocks_already + int_conv(new_nzf.blocks)
                         logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
-                    # Reset all try lists
-                    self.reset_all_try_lists()
+                    # Reset NZO TryList
+                    self.reset_try_list()
 
     def check_quality(self, req_ratio=0):
         """ Determine amount of articles present on servers
