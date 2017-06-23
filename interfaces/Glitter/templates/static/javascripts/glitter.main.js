@@ -538,7 +538,7 @@ function ViewModel() {
                 // Go over all warnings and add
                 $.each(response.warnings, function(index, warning) {
                     // Split warning into parts
-                    var warningSplit = warning.split(/\n/);
+                    var warningSplit = convertHTMLtoText(warning).split(/\n/);
 
                     // Reformat CSS label and date
                     var warningData = {
