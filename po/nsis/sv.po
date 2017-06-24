@@ -7,63 +7,63 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-03-18 21:42+0000\n"
+"POT-Creation-Date: 2017-06-22 20:42+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Andreas Lindberg <andypandyswe@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-03-19 06:37+0000\n"
-"X-Generator: Launchpad (build 18332)\n"
+"X-Launchpad-Export-Date: 2017-06-23 05:56+0000\n"
+"X-Generator: Launchpad (build 18416)\n"
 
-#: NSIS_Installer.nsi:473
+#: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Visa releasenoteringar"
 
-#: NSIS_Installer.nsi:475
+#: NSIS_Installer.nsi
 msgid "Start SABnzbd"
 msgstr ""
 
-#: NSIS_Installer.nsi:477
+#: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
 msgstr "Donera och stöd detta projekt!"
 
-#: NSIS_Installer.nsi:479
+#: NSIS_Installer.nsi
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Var vänlig stäng \"SABnzbd.exe\" först"
 
-#: NSIS_Installer.nsi:481
+#: NSIS_Installer.nsi
 msgid ""
 "The installation directory has changed (now in \"Program Files\"). \\nIf you "
 "run SABnzbd as a service, you need to update the service settings."
 msgstr ""
 
-#: NSIS_Installer.nsi:483
+#: NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Detta kommer att avinstallera SABnzbd från systemet"
 
-#: NSIS_Installer.nsi:485
+#: NSIS_Installer.nsi
 msgid "Run at startup"
 msgstr "Kör vid uppstart"
 
-#: NSIS_Installer.nsi:487
+#: NSIS_Installer.nsi
 msgid "Desktop Icon"
 msgstr "Skrivbordsikon"
 
-#: NSIS_Installer.nsi:489
+#: NSIS_Installer.nsi
 msgid "NZB File association"
 msgstr "NZB Filassosication"
 
-#: NSIS_Installer.nsi:491
+#: NSIS_Installer.nsi
 msgid "Delete Program"
 msgstr "Radera programmet"
 
-#: NSIS_Installer.nsi:493
+#: NSIS_Installer.nsi
 msgid "Delete Settings"
 msgstr "Radera inställningar"
 
-#: NSIS_Installer.nsi:495
+#: NSIS_Installer.nsi
 msgid ""
 "This system requires the Microsoft runtime library VC90 to be installed "
 "first. Do you want to do that now?"
@@ -71,19 +71,19 @@ msgstr ""
 "Detta system kräver att Microsofts runtimebibliotek VC90 är installerat. "
 "Vill du göra detta nu?"
 
-#: NSIS_Installer.nsi:497
+#: NSIS_Installer.nsi
 msgid "Downloading Microsoft runtime installer..."
 msgstr "Laddar ned Microsofts runtimeinstaller..."
 
-#: NSIS_Installer.nsi:499
+#: NSIS_Installer.nsi
 msgid "Download error, retry?"
 msgstr "Misslyckat nedladdningsförsök, försök igen?"
 
-#: NSIS_Installer.nsi:501
+#: NSIS_Installer.nsi
 msgid "Cannot install without runtime library, retry?"
 msgstr "Kan inte installera utan runtimebibliotek, försök igen?"
 
-#: NSIS_Installer.nsi:503
+#: NSIS_Installer.nsi
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
@@ -92,7 +92,7 @@ msgstr ""
 "avinstallera tidigare version eller 'Avbryt' för att avbryta denna "
 "uppgradering."
 
-#: NSIS_Installer.nsi:505
+#: NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Dina inställningar och ditt data kommer att bevaras."
 

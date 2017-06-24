@@ -7,33 +7,33 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-03-18 21:42+0000\n"
+"POT-Creation-Date: 2017-06-22 20:42+0000\n"
 "PO-Revision-Date: 2017-04-02 07:38+0000\n"
 "Last-Translator: Paavo Rissanen <paavo.rissanen@outlook.com>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-04-05 07:19+0000\n"
-"X-Generator: Launchpad (build 18335)\n"
+"X-Launchpad-Export-Date: 2017-06-23 05:56+0000\n"
+"X-Generator: Launchpad (build 18416)\n"
 
-#: NSIS_Installer.nsi:473
+#: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Näytä julkaisutiedot"
 
-#: NSIS_Installer.nsi:475
+#: NSIS_Installer.nsi
 msgid "Start SABnzbd"
 msgstr "Käynnistä SABnzbd"
 
-#: NSIS_Installer.nsi:477
+#: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
 msgstr "Tue projektia, lahjoita!"
 
-#: NSIS_Installer.nsi:479
+#: NSIS_Installer.nsi
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Ole hyvä ja sulje \"SABnzbd.exe\" ensin"
 
-#: NSIS_Installer.nsi:481
+#: NSIS_Installer.nsi
 msgid ""
 "The installation directory has changed (now in \"Program Files\"). \\nIf you "
 "run SABnzbd as a service, you need to update the service settings."
@@ -41,31 +41,31 @@ msgstr ""
 "Asennuskansio on muuttunut (nykyisin \"Program Files\"). \\nJos suoritat "
 "SABnzbd:ta palveluna, sinun täytyy päivittää palvelun asetukset."
 
-#: NSIS_Installer.nsi:483
+#: NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Tämä poistaa SABnzbd:n tietokoneestasi"
 
-#: NSIS_Installer.nsi:485
+#: NSIS_Installer.nsi
 msgid "Run at startup"
 msgstr "Suorita käynnistyksen yhteydessä"
 
-#: NSIS_Installer.nsi:487
+#: NSIS_Installer.nsi
 msgid "Desktop Icon"
 msgstr "Työpöydän kuvake"
 
-#: NSIS_Installer.nsi:489
+#: NSIS_Installer.nsi
 msgid "NZB File association"
 msgstr "NZB tiedostosidos"
 
-#: NSIS_Installer.nsi:491
+#: NSIS_Installer.nsi
 msgid "Delete Program"
 msgstr "Poista sovellus"
 
-#: NSIS_Installer.nsi:493
+#: NSIS_Installer.nsi
 msgid "Delete Settings"
 msgstr "Poista asetukset"
 
-#: NSIS_Installer.nsi:495
+#: NSIS_Installer.nsi
 msgid ""
 "This system requires the Microsoft runtime library VC90 to be installed "
 "first. Do you want to do that now?"
@@ -73,19 +73,19 @@ msgstr ""
 "Tämä järjestelmä vaatii, että Microsoft runtime kirjasto VC90 täytyy asentaa "
 "ensin. Haluatko asentaa sen nyt?"
 
-#: NSIS_Installer.nsi:497
+#: NSIS_Installer.nsi
 msgid "Downloading Microsoft runtime installer..."
 msgstr "Ladataan Microsoft runtime asennusta..."
 
-#: NSIS_Installer.nsi:499
+#: NSIS_Installer.nsi
 msgid "Download error, retry?"
 msgstr "Latausvirhe, yritä uudelleen?"
 
-#: NSIS_Installer.nsi:501
+#: NSIS_Installer.nsi
 msgid "Cannot install without runtime library, retry?"
 msgstr "Ei voida asentaa ilman runtime kirjastoa, yritä uudelleen?"
 
-#: NSIS_Installer.nsi:503
+#: NSIS_Installer.nsi
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
@@ -93,7 +93,7 @@ msgstr ""
 "Et voi asentaa tätä vanhan asennuksen päälle. \\n\\nPaina `OK` poistaaksesi "
 "edellisen version tai paina `Peruuta` peruuttaaksesi tämän päivityksen."
 
-#: NSIS_Installer.nsi:505
+#: NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Asetuksiasi ja tietojasi ei poisteta."
 
