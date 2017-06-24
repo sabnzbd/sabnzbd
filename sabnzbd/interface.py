@@ -1216,6 +1216,7 @@ def orphan_delete(kwargs):
     if path:
         path = platform_encode(path)
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
+        logging.info('Removing orphaned job %s', path)
         remove_all(path, recursive=True)
 
 def orphan_delete_all():
@@ -1229,6 +1230,7 @@ def orphan_add(kwargs):
     if path:
         path = platform_encode(path)
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
+        logging.info('Re-adding orphaned job %s', path)
         NzbQueue.do.repair_job(path, None, None)
 
 def orphan_add_all():

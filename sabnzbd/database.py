@@ -217,6 +217,7 @@ class HistoryDB(object):
     def remove_completed(self, search=None):
         """ Remove all completed jobs from the database, optional with `search` pattern """
         search = convert_search(search)
+        logging.info('Removing all completed jobs from history')
         return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Completed'""", (search,), save=True)
 
     def get_failed_paths(self, search=None):
@@ -231,6 +232,7 @@ class HistoryDB(object):
     def remove_failed(self, search=None):
         """ Remove all failed jobs from the database, optional with `search` pattern """
         search = convert_search(search)
+        logging.info('Removing all failed jobs from history')
         return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Failed'""", (search,), save=True)
 
     def remove_history(self, jobs=None):
@@ -243,6 +245,7 @@ class HistoryDB(object):
 
             for job in jobs:
                 self.execute("""DELETE FROM history WHERE nzo_id=?""", (job,))
+                logging.info('Removing job %s from history', job)
 
         self.save()
 
@@ -255,6 +258,7 @@ class HistoryDB(object):
         downloaded, completeness, fail_message, url_info, bytes, series, md5sum, password)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
+        logging.info('Added job %s to history', nzo.final_name)
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
         """ Return records for specified jobs """

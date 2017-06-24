@@ -259,6 +259,7 @@ class NzbQueue(object):
             del self.__nzo_table[nzo_id]
             # And attach the new nzo to the old nzo_id
             self.__nzo_table[old_id] = new_nzo
+            logging.info('Replacing in queue %s by %s', nzo.final_name, new_nzo.final_name)
             del nzo
             return new_nzo
         except:
@@ -289,6 +290,7 @@ class NzbQueue(object):
 
     def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY, nzbname=None):
         """ Create and return a placeholder nzo object """
+        logging.debug('Creating placeholder NZO')
         future_nzo = NzbObject(msg, pp, script, None, True, cat=cat, url=url, priority=priority, nzbname=nzbname, status=Status.GRABBING)
         self.add(future_nzo)
         return future_nzo
@@ -306,6 +308,7 @@ class NzbQueue(object):
         for nzo_id in [item.strip() for item in nzo_ids.split(',')]:
             if nzo_id in self.__nzo_table:
                 self.__nzo_table[nzo_id].script = script
+                logging.info('Set script=%s for job %s', script, self.__nzo_table[nzo_id].final_name)
                 result += 1
         return result
 
@@ -315,6 +318,7 @@ class NzbQueue(object):
             if nzo_id in self.__nzo_table:
                 nzo = self.__nzo_table[nzo_id]
                 nzo.cat, pp, nzo.script, prio = cat_to_opts(cat)
+                logging.info('Set cat=%s for job %s', cat, nzo.final_name)
                 nzo.set_pp(pp)
                 if explicit_priority is None:
                     self.set_priority(nzo_id, prio)
@@ -324,6 +328,7 @@ class NzbQueue(object):
     def change_name(self, nzo_id, name, password=None):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
+            logging.info('Renaming %s to %s', nzo.final_name, name)
             if not nzo.futuretype:
                 nzo.set_final_name_pw(name, password)
             else:
@@ -416,7 +421,7 @@ class NzbQueue(object):
                 self.cleanup_nzo(nzo, keep_basic, del_files)
 
             sabnzbd.remove_data(nzo_id, nzo.workpath)
-
+            logging.info('Removed job %s', nzo.final_name)
             if save:
                 self.save(nzo)
         else:
@@ -467,7 +472,7 @@ class NzbQueue(object):
                     nzo.bytes_tried -= (nzf.bytes - nzf.bytes_left)
                     del nzo.files_table[nzf_id]
                     nzo.finished_files.remove(nzf)
-
+            logging.info('Removed NZFs %s from job %s', removed, nzo.final_name)
         return removed
 
     def pause_multiple_nzo(self, nzo_ids):
@@ -482,7 +487,7 @@ class NzbQueue(object):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzo.pause()
-            logging.debug("Paused nzo: %s", nzo_id)
+            logging.info("Paused nzo: %s", nzo_id)
             handled.append(nzo_id)
         return handled
 
@@ -500,7 +505,7 @@ class NzbQueue(object):
             nzo = self.__nzo_table[nzo_id]
             nzo.resume()
             nzo.reset_all_try_lists()
-            logging.debug("Resumed nzo: %s", nzo_id)
+            logging.info("Resumed nzo: %s", nzo_id)
             handled.append(nzo_id)
         return handled
 
@@ -545,6 +550,7 @@ class NzbQueue(object):
                 item_id_pos2 = i
             if (item_id_pos1 > -1) and (item_id_pos2 > -1):
                 item = self.__nzo_list[item_id_pos1]
+                logging.info('Switching job [%s] %s => [%s] %s', item_id_pos1, item.final_name, item_id_pos2, self.__nzo_list[item_id_pos2].final_name)
                 del self.__nzo_list[item_id_pos1]
                 self.__nzo_list.insert(item_id_pos2, item)
                 return (item_id_pos2, nzo1.priority)
@@ -570,15 +576,15 @@ class NzbQueue(object):
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
     def sort_by_avg_age(self, reverse=False):
-        logging.info("Sorting by average date...(reversed:%s)", reverse)
+        logging.info("Sorting by average date... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_date_cmp, reverse)
 
     def sort_by_name(self, reverse=False):
-        logging.info("Sorting by name...(reversed:%s)", reverse)
+        logging.info("Sorting by name... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_name_cmp, reverse)
 
     def sort_by_size(self, reverse=False):
-        logging.info("Sorting by size...(reversed:%s)", reverse)
+        logging.info("Sorting by size... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
 
     def sort_queue(self, field, reverse=None):
@@ -663,6 +669,8 @@ class NzbQueue(object):
                         # if the queue is empty then simple append the item to the bottom
                         self.__nzo_list.append(nzo)
                         pos = 0
+
+            logging.info('Set priority=%s for job %s => position=%s ', priority, self.__nzo_table[nzo_id].final_name, pos)
             return pos
 
         except:
@@ -752,6 +760,7 @@ class NzbQueue(object):
 
     def end_job(self, nzo):
         """ Send NZO to the post-processing queue """
+        logging.info('Ending job %s', nzo.final_name)
         if self.actives(grabs=False) < 2 and cfg.autodisconnect():
             # This was the last job, close server connections
             if sabnzbd.downloader.Downloader.do:

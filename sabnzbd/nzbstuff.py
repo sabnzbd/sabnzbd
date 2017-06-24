@@ -1109,6 +1109,7 @@ class NzbObject(TryList):
 
     def set_pp(self, value):
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(value)
+        logging.info('Set pp=%s for job %s', value, self.final_name)
         self.save_to_disk()
 
     @property

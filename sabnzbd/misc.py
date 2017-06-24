@@ -911,8 +911,7 @@ def move_to_path(path, new_path):
         new_path = get_unique_filename(new_path)
 
     if new_path:
-        logging.debug("Moving. Old path: %s New path: %s Overwrite: %s",
-                                                  path, new_path, overwrite)
+        logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
         try:
             # First try cheap rename
             renamer(path, new_path)
@@ -1365,6 +1364,7 @@ def renamer(old, new):
 
 def remove_dir(path):
     """ Remove directory with retries for Win32 """
+    logging.debug('Removing dir %s', path)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
@@ -1393,6 +1393,7 @@ def remove_all(path, pattern='*', keep_folder=False, recursive=False):
         for f in files:
             if os.path.isfile(f):
                 try:
+                    logging.debug('Removing file %s', f)
                     os.remove(f)
                 except:
                     logging.info('Cannot remove file %s', f)
@@ -1400,6 +1401,7 @@ def remove_all(path, pattern='*', keep_folder=False, recursive=False):
                 remove_all(f, pattern, False, True)
         if not keep_folder:
             try:
+                logging.debug('Removing dir %s', path)
                 os.rmdir(path)
             except:
                 logging.info('Cannot remove folder %s', path)
@@ -1451,6 +1453,7 @@ def starts_with_path(path, prefix):
 def set_chmod(path, permissions, report):
     """ Set 'permissions' on 'path', report any errors when 'report' is True """
     try:
+        logging.debug('Applying %s to %s', permissions, path)
         os.chmod(path, permissions)
     except:
         lpath = path.lower()
