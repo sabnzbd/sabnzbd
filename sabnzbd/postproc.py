@@ -533,14 +533,6 @@ def process_job(nzo):
                 for host in hosts:
                     Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)
 
-        # Show final status in history
-        if all_ok:
-            notifier.send_notification(T('Download Completed'), filename, 'complete')
-            nzo.status = Status.COMPLETED
-        else:
-            notifier.send_notification(T('Download Failed'), filename, 'failed')
-            nzo.status = Status.FAILED
-
     except:
         logging.error(T('Post Processing Failed for %s (%s)'), filename, crash_msg)
         if not crash_msg:
@@ -560,18 +552,6 @@ def process_job(nzo):
         # Be aware that series/generic/date sorting may move a single file into a folder containing other files
         workdir_complete = one_file_or_folder(workdir_complete)
         workdir_complete = os.path.normpath(workdir_complete)
-
-    # Log the overall time taken for postprocessing
-    postproc_time = int(time.time() - start)
-
-    # Create the history DB instance
-    history_db = database.HistoryDB()
-    # Add the nzo to the database. Only the path, script and time taken is passed
-    # Other information is obtained from the nzo
-    history_db.add_history_db(nzo, clip_path(workdir_complete), nzo.downpath, postproc_time, script_log, script_line)
-    # The connection is only used once, so close it here
-    history_db.close()
-    sabnzbd.history_updated()
 
     # Clean up the NZO
     try:
@@ -595,6 +575,25 @@ def process_job(nzo):
     if par_error or unpack_error in (2, 3):
         try_alt_nzb(nzo)
 
+    # Show final status in history
+    if all_ok:
+        notifier.send_notification(T('Download Completed'), filename, 'complete')
+        nzo.status = Status.COMPLETED
+    else:
+        notifier.send_notification(T('Download Failed'), filename, 'failed')
+        nzo.status = Status.FAILED
+
+    # Log the overall time taken for postprocessing
+    postproc_time = int(time.time() - start)
+
+    # Create the history DB instance
+    history_db = database.HistoryDB()
+    # Add the nzo to the database. Only the path, script and time taken is passed
+    # Other information is obtained from the nzo
+    history_db.add_history_db(nzo, clip_path(workdir_complete), nzo.downpath, postproc_time, script_log, script_line)
+    # The connection is only used once, so close it here
+    history_db.close()
+    sabnzbd.history_updated()
     return True
 
 
