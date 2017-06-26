@@ -1338,7 +1338,7 @@ class NzbObject(TryList):
                         if sabnzbd.highest_server(server):
                             nzf.finish_import()
                             # Still not finished? Something went wrong...
-                            if not nzf.import_finished:
+                            if not nzf.import_finished and not self.is_gone():
                                 logging.error(T('Error importing %s'), nzf)
                                 nzf_remove_list.append(nzf)
                                 continue
