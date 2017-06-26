@@ -954,7 +954,8 @@ class NzbObject(TryList):
                 if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
                     self.extrapars[parset].append(xnzf)
-                    if not self.precheck:
+                    # Don't postpone during pre-check or if all par2 should be kept
+                    if not self.precheck and cfg.enable_par_cleanup():
                         self.files.remove(xnzf)
 
     @synchronized(NZO_LOCK)
