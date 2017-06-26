@@ -1182,24 +1182,40 @@ else:
             return 20.0, 10.0
 
 
-__LAST_DISK_RESULT = {}
-__LAST_DISK_CALL = {}
-def diskspace(_dir, force=False):
+# Store all results to speed things up
+__DIRS_CHECKED = []
+__DISKS_SAME = None
+__LAST_DISK_RESULT = {'download_dir': [], 'complete_dir': []}
+__LAST_DISK_CALL = 0
+
+def diskspace(force=False):
     """ Wrapper to cache results """
-    if _dir not in __LAST_DISK_RESULT:
-        __LAST_DISK_RESULT[_dir] = [0.0, 0.0]
-        __LAST_DISK_CALL[_dir] = 0.0
+    global __DIRS_CHECKED, __DISKS_SAME, __LAST_DISK_RESULT, __LAST_DISK_CALL
+
+    # Reset everything when folders changed
+    dirs_to_check = [cfg.download_dir.get_path(), cfg.complete_dir.get_path()]
+    if __DIRS_CHECKED != dirs_to_check:
+        __DIRS_CHECKED = dirs_to_check
+        __DISKS_SAME = None
+        __LAST_DISK_RESULT = {'download_dir': [], 'complete_dir': []}
+        __LAST_DISK_CALL = 0
 
     # When forced, ignore any cache to avoid problems in UI
     if force:
-        return diskspace_base(_dir)
+        __LAST_DISK_CALL = 0
 
     # Check against cache
-    if time.time() > __LAST_DISK_CALL[_dir] + 10.0:
-        __LAST_DISK_RESULT[_dir] = diskspace_base(_dir)
-        __LAST_DISK_CALL[_dir] = time.time()
+    if time.time() > __LAST_DISK_CALL + 10.0:
+        # Same disk? Then copy-paste
+        __LAST_DISK_RESULT['download_dir'] = diskspace_base(cfg.download_dir.get_path())
+        __LAST_DISK_RESULT['complete_dir'] = __LAST_DISK_RESULT['download_dir'] if __DISKS_SAME else diskspace_base(cfg.complete_dir.get_path())
+        __LAST_DISK_CALL = time.time()
 
-    return __LAST_DISK_RESULT[_dir]
+    # Do we know if it's same disk?
+    if __DISKS_SAME is None:
+        __DISKS_SAME = (__LAST_DISK_RESULT['download_dir'] == __LAST_DISK_RESULT['complete_dir'])
+
+    return __LAST_DISK_RESULT
 
 
 ##############################################################################

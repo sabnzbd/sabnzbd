@@ -1622,8 +1622,7 @@ def build_header(webdir='', output=None):
     if speed_limit_abs <= 0:
         speed_limit_abs = ''
 
-    disk_total1, disk_free1 = diskspace(cfg.download_dir.get_path())
-    disk_total2, disk_free2 = diskspace(cfg.complete_dir.get_path())
+    diskspace_info = diskspace()
 
     header = {}
 
@@ -1660,12 +1659,12 @@ def build_header(webdir='', output=None):
     header['pause_int'] = scheduler.pause_int()
     header['paused_all'] = sabnzbd.PAUSED_ALL
 
-    header['diskspace1'] = "%.2f" % disk_free1
-    header['diskspace2'] = "%.2f" % disk_free2
-    header['diskspace1_norm'] = to_units(disk_free1 * GIGI)
-    header['diskspace2_norm'] = to_units(disk_free2 * GIGI)
-    header['diskspacetotal1'] = "%.2f" % disk_total1
-    header['diskspacetotal2'] = "%.2f" % disk_total2
+    header['diskspace1'] = "%.2f" % diskspace_info['download_dir'][1]
+    header['diskspace2'] = "%.2f" % diskspace_info['complete_dir'][1]
+    header['diskspace1_norm'] = to_units(diskspace_info['download_dir'][1] * GIGI)
+    header['diskspace2_norm'] = to_units(diskspace_info['complete_dir'][1] * GIGI)
+    header['diskspacetotal1'] = "%.2f" % diskspace_info['download_dir'][0]
+    header['diskspacetotal2'] = "%.2f" % diskspace_info['complete_dir'][0]
     header['loadavg'] = loadavg()
     header['speedlimit'] = "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit)
     header['speedlimit_abs'] = "%s" % speed_limit_abs
