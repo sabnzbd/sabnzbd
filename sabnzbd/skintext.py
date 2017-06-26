@@ -84,7 +84,6 @@ SKIN_TEXT = {
     'pushover-off'       : TT('Off'), #: Prowl priority
     'pushover-low'       : TT('Low'), #: Prowl priority
     'pushover-high'      : TT('High'), #: Prowl priority
-    'pushover-confirm'   : TT('Confirm'), #: Prowl priority
 
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus
@@ -140,7 +139,6 @@ SKIN_TEXT = {
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
     'button-save' : TT('Save'), #: "Save" button
-    'queued' : TT('Queued'), #: "Queued" used to show amount of jobs
     'confirm' : TT('Are you sure?'), #: Used in confirmation popups
     'delFiles' : TT('Delete all downloaded files?'),  #: Used in confirmation popups
 
@@ -174,7 +172,6 @@ SKIN_TEXT = {
     'ft-paused' : TT('PAUSED'), # Used in Footer
     'ft-buffer@2' : TT('Cached %s articles (%s)'), # Used in Footer
     'ft-sysload' : TT('Sysload'), # Used in Footer
-    'ft-warning' : TT('WARNINGS'), # Used in Footer
     'ft-newRelease@1' : TT('New release %s available at'), # Used in Footer
 
 # Main page
@@ -205,8 +202,6 @@ SKIN_TEXT = {
     'enterURL' : TT('Enter URL'), #: Add NZB Dialog
 
 # Queue page
-    'link-hideFiles' : TT('Hide files'), #: Queue page button
-    'link-showFiles' : TT('Show files'), #: Queue page button
     'onQueueFinish' : TT('On queue finish'),  #: Queue page selection menu
     'shutdownPc' : TT('Shutdown PC'), #: Queue page end-of-queue action
     'standbyPc' : TT('Standby PC'), #: Queue page end-of-queue action
@@ -269,7 +264,6 @@ SKIN_TEXT = {
     'log-info' : TT('+ Info'), #: Status page logging selection value
     'log-debug' : TT('+ Debug'), #: Status page logging selection value
     'connections' : TT('Connections'), #: Status page tab header
-    'emailResult' : TT('Email Test Result'), #: Status page, title for email test result
     'lastWarnings' : TT('Latest Warnings'), #: Status page, table header
     'clearWarnings' : TT('clear'),  #: Status page button
     'server-blocked' : TT('Unblock'), #: Status page button
@@ -335,7 +329,6 @@ SKIN_TEXT = {
     'opt-web_password' : TT('SABnzbd Password'),
     'explain-web_password' : TT('Optional authentication password.'),
     'security' : TT('Security'),
-    'httpsSupport' : TT('HTTPS Support'),
     'opt-enable_https' : TT('Enable HTTPS'),
     'opt-notInstalled' : TT('not installed'),
     'explain-enable_https' : TT('Enable accessing the interface from a HTTPS address.'),
@@ -450,8 +443,6 @@ SKIN_TEXT = {
     'explain-folder_rename' : TT('Use temporary names during post processing. Disable when your system doesn\'t handle that properly.'),
     'opt-pre_script' : TT('Pre-queue user script'),
     'explain-pre_script' : TT('Used before an NZB enters the queue.'),
-    'opt-par2_multicore' : TT('Enable MultiCore Par2'),
-    'explain-par2_multicore' : TT('Read the Wiki Help on this!'),
     'opt-par_option' : TT('Extra PAR2 Parameters'),
     'explain-par_option' : TT('Read the Wiki Help on this!'),
     'opt-nice' : TT('Nice Parameters'),
@@ -479,11 +470,9 @@ SKIN_TEXT = {
     'explain-pause_on_post_processing' : TT('Pauses downloading at the start of post processing and resumes when finished.'),
     'opt-ignore_samples' : TT('Ignore Samples'),
     'explain-ignore_samples' : TT('Filter out sample files (e.g. video samples).'),
-    'igsam-off' : TT('Off'),
     'igsam-del' : TT('Delete after download'),
     'opt-enable_https_verification' : TT('HTTPS certificate verification'),
     'explain-enable_https_verification' : TT('Verify certificates when connecting to indexers and RSS-sources using HTTPS.'),
-    'swtag-general' : TT('General'),
     'swtag-server' : TT('Server'),
     'swtag-queue' : TT('Queue'),
     'swtag-pp' : TT('Post processing'),
@@ -584,7 +573,6 @@ SKIN_TEXT = {
     'rss-order' : TT('Order'), #: Config->RSS table column header
     'rss-type' : TT('Type'), #: Config->RSS table column header
     'rss-filter' : TT('Filter'), #: Config->RSS table column header
-    'rss-skip' : TT('Skip'), #: Config->RSS table column header
     'rss-accept' : TT('Accept'), #: Config->RSS filter-type selection menu
     'rss-reject' : TT('Reject'), #: Config->RSS filter-type selection menu
     'rss-must' : TT('Requires'), #: Config->RSS filter-type selection menu
@@ -796,7 +784,6 @@ SKIN_TEXT = {
     'Glitter-showExtraQueueColumn' : TT('Extra queue column'),
     'Glitter-showExtraHistoryColumn' : TT('Extra history column'),
     'Glitter-page' : TT('page'),
-    'Glitter-everything' : TT('Everything'),
     'Glitter-loading' : TT('Loading'),
     'Glitter-articles' : TT('articles'),
     'Glitter-repairQueue' : TT('Queue repair'),
