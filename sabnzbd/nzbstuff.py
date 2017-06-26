@@ -278,8 +278,10 @@ class NzbFile(TryList):
             self.articles.remove(article)
             if found:
                 self.bytes_left -= article.bytes
+                # To keep counter correct for pre-check
+                if self.nzo.precheck:
+                    self.nzo.bytes_downloaded += article.bytes
             self.nzo.bytes_tried += article.bytes
-
         return (not self.articles)
 
     def set_par2(self, setname, vol, blocks):
