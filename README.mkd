@@ -19,7 +19,8 @@ https://sabnzbd.org/donate/
 ## Bugfixes since Alpha 1
 - Fixed some "Saving failed" errors
 - Fixed crashing URLGrabber
-- Correct redirect after enabeling HTTPS in the Config
+- Disk-space readings could be updated incorrectly
+- Correct redirect after enabling HTTPS in the Config
 - Fix race-condition in Post-processing
 - History would not always show latest changes
 - Convert HTML in error messages
