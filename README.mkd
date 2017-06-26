@@ -1,10 +1,30 @@
-Release Notes  -  SABnzbd 2.2.0 Alpha 1
+Release Notes  -  SABnzbd 2.2.0 Alpha 2
 =========================================================
 
 NOTE: Due to changes in this release, the queue will be converted when 2.2.0
 is started for the first time. Job order, settings and data will be
 preserved, but all jobs will be unpaused and URL's that did not finish
 fetching before the upgrade will be lost!
+
+We now also accept donations via Bitcoin, Ethereum and Litecoin:
+https://sabnzbd.org/donate/
+
+## Changes since Alpha 1
+- Show missing articles in MB instead of number of articles
+- 'Download all par2' will download all par2 if par_cleanup is disabled
+- Windows: Move enable_multipar to Specials (so MultiPar is always used)
+- Windows: Better indication of verification process before and after repair
+- Windows: MultiPar verification of a job is skipped after blocks are fetched
+
+## Bugfixes since Alpha 1
+- Fixed some "Saving failed" errors
+- Fixed crashing URLGrabber
+- Correct redirect after enabeling HTTPS in the Config
+- Fix race-condition in Post-processing
+- History would not always show latest changes
+- Convert HTML in error messages
+- Not all texts were shown in the selected Language
+
 
 ## Changes in 2.2.0
 - Reduced memory usage, especially with larger queues
