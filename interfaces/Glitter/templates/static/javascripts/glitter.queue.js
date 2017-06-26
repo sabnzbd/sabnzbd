@@ -464,7 +464,7 @@ function QueueModel(parent, data) {
     self.totalMB = ko.observable(parseFloat(data.mb));
     self.remainingMB = ko.observable(parseFloat(data.mbleft));
     self.avg_age = ko.observable(data.avg_age)
-    self.missing = ko.observable(data.missing)
+    self.missing = ko.observable(parseFloat(data.mbmissing))
     self.category = ko.observable(data.cat);
     self.priority = ko.observable(parent.priorityName[data.priority]);
     self.script = ko.observable(data.script);
@@ -485,8 +485,8 @@ function QueueModel(parent, data) {
         if(self.status() == 'Checking') {
             return '#58A9FA'
         }
-        // Check for missing data, the value is arbitrary!
-        if(self.missing() > 50) {
+        // Check for missing data, the value is arbitrary! (3%)
+        if(self.missing()/self.totalMB() > 0.03) {
             return '#F8A34E'
         }
         // Set to grey, only when not Force download
@@ -510,9 +510,9 @@ function QueueModel(parent, data) {
 
     // Texts
     self.missingText= ko.pureComputed(function() {
-        // Check for missing data, the value is arbitrary!
-        if(self.missing() > 50) {
-            return self.missing() + ' ' + glitterTranslate.misingArt
+        // Check for missing data, the value is arbitrary! (3%)
+        if(self.missing()/self.totalMB() > 0.03) {
+            return self.missing().toFixed(0) + ' MB ' + glitterTranslate.misingArt
         }
         return;
     })
@@ -565,7 +565,7 @@ function QueueModel(parent, data) {
         self.totalMB(parseFloat(data.mb));
         self.remainingMB(parseFloat(data.mbleft));
         self.avg_age(data.avg_age)
-        self.missing(data.missing)
+        self.missing(parseFloat(data.mbmissing))
         self.category(data.cat);
         self.priority(parent.priorityName[data.priority]);
         self.script(data.script);

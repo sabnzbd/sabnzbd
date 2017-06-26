@@ -1525,7 +1525,8 @@ class NzbObject(TryList):
                 self.files if full else [],
                 queued_files,
                 self.status, self.priority,
-                len(self.nzo_info.get('missing_art_log', []))
+                len(self.nzo_info.get('missing_art_log', [])),
+                self.bytes_tried - self.bytes_downloaded,
                 )
 
     def get_nzf_by_id(self, nzf_id):
