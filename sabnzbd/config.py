@@ -24,6 +24,9 @@ import re
 import logging
 import threading
 import shutil
+import time
+import random
+from hashlib import md5
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
 from sabnzbd.utils import configobj
@@ -1074,12 +1077,6 @@ def validate_notempty(root, value, default):
 
 def create_api_key():
     """ Return a new randomized API_KEY """
-    import time
-    try:
-        from hashlib import md5
-    except ImportError:
-        from md5 import md5
-    import random
     # Create some values to seed md5
     t = str(time.time())
     r = str(random.random())
