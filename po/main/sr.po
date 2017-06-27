@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2017-06-22 20:42+0000\n"
+"POT-Creation-Date: 2017-06-26 23:00+0000\n"
 "PO-Revision-Date: 2015-12-28 10:25+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-06-23 05:56+0000\n"
+"X-Launchpad-Export-Date: 2017-06-27 06:01+0000\n"
 "X-Generator: Launchpad (build 18416)\n"
 
 #: SABnzbd.py [Error message]
@@ -999,6 +999,10 @@ msgstr "Проверавање"
 msgid "Checking"
 msgstr "Провера"
 
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr ""
+
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
@@ -1514,14 +1518,6 @@ msgstr "Kod prekida skripte je %s"
 msgid "More"
 msgstr "Више"
 
-#: sabnzbd/postproc.py
-msgid "Download Completed"
-msgstr "Преузимање завршено"
-
-#: sabnzbd/postproc.py # sabnzbd/postproc.py
-msgid "Download Failed"
-msgstr "Неуспешно преузимање"
-
 #: sabnzbd/postproc.py [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Грешка пост-процесирања за %s (%s)"
@@ -1530,6 +1526,10 @@ msgstr "Грешка пост-процесирања за %s (%s)"
 msgid "see logfile"
 msgstr "видети извештај"
 
+#: sabnzbd/postproc.py # sabnzbd/postproc.py
+msgid "Download Failed"
+msgstr "Неуспешно преузимање"
+
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Чишћење  %s није успело."
@@ -1537,6 +1537,10 @@ msgstr "Чишћење  %s није успело."
 #: sabnzbd/postproc.py [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Грешка у брисању радне фасцикле (%s)"
+
+#: sabnzbd/postproc.py
+msgid "Download Completed"
+msgstr "Преузимање завршено"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
@@ -1817,7 +1821,6 @@ msgid "Disable quota management"
 msgstr "Онемогући управљање квота"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
-#: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Искључено"
 
@@ -1844,10 +1847,6 @@ msgstr "Хитно"
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
 msgid "Low"
 msgstr "Низак"
-
-#: sabnzbd/skintext.py [Prowl priority]
-msgid "Confirm"
-msgstr "Потврди"
 
 #: sabnzbd/skintext.py [Megabytes]
 msgid "MB"
@@ -2001,10 +2000,6 @@ msgstr "Alatka za automatizovano preuzimanje sa usenet-a"
 msgid "Save"
 msgstr "Сачувај"
 
-#: sabnzbd/skintext.py ["Queued" used to show amount of jobs]
-msgid "Queued"
-msgstr "У реду"
-
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py # sabnzbd/skintext.py
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Are you sure?"
@@ -2046,7 +2041,7 @@ msgstr ""
 msgid "Support the project, Donate!"
 msgstr ""
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "General"
 msgstr "Опште"
 
@@ -2105,10 +2100,6 @@ msgstr "Кеширано %s артикла (%s)"
 #: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "Sysload"
-
-#: sabnzbd/skintext.py
-msgid "WARNINGS"
-msgstr "УПОЗОРЕЊА"
 
 #: sabnzbd/skintext.py
 msgid "New release %s available at"
@@ -2173,14 +2164,6 @@ msgstr "Заустави"
 #: sabnzbd/skintext.py [Add NZB Dialog]
 msgid "Enter URL"
 msgstr "Унесите УРЛ"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Hide files"
-msgstr "Сакриј датотеке"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Show files"
-msgstr "Прикажи датотеке"
 
 #: sabnzbd/skintext.py [Queue page selection menu] # sabnzbd/skintext.py
 msgid "On queue finish"
@@ -2390,10 +2373,6 @@ msgstr "+ Дебаг"
 msgid "Connections"
 msgstr "Везе"
 
-#: sabnzbd/skintext.py [Status page, title for email test result]
-msgid "Email Test Result"
-msgstr "Резултат пробне е-поруке"
-
 #: sabnzbd/skintext.py [Status page, table header]
 msgid "Latest Warnings"
 msgstr "Најновија Упозорења"
@@ -2572,7 +2551,7 @@ msgid "Backup"
 msgstr "Резервно"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "За више информација, читајте Вики!"
 
@@ -2631,10 +2610,6 @@ msgstr "Лозинка за аутентификацију (опционо)"
 #: sabnzbd/skintext.py
 msgid "Security"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "HTTPS Support"
-msgstr "HTTPS подршка"
 
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
@@ -3144,10 +3119,6 @@ msgid "Used before an NZB enters the queue."
 msgstr "Коришћено пре него што NZB уђе у ред."
 
 #: sabnzbd/skintext.py
-msgid "Enable MultiCore Par2"
-msgstr "Упали 'MultiCore Par2'"
-
-#: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
 msgstr "Додатни параметри PAR2"
 
@@ -3576,10 +3547,6 @@ msgstr "Натерај преузимање"
 #: sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Filter"
 msgstr "Филтер"
-
-#: sabnzbd/skintext.py [Config->RSS table column header]
-msgid "Skip"
-msgstr "Прескочи"
 
 #: sabnzbd/skintext.py [Config->RSS filter-type selection menu]
 msgid "Accept"
@@ -4257,10 +4224,6 @@ msgstr ""
 msgid "page"
 msgstr "страни"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Све"
-
 #: sabnzbd/skintext.py
 msgid "Loading"
 msgstr "Учитавам"
@@ -4514,6 +4477,10 @@ msgstr "Опсег"
 #: sabnzbd/skintext.py
 msgid "Apply to Selected"
 msgstr "Примени на одабрано"
+
+#: sabnzbd/skintext.py
+msgid "Everything"
+msgstr "Све"
 
 #: sabnzbd/skintext.py
 msgid "Refresh Rate"
@@ -4900,6 +4867,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "Add Feed"
 #~ msgstr "Додај фид"
 
+#~ msgid "Skip"
+#~ msgstr "Прескочи"
+
 #~ msgid "Delete Feed"
 #~ msgstr "Обриши фид"
 
@@ -4935,6 +4905,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "SSL type"
 #~ msgstr "Тип ССЛ-а"
+
+#~ msgid "Enable MultiCore Par2"
+#~ msgstr "Упали 'MultiCore Par2'"
 
 #~ msgid "Used when no priority is defined by the category."
 #~ msgstr "Коришћено када категорија не дефинише приоритет."
@@ -4993,6 +4966,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "Refresh interval of the queue web-interface page(sec, 0= none)."
 #~ msgstr "Интервал обнове реда у веб интерфејсу (у секундама, 0=без)."
 
+#~ msgid "HTTPS Support"
+#~ msgstr "HTTPS подршка"
+
 #~ msgid "Web server authentication"
 #~ msgstr "Аутентификација веб сервера"
 
@@ -5001,6 +4977,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "Thread"
 #~ msgstr "Нит"
+
+#~ msgid "Email Test Result"
+#~ msgstr "Резултат пробне е-поруке"
 
 #~ msgid "Show Weblogging"
 #~ msgstr "Покажи веб извештај"
@@ -5020,17 +4999,29 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "Sort by size"
 #~ msgstr "Поређај по величини"
 
+#~ msgid "Hide files"
+#~ msgstr "Сакриј датотеке"
+
+#~ msgid "Show files"
+#~ msgstr "Прикажи датотеке"
+
 #~ msgid "&nbsp;"
 #~ msgstr "&nbsp;"
 
 #~ msgid "Add new downloads"
 #~ msgstr "Додај нова преузимања"
 
+#~ msgid "WARNINGS"
+#~ msgstr "УПОЗОРЕЊА"
+
 #~ msgid "Complete Dir"
 #~ msgstr "Фасцикла завршених"
 
 #~ msgid "Download speed"
 #~ msgstr "Брзина преузимања"
+
+#~ msgid "Queued"
+#~ msgstr "У реду"
 
 #~ msgid "View script output"
 #~ msgstr "Видети резултат скрипта"

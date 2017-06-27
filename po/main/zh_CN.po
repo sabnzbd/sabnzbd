@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-06-22 20:42+0000\n"
+"POT-Creation-Date: 2017-06-26 23:00+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-06-23 05:56+0000\n"
+"X-Launchpad-Export-Date: 2017-06-27 06:02+0000\n"
 "X-Generator: Launchpad (build 18416)\n"
 
 #: SABnzbd.py [Error message]
@@ -984,6 +984,10 @@ msgstr "正在验证"
 msgid "Checking"
 msgstr "正在检查"
 
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr ""
+
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Python 脚本 \"%s\" 不具有执行 (+x) 权限"
@@ -1498,14 +1502,6 @@ msgstr "脚本退出代码为 %s"
 msgid "More"
 msgstr "更多"
 
-#: sabnzbd/postproc.py
-msgid "Download Completed"
-msgstr "下载完成"
-
-#: sabnzbd/postproc.py # sabnzbd/postproc.py
-msgid "Download Failed"
-msgstr "下载失败"
-
 #: sabnzbd/postproc.py [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "后期处理失败：%s (%s)"
@@ -1514,6 +1510,10 @@ msgstr "后期处理失败：%s (%s)"
 msgid "see logfile"
 msgstr "查看日志文件"
 
+#: sabnzbd/postproc.py # sabnzbd/postproc.py
+msgid "Download Failed"
+msgstr "下载失败"
+
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "%s 清理失败。"
@@ -1521,6 +1521,10 @@ msgstr "%s 清理失败。"
 #: sabnzbd/postproc.py [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "移除工作目录出错 (%s)"
+
+#: sabnzbd/postproc.py
+msgid "Download Completed"
+msgstr "下载完成"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
@@ -1801,7 +1805,6 @@ msgid "Disable quota management"
 msgstr "禁用配额管理"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
-#: sabnzbd/skintext.py
 msgid "Off"
 msgstr "关"
 
@@ -1828,10 +1831,6 @@ msgstr "紧急"
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
 msgid "Low"
 msgstr "低"
-
-#: sabnzbd/skintext.py [Prowl priority]
-msgid "Confirm"
-msgstr "确认"
 
 #: sabnzbd/skintext.py [Megabytes]
 msgid "MB"
@@ -1985,10 +1984,6 @@ msgstr "usenet 自动下载工具"
 msgid "Save"
 msgstr "保存"
 
-#: sabnzbd/skintext.py ["Queued" used to show amount of jobs]
-msgid "Queued"
-msgstr "在队列中"
-
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py # sabnzbd/skintext.py
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Are you sure?"
@@ -2030,7 +2025,7 @@ msgstr "问题"
 msgid "Support the project, Donate!"
 msgstr "支持该项目，捐助!"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "General"
 msgstr "常规"
 
@@ -2089,10 +2084,6 @@ msgstr "已缓存 %s 篇文章 (%s)"
 #: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "系统负载"
-
-#: sabnzbd/skintext.py
-msgid "WARNINGS"
-msgstr "警告信息"
 
 #: sabnzbd/skintext.py
 msgid "New release %s available at"
@@ -2157,14 +2148,6 @@ msgstr "停止"
 #: sabnzbd/skintext.py [Add NZB Dialog]
 msgid "Enter URL"
 msgstr "输入 URL"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Hide files"
-msgstr "隐藏文件列表"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Show files"
-msgstr "显示文件列表"
 
 #: sabnzbd/skintext.py [Queue page selection menu] # sabnzbd/skintext.py
 msgid "On queue finish"
@@ -2374,10 +2357,6 @@ msgstr "+ 调试"
 msgid "Connections"
 msgstr "连接"
 
-#: sabnzbd/skintext.py [Status page, title for email test result]
-msgid "Email Test Result"
-msgstr "电子邮件测试结果"
-
 #: sabnzbd/skintext.py [Status page, table header]
 msgid "Latest Warnings"
 msgstr "最新警告信息"
@@ -2552,7 +2531,7 @@ msgid "Backup"
 msgstr "备份"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "关于该项请参阅 Wiki 帮助!"
 
@@ -2611,10 +2590,6 @@ msgstr "可选身份验证密码。"
 #: sabnzbd/skintext.py
 msgid "Security"
 msgstr "安全"
-
-#: sabnzbd/skintext.py
-msgid "HTTPS Support"
-msgstr "HTTPS 支持"
 
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
@@ -3092,10 +3067,6 @@ msgid "Used before an NZB enters the queue."
 msgstr "用于在 NZB 进入队列前执行。"
 
 #: sabnzbd/skintext.py
-msgid "Enable MultiCore Par2"
-msgstr "启用多核 Par2"
-
-#: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
 msgstr "额外的 PAR2 参数"
 
@@ -3519,10 +3490,6 @@ msgstr "强制下载"
 #: sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Filter"
 msgstr "过滤器"
-
-#: sabnzbd/skintext.py [Config->RSS table column header]
-msgid "Skip"
-msgstr "跳过"
 
 #: sabnzbd/skintext.py [Config->RSS filter-type selection menu]
 msgid "Accept"
@@ -4198,10 +4165,6 @@ msgstr "额外的历史记录列"
 msgid "page"
 msgstr "页"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "Everything"
-msgstr "全部"
-
 #: sabnzbd/skintext.py
 msgid "Loading"
 msgstr "正在加载"
@@ -4455,6 +4418,10 @@ msgstr "范围"
 #: sabnzbd/skintext.py
 msgid "Apply to Selected"
 msgstr "应用到所选项"
+
+#: sabnzbd/skintext.py
+msgid "Everything"
+msgstr "全部"
 
 #: sabnzbd/skintext.py
 msgid "Refresh Rate"
@@ -4840,6 +4807,9 @@ msgstr "URL 装取失败; %s"
 #~ msgid "KB/s"
 #~ msgstr "KB/s"
 
+#~ msgid "Queued"
+#~ msgstr "在队列中"
+
 #~ msgid "Complete Dir"
 #~ msgstr "完成目录"
 
@@ -4864,6 +4834,12 @@ msgstr "URL 装取失败; %s"
 #~ msgid "Sort by size"
 #~ msgstr "按尺寸排列"
 
+#~ msgid "Hide files"
+#~ msgstr "隐藏文件列表"
+
+#~ msgid "Show files"
+#~ msgstr "显示文件列表"
+
 #~ msgid "Remain/Total"
 #~ msgstr "剩余/总计"
 
@@ -4882,6 +4858,9 @@ msgstr "URL 装取失败; %s"
 #~ msgid "Thread"
 #~ msgstr "线程"
 
+#~ msgid "Email Test Result"
+#~ msgstr "电子邮件测试结果"
+
 #~ msgid "General configuration"
 #~ msgstr "常规配置"
 
@@ -4893,6 +4872,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Web server authentication"
 #~ msgstr "Web 服务器身份验证"
+
+#~ msgid "HTTPS Support"
+#~ msgstr "HTTPS 支持"
 
 #~ msgid "Queue auto refresh interval:"
 #~ msgstr "队列自动刷新间隔:"
@@ -4990,6 +4972,9 @@ msgstr "URL 装取失败; %s"
 #~ msgid "Used when no priority is defined by the category."
 #~ msgstr "当分类未定义优先级时使用。"
 
+#~ msgid "Enable MultiCore Par2"
+#~ msgstr "启用多核 Par2"
+
 #~ msgid "Other Switches"
 #~ msgstr "其他参数"
 
@@ -5050,6 +5035,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Delete Feed"
 #~ msgstr "删除 Feed"
+
+#~ msgid "Skip"
+#~ msgstr "跳过"
 
 #~ msgid "Feeds"
 #~ msgstr "Feed 列表"
@@ -5199,6 +5187,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "E.g. 119 or 563 for SSL"
 #~ msgstr "如 SSL 连接用 119 或 563"
+
+#~ msgid "WARNINGS"
+#~ msgstr "警告信息"
 
 #~ msgid "Notification classes"
 #~ msgstr "通知分组"

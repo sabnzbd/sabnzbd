@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-06-22 20:42+0000\n"
+"POT-Creation-Date: 2017-06-26 23:00+0000\n"
 "PO-Revision-Date: 2016-07-29 16:20+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-06-23 05:56+0000\n"
+"X-Launchpad-Export-Date: 2017-06-27 06:01+0000\n"
 "X-Generator: Launchpad (build 18416)\n"
 
 #: SABnzbd.py [Error message]
@@ -1010,6 +1010,10 @@ msgstr "Se verifică"
 msgid "Checking"
 msgstr "Se verifică"
 
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr ""
+
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
@@ -1534,14 +1538,6 @@ msgstr "Codul de ieșire a scriptului este %s"
 msgid "More"
 msgstr "Mai mult"
 
-#: sabnzbd/postproc.py
-msgid "Download Completed"
-msgstr "Descărcare terminată"
-
-#: sabnzbd/postproc.py # sabnzbd/postproc.py
-msgid "Download Failed"
-msgstr "Descărcarea a eșuat"
-
 #: sabnzbd/postproc.py [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Post Procesare Nereuşită pentru %s (%s)"
@@ -1550,6 +1546,10 @@ msgstr "Post Procesare Nereuşită pentru %s (%s)"
 msgid "see logfile"
 msgstr "vezi fişier jurnal"
 
+#: sabnzbd/postproc.py # sabnzbd/postproc.py
+msgid "Download Failed"
+msgstr "Descărcarea a eșuat"
+
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Ştergerea lui %s nereuşită."
@@ -1557,6 +1557,10 @@ msgstr "Ştergerea lui %s nereuşită."
 #: sabnzbd/postproc.py [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Eroare ştergere dosar curent (%s)"
+
+#: sabnzbd/postproc.py
+msgid "Download Completed"
+msgstr "Descărcare terminată"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
@@ -1837,7 +1841,6 @@ msgid "Disable quota management"
 msgstr "Dezactivează gestionarea cotelor"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
-#: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Oprit"
 
@@ -1864,10 +1867,6 @@ msgstr "Urgență"
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
 msgid "Low"
 msgstr "Scăzută"
-
-#: sabnzbd/skintext.py [Prowl priority]
-msgid "Confirm"
-msgstr "Confirmă"
 
 #: sabnzbd/skintext.py [Megabytes]
 msgid "MB"
@@ -2021,10 +2020,6 @@ msgstr "Instrumentul de descărcare automată usenet"
 msgid "Save"
 msgstr "Salvează"
 
-#: sabnzbd/skintext.py ["Queued" used to show amount of jobs]
-msgid "Queued"
-msgstr "Pus în coadă"
-
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py # sabnzbd/skintext.py
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Are you sure?"
@@ -2066,7 +2061,7 @@ msgstr "Probleme"
 msgid "Support the project, Donate!"
 msgstr ""
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "General"
 msgstr "General"
 
@@ -2125,10 +2120,6 @@ msgstr "Articole %s în cache (%s)"
 #: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "Încărcare sistem"
-
-#: sabnzbd/skintext.py
-msgid "WARNINGS"
-msgstr "AVERTIZĂRI"
 
 #: sabnzbd/skintext.py
 msgid "New release %s available at"
@@ -2193,14 +2184,6 @@ msgstr "Stop"
 #: sabnzbd/skintext.py [Add NZB Dialog]
 msgid "Enter URL"
 msgstr "Introdu URL"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Hide files"
-msgstr "Ascunde fişiere"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Show files"
-msgstr "Arată fişiere"
 
 #: sabnzbd/skintext.py [Queue page selection menu] # sabnzbd/skintext.py
 msgid "On queue finish"
@@ -2410,10 +2393,6 @@ msgstr "+ Depanare"
 msgid "Connections"
 msgstr "Conexiuni"
 
-#: sabnzbd/skintext.py [Status page, title for email test result]
-msgid "Email Test Result"
-msgstr "Rezultat Test Email"
-
 #: sabnzbd/skintext.py [Status page, table header]
 msgid "Latest Warnings"
 msgstr "Ultimele Avertizări"
@@ -2597,7 +2576,7 @@ msgid "Backup"
 msgstr "Server Secundar"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Citeşte Ajutorul Wiki despre asta !"
 
@@ -2656,10 +2635,6 @@ msgstr "Parolă autentificare opţională"
 #: sabnzbd/skintext.py
 msgid "Security"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "HTTPS Support"
-msgstr "Suport HTTPS"
 
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
@@ -3169,10 +3144,6 @@ msgid "Used before an NZB enters the queue."
 msgstr "Folosit înainte ca un NZB să intre în coadă."
 
 #: sabnzbd/skintext.py
-msgid "Enable MultiCore Par2"
-msgstr "Activează Par2 MultiCore"
-
-#: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
 msgstr "Parametri Extra PAR2"
 
@@ -3612,10 +3583,6 @@ msgstr "Descărcare Forţată"
 #: sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Filter"
 msgstr "Filtru"
-
-#: sabnzbd/skintext.py [Config->RSS table column header]
-msgid "Skip"
-msgstr "Omite"
 
 #: sabnzbd/skintext.py [Config->RSS filter-type selection menu]
 msgid "Accept"
@@ -4292,10 +4259,6 @@ msgstr "Coloană extra de istoric"
 msgid "page"
 msgstr "pagină"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Tot"
-
 #: sabnzbd/skintext.py
 msgid "Loading"
 msgstr "Se încarcă"
@@ -4551,6 +4514,10 @@ msgstr "Interval"
 #: sabnzbd/skintext.py
 msgid "Apply to Selected"
 msgstr "Aplică la Selecţie"
+
+#: sabnzbd/skintext.py
+msgid "Everything"
+msgstr "Tot"
 
 #: sabnzbd/skintext.py
 msgid "Refresh Rate"
@@ -4932,11 +4899,17 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "KB/s"
 #~ msgstr "KB/s"
 
+#~ msgid "Queued"
+#~ msgstr "Pus în coadă"
+
 #~ msgid "Complete Dir"
 #~ msgstr "Dosar Complete"
 
 #~ msgid "Download speed"
 #~ msgstr "Viteză de descărcare"
+
+#~ msgid "WARNINGS"
+#~ msgstr "AVERTIZĂRI"
 
 #~ msgid "&nbsp;"
 #~ msgstr "&nbsp;"
@@ -4953,6 +4926,12 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "Sort by size"
 #~ msgstr "Sortează după mărime"
 
+#~ msgid "Hide files"
+#~ msgstr "Ascunde fişiere"
+
+#~ msgid "Show files"
+#~ msgstr "Arată fişiere"
+
 #~ msgid "Remain/Total"
 #~ msgstr "Rămas/Total"
 
@@ -4968,6 +4947,9 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "Thread"
 #~ msgstr "Proces"
 
+#~ msgid "Email Test Result"
+#~ msgstr "Rezultat Test Email"
+
 #~ msgid "General configuration"
 #~ msgstr "Configuraţie Generală"
 
@@ -4979,6 +4961,9 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "Activate an alternative skin."
 #~ msgstr "Activează o temă alternativă."
+
+#~ msgid "HTTPS Support"
+#~ msgstr "Suport HTTPS"
 
 #~ msgid "Queue auto refresh interval:"
 #~ msgstr "Interval reîmprospătare automată coadă:"
@@ -5066,6 +5051,9 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "Default User Script"
 #~ msgstr "Script Utilizator Implicit"
 
+#~ msgid "Enable MultiCore Par2"
+#~ msgstr "Activează Par2 MultiCore"
+
 #~ msgid "Used when no priority is defined by the category."
 #~ msgstr "Folosit când nu este definit nici o prioritate de categorie."
 
@@ -5128,6 +5116,9 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "Feeds"
 #~ msgstr "Fluxuri"
+
+#~ msgid "Skip"
+#~ msgstr "Omite"
 
 #~ msgid "Settings"
 #~ msgstr "Setări"

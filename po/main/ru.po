@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-22 20:42+0000\n"
+"POT-Creation-Date: 2017-06-26 23:00+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-06-23 05:56+0000\n"
+"X-Launchpad-Export-Date: 2017-06-27 06:01+0000\n"
 "X-Generator: Launchpad (build 18416)\n"
 "Generated-By: pygettext.py 1.5\n"
 
@@ -998,6 +998,10 @@ msgstr "Проверка"
 msgid "Checking"
 msgstr "Проверка"
 
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr ""
+
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
@@ -1520,14 +1524,6 @@ msgstr ""
 msgid "More"
 msgstr "Подробнее"
 
-#: sabnzbd/postproc.py
-msgid "Download Completed"
-msgstr "Загрузка завершена"
-
-#: sabnzbd/postproc.py # sabnzbd/postproc.py
-msgid "Download Failed"
-msgstr "Не удалось загрузить"
-
 #: sabnzbd/postproc.py [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Ошибка пост-обработки для %s (%s)"
@@ -1536,6 +1532,10 @@ msgstr "Ошибка пост-обработки для %s (%s)"
 msgid "see logfile"
 msgstr "см. журнал"
 
+#: sabnzbd/postproc.py # sabnzbd/postproc.py
+msgid "Download Failed"
+msgstr "Не удалось загрузить"
+
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Не удалось очистить %s."
@@ -1543,6 +1543,10 @@ msgstr "Не удалось очистить %s."
 #: sabnzbd/postproc.py [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Не удалось удалить рабочий каталог (%s)"
+
+#: sabnzbd/postproc.py
+msgid "Download Completed"
+msgstr "Загрузка завершена"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
@@ -1823,7 +1827,6 @@ msgid "Disable quota management"
 msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
-#: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Выкл."
 
@@ -1850,10 +1853,6 @@ msgstr ""
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
 msgid "Low"
 msgstr "низкий"
-
-#: sabnzbd/skintext.py [Prowl priority]
-msgid "Confirm"
-msgstr ""
 
 #: sabnzbd/skintext.py [Megabytes]
 msgid "MB"
@@ -2007,10 +2006,6 @@ msgstr "Клиент автоматической загрузки из USENET"
 msgid "Save"
 msgstr "Сохранить"
 
-#: sabnzbd/skintext.py ["Queued" used to show amount of jobs]
-msgid "Queued"
-msgstr "В очереди"
-
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py # sabnzbd/skintext.py
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Are you sure?"
@@ -2052,7 +2047,7 @@ msgstr ""
 msgid "Support the project, Donate!"
 msgstr ""
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "General"
 msgstr "Общие"
 
@@ -2111,10 +2106,6 @@ msgstr "Статей в кэше: %s (%s)"
 #: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "Загрузка системы"
-
-#: sabnzbd/skintext.py
-msgid "WARNINGS"
-msgstr "ПРЕДУПРЕЖДЕНИЯ"
 
 #: sabnzbd/skintext.py
 msgid "New release %s available at"
@@ -2179,14 +2170,6 @@ msgstr "Остановить"
 #: sabnzbd/skintext.py [Add NZB Dialog]
 msgid "Enter URL"
 msgstr "Введите URL"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Hide files"
-msgstr "Скрыть файлы"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Show files"
-msgstr "Показать файлы"
 
 #: sabnzbd/skintext.py [Queue page selection menu] # sabnzbd/skintext.py
 msgid "On queue finish"
@@ -2396,10 +2379,6 @@ msgstr "+ отладка"
 msgid "Connections"
 msgstr "Соединения"
 
-#: sabnzbd/skintext.py [Status page, title for email test result]
-msgid "Email Test Result"
-msgstr "Результат проверки электронной почты"
-
 #: sabnzbd/skintext.py [Status page, table header]
 msgid "Latest Warnings"
 msgstr "Последние предупреждения"
@@ -2580,7 +2559,7 @@ msgid "Backup"
 msgstr "Резервный"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Описание см. на вики-странице."
 
@@ -2639,10 +2618,6 @@ msgstr "Необязательный пароль для входа."
 #: sabnzbd/skintext.py
 msgid "Security"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "HTTPS Support"
-msgstr "Поддержка HTTPS"
 
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
@@ -3148,10 +3123,6 @@ msgid "Used before an NZB enters the queue."
 msgstr "Используется до того, как NZB помещается в очередь."
 
 #: sabnzbd/skintext.py
-msgid "Enable MultiCore Par2"
-msgstr "Включить MultiCore PAR2"
-
-#: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
 msgstr "Дополнительные параметры PAR2"
 
@@ -3583,10 +3554,6 @@ msgstr "Загрузить принудительно"
 #: sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Filter"
 msgstr "Фильтр"
-
-#: sabnzbd/skintext.py [Config->RSS table column header]
-msgid "Skip"
-msgstr "Пропустить"
 
 #: sabnzbd/skintext.py [Config->RSS filter-type selection menu]
 msgid "Accept"
@@ -4270,10 +4237,6 @@ msgstr ""
 msgid "page"
 msgstr "стр."
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "Everything"
-msgstr "все"
-
 #: sabnzbd/skintext.py
 msgid "Loading"
 msgstr ""
@@ -4527,6 +4490,10 @@ msgstr "Диапазон"
 #: sabnzbd/skintext.py
 msgid "Apply to Selected"
 msgstr "Применить к выделенным"
+
+#: sabnzbd/skintext.py
+msgid "Everything"
+msgstr "все"
 
 #: sabnzbd/skintext.py
 msgid "Refresh Rate"
@@ -4928,11 +4895,17 @@ msgstr "Не удалось загрузить URL: %s"
 #~ msgid "KB/s"
 #~ msgstr "КБ/с"
 
+#~ msgid "Queued"
+#~ msgstr "В очереди"
+
 #~ msgid "Complete Dir"
 #~ msgstr "Каталог для завершённых"
 
 #~ msgid "Download speed"
 #~ msgstr "Скорость загрузки"
+
+#~ msgid "WARNINGS"
+#~ msgstr "ПРЕДУПРЕЖДЕНИЯ"
 
 #~ msgid "Add new downloads"
 #~ msgstr "Добавить новые загрузки"
@@ -4952,6 +4925,12 @@ msgstr "Не удалось загрузить URL: %s"
 #~ msgid "Sort by size"
 #~ msgstr "Сортировать по размеру"
 
+#~ msgid "Hide files"
+#~ msgstr "Скрыть файлы"
+
+#~ msgid "Show files"
+#~ msgstr "Показать файлы"
+
 #~ msgid "Remain/Total"
 #~ msgstr "Осталось/всего"
 
@@ -4970,6 +4949,9 @@ msgstr "Не удалось загрузить URL: %s"
 #~ msgid "Thread"
 #~ msgstr "Поток"
 
+#~ msgid "Email Test Result"
+#~ msgstr "Результат проверки электронной почты"
+
 #~ msgid "General configuration"
 #~ msgstr "Общая конфигурация"
 
@@ -4981,6 +4963,9 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "Web server authentication"
 #~ msgstr "Проверка подлинности веб-сервера"
+
+#~ msgid "HTTPS Support"
+#~ msgstr "Поддержка HTTPS"
 
 #~ msgid "Queue auto refresh interval:"
 #~ msgstr "Интервал автоматического обновления очереди:"
@@ -5083,6 +5068,9 @@ msgstr "Не удалось загрузить URL: %s"
 #~ msgid "Used when no priority is defined by the category."
 #~ msgstr "Используется, если приоритет не определён категорией."
 
+#~ msgid "Enable MultiCore Par2"
+#~ msgstr "Включить MultiCore PAR2"
+
 #~ msgid "Other Switches"
 #~ msgstr "Другие переключатели"
 
@@ -5147,6 +5135,9 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "Delete Feed"
 #~ msgstr "Удалить ленту"
+
+#~ msgid "Skip"
+#~ msgstr "Пропустить"
 
 #~ msgid "Feeds"
 #~ msgstr "Ленты новостей"

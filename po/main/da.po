@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-06-22 20:42+0000\n"
+"POT-Creation-Date: 2017-06-26 23:00+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-06-23 05:55+0000\n"
+"X-Launchpad-Export-Date: 2017-06-27 06:01+0000\n"
 "X-Generator: Launchpad (build 18416)\n"
 
 #: SABnzbd.py [Error message]
@@ -1010,6 +1010,10 @@ msgstr "Bekræfter"
 msgid "Checking"
 msgstr "Kontrollerer"
 
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr ""
+
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Python script '%s' har ikke udfør (+x) tilladelsessæt"
@@ -1526,14 +1530,6 @@ msgstr "Script exit kode er %s"
 msgid "More"
 msgstr "Mere"
 
-#: sabnzbd/postproc.py
-msgid "Download Completed"
-msgstr "Overførsel fuldført"
-
-#: sabnzbd/postproc.py # sabnzbd/postproc.py
-msgid "Download Failed"
-msgstr "Download mislykkedes"
-
 #: sabnzbd/postproc.py [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Efterbehandling mislykkedes for %s (%s)"
@@ -1542,6 +1538,10 @@ msgstr "Efterbehandling mislykkedes for %s (%s)"
 msgid "see logfile"
 msgstr "se logfil"
 
+#: sabnzbd/postproc.py # sabnzbd/postproc.py
+msgid "Download Failed"
+msgstr "Download mislykkedes"
+
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Fjernelse af %s mislykkedes."
@@ -1549,6 +1549,10 @@ msgstr "Fjernelse af %s mislykkedes."
 #: sabnzbd/postproc.py [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Det lykkedes ikke at fjerne arbejdsmappen (%s)"
+
+#: sabnzbd/postproc.py
+msgid "Download Completed"
+msgstr "Overførsel fuldført"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
@@ -1829,7 +1833,6 @@ msgid "Disable quota management"
 msgstr "Deaktivere kvota styring"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
-#: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Slået fra"
 
@@ -1856,10 +1859,6 @@ msgstr "Nødsituation"
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
 msgid "Low"
 msgstr "Lav"
-
-#: sabnzbd/skintext.py [Prowl priority]
-msgid "Confirm"
-msgstr "Bekræft"
 
 #: sabnzbd/skintext.py [Megabytes]
 msgid "MB"
@@ -2013,10 +2012,6 @@ msgstr "Det automatiske usenet download værktøj"
 msgid "Save"
 msgstr "Gem"
 
-#: sabnzbd/skintext.py ["Queued" used to show amount of jobs]
-msgid "Queued"
-msgstr "Køen"
-
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py # sabnzbd/skintext.py
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Are you sure?"
@@ -2058,7 +2053,7 @@ msgstr "Problemer"
 msgid "Support the project, Donate!"
 msgstr "Støt projektet, donér!"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "General"
 msgstr "Generelt"
 
@@ -2117,10 +2112,6 @@ msgstr "Cached %s artikler (%s)"
 #: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "Sysload"
-
-#: sabnzbd/skintext.py
-msgid "WARNINGS"
-msgstr "ADVARSLER"
 
 #: sabnzbd/skintext.py
 msgid "New release %s available at"
@@ -2185,14 +2176,6 @@ msgstr "Stop"
 #: sabnzbd/skintext.py [Add NZB Dialog]
 msgid "Enter URL"
 msgstr "URL"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Hide files"
-msgstr "Skjul filer"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Show files"
-msgstr "Vis filer"
 
 #: sabnzbd/skintext.py [Queue page selection menu] # sabnzbd/skintext.py
 msgid "On queue finish"
@@ -2402,10 +2385,6 @@ msgstr "Fejlfinding"
 msgid "Connections"
 msgstr "Forbindelser"
 
-#: sabnzbd/skintext.py [Status page, title for email test result]
-msgid "Email Test Result"
-msgstr "E-mail testresultat"
-
 #: sabnzbd/skintext.py [Status page, table header]
 msgid "Latest Warnings"
 msgstr "Seneste advarsler"
@@ -2594,7 +2573,7 @@ msgid "Backup"
 msgstr "Sikkerhedskopi"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Læs mere om dette på Wiki Help!"
 
@@ -2653,10 +2632,6 @@ msgstr "Valgfrit password."
 #: sabnzbd/skintext.py
 msgid "Security"
 msgstr "Sikkerhed"
-
-#: sabnzbd/skintext.py
-msgid "HTTPS Support"
-msgstr "HTTPS Support"
 
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
@@ -3177,10 +3152,6 @@ msgid "Used before an NZB enters the queue."
 msgstr "Brugt før, en NZB kommer ind i køen."
 
 #: sabnzbd/skintext.py
-msgid "Enable MultiCore Par2"
-msgstr "Aktivere MultiCore Par2"
-
-#: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
 msgstr "Ekstra PAR2 parameter"
 
@@ -3622,10 +3593,6 @@ msgstr "Gennemtving download"
 #: sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Filter"
 msgstr "Filter"
-
-#: sabnzbd/skintext.py [Config->RSS table column header]
-msgid "Skip"
-msgstr "Spring over"
 
 #: sabnzbd/skintext.py [Config->RSS filter-type selection menu]
 msgid "Accept"
@@ -4306,10 +4273,6 @@ msgstr "Ekstra kolonne historie"
 msgid "page"
 msgstr "side"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Alt"
-
 #: sabnzbd/skintext.py
 msgid "Loading"
 msgstr "Indlæser..."
@@ -4565,6 +4528,10 @@ msgstr "Interval"
 #: sabnzbd/skintext.py
 msgid "Apply to Selected"
 msgstr "Anvend på markerede"
+
+#: sabnzbd/skintext.py
+msgid "Everything"
+msgstr "Alt"
 
 #: sabnzbd/skintext.py
 msgid "Refresh Rate"
@@ -4909,17 +4876,29 @@ msgstr "URL hentning mislykkedes; %s"
 #~ msgid "View script output"
 #~ msgstr "Vis script udlæsning"
 
+#~ msgid "Queued"
+#~ msgstr "Køen"
+
 #~ msgid "Complete Dir"
 #~ msgstr "Færdig download mappe"
 
 #~ msgid "Download speed"
 #~ msgstr "Download hastighed"
 
+#~ msgid "WARNINGS"
+#~ msgstr "ADVARSLER"
+
 #~ msgid "Add new downloads"
 #~ msgstr "Tilføj nye downloads"
 
 #~ msgid "&nbsp;or Report ID"
 #~ msgstr "&nbsp;eller Report ID"
+
+#~ msgid "Hide files"
+#~ msgstr "Skjul filer"
+
+#~ msgid "Show files"
+#~ msgstr "Vis filer"
 
 #~ msgid "Remain/Total"
 #~ msgstr "Tilbage/Totalt"
@@ -4932,6 +4911,9 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Thread"
 #~ msgstr "Tråd"
+
+#~ msgid "Email Test Result"
+#~ msgstr "E-mail testresultat"
 
 #~ msgid "General configuration"
 #~ msgstr "Generel konfiguration"
@@ -5013,6 +4995,9 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Used when no priority is defined by the category."
 #~ msgstr "Anvendes når ingen prioritet er bestemt af kategori."
+
+#~ msgid "Enable MultiCore Par2"
+#~ msgstr "Aktivere MultiCore Par2"
 
 #~ msgid "Other Switches"
 #~ msgstr "Andre parameter"
@@ -5153,6 +5138,9 @@ msgstr "URL hentning mislykkedes; %s"
 #~ msgid "Secondary Web Interface"
 #~ msgstr "Sekundær udseende"
 
+#~ msgid "HTTPS Support"
+#~ msgstr "HTTPS Support"
+
 #~ msgid "SSL type"
 #~ msgstr "SSL type"
 
@@ -5161,6 +5149,9 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Remove"
 #~ msgstr "Slet"
+
+#~ msgid "Skip"
+#~ msgstr "Spring over"
 
 #~ msgid "New Feed URL"
 #~ msgstr "Ny Feed URL"

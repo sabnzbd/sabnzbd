@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-06-22 20:42+0000\n"
+"POT-Creation-Date: 2017-06-26 23:00+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-06-23 05:55+0000\n"
+"X-Launchpad-Export-Date: 2017-06-27 06:01+0000\n"
 "X-Generator: Launchpad (build 18416)\n"
 
 #: SABnzbd.py [Error message]
@@ -1037,6 +1037,10 @@ msgstr "Überprüfen"
 msgid "Checking"
 msgstr "Wird überprüft"
 
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr ""
+
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Dem Pythonskript \"%s\" fehlen die Ausführenrechte (+x)"
@@ -1571,14 +1575,6 @@ msgstr "Exit-Code des Skripts ist %s"
 msgid "More"
 msgstr "Mehr"
 
-#: sabnzbd/postproc.py
-msgid "Download Completed"
-msgstr "Download fertig"
-
-#: sabnzbd/postproc.py # sabnzbd/postproc.py
-msgid "Download Failed"
-msgstr "Download Fehlgeschlagen"
-
 #: sabnzbd/postproc.py [Error message]
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Nachbearbeitung von %s fehlgeschlagen (%s)"
@@ -1587,6 +1583,10 @@ msgstr "Nachbearbeitung von %s fehlgeschlagen (%s)"
 msgid "see logfile"
 msgstr "Beachten Sie die Protokolldatei"
 
+#: sabnzbd/postproc.py # sabnzbd/postproc.py
+msgid "Download Failed"
+msgstr "Download Fehlgeschlagen"
+
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Aufräumen von %s fehlgeschlagen"
@@ -1594,6 +1594,10 @@ msgstr "Aufräumen von %s fehlgeschlagen"
 #: sabnzbd/postproc.py [Error message]
 msgid "Error removing workdir (%s)"
 msgstr "Fehler beim Entfernen des Arbeitsverzeichnisses %s."
+
+#: sabnzbd/postproc.py
+msgid "Download Completed"
+msgstr "Download fertig"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
@@ -1874,7 +1878,6 @@ msgid "Disable quota management"
 msgstr "Quoten-Management ausschalten"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
-#: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Nein"
 
@@ -1901,10 +1904,6 @@ msgstr "Notfall"
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
 msgid "Low"
 msgstr "Gering"
-
-#: sabnzbd/skintext.py [Prowl priority]
-msgid "Confirm"
-msgstr "Bestätigen"
 
 #: sabnzbd/skintext.py [Megabytes]
 msgid "MB"
@@ -2058,10 +2057,6 @@ msgstr "Automatisiertes Programm für Usenet-Downloads"
 msgid "Save"
 msgstr "Speichern"
 
-#: sabnzbd/skintext.py ["Queued" used to show amount of jobs]
-msgid "Queued"
-msgstr "In der Warteschlange"
-
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py # sabnzbd/skintext.py
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Are you sure?"
@@ -2103,7 +2098,7 @@ msgstr "Probleme"
 msgid "Support the project, Donate!"
 msgstr "Bitte unterstützen Sie das Projekt durch eine Spende!"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "General"
 msgstr "Allgemein"
 
@@ -2162,10 +2157,6 @@ msgstr "%s Artikel im Cache (%s)"
 #: sabnzbd/skintext.py
 msgid "Sysload"
 msgstr "Systemlast"
-
-#: sabnzbd/skintext.py
-msgid "WARNINGS"
-msgstr "WARNUNGEN"
 
 #: sabnzbd/skintext.py
 msgid "New release %s available at"
@@ -2230,14 +2221,6 @@ msgstr "Anhalten"
 #: sabnzbd/skintext.py [Add NZB Dialog]
 msgid "Enter URL"
 msgstr "URL"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Hide files"
-msgstr "Dateien verbergen"
-
-#: sabnzbd/skintext.py [Queue page button]
-msgid "Show files"
-msgstr "Dateien anzeigen"
 
 #: sabnzbd/skintext.py [Queue page selection menu] # sabnzbd/skintext.py
 msgid "On queue finish"
@@ -2447,10 +2430,6 @@ msgstr "+ Fehlersuche"
 msgid "Connections"
 msgstr "Verbindungen"
 
-#: sabnzbd/skintext.py [Status page, title for email test result]
-msgid "Email Test Result"
-msgstr "Resultat des E-Mail-Tests"
-
 #: sabnzbd/skintext.py [Status page, table header]
 msgid "Latest Warnings"
 msgstr "Neuste Warnungen"
@@ -2642,7 +2621,7 @@ msgid "Backup"
 msgstr "Sicherheitskopie"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Lesen Sie dazu die Hilfe im Wiki!"
 
@@ -2701,10 +2680,6 @@ msgstr "Optionale Anmeldung mit Passwort"
 #: sabnzbd/skintext.py
 msgid "Security"
 msgstr "Sicherheit"
-
-#: sabnzbd/skintext.py
-msgid "HTTPS Support"
-msgstr "HTTPS-Unterstützung"
 
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
@@ -3243,10 +3218,6 @@ msgstr ""
 "Wird verwendet, bevor eine NZB-Datei zur Warteschlange hinzugefügt wird."
 
 #: sabnzbd/skintext.py
-msgid "Enable MultiCore Par2"
-msgstr "Mehrkernprozessor-Unterstützung von PAR2 verwenden"
-
-#: sabnzbd/skintext.py
 msgid "Extra PAR2 Parameters"
 msgstr "Zusätzliche PAR2-Parameter"
 
@@ -3700,10 +3671,6 @@ msgstr "Download erzwingen"
 #: sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Filter"
 msgstr "Filter"
-
-#: sabnzbd/skintext.py [Config->RSS table column header]
-msgid "Skip"
-msgstr "Überspringen"
 
 #: sabnzbd/skintext.py [Config->RSS filter-type selection menu]
 msgid "Accept"
@@ -4383,10 +4350,6 @@ msgstr "Extra Verlauf-Spalte"
 msgid "page"
 msgstr "Seite"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Alles"
-
 #: sabnzbd/skintext.py
 msgid "Loading"
 msgstr "Wird geladen..."
@@ -4642,6 +4605,10 @@ msgstr "Bereich"
 #: sabnzbd/skintext.py
 msgid "Apply to Selected"
 msgstr "Auf Auswahl anwenden"
+
+#: sabnzbd/skintext.py
+msgid "Everything"
+msgstr "Alles"
 
 #: sabnzbd/skintext.py
 msgid "Refresh Rate"
@@ -4997,11 +4964,17 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "View script output"
 #~ msgstr "Skript-Ausgabe anzeigen"
 
+#~ msgid "Queued"
+#~ msgstr "In der Warteschlange"
+
 #~ msgid "Complete Dir"
 #~ msgstr "Fertige Downloads"
 
 #~ msgid "Download speed"
 #~ msgstr "Geschwindigkeit"
+
+#~ msgid "WARNINGS"
+#~ msgstr "WARNUNGEN"
 
 #~ msgid "Add new downloads"
 #~ msgstr "Neue Downloads hinzufügen"
@@ -5015,6 +4988,12 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Sort by age"
 #~ msgstr "Nach Alter sortieren"
 
+#~ msgid "Hide files"
+#~ msgstr "Dateien verbergen"
+
+#~ msgid "Show files"
+#~ msgstr "Dateien anzeigen"
+
 #~ msgid "Remain/Total"
 #~ msgstr "Verbleibend/Insgesamt"
 
@@ -5023,6 +5002,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "Show Weblogging"
 #~ msgstr "Web-Protokoll anzeigen"
+
+#~ msgid "Email Test Result"
+#~ msgstr "Resultat des E-Mail-Tests"
 
 #~ msgid "General configuration"
 #~ msgstr "Allgemeine Einstellungen"
@@ -5035,6 +5017,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "Web server authentication"
 #~ msgstr "Authentifizierung für Web-Server"
+
+#~ msgid "HTTPS Support"
+#~ msgstr "HTTPS-Unterstützung"
 
 #~ msgid "Queue auto refresh interval:"
 #~ msgstr "Warteschlange automatisch neu laden"
@@ -5127,6 +5112,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "Used when no priority is defined by the category."
 #~ msgstr "Wird verwendet, wenn die Kategorie keine Priorität vorschreibt."
+
+#~ msgid "Enable MultiCore Par2"
+#~ msgstr "Mehrkernprozessor-Unterstützung von PAR2 verwenden"
 
 #~ msgid "Other Switches"
 #~ msgstr "Andere Schalter"
@@ -5306,6 +5294,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "Thread"
 #~ msgstr "Thread"
+
+#~ msgid "Skip"
+#~ msgstr "Überspringen"
 
 #~ msgid ""
 #~ "\n"
