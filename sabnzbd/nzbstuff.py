@@ -271,6 +271,13 @@ class NzbFile(TryList):
                 self.decodetable[partnum] = article
 
             self.import_finished = True
+        else:
+            # TEMPORARY ERRORS
+            if not os.path.exists(os.path.join(self.nzf_id, self.nzo.workpath)):
+                logging.warning('Article DB file not found %s', self)
+            else:
+                # It was there, but empty
+                logging.warning('Article DB empty %s', self)
 
     def remove_article(self, article, found):
         """ Handle completed article, possibly end of file """
