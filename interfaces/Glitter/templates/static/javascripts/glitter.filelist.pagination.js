@@ -25,7 +25,41 @@ function Fileslisting(parent) {
 
         // Set state of the check-all
         setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
-
+        var createTimeout = setTimeout(function() {
+            $('.buttonMoveToTop').click(function () {
+                var ITEMKEY = "ko_sortItem",
+                    INDEXKEY = "ko_sourceIndex",
+                    LISTKEY = "ko_sortList",
+                    PARENTKEY = "ko_parentList",
+                    DRAGKEY = "ko_dragItem",
+                    unwrap = ko.utils.unwrapObservable,
+                    dataGet = ko.utils.domData.get,
+                    dataSet = ko.utils.domData.set;
+                var row = $(this).parents("tr").filter(":first");
+                var tbody = $(this).parents("tbody").filter(":first");	
+                dataSet(row[0], INDEXKEY, ko.utils.arrayIndexOf(row.parent().children(), row[0]));
+                tbody.prepend(row);
+                tbody.sortable('option', 'update').call(tbody[0],null, { item: row });
+            });
+            $('.buttonMoveToBottom').click(function () {
+                var ITEMKEY = "ko_sortItem",
+                    INDEXKEY = "ko_sourceIndex",
+                    LISTKEY = "ko_sortList",
+                    PARENTKEY = "ko_parentList",
+                    DRAGKEY = "ko_dragItem",
+                    unwrap = ko.utils.unwrapObservable,
+                    dataGet = ko.utils.domData.get,
+                    dataSet = ko.utils.domData.set;
+                var row = $(this).parents("tr").filter(":first");
+                var tbody = $(this).parents("tbody").filter(":first");	
+                dataSet(row[0], INDEXKEY, ko.utils.arrayIndexOf(row.parent().children(), row[0]));
+                tbody.append(row);
+                tbody.sortable('option', 'update').call(tbody[0],null, { item: row });
+            });			
+        }, 50);
+		
+		
+		
         // Show
         $('#modal-item-files').modal('show');
 
