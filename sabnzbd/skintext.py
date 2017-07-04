@@ -835,6 +835,8 @@ SKIN_TEXT = {
     'Glitter-notification-removing1' : TT('Removing job'), # Notification window
     'Glitter-notification-removing' : TT('Removing jobs'), # Notification window
     'Glitter-notification-shutdown' : TT('Shutting down'), # Notification window
+	'Glitter-moveToTop' : TT('Move To Top'),
+	'Glitter-moveToBottom' : TT('Move To Bottom'),
 
 #Plush skin
     'Plush-confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),

@@ -525,12 +525,14 @@
                                             <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: '+percentage()+'; background-color: ' + \$parent.filelist.currentItem.progressColor() + ';' }">
                                                 <input type="checkbox" data-bind="attr: { 'name' : nzf_id }, disable: !canselect(), click : \$parent.filelist.checkSelectRange" title="$T('Glitter-multiSelect')" />
                                                 <strong data-bind="text: percentage"></strong>
-                                                <span>
+                                                <div class="fileDetails">
                                                     <span data-bind="truncatedTextCenter: filename"></span>
                                                     <small>(<span data-bind="text: file_age"></span> - <span data-bind="text: mb"></span> MB)</small>
-                                                    <a href="#" class="buttonMoveToTop" title="Move To Top"><span class="glyphicon glyphicon-chevron-up"></span></a>
-                                                    <a href="#" class="buttonMoveToBottom" title="Move To Bottom"><span class="glyphicon glyphicon-chevron-down"></span></a>
-                                                </span>
+                                                </div>
+                                            </div>
+                                            <div class="fileControls">
+                                                <a href="#" class="hover-button buttonMoveToTop" title="$T('Glitter-MoveToTop')"><span class="glyphicon glyphicon-chevron-up"></span></a>
+                                                <a href="#" class="hover-button buttonMoveToBottom" title="$T('Glitter-MoveToBottom')"><span class="glyphicon glyphicon-chevron-down"></span></a>
                                             </div>
                                         </div>
                                     </td>
