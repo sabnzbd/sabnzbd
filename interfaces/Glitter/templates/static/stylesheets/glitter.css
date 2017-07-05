@@ -1642,6 +1642,10 @@ input[name="nzbURL"] {
     color: #727272 !important;
 }
 
+#modal-item-files .item-files-table tr:hover .progress small {
+    display:none;
+}
+
 #modal-item-files .item-files-table td {
     padding: 0 !important;
     border-bottom: 3px solid white;
