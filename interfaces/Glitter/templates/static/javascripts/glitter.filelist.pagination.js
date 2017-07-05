@@ -25,7 +25,9 @@ function Fileslisting(parent) {
 
         // Set state of the check-all
         setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
-        var createTimeout = setTimeout(function() {
+
+		//Configure the buttons once the modal is fully rendered
+		$('#modal-item-files').on('shown.bs.modal', function() {
             $('.buttonMoveToTop').click(function () {
                 var ITEMKEY = "ko_sortItem",
                     INDEXKEY = "ko_sourceIndex",
@@ -56,13 +58,11 @@ function Fileslisting(parent) {
                 tbody.append(row);
                 tbody.sortable('option', 'update').call(tbody[0],null, { item: row });
             });			
-        }, 50);
-		
-		
+		});
 		
         // Show
         $('#modal-item-files').modal('show');
-
+		
         // Stop updating on closing of the modal
         $('#modal-item-files').on('hidden.bs.modal', function() {
             self.removeUpdate();

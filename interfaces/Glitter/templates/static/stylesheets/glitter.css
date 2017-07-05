@@ -775,7 +775,7 @@ tr.queue-item>td:first-child>a {
 .progress .progress-bar .fileDetails {
     display:inline;
     text-align: left;
-    margin-left: 80px;
+    margin-left: 70px;
     line-height: 25px;
     position: absolute;
     top: 0;
@@ -783,7 +783,7 @@ tr.queue-item>td:first-child>a {
     z-index: 2;
     font-size: 12px;
     color: #404040;
-    padding-right: 10px;
+    padding-right: 0px;
 }
 
 .progress strong {
