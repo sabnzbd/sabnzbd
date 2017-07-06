@@ -1020,6 +1020,9 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             if os.path.exists(test_parfile):
                 parfile_nzf = new_par
                 break
+        else:
+            # No file was found, we assume this set already finished
+            return False, True
 
     # Shorten just the workdir on Windows
     parfile = os.path.join(workdir, parfile_nzf.filename)
