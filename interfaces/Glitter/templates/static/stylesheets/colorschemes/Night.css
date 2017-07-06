@@ -100,7 +100,8 @@ legend,
 
 .table-striped>tbody>tr:nth-child(odd)>td,
 .table>tbody>tr:nth-child(odd)>td,
-.table>tbody>tr:nth-child(even).files-sortable>td .progress,
+.table>tbody>tr:nth-child(odd).files-sortable>td .progress,
+.item-files-table>tbody>tr:nth-child(odd)>td .progress,
 .multioperations-selector,
 .pagination li.active span,
 .pagination li span:hover,
@@ -109,18 +110,24 @@ legend,
     background-color: #444444;
     color: #EBEBEB;
 }
-
-.table>tbody>tr:nth-child(even).files-sortable>td .progress .progress-bar .fileDetails {
+/*
+.table>tbody>tr:nth-child(even).files-sortable>td .progress .progress-bar .fileDetails{
     color: #000000;
+}*/
+.table.item-files-table>tbody>tr>td .progress .progress-bar .fileDetails {
+	color: #000000;
 }
 
-.table>tbody>tr:nth-child(odd).files-sortable>td .progress .progress-bar .fileDetails {
+/*
+.table.item-files-table>tbody>tr:nth-child(odd).files-sortable>td .progress .progress-bar .fileDetails {
     color: #000000;	
 }
+*/
 
 .table-striped>tbody>tr:nth-child(even)>td,
 .table>tbody>tr:nth-child(even)>td,
-.table>tbody>tr:nth-child(odd).files-sortable>td .progress,
+.table>tbody>tr:nth-child(even).files-sortable>td .progress,
+.item-files-table>tbody>tr:nth-child(even)>td .progress,
 .table th,
 .pagination li span,
 .pagination>.disabled>span,
