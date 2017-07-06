@@ -769,8 +769,16 @@ tr.queue-item>td:first-child>a {
     padding-right: 10px;
 }
 
-.item-files-table tr .fileControls{float:right;display:none;}
-.item-files-table tr:hover .fileControls{float:right;display:block;}
+.item-files-table tr .fileControls{
+    float:right;
+    display:none;
+}
+
+.item-files-table tr:hover .fileControls{
+    float:right;
+    display:block;
+    margin-left:5px;
+}
 
 .progress .progress-bar .fileDetails {
     display:inline;
