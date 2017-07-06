@@ -26,9 +26,9 @@ function Fileslisting(parent) {
         // Set state of the check-all
         setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
 
-		//Configure the buttons once the modal is fully rendered
-		$('#modal-item-files').on('shown.bs.modal', function() {
-            $('.buttonMoveToTop').click(function () {
+        //Configure the buttons once the modal is fully rendered
+        $('#modal-item-files').on('shown.bs.modal', function() {
+            $('.buttonMoveToTop,.buttonMoveToBottom').click(function () {
                 var ITEMKEY = "ko_sortItem",
                     INDEXKEY = "ko_sourceIndex",
                     LISTKEY = "ko_sortList",
@@ -37,32 +37,26 @@ function Fileslisting(parent) {
                     unwrap = ko.utils.unwrapObservable,
                     dataGet = ko.utils.domData.get,
                     dataSet = ko.utils.domData.set;
+
                 var row = $(this).parents("tr").filter(":first");
-                var tbody = $(this).parents("tbody").filter(":first");	
+                var tbody = $(this).parents("tbody").filter(":first");
+                var targetRow = ""
                 dataSet(row[0], INDEXKEY, ko.utils.arrayIndexOf(row.parent().children(), row[0]));
-                tbody.prepend(row);
+                if($(this).is(".buttonMoveToTop")){
+                    // put it at the top
+                    targetRow = $(this).parents("tbody").children(".files-done").filter(":last");
+                } else {
+                    // put it at the bottom
+                    targetRow = $(this).parents("tbody").children(".files-sortable").filter(":last");
+                }
+                row.insertAfter(targetRow);
                 tbody.sortable('option', 'update').call(tbody[0],null, { item: row });
             });
-            $('.buttonMoveToBottom').click(function () {
-                var ITEMKEY = "ko_sortItem",
-                    INDEXKEY = "ko_sourceIndex",
-                    LISTKEY = "ko_sortList",
-                    PARENTKEY = "ko_parentList",
-                    DRAGKEY = "ko_dragItem",
-                    unwrap = ko.utils.unwrapObservable,
-                    dataGet = ko.utils.domData.get,
-                    dataSet = ko.utils.domData.set;
-                var row = $(this).parents("tr").filter(":first");
-                var tbody = $(this).parents("tbody").filter(":first");	
-                dataSet(row[0], INDEXKEY, ko.utils.arrayIndexOf(row.parent().children(), row[0]));
-                tbody.append(row);
-                tbody.sortable('option', 'update').call(tbody[0],null, { item: row });
-            });			
-		});
-		
+        });
+
         // Show
         $('#modal-item-files').modal('show');
-		
+
         // Stop updating on closing of the modal
         $('#modal-item-files').on('hidden.bs.modal', function() {
             self.removeUpdate();

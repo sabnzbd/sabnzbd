@@ -774,7 +774,7 @@ tr.queue-item>td:first-child>a {
     display:none;
 }
 
-.item-files-table tr:hover .fileControls{
+.item-files-table tr.files-sortable:hover .fileControls{
     float:right;
     display:block;
     margin-left:5px;
@@ -1650,7 +1650,7 @@ input[name="nzbURL"] {
     color: #727272 !important;
 }
 
-#modal-item-files .item-files-table tr:hover .progress small {
+#modal-item-files .item-files-table tr.files-sortable:hover .progress small {
     display:none;
 }
 
