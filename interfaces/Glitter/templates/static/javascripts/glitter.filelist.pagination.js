@@ -49,8 +49,11 @@ function Fileslisting(parent) {
                     // put it at the bottom
                     targetRow = $(this).parents("tbody").children(".files-sortable").filter(":last");
                 }
-                row.insertAfter(targetRow);
-                tbody.sortable('option', 'update').call(tbody[0],null, { item: row });
+                if(targetRow.length){
+                    row = row.detach();
+                    row.insertAfter(targetRow);
+                    tbody.sortable('option', 'update').call(tbody[0],null, { item: row });
+                } // no target row so we stay put
             });
         });
 
