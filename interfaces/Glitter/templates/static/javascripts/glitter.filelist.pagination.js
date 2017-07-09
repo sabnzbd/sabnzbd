@@ -26,37 +26,6 @@ function Fileslisting(parent) {
         // Set state of the check-all
         setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
 
-        //Configure the buttons once the modal is fully rendered
-        $('#modal-item-files').on('shown.bs.modal', function() {
-            $('.buttonMoveToTop,.buttonMoveToBottom').click(function () {
-                var ITEMKEY = "ko_sortItem",
-                    INDEXKEY = "ko_sourceIndex",
-                    LISTKEY = "ko_sortList",
-                    PARENTKEY = "ko_parentList",
-                    DRAGKEY = "ko_dragItem",
-                    unwrap = ko.utils.unwrapObservable,
-                    dataGet = ko.utils.domData.get,
-                    dataSet = ko.utils.domData.set;
-
-                var row = $(this).parents("tr").filter(":first");
-                var tbody = $(this).parents("tbody").filter(":first");
-                var targetRow = ""
-                dataSet(row[0], INDEXKEY, ko.utils.arrayIndexOf(row.parent().children(), row[0]));
-                if($(this).is(".buttonMoveToTop")){
-                    // put it at the top
-                    targetRow = $(this).parents("tbody").children(".files-done").filter(":last");
-                } else {
-                    // put it at the bottom
-                    targetRow = $(this).parents("tbody").children(".files-sortable").filter(":last");
-                }
-                if(targetRow.length){
-                    row = row.detach();
-                    row.insertAfter(targetRow);
-                    tbody.sortable('option', 'update').call(tbody[0],null, { item: row });
-                } // no target row so we stay put
-            });
-        });
-
         // Show
         $('#modal-item-files').modal('show');
 
@@ -66,6 +35,39 @@ function Fileslisting(parent) {
         })
     }
 
+    // Move to top and bottom buttons
+    self.moveButton = function (item,event) {
+        var ITEMKEY = "ko_sortItem",
+            INDEXKEY = "ko_sourceIndex",
+            LISTKEY = "ko_sortList",
+            PARENTKEY = "ko_parentList",
+            DRAGKEY = "ko_dragItem",
+            unwrap = ko.utils.unwrapObservable,
+            dataGet = ko.utils.domData.get,
+            dataSet = ko.utils.domData.set;
+        var targetRow,sourceRow,tbody;
+        sourceRow = $(event.currentTarget).parents("tr").filter(":first");
+        tbody = sourceRow.parents("tbody").filter(":first");
+        //debugger;
+        dataSet(sourceRow[0], INDEXKEY, ko.utils.arrayIndexOf(sourceRow.parent().children(), sourceRow[0]));
+        sourceRow = sourceRow.detach();
+        if ($(event.currentTarget).is(".buttonMoveToTop")) {
+            // we are moving to the top
+            targetRow = tbody.children(".files-done").filter(":last");
+        } else {
+            //we are moving to the bottom
+            targetRow = tbody.children(".files-sortable").filter(":last");
+        }
+        if(targetRow.length < 1 ){
+        // we found an edge case and need to do something special
+            targetRow = tbody.children(".files-sortable").filter(":first");
+            sourceRow.insertBefore(targetRow[0]);
+        } else {
+            sourceRow.insertAfter($(targetRow[0]));
+        }
+        tbody.sortable('option', 'update').call(tbody[0],null, { item: sourceRow });
+    };
+   
     // Trigger update
     self.triggerUpdate = function() {
         // Call API
