@@ -805,6 +805,8 @@ SKIN_TEXT = {
     'Glitter-noSelect' : TT('Nothing selected!'),
     'Glitter-removeSelected' : TT('Remove all selected files'),
     'Glitter-toggleCompletedFiles' : TT('Hide/show completed files'),
+    'Glitter-MoveToTop' : TT('Top'),
+    'Glitter-MoveToBottom' : TT('Bottom'),
     'Glitter-retryJob' : TT('Retry'),
     'Glitter-more' : TT('More'),
     'Glitter-scriptLog' : TT('View Script Log'),
@@ -835,8 +837,6 @@ SKIN_TEXT = {
     'Glitter-notification-removing1' : TT('Removing job'), # Notification window
     'Glitter-notification-removing' : TT('Removing jobs'), # Notification window
     'Glitter-notification-shutdown' : TT('Shutting down'), # Notification window
-	'Glitter-moveToTop' : TT('Move To Top'),
-	'Glitter-moveToBottom' : TT('Move To Bottom'),
 
 #Plush skin
     'Plush-confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
