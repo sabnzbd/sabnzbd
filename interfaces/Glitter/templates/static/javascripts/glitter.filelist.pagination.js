@@ -35,6 +35,39 @@ function Fileslisting(parent) {
         })
     }
 
+    // Move to top and bottom buttons
+    self.moveButton = function (item,event) {
+        var ITEMKEY = "ko_sortItem",
+            INDEXKEY = "ko_sourceIndex",
+            LISTKEY = "ko_sortList",
+            PARENTKEY = "ko_parentList",
+            DRAGKEY = "ko_dragItem",
+            unwrap = ko.utils.unwrapObservable,
+            dataGet = ko.utils.domData.get,
+            dataSet = ko.utils.domData.set;
+        var targetRow,sourceRow,tbody;
+        sourceRow = $(event.currentTarget).parents("tr").filter(":first");
+        tbody = sourceRow.parents("tbody").filter(":first");
+        //debugger;
+        dataSet(sourceRow[0], INDEXKEY, ko.utils.arrayIndexOf(sourceRow.parent().children(), sourceRow[0]));
+        sourceRow = sourceRow.detach();
+        if ($(event.currentTarget).is(".buttonMoveToTop")) {
+            // we are moving to the top
+            targetRow = tbody.children(".files-done").filter(":last");
+        } else {
+            //we are moving to the bottom
+            targetRow = tbody.children(".files-sortable").filter(":last");
+        }
+        if(targetRow.length < 1 ){
+        // we found an edge case and need to do something special
+            targetRow = tbody.children(".files-sortable").filter(":first");
+            sourceRow.insertBefore(targetRow[0]);
+        } else {
+            sourceRow.insertAfter($(targetRow[0]));
+        }
+        tbody.sortable('option', 'update').call(tbody[0],null, { item: sourceRow });
+    };
+   
     // Trigger update
     self.triggerUpdate = function() {
         // Call API
