@@ -106,6 +106,8 @@
                         <input type="text" data-bind="value: nameForEdit, visible: editingName(), hasfocus: editingName" />
                     </form>
                     <div class="name-options" data-bind="visible: !editingName()">
+                        <a href="#" data-bind="click: \$parent.queue.moveButton" class="hover-button buttonMoveToTop" title="$T('Glitter-MoveToTop')"><span class="glyphicon glyphicon-chevron-up"></span></a>
+                        <a href="#" data-bind="click: \$parent.queue.moveButton" class="hover-button buttonMoveToBottom" title="$T('Glitter-MoveToBottom')"><span class="glyphicon glyphicon-chevron-down"></span></a>
                         <a href="#" data-bind="click: editName, css: { disabled: isGrabbing() }" class="hover-button"><span class="glyphicon glyphicon-pencil"></span></a>
                         <a href="#" data-bind="click: showFiles, css: { disabled: isGrabbing() }" class="hover-button" title="$T('nzoDetails') - $T('srv-password')"><span class="glyphicon glyphicon-folder-open"></span></a>
                         <small data-bind="text: avg_age"></small>
