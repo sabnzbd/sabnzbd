@@ -32,7 +32,7 @@ import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    flag_file, real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
+    real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
     has_win_device, calc_age
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
@@ -1056,7 +1056,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             return readd, result
 
     if not result:
-        flag_file(workdir, QCHECK_FILE, True)
         nzo.status = Status.REPAIRING
         result = False
         readd = False
