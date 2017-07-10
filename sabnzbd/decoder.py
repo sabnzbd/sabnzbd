@@ -337,10 +337,11 @@ class Decoder(Thread):
                 logging.info('Detected filename based on par2: %s', article.nzf.filename)
                 return
 
-        # Fallback to yenc/nzb name
+        # Fallback to yenc/nzb name (also when there is no partnum=1)
         if not is_obfuscated_filename(yenc_filename):
             article.nzf.filename = yenc_filename
             logging.info('Detected filename from yenc: %s', article.nzf.filename)
+
 
 def yCheck(data):
     ybegin = None
