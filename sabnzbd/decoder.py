@@ -22,6 +22,7 @@ sabnzbd.decoder - article decoder
 import binascii
 import logging
 import re
+import hashlib
 from time import sleep
 from threading import Thread
 
@@ -66,6 +67,9 @@ class BadYenc(Exception):
 
     def __init__(self):
         Exception.__init__(self)
+
+
+YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
 
 
 class Decoder(Thread):
@@ -113,7 +117,7 @@ class Decoder(Thread):
                     register = True
                     logging.debug("Decoding %s", art_id)
 
-                    data = decode(article, lines, raw_data)
+                    data = self.decode(article, lines, raw_data)
                     nzf.article_count += 1
                     found = True
 
@@ -176,7 +180,7 @@ class Decoder(Thread):
                         logging.info(logme)
 
                     if not found or killed:
-                        new_server_found = self.__search_new_server(article)
+                        new_server_found = self.search_new_server(article)
                         if new_server_found:
                             register = False
                             logme = None
@@ -185,7 +189,7 @@ class Decoder(Thread):
                     logme = T('Unknown Error while decoding %s') % art_id
                     logging.info(logme)
                     logging.info("Traceback: ", exc_info=True)
-                    new_server_found = self.__search_new_server(article)
+                    new_server_found = self.search_new_server(article)
                     if new_server_found:
                         register = False
                         logme = None
@@ -197,7 +201,7 @@ class Decoder(Thread):
                         nzo.inc_log('bad_art_log', art_id)
 
             else:
-                new_server_found = self.__search_new_server(article)
+                new_server_found = self.search_new_server(article)
                 if new_server_found:
                     register = False
                 elif nzo.precheck:
@@ -209,7 +213,95 @@ class Decoder(Thread):
             if register:
                 sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found)
 
-    def __search_new_server(self, article):
+    def decode(self, article, data, raw_data):
+        # Do we have SABYenc? Let it do all the work
+        if sabnzbd.decoder.SABYENC_ENABLED:
+            decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
+
+            # Assume it is yenc
+            article.nzf.type = 'yenc'
+
+            # Only set the name if it was found and not obfuscated
+            self.verify_filename(article, decoded_data, output_filename)
+
+            # CRC check
+            if not crc_correct:
+                raise CrcError(crc_expected, crc, decoded_data)
+
+            return decoded_data
+
+        # Continue for _yenc or Python-yEnc
+        # Filter out empty ones
+        data = filter(None, data)
+        # No point in continuing if we don't have any data left
+        if data:
+            nzf = article.nzf
+            yenc, data = yCheck(data)
+            ybegin, ypart, yend = yenc
+            decoded_data = None
+
+            # Deal with non-yencoded posts
+            if not ybegin:
+                found = False
+                try:
+                    for i in xrange(min(40, len(data))):
+                        if data[i].startswith('begin '):
+                            nzf.type = 'uu'
+                            found = True
+                            # Pause the job and show warning
+                            if nzf.nzo.status != Status.PAUSED:
+                                nzf.nzo.pause()
+                                msg = T('UUencode detected, only yEnc encoding is supported [%s]') % nzf.nzo.final_name
+                                logging.warning(msg)
+                            break
+                except IndexError:
+                    raise BadYenc()
+
+                if found:
+                    decoded_data = ''
+                else:
+                    raise BadYenc()
+
+            # Deal with yenc encoded posts
+            elif ybegin and yend:
+                possible_filename = yenc_name_fixer(ybegin['name'])
+                if 'name' in ybegin and not is_obfuscated_filename(possible_filename):
+                    nzf.filename = possible_filename
+                else:
+                    logging.debug("Possible corrupt/obfuscated header detected => ybegin: %s", ybegin)
+                nzf.type = 'yenc'
+                # Decode data
+                if HAVE_YENC:
+                    decoded_data, crc = _yenc.decode_string(''.join(data))[:2]
+                    partcrc = '%08X' % ((crc ^ -1) & 2 ** 32L - 1)
+                else:
+                    data = ''.join(data)
+                    for i in (0, 9, 10, 13, 27, 32, 46, 61):
+                        j = '=%c' % (i + 64)
+                        data = data.replace(j, chr(i))
+                    decoded_data = data.translate(YDEC_TRANS)
+                    crc = binascii.crc32(decoded_data)
+                    partcrc = '%08X' % (crc & 2 ** 32L - 1)
+
+                if ypart:
+                    crcname = 'pcrc32'
+                else:
+                    crcname = 'crc32'
+
+                if crcname in yend:
+                    _partcrc = yenc_name_fixer('0' * (8 - len(yend[crcname])) + yend[crcname].upper())
+                else:
+                    _partcrc = None
+                    logging.debug("Corrupt header detected => yend: %s", yend)
+
+                if not _partcrc == partcrc:
+                    raise CrcError(_partcrc, partcrc, decoded_data)
+            else:
+                raise BadYenc()
+
+            return decoded_data
+
+    def search_new_server(self, article):
         # Search new server
         article.add_to_try_list(article.fetcher)
         for server in self.servers:
@@ -226,97 +318,29 @@ class Decoder(Thread):
         article.nzf.nzo.inc_log('missing_art_log', msg)
         return False
 
+    def verify_filename(self, article, decoded_data, yenc_filename):
+        """ Verify the filename provided by yenc by using
+            par2 information and otherwise fall back to NZB name
+        """
+        # Was this file already verified and did we get a name?
+        if article.nzf.filename_checked or not yenc_filename:
+            return
 
-YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in xrange(256)])
-def decode(article, data, raw_data):
-    # Do we have SABYenc? Let it do all the work
-    if sabnzbd.decoder.SABYENC_ENABLED:
-        decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
+        # Is this the first article?
+        if article.partnum == 1:
+            # Don't check again, even if no match
+            article.nzf.filename_checked = True
+            # Did we find this data?
+            md5of16k = hashlib.md5(decoded_data[:16384]).digest()
+            if md5of16k in article.nzf.nzo.md5of16k:
+                article.nzf.filename = article.nzf.nzo.md5of16k[md5of16k]
+                logging.info('Detected filename based on par2: %s', article.nzf.filename)
+                return
 
-        # Assume it is yenc
-        article.nzf.type = 'yenc'
-
-        # Only set the name if it was found and not obfuscated
-        if output_filename and not is_obfuscated_filename(output_filename):
-            article.nzf.filename = output_filename
-
-        # CRC check
-        if not crc_correct:
-            raise CrcError(crc_expected, crc, decoded_data)
-
-        return decoded_data
-
-    # Continue for _yenc or Python-yEnc
-    # Filter out empty ones
-    data = filter(None, data)
-    # No point in continuing if we don't have any data left
-    if data:
-        nzf = article.nzf
-        yenc, data = yCheck(data)
-        ybegin, ypart, yend = yenc
-        decoded_data = None
-
-        # Deal with non-yencoded posts
-        if not ybegin:
-            found = False
-            try:
-                for i in xrange(min(40, len(data))):
-                    if data[i].startswith('begin '):
-                        nzf.type = 'uu'
-                        found = True
-                        # Pause the job and show warning
-                        if nzf.nzo.status != Status.PAUSED:
-                            nzf.nzo.pause()
-                            msg = T('UUencode detected, only yEnc encoding is supported [%s]') % nzf.nzo.final_name
-                            logging.warning(msg)
-                        break
-            except IndexError:
-                raise BadYenc()
-
-            if found:
-                decoded_data = ''
-            else:
-                raise BadYenc()
-
-        # Deal with yenc encoded posts
-        elif ybegin and yend:
-            possible_filename = yenc_name_fixer(ybegin['name'])
-            if 'name' in ybegin and not is_obfuscated_filename(possible_filename):
-                nzf.filename = possible_filename
-            else:
-                logging.debug("Possible corrupt/obfuscated header detected => ybegin: %s", ybegin)
-            nzf.type = 'yenc'
-            # Decode data
-            if HAVE_YENC:
-                decoded_data, crc = _yenc.decode_string(''.join(data))[:2]
-                partcrc = '%08X' % ((crc ^ -1) & 2 ** 32L - 1)
-            else:
-                data = ''.join(data)
-                for i in (0, 9, 10, 13, 27, 32, 46, 61):
-                    j = '=%c' % (i + 64)
-                    data = data.replace(j, chr(i))
-                decoded_data = data.translate(YDEC_TRANS)
-                crc = binascii.crc32(decoded_data)
-                partcrc = '%08X' % (crc & 2 ** 32L - 1)
-
-            if ypart:
-                crcname = 'pcrc32'
-            else:
-                crcname = 'crc32'
-
-            if crcname in yend:
-                _partcrc = yenc_name_fixer('0' * (8 - len(yend[crcname])) + yend[crcname].upper())
-            else:
-                _partcrc = None
-                logging.debug("Corrupt header detected => yend: %s", yend)
-
-            if not _partcrc == partcrc:
-                raise CrcError(_partcrc, partcrc, decoded_data)
-        else:
-            raise BadYenc()
-
-        return decoded_data
-
+        # Fallback to yenc/nzb name
+        if not is_obfuscated_filename(yenc_filename):
+            article.nzf.filename = yenc_filename
+            logging.info('Detected filename from yenc: %s', article.nzf.filename)
 
 def yCheck(data):
     ybegin = None

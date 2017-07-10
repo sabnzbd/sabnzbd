@@ -1181,7 +1181,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     classic = classic or not cfg.par2_multicore()
     if sabnzbd.WIN32:
         # If filenames are UTF-8 then we must use par2-tbb, unless this is a retry with classic
-        tbb = (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND
+        tbb = (sabnzbd.assembler.GetMD5Hashes(parfile, True)[2] and not classic) or not PAR2C_COMMAND
     else:
         tbb = False
     if tbb and options:

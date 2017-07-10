@@ -209,8 +209,8 @@ class Article(TryList):
 # NzbFile
 ##############################################################################
 NzbFileSaver = (
-    'date', 'subject', 'filename', 'type', 'is_par2', 'vol', 'blocks', 'setname',
-    'extrapars', 'articles', 'decodetable', 'bytes', 'bytes_left',
+    'date', 'subject', 'filename', 'filename_checked', 'type', 'is_par2', 'vol',
+    'blocks', 'setname','extrapars', 'articles', 'decodetable', 'bytes', 'bytes_left',
     'article_count', 'nzo', 'nzf_id', 'deleted', 'valid', 'import_finished',
     'md5sum'
 )
@@ -229,6 +229,7 @@ class NzbFile(TryList):
         self.subject = subject
         self.type = None
         self.filename = name_extractor(subject)
+        self.filename_checked = False
 
         self.is_par2 = False
         self.vol = None
@@ -538,7 +539,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 ##############################################################################
 NzbObjectSaver = (
     'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'bytes_tried',
-    'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date',
+    'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date', 'md5of16k',
     'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
@@ -611,7 +612,8 @@ class NzbObject(TryList):
 
         self.partable = {}          # Holds one parfile-name for each set
         self.extrapars = {}         # Holds the extra parfile names for all sets
-        self.md5packs = {}          # Holds the md5pack for each set
+        self.md5packs = {}          # Holds the md5pack for each set (name: hash)
+        self.md5of16k = {}          # Holds the md5s of the first-16k of all files in the NZB (hash: name)
 
         self.files = []             # List of all NZFs
         self.files_table = {}       # Dictionary of NZFs indexed using NZF_ID
@@ -1657,6 +1659,8 @@ class NzbObject(TryList):
             self.meta = {}
         if self.servercount is None:
             self.servercount = {}
+        if self.md5of16k is None:
+            self.md5of16k = {}
         if self.bytes_tried is None:
             # Fill with old info
             self.bytes_tried = 0

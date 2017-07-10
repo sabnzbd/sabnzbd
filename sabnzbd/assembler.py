@@ -100,9 +100,10 @@ class Assembler(Thread):
                     nzf.remove_admin()
                     setname = nzf.setname
                     if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack = GetMD5Hashes(filepath)[0]
+                        pack, new16khashes, _ = GetMD5Hashes(filepath)
                         if pack:
                             nzo.md5packs[setname] = pack
+                            nzo.md5of16k.update(new16khashes)
                             logging.debug('Got md5pack for set %s', setname)
                             # Valid md5pack, so use this par2-file as main par2 file for the set
                             if setname in nzo.partable:
@@ -203,11 +204,12 @@ def file_has_articles(nzf):
 # http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
 
 def GetMD5Hashes(fname, force=False):
-    """ Get the hash table from a PAR2 file
+    """ Get the hash table and the first-16k hash table from a PAR2 file
         Return as dictionary, indexed on names and True for utf8-encoded names
     """
     new_encoding = True
     table = {}
+    table16k = {}
     if force or not flag_file(os.path.split(fname)[0], QCHECK_FILE):
         try:
             f = open(fname, 'rb')
@@ -218,10 +220,11 @@ def GetMD5Hashes(fname, force=False):
         try:
             header = f.read(8)
             while header:
-                name, hash = ParseFilePacket(f, header)
+                name, hash, hash16k = ParseFilePacket(f, header)
                 new_encoding |= is_utf8(name)
                 if name:
                     table[name] = hash
+                    table16k[hash16k] = name
                 header = f.read(8)
 
         except (struct.error, IndexError):
@@ -233,13 +236,13 @@ def GetMD5Hashes(fname, force=False):
             table = {}
 
         f.close()
-    return table, new_encoding
+    return table, table16k, new_encoding
 
 
 def ParseFilePacket(f, header):
     """ Look up and analyze a FileDesc package """
 
-    nothing = None, None
+    nothing = None, None, None
 
     if header != 'PAR2\0PKT':
         return nothing
@@ -271,8 +274,9 @@ def ParseFilePacket(f, header):
     for offset in range(0, len, 8):
         if data[offset:offset + 16] == "PAR 2.0\0FileDesc":
             hash = data[offset + 32:offset + 48]
+            hash16k = data[offset + 48:offset + 64]
             filename = data[offset + 72:].strip('\0')
-            return filename, hash
+            return filename, hash, hash16k
 
     return nothing
 
