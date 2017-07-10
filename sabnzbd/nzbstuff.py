@@ -212,7 +212,7 @@ NzbFileSaver = (
     'date', 'subject', 'filename', 'filename_checked', 'type', 'is_par2', 'vol',
     'blocks', 'setname','extrapars', 'articles', 'decodetable', 'bytes', 'bytes_left',
     'article_count', 'nzo', 'nzf_id', 'deleted', 'valid', 'import_finished',
-    'md5sum'
+    'md5sum', 'md5of16k'
 )
 
 
@@ -251,6 +251,7 @@ class NzbFile(TryList):
         self.import_finished = False
 
         self.md5sum = None
+        self.md5of16k = None
 
         self.valid = bool(article_db)
 

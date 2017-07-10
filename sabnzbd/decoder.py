@@ -264,11 +264,11 @@ class Decoder(Thread):
 
             # Deal with yenc encoded posts
             elif ybegin and yend:
-                possible_filename = yenc_name_fixer(ybegin['name'])
-                if 'name' in ybegin and not is_obfuscated_filename(possible_filename):
-                    nzf.filename = possible_filename
+                if 'name' in ybegin:
+                    output_filename = yenc_name_fixer(ybegin['name'])
                 else:
-                    logging.debug("Possible corrupt/obfuscated header detected => ybegin: %s", ybegin)
+                    output_filename = None
+                    logging.debug("Possible corrupt header detected => ybegin: %s", ybegin)
                 nzf.type = 'yenc'
                 # Decode data
                 if HAVE_YENC:
@@ -299,6 +299,11 @@ class Decoder(Thread):
             else:
                 raise BadYenc()
 
+            # Parse filename if there was data
+            if decoded_data:
+                # Only set the name if it was found and not obfuscated
+                self.verify_filename(article, decoded_data, output_filename)
+
             return decoded_data
 
     def search_new_server(self, article):
@@ -326,19 +331,22 @@ class Decoder(Thread):
         if article.nzf.filename_checked or not yenc_filename:
             return
 
-        # Is this the first article?
+        # Set the md5-of-16k if this is the first article
         if article.partnum == 1:
+            article.nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
+
+        # If we have the md5, use it to rename
+        if article.nzf.md5of16k:
             # Don't check again, even if no match
             article.nzf.filename_checked = True
-            # Did we find this data?
-            md5of16k = hashlib.md5(decoded_data[:16384]).digest()
-            if md5of16k in article.nzf.nzo.md5of16k:
-                article.nzf.filename = article.nzf.nzo.md5of16k[md5of16k]
+            # Find the match and rename
+            if article.nzf.md5of16k in article.nzf.nzo.md5of16k:
+                article.nzf.filename = article.nzf.nzo.md5of16k[article.nzf.md5of16k]
                 logging.info('Detected filename based on par2: %s', article.nzf.filename)
                 return
 
         # Fallback to yenc/nzb name (also when there is no partnum=1)
-        # We also keep the NZB name in case it ends with ".par2"
+        # We also keep the NZB name in case it ends with ".par2" (usually correct)
         if not is_obfuscated_filename(yenc_filename) and not article.nzf.filename.endswith('.par2'):
             article.nzf.filename = yenc_filename
             logging.info('Detected filename from yenc: %s', article.nzf.filename)
