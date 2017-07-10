@@ -100,7 +100,7 @@ class Assembler(Thread):
                     nzf.remove_admin()
                     setname = nzf.setname
                     if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack, new16khashes, _ = self.parse_par2_file(filepath)
+                        pack, new16khashes = self.parse_par2_file(filepath)
                         if pack:
                             nzo.md5packs[setname] = pack
                             nzo.md5of16k.update(new16khashes)
