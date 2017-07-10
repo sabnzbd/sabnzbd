@@ -1221,6 +1221,8 @@ class NzbObject(TryList):
     def prospective_add(self, nzf):
         """ Add par2 files to compensate for missing articles
         """
+        original_filename = ''
+
         # How many do we need?
         bad = len(self.nzo_info.get('bad_art_log', []))
         miss = len(self.nzo_info.get('missing_art_log', []))
@@ -1235,11 +1237,15 @@ class NzbObject(TryList):
             if nzf_check.blocks:
                 blocks_already = blocks_already + int_conv(nzf_check.blocks)
 
+        # Make sure to also select a parset if it was in the original filename
+        if nzf.filename in self.renames:
+            original_filename = self.renames[nzf.filename]
+
         # Need more?
         if not nzf.is_par2 and blocks_already < total_need:
             # We have to find the right par-set
             for parset in self.extrapars.keys():
-                if parset in nzf.filename and self.extrapars[parset]:
+                if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
                     extrapars_sorted = sorted(self.extrapars[parset], key=lambda x: x.blocks, reverse=True)
                     # Loop until we have enough
                     while blocks_already < total_need and extrapars_sorted:
