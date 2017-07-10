@@ -81,7 +81,7 @@ class Assembler(Thread):
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.type)
                     try:
-                        filepath = _assemble(nzf, filepath, dupe)
+                        filepath = self.assemble(nzf, filepath, dupe)
                     except IOError, (errno, strerror):
                         # If job was deleted, ignore error
                         if not nzo.is_gone():
@@ -100,7 +100,7 @@ class Assembler(Thread):
                     nzf.remove_admin()
                     setname = nzf.setname
                     if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack, new16khashes, _ = GetMD5Hashes(filepath)
+                        pack, new16khashes, _ = self.parse_par2_file(filepath)
                         if pack:
                             nzo.md5packs[setname] = pack
                             nzo.md5of16k.update(new16khashes)
@@ -145,44 +145,78 @@ class Assembler(Thread):
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)
 
+    def assemble(self, nzf, path, dupe):
+        """ Assemble a NZF from its table of articles """
+        if os.path.exists(path):
+            unique_path = get_unique_filename(path)
+            if dupe:
+                path = unique_path
+            else:
+                renamer(path, unique_path)
 
-def _assemble(nzf, path, dupe):
-    if os.path.exists(path):
-        unique_path = get_unique_filename(path)
-        if dupe:
-            path = unique_path
-        else:
-            renamer(path, unique_path)
+        md5 = hashlib.md5()
+        fout = open(path, 'ab')
+        decodetable = nzf.decodetable
 
-    md5 = hashlib.md5()
-    fout = open(path, 'ab')
-    decodetable = nzf.decodetable
+        for articlenum in decodetable:
+            # Break if deleted during writing
+            if nzf.nzo.status is Status.DELETED:
+                break
 
-    for articlenum in decodetable:
-        # Break if deleted during writing
-        if nzf.nzo.status is Status.DELETED:
-            break
+            # Sleep to allow decoder/assembler switching
+            sleep(0.0001)
+            article = decodetable[articlenum]
 
-        # Sleep to allow decoder/assembler switching
-        sleep(0.0001)
-        article = decodetable[articlenum]
+            data = ArticleCache.do.load_article(article)
 
-        data = ArticleCache.do.load_article(article)
+            if not data:
+                logging.info(T('%s missing'), article)
+            else:
+                # yenc data already decoded, flush it out
+                fout.write(data)
+                md5.update(data)
 
-        if not data:
-            logging.info(T('%s missing'), article)
-        else:
-            # yenc data already decoded, flush it out
-            fout.write(data)
-            md5.update(data)
+        fout.flush()
+        fout.close()
+        set_permissions(path)
+        nzf.md5sum = md5.digest()
+        del md5
 
-    fout.flush()
-    fout.close()
-    set_permissions(path)
-    nzf.md5sum = md5.digest()
-    del md5
+        return path
 
-    return path
+    def parse_par2_file(self, fname):
+        """ Get the hash table and the first-16k hash table from a PAR2 file
+            Return as dictionary, indexed on names or hashes for the first-16 table
+            For a full description of the par2 specification, visit:
+            http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
+        """
+        table = {}
+        table16k = {}
+        if not flag_file(os.path.split(fname)[0], QCHECK_FILE):
+            try:
+                f = open(fname, 'rb')
+            except:
+                return table
+
+            try:
+                header = f.read(8)
+                while header:
+                    name, hash, hash16k = parse_par2_file_packet(f, header)
+                    if name:
+                        table[name] = hash
+                        table16k[hash16k] = name
+                    header = f.read(8)
+
+            except (struct.error, IndexError):
+                logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
+                table = {}
+            except:
+                logging.debug('QuickCheck parser crashed in file %s', fname)
+                logging.info('Traceback: ', exc_info=True)
+                table = {}
+
+            f.close()
+        return table, table16k
 
 
 def file_has_articles(nzf):
@@ -200,46 +234,7 @@ def file_has_articles(nzf):
     return has
 
 
-# For a full description of the par2 specification, visit:
-# http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
-
-def GetMD5Hashes(fname, force=False):
-    """ Get the hash table and the first-16k hash table from a PAR2 file
-        Return as dictionary, indexed on names and True for utf8-encoded names
-    """
-    new_encoding = True
-    table = {}
-    table16k = {}
-    if force or not flag_file(os.path.split(fname)[0], QCHECK_FILE):
-        try:
-            f = open(fname, 'rb')
-        except:
-            return table, new_encoding
-
-        new_encoding = False
-        try:
-            header = f.read(8)
-            while header:
-                name, hash, hash16k = ParseFilePacket(f, header)
-                new_encoding |= is_utf8(name)
-                if name:
-                    table[name] = hash
-                    table16k[hash16k] = name
-                header = f.read(8)
-
-        except (struct.error, IndexError):
-            logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
-            table = {}
-        except:
-            logging.debug('QuickCheck parser crashed in file %s', fname)
-            logging.info('Traceback: ', exc_info=True)
-            table = {}
-
-        f.close()
-    return table, table16k, new_encoding
-
-
-def ParseFilePacket(f, header):
+def parse_par2_file_packet(f, header):
     """ Look up and analyze a FileDesc package """
 
     nothing = None, None, None
