@@ -546,7 +546,7 @@ NzbObjectSaver = (
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted',
     'duplicate', 'oversized', 'precheck', 'incomplete', 'reuse', 'meta',
-    'md5sum', 'servercount', 'unwanted_ext', 'rating_filtered'
+    'md5sum', 'servercount', 'unwanted_ext', 'renames', 'rating_filtered'
 )
 
 # Lock to prevent errors when saving the NZO data
@@ -618,6 +618,7 @@ class NzbObject(TryList):
 
         self.files = []             # List of all NZFs
         self.files_table = {}       # Dictionary of NZFs indexed using NZF_ID
+        self.renames = {}           # Dictionary of all renamed files
 
         self.finished_files = []    # List of all finished NZFs
 
@@ -1442,6 +1443,17 @@ class NzbObject(TryList):
                         self.files[pos + 1] = nzf
                         self.files[pos] = tmp_nzf
 
+    @synchronized(NZO_LOCK)
+    def renamed_file(self, name_set, old_name=None):
+        """ Save renames at various stages (Download/PP)
+            to be used on Retry. Accepts strings and dicts.
+        """
+        if not old_name:
+            # Add to dict
+            self.renames.update(name_set)
+        else:
+            self.renames[name_set] = old_name
+
     # Determine if rating information (including site identifier so rating can be updated)
     # is present in metadata and if so store it
     @synchronized(NZO_LOCK)
@@ -1501,6 +1513,8 @@ class NzbObject(TryList):
             if keep_basic:
                 remove_all(wpath, 'SABnzbd_nz?_*', keep_folder=True)
                 remove_all(wpath, 'SABnzbd_article_*', keep_folder=True)
+                # We save the renames file
+                sabnzbd.save_data(self.renames, RENAMES_FILE, self.workpath)
             else:
                 remove_all(wpath, recursive=True)
             if del_files:
@@ -1662,6 +1676,8 @@ class NzbObject(TryList):
             self.servercount = {}
         if self.md5of16k is None:
             self.md5of16k = {}
+        if self.renames is None:
+            self.renames = {}
         if self.bytes_tried is None:
             # Fill with old info
             self.bytes_tried = 0

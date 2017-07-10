@@ -327,29 +327,33 @@ class Decoder(Thread):
         """ Verify the filename provided by yenc by using
             par2 information and otherwise fall back to NZB name
         """
+        nzf = article.nzf
         # Was this file already verified and did we get a name?
-        if article.nzf.filename_checked or not yenc_filename:
+        if nzf.filename_checked or not yenc_filename:
             return
 
         # Set the md5-of-16k if this is the first article
         if article.partnum == 1:
-            article.nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
+            nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
 
         # If we have the md5, use it to rename
-        if article.nzf.md5of16k:
+        if nzf.md5of16k:
             # Don't check again, even if no match
-            article.nzf.filename_checked = True
+            nzf.filename_checked = True
             # Find the match and rename
-            if article.nzf.md5of16k in article.nzf.nzo.md5of16k:
-                article.nzf.filename = article.nzf.nzo.md5of16k[article.nzf.md5of16k]
-                logging.info('Detected filename based on par2: %s', article.nzf.filename)
+            if nzf.md5of16k in nzf.nzo.md5of16k:
+                new_filename = nzf.nzo.md5of16k[nzf.md5of16k]
+                logging.info('Detected filename based on par2: %s', new_filename)
+                nzf.nzo.renamed_file(new_filename, nzf.filename)
+                nzf.filename = new_filename
                 return
 
         # Fallback to yenc/nzb name (also when there is no partnum=1)
         # We also keep the NZB name in case it ends with ".par2" (usually correct)
-        if not is_obfuscated_filename(yenc_filename) and not article.nzf.filename.endswith('.par2'):
-            article.nzf.filename = yenc_filename
-            logging.info('Detected filename from yenc: %s', article.nzf.filename)
+        if not is_obfuscated_filename(yenc_filename) and not nzf.filename.endswith('.par2'):
+            logging.info('Detected filename from yenc: %s', yenc_filename)
+            nzf.nzo.renamed_file(yenc_filename, nzf.filename)
+            nzf.filename = yenc_filename
 
 
 def yCheck(data):

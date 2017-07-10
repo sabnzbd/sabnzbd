@@ -36,7 +36,7 @@ from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int
     has_win_device, calc_age
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
+from sabnzbd.constants import Status
 
 if sabnzbd.WIN32:
     try:
@@ -1579,10 +1579,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
     # If successful, add renamed files to the collection
     if finished and renames:
-        previous = sabnzbd.load_data(RENAMES_FILE, nzo.workpath, remove=False)
-        for name in previous or {}:
-            renames[name] = previous[name]
-        sabnzbd.save_data(renames, RENAMES_FILE, nzo.workpath)
+        nzo.renamed_file(renames)
 
     # If successful and files were reconstructed, remove incomplete original files
     if finished and reconstructed:
@@ -1989,15 +1986,12 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     # Even if the repair did not complete fully it will rename those!
     # But the ones in 'Finding available slices'-section will only be renamed after succesfull repair
     if renames:
-        # Adding to the collection
-        previous = sabnzbd.load_data(RENAMES_FILE, nzo.workpath, remove=False)
-        for name in previous or {}:
-            renames[name] = previous[name]
-        sabnzbd.save_data(renames, RENAMES_FILE, nzo.workpath)
-
         # If succes, we also remove the possibly previously renamed ones
-        if finished and previous:
-            reconstructed.extend(previous.values())
+        if finished:
+            reconstructed.extend(nzo.reconstructed)
+
+        # Adding to the collection
+        nzo.renamed_file(renames)
 
         # Remove renamed original files
         workdir = os.path.split(parfile)[0]
@@ -2254,10 +2248,8 @@ def QuickCheck(set, nzo):
 
     # Save renames
     if renames:
-        previous = sabnzbd.load_data(RENAMES_FILE, nzo.workpath, remove=False)
-        for name in previous or {}:
-            renames[name] = previous[name]
-        sabnzbd.save_data(renames, RENAMES_FILE, nzo.workpath)
+        nzo.renamed_file(renames)
+
     return result
 
 
