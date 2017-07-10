@@ -397,6 +397,13 @@ def sanitize_files_in_folder(folder):
     return lst
 
 
+def is_obfuscated_filename(filename):
+    """ Check if this file has an extension, if not, it's
+        probably obfuscated and we don't use it
+    """
+    return (os.path.splitext(filename)[1] == '')
+
+
 def flag_file(path, flag, create=False):
     """ Create verify flag file or return True if it already exists """
     path = os.path.join(path, JOB_ADMIN)

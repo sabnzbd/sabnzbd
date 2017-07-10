@@ -31,7 +31,7 @@ import sabnzbd.articlecache
 import sabnzbd.downloader
 import sabnzbd.nzbqueue
 from sabnzbd.encoding import yenc_name_fixer
-from sabnzbd.misc import match_str
+from sabnzbd.misc import match_str, is_obfuscated_filename
 
 # Check for basic-yEnc
 try:
@@ -236,8 +236,8 @@ def decode(article, data, raw_data):
         # Assume it is yenc
         article.nzf.type = 'yenc'
 
-        # Only set the name if it was found
-        if output_filename:
+        # Only set the name if it was found and not obfuscated
+        if output_filename and not is_obfuscated_filename(output_filename):
             article.nzf.filename = output_filename
 
         # CRC check
@@ -280,10 +280,11 @@ def decode(article, data, raw_data):
 
         # Deal with yenc encoded posts
         elif ybegin and yend:
-            if 'name' in ybegin:
-                nzf.filename = yenc_name_fixer(ybegin['name'])
+            possible_filename = yenc_name_fixer(ybegin['name'])
+            if 'name' in ybegin and not is_obfuscated_filename(possible_filename):
+                nzf.filename = possible_filename
             else:
-                logging.debug("Possible corrupt header detected => ybegin: %s", ybegin)
+                logging.debug("Possible corrupt/obfuscated header detected => ybegin: %s", ybegin)
             nzf.type = 'yenc'
             # Decode data
             if HAVE_YENC:
