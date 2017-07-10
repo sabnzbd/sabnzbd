@@ -214,8 +214,13 @@ class Assembler(Thread):
             logging.debug('QuickCheck parser crashed in file %s', fname)
             logging.info('Traceback: ', exc_info=True)
             table = {}
-
         f.close()
+
+        # If the first-16k is not unique, clear the table to prevent incorrect renames
+        if len(table) != len(table16k):
+            table16k = {}
+            logging.debug('Par2-16K signatures not unique for %s', fname)
+
         return table, table16k
 
 
