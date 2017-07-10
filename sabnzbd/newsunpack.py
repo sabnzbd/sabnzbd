@@ -1579,7 +1579,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
     # If successful, add renamed files to the collection
     if finished and renames:
-        nzo.renamed_file(renames)
+        nzo.renamed_file(renames.values())
 
     # If successful and files were reconstructed, remove incomplete original files
     if finished and reconstructed:
@@ -1988,7 +1988,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     if renames:
         # If succes, we also remove the possibly previously renamed ones
         if finished:
-            reconstructed.extend(nzo.reconstructed)
+            reconstructed.extend(nzo.renames)
 
         # Adding to the collection
         nzo.renamed_file(renames)

@@ -350,7 +350,7 @@ class Decoder(Thread):
 
         # Fallback to yenc/nzb name (also when there is no partnum=1)
         # We also keep the NZB name in case it ends with ".par2" (usually correct)
-        if not is_obfuscated_filename(yenc_filename) and not nzf.filename.endswith('.par2'):
+        if yenc_filename != nzf.filename and not is_obfuscated_filename(yenc_filename) and not nzf.filename.endswith('.par2'):
             logging.info('Detected filename from yenc: %s', yenc_filename)
             nzf.nzo.renamed_file(yenc_filename, nzf.filename)
             nzf.filename = yenc_filename
