@@ -343,9 +343,11 @@ class Decoder(Thread):
             # Find the match and rename
             if nzf.md5of16k in nzf.nzo.md5of16k:
                 new_filename = platform_encode(nzf.nzo.md5of16k[nzf.md5of16k])
-                logging.info('Detected filename based on par2: %s -> %s', nzf.filename, new_filename)
-                nzf.nzo.renamed_file(new_filename, nzf.filename)
-                nzf.filename = new_filename
+                # Was it even new?
+                if new_filename != nzf.filename:
+                    logging.info('Detected filename based on par2: %s -> %s', nzf.filename, new_filename)
+                    nzf.nzo.renamed_file(new_filename, nzf.filename)
+                    nzf.filename = new_filename
                 return
 
         # Fallback to yenc/nzb name (also when there is no partnum=1)
