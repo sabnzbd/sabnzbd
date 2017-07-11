@@ -151,7 +151,6 @@ function QueueListModel(parent) {
         // See what the actual index is of the queue-object
         // This way we can see how we move up and down independent of pagination
         var itemReplaced = self.queueItems()[event.targetIndex+corTerm];
-        var testing = itemReplaced.index();
         callAPI({
             mode: "switch",
             value: itemMoved.id,

@@ -48,10 +48,6 @@ function ViewModel() {
     self.onQueueFinish = ko.observable('');
     self.speedHistory = [];
     
-    //queue indicators
-    self.topOfQueue = "";
-    self.bottomOfQueue = "";
-
     // Statusinfo container
     self.hasStatusInfo = ko.observable(false);
     self.hasPerformanceInfo = ko.observable(false);
