@@ -114,15 +114,15 @@ class Assembler(Thread):
                     rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
                     if rar_encrypted:
                         if cfg.pause_on_pwrar() == 1:
-                            logging.warning(T('WARNING: Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'), nzo.final_name)
+                            logging.warning(remove_warning_label(T('WARNING: Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)')), nzo.final_name)
                             nzo.pause()
                         else:
-                            logging.warning(T('WARNING: Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'), nzo.final_name)
+                            logging.warning(remove_warning_label(T('WARNING: Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)')), nzo.final_name)
                             nzo.fail_msg = T('Aborted, encryption detected')
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
                     if unwanted_file:
-                        logging.warning(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), nzo.final_name, unwanted_file)
+                        logging.warning(remove_warning_label(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s ')), nzo.final_name, unwanted_file)
                         logging.debug(T('Unwanted extension is in rar file %s'), filepath)
                         if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                             logging.debug('Unwanted extension ... pausing')
@@ -135,10 +135,10 @@ class Assembler(Thread):
 
                     filter, reason = nzo_filtered_by_rating(nzo)
                     if filter == 1:
-                        logging.warning(T('WARNING: Paused job "%s" because of rating (%s)'), nzo.final_name, reason)
+                        logging.warning(remove_warning_label(T('WARNING: Paused job "%s" because of rating (%s)')), nzo.final_name, reason)
                         nzo.pause()
                     elif filter == 2:
-                        logging.warning(T('WARNING: Aborted job "%s" because of rating (%s)'), nzo.final_name, reason)
+                        logging.warning(remove_warning_label(T('WARNING: Aborted job "%s" because of rating (%s)')), nzo.final_name, reason)
                         nzo.fail_msg = T('Aborted, rating filter matched (%s)') % reason
                         sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
             else:
@@ -433,3 +433,11 @@ def rating_filtered(rating, filename, abort):
     if any(check_keyword(k) for k in keywords.split(',')):
         return T('keywords')
     return None
+
+
+def remove_warning_label(msg):
+    """ Standardize errors by removing obsolete
+        "WARNING:" part in all languages """
+    if ':' in msg:
+        return msg.split(':')[1]
+    return msg
