@@ -45,15 +45,18 @@ if sabnzbd.WIN32:
         from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
     except ImportError:
         pass
+    # Load the POpen from the fixed unicode-subprocess
+    from sabnzbd.utils.subprocess_fix import Popen
 else:
     # Define dummy WindowsError for non-Windows
     class WindowsError(Exception):
-
         def __init__(self, value):
             self.parameter = value
 
         def __str__(self):
             return repr(self.parameter)
+    # Load the regular POpen
+    from subprocess import Popen
 
 # Regex globals
 RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d)$', re.I)
@@ -166,7 +169,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
 
         logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
                      extern_proc, complete_dir, nzo.filename, nicename, '', nzo.cat, nzo.group, status, failure_url)
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
 
@@ -207,7 +210,7 @@ def external_script(script, p1, p2, p3=None, p4=None):
         stup, need_shell, command, creationflags = build_command(command)
         env = create_env()
         logging.info('Running user script %s(%s, %s)', script, p1, p2)
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
     except:
@@ -602,7 +605,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     logging.debug("Running unrar %s", command)
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
@@ -854,7 +857,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting unzip: %s', command)
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
@@ -976,7 +979,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting 7za: %s', command)
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
@@ -1238,7 +1241,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     logging.debug('Starting par2: %s', command)
     lines = []
     try:
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              startupinfo=stup, creationflags=creationflags)
 
@@ -1627,7 +1630,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     logging.info('Starting MultiPar: %s', command)
 
     lines = []
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
@@ -2055,10 +2058,6 @@ def userxbit(filename):
 
 def build_command(command):
     """ Prepare list from running an external program """
-    for n in xrange(len(command)):
-        if isinstance(command[n], unicode):
-            command[n] = deunicode(command[n])
-
     if not sabnzbd.WIN32:
         if command[0].endswith('.py'):
             with open(command[0], 'r') as script_file:
@@ -2380,7 +2379,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
             stup, need_shell, command, creationflags = build_command(command)
             env = create_env()
             logging.info('Running pre-queue script %s', command)
-            p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+            p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 startupinfo=stup, env=env, creationflags=creationflags)
         except:
@@ -2450,7 +2449,7 @@ class SevenZip(object):
         command = [SEVEN_COMMAND, 'l', '-p', '-y', '-slt', self.path]
         stup, need_shell, command, creationflags = build_command(command)
 
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              startupinfo=stup, creationflags=creationflags)
 
@@ -2477,7 +2476,7 @@ class SevenZip(object):
         else:
             stderr = open('/dev/null', 'w')
 
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=stderr,
                              startupinfo=stup, creationflags=creationflags)
 
@@ -2493,7 +2492,7 @@ class SevenZip(object):
 
 def run_simple(cmd):
     """ Run simple external command and return output """
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     txt = p.stdout.read()
     p.wait()
     return txt
