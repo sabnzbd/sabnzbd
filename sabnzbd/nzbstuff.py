@@ -320,6 +320,11 @@ class NzbFile(TryList):
         """ Is this file completed? """
         return self.import_finished and not bool(self.articles)
 
+    @property
+    def lowest_partnum(self):
+        """ Get lowest article number of this file """
+        return min(self.decodetable)
+
     def remove_admin(self):
         """ Remove article database from disk (sabnzbd_nzf_<id>)"""
         try:
