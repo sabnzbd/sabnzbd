@@ -1,3 +1,9 @@
+## Fixing python 2.7 windows unicode issue with ``subprocess.Popen``.
+
+## Copied from
+## http://vaab.blog.kal.fr/2017/03/16/fixing-windows-python-2-7-unicode-issue-with-subprocesss-popen/
+## https://gist.github.com/vaab/2ad7051fc193167f15f85ef573e54eb9
+
 ## issue: https://bugs.python.org/issue19264
 import os
 import ctypes

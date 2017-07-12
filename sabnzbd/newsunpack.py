@@ -603,7 +603,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     stup, need_shell, command, creationflags = build_command(command)
 
+    # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
+    rarfiles = rarfile.RarFile(rarfile_path).volumelist()
+
     logging.debug("Running unrar %s", command)
     p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -618,7 +621,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     # Loop over the output from rar!
     curr = 0
     extracted = []
-    rarfiles = []
     fail = 0
     inrecovery = False
     lines = []
@@ -641,9 +643,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         lines.append(line)
 
         if line.startswith('Extracting from'):
-            filename = TRANS((re.search(EXTRACTFROM_RE, line).group(1)))
-            if filename not in rarfiles:
-                rarfiles.append(filename)
             curr += 1
             nzo.set_action_line(T('Unpacking'), '%02d/%02d' % (curr, numrars))
 
