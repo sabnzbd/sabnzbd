@@ -30,8 +30,8 @@ import hashlib
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-    set_permissions, long_path, clip_path, has_win_device, get_all_passwords
-from sabnzbd.constants import Status
+    set_permissions, flag_file, long_path, clip_path, has_win_device, get_all_passwords
+from sabnzbd.constants import QCHECK_FILE, Status
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
@@ -192,35 +192,35 @@ class Assembler(Thread):
         """
         table = {}
         table16k = {}
+        if not flag_file(os.path.split(fname)[0], QCHECK_FILE):
+            try:
+                f = open(fname, 'rb')
+            except:
+                return table
 
-        try:
-            f = open(fname, 'rb')
-        except:
-            return table, table16k
-
-        try:
-            header = f.read(8)
-            while header:
-                name, hash, hash16k = parse_par2_file_packet(f, header)
-                if name:
-                    table[name] = hash
-                    table16k[hash16k] = name
+            try:
                 header = f.read(8)
+                while header:
+                    name, hash, hash16k = parse_par2_file_packet(f, header)
+                    if name:
+                        table[name] = hash
+                        table16k[hash16k] = name
+                    header = f.read(8)
 
-        except (struct.error, IndexError):
-            logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
-            table = {}
-        except:
-            logging.debug('QuickCheck parser crashed in file %s', fname)
-            logging.info('Traceback: ', exc_info=True)
-            table = {}
-        f.close()
+            except (struct.error, IndexError):
+                logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
+                table = {}
+            except:
+                logging.debug('QuickCheck parser crashed in file %s', fname)
+                logging.info('Traceback: ', exc_info=True)
+                table = {}
 
-        # If the first-16k is not unique, clear the table to prevent incorrect renames
-        if len(table) != len(table16k):
-            table16k = {}
-            logging.debug('Par2-16K signatures not unique for %s', fname)
+            # If the first-16k is not unique, clear the table to prevent incorrect renames
+            if len(table) != len(table16k):
+                table16k = {}
+                logging.debug('Par2-16K signatures not unique for %s', fname)
 
+            f.close()
         return table, table16k
 
 
