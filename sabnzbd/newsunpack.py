@@ -36,7 +36,7 @@ from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int
     has_win_device, calc_age
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import Status
+from sabnzbd.constants import Status, QCHECK_FILE
 
 if sabnzbd.WIN32:
     try:
@@ -1078,8 +1078,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
 
             if finished:
                 result = True
-                logging.info('Par verify finished ok on %s!',
-                             parfile)
+                logging.info('Par verify finished ok on %s!', parfile)
 
                 # Remove this set so we don't try to check it again
                 nzo.remove_parset(parfile_nzf.setname)
@@ -1102,43 +1101,18 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
 
     try:
         if cfg.enable_par_cleanup():
+            deletables = []
             new_dir_content = os.listdir(workdir)
 
+            # Remove extra files created during repair and par2 base files
             for path in new_dir_content:
                 if os.path.splitext(path)[1] == '.1' and path not in old_dir_content:
-                    try:
-                        path = os.path.join(workdir, path)
+                    deletables.append(os.path.join(workdir, path))
+            deletables.append(os.path.join(workdir, setname + '.par2'))
+            deletables.append(os.path.join(workdir, setname + '.PAR2'))
+            deletables.append(parfile)
 
-                        logging.info("Deleting %s", path)
-                        os.remove(path)
-                    except:
-                        logging.warning(T('Deleting %s failed!'), path)
-
-            path = os.path.join(workdir, setname + '.par2')
-            path2 = os.path.join(workdir, setname + '.PAR2')
-
-            if os.path.exists(path):
-                try:
-                    logging.info("Deleting %s", path)
-                    os.remove(path)
-                except:
-                    logging.warning(T('Deleting %s failed!'), path)
-
-            if os.path.exists(path2):
-                try:
-                    logging.info("Deleting %s", path2)
-                    os.remove(path2)
-                except:
-                    logging.warning(T('Deleting %s failed!'), path2)
-
-            if os.path.exists(parfile):
-                try:
-                    logging.info("Deleting %s", parfile)
-                    os.remove(parfile)
-                except OSError:
-                    logging.warning(T('Deleting %s failed!'), parfile)
-
-            deletables = []
+            # Add output of par2-repair to remove
             deletables.extend(used_joinables)
             deletables.extend([os.path.join(workdir, f) for f in used_for_repair])
 
