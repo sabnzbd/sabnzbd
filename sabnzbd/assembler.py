@@ -39,6 +39,7 @@ import sabnzbd.downloader
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.encoding import unicoder, is_utf8
 from sabnzbd.rating import Rating
+from sabnzbd.directunpacker import DirectUnpacker
 
 
 class Assembler(Thread):
@@ -139,6 +140,12 @@ class Assembler(Thread):
                         logging.warning(remove_warning_label(T('WARNING: Aborted job "%s" because of rating (%s)')), nzo.final_name, reason)
                         nzo.fail_msg = T('Aborted, rating filter matched (%s)') % reason
                         sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+
+                    if rarfile.is_rarfile(filepath):
+                        if not nzo.direct_unpacker:
+                            DirectUnpacker(nzo)
+                        nzo.direct_unpacker.add(nzf)
+
             else:
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)

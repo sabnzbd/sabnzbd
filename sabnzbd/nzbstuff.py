@@ -600,6 +600,7 @@ class NzbObject(TryList):
         self.meta = {}
         self.servercount = {}       # Dict to keep bytes per server
         self.created = False        # dirprefixes + work_name created
+        self.direct_unpacker = None # Holds the DirectUnpacker instance
         self.bytes = 0              # Original bytesize
         self.bytes_downloaded = 0   # Downloaded byte
         self.bytes_tried = 0        # Which bytes did we try
@@ -1680,6 +1681,7 @@ class NzbObject(TryList):
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.wait = None
         self.to_be_removed = False
+        self.direct_unpacker = None
         if self.meta is None:
             self.meta = {}
         if self.servercount is None:
