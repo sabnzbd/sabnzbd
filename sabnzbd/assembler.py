@@ -70,12 +70,10 @@ class Assembler(Thread):
 
             if nzf:
                 sabnzbd.CheckFreeSpace()
-                # We allow win_devices because otherwise par2cmdline fails to repair
-                filename = sanitize_filename(nzf.filename, allow_win_devices=True)
+
+                filename = sanitize_filename(nzf.filename)
                 nzf.filename = filename
-
                 dupe = nzo.check_for_dupe(nzf)
-
                 filepath = get_filepath(long_path(cfg.download_dir.get_path()), nzo, filename)
 
                 if filepath:

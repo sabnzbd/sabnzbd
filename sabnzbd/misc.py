@@ -264,7 +264,7 @@ else:
     CH_LEGAL = '+'
 
 
-def sanitize_filename(name, allow_win_devices=False):
+def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
@@ -281,7 +281,7 @@ def sanitize_filename(name, allow_win_devices=False):
             # Compensate for the foolish way par2 on OSX handles a colon character
             name = name[name.rfind(':') + 1:]
 
-    if sabnzbd.WIN32 and not allow_win_devices:
+    if sabnzbd.WIN32 or cfg.sanitize_safe():
         name = replace_win_devices(name)
 
     lst = []
