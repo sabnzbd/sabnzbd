@@ -37,7 +37,7 @@ else:
     # Load the regular POpen
     from subprocess import Popen
 
-RAR_NR = re.compile(r'\.part(\d*).rar|r(\d*)$')
+RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|.r(\d*))$')
 
 
 class DirectUnpacker(threading.Thread):
@@ -51,7 +51,8 @@ class DirectUnpacker(threading.Thread):
 
         self.next_file_lock = threading.Condition()
 
-        self.rar_cur_volume = 0
+        self.cur_setname = None
+        self.cur_volume = 0
 
         nzo.direct_unpacker = self
 
@@ -62,20 +63,25 @@ class DirectUnpacker(threading.Thread):
         pass
 
     def add(self, nzf):
+        # Analyze the input
         filename = nzf.filename.lower()
-        nzf.vol = analyze_rar(filename)
+        nzf.setname, nzf.vol = analyze_rar_filename(filename)
 
-        # Is this the first one?
-        if filename.endswith('.part01.rar') or (filename.endswith('.rar') and '.part' not in filename):
-            self.rar_cur_volume = 1
-            # Start the unrar command and the loop
-            self.create_unrar_instance(nzf)
-            self.start()
-        else:
-            print 'adding', nzf
-            # Wake up the thread to see if this is good to go
-            with self.next_file_lock:
-                self.next_file_lock.notify()
+        # Are we doing this set?
+        if not self.cur_setname or self.cur_setname == nzf.setname:
+            # Is this the first one?
+            if not self.cur_volume and (filename.endswith('.part01.rar') or (filename.endswith('.rar') and '.part' not in filename)):
+                # Assign start values
+                self.cur_volume = 1
+                self.cur_setname = nzf.setname
+
+                # Start the unrar command and the loop
+                self.create_unrar_instance(nzf)
+                self.start()
+            else:
+                # Wake up the thread to see if this is good to go
+                with self.next_file_lock:
+                    self.next_file_lock.notify()
 
     def run(self):
         # Input and output
@@ -108,7 +114,7 @@ class DirectUnpacker(threading.Thread):
                 proc_stdin.write('\n')
 
                 # Next volume
-                self.rar_cur_volume += 1
+                self.cur_volume += 1
 
             if linebuf.endswith('\n'):
                 unrar_log.append(linebuf.strip())
@@ -118,7 +124,12 @@ class DirectUnpacker(threading.Thread):
         unrar_log.append(linebuf.strip())
 
     def have_next_volume(self):
-        return any(nzf_search for nzf_search in self.nzo.finished_files if nzf_search.vol == self.rar_cur_volume+1)
+        """ Check if next volume of set is available, start
+            from the end of the list where latest completed files are """
+        for nzf_search in reversed(self.nzo.finished_files):
+            if nzf_search.setname == self.cur_setname and nzf_search.vol == self.cur_volume+1:
+                return True
+        return False
 
     def create_unrar_instance(self, rarfile_nzf):
         password = None
@@ -156,10 +167,10 @@ class DirectUnpacker(threading.Thread):
                                     startupinfo=stup, creationflags=creationflags)
 
 
-def analyze_rar(filename):
-    """ Extract volume number from rar-filenames
+def analyze_rar_filename(filename):
+    """ Extract volume number and setname from rar-filenames
         Both ".part01.rar" and ".r01" """
     m = RAR_NR.search(filename)
     if m:
-        return int_conv(m.group(1) or m.group(2))
-    return None
+        return m.group(1), int_conv(m.group(3) or m.group(4))
+    return None, None
