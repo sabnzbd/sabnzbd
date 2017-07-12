@@ -404,22 +404,6 @@ def is_obfuscated_filename(filename):
     return (os.path.splitext(filename)[1] == '')
 
 
-def flag_file(path, flag, create=False):
-    """ Create verify flag file or return True if it already exists """
-    path = os.path.join(path, JOB_ADMIN)
-    path = os.path.join(path, flag)
-    if create:
-        try:
-            f = open(path, 'w')
-            f.write('ok\n')
-            f.close()
-            return True
-        except IOError:
-            return False
-    else:
-        return os.path.exists(path)
-
-
 ##############################################################################
 # DirPermissions
 ##############################################################################
