@@ -1050,6 +1050,7 @@ class NzbObject(TryList):
         if not found:
             # Add extra parfiles when there was a damaged article and not pre-checking
             if self.extrapars and not self.precheck:
+                self.abort_direct_unpacker()
                 self.prospective_add(nzf)
 
         post_done = False
@@ -1261,6 +1262,17 @@ class NzbObject(TryList):
                         logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
                     # Reset NZO TryList
                     self.reset_try_list()
+
+    def add_to_direct_unpacker(self, nzf):
+        """ Start or add to DirectUnpacker """
+        if not self.direct_unpacker:
+            sabnzbd.directunpacker.DirectUnpacker(self)
+        self.direct_unpacker.add(nzf)
+
+    def abort_direct_unpacker(self):
+        """ Abort any running DirectUnpackers """
+        if self.direct_unpacker:
+            self.direct_unpacker.abort()
 
     def check_quality(self, req_ratio=0):
         """ Determine amount of articles present on servers

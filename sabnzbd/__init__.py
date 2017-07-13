@@ -106,6 +106,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.api
+import sabnzbd.directunpacker as directunpacker
 from sabnzbd.decorators import synchronized, notify_downloader
 from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
@@ -382,6 +383,8 @@ def halt():
             sabnzbd.WINTRAY.terminate = True
 
         sabnzbd.zconfig.remove_server()
+
+        sabnzbd.directunpacker.abort_all()
 
         rss.stop()
 

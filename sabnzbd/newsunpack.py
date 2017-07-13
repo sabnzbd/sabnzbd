@@ -24,7 +24,7 @@ import sys
 import re
 import subprocess
 import logging
-from time import time
+import time
 import binascii
 import shutil
 
@@ -483,8 +483,20 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
             while nzo.direct_unpacker.is_alive():
                 time.sleep(1)
 
+                # Bump the file-lock in case its stuck
+                with nzo.direct_unpacker.next_file_lock:
+                    nzo.direct_unpacker.next_file_lock.notify()
+
+                # Don't abort while it's still doing something
+                with sabnzbd.directunpacker.CONCURRENT_LOCK:
+                    # Is it waiting for a non-existing file?
+                    if nzo.direct_unpacker.active_instance and not nzo.direct_unpacker.have_next_volume():
+                        nzo.abort_direct_unpacker()
+                        break
+
         # Did we already direct-unpack it? Not when recursive-unpacking
         if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
+            logging.info("Set %s completed by DirectUnpack", rar_set)
             fail = 0
             success = 1
             rars = rar_sets[rar_set]
@@ -569,7 +581,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     """ Unpack single rar set 'rarfile_path' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
-    start = time()
+    start = time.time()
 
     logging.debug("rar_extract(): Extractionpath: %s", extraction_path)
 
@@ -790,7 +802,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     logging.debug('UNRAR output %s', '\n'.join(lines))
     nzo.fail_msg = ''
-    msg = T('Unpacked %s files/folders in %s') % (str(len(extracted)), format_time_string(time() - start))
+    msg = T('Unpacked %s files/folders in %s') % (str(len(extracted)), format_time_string(time.time() - start))
     nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg))
     logging.info('%s', msg)
 
@@ -808,7 +820,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
     try:
         i = 0
         unzip_failed = False
-        tms = time()
+        tms = time.time()
 
         for _zip in zips:
             logging.info("Starting extract on zipfile: %s ", _zip)
@@ -824,7 +836,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
             else:
                 i += 1
 
-        msg = T('%s files in %s') % (str(i), format_time_string(time() - tms))
+        msg = T('%s files in %s') % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info('Unpack', msg)
 
         # Delete the old files if we have to
@@ -888,7 +900,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
     """
     i = 0
     unseven_failed = False
-    tms = time()
+    tms = time.time()
 
     # Find multi-volume sets, because 7zip will not provide actual set members
     sets = {}
@@ -922,7 +934,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
             i += 1
 
     if not unseven_failed:
-        msg = T('%s files in %s') % (str(i), format_time_string(time() - tms))
+        msg = T('%s files in %s') % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info('Unpack', msg)
 
     return unseven_failed
@@ -1161,7 +1173,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     extra_par2_name = None
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
-    start = time()
+    start = time.time()
     options = cfg.par_option().strip()
 
     classic = classic or not cfg.par2_multicore()
@@ -1296,18 +1308,18 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 logging.error(msg)
 
             elif line.startswith('All files are correct'):
-                msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
+                msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time.time() - start))
                 nzo.set_unpack_info('Repair', msg)
                 logging.info('Verified in %s, all files correct',
-                             format_time_string(time() - start))
+                             format_time_string(time.time() - start))
                 finished = 1
 
             elif line.startswith('Repair is required'):
-                msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time() - start))
+                msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time.time() - start))
                 nzo.set_unpack_info('Repair', msg)
                 logging.info('Verified in %s, repair is required',
-                              format_time_string(time() - start))
-                start = time()
+                              format_time_string(time.time() - start))
+                start = time.time()
                 verified = 1
 
             elif line.startswith('Loading "'):
@@ -1433,7 +1445,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.status = Status.FAILED
 
             elif line.startswith('Repair is possible'):
-                start = time()
+                start = time.time()
                 nzo.set_action_line(T('Repairing'), '%2d%%' % (0))
 
             elif line.startswith('Repairing:'):
@@ -1443,9 +1455,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 nzo.status = Status.REPAIRING
 
             elif line.startswith('Repair complete'):
-                msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time() - start))
+                msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time.time() - start))
                 nzo.set_unpack_info('Repair', msg)
-                logging.info('Repaired in %s', format_time_string(time() - start))
+                logging.info('Repaired in %s', format_time_string(time.time() - start))
                 finished = 1
 
             elif line.startswith('File:') and line.find('data blocks from') > 0:
@@ -1589,7 +1601,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
-    start = time()
+    start = time.time()
 
     # Caching of verification implemented by adding:
     # But not really required due to prospective-par2
@@ -1913,20 +1925,20 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         # Result of verification
         elif line.startswith('All Files Complete'):
             # Completed without damage!
-            msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
+            msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time.time() - start))
             nzo.set_unpack_info('Repair', msg)
             logging.info('Verified in %s, all files correct',
-                        format_time_string(time() - start))
+                        format_time_string(time.time() - start))
             finished = 1
 
         elif line.startswith(('Ready to repair', 'Ready to rejoin')):
             # Ready to repair!
             # Or we are re-joining a split file when there's no damage but takes time
-            msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time() - start))
+            msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time.time() - start))
             nzo.set_unpack_info('Repair', msg)
             logging.info('Verified in %s, repair is required',
-                          format_time_string(time() - start))
-            start = time()
+                          format_time_string(time.time() - start))
+            start = time.time()
 
             # Set message for user in case of joining
             if line.startswith('Ready to rejoin'):
@@ -1935,7 +1947,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         # ----------------- Repair stage
         elif 'Recovering slice' in line:
             # Before this it will calculate matrix, here is where it starts
-            start = time()
+            start = time.time()
             in_repair = True
             nzo.set_action_line(T('Repairing'), '%2d%%' % (0))
 
@@ -1953,9 +1965,9 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             nzo.status = Status.REPAIRING
 
         elif line.startswith('Repaired successfully'):
-            msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time() - start))
+            msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time.time() - start))
             nzo.set_unpack_info('Repair', msg)
-            logging.info('Repaired in %s', format_time_string(time() - start))
+            logging.info('Repaired in %s', format_time_string(time.time() - start))
             finished = 1
 
         elif in_verify_repaired and line.startswith('Repaired :'):
