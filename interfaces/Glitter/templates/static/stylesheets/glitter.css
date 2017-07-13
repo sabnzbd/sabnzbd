@@ -626,7 +626,7 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name:hover .row-wrap-text {
-    max-width: calc(100% - 85px);
+    max-width: calc(100% - 125px);
  /* Change for each size! */
 }
 

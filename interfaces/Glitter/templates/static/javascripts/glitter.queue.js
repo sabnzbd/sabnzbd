@@ -42,7 +42,7 @@ function QueueListModel(parent) {
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(20).extend({ persist: 'queuePaginationLimit' });
     self.pagination = new paginationModel(self);
-
+ 
     // Don't update while dragging
     self.shouldUpdate = function() {
         return !self.dragging;
@@ -148,7 +148,6 @@ function QueueListModel(parent) {
         // See what the actual index is of the queue-object
         // This way we can see how we move up and down independent of pagination
         var itemReplaced = self.queueItems()[event.targetIndex+corTerm];
-
         callAPI({
             mode: "switch",
             value: itemMoved.id,
@@ -156,6 +155,25 @@ function QueueListModel(parent) {
         }).then(self.parent.refresh);
     };
 
+    // Move button clicked
+    self.moveButton = function(event,ui) {
+        var itemMoved = event;
+        var targetIndex;
+        if($(ui.currentTarget).is(".buttonMoveToTop")){
+            //we want to move to the top
+            targetIndex = 0;
+        } else {
+            // we want to move to the bottom
+			targetIndex = self.totalItems() - 1;
+        }
+        callAPI({
+            mode: "switch",
+            value: itemMoved.id,
+            value2: targetIndex
+        }).then(self.parent.refresh);
+        
+    }
+    
     // Save pagination state
     self.paginationLimit.subscribe(function(newValue) {
         // Save in config if global

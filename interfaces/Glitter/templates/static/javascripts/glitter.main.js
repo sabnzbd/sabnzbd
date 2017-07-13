@@ -47,7 +47,7 @@ function ViewModel() {
     self.allMessages = ko.observableArray([]);
     self.onQueueFinish = ko.observable('');
     self.speedHistory = [];
-
+    
     // Statusinfo container
     self.hasStatusInfo = ko.observable(false);
     self.hasPerformanceInfo = ko.observable(false);
