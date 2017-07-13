@@ -1347,6 +1347,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else '0'
         slot['missing'] = pnfo.missing
         slot['mbmissing'] = "%.2f" % (pnfo.bytes_missing / MEBI)
+        slot['direct_unpack'] = pnfo.direct_unpack
         if not output:
             slot['mb_fmt'] = locale.format('%d', int(mb), True)
             slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
