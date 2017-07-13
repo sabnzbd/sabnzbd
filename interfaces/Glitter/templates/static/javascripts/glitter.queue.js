@@ -43,9 +43,6 @@ function QueueListModel(parent) {
     self.paginationLimit = ko.observable(20).extend({ persist: 'queuePaginationLimit' });
     self.pagination = new paginationModel(self);
  
-    self.topOfQueue = "";
-    self.bottomOfQueue = "";
-
     // Don't update while dragging
     self.shouldUpdate = function() {
         return !self.dragging;
@@ -167,7 +164,7 @@ function QueueListModel(parent) {
             targetIndex = 0;
         } else {
             // we want to move to the bottom
-            targetIndex = self.bottomOfQueue.index();
+			targetIndex = self.totalItems() - 1;
         }
         callAPI({
             mode: "switch",

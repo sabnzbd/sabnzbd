@@ -128,32 +128,6 @@ function ViewModel() {
         return parseInt(self.nrWarnings()) + self.allMessages().length;
     })
 
-    // process the full queue
-    self.processFullQueue = function(response){
-        // Block in case off dragging
-        if(!self.queue.shouldUpdate()) return;
-        // Make sure we are displaying the interface
-        if(self.isRestarting() >= 1) {
-            // Decrease the counter by 1
-            // In case of restart (which takes time to fire) we count down
-            // In case of re-connect after failure it counts from 1 so emmediate continuation
-            self.isRestarting(self.isRestarting() - 1);
-            return;
-        }
-        /***
-            Possible login failure?
-        ***/
-        if(response.hasOwnProperty('error') && response.error == 'Missing authentication') {
-            // Restart
-            document.location = document.location;
-        }
-        self.queue.topOfQueue = new QueueModel(self.queue,response.queue.slots[0]);
-        self.queue.bottomOfQueue = new QueueModel(self.queue,response.queue.slots[response.queue.noofslots-1]);
-        // get the top and bottom row identifiers so we can move to them
-        // Update queue rows
-        //self.queue.updateFromData(response.queue);
-    }
-    
     // Update main queue
     self.updateQueue = function(response) {
         // Block in case off dragging
@@ -414,23 +388,6 @@ function ViewModel() {
             self.isRestarting(1)
         }).always(self.setNextUpdate);
 
-        // this is a test of getting the entire queue
-        var fullQueueAPI = callAPI({
-            mode:"queue"            
-        })
-        .done(self.processFullQueue)
-                .fail(function(response) {
-            // Catch the failure of authorization error
-            if(response.status == 401) {
-                // Stop refresh and reload
-                clearInterval(self.interval)
-                location.reload();
-            }
-            // Show screen
-            self.isRestarting(1)
-        })
-        
-        
         // Force full history update?
         if(forceFullHistory) {
             self.history.lastUpdate = 0
