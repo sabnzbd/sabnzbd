@@ -226,8 +226,6 @@ class PostProcessor(Thread):
 
 
 def process_job(nzo):
-    import pdb; pdb.set_trace()  # breakpoint b9f5dc75 //
-
     """ Process one job """
     start = time.time()
 
