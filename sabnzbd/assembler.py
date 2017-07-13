@@ -39,7 +39,6 @@ import sabnzbd.downloader
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.encoding import unicoder, is_utf8
 from sabnzbd.rating import Rating
-from sabnzbd.directunpacker import DirectUnpacker
 
 
 class Assembler(Thread):
@@ -142,9 +141,7 @@ class Assembler(Thread):
                         sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
                     if rarfile.is_rarfile(filepath):
-                        if not nzo.direct_unpacker:
-                            DirectUnpacker(nzo)
-                        nzo.direct_unpacker.add(nzf)
+                        nzo.add_to_direct_unpacker(nzf)
 
             else:
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)

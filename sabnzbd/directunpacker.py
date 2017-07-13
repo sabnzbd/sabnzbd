@@ -23,13 +23,14 @@ import os
 import re
 import threading
 import subprocess
+import logging
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path, remove_all
+from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_string
+from sabnzbd.encoding import unicoder
 from sabnzbd.newsunpack import build_command
 from sabnzbd.postproc import prepare_extraction_path
-
 
 if sabnzbd.WIN32:
     # Load the POpen from the fixed unicode-subprocess
@@ -37,6 +38,10 @@ if sabnzbd.WIN32:
 else:
     # Load the regular POpen
     from subprocess import Popen
+
+MAX_ACTIVE_UNPACKERS = 5
+ACTIVE_UNPACKERS = []
+CONCURRENT_LOCK = threading.Condition()
 
 RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$')
 
@@ -56,7 +61,6 @@ class DirectUnpacker(threading.Thread):
         self.cur_volume = 0
 
         self.success_sets = []
-
         self.next_sets = []
 
         nzo.direct_unpacker = self
@@ -71,13 +75,19 @@ class DirectUnpacker(threading.Thread):
         self.active_instance = None
         self.cur_setname = None
         self.cur_volume = 0
+        # Release lock to be sure
+        try:
+            CONCURRENT_LOCK.release()
+        except:
+            pass
 
     def check_requirements(self):
-        if self.killed or not cfg.direct_unpack():
+        if self.killed or cfg.direct_unpack() < 1 or sabnzbd.newsunpack.RAR_PROBLEM:
             return False
         return True
 
     def add(self, nzf):
+        """ Add jobs and start instance of DirectUnpack """
         # Stop if something is wrong
         if not self.check_requirements():
             return
@@ -92,8 +102,14 @@ class DirectUnpacker(threading.Thread):
 
         # Are we doing this set?
         if self.cur_setname == nzf.setname:
+            logging.debug('Queued %s for %s', nzf.filename, self.cur_setname)
             # Is this the first one?
-            if not self.cur_volume and self.have_next_volume():
+            if not self.active_instance and self.have_next_volume():
+                # Too many runners already?
+                if len(ACTIVE_UNPACKERS) >= MAX_ACTIVE_UNPACKERS:
+                    logging.info('Too many DirectUnpackers currently to start %s', self.cur_setname)
+                    return
+
                 # Start the unrar command and the loop
                 self.cur_volume = 1
                 self.create_unrar_instance(nzf)
@@ -102,20 +118,22 @@ class DirectUnpacker(threading.Thread):
                 # Wake up the thread to see if this is good to go
                 with self.next_file_lock:
                     self.next_file_lock.notify()
-        else:
-            # Need to store this for the future
+
+        elif not any(test_nzf.setname == nzf.setname for test_nzf in self.next_sets):
+            # Need to store this for the future, only once per set!
             self.next_sets.append(nzf)
 
     def run(self):
         # Input and output
-        proc_stdout = self.active_instance.stdout
-        proc_stdin = self.active_instance.stdin
         linebuf = ''
         unrar_log = []
 
         # Need to read char-by-char because there's no newline after new-disk message
         while 1:
-            char = proc_stdout.read(1)
+            if not self.active_instance:
+                break
+
+            char = self.active_instance.stdout.read(1)
             linebuf += char
 
             if not char:
@@ -123,16 +141,34 @@ class DirectUnpacker(threading.Thread):
                 break
 
             # Error? Let PP-handle it
-            if linebuf.endswith('Cannot create'):
+            if linebuf.endswith('Cannot create') or linebuf.endswith('in the encrypted file') or \
+                    linebuf.endswith('CRC failed') or linebuf.endswith('checksum failed') or \
+                    linebuf.endswith('You need to start extraction from a previous volume') or \
+                    linebuf.endswith('password is incorrect') or linebuf.endswith('Write error') or \
+                    linebuf.endswith('checksum error'):
+                logging.info('Error in DirectUnpack of %s', self.cur_setname)
                 self.abort()
 
             # Did we reach the end?
             if linebuf.endswith('All OK'):
                 # Add to success
                 self.success_sets.append(self.cur_setname)
+                logging.info('DirectUnpack completed for %s', self.cur_setname)
 
-                 # Is there another set to do?
+                # Are there more files left?
+                if self.nzo.files:
+                    with self.next_file_lock:
+                        self.next_file_lock.wait()
+
+                # Is there another set to do?
                 if self.next_sets:
+                    # Write current log
+                    unrar_log.append(linebuf.strip())
+                    linebuf = ''
+                    logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
+                    unrar_log = []
+
+                    # Start new instance
                     self.reset_active()
                     nzf = self.next_sets.pop(0)
                     self.cur_setname = nzf.setname
@@ -141,24 +177,42 @@ class DirectUnpacker(threading.Thread):
                     break
 
             if linebuf.endswith('[C]ontinue, [Q]uit '):
+                # Next one can go now
+                try:
+                    CONCURRENT_LOCK.release()
+                except:
+                    pass
+
                 # Wait for the volume to appear
                 while not self.have_next_volume():
                     with self.next_file_lock:
                         self.next_file_lock.wait()
 
-                # Send "Enter" to proceed
-                proc_stdin.write('\n')
-
                 # Next volume
                 self.cur_volume += 1
 
+                # Send "Enter" to proceed, only 1 at a time via lock
+                CONCURRENT_LOCK.acquire()
+                self.active_instance.stdin.write('\n')
+                self.nzo.set_action_line(T('Unpacking'), '%02d' % self.cur_volume)
+                logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
+
             if linebuf.endswith('\n'):
-                print linebuf
                 unrar_log.append(linebuf.strip())
                 linebuf = ''
 
         # Add last line
         unrar_log.append(linebuf.strip())
+        logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
+
+        # Save information if success
+        if self.success_sets:
+            msg = T('Unpacked %s files/folders in %s') % (len(globber(self.unpack_dir_info[0])), format_time_string(0))
+            self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
+
+        # Make more space
+        self.reset_active()
+        ACTIVE_UNPACKERS.remove(self)
 
     def have_next_volume(self):
         """ Check if next volume of set is available, start
@@ -169,16 +223,15 @@ class DirectUnpacker(threading.Thread):
         return False
 
     def create_unrar_instance(self, rarfile_nzf):
-        password = None
-        rarfile_path = os.path.join(self.nzo.downpath, rarfile_nzf.filename)
-
+        """ Start the unrar instance using the user's options """
         # Generate extraction path and save for post-proc
-        self.unpack_dir_info = prepare_extraction_path(self.nzo)
+        if not self.unpack_dir_info:
+            self.unpack_dir_info = prepare_extraction_path(self.nzo)
         extraction_path, _, _, one_folder, _ = self.unpack_dir_info
 
         # Set options
-        if password:
-            password_command = '-p%s' % password
+        if self.nzo.password:
+            password_command = '-p%s' % self.nzo.password
         else:
             password_command = '-p-'
 
@@ -187,34 +240,49 @@ class DirectUnpacker(threading.Thread):
         else:
             action = 'x'
 
+        # Generate command
+        rarfile_path = os.path.join(self.nzo.downpath, rarfile_nzf.filename)
         if sabnzbd.WIN32:
             command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
                        '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+        else:
+            # Don't use "-ai" (not needed for non-Windows)
+            command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', rename, password_command,
+                       '%s' % rarfile_path, '%s/' % extraction_path]
 
         if cfg.ignore_unrar_dates():
             command.insert(3, '-tsm-')
 
         stup, need_shell, command, creationflags = build_command(command)
+        logging.debug('Running unrar for DirectUnpack %s', command)
         self.active_instance = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                     startupinfo=stup, creationflags=creationflags)
+        # Add to runners
+        ACTIVE_UNPACKERS.append(self)
 
     def abort(self):
         """ Abort running instance and delete generated files """
         if not self.killed:
+            logging.info('Aborting DirectUnpack for %s', self.cur_setname)
             self.killed = True
+
             # Abort Unrar
             if self.active_instance:
                 self.active_instance.kill()
                 # We need to wait for it to kill the process
                 self.active_instance.wait()
+
             # No new sets
             self.next_sets = []
+
             # Remove files
-            extraction_path, _, _, _, _ = self.unpack_dir_info
-            remove_all(extraction_path, recursive=True)
-            # Remove dir-info
-            self.unpack_dir_info = None
+            if self.unpack_dir_info:
+                extraction_path, _, _, _, _ = self.unpack_dir_info
+                remove_all(extraction_path, recursive=True)
+                # Remove dir-info
+                self.unpack_dir_info = None
+
             # Reset settings
             self.reset_active()
 
@@ -233,3 +301,11 @@ def analyze_rar_filename(filename):
         if filename.endswith('.rar') and '.part' not in filename:
             return os.path.splitext(filename)[0], 1
     return None, None
+
+
+def abort_all():
+    """ Abort all running DirectUnpackers """
+    logging.info('Aborting all DirectUnpackers')
+    for direct_unpacker in ACTIVE_UNPACKERS:
+        direct_unpacker.abort()
+

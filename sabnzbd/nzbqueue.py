@@ -460,6 +460,7 @@ class NzbQueue(object):
 
             if nzf:
                 removed.append(nzf_id)
+                nzo.abort_direct_unpacker()
                 post_done = nzo.remove_nzf(nzf)
                 if post_done:
                     if nzo.finished_files:
@@ -844,8 +845,7 @@ class NzbQueue(object):
 
     def cleanup_nzo(self, nzo, keep_basic=False, del_files=False):
         # Abort DirectUnpack and let it remove files
-        if nzo.direct_unpacker:
-            nzo.direct_unpacker.abort()
+        nzo.abort_direct_unpacker()
         nzo.purge_data(keep_basic, del_files)
         ArticleCache.do.purge_articles(nzo.saved_articles)
 
