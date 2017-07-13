@@ -37,7 +37,21 @@ else:
     # Load the regular POpen
     from subprocess import Popen
 
-RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|.r(\d*))$')
+RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$')
+
+
+class DirectUnpackerHandler(object):
+
+    def __init__(self):
+        self.workers = {}
+        self.running_instances = 0
+
+    def add_file(self, nzf):
+        # Are we already working on this one?
+        if nzo not in self.workers:
+            self.workers[nzo] = DirectUnpacker(nzo)
+        # Add the new file
+        self.workers[nzo].add(nzf)
 
 
 class DirectUnpacker(threading.Thread):
@@ -46,13 +60,13 @@ class DirectUnpacker(threading.Thread):
         threading.Thread.__init__(self)
 
         self.nzo = nzo
-        self.is_running = False
         self.active_instance = None
-
         self.next_file_lock = threading.Condition()
 
         self.cur_setname = None
         self.cur_volume = 0
+
+        self.next_sets = []
 
         nzo.direct_unpacker = self
 
@@ -62,30 +76,38 @@ class DirectUnpacker(threading.Thread):
     def save(self):
         pass
 
+    def reset(self):
+        self.active_instance = None
+        self.cur_setname = None
+        self.cur_volume = 0
+
     def add(self, nzf):
         # Analyze the input
         filename = nzf.filename.lower()
         nzf.setname, nzf.vol = analyze_rar_filename(filename)
 
-        # Are we doing this set?
-        if not self.cur_setname or self.cur_setname == nzf.setname:
-            # Is this the first one?
-            if not self.cur_volume and (filename.endswith('.part01.rar') or (filename.endswith('.rar') and '.part' not in filename)):
-                # Assign start values
-                self.cur_volume = 1
-                self.cur_setname = nzf.setname
+        # Do we have a set yet?
+        if not self.cur_setname:
+            self.cur_setname = nzf.setname
 
+        # Are we doing this set?
+        if self.cur_setname == nzf.setname:
+            # Is this the first one?
+            if not self.cur_volume and self.have_next_volume():
                 # Start the unrar command and the loop
+                self.cur_volume = 1
                 self.create_unrar_instance(nzf)
                 self.start()
             else:
                 # Wake up the thread to see if this is good to go
                 with self.next_file_lock:
                     self.next_file_lock.notify()
+        else:
+            # Need to store this for the future
+            self.next_sets.append(nzf)
 
     def run(self):
         # Input and output
-        self.is_running = True
         proc_stdout = self.active_instance.stdout
         proc_stdin = self.active_instance.stdin
         linebuf = ''
@@ -102,7 +124,14 @@ class DirectUnpacker(threading.Thread):
 
             # Did we reach the end?
             if linebuf.endswith('All OK'):
-                break
+                 # Is there another set to do?
+                if self.next_sets:
+                    self.reset()
+                    nzf = self.next_sets.pop(0)
+                    self.cur_setname = nzf.setname
+                    self.create_unrar_instance(nzf)
+                else:
+                    break
 
             if linebuf.endswith('[C]ontinue, [Q]uit '):
                 # Wait for the volume to appear
@@ -117,11 +146,14 @@ class DirectUnpacker(threading.Thread):
                 self.cur_volume += 1
 
             if linebuf.endswith('\n'):
+                print linebuf
                 unrar_log.append(linebuf.strip())
                 linebuf = ''
-
+        print linebuf
         # Add last line
         unrar_log.append(linebuf.strip())
+
+
 
     def have_next_volume(self):
         """ Check if next volume of set is available, start
@@ -172,5 +204,12 @@ def analyze_rar_filename(filename):
         Both ".part01.rar" and ".r01" """
     m = RAR_NR.search(filename)
     if m:
-        return m.group(1), int_conv(m.group(3) or m.group(4))
+        if m.group(4):
+            # Special since starts with ".rar", ".r00"
+            return m.group(1), int_conv(m.group(4)) + 2
+        return m.group(1), int_conv(m.group(3))
+    else:
+        # Detect if first of "rxx" set
+        if filename.endswith('.rar') and '.part' not in filename:
+            return os.path.splitext(filename)[0], 1
     return None, None
