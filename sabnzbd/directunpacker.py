@@ -82,7 +82,7 @@ class DirectUnpacker(threading.Thread):
             pass
 
     def check_requirements(self):
-        if self.killed or cfg.direct_unpack() < 1 or sabnzbd.newsunpack.RAR_PROBLEM:
+        if self.killed or not self.nzo.unpack or cfg.direct_unpack() < 1 or sabnzbd.newsunpack.RAR_PROBLEM:
             return False
         return True
 

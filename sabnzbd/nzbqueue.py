@@ -322,6 +322,8 @@ class NzbQueue(object):
                 nzo.set_pp(pp)
                 if explicit_priority is None:
                     self.set_priority(nzo_id, prio)
+                # Abort any ongoing unpacking if the category changed
+                nzo.abort_direct_unpacker()
                 result += 1
         return result
 
