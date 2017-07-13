@@ -843,6 +843,9 @@ class NzbQueue(object):
         return empty
 
     def cleanup_nzo(self, nzo, keep_basic=False, del_files=False):
+        # Abort DirectUnpack and let it remove files
+        if nzo.direct_unpacker:
+            nzo.direct_unpacker.abort()
         nzo.purge_data(keep_basic, del_files)
         ArticleCache.do.purge_articles(nzo.saved_articles)
 

@@ -26,8 +26,9 @@ import subprocess
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path
+from sabnzbd.misc import int_conv, clip_path, remove_all
 from sabnzbd.newsunpack import build_command
+from sabnzbd.postproc import prepare_extraction_path
 
 
 if sabnzbd.WIN32:
@@ -40,20 +41,6 @@ else:
 RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$')
 
 
-class DirectUnpackerHandler(object):
-
-    def __init__(self):
-        self.workers = {}
-        self.running_instances = 0
-
-    def add_file(self, nzf):
-        # Are we already working on this one?
-        if nzo not in self.workers:
-            self.workers[nzo] = DirectUnpacker(nzo)
-        # Add the new file
-        self.workers[nzo].add(nzf)
-
-
 class DirectUnpacker(threading.Thread):
 
     def __init__(self, nzo):
@@ -61,10 +48,14 @@ class DirectUnpacker(threading.Thread):
 
         self.nzo = nzo
         self.active_instance = None
+        self.killed = False
         self.next_file_lock = threading.Condition()
 
+        self.unpack_dir_info = None
         self.cur_setname = None
         self.cur_volume = 0
+
+        self.success_sets = []
 
         self.next_sets = []
 
@@ -76,13 +67,13 @@ class DirectUnpacker(threading.Thread):
     def save(self):
         pass
 
-    def reset(self):
+    def reset_active(self):
         self.active_instance = None
         self.cur_setname = None
         self.cur_volume = 0
 
     def check_requirements(self):
-        if not cfg.direct_unpack():
+        if self.killed or not cfg.direct_unpack():
             return False
         return True
 
@@ -133,9 +124,12 @@ class DirectUnpacker(threading.Thread):
 
             # Did we reach the end?
             if linebuf.endswith('All OK'):
+                # Add to success
+                self.success_sets.append(self.cur_setname)
+
                  # Is there another set to do?
                 if self.next_sets:
-                    self.reset()
+                    self.reset_active()
                     nzf = self.next_sets.pop(0)
                     self.cur_setname = nzf.setname
                     self.create_unrar_instance(nzf)
@@ -158,7 +152,7 @@ class DirectUnpacker(threading.Thread):
                 print linebuf
                 unrar_log.append(linebuf.strip())
                 linebuf = ''
-        print linebuf
+
         # Add last line
         unrar_log.append(linebuf.strip())
 
@@ -172,17 +166,19 @@ class DirectUnpacker(threading.Thread):
 
     def create_unrar_instance(self, rarfile_nzf):
         password = None
-        extraction_path = 'D:\\SABnzbd'
         rarfile_path = os.path.join(self.nzo.downpath, rarfile_nzf.filename)
 
-        ############################################################################
+        # Generate extraction path and save for post-proc
+        self.unpack_dir_info = prepare_extraction_path(self.nzo)
+        extraction_path, _, _, one_folder, _ = self.unpack_dir_info
 
+        # Set options
         if password:
             password_command = '-p%s' % password
         else:
             password_command = '-p-'
 
-        if cfg.flat_unpack():
+        if one_folder or cfg.flat_unpack():
             action = 'e'
         else:
             action = 'x'
@@ -204,6 +200,24 @@ class DirectUnpacker(threading.Thread):
         self.active_instance = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                     startupinfo=stup, creationflags=creationflags)
+
+    def abort(self):
+        """ Abort running instance and delete generated files """
+        self.killed = True
+        # Abort Unrar
+        if self.active_instance:
+            self.active_instance.kill()
+            # We need to wait for it to kill the process
+            self.active_instance.wait()
+        # No new sets
+        self.next_sets = []
+        # Remove files
+        extraction_path, _, _, _, _ = self.unpack_dir_info
+        remove_all(extraction_path, recursive=True)
+        # Remove dir-info
+        self.unpack_dir_info = None
+        # Reset settings
+        self.reset_active()
 
 
 def analyze_rar_filename(filename):
