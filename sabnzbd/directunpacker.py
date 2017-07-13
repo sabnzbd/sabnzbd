@@ -81,7 +81,16 @@ class DirectUnpacker(threading.Thread):
         self.cur_setname = None
         self.cur_volume = 0
 
+    def check_requirements(self):
+        if not cfg.direct_unpack():
+            return False
+        return True
+
     def add(self, nzf):
+        # Stop if something is wrong
+        if not self.check_requirements():
+            return
+
         # Analyze the input
         filename = nzf.filename.lower()
         nzf.setname, nzf.vol = analyze_rar_filename(filename)
@@ -152,8 +161,6 @@ class DirectUnpacker(threading.Thread):
         print linebuf
         # Add last line
         unrar_log.append(linebuf.strip())
-
-
 
     def have_next_volume(self):
         """ Check if next volume of set is available, start
