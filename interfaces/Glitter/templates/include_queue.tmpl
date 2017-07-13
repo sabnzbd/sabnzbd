@@ -95,6 +95,9 @@
                             <span data-bind="text: password"></span>
                         </small>
                         <!-- /ko -->
+                        <div class="name-ratings hover-button" data-bind="visible: direct_unpack">
+                            <span class="glyphicon glyphicon-compressed "></span> <span data-bind="text: direct_unpack">5</span>
+                        </div>
                         <!-- ko if: (rating_avg_video() !== false)  -->
                         <div class="name-ratings hover-button">
                             <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: rating_avg_video"></span>
