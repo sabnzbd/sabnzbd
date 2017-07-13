@@ -122,6 +122,10 @@ class DirectUnpacker(threading.Thread):
                 # End of program
                 break
 
+            # Error? Let PP-handle it
+            if linebuf.endswith('Cannot create'):
+                self.abort()
+
             # Did we reach the end?
             if linebuf.endswith('All OK'):
                 # Add to success
@@ -182,15 +186,9 @@ class DirectUnpacker(threading.Thread):
             action = 'e'
         else:
             action = 'x'
-        if cfg.overwrite_files():
-            overwrite = '-o+'  # Enable overwrite
-            rename = '-o+'    # Dummy
-        else:
-            overwrite = '-o-'  # Disable overwrite
-            rename = '-or'    # Auto renaming
 
         if sabnzbd.WIN32:
-            command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', overwrite, rename, '-ai', password_command,
+            command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
                        '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
 
         if cfg.ignore_unrar_dates():
@@ -203,21 +201,22 @@ class DirectUnpacker(threading.Thread):
 
     def abort(self):
         """ Abort running instance and delete generated files """
-        self.killed = True
-        # Abort Unrar
-        if self.active_instance:
-            self.active_instance.kill()
-            # We need to wait for it to kill the process
-            self.active_instance.wait()
-        # No new sets
-        self.next_sets = []
-        # Remove files
-        extraction_path, _, _, _, _ = self.unpack_dir_info
-        remove_all(extraction_path, recursive=True)
-        # Remove dir-info
-        self.unpack_dir_info = None
-        # Reset settings
-        self.reset_active()
+        if not self.killed:
+            self.killed = True
+            # Abort Unrar
+            if self.active_instance:
+                self.active_instance.kill()
+                # We need to wait for it to kill the process
+                self.active_instance.wait()
+            # No new sets
+            self.next_sets = []
+            # Remove files
+            extraction_path, _, _, _, _ = self.unpack_dir_info
+            remove_all(extraction_path, recursive=True)
+            # Remove dir-info
+            self.unpack_dir_info = None
+            # Reset settings
+            self.reset_active()
 
 
 def analyze_rar_filename(filename):

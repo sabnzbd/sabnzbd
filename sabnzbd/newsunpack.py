@@ -478,27 +478,39 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         else:
             extraction_path = os.path.split(rarpath)[0]
 
-        logging.info("Extracting rarfile %s (belonging to %s) to %s",
-                     rarpath, rar_set, extraction_path)
+        # Is the direct-unpacker still running? We wait for it
+        if nzo.direct_unpacker:
+            while nzo.direct_unpacker.is_alive():
+                time.sleep(1)
 
-        try:
-            fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
-                                         one_folder, nzo, rar_set, extraction_path)
-            # Was it aborted?
-            if not nzo.pp_active:
-                fail = 1
-                break
-            success = not fail
-        except:
-            success = False
-            fail = True
-            msg = sys.exc_info()[1]
-            nzo.fail_msg = T('Unpacking failed, %s') % msg
-            setname = nzo.final_name
-            nzo.set_unpack_info('Unpack', T('[%s] Error "%s" while unpacking RAR files') % (unicoder(setname), msg))
+        # Did we already direct-unpack it? Not when recursive-unpacking
+        if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
+            fail = 0
+            success = 1
+            rars = rar_sets[rar_set]
+            newfiles = globber(extraction_path)
+            nzo.direct_unpacker.success_sets.remove(rar_set)
+        else:
+            logging.info("Extracting rarfile %s (belonging to %s) to %s",
+                         rarpath, rar_set, extraction_path)
+            try:
+                fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
+                                             one_folder, nzo, rar_set, extraction_path)
+                # Was it aborted?
+                if not nzo.pp_active:
+                    fail = 1
+                    break
+                success = not fail
+            except:
+                success = False
+                fail = True
+                msg = sys.exc_info()[1]
+                nzo.fail_msg = T('Unpacking failed, %s') % msg
+                setname = nzo.final_name
+                nzo.set_unpack_info('Unpack', T('[%s] Error "%s" while unpacking RAR files') % (unicoder(setname), msg))
 
-            logging.error(T('Error "%s" while running rar_unpack on %s'), msg, setname)
-            logging.debug("Traceback: ", exc_info=True)
+                logging.error(T('Error "%s" while running rar_unpack on %s'), msg, setname)
+                logging.debug("Traceback: ", exc_info=True)
 
         if success:
             logging.debug('rar_unpack(): Rars: %s', rars)
@@ -533,7 +545,6 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
         with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
     """
-
     fail = 0
     new_files = None
     rars = []
