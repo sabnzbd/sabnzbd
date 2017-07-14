@@ -483,7 +483,7 @@ function QueueModel(parent, data) {
     self.remainingMB = ko.observable(parseFloat(data.mbleft));
     self.avg_age = ko.observable(data.avg_age)
     self.missing = ko.observable(parseFloat(data.mbmissing))
-    self.direct_unpack = ko.observable(parseInt(data.direct_unpack))
+    self.direct_unpack = ko.observable(data.direct_unpack)
     self.category = ko.observable(data.cat);
     self.priority = ko.observable(parent.priorityName[data.priority]);
     self.script = ko.observable(data.script);
@@ -583,7 +583,7 @@ function QueueModel(parent, data) {
         self.remainingMB(parseFloat(data.mbleft));
         self.avg_age(data.avg_age)
         self.missing(parseFloat(data.mbmissing))
-        self.direct_unpack(parseInt(data.direct_unpack))
+        self.direct_unpack(data.direct_unpack)
         self.category(data.cat);
         self.priority(parent.priorityName[data.priority]);
         self.script(data.script);

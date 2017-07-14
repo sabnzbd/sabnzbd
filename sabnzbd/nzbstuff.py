@@ -972,9 +972,9 @@ class NzbObject(TryList):
                 head, vol, block = analyse_par2(name)
                 if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
-                    self.extrapars[parset].append(xnzf)
                     # Don't postpone during pre-check or if all par2 should be kept
                     if not self.precheck and cfg.enable_par_cleanup():
+                        self.extrapars[parset].append(xnzf)
                         self.files.remove(xnzf)
 
     @synchronized(NZO_LOCK)
@@ -1579,7 +1579,7 @@ class NzbObject(TryList):
                 self.status, self.priority,
                 len(self.nzo_info.get('missing_art_log', [])),
                 self.bytes_tried - self.bytes_downloaded,
-                self.direct_unpacker.cur_volume if self.direct_unpacker else 0)
+                self.direct_unpacker.get_formatted_stats() if self.direct_unpacker else 0)
 
     def get_nzf_by_id(self, nzf_id):
         if nzf_id in self.files_table:
