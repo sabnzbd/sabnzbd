@@ -41,7 +41,7 @@ else:
 
 MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
-CONCURRENT_LOCK = threading.Condition()
+CONCURRENT_LOCK = threading.RLock()
 
 RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$')
 
@@ -54,7 +54,7 @@ class DirectUnpacker(threading.Thread):
         self.nzo = nzo
         self.active_instance = None
         self.killed = False
-        self.next_file_lock = threading.Condition()
+        self.next_file_lock = threading.Condition(threading.RLock())
 
         self.unpack_dir_info = None
         self.cur_setname = None
@@ -202,7 +202,7 @@ class DirectUnpacker(threading.Thread):
                     pass
 
                 # Wait for the volume to appear
-                while not self.have_next_volume():
+                while not self.have_next_volume() and not self.killed:
                     with self.next_file_lock:
                         self.next_file_lock.wait()
 
@@ -211,9 +211,11 @@ class DirectUnpacker(threading.Thread):
 
                 # Send "Enter" to proceed, only 1 at a time via lock
                 CONCURRENT_LOCK.acquire()
-                self.active_instance.stdin.write('\n')
-                self.nzo.set_action_line(T('Unpacking'), self.get_formatted_stats())
-                logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
+                # Possible that the instance was deleted while locked
+                if not self.killed:
+                    self.active_instance.stdin.write('\n')
+                    self.nzo.set_action_line(T('Unpacking'), self.get_formatted_stats())
+                    logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
             if linebuf.endswith('\n'):
                 unrar_log.append(linebuf.strip())
@@ -291,8 +293,13 @@ class DirectUnpacker(threading.Thread):
                 # We need to wait for it to kill the process
                 self.active_instance.wait()
 
+            # Wake up the thread
+            with self.next_file_lock:
+                self.next_file_lock.notify()
+
             # No new sets
             self.next_sets = []
+            self.success_sets = []
 
             # Remove files
             if self.unpack_dir_info:
