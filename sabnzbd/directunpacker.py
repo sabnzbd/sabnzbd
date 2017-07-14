@@ -59,6 +59,7 @@ class DirectUnpacker(threading.Thread):
         self.unpack_dir_info = None
         self.cur_setname = None
         self.cur_volume = 0
+        self.total_volumes = {}
 
         self.success_sets = []
         self.next_sets = []
@@ -86,18 +87,24 @@ class DirectUnpacker(threading.Thread):
             return False
         return True
 
+    def set_volumes_for_nzo(self):
+        """ Loop over all files to detect the names """
+        for nzf in self.nzo.files + self.nzo.finished_files:
+            filename = nzf.filename.lower()
+            nzf.setname, nzf.vol = analyze_rar_filename(filename)
+            if nzf.setname not in self.total_volumes:
+                self.total_volumes[nzf.setname] = 0
+            self.total_volumes[nzf.setname] += 1
+
     def add(self, nzf):
         """ Add jobs and start instance of DirectUnpack """
         # Stop if something is wrong
         if not self.check_requirements():
             return
 
-        # Analyze the input
-        filename = nzf.filename.lower()
-        nzf.setname, nzf.vol = analyze_rar_filename(filename)
-
         # Do we have a set yet?
         if not self.cur_setname:
+            self.set_volumes_for_nzo()
             self.cur_setname = nzf.setname
 
         # Are we doing this set?
@@ -194,7 +201,7 @@ class DirectUnpacker(threading.Thread):
                 # Send "Enter" to proceed, only 1 at a time via lock
                 CONCURRENT_LOCK.acquire()
                 self.active_instance.stdin.write('\n')
-                self.nzo.set_action_line(T('Unpacking'), '%02d' % self.cur_volume)
+                self.nzo.set_action_line(T('Unpacking'), self.get_formatted_stats())
                 logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
             if linebuf.endswith('\n'):
@@ -285,6 +292,14 @@ class DirectUnpacker(threading.Thread):
 
             # Reset settings
             self.reset_active()
+
+    def get_formatted_stats(self):
+        """ Get percentage or number of rar's done """
+        if self.cur_setname and self.cur_setname in self.total_volumes:
+            # This won't work on obfuscated posts
+            if self.total_volumes[self.cur_setname] > self.cur_volume:
+                return '%.0f%%' % (100*float(self.cur_volume)/self.total_volumes[self.cur_setname])
+        return self.cur_volume
 
 
 def analyze_rar_filename(filename):
