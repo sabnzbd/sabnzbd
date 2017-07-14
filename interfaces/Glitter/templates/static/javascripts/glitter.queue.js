@@ -495,8 +495,6 @@ function QueueModel(parent, data) {
     self.nameForEdit = ko.observable();
     self.editingName = ko.observable(false);
     self.hasDropdown = ko.observable(false);
-    self.rating_avg_video = ko.observable(false)
-    self.rating_avg_audio = ko.observable(false)
 
     // Color of the progress bar
     self.progressColor = ko.computed(function() {
@@ -592,12 +590,6 @@ function QueueModel(parent, data) {
         self.unpackopts(parseInt(data.unpackopts)) // UnpackOpts fails if not parseInt'd!
         self.pausedStatus(data.status == 'Paused');
         self.timeLeft(data.timeleft);
-
-        // If exists, otherwise false
-        if(data.rating_avg_video !== undefined) {
-            self.rating_avg_video(data.rating_avg_video === 0 ? '-' : data.rating_avg_video);
-            self.rating_avg_audio(data.rating_avg_audio === 0 ? '-' : data.rating_avg_audio);
-        }
     };
 
     // Pause individual download
