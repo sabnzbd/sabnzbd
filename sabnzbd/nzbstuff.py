@@ -1214,7 +1214,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def remove_parset(self, setname):
-        self.partable.pop(setname)
+        if setname in self.partable:
+            self.partable.pop(setname)
 
     @synchronized(NZO_LOCK)
     def remove_extrapar(self, parfile):
