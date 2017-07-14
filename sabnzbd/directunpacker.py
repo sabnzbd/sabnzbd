@@ -43,7 +43,7 @@ MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
 CONCURRENT_LOCK = threading.RLock()
 
-RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$')
+RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$', re.IGNORECASE)
 
 
 class DirectUnpacker(threading.Thread):
@@ -92,8 +92,7 @@ class DirectUnpacker(threading.Thread):
         none_counter = 0
         found_counter = 0
         for nzf in self.nzo.files + self.nzo.finished_files:
-            filename = nzf.filename.lower()
-            nzf.setname, nzf.vol = analyze_rar_filename(filename)
+            nzf.setname, nzf.vol = analyze_rar_filename(nzf.filename)
             # We matched?
             if nzf.setname:
                 found_counter += 1
@@ -113,14 +112,13 @@ class DirectUnpacker(threading.Thread):
         if not self.check_requirements():
             return
 
-        # Do we have a set yet?
+        # Is this the first set?
         if not self.cur_setname:
             self.set_volumes_for_nzo()
             self.cur_setname = nzf.setname
 
         # Analyze updated filenames
-        filename = nzf.filename.lower()
-        nzf.setname, nzf.vol = analyze_rar_filename(filename)
+        nzf.setname, nzf.vol = analyze_rar_filename(nzf.filename)
 
         # Are we doing this set?
         if self.cur_setname == nzf.setname:
