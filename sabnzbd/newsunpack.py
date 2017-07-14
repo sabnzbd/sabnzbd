@@ -482,18 +482,11 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         if nzo.direct_unpacker:
             while nzo.direct_unpacker.is_alive():
                 logging.debug('DirectUnpacker still alive for %s', nzo)
-                time.sleep(1)
+                time.sleep(2)
 
                 # Bump the file-lock in case it's stuck
                 with nzo.direct_unpacker.next_file_lock:
                     nzo.direct_unpacker.next_file_lock.notify()
-
-                # Don't abort while it's still doing something
-                with sabnzbd.directunpacker.CONCURRENT_LOCK:
-                    # Is it waiting for a non-existing file?
-                    if nzo.direct_unpacker.active_instance and not nzo.direct_unpacker.have_next_volume():
-                        nzo.abort_direct_unpacker()
-                        break
 
         # Did we already direct-unpack it? Not when recursive-unpacking
         if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
