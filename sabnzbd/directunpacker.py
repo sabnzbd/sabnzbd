@@ -89,12 +89,23 @@ class DirectUnpacker(threading.Thread):
 
     def set_volumes_for_nzo(self):
         """ Loop over all files to detect the names """
+        none_counter = 0
+        found_counter = 0
         for nzf in self.nzo.files + self.nzo.finished_files:
             filename = nzf.filename.lower()
             nzf.setname, nzf.vol = analyze_rar_filename(filename)
-            if nzf.setname not in self.total_volumes:
-                self.total_volumes[nzf.setname] = 0
-            self.total_volumes[nzf.setname] += 1
+            # We matched?
+            if nzf.setname:
+                found_counter += 1
+                if nzf.setname not in self.total_volumes:
+                    self.total_volumes[nzf.setname] = 0
+                self.total_volumes[nzf.setname] += 1
+            else:
+                none_counter += 1
+
+        # Too much not found? Obfuscated, ignore results
+        if none_counter > found_counter:
+            self.total_volumes = {}
 
     def add(self, nzf):
         """ Add jobs and start instance of DirectUnpack """
@@ -297,7 +308,7 @@ class DirectUnpacker(threading.Thread):
         """ Get percentage or number of rar's done """
         if self.cur_setname and self.cur_setname in self.total_volumes:
             # This won't work on obfuscated posts
-            if self.total_volumes[self.cur_setname] > self.cur_volume:
+            if self.total_volumes[self.cur_setname] > self.cur_volume and self.cur_volume:
                 return '%.0f%%' % (100*float(self.cur_volume)/self.total_volumes[self.cur_setname])
         return self.cur_volume
 
