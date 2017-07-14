@@ -331,6 +331,8 @@ class NzbQueue(object):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             logging.info('Renaming %s to %s', nzo.final_name, name)
+            # Abort any ongoing unpacking if the name changed (dirs change)
+            nzo.abort_direct_unpacker()
             if not nzo.futuretype:
                 nzo.set_final_name_pw(name, password)
             else:
