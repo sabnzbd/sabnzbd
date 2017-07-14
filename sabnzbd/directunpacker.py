@@ -203,17 +203,17 @@ class DirectUnpacker(threading.Thread):
                     pass
 
                 # Wait for the volume to appear
-                while not self.have_next_volume() and not self.killed:
+                # But stop if it was killed or the NZB is done
+                while not self.have_next_volume() and not self.killed and self.nzo.files:
                     with self.next_file_lock:
                         self.next_file_lock.wait()
-
-                # Next volume
-                self.cur_volume += 1
 
                 # Send "Enter" to proceed, only 1 at a time via lock
                 CONCURRENT_LOCK.acquire()
                 # Possible that the instance was deleted while locked
                 if not self.killed:
+                    # Next volume
+                    self.cur_volume += 1
                     self.active_instance.stdin.write('\n')
                     self.nzo.set_action_line(T('Unpacking'), self.get_formatted_stats())
                     logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
