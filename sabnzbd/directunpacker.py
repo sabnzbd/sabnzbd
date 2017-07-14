@@ -118,6 +118,10 @@ class DirectUnpacker(threading.Thread):
             self.set_volumes_for_nzo()
             self.cur_setname = nzf.setname
 
+        # Analyze updated filenames
+        filename = nzf.filename.lower()
+        nzf.setname, nzf.vol = analyze_rar_filename(filename)
+
         # Are we doing this set?
         if self.cur_setname == nzf.setname:
             logging.debug('Queued %s for %s', nzf.filename, self.cur_setname)
@@ -132,14 +136,13 @@ class DirectUnpacker(threading.Thread):
                 self.cur_volume = 1
                 self.create_unrar_instance(nzf)
                 self.start()
-            else:
-                # Wake up the thread to see if this is good to go
-                with self.next_file_lock:
-                    self.next_file_lock.notify()
-
         elif not any(test_nzf.setname == nzf.setname for test_nzf in self.next_sets):
             # Need to store this for the future, only once per set!
             self.next_sets.append(nzf)
+
+        # Wake up the thread to see if this is good to go
+        with self.next_file_lock:
+            self.next_file_lock.notify()
 
     def run(self):
         # Input and output
@@ -187,8 +190,8 @@ class DirectUnpacker(threading.Thread):
                     unrar_log = []
 
                     # Start new instance
-                    self.reset_active()
                     nzf = self.next_sets.pop(0)
+                    self.reset_active()
                     self.cur_setname = nzf.setname
                     self.create_unrar_instance(nzf)
                 else:
@@ -233,6 +236,12 @@ class DirectUnpacker(threading.Thread):
         # Make more space
         self.reset_active()
         ACTIVE_UNPACKERS.remove(self)
+
+        # Make sure to release the lock
+        try:
+            CONCURRENT_LOCK.release()
+        except:
+            pass
 
     def have_next_volume(self):
         """ Check if next volume of set is available, start
