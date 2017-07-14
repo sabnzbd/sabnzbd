@@ -39,7 +39,7 @@ from sabnzbd.constants import NOTIFY_KEYS
 from sabnzbd.misc import split_host, make_script_path
 from sabnzbd.newsunpack import external_script
 
-from gntp import GNTPRegister
+from gntp.core import GNTPRegister
 from gntp.notifier import GrowlNotifier
 try:
     import Growl
@@ -57,6 +57,7 @@ try:
     _HAVE_NTFOSD = True
 except:
     _HAVE_NTFOSD = False
+
 
 ##############################################################################
 # Define translatable message table
@@ -89,13 +90,9 @@ def get_icon():
     if not os.path.isfile(icon):
         icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
     if os.path.isfile(icon):
-        if sabnzbd.WIN32 or sabnzbd.DARWIN:
-            fp = open(icon, 'rb')
-            icon = fp.read()
-            fp.close()
-        else:
-            # Due to a bug in GNTP, need this work-around for Linux/Unix
-            icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
+        fp = open(icon, 'rb')
+        icon = fp.read()
+        fp.close()
     else:
         icon = None
     return icon
@@ -192,6 +189,9 @@ def register_growl(growl_server, growl_password):
     host, port = split_host(growl_server or '')
 
     sys_name = hostname(host)
+
+    # Reduce logging of Growl in Debug/Info mode
+    logging.getLogger('gntp').setLevel(logging.WARNING)
 
     # Clean up persistent data in GNTP to make re-registration work
     GNTPRegister.notifications = []
