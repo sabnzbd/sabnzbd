@@ -95,15 +95,9 @@
                             <span data-bind="text: password"></span>
                         </small>
                         <!-- /ko -->
-                        <div class="name-ratings hover-button" data-bind="visible: direct_unpack">
+                        <div class="name-icons hover-button" data-bind="visible: direct_unpack">
                             <span class="glyphicon glyphicon-compressed "></span> <span data-bind="text: direct_unpack">5</span>
                         </div>
-                        <!-- ko if: (rating_avg_video() !== false)  -->
-                        <div class="name-ratings hover-button">
-                            <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: rating_avg_video"></span>
-                            <span class="glyphicon glyphicon-volume-up"></span> <span data-bind="text: rating_avg_audio"></span>
-                        </div>
-                        <!-- /ko -->
                     </div>
                     <form data-bind="submit: editingNameSubmit">
                         <input type="text" data-bind="value: nameForEdit, visible: editingName(), hasfocus: editingName" />

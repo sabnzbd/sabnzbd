@@ -648,18 +648,18 @@ td.name .row-wrap-text {
     border: 1px solid #ccc;
 }
 
-td.name .name-ratings {
+td.name .name-icons {
     display: inline;
     margin-left: 5px;
     color: black !important;
     text-decoration: none !important;
 }
 
-.queue-table td.name:hover .name-ratings {
+.queue-table td.name:hover .name-icons {
     display: none;
 }
 
-td.name .name-ratings .glyphicon {
+td.name .name-icons .glyphicon {
     margin-left: 2px;
 }
 
@@ -1060,7 +1060,7 @@ tr.queue-item>td:first-child>a {
     opacity: 1;
 }
 
-.history-ratings .name-ratings {
+.history-ratings .name-icons {
     float: none !important;
 }
 
@@ -1839,7 +1839,7 @@ input[name="nzbURL"] {
 }
 
 @media screen and (max-width: 1200px) {
-    td.name .name-ratings {
+    td.name .name-icons {
         margin-left: 0px;
         margin-right: -5px;
         display: block;
