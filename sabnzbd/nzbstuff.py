@@ -66,9 +66,10 @@ RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$')  # Test reasonably sized extension at
 # Trylist
 ##############################################################################
 
+TRYLIST_LOCK = threading.Lock()
+
 class TryList(object):
     """ TryList keeps track of which servers have been tried for a specific article
-        This used to have a Lock, but it's not needed (all atomic) and faster without
     """
     # Pre-define attributes to save memory
     __slots__ = ('__try_list', 'fetcher_priority')
@@ -79,16 +80,19 @@ class TryList(object):
 
     def server_in_try_list(self, server):
         """ Return whether specified server has been tried """
-        return server in self.__try_list
+        with TRYLIST_LOCK:
+            return server in self.__try_list
 
     def add_to_try_list(self, server):
         """ Register server as having been tried already """
-        self.__try_list.append(server)
+        with TRYLIST_LOCK:
+            if server not in self.__try_list:
+                self.__try_list.append(server)
 
     def reset_try_list(self):
         """ Clean the list """
-        self.__try_list = []
-        self.fetcher_priority = 0
+        with TRYLIST_LOCK:
+            self.__try_list = []
 
 
 ##############################################################################
@@ -972,8 +976,8 @@ class NzbObject(TryList):
                 head, vol, block = analyse_par2(name)
                 if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
-                    # Don't postpone during pre-check or if all par2 should be kept
-                    if not self.precheck and cfg.enable_par_cleanup():
+                    # Don't postpone if all par2 should be kept
+                    if cfg.enable_par_cleanup():
                         self.extrapars[parset].append(xnzf)
                         self.files.remove(xnzf)
 
