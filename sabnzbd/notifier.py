@@ -41,6 +41,7 @@ from sabnzbd.newsunpack import external_script
 
 from gntp.core import GNTPRegister
 from gntp.notifier import GrowlNotifier
+import gntp.errors
 try:
     import Growl
     # Detect classic Growl (older than 1.3)
@@ -216,7 +217,7 @@ def register_growl(growl_server, growl_password):
             logging.debug(error)
             del growler
             ret = None
-    except socket.error, err:
+    except (gntp.errors.NetworkError, gntp.errors.AuthError) as err:
         error = 'Cannot register with Growl %s' % str(err)
         logging.debug(error)
         del growler
