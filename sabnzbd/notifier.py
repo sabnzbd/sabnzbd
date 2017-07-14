@@ -271,7 +271,7 @@ def send_growl(title, msg, gtype, test=None):
                 else:
                     logging.debug('Growl error %s', ret)
                     return 'Growl error %s', ret
-            except socket.error, err:
+            except (gntp.errors.NetworkError, gntp.errors.AuthError) as err:
                 error = 'Growl error %s' % err
                 logging.debug(error)
                 return error
