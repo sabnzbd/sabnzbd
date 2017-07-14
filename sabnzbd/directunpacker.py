@@ -39,7 +39,7 @@ else:
     # Load the regular POpen
     from subprocess import Popen
 
-MAX_ACTIVE_UNPACKERS = 5
+MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
 CONCURRENT_LOCK = threading.Condition()
 
