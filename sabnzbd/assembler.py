@@ -98,10 +98,9 @@ class Assembler(Thread):
                     nzf.remove_admin()
                     setname = nzf.setname
                     if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack, new16khashes = self.parse_par2_file(filepath)
+                        pack = self.parse_par2_file(filepath, nzo.md5of16k)
                         if pack:
                             nzo.md5packs[setname] = pack
-                            nzo.md5of16k.update(new16khashes)
                             logging.debug('Got md5pack for set %s', setname)
                             # Valid md5pack, so use this par2-file as main par2 file for the set
                             if setname in nzo.partable:
@@ -186,19 +185,18 @@ class Assembler(Thread):
 
         return path
 
-    def parse_par2_file(self, fname):
+    def parse_par2_file(self, fname, table16k):
         """ Get the hash table and the first-16k hash table from a PAR2 file
             Return as dictionary, indexed on names or hashes for the first-16 table
             For a full description of the par2 specification, visit:
             http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
         """
         table = {}
-        table16k = {}
 
         try:
             f = open(fname, 'rb')
         except:
-            return table, table16k
+            return table
 
         try:
             header = f.read(8)
@@ -206,7 +204,13 @@ class Assembler(Thread):
                 name, hash, hash16k = parse_par2_file_packet(f, header)
                 if name:
                     table[name] = hash
-                    table16k[hash16k] = name
+                    if hash16k not in table16k:
+                        table16k[hash16k] = name
+                    else:
+                        # Not unique, remove to avoid false-renames
+                        old_name = table16k.pop(hash16k)
+                        logging.debug('Par2-16k signatures of %s and %s are identical, discarding', old_name, name)
+
                 header = f.read(8)
 
         except (struct.error, IndexError):
@@ -218,12 +222,7 @@ class Assembler(Thread):
             table = {}
         f.close()
 
-        # If the first-16k is not unique, clear the table to prevent incorrect renames
-        if len(table) != len(table16k):
-            table16k = {}
-            logging.debug('Par2-16K signatures not unique for %s', fname)
-
-        return table, table16k
+        return table
 
 
 def file_has_articles(nzf):
