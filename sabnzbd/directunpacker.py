@@ -31,6 +31,7 @@ from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_s
 from sabnzbd.encoding import unicoder
 from sabnzbd.newsunpack import build_command
 from sabnzbd.postproc import prepare_extraction_path
+from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 if sabnzbd.WIN32:
     # Load the POpen from the fixed unicode-subprocess
@@ -108,6 +109,9 @@ class DirectUnpacker(threading.Thread):
 
     def add(self, nzf):
         """ Add jobs and start instance of DirectUnpack """
+        if not cfg.direct_unpack_tested():
+            test_disk_performance()
+
         # Stop if something is wrong
         if not self.check_requirements():
             return
@@ -352,3 +356,12 @@ def abort_all():
     for direct_unpacker in ACTIVE_UNPACKERS:
         direct_unpacker.abort()
 
+
+def test_disk_performance():
+    """ Test the incomplete-dir performance and enable
+        Direct Unpack if good enough (> 60MB/s)
+    """
+    if diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()) > 60:
+        cfg.direct_unpack.set(True)
+        logging.warning(T('Enabled Direct Unpack:') + ' ' + T('Jobs will start unpacking during the download, reduces post-processing time but requires capable hard drive. Only works for jobs that do not need repair.'))
+    cfg.direct_unpack_tested.set(True)

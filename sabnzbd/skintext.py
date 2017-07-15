@@ -454,7 +454,7 @@ SKIN_TEXT = {
     'opt-auto_sort' : TT('Sort by Age'),
     'explain-auto_sort' : TT('Automatically sort items by (average) age.'),
     'opt-direct_unpack' : TT('Direct Unpack'),
-    'explain-direct_unpack' : TT('Start unpacking during download, reduces post-processing time. Requires fast hard drive. Only works for jobs that do not need repair.'),
+    'explain-direct_unpack' : TT('Jobs will start unpacking during the download, reduces post-processing time but requires capable hard drive. Only works for jobs that do not need repair.'),
     'opt-propagation_delay' : TT('Propagation delay'),
     'explain-propagation_delay' : TT('Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay.'),
     'opt-check_new_rel' : TT('Check for New Release'),
