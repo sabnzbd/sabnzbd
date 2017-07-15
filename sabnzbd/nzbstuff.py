@@ -991,7 +991,7 @@ class NzbObject(TryList):
             if not nzf.is_par2:
                 head, vol, block = analyse_par2(fn)
                 # Is a par2file and repair mode activated
-                if head and (self.repair or cfg.allow_streaming()):
+                if head and self.repair:
                     # Skip if mini-par2 is not complete and there are more par2 files
                     if not block and nzf.bytes_left and self.extrapars.get(head):
                         return

@@ -257,13 +257,6 @@ def process_job(nzo):
     # Get the NZB name
     filename = nzo.final_name
 
-    if cfg.allow_streaming() and not (flag_repair or flag_unpack or flag_delete):
-        # After streaming, force +D
-        nzo.set_pp(3)
-        nzo.status = Status.FAILED
-        nzo.save_attribs()
-        all_ok = False
-
     if nzo.fail_msg:  # Special case: aborted due to too many missing data
         nzo.status = Status.FAILED
         nzo.save_attribs()
