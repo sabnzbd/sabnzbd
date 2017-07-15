@@ -599,13 +599,14 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     if sabnzbd.WIN32:
         # Use all flags
-        # See: https://github.com/sabnzbd/sabnzbd/pull/771
-        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
-                   '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+        if not has_win_device(rarfile_path):
+            command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
+                       '%s' % clip_path(rarfile_path), clip_path(extraction_path)]
+        else:
+            # Need long-path notation in case of forbidden-names
+            command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
+                       '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
 
-        # If this is the retry without leading \\.\, we need to remove the \ at the end (yes..)
-        if not extraction_path.startswith('\\\\?\\'):
-            command[-1] = command[-1][:-1]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password_command,
@@ -702,12 +703,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             logging.error(T('ERROR: write error (%s)'), line[11:])
             fail = 1
 
-        elif line.startswith('Cannot create') and sabnzbd.WIN32 and extraction_path.startswith('\\\\?\\'):
-            # Can be due to Unicode problems on Windows, let's retry
-            fail = 4
-            # Kill the process (can stay in endless loop on Windows Server)
-            p.kill()
-
         elif line.startswith('Cannot create'):
             line2 = proc.readline()
             if 'must not exceed 260' in line2:
@@ -720,6 +715,8 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
                 logging.error(T('ERROR: write error (%s)'), unicoder(line[13:]))
             nzo.set_unpack_info('Unpack', unicoder(msg))
             fail = 1
+            # Kill the process (can stay in endless loop on Windows Server)
+            p.kill()
 
         elif line.startswith('ERROR: '):
             nzo.fail_msg = T('Unpacking failed, see log')
@@ -782,13 +779,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
                 proc.close()
             p.wait()
             logging.debug('UNRAR output %s', '\n'.join(lines))
-
-            # Unicode problems, lets start again but now we try without \\?\
-            # This will only fail if the download contains forbidden-Windows-names
-            if fail == 4:
-                return rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, clip_path(extraction_path), password)
-            else:
-                return fail, (), ()
+            return fail, (), ()
 
     if proc:
         proc.close()

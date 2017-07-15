@@ -27,7 +27,7 @@ import logging
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_string
+from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_string, has_win_device
 from sabnzbd.encoding import unicoder
 from sabnzbd.newsunpack import build_command
 from sabnzbd.postproc import prepare_extraction_path
@@ -274,8 +274,13 @@ class DirectUnpacker(threading.Thread):
         # Generate command
         rarfile_path = os.path.join(self.nzo.downpath, rarfile_nzf.filename)
         if sabnzbd.WIN32:
-            command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
-                       '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+            if not has_win_device(rarfile_path):
+                command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
+                           '%s' % clip_path(rarfile_path), clip_path(extraction_path)]
+            else:
+                # Need long-path notation in case of forbidden-names
+                command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
+                           '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
         else:
             # Don't use "-ai" (not needed for non-Windows)
             command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', rename, password_command,
