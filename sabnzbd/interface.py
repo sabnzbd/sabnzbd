@@ -1376,7 +1376,7 @@ class ConfigSwitches(object):
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files', 'enable_par_cleanup',
               'queue_complete_pers', 'api_warnings', 'ampm', 'enable_unrar', 'enable_unzip', 'enable_7zip',
-              'enable_filejoin', 'enable_tsjoin', 'allow_streaming', 'ignore_unrar_dates', 'par2_multicore',
+              'enable_filejoin', 'enable_tsjoin', 'ignore_unrar_dates', 'par2_multicore',
               'multipar', 'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
               'max_art_opt', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files', 'warn_dupl_jobs',
