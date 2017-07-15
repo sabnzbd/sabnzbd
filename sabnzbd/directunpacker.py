@@ -131,7 +131,6 @@ class DirectUnpacker(threading.Thread):
                     return
 
                 # Start the unrar command and the loop
-                self.cur_volume = 1
                 self.create_unrar_instance(nzf)
                 self.start()
         elif not any(test_nzf.setname == nzf.setname for test_nzf in self.next_sets):
@@ -164,7 +163,8 @@ class DirectUnpacker(threading.Thread):
                     linebuf.endswith('CRC failed') or linebuf.endswith('checksum failed') or \
                     linebuf.endswith('You need to start extraction from a previous volume') or \
                     linebuf.endswith('password is incorrect') or linebuf.endswith('Write error') or \
-                    linebuf.endswith('checksum error'):
+                    linebuf.endswith('checksum error') or linebuf.endswith('ERROR: ') or \
+                    linebuf.endswith('start extraction from a previous volume'):
                 logging.info('Error in DirectUnpack of %s', self.cur_setname)
                 self.abort()
 
@@ -287,6 +287,9 @@ class DirectUnpacker(threading.Thread):
                                     startupinfo=stup, creationflags=creationflags)
         # Add to runners
         ACTIVE_UNPACKERS.append(self)
+
+        # Doing the first
+        logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
     def abort(self):
         """ Abort running instance and delete generated files """
