@@ -247,10 +247,11 @@ def replace_win_devices(name):
 
 def has_win_device(p):
     """ Return True if filename part contains forbidden name
+        Before and after sanitizing
     """
     p = os.path.split(p)[1].lower()
     for dev in _DEVICES:
-        if p == dev or p.startswith(dev + '.'):
+        if p == dev or p.startswith(dev + '.') or p.startswith('_' + dev + '.'):
             return True
     return False
 
