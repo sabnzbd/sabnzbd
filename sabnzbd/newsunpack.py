@@ -1509,7 +1509,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
 
     # If successful, add renamed files to the collection
     if finished and renames:
-        nzo.renamed_file(renames.values())
+        nzo.renamed_file(renames)
 
     # If successful and files were reconstructed, remove incomplete original files
     if finished and reconstructed:
