@@ -192,6 +192,7 @@ class Assembler(Thread):
             http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
         """
         table = {}
+        duplicates16k = []
 
         try:
             f = open(fname, 'rb')
@@ -208,8 +209,7 @@ class Assembler(Thread):
                         table16k[hash16k] = name
                     else:
                         # Not unique, remove to avoid false-renames
-                        old_name = table16k.pop(hash16k)
-                        logging.debug('Par2-16k signatures of %s and %s are identical, discarding', old_name, name)
+                        duplicates16k.append(hash16k)
 
                 header = f.read(8)
 
@@ -221,6 +221,13 @@ class Assembler(Thread):
             logging.info('Traceback: ', exc_info=True)
             table = {}
         f.close()
+
+        # Have to remove duplicates at the end to make sure
+        # no trace is left in case of multi-duplicates
+        for hash16k in duplicates16k:
+            if hash16k in table16k:
+                old_name = table16k.pop(hash16k)
+                logging.debug('Par2-16k signature of %s not unique, discarding', old_name)
 
         return table
 
