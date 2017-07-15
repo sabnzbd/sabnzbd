@@ -73,15 +73,19 @@ class DirectUnpacker(threading.Thread):
     def save(self):
         pass
 
+    def release_concurrent_lock(self):
+        """ Let other unpackers go """
+        try:
+            CONCURRENT_LOCK.release()
+        except:
+            pass
+
     def reset_active(self):
         self.active_instance = None
         self.cur_setname = None
         self.cur_volume = 0
         # Release lock to be sure
-        try:
-            CONCURRENT_LOCK.release()
-        except:
-            pass
+        self.release_concurrent_lock()
 
     def check_requirements(self):
         if self.killed or not self.nzo.unpack or cfg.direct_unpack() < 1 or sabnzbd.newsunpack.RAR_PROBLEM:
@@ -126,9 +130,9 @@ class DirectUnpacker(threading.Thread):
 
         # Are we doing this set?
         if self.cur_setname == nzf.setname:
-            logging.debug('Queued %s for %s', nzf.filename, self.cur_setname)
-            # Is this the first one?
-            if not self.active_instance and self.have_next_volume():
+            logging.debug('DirectUnpack queued %s for %s', nzf.filename, self.cur_setname)
+            # Is this the first one of the first set?
+            if not self.active_instance and not self.is_alive() and self.have_next_volume():
                 # Too many runners already?
                 if len(ACTIVE_UNPACKERS) >= MAX_ACTIVE_UNPACKERS:
                     logging.info('Too many DirectUnpackers currently to start %s', self.cur_setname)
@@ -178,6 +182,9 @@ class DirectUnpacker(threading.Thread):
                 self.success_sets.append(self.cur_setname)
                 logging.info('DirectUnpack completed for %s', self.cur_setname)
 
+                # Make sure to release the lock
+                self.release_concurrent_lock()
+
                 # Are there more files left?
                 if self.nzo.files:
                     with self.next_file_lock:
@@ -195,22 +202,18 @@ class DirectUnpacker(threading.Thread):
                     nzf = self.next_sets.pop(0)
                     self.reset_active()
                     self.cur_setname = nzf.setname
+                    # Wait for the 1st volume to appear
+                    self.wait_for_next_volume()
                     self.create_unrar_instance(nzf)
                 else:
                     break
 
             if linebuf.endswith('[C]ontinue, [Q]uit '):
                 # Next one can go now
-                try:
-                    CONCURRENT_LOCK.release()
-                except:
-                    pass
+                self.release_concurrent_lock()
 
-                # Wait for the volume to appear
-                # But stop if it was killed or the NZB is done
-                while not self.have_next_volume() and not self.killed and self.nzo.files:
-                    with self.next_file_lock:
-                        self.next_file_lock.wait()
+                # Wait for the next one..
+                self.wait_for_next_volume()
 
                 # Send "Enter" to proceed, only 1 at a time via lock
                 CONCURRENT_LOCK.acquire()
@@ -240,10 +243,7 @@ class DirectUnpacker(threading.Thread):
         ACTIVE_UNPACKERS.remove(self)
 
         # Make sure to release the lock
-        try:
-            CONCURRENT_LOCK.release()
-        except:
-            pass
+        self.release_concurrent_lock()
 
     def have_next_volume(self):
         """ Check if next volume of set is available, start
@@ -252,6 +252,13 @@ class DirectUnpacker(threading.Thread):
             if nzf_search.setname == self.cur_setname and nzf_search.vol == self.cur_volume+1:
                 return True
         return False
+
+    def wait_for_next_volume(self):
+        """ Wait for the correct volume to appear
+            But stop if it was killed or the NZB is done """
+        while not self.have_next_volume() and not self.killed and self.nzo.files:
+            with self.next_file_lock:
+                self.next_file_lock.wait()
 
     def create_unrar_instance(self, rarfile_nzf):
         """ Start the unrar instance using the user's options """
@@ -291,6 +298,8 @@ class DirectUnpacker(threading.Thread):
 
         stup, need_shell, command, creationflags = build_command(command)
         logging.debug('Running unrar for DirectUnpack %s', command)
+
+        # Aquire lock and go
         self.active_instance = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                     startupinfo=stup, creationflags=creationflags)
