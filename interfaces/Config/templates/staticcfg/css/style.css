@@ -137,7 +137,8 @@ input[type="checkbox"]+.desc {
     font-style: italic;
     padding: 0 1px;
 }
-.col2 p {
+.col2 p,
+.col2-cats {
     font-size: 12px;
     color: #666;
     margin: 1em 0;

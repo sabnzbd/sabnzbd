@@ -361,7 +361,7 @@ def bad_fetch(nzo, url, msg='', content=False):
 
     nzo.fail_msg = msg
 
-    notifier.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
+    notifier.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other', nzo.cat)
     if cfg.email_endjob() > 0:
         emailer.badfetch_mail(msg, url)
 

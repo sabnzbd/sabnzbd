@@ -74,6 +74,7 @@ email_endjob = OptionNumber('misc', 'email_endjob', 0, 0, 2)
 email_full = OptionBool('misc', 'email_full', False)
 email_dir = OptionDir('misc', 'email_dir', create=True)
 email_rss = OptionBool('misc', 'email_rss', False)
+email_cats = OptionList('misc', 'email_cats', ['*'])
 
 version_check = OptionNumber('misc', 'check_new_rel', 1)
 autobrowser = OptionBool('misc', 'auto_browser', True)
@@ -172,7 +173,7 @@ movie_categories = OptionList('misc', 'movie_categories', ['movies'])
 
 enable_date_sorting = OptionBool('misc', 'enable_date_sorting', False)
 date_sort_string = OptionStr('misc', 'date_sort_string')
-date_categories = OptionStr('misc', 'date_categories', ['tv'])
+date_categories = OptionList('misc', 'date_categories', ['tv'])
 
 configlock = OptionBool('misc', 'config_lock', 0)
 
@@ -245,6 +246,7 @@ fixed_ports = OptionBool('misc', 'fixed_ports', False)
 
 # [ncenter]
 ncenter_enable = OptionBool('ncenter', 'ncenter_enable', sabnzbd.DARWIN)
+ncenter_cats = OptionList('ncenter', 'ncenter_cats', ['*'])
 ncenter_prio_startup = OptionBool('ncenter', 'ncenter_prio_startup', True)
 ncenter_prio_download = OptionBool('ncenter', 'ncenter_prio_download', False)
 ncenter_prio_pp = OptionBool('ncenter', 'ncenter_prio_pp', False)
@@ -259,6 +261,7 @@ ncenter_prio_other = OptionBool('ncenter', 'ncenter_prio_other', False)
 
 # [acenter]
 acenter_enable = OptionBool('acenter', 'acenter_enable', sabnzbd.WIN32)
+acenter_cats = OptionList('acenter', 'acenter_cats', ['*'])
 acenter_prio_startup = OptionBool('acenter', 'acenter_prio_startup', False)
 acenter_prio_download = OptionBool('acenter', 'acenter_prio_download', False)
 acenter_prio_pp = OptionBool('acenter', 'acenter_prio_pp', False)
@@ -273,6 +276,7 @@ acenter_prio_other = OptionBool('acenter', 'acenter_prio_other', False)
 
 # [ntfosd]
 ntfosd_enable = OptionBool('ntfosd', 'ntfosd_enable', not sabnzbd.WIN32 and not sabnzbd.DARWIN)
+ntfosd_cats = OptionList('ntfosd', 'ntfosd_cats', ['*'])
 ntfosd_prio_startup = OptionBool('ntfosd', 'ntfosd_prio_startup', True)
 ntfosd_prio_download = OptionBool('ntfosd', 'ntfosd_prio_download', False)
 ntfosd_prio_pp = OptionBool('ntfosd', 'ntfosd_prio_pp', False)
@@ -287,6 +291,7 @@ ntfosd_prio_other = OptionBool('ntfosd', 'ntfosd_prio_other', False)
 
 # [growl]
 growl_enable = OptionBool('growl', 'growl_enable', False)
+growl_cats = OptionList('growl', 'growl_cats', ['*'])
 growl_server = OptionStr('growl', 'growl_server')
 growl_password = OptionPassword('growl', 'growl_password')
 growl_prio_startup = OptionBool('growl', 'growl_prio_startup', True)
@@ -303,6 +308,7 @@ growl_prio_other = OptionBool('growl', 'growl_prio_other', False)
 
 # [prowl]
 prowl_enable = OptionBool('prowl', 'prowl_enable', False)
+prowl_cats = OptionList('prowl', 'prowl_cats', ['*'])
 prowl_apikey = OptionStr('prowl', 'prowl_apikey')
 prowl_prio_startup = OptionNumber('prowl', 'prowl_prio_startup', -3)
 prowl_prio_download = OptionNumber('prowl', 'prowl_prio_download', -3)
@@ -321,6 +327,7 @@ pushover_token = OptionStr('pushover', 'pushover_token')
 pushover_userkey = OptionStr('pushover', 'pushover_userkey')
 pushover_device = OptionStr('pushover', 'pushover_device')
 pushover_enable = OptionBool('pushover', 'pushover_enable')
+pushover_cats = OptionList('pushover', 'pushover_cats', ['*'])
 pushover_prio_startup = OptionNumber('pushover', 'pushover_prio_startup', -3)
 pushover_prio_download = OptionNumber('pushover', 'pushover_prio_download', -2)
 pushover_prio_pp = OptionNumber('pushover', 'pushover_prio_pp', -3)
@@ -335,6 +342,7 @@ pushover_prio_other = OptionNumber('pushover', 'pushover_prio_other', -3)
 
 # [pushbullet]
 pushbullet_enable = OptionBool('pushbullet', 'pushbullet_enable')
+pushbullet_cats = OptionList('pushbullet', 'pushbullet_cats', ['*'])
 pushbullet_apikey = OptionStr('pushbullet', 'pushbullet_apikey')
 pushbullet_device = OptionStr('pushbullet', 'pushbullet_device')
 pushbullet_prio_startup = OptionNumber('pushbullet', 'pushbullet_prio_startup', 0)
@@ -351,6 +359,7 @@ pushbullet_prio_other = OptionNumber('pushbullet', 'pushbullet_prio_other', 0)
 
 # [nscript]
 nscript_enable = OptionBool('nscript', 'nscript_enable')
+nscript_cats = OptionList('nscript', 'nscript_cats', ['*'])
 nscript_script = OptionStr('nscript', 'nscript_script')
 nscript_parameters = OptionStr('nscript', 'nscript_parameters')
 nscript_prio_startup = OptionBool('nscript', 'nscript_prio_startup', True)

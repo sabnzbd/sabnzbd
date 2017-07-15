@@ -29,6 +29,7 @@ from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host, time_format
 from sabnzbd.encoding import EmailFilter
+from sabnzbd.notifier import check_cat
 import sabnzbd.cfg as cfg
 
 
@@ -216,6 +217,9 @@ def send_with_template(prefix, parm, test=None):
 
 def endjob(filename, cat, status, path, bytes, fail_msg, stages, script, script_output, script_ret, test=None):
     """ Send end-of-job email """
+    # Is it allowed?
+    if not check_cat('email', cat):
+        return None
 
     # Translate the stage names
     tr = sabnzbd.api.Ttemplate

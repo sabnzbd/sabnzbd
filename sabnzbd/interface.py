@@ -2695,39 +2695,39 @@ def GetRssLog(feed):
 
 ##############################################################################
 LIST_EMAIL = (
-    'email_endjob', 'email_full',
+    'email_endjob', 'email_cats', 'email_full',
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_dir', 'email_rss'
 )
-LIST_GROWL = ('growl_enable', 'growl_server', 'growl_password',
+LIST_GROWL = ('growl_enable', 'growl_cats', 'growl_server', 'growl_password',
               'growl_prio_startup', 'growl_prio_download', 'growl_prio_pp', 'growl_prio_complete', 'growl_prio_failed',
               'growl_prio_disk_full', 'growl_prio_warning', 'growl_prio_error', 'growl_prio_queue_done', 'growl_prio_other',
               'growl_prio_new_login')
-LIST_NCENTER = ('ncenter_enable',
+LIST_NCENTER = ('ncenter_enable', 'ncenter_cats',
                 'ncenter_prio_startup', 'ncenter_prio_download', 'ncenter_prio_pp', 'ncenter_prio_complete', 'ncenter_prio_failed',
                 'ncenter_prio_disk_full', 'ncenter_prio_warning', 'ncenter_prio_error', 'ncenter_prio_queue_done', 'ncenter_prio_other',
                 'ncenter_prio_new_login')
-LIST_ACENTER = ('acenter_enable',
+LIST_ACENTER = ('acenter_enable', 'acenter_cats',
                 'acenter_prio_startup', 'acenter_prio_download', 'acenter_prio_pp', 'acenter_prio_complete', 'acenter_prio_failed',
                 'acenter_prio_disk_full', 'acenter_prio_warning', 'acenter_prio_error', 'acenter_prio_queue_done', 'acenter_prio_other',
                 'acenter_prio_new_login')
-LIST_NTFOSD = ('ntfosd_enable',
+LIST_NTFOSD = ('ntfosd_enable', 'ntfosd_cats',
                'ntfosd_prio_startup', 'ntfosd_prio_download', 'ntfosd_prio_pp', 'ntfosd_prio_complete', 'ntfosd_prio_failed',
                'ntfosd_prio_disk_full', 'ntfosd_prio_warning', 'ntfosd_prio_error', 'ntfosd_prio_queue_done', 'ntfosd_prio_other',
                'ntfosd_prio_new_login')
-LIST_PROWL = ('prowl_enable', 'prowl_apikey',
+LIST_PROWL = ('prowl_enable', 'prowl_cats', 'prowl_apikey',
               'prowl_prio_startup', 'prowl_prio_download', 'prowl_prio_pp', 'prowl_prio_complete', 'prowl_prio_failed',
               'prowl_prio_disk_full', 'prowl_prio_warning', 'prowl_prio_error', 'prowl_prio_queue_done', 'prowl_prio_other',
               'prowl_prio_new_login')
-LIST_PUSHOVER = ('pushover_enable', 'pushover_token', 'pushover_userkey', 'pushover_device',
+LIST_PUSHOVER = ('pushover_enable', 'pushover_cats', 'pushover_token', 'pushover_userkey', 'pushover_device',
                  'pushover_prio_startup', 'pushover_prio_download', 'pushover_prio_pp', 'pushover_prio_complete', 'pushover_prio_failed',
                  'pushover_prio_disk_full', 'pushover_prio_warning', 'pushover_prio_error', 'pushover_prio_queue_done', 'pushover_prio_other',
                  'pushover_prio_new_login')
-LIST_PUSHBULLET = ('pushbullet_enable', 'pushbullet_apikey', 'pushbullet_device',
+LIST_PUSHBULLET = ('pushbullet_enable', 'pushbullet_cats', 'pushbullet_apikey', 'pushbullet_device',
                    'pushbullet_prio_startup', 'pushbullet_prio_download', 'pushbullet_prio_pp', 'pushbullet_prio_complete', 'pushbullet_prio_failed',
                    'pushbullet_prio_disk_full', 'pushbullet_prio_warning', 'pushbullet_prio_error', 'pushbullet_prio_queue_done', 'pushbullet_prio_other',
                    'pushbullet_prio_new_login')
-LIST_NSCRIPT = ('nscript_enable', 'nscript_script', 'nscript_parameters',
+LIST_NSCRIPT = ('nscript_enable', 'nscript_cats', 'nscript_script', 'nscript_parameters',
                 'nscript_prio_startup', 'nscript_prio_download', 'nscript_prio_pp', 'nscript_prio_complete', 'nscript_prio_failed',
                 'nscript_prio_disk_full', 'nscript_prio_warning', 'nscript_prio_error', 'nscript_prio_queue_done', 'nscript_prio_other',
                 'nscript_prio_new_login')
@@ -2749,6 +2749,7 @@ class ConfigNotify(object):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf['my_home'] = sabnzbd.DIR_HOME
+        conf['categories'] = list_cats(False)
         conf['lastmail'] = self.__lastmail
         conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.notifier.have_ntfosd()

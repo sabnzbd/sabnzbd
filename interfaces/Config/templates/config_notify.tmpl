@@ -13,6 +13,18 @@
     <!--#end for#-->
 <!--#end def#-->
 
+<!--#def show_cat_box($section_label)#-->
+    <div class="col2-cats" <!--#if int($getVar($section_label + '_enable')) > 0 then '' else 'style="display:none"'#-->>
+        <hr>
+        <b>$T('affectedCat')</b><br/>
+        <select name="${section_label}_cats" multiple="multiple" class="multiple_cats">
+            <!--#for $ct in $categories#-->
+                <option value="$ct" <!--#if $ct in $getVar($section_label + '_cats') then 'selected="selected"' else ""#-->>$Tspec($ct)</option>
+            <!--#end for#-->
+        </select>
+    </div>
+<!--#end def#-->
+
 <div class="colmask">
     <form action="saveEmail" method="post" name="fullform" class="fullform" autocomplete="off" novalidate>
     <input type="hidden" id="session" name="session" value="$session" />
@@ -20,7 +32,15 @@
     <div class="section" id="email">
         <div class="col2">
             <h3>$T('cmenu-email') <a href="$helpuri$help_uri#toc0" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-        </div><!-- /col2 -->
+            <div class="col2-cats" <!--#if int($email_endjob) > 0 then '' else 'style="display:none"'#-->>
+                <b>$T('affectedCat')</b><br/>
+                <select name="email_cats" multiple="multiple" class="multiple_cats">
+                    <!--#for $ct in $categories#-->
+                        <option value="$ct" <!--#if $ct in $email_cats then 'selected="selected"' else ""#-->>$Tspec($ct)</option>
+                    <!--#end for#-->
+                </select>
+            </div>
+        </div>
         <div class="col1">
             <fieldset>
                 <div class="field-pair">
@@ -79,8 +99,8 @@
                     <div class="alert"></div>
                 </div>
             </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
+        </div>
+    </div>
     <!--#if $have_ncenter#-->
     <div class="section">
         <div class="col2">
@@ -91,7 +111,7 @@
                     <td><label for="ncenter_enable"> $T('opt-ncenter_enable')</label></td>
                 </tr>
             </table>
-        </div><!-- /col2 -->
+        </div>
         <div class="col1" <!--#if int($ncenter_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('ncenter')
@@ -103,8 +123,8 @@
                     <div class="alert"></div>
                 </div>
            </fieldset>
-       </div><!-- /col1 -->
-    </div><!-- /section -->
+       </div>
+    </div>
     <!--#end if#-->
     <!--#if $nt#-->
     <div class="section">
@@ -116,7 +136,8 @@
                     <td><label for="acenter_enable"> $T('opt-acenter_enable')</label></td>
                 </tr>
             </table>
-        </div><!-- /col2 -->
+            $show_cat_box('acenter')
+        </div>
         <div class="col1" <!--#if int($acenter_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('acenter')
@@ -128,8 +149,8 @@
                     <div class="alert"></div>
                 </div>
            </fieldset>
-       </div><!-- /col1 -->
-    </div><!-- /section -->
+       </div>
+    </div>
     <!--#end if#-->
     <!--#if $have_ntfosd#-->
     <div class="section">
@@ -141,7 +162,8 @@
                     <td><label for="ntfosd_enable"> $T('opt-ntfosd_enable')</label></td>
                 </tr>
             </table>
-        </div><!-- /col2 -->
+            $show_cat_box('ntfosd')
+        </div>
         <div class="col1" <!--#if int($ntfosd_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('ntfosd')
@@ -153,8 +175,8 @@
                     <div class="alert"></div>
                 </div>
            </fieldset>
-       </div><!-- /col1 -->
-    </div><!-- /section -->
+       </div>
+    </div>
     <!--#end if#-->
     <div class="section" id="growl">
         <div class="col2">
@@ -165,7 +187,8 @@
                     <td><label for="growl_enable"> $T('opt-growl_enable')</label></td>
                 </tr>
             </table>
-        </div><!-- /col2 -->
+            $show_cat_box('growl')
+        </div>
         <div class="col1" <!--#if int($growl_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
@@ -187,8 +210,8 @@
                     <div class="alert"></div>
                 </div>
            </fieldset>
-       </div><!-- /col1 -->
-    </div><!-- /section -->
+       </div>
+    </div>
     <div class="section" id="prowl">
         <div class="col2">
             <h3>$T('section-Prowl')</h3>
@@ -199,7 +222,8 @@
                 </tr>
             </table>
             <em>$T('explain-prowl_enable')</em>
-        </div><!-- /col2 -->
+            $show_cat_box('prowl')
+        </div>
         <div class="col1" <!--#if int($prowl_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
@@ -231,8 +255,8 @@
                     <div class="alert"></div>
                 </div>
             </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
+        </div>
+    </div>
 
     <div class="section" id="pushover">
         <div class="col2">
@@ -244,7 +268,8 @@
                 </tr>
             </table>
             <em>$T('explain-pushover_enable')</em>
-        </div><!-- /col2 -->
+            $show_cat_box('pushover')
+        </div>
         <div class="col1" <!--#if int($pushover_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
@@ -286,8 +311,8 @@
                     <div class="alert"></div>
                 </div>
             </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
+        </div>
+    </div>
     <div class="section" id="pushbullet">
         <div class="col2">
             <h3>$T('section-Pushbullet')</h3>
@@ -298,7 +323,8 @@
                 </tr>
             </table>
             <em>$T('explain-pushbullet_enable')</em>
-        </div><!-- /col2 -->
+            $show_cat_box('pushbullet')
+        </div>
         <div class="col1" <!--#if int($pushbullet_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
@@ -322,19 +348,20 @@
                     <div class="alert"></div>
                 </div>
            </fieldset>
-       </div><!-- /col1 -->
-    </div><!-- /section -->
+       </div>
+    </div>
     <div class="section" id="nscript">
         <div class="col2">
-        <h3>$T('section-NScript')</h3>
-        <table>
-            <tr>
-                <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
-                <td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
-            </tr>
-        </table>
-        <em>$T('explain-nscript_enable')</em>
-        </div><!-- /col2 -->
+            <h3>$T('section-NScript')</h3>
+            <table>
+                <tr>
+                    <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
+                </tr>
+            </table>
+            <em>$T('explain-nscript_enable')</em>
+            $show_cat_box('nscript')
+        </div>
         <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 <div class="field-pair">
@@ -360,8 +387,8 @@
                     <div class="alert"></div>
                 </div>
             </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
+        </div>
+    </div>
     </form>
 </div><!-- /colmask -->
 
@@ -374,10 +401,19 @@
     \$('.col2 input[name$="enable"]').change(function() {
         if(this.checked) {
             \$(this).parents('.section').find('.col1').show()
+            \$(this).parents('.col2').find('.col2-cats').show()
         } else {
             \$(this).parents('.section').find('.col1').hide()
+            \$(this).parents('.col2').find('.col2-cats').hide()
         }
         \$('form').submit()
+    })
+    \$('#email_endjob').change(function() {
+        if(\$(this).val() > 0) {
+            \$(this).parents('.section').find('.col2-cats').show()
+        } else {
+            \$(this).parents('.section').find('.col2-cats').hide()
+        }
     })
 
     /**

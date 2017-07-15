@@ -398,7 +398,7 @@ class NzbQueue(object):
                 self.save(nzo)
 
             if not (quiet or nzo.status in ('Fetching',)):
-                notifier.send_notification(T('NZB added to queue'), nzo.filename, 'download')
+                notifier.send_notification(T('NZB added to queue'), nzo.filename, 'download', nzo.cat)
 
         if not quiet and cfg.auto_sort():
             self.sort_by_avg_age()

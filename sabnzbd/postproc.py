@@ -500,7 +500,7 @@ def process_job(nzo):
             logging.info("Traceback: ", exc_info=True)
             crash_msg = T('see logfile')
         nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
-        notifier.send_notification(T('Download Failed'), filename, 'failed')
+        notifier.send_notification(T('Download Failed'), filename, 'failed', nzo.cat)
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False
@@ -538,10 +538,10 @@ def process_job(nzo):
 
     # Show final status in history
     if all_ok:
-        notifier.send_notification(T('Download Completed'), filename, 'complete')
+        notifier.send_notification(T('Download Completed'), filename, 'complete', nzo.cat)
         nzo.status = Status.COMPLETED
     else:
-        notifier.send_notification(T('Download Failed'), filename, 'failed')
+        notifier.send_notification(T('Download Failed'), filename, 'failed', nzo.cat)
         nzo.status = Status.FAILED
 
     # Log the overall time taken for postprocessing
@@ -623,7 +623,7 @@ def is_parfile(fn):
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
     filename = nzo.final_name
-    notifier.send_notification(T('Post-processing'), filename, 'pp')
+    notifier.send_notification(T('Post-processing'), filename, 'pp', nzo.cat)
     logging.info('Starting verification and repair of %s', filename)
 
     # Get verification status of sets

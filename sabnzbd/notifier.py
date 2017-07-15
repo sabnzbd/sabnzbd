@@ -120,7 +120,7 @@ def check_classes(gtype, section):
 
 
 def get_prio(gtype, section):
-    """ Check if `gtype` is enabled in `section` """
+    """ Check prio of `gtype` in `section` """
     try:
         return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))()
     except TypeError:
@@ -128,20 +128,32 @@ def get_prio(gtype, section):
         return -1000
 
 
-def send_notification(title, msg, gtype):
+def check_cat(section, job_cat):
+    """ Check if `job_cat` is enabled in `section`. * = All """
+    if not job_cat:
+        return True
+    try:
+        section_cats = sabnzbd.config.get_config(section, '%s_cats' % section)()
+        return ('*' in section_cats or job_cat in section_cats)
+    except TypeError:
+        logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
+        return False
+
+
+def send_notification(title, msg, gtype, job_cat=None):
     """ Send Notification message """
     # Notification Center
     if sabnzbd.DARWIN and sabnzbd.cfg.ncenter_enable():
-        if check_classes(gtype, 'ncenter'):
+        if check_classes(gtype, 'ncenter') and check_cat('ncenter', job_cat):
             send_notification_center(title, msg, gtype)
 
     # Windows
     if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
-        if check_classes(gtype, 'acenter'):
+        if check_classes(gtype, 'acenter') and check_cat('acenter', job_cat):
             send_windows(title, msg, gtype)
 
     # Growl
-    if sabnzbd.cfg.growl_enable() and check_classes(gtype, 'growl'):
+    if sabnzbd.cfg.growl_enable() and check_classes(gtype, 'growl') and check_cat('growl', job_cat):
         if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
             return send_local_growl(title, msg, gtype)
         else:
@@ -149,32 +161,33 @@ def send_notification(title, msg, gtype):
             time.sleep(0.5)
 
     # Prowl
-    if sabnzbd.cfg.prowl_enable():
+    if sabnzbd.cfg.prowl_enable() and check_cat('prowl', job_cat):
         if sabnzbd.cfg.prowl_apikey():
             Thread(target=send_prowl, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # Pushover
-    if sabnzbd.cfg.pushover_enable():
+    if sabnzbd.cfg.pushover_enable() and check_cat('pushover', job_cat):
         if sabnzbd.cfg.pushover_token():
             Thread(target=send_pushover, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # Pushbullet
-    if sabnzbd.cfg.pushbullet_enable():
+    if sabnzbd.cfg.pushbullet_enable() and check_cat('pushbullet', job_cat):
         if sabnzbd.cfg.pushbullet_apikey() and check_classes(gtype, 'pushbullet'):
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # Notification script.
-    if sabnzbd.cfg.nscript_enable():
+    if sabnzbd.cfg.nscript_enable() and check_cat('nscript', job_cat):
         if sabnzbd.cfg.nscript_script():
             Thread(target=send_nscript, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # NTFOSD
-    if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
-        send_notify_osd(title, msg)
+    if have_ntfosd() and sabnzbd.cfg.ntfosd_enable():
+        if check_classes(gtype, 'ntfosd') and check_cat('ntfosd', job_cat):
+            send_notify_osd(title, msg)
 
 
 def reset_growl():
