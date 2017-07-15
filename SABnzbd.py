@@ -428,9 +428,6 @@ def print_modules():
     else:
         logging.error(T('par2 binary... NOT found!'))
 
-    if sabnzbd.newsunpack.PAR2C_COMMAND:
-        logging.info("par2cmdline binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
-
     if sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
 

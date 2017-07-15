@@ -73,7 +73,6 @@ FULLVOLPAR2_RE = re.compile(r'(.*[^.])(\.*vol[0-9]+\+[0-9]+\.par2)', re.I)
 TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
 
 PAR2_COMMAND = None
-PAR2C_COMMAND = None
 MULTIPAR_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
@@ -95,7 +94,6 @@ def find_programs(curdir):
             return None
 
     if sabnzbd.DARWIN:
-        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'osx/par2/par2-classic')
         sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl64')
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'osx/unrar/unrar')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'osx/7zip/7za')
@@ -103,15 +101,13 @@ def find_programs(curdir):
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
             # 64 bit versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/x64/par2.exe')
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/par2/multipar/par2j64.exe')
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/x64/UnRAR.exe')
         else:
             # 32 bit versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/par2/multipar/par2j.exe')
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/UnRAR.exe')
-        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2cmdline.exe')
+        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
         sabnzbd.newsunpack.ZIP_COMMAND = check(curdir, 'win/unzip/unzip.exe')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'win/7zip/7za.exe')
     else:
@@ -127,9 +123,6 @@ def find_programs(curdir):
             sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
         if not sabnzbd.newsunpack.SEVEN_COMMAND:
             sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7z')
-
-    if not sabnzbd.newsunpack.PAR2C_COMMAND:
-        sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
         # Run check on rar version
@@ -1150,33 +1143,17 @@ _RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
 _RE_LOADED_PAR2 = re.compile(r'Loaded (\d+) new packets')
 
 
-def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
+def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
     """ Run par2 on par-set """
-    retry_classic = False
     used_joinables = []
     used_for_repair = []
     extra_par2_name = None
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
     start = time.time()
+
     options = cfg.par_option().strip()
-
-    classic = classic or not cfg.par2_multicore()
-    tbb = sabnzbd.WIN32 and not classic
-
-    if tbb and options:
-        command = [str(PAR2_COMMAND), 'r', options, parfile]
-    else:
-        if classic:
-            command = [str(PAR2C_COMMAND), 'r', parfile]
-        else:
-            command = [str(PAR2_COMMAND), 'r', parfile]
-
-        # Allow options if not classic or when classic and non-classic are the same
-        if (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
-            command.insert(2, options)
-
-    logging.debug('Par2-classic/cmdline = %s', classic)
+    command = [str(PAR2_COMMAND), 'r', options, parfile]
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
@@ -1197,7 +1174,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath
     # Only if we're not doing multicore
-    if not tbb:
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         par2text = run_simple([command[0], '-h'])
         if 'No data skipping' in par2text:
             logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
@@ -1210,13 +1187,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     stup, need_shell, command, creationflags = build_command(command)
 
     # par2multicore wants to see \\.\ paths on Windows
-    # But par2cmdline doesn't support that notation, or \\?\ notation
     # See: https://github.com/sabnzbd/sabnzbd/pull/771
-    if sabnzbd.WIN32 and (tbb or has_win_device(parfile)):
+    if sabnzbd.WIN32:
         command = [x.replace('\\\\?\\', '\\\\.\\', 1) if x.startswith('\\\\?\\') else x for x in command]
-    elif sabnzbd.WIN32:
-        # For par2cmdline on Windows we need clipped paths
-        command = [clip_path(x) if x.startswith('\\\\?\\') else x for x in command]
 
     # Run the external command
     logging.debug('Starting par2: %s', command)
@@ -1345,22 +1318,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.status = Status.FAILED
 
             elif line.startswith('You need'):
-                # Because par2cmdline doesn't handle split files correctly
-                # if there are joinables, let's join them first and try again
-                # Only when in the par2-detection also only 1 output-file was mentioned
-                if joinables and len(datafiles) == 1:
-                    error, newf = file_join(nzo, parfolder, parfolder, True, joinables)
-                    # Only do it again if we had a good join
-                    if newf:
-                        retry_classic = True
-                        # Save the renames in case of retry
-                        for jn in joinables:
-                            renames[datafiles[0]] = os.path.split(jn)[1]
-                        joinables = []
-                        # Need to set it to 1 so the renames get saved
-                        finished = 1
-                        break
-
                 chunks = line.split()
                 needed_blocks = int(chunks[2])
                 avail_blocks = 0
@@ -1466,27 +1423,20 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                         logging.debug('PAR2 will reconstruct "%s" from "%s"', new_name, old_name)
                         reconstructed.append(os.path.join(workdir, old_name))
 
-            elif 'Could not write' in line and 'at offset 0:' in line and not classic:
+            elif 'Could not write' in line and 'at offset 0:' in line:
                 # If there are joinables, this error will only happen in case of 100% complete files
                 # We can just skip the retry, because par2cmdline will fail in those cases
                 # becauses it refuses to scan the ".001" file
                 if joinables:
                     finished = 1
                     used_joinables = []
-                else:
-                    # Hit a bug in par2-tbb, retry with par2-classic
-                    retry_classic = sabnzbd.WIN32
 
             elif ' cannot be renamed to ' in line:
-                if not classic and sabnzbd.WIN32:
-                    # Hit a bug in par2-tbb, retry with par2-classic
-                    retry_classic = True
-                else:
-                    msg = unicoder(line.strip())
-                    nzo.fail_msg = msg
-                    msg = u'[%s] %s' % (unicoder(setname), msg)
-                    nzo.set_unpack_info('Repair', msg)
-                    nzo.status = Status.FAILED
+                msg = unicoder(line.strip())
+                nzo.fail_msg = msg
+                msg = u'[%s] %s' % (unicoder(setname), msg)
+                nzo.set_unpack_info('Repair', msg)
+                nzo.status = Status.FAILED
 
             elif 'There is not enough space on the disk' in line:
                 # Oops, disk is full!
@@ -1553,11 +1503,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
         p.wait()
     except WindowsError, err:
-        if err[0] == '87' and not classic:
-            # Hit a bug in par2-tbb, retry with par2-classic
-            retry_classic = True
-        else:
-            raise WindowsError(err)
+        raise WindowsError(err)
 
     logging.debug('PAR2 output was\n%s', '\n'.join(lines))
 
@@ -1570,15 +1516,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         # Use 'used_joinables' as a vehicle to get rid of the files
         used_joinables.extend(reconstructed)
 
-    if retry_classic:
-        logging.debug('Retry PAR2-joining with par2-classic/cmdline')
-        return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True, single=single)
-    else:
-        return finished, readd, pars, datafiles, used_joinables, used_for_repair
+    return finished, readd, pars, datafiles, used_joinables, used_for_repair
 
 _RE_FILENAME = re.compile(r'"([^"]+)"')
 
-def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
+def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
     """ Run par2 on par-set """
     parfolder = os.path.split(parfile)[0]
     used_joinables = []
