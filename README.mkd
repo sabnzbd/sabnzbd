@@ -1,4 +1,4 @@
-Release Notes  -  SABnzbd 2.2.0 Alpha 2
+Release Notes  -  SABnzbd 2.2.0 Alpha 3
 =========================================================
 
 NOTE: Due to changes in this release, the queue will be converted when 2.2.0
@@ -6,41 +6,46 @@ is started for the first time. Job order, settings and data will be
 preserved, but all jobs will be unpaused and URL's that did not finish
 fetching before the upgrade will be lost!
 
-We now also accept donations via Bitcoin, Ethereum and Litecoin:
-https://sabnzbd.org/donate/
-
-## Changes since Alpha 1
+## Changes since 2.1.0
+- Direct Unpack: Jobs will start unpacking during the download, reduces
+  post-processing time but requires capable hard drive. Only works for jobs that
+  do not need repair. Will be enabled if your incomplete folder-speed > 60MB/s
+- Reduced memory usage, especially with larger queues
+- Removed 5 second delay between fetching URLs
+- Notifications can now be limited to certain Categories
+- Each item in the Queue and Filelist now has Move to Top/Bottom buttons
+- Smoother animations in Firefox (disabled previously due to FF high-CPU usage)
+- Jobs outside server retention are processed faster
 - Show missing articles in MB instead of number of articles
-- 'Download all par2' will download all par2 if par_cleanup is disabled
-- Windows: Move enable_multipar to Specials (so MultiPar is always used)
+- Obfuscated filenames are renamed during downloading, if possible
+- If enable_par_cleanup is disabled all par2 files be downloaded
+- If enabled, replace dots in filenames also when there are spaces already
+- Update GNTP bindings to 1.0.3
+- max_art_opt and replace_illegal moved from Switches to Specials
+- Removed Specials enable_meta, par2_multicore and allow_streaming
+- Windows: Full unicode support when calling repair and unpack
+- Windows: Move enable_multipar to Specials
 - Windows: Better indication of verification process before and after repair
 - Windows: MultiPar verification of a job is skipped after blocks are fetched
+- Windows & macOS: removed par2cmdline in favor of par2tbb/Multipar
 
-## Bugfixes since Alpha 1
+## Bugfixes since 2.1.0
+- Shutdown/suspend did not work on some Linux systems
+- Deleting a job could result in write errors
+- Display warning if custom par2 parameters are wrong
+- RSS URLs with commas were broken
 - Fixed some "Saving failed" errors
 - Fixed crashing URLGrabber
+- Jobs with renamed files are now correctly handled when using Retry
 - Disk-space readings could be updated incorrectly
 - Correct redirect after enabling HTTPS in the Config
 - Fix race-condition in Post-processing
 - History would not always show latest changes
 - Convert HTML in error messages
+- Fixed unicode error during Sorting
 - Not all texts were shown in the selected Language
-
-
-## Changes in 2.2.0
-- Reduced memory usage, especially with larger queues
-- Slight improvement in download performance by removing internal locks
-- Smoother animations in Firefox (disabled previously due to FF high-CPU usage)
-- If enabled, replace dots in filenames also when there are spaces already
-- Jobs outside server retention are processed faster
-- max_art_opt and replace_illegal moved from Switches to Specials
-
-## Bugfixes in 2.2.0
-- Shutdown/suspend did not work on some Linux systems
-- Deleting a job could result in write errors
-- Display warning if custom par2 parameters are wrong
-- macOS: Catch 'Protocol wrong type for socket' errors
 - Windows: Fix error in MultiPar-code when first par2-file was damaged
+- macOS: Catch 'Protocol wrong type for socket' errors
 
 ## Translations
 - Added Hebrew translation by ION IL, many other languages updated.
