@@ -27,6 +27,7 @@ import shutil
 import time
 import random
 from hashlib import md5
+from urlparse import urlparse
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
 from sabnzbd.utils import configobj
@@ -977,6 +978,21 @@ def define_rss():
 def get_rss():
     global database
     try:
+        # We have to remove non-seperator commas by detecting if they are valid URL's
+        for feed_key in database['rss']:
+            feed = database['rss'][feed_key]
+            # Create a new corrected list
+            new_feed_uris = []
+            for feed_uri in feed.uri():
+                if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
+                    # Current one has no scheme but previous one does, append to previous
+                    new_feed_uris[-1] += '%2C' + feed_uri
+                    continue
+                # Add full working URL
+                new_feed_uris.append(feed_uri)
+            # Set new list
+            feed.uri.set(new_feed_uris)
+
         return database['rss']
     except KeyError:
         return {}
