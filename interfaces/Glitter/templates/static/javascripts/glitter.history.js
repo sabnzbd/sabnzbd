@@ -328,16 +328,14 @@ function HistoryModel(parent, data) {
             case 'speed':
                 // Anything to calculate?
                 if(self.historyStatus.bytes() > 0 && self.historyStatus.download_time() > 0) {
-                    var theSpeed = self.historyStatus.bytes()/self.historyStatus.download_time();
-                    theSpeed = theSpeed/1024;
-
-                    // MB/s or KB/s
-                    if(theSpeed > 1024) {
-                        theSpeed = theSpeed/1024;
-                        return theSpeed.toFixed(1) + ' MB/s'
-                    } else {
-                        return Math.round(theSpeed) + ' KB/s'
-                    }
+                    try {
+                        // Extract the Download section
+                        var downloadLog = ko.utils.arrayFirst(self.historyStatus.stage_log(), function(item) {
+                            return item.name() == 'Download'
+                        });
+                        // Extract the speed
+                        return downloadLog.actions()[0].match(/(\S*\s\S+)(?=<br\/>)/)[0]
+                    } catch(err) { }
                 }
                 return;
             case 'category':
