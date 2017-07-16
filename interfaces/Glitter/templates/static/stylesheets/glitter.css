@@ -617,6 +617,7 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name .name-options small,
+.queue-table td.name .direct-unpack,
 .queue-item-password {
     opacity: 0.5;
 }
@@ -1885,6 +1886,11 @@ input[name="nzbURL"] {
 
     .queue .sortable-placeholder td {
         padding: 9px 0px 8px !important;
+    }
+
+    .queue-table .buttonMoveToBottom,
+    .queue-table .buttonMoveToTop {
+        display: inline;
     }
 }
 
