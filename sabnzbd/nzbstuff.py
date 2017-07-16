@@ -60,6 +60,8 @@ SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
 REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I)  # Reject duplicate par2 files
 RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$')  # Test reasonably sized extension at the end
+RE_QUICK_PAR2_CHECK = re.compile(r'\.par2\W*', re.I)
+RE_RAR = re.compile(r'(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$', re.I)
 
 
 ##############################################################################
@@ -908,8 +910,8 @@ class NzbObject(TryList):
         if not self.password and self.meta.get('password'):
             self.password = self.meta.get('password', [None])[0]
 
-        # Set nzo save-delay to minimum 30 seconds
-        self.save_timeout = max(30, min(6.0 * float(self.bytes) / GIGI, 300.0))
+        # Set nzo save-delay to minimum 120 seconds
+        self.save_timeout = max(120, min(6.0 * float(self.bytes) / GIGI, 300.0))
 
         # In case pre-queue script or duplicate check want to move
         # to history we first need an nzo_id by entering the NzbQueue
@@ -1230,8 +1232,6 @@ class NzbObject(TryList):
             if self.partable and _set in self.partable and self.partable[_set] and parfile in self.partable[_set].extrapars:
                 self.partable[_set].extrapars.remove(parfile)
 
-    __re_quick_par2_check = re.compile(r'\.par2\W*', re.I)
-
     @synchronized(NZO_LOCK)
     def prospective_add(self, nzf):
         """ Add par2 files to compensate for missing articles
@@ -1294,7 +1294,7 @@ class NzbObject(TryList):
             nzf = self.files_table[nzf_id]
             if nzf.deleted:
                 short += nzf.bytes_left
-            if self.__re_quick_par2_check.search(nzf.subject):
+            if RE_QUICK_PAR2_CHECK.search(nzf.subject):
                 pars += nzf.bytes
                 anypars = True
             else:
@@ -1767,8 +1767,6 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
 
     if name:
         # Prioritize .rar files above any other type of file (other than vol-par)
-        # Useful for nzb streaming
-        RE_RAR = re.compile(r'(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$', re.I)
         m1 = RE_RAR.search(name1)
         m2 = RE_RAR.search(name2)
         if m1 and not (is_par2 or m2):
