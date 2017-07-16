@@ -73,9 +73,6 @@ class URLGrabber(Thread):
         self.shutdown = False
 
         while not self.shutdown:
-            # Don't pound the website!
-            time.sleep(5.0)
-
             (url, future_nzo) = self.queue.get()
 
             if not url:
