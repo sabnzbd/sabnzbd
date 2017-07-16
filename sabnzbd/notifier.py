@@ -136,8 +136,8 @@ def check_cat(section, job_cat):
         section_cats = sabnzbd.config.get_config(section, '%s_cats' % section)()
         return ('*' in section_cats or job_cat in section_cats)
     except TypeError:
-        logging.debug('Incorrect Notify option %s:%s_prio_%s', section, section, gtype)
-        return False
+        logging.debug('Incorrect Notify option %s:%s_cats', section, section)
+        return True
 
 
 def send_notification(title, msg, gtype, job_cat=None):
