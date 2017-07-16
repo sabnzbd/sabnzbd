@@ -795,6 +795,10 @@ tr.queue-item>td:first-child>a {
     padding-right: 0px;
 }
 
+.progress .progress-bar .fileDetails>span {
+    float: left;
+}
+
 .progress strong {
     font-size: 13px;
 }
@@ -1649,6 +1653,7 @@ input[name="nzbURL"] {
 
 #modal-item-files .item-files-table .progress small {
     color: #727272 !important;
+    margin-left: 5px;
 }
 
 #modal-item-files .item-files-table tr.files-sortable:hover .progress small {
