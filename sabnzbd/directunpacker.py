@@ -288,7 +288,7 @@ class DirectUnpacker(threading.Thread):
                            '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
         else:
             # Don't use "-ai" (not needed for non-Windows)
-            command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', rename, password_command,
+            command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', password_command,
                        '%s' % rarfile_path, '%s/' % extraction_path]
 
         if cfg.ignore_unrar_dates():
