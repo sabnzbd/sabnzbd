@@ -167,12 +167,10 @@ class DirectUnpacker(threading.Thread):
                 break
 
             # Error? Let PP-handle it
-            if linebuf.endswith('Cannot create') or linebuf.endswith('in the encrypted file') or \
-                    linebuf.endswith('CRC failed') or linebuf.endswith('checksum failed') or \
-                    linebuf.endswith('You need to start extraction from a previous volume') or \
-                    linebuf.endswith('password is incorrect') or linebuf.endswith('Write error') or \
-                    linebuf.endswith('checksum error') or linebuf.endswith('ERROR: ') or \
-                    linebuf.endswith('start extraction from a previous volume'):
+            if linebuf.endswith(('ERROR: ', 'Cannot create', 'in the encrypted file', 'CRC failed', \
+                    'checksum failed', 'You need to start extraction from a previous volume',  \
+                    'password is incorrect', 'Write error', 'checksum error', \
+                    'start extraction from a previous volume')):
                 logging.info('Error in DirectUnpack of %s', self.cur_setname)
                 self.abort()
 
