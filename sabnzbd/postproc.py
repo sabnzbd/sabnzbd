@@ -564,6 +564,7 @@ def prepare_extraction_path(nzo):
         Seperated so it can be called from DirectUnpacker
     """
     one_folder = False
+    marker_file = None
     # Determine class directory
     catdir = config.get_categories(nzo.cat).dir()
     if catdir.endswith('*'):
@@ -587,7 +588,7 @@ def prepare_extraction_path(nzo):
         marker_file = set_marker(workdir_complete)
 
     if not workdir_complete or not os.path.exists(workdir_complete):
-        crash_msg = T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, nzo.final_name))
+        logging.error(T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, nzo.final_name)))
         raise IOError
 
     if cfg.folder_rename() and not one_folder:
