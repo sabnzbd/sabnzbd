@@ -377,3 +377,4 @@ def test_disk_performance():
         cfg.direct_unpack.set(True)
         logging.warning(T('Enabled Direct Unpack:') + ' ' + T('Jobs will start unpacking during the download, reduces post-processing time but requires capable hard drive. Only works for jobs that do not need repair.'))
     cfg.direct_unpack_tested.set(True)
+    config.save_config()

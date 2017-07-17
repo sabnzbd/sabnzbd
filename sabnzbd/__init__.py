@@ -308,6 +308,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     if cfg.sched_converted() != 2:
         cfg.schedules.set(['%s %s' % (1, schedule) for schedule in cfg.schedules()])
         cfg.sched_converted.set(2)
+        config.save_config()
 
     if check_repair_request():
         repair = 2

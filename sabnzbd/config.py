@@ -852,6 +852,7 @@ def save_config(force=False):
 
     # Write new config file
     try:
+        logging.info('Writing settings to INI file %s', filename)
         CFG.write()
         shutil.copymode(bakname, filename)
         modified = False

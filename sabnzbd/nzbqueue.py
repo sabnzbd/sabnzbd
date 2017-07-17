@@ -111,6 +111,7 @@ class NzbQueue(object):
             if sabnzbd.OLD_QUEUE and cfg.warned_old_queue() < QUEUE_VERSION:
                 logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
                 cfg.warned_old_queue.set(QUEUE_VERSION)
+                sabnzbd.config.save_config()
         else:
             # Try to process
             try:
@@ -142,6 +143,7 @@ class NzbQueue(object):
 
             # Done converting
             cfg.converted_nzo_pickles.set(True)
+            sabnzbd.config.save_config()
             nzo_ids = []
         return nzo_ids
 
