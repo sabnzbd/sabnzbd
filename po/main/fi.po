@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-06-26 23:00+0000\n"
+"POT-Creation-Date: 2017-07-16 12:42+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-06-27 06:01+0000\n"
-"X-Generator: Launchpad (build 18416)\n"
+"X-Launchpad-Export-Date: 2017-07-17 05:26+0000\n"
+"X-Generator: Launchpad (build 18419)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -428,12 +428,32 @@ msgid "Unknown Error while decoding %s"
 msgstr "Tuntematon virhe dekoodattaessa %s"
 
 #: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr "UUencode-koodaus havaittiin, vain yEnc-koodausta tuetaan [%s]"
+
+#: sabnzbd/decoder.py
 msgid "%s => missing from all servers, discarding"
 msgstr "%s => puuttuu kaikilta palvelimilta, hylätään"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode-koodaus havaittiin, vain yEnc-koodausta tuetaan [%s]"
+#: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
+msgid "Unpacking"
+msgstr "Puretaan"
+
+#: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
+msgid "Unpacked %s files/folders in %s"
+msgstr "Purettiin %s tiedostoa/kansiota kohteeseen %s"
+
+#: sabnzbd/directunpacker.py [Warning message]
+msgid "Enabled Direct Unpack:"
+msgstr ""
+
+#: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
+msgid ""
+"Jobs will start unpacking during the download, reduces post-processing time "
+"but requires capable hard drive. Only works for jobs that do not need repair."
+msgstr ""
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error removing %s"
@@ -807,8 +827,6 @@ msgstr "Virhe \"%s\" ajettaessa rar_unpack kohteelle %s"
 #: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
 #: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
 #: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
-#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
-#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
 #: sabnzbd/newsunpack.py [Warning message]
 msgid "Deleting %s failed!"
 msgstr "Kohteen %s poisto epäonnistui!"
@@ -821,11 +839,6 @@ msgstr "Yritetään purkaa rar arkistoa salasanalla \"%s\""
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
 msgstr "Purkaminen epäonnistui, arkisto vaatii salasanan"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Unpacking"
-msgstr "Puretaan"
 
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP phase "unpack"]
 msgid "Unpack"
@@ -887,10 +900,6 @@ msgstr "Käyttökelvoton RAR arkisto"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
 msgstr "Korruptoitunut RAR arkisto"
-
-#: sabnzbd/newsunpack.py
-msgid "Unpacked %s files/folders in %s"
-msgstr "Purettiin %s tiedostoa/kansiota kohteeseen %s"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "%s files in %s"
@@ -1491,10 +1500,6 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Lataus epäonnistui - Ei ole palvelimilla"
 
 #: sabnzbd/postproc.py
-msgid "Cannot create final folder %s"
-msgstr "Ei voitu luoda lopullista kansiota %s"
-
-#: sabnzbd/postproc.py
 msgid "No post-processing because of failed verification"
 msgstr "Jälkikäsittelyä ei suoritettu, koska varmennus epäonnistui"
 
@@ -1557,6 +1562,10 @@ msgstr "Virhe poistettaessa työkansiota (%s)"
 #: sabnzbd/postproc.py
 msgid "Download Completed"
 msgstr "Lataus valmistui"
+
+#: sabnzbd/postproc.py
+msgid "Cannot create final folder %s"
+msgstr "Ei voitu luoda lopullista kansiota %s"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
@@ -3193,6 +3202,10 @@ msgid "Automatically sort items by (average) age."
 msgstr "Järjestelee kohteet (keskimääräisen) iän mukaan."
 
 #: sabnzbd/skintext.py
+msgid "Direct Unpack"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
@@ -4148,7 +4161,7 @@ msgstr "NZB tietojen muokkaus"
 msgid "Delete"
 msgstr "Poista"
 
-#: sabnzbd/skintext.py [Job details page, move file to top]
+#: sabnzbd/skintext.py [Job details page, move file to top] # sabnzbd/skintext.py
 msgid "Top"
 msgstr "Ylin"
 
@@ -4160,7 +4173,7 @@ msgstr "Ylös"
 msgid "Down"
 msgstr "Alas"
 
-#: sabnzbd/skintext.py [Job details page, move file to bottom]
+#: sabnzbd/skintext.py [Job details page, move file to bottom] # sabnzbd/skintext.py
 msgid "Bottom"
 msgstr "Alin"
 

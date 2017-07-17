@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-06-26 23:00+0000\n"
+"POT-Creation-Date: 2017-07-16 12:42+0000\n"
 "PO-Revision-Date: 2015-12-28 10:22+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-06-27 06:01+0000\n"
-"X-Generator: Launchpad (build 18416)\n"
+"X-Launchpad-Export-Date: 2017-07-17 05:26+0000\n"
+"X-Generator: Launchpad (build 18419)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -424,11 +424,31 @@ msgid "Unknown Error while decoding %s"
 msgstr "Nieznany błąd podczas dekodowania %s"
 
 #: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr ""
+
+#: sabnzbd/decoder.py
 msgid "%s => missing from all servers, discarding"
 msgstr "%s => nie znaleziono na żadnym serwerze, porzucam"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
+#: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
+msgid "Unpacking"
+msgstr "Rozpakowywanie"
+
+#: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
+msgid "Unpacked %s files/folders in %s"
+msgstr "Rozpakowano %s plików/katalogów w %s"
+
+#: sabnzbd/directunpacker.py [Warning message]
+msgid "Enabled Direct Unpack:"
+msgstr ""
+
+#: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
+msgid ""
+"Jobs will start unpacking during the download, reduces post-processing time "
+"but requires capable hard drive. Only works for jobs that do not need repair."
 msgstr ""
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
@@ -806,8 +826,6 @@ msgstr "Błąd \"%s\" podczas uruchamiania rar_unpack na %s"
 #: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
 #: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
 #: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
-#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
-#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py [Warning message]
 #: sabnzbd/newsunpack.py [Warning message]
 msgid "Deleting %s failed!"
 msgstr "Usuwanie %s nie powiodło się!"
@@ -820,11 +838,6 @@ msgstr "Próba rozpakowania archiwum RAR z użyciem hasła \"%s\""
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Unpacking failed, archive requires a password"
 msgstr "Rozpakowywanie nie powiodło się, archiwum wymaga podania hasła"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Unpacking"
-msgstr "Rozpakowywanie"
 
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP phase "unpack"]
 msgid "Unpack"
@@ -886,10 +899,6 @@ msgstr "Bezużyteczny plik RAR"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
 msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Unpacked %s files/folders in %s"
-msgstr "Rozpakowano %s plików/katalogów w %s"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "%s files in %s"
@@ -1490,10 +1499,6 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Pobieranie nieudane - Dane niedostępne na skonfigurowanych serwerach"
 
 #: sabnzbd/postproc.py
-msgid "Cannot create final folder %s"
-msgstr "Nie można utworzyć ostatecznego katalogu %s"
-
-#: sabnzbd/postproc.py
 msgid "No post-processing because of failed verification"
 msgstr ""
 "Przetwarzanie końcowe nie zostało uruchomione z powodu nieudanej weryfikacji"
@@ -1557,6 +1562,10 @@ msgstr "Błąd usuwania katalogu roboczego (%s)"
 #: sabnzbd/postproc.py
 msgid "Download Completed"
 msgstr "Zakończono pobieranie"
+
+#: sabnzbd/postproc.py
+msgid "Cannot create final folder %s"
+msgstr "Nie można utworzyć ostatecznego katalogu %s"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
@@ -3175,6 +3184,10 @@ msgid "Automatically sort items by (average) age."
 msgstr "Automatycznie sortuj pozycje według wieku (średniego)"
 
 #: sabnzbd/skintext.py
+msgid "Direct Unpack"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
 "Posts will be paused untill they are at least this age. Setting job priority "
 "to Force will skip the delay."
@@ -4121,7 +4134,7 @@ msgstr "Edytuj szczegóły NZB"
 msgid "Delete"
 msgstr "Usuń"
 
-#: sabnzbd/skintext.py [Job details page, move file to top]
+#: sabnzbd/skintext.py [Job details page, move file to top] # sabnzbd/skintext.py
 msgid "Top"
 msgstr "Na górę"
 
@@ -4133,7 +4146,7 @@ msgstr "Wyżej"
 msgid "Down"
 msgstr "Niżej"
 
-#: sabnzbd/skintext.py [Job details page, move file to bottom]
+#: sabnzbd/skintext.py [Job details page, move file to bottom] # sabnzbd/skintext.py
 msgid "Bottom"
 msgstr "Na dół"
 
