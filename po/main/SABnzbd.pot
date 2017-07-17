@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-07-15 13:06+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-07-17 20:10+W. Europe Daylight Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -420,11 +420,11 @@ msgid "Unpacked %s files/folders in %s"
 msgstr ""
 
 #: sabnzbd/directunpacker.py [Warning message]
-msgid "Enabled Direct Unpack:"
+msgid "Direct Unpack was automatically enabled."
 msgstr ""
 
 #: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
-msgid "Jobs will start unpacking during the download, reduces post-processing time but requires capable hard drive. Only works for jobs that do not need repair."
+msgid "Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair."
 msgstr ""
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
@@ -1455,7 +1455,7 @@ msgstr ""
 msgid "Download Completed"
 msgstr ""
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message]
 msgid "Cannot create final folder %s"
 msgstr ""
 

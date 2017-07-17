@@ -375,6 +375,6 @@ def test_disk_performance():
     """
     if diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()) > 60:
         cfg.direct_unpack.set(True)
-        logging.warning(T('Enabled Direct Unpack:') + ' ' + T('Jobs will start unpacking during the download, reduces post-processing time but requires capable hard drive. Only works for jobs that do not need repair.'))
+        logging.warning(T('Direct Unpack was automatically enabled.') + ' ' + T('Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair.'))
     cfg.direct_unpack_tested.set(True)
     config.save_config()
