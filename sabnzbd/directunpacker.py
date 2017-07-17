@@ -342,7 +342,7 @@ class DirectUnpacker(threading.Thread):
         if self.cur_setname and self.cur_setname in self.total_volumes:
             # This won't work on obfuscated posts
             if self.total_volumes[self.cur_setname] > self.cur_volume and self.cur_volume:
-                return '%.0f%%' % (100*float(self.cur_volume)/self.total_volumes[self.cur_setname])
+                return '%02d/%02d' % (self.cur_volume, self.total_volumes[self.cur_setname])
         return self.cur_volume
 
 
