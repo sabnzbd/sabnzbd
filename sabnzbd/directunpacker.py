@@ -21,6 +21,7 @@ sabnzbd.directunpacker
 
 import os
 import re
+import time
 import threading
 import subprocess
 import logging
@@ -60,6 +61,7 @@ class DirectUnpacker(threading.Thread):
         self.cur_setname = None
         self.cur_volume = 0
         self.total_volumes = {}
+        self.unpack_time = 0.0
 
         self.success_sets = []
         self.next_sets = []
@@ -93,7 +95,7 @@ class DirectUnpacker(threading.Thread):
                 found_counter += 1
                 if nzf.setname not in self.total_volumes:
                     self.total_volumes[nzf.setname] = 0
-                self.total_volumes[nzf.setname] += 1
+                self.total_volumes[nzf.setname] = max(self.total_volumes[nzf.setname], nzf.vol)
             else:
                 none_counter += 1
 
@@ -142,7 +144,9 @@ class DirectUnpacker(threading.Thread):
     def run(self):
         # Input and output
         linebuf = ''
+        last_volume_linebuf = ''
         unrar_log = []
+        start_time = time.time()
 
         # Need to read char-by-char because there's no newline after new-disk message
         while 1:
@@ -166,25 +170,28 @@ class DirectUnpacker(threading.Thread):
 
             # Did we reach the end?
             if linebuf.endswith('All OK'):
-                # Add to success
-                self.cur_volume += 1
-                self.success_sets.append(self.cur_setname)
-                logging.info('DirectUnpack completed for %s', self.cur_setname)
+                # Stop timer and finish
+                self.unpack_time += time.time() - start_time
                 ACTIVE_UNPACKERS.remove(self)
 
+                # Add to success
+                self.success_sets.append(self.cur_setname)
+                logging.info('DirectUnpack completed for %s', self.cur_setname)
+
+
+                # Write current log
+                unrar_log.append(linebuf.strip())
+                linebuf = ''
+                logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
+                unrar_log = []
+
                 # Are there more files left?
-                if self.nzo.files:
+                while self.nzo.files and not self.next_sets:
                     with self.next_file_lock:
                         self.next_file_lock.wait()
 
                 # Is there another set to do?
                 if self.next_sets:
-                    # Write current log
-                    unrar_log.append(linebuf.strip())
-                    linebuf = ''
-                    logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
-                    unrar_log = []
-
                     # Start new instance
                     nzf = self.next_sets.pop(0)
                     self.reset_active()
@@ -192,20 +199,32 @@ class DirectUnpacker(threading.Thread):
                     # Wait for the 1st volume to appear
                     self.wait_for_next_volume()
                     self.create_unrar_instance(nzf)
+                    start_time = time.time()
                 else:
+                    self.killed = True
                     break
 
             if linebuf.endswith('[C]ontinue, [Q]uit '):
+                # Stop timer
+                self.unpack_time += time.time() - start_time
+
                 # Wait for the next one..
                 self.wait_for_next_volume()
 
                 # Possible that the instance was deleted while locked
                 if not self.killed:
-                    # Next volume
-                    self.cur_volume += 1
+                    # Give unrar some time to do it's thing
                     self.active_instance.stdin.write('\n')
-                    self.nzo.set_action_line(T('Unpacking'), self.get_formatted_stats())
-                    logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
+                    start_time = time.time()
+                    time.sleep(0.1)
+
+                    # Did we unpack a new volume? Sometimes UnRar hangs on 1 volume
+                    if not last_volume_linebuf or last_volume_linebuf != linebuf:
+                        # Next volume
+                        self.cur_volume += 1
+                        self.nzo.set_action_line(T('Unpacking'), self.get_formatted_stats())
+                        logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
+                    last_volume_linebuf = linebuf
 
             if linebuf.endswith('\n'):
                 unrar_log.append(linebuf.strip())
@@ -217,7 +236,8 @@ class DirectUnpacker(threading.Thread):
 
         # Save information if success
         if self.success_sets:
-            msg = T('Unpacked %s files/folders in %s') % (len(globber(self.unpack_dir_info[0])), format_time_string(0))
+            msg = T('Unpacked %s files/folders in %s') % (len(globber(self.unpack_dir_info[0])), format_time_string(self.unpack_time))
+            msg = '%s - %s' % (T('Direct Unpack'), msg)
             self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
 
         # Make more space
@@ -229,7 +249,7 @@ class DirectUnpacker(threading.Thread):
         """ Check if next volume of set is available, start
             from the end of the list where latest completed files are """
         for nzf_search in reversed(self.nzo.finished_files):
-            if nzf_search.setname == self.cur_setname and nzf_search.vol == self.cur_volume+1:
+            if nzf_search.setname == self.cur_setname and nzf_search.vol == (self.cur_volume+1):
                 return True
         return False
 
@@ -276,10 +296,10 @@ class DirectUnpacker(threading.Thread):
         if cfg.ignore_unrar_dates():
             command.insert(3, '-tsm-')
 
+        # Let's start from the first one!
+        self.cur_volume = 1
         stup, need_shell, command, creationflags = build_command(command)
         logging.debug('Running unrar for DirectUnpack %s', command)
-
-        # Aquire lock and go
         self.active_instance = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                     startupinfo=stup, creationflags=creationflags)

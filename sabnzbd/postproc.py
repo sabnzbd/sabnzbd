@@ -59,25 +59,18 @@ class PostProcessor(Thread):
     """ PostProcessor thread, designed as Singleton """
     do = None  # Link to instance of the thread
 
-    def __init__(self, queue=None, history_queue=None):
-        """ Initialize, optionally passing existing queue """
+    def __init__(self):
+        """ Initialize PostProcessor thread """
         Thread.__init__(self)
 
         # This history queue is simply used to log what active items to display in the web_ui
-        if history_queue:
-            self.history_queue = history_queue
-        else:
-            self.load()
+        self.load()
 
         if self.history_queue is None:
             self.history_queue = []
-
-        if queue:
-            self.queue = queue
-        else:
-            self.queue = Queue.Queue()
-            for nzo in self.history_queue:
-                self.process(nzo)
+        self.queue = Queue.Queue()
+        for nzo in self.history_queue:
+            self.process(nzo)
         self.__stop = False
         self.paused = False
         PostProcessor.do = self
