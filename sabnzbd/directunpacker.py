@@ -371,10 +371,12 @@ def abort_all():
 
 def test_disk_performance():
     """ Test the incomplete-dir performance and enable
-        Direct Unpack if good enough (> 60MB/s)
+        Direct Unpack if good enough (> 40MB/s)
     """
-    if diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()) > 60:
+    if diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()) > 40:
         cfg.direct_unpack.set(True)
         logging.warning(T('Direct Unpack was automatically enabled.') + ' ' + T('Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair.'))
+    else:
+        logging.info('Direct Unpack was not enabled, incomplete folder disk speed below 40MB/s')
     cfg.direct_unpack_tested.set(True)
     config.save_config()
