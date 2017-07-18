@@ -459,7 +459,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
                 if segm != self.article_db[partnum][0]:
                     msg = 'Duplicate part %s, but different ID-s (%s // %s)' % (partnum, self.article_db[partnum][0], segm)
                     logging.info(msg)
-                    self.nzo.inc_log('dup_art_log', msg)
+                    self.nzo.increase_bad_articles_counter('duplicate_articles')
                 else:
                     logging.info("Skipping duplicate article (%s)", segm)
             else:
@@ -555,7 +555,7 @@ NzbObjectSaver = (
     'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
     'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
-    'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted',
+    'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted', 'bad_articles',
     'duplicate', 'oversized', 'precheck', 'incomplete', 'reuse', 'meta',
     'md5sum', 'servercount', 'unwanted_ext', 'renames', 'rating_filtered'
 )
@@ -610,6 +610,7 @@ class NzbObject(TryList):
         self.bytes = 0              # Original bytesize
         self.bytes_downloaded = 0   # Downloaded byte
         self.bytes_tried = 0        # Which bytes did we try
+        self.bad_articles = 0       # How many bad (non-recoverable) articles
         self.repair = r             # True if we want to repair this set
         self.unpack = u             # True if we want to unpack this set
         self.delete = d             # True if we want to delete this set
@@ -1236,13 +1237,6 @@ class NzbObject(TryList):
     def prospective_add(self, nzf):
         """ Add par2 files to compensate for missing articles
         """
-        # How many do we need?
-        bad = len(self.nzo_info.get('bad_art_log', []))
-        miss = len(self.nzo_info.get('missing_art_log', []))
-        killed = len(self.nzo_info.get('killed_art_log', []))
-        dups = len(self.nzo_info.get('dup_art_log', []))
-        total_need = bad + miss + killed + dups
-
         # How many do we already have?
         blocks_already = 0
         for nzf_check in self.files:
@@ -1254,13 +1248,13 @@ class NzbObject(TryList):
         original_filename = self.renames.get(nzf.filename, '')
 
         # Need more?
-        if not nzf.is_par2 and blocks_already < total_need:
+        if not nzf.is_par2 and blocks_already < self.bad_articles:
             # We have to find the right par-set
             for parset in self.extrapars.keys():
                 if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
                     extrapars_sorted = sorted(self.extrapars[parset], key=lambda x: x.blocks, reverse=True)
                     # Loop until we have enough
-                    while blocks_already < total_need and extrapars_sorted:
+                    while blocks_already < self.bad_articles and extrapars_sorted:
                         new_nzf = extrapars_sorted.pop()
                         # Reset NZF TryList, in case something was on it before it became extrapar
                         new_nzf.reset_try_list()
@@ -1326,19 +1320,19 @@ class NzbObject(TryList):
             msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024, dec_limit=1))
             msg1 += u'<br/>' + T('Age') + ': ' + calc_age(self.avg_date, True)
 
-            bad = self.nzo_info.get('bad_art_log', [])
-            miss = self.nzo_info.get('missing_art_log', [])
-            killed = self.nzo_info.get('killed_art_log', [])
-            dups = self.nzo_info.get('dup_art_log', [])
+            bad = self.nzo_info.get('bad_articles', 0)
+            miss = self.nzo_info.get('missing_articles', 0)
+            killed = self.nzo_info.get('killed_articles', 0)
+            dups = self.nzo_info.get('duplicate_articles', 0)
             msg2 = msg3 = msg4 = msg5 = ''
             if bad:
-                msg2 = (u'<br/>' + T('%s articles were malformed')) % len(bad)
+                msg2 = (u'<br/>' + T('%s articles were malformed')) % bad
             if miss:
-                msg3 = (u'<br/>' + T('%s articles were missing')) % len(miss)
+                msg3 = (u'<br/>' + T('%s articles were missing')) % miss
             if dups:
-                msg4 = (u'<br/>' + T('%s articles had non-matching duplicates')) % len(dups)
+                msg4 = (u'<br/>' + T('%s articles had non-matching duplicates')) % dups
             if killed:
-                msg5 = (u'<br/>' + T('%s articles were removed')) % len(killed)
+                msg5 = (u'<br/>' + T('%s articles were removed')) % killed
             msg = u''.join((msg1, msg2, msg3, msg4, msg5, ))
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
@@ -1349,12 +1343,12 @@ class NzbObject(TryList):
                 self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
     @synchronized(NZO_LOCK)
-    def inc_log(self, log, txt):
-        """ Append string txt to nzo_info element "log" """
-        try:
-            self.nzo_info[log].append(txt)
-        except:
-            self.nzo_info[log] = [txt]
+    def increase_bad_articles_counter(self, type):
+        """ Record information about bad articles """
+        if type not in self.nzo_info:
+            self.nzo_info[type] = 0
+        self.nzo_info[type] += 1
+        self.bad_articles += 1
 
     def server_allowed(self, server):
         if not server.categories:
@@ -1582,7 +1576,7 @@ class NzbObject(TryList):
                 self.files if full else [],
                 queued_files,
                 self.status, self.priority,
-                len(self.nzo_info.get('missing_art_log', [])),
+                self.nzo_info.get('missing_articles', 0),
                 self.bytes_tried - self.bytes_downloaded,
                 self.direct_unpacker.get_formatted_stats() if self.direct_unpacker else 0)
 
@@ -1710,6 +1704,8 @@ class NzbObject(TryList):
             self.md5of16k = {}
         if self.renames is None:
             self.renames = {}
+        if self.bad_articles is None:
+            self.bad_articles = 0
         if self.bytes_tried is None:
             # Fill with old info
             self.bytes_tried = 0

@@ -80,7 +80,7 @@ class DirectUnpacker(threading.Thread):
         self.cur_volume = 0
 
     def check_requirements(self):
-        if self.killed or not self.nzo.unpack or cfg.direct_unpack() < 1 or sabnzbd.newsunpack.RAR_PROBLEM:
+        if not cfg.direct_unpack() or self.killed or not self.nzo.unpack or self.nzo.bad_articles or sabnzbd.newsunpack.RAR_PROBLEM:
             return False
         return True
 
@@ -131,7 +131,7 @@ class DirectUnpacker(threading.Thread):
                     return
 
                 # Start the unrar command and the loop
-                self.create_unrar_instance(nzf)
+                self.create_unrar_instance()
                 self.start()
         elif not any(test_nzf.setname == nzf.setname for test_nzf in self.next_sets):
             # Need to store this for the future, only once per set!
@@ -198,7 +198,7 @@ class DirectUnpacker(threading.Thread):
                     self.cur_setname = nzf.setname
                     # Wait for the 1st volume to appear
                     self.wait_for_next_volume()
-                    self.create_unrar_instance(nzf)
+                    self.create_unrar_instance()
                     start_time = time.time()
                 else:
                     self.killed = True
@@ -250,7 +250,7 @@ class DirectUnpacker(threading.Thread):
             from the end of the list where latest completed files are """
         for nzf_search in reversed(self.nzo.finished_files):
             if nzf_search.setname == self.cur_setname and nzf_search.vol == (self.cur_volume+1):
-                return True
+                return nzf_search
         return False
 
     def wait_for_next_volume(self):
@@ -260,7 +260,7 @@ class DirectUnpacker(threading.Thread):
             with self.next_file_lock:
                 self.next_file_lock.wait()
 
-    def create_unrar_instance(self, rarfile_nzf):
+    def create_unrar_instance(self):
         """ Start the unrar instance using the user's options """
         # Generate extraction path and save for post-proc
         if not self.unpack_dir_info:
@@ -277,6 +277,9 @@ class DirectUnpacker(threading.Thread):
             action = 'e'
         else:
             action = 'x'
+
+        # The first NZF
+        rarfile_nzf = self.have_next_volume()
 
         # Generate command
         rarfile_path = os.path.join(self.nzo.downpath, rarfile_nzf.filename)

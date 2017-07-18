@@ -196,9 +196,9 @@ class Decoder(Thread):
 
                 if logme:
                     if killed:
-                        nzo.inc_log('killed_art_log', art_id)
+                        nzo.increase_bad_articles_counter('killed_articles')
                     else:
-                        nzo.inc_log('bad_art_log', art_id)
+                        nzo.increase_bad_articles_counter('bad_articles')
 
             else:
                 new_server_found = self.search_new_server(article)
@@ -320,7 +320,7 @@ class Decoder(Thread):
 
         msg = T('%s => missing from all servers, discarding') % article
         logging.info(msg)
-        article.nzf.nzo.inc_log('missing_art_log', msg)
+        article.nzf.nzo.increase_bad_articles_counter('missing_articles')
         return False
 
     def verify_filename(self, article, decoded_data, yenc_filename):
