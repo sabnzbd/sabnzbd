@@ -42,7 +42,6 @@ else:
 
 MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
-CONCURRENT_LOCK = threading.RLock()
 
 RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$', re.IGNORECASE)
 
@@ -73,19 +72,10 @@ class DirectUnpacker(threading.Thread):
     def save(self):
         pass
 
-    def release_concurrent_lock(self):
-        """ Let other unpackers go """
-        try:
-            CONCURRENT_LOCK.release()
-        except:
-            pass
-
     def reset_active(self):
         self.active_instance = None
         self.cur_setname = None
         self.cur_volume = 0
-        # Release lock to be sure
-        self.release_concurrent_lock()
 
     def check_requirements(self):
         if self.killed or not self.nzo.unpack or cfg.direct_unpack() < 1 or sabnzbd.newsunpack.RAR_PROBLEM:
@@ -134,7 +124,7 @@ class DirectUnpacker(threading.Thread):
             # Is this the first one of the first set?
             if not self.active_instance and not self.is_alive() and self.have_next_volume():
                 # Too many runners already?
-                if len(ACTIVE_UNPACKERS) >= MAX_ACTIVE_UNPACKERS:
+                if len(ACTIVE_UNPACKERS) >= cfg.direct_unpack_threads():
                     logging.info('Too many DirectUnpackers currently to start %s', self.cur_setname)
                     return
 
@@ -177,11 +167,10 @@ class DirectUnpacker(threading.Thread):
             # Did we reach the end?
             if linebuf.endswith('All OK'):
                 # Add to success
+                self.cur_volume += 1
                 self.success_sets.append(self.cur_setname)
                 logging.info('DirectUnpack completed for %s', self.cur_setname)
-
-                # Make sure to release the lock
-                self.release_concurrent_lock()
+                ACTIVE_UNPACKERS.remove(self)
 
                 # Are there more files left?
                 if self.nzo.files:
@@ -207,14 +196,9 @@ class DirectUnpacker(threading.Thread):
                     break
 
             if linebuf.endswith('[C]ontinue, [Q]uit '):
-                # Next one can go now
-                self.release_concurrent_lock()
-
                 # Wait for the next one..
                 self.wait_for_next_volume()
 
-                # Send "Enter" to proceed, only 1 at a time via lock
-                CONCURRENT_LOCK.acquire()
                 # Possible that the instance was deleted while locked
                 if not self.killed:
                     # Next volume
@@ -238,10 +222,8 @@ class DirectUnpacker(threading.Thread):
 
         # Make more space
         self.reset_active()
-        ACTIVE_UNPACKERS.remove(self)
-
-        # Make sure to release the lock
-        self.release_concurrent_lock()
+        if self in ACTIVE_UNPACKERS:
+            ACTIVE_UNPACKERS.remove(self)
 
     def have_next_volume(self):
         """ Check if next volume of set is available, start
@@ -341,7 +323,7 @@ class DirectUnpacker(threading.Thread):
         """ Get percentage or number of rar's done """
         if self.cur_setname and self.cur_setname in self.total_volumes:
             # This won't work on obfuscated posts
-            if self.total_volumes[self.cur_setname] > self.cur_volume and self.cur_volume:
+            if self.total_volumes[self.cur_setname] >= self.cur_volume and self.cur_volume:
                 return '%02d/%02d' % (self.cur_volume, self.total_volumes[self.cur_setname])
         return self.cur_volume
 

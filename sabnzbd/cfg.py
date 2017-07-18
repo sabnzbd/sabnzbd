@@ -83,6 +83,7 @@ converted_nzo_pickles = OptionBool('misc', 'converted_nzo_pickles', False)
 warned_old_queue = OptionNumber('misc', 'warned_old_queue', QUEUE_VERSION)
 sched_converted = OptionBool('misc', 'sched_converted', False)
 notified_new_skin = OptionNumber('misc', 'notified_new_skin', 0)
+direct_unpack_tested = OptionBool('misc', 'direct_unpack_tested', False)
 
 
 ##############################################################################
@@ -151,7 +152,7 @@ pause_on_pwrar = OptionNumber('misc', 'pause_on_pwrar', 1)
 ignore_samples = OptionBool('misc', 'ignore_samples', False)
 auto_sort = OptionBool('misc', 'auto_sort', False)
 direct_unpack = OptionBool('misc', 'direct_unpack', False)
-direct_unpack_tested = OptionBool('misc', 'direct_unpack_tested', False)
+direct_unpack_threads = OptionNumber('misc', 'direct_unpack_threads', 3, 1)
 propagation_delay = OptionNumber('misc', 'propagation_delay', 0)
 folder_rename = OptionBool('misc', 'folder_rename', True)
 replace_spaces = OptionBool('misc', 'replace_spaces', False)
