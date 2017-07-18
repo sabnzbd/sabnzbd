@@ -801,7 +801,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
 
         for _zip in zips:
             logging.info("Starting extract on zipfile: %s ", _zip)
-            nzo.set_action_line(T('Unpacking'), '%s' % unicoder(_zip))
+            nzo.set_action_line(T('Unpacking'), '%s' % unicoder(os.path.basename(_zip)))
 
             if workdir_complete and _zip.startswith(workdir):
                 extraction_path = workdir_complete
@@ -1741,6 +1741,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
         elif line.startswith('Finding available slice'):
             # The actual scanning of the files
             in_verify = True
+            nzo.set_action_line(T('Verifying'), T('Checking'))
         elif in_verify:
             m = _RE_FILENAME.search(line)
             if m:
