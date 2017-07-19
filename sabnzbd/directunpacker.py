@@ -177,7 +177,7 @@ class DirectUnpacker(threading.Thread):
                 # Add to success
                 self.success_sets.append(self.cur_setname)
                 logging.info('DirectUnpack completed for %s', self.cur_setname)
-
+                self.nzo.set_action_line(T('Unpacking'), T('Completed'))
 
                 # Write current log
                 unrar_log.append(linebuf.strip())

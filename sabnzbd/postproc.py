@@ -137,8 +137,10 @@ class PostProcessor(Thread):
     def cancel_pp(self, nzo_id):
         """ Change the status, so that the PP is canceled """
         for nzo in self.history_queue:
-            if nzo.nzo_id == nzo_id and nzo.pp_active:
-                nzo.pp_active = False
+            if nzo.nzo_id == nzo_id:
+                nzo.abort_direct_unpacker()
+                if nzo.pp_active:
+                    nzo.pp_active = False
                 return True
         return None
 
