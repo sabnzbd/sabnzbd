@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-16 12:42+0000\n"
-"PO-Revision-Date: 2017-07-10 06:45+0000\n"
+"POT-Creation-Date: 2017-07-17 18:42+0000\n"
+"PO-Revision-Date: 2017-07-17 20:20+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-17 05:25+0000\n"
+"X-Launchpad-Export-Date: 2017-07-18 05:26+0000\n"
 "X-Generator: Launchpad (build 18419)\n"
 
 #: SABnzbd.py [Error message]
@@ -460,14 +460,17 @@ msgid "Unpacked %s files/folders in %s"
 msgstr "%s bestanden/mappen uitgepakt in %s"
 
 #: sabnzbd/directunpacker.py [Warning message]
-msgid "Enabled Direct Unpack:"
-msgstr ""
+msgid "Direct Unpack was automatically enabled."
+msgstr "Direct Uitpakken is automatisch ingeschakeld."
 
 #: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
 msgid ""
-"Jobs will start unpacking during the download, reduces post-processing time "
-"but requires capable hard drive. Only works for jobs that do not need repair."
+"Jobs will start unpacking during the downloading to reduce post-processing "
+"time. Only works for jobs that do not need repair."
 msgstr ""
+"Het uitpakken van opdrachten wordt al gestart tijdens het downloaden. Dit "
+"verkort de tijd die nodig is voor het nabewerken. Dit werkt alleen als de "
+"opdracht niet beschadigd is."
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error removing %s"
@@ -1582,7 +1585,7 @@ msgstr "Fout bij verwijderen van werkmap %s"
 msgid "Download Completed"
 msgstr "Download voltooid"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message]
 msgid "Cannot create final folder %s"
 msgstr "Kan bestemmingsmap %s niet maken"
 
@@ -3218,7 +3221,7 @@ msgstr "Automatisch sorteren op basis van gemiddelde leeftijd."
 
 #: sabnzbd/skintext.py
 msgid "Direct Unpack"
-msgstr ""
+msgstr "Direct Uitpakken"
 
 #: sabnzbd/skintext.py
 msgid ""

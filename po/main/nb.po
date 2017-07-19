@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-16 12:42+0000\n"
+"POT-Creation-Date: 2017-07-17 18:42+0000\n"
 "PO-Revision-Date: 2017-05-23 11:46+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-17 05:26+0000\n"
+"X-Launchpad-Export-Date: 2017-07-18 05:26+0000\n"
 "X-Generator: Launchpad (build 18419)\n"
 
 #: SABnzbd.py [Error message]
@@ -442,13 +442,13 @@ msgid "Unpacked %s files/folders in %s"
 msgstr "Utpakket %s filer/mapper på %s"
 
 #: sabnzbd/directunpacker.py [Warning message]
-msgid "Enabled Direct Unpack:"
+msgid "Direct Unpack was automatically enabled."
 msgstr ""
 
 #: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
 msgid ""
-"Jobs will start unpacking during the download, reduces post-processing time "
-"but requires capable hard drive. Only works for jobs that do not need repair."
+"Jobs will start unpacking during the downloading to reduce post-processing "
+"time. Only works for jobs that do not need repair."
 msgstr ""
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
@@ -1555,7 +1555,7 @@ msgstr "Kunne ikke fjerne arbeidsmappe (%s)"
 msgid "Download Completed"
 msgstr "Nedlasting ferdig"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message]
 msgid "Cannot create final folder %s"
 msgstr "Kan ikke opprette mappe %s"
 
