@@ -1,10 +1,15 @@
-Release Notes  -  SABnzbd 2.2.0 Alpha 3
+Release Notes  -  SABnzbd 2.2.0 Beta 1
 =========================================================
 
 NOTE: Due to changes in this release, the queue will be converted when 2.2.0
 is started for the first time. Job order, settings and data will be
 preserved, but all jobs will be unpaused and URL's that did not finish
 fetching before the upgrade will be lost!
+
+## Bugfixes since Alpha 3
+- Bugfixes and stability updates for Direct Unpack
+- Notification errors
+- Correct value in "Speed" Extra History Column
 
 ## Changes since 2.1.0
 - Direct Unpack: Jobs will start unpacking during the download, reduces
