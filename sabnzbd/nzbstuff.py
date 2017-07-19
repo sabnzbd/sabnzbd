@@ -1088,7 +1088,7 @@ class NzbObject(TryList):
                     if name in files:
                         files.remove(name)
                     files.append(renames[name])
-        self.renames = renames
+            self.renames = renames
 
         # Looking for the longest name first, minimizes the chance on a mismatch
         files.sort(lambda x, y: len(y) - len(x))
