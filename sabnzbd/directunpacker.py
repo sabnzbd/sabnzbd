@@ -245,17 +245,23 @@ class DirectUnpacker(threading.Thread):
         if self in ACTIVE_UNPACKERS:
             ACTIVE_UNPACKERS.remove(self)
 
+        # Set the thread to killed so it never gets restarted by accident
+        self.killed = True
+
     def have_next_volume(self):
         """ Check if next volume of set is available, start
-            from the end of the list where latest completed files are """
+            from the end of the list where latest completed files are
+            Make sure that files are 100% written to disk by checking md5sum
+        """
         for nzf_search in reversed(self.nzo.finished_files):
-            if nzf_search.setname == self.cur_setname and nzf_search.vol == (self.cur_volume+1):
+            if nzf_search.setname == self.cur_setname and nzf_search.vol == (self.cur_volume+1) and nzf_search.md5sum:
                 return nzf_search
         return False
 
     def wait_for_next_volume(self):
         """ Wait for the correct volume to appear
-            But stop if it was killed or the NZB is done """
+            But stop if it was killed or the NZB is done
+        """
         while not self.have_next_volume() and not self.killed and self.nzo.files:
             with self.next_file_lock:
                 self.next_file_lock.wait()
@@ -353,7 +359,8 @@ class DirectUnpacker(threading.Thread):
 
 def analyze_rar_filename(filename):
     """ Extract volume number and setname from rar-filenames
-        Both ".part01.rar" and ".r01" """
+        Both ".part01.rar" and ".r01"
+    """
     m = RAR_NR.search(filename)
     if m:
         if m.group(4):
