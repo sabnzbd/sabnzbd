@@ -1461,7 +1461,7 @@ def starts_with_path(path, prefix):
 def set_chmod(path, permissions, report):
     """ Set 'permissions' on 'path', report any errors when 'report' is True """
     try:
-        logging.debug('Applying %s to %s', permissions, path)
+        logging.debug('Applying permissions %s (octal) to %s', oct(permissions), path)
         os.chmod(path, permissions)
     except:
         lpath = path.lower()
