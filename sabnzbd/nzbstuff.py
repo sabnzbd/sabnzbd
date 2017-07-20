@@ -1057,8 +1057,11 @@ class NzbObject(TryList):
         if not found:
             # Add extra parfiles when there was a damaged article and not pre-checking
             if self.extrapars and not self.precheck:
-                self.abort_direct_unpacker()
                 self.prospective_add(nzf)
+
+            # Sometimes a few CRC errors are still fine, so we continue
+            if self.bad_articles > 5:
+                self.abort_direct_unpacker()
 
         post_done = False
         if not self.files:
