@@ -662,6 +662,8 @@ td.name .name-icons {
 
 td.name .name-icons .glyphicon {
     margin-left: 2px;
+    top: 2px;
+    font-weight: bold;
 }
 
 tbody.no-downloads tr td {
