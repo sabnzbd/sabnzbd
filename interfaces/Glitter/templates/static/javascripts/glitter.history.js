@@ -169,7 +169,6 @@ function HistoryListModel(parent) {
 
     // Toggle showing failed
     self.toggleShowFailed = function(data, event) {
-
         // Set the loader so it doesn't flicker and then switch
         self.isLoading(true)
         self.showFailed(!self.showFailed())
@@ -177,7 +176,20 @@ function HistoryListModel(parent) {
         $('#history-options a').tooltip('hide')
         // Force refresh
         self.parent.refresh(true)
+    }
 
+    // Retry all failed
+    self.retryAllFailed = function(data, event) {
+        // Ask to be sure
+        if(confirm(glitterTranslate.retryAll)) {
+            // Send the command
+            callAPI({
+                mode: 'retry_all'
+            }).then(function() {
+                // Force refresh
+                self.parent.refresh(true)
+            })
+        }
     }
 
     // Empty history options
