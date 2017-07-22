@@ -47,6 +47,11 @@ class Wizard(object):
     @cherrypy.expose
     def index(self, **kwargs):
         """ Show the language selection page """
+        if cfg.configlock() or not sabnzbd.interface.check_access():
+            return sabnzbd.interface.Protected()
+        if not sabnzbd.interface.check_login():
+            raise sabnzbd.interface.NeedLogin()
+
         info = self.info.copy()
         lng = None
         if sabnzbd.WIN32:
@@ -72,15 +77,25 @@ class Wizard(object):
     @cherrypy.expose
     def exit(self, **kwargs):
         """ Stop SABnzbd """
-        yield "Initiating shutdown..."
+        if cfg.configlock() or not sabnzbd.interface.check_access():
+            return sabnzbd.interface.Protected()
+        if not sabnzbd.interface.check_login():
+            raise sabnzbd.interface.NeedLogin()
+
+        logging.info('Shutdown requested by wizard')
         sabnzbd.halt()
-        yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
+        return T('SABnzbd shutdown finished')
 
     @cherrypy.expose
     def one(self, **kwargs):
         """ Accept language and show server page """
+        if cfg.configlock() or not sabnzbd.interface.check_access():
+            return sabnzbd.interface.Protected()
+        if not sabnzbd.interface.check_login():
+            raise sabnzbd.interface.NeedLogin()
+
         language = kwargs.get('lang') if kwargs.get('lang') else cfg.language()
         cfg.language.set(language)
         set_language(language)
@@ -125,6 +140,11 @@ class Wizard(object):
     @cherrypy.expose
     def two(self, **kwargs):
         """ Accept server and show the final page for restart """
+        if cfg.configlock() or not sabnzbd.interface.check_access():
+            return sabnzbd.interface.Protected()
+        if not sabnzbd.interface.check_login():
+            raise sabnzbd.interface.NeedLogin()
+
         # Save server details
         if kwargs:
             kwargs['enable'] = 1
