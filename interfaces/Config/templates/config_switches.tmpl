@@ -215,6 +215,20 @@
                         <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>
                         <span class="desc">$T('explain-cleanup_list')</span>
                     </div>
+
+                    <div class="field-pair">
+                        <label class="config" for="history_retention_select">$T('opt-history_retention')</label>
+                        <input type="hidden" name="history_retention" id="history_retention" value="$history_retention">
+                        <select name="history_retention_select" id="history_retention_select">
+                            <option value="0">$T('history_retention-all')</option>
+                            <option value="n">$T('history_retention-number')</option>
+                            <option value="d">$T('history_retention-days')</option>
+                            <option value="-1">$T('history_retention-none')</option>
+                        </select>
+                        <input type="number" id="history_retention_number" name="history_retention_number" min="1">
+                        <span class="desc">$T('explain-history_retention')</span>
+                    </div>
+
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                         <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
@@ -436,6 +450,53 @@
             \$("#rating_filter_pause").hide();
         }
     });
+
+    \$('#history_retention_select, #history_retention_number').on('change', updateHistoryRetention)
+    function updateHistoryRetention() {
+        var retention_setting = \$('#history_retention')
+        var retention_select = \$('#history_retention_select').val()
+        var retention_number = \$('#history_retention_number')
+        // Keep all or keep none
+        if(retention_select == "0" || retention_select == "-1") {
+            retention_number.hide()
+            retention_number.val('')
+            retention_number.attr('placeholder', '')
+            retention_setting.val(retention_select)
+        } else {
+            retention_number.show()
+            // Days or number?
+            if(retention_select.indexOf("d") !== -1) {
+                retention_number.attr('placeholder', '$T('days')')
+                if(retention_number.val()) {
+                    retention_setting.val(retention_number.val() + 'd')
+                } else if(parseInt(retention_setting.val()) > 0) {
+                    retention_number.val(parseInt(retention_setting.val()))
+                }
+            } else {
+                retention_number.attr('placeholder', '$T('history_retention-limit')')
+                if(retention_number.val()) {
+                    retention_setting.val(retention_number.val())
+                } else if(parseInt(retention_setting.val()) > 0) {
+                    retention_number.val(parseInt(retention_setting.val()))
+                }
+            }
+        }
+    }
+    // Set the history-retention settig
+    var retention_setting_value = \$('#history_retention').val()
+    if(parseInt(retention_setting_value) > 0) {
+        // Days or number?
+        if(retention_setting_value.indexOf("d") !== -1) {
+            \$('#history_retention_select').val("d")
+        } else {
+            \$('#history_retention_select').val("n")
+        }
+        \$('#history_retention_number').val(parseInt(retention_setting_value))
+    } else {
+        // Keep all or keep none
+        \$('#history_retention_select').val(retention_setting_value)
+        \$('#history_retention_number').hide()
+    }
 
     \$('.restoreDefaults').click(function(e) {
         // Get section name
