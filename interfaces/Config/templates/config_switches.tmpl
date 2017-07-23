@@ -86,6 +86,7 @@
                         <label class="config" for="no_dupes">$T('opt-no_dupes')</label>
                         <select name="no_dupes" id="no_dupes">
                             <option value="0" <!--#if int($no_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="4" <!--#if int($no_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
                             <option value="2" <!--#if int($no_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
                             <option value="3" <!--#if int($no_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
                             <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
@@ -96,6 +97,7 @@
                         <label class="config" for="no_series_dupes">$T('opt-no_series_dupes')</label>
                         <select name="no_series_dupes" id="no_series_dupes">
                             <option value="0" <!--#if int($no_series_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="4" <!--#if int($no_series_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
                             <option value="2" <!--#if int($no_series_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
                             <option value="3" <!--#if int($no_series_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
                             <option value="1" <!--#if int($no_series_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>

@@ -437,9 +437,10 @@ SKIN_TEXT = {
     'opt-no_series_dupes' : TT('Detect duplicate episodes in series'),
     'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode" of items in your History)'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
-    'nodupes-ignore' : TT('Discard'), #: Three way switch for duplicates
-    'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
-    'nodupes-fail' : TT('Fail job (move to History)'), #: Three way switch for duplicates
+    'nodupes-ignore' : TT('Discard'), #: Four way switch for duplicates
+    'nodupes-pause' : TT('Pause'), #: Four way switch for duplicates
+    'nodupes-fail' : TT('Fail job (move to History)'), #: Four way switch for duplicates
+    'nodupes-tag' : TT('Tag job'), #: Four way switch for duplicates
     'abort' : TT('Abort'), #: Three way switch for encrypted posts
     'opt-action_on_unwanted_extensions' : TT('Action when unwanted extension detected'),
     'explain-action_on_unwanted_extensions' : TT('Action when an unwanted extension is detected in RAR files'),

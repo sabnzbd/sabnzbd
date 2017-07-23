@@ -851,17 +851,23 @@ class NzbObject(TryList):
         if duplicate and ((not series and cfg.no_dupes() == 3) or (series and cfg.no_series_dupes() == 3)):
             if cfg.warn_dupl_jobs():
                 logging.warning(T('Failing duplicate NZB "%s"'), filename)
-            # Move to history, utlizing the same code as accept&fail from pre-queue script
+            # Move to history, utilizing the same code as accept&fail from pre-queue script
             self.fail_msg = T('Duplicate NZB')
             accept = 2
             duplicate = False
 
         if duplicate or self.priority == DUP_PRIORITY:
-            if cfg.warn_dupl_jobs():
-                logging.warning(T('Pausing duplicate NZB "%s"'), filename)
-            self.duplicate = True
-            self.pause()
-            self.priority = NORMAL_PRIORITY
+            if cfg.no_dupes() == 4 or cfg.no_series_dupes() == 4:
+                if cfg.warn_dupl_jobs():
+                    logging.warning(T('Tagging duplicate NZB "%s"'), filename)
+                self.duplicate = True
+                self.priority = NORMAL_PRIORITY
+            else:
+                if cfg.warn_dupl_jobs():
+                    logging.warning(T('Pausing duplicate NZB "%s"'), filename)
+                self.duplicate = True
+                self.pause()
+                self.priority = NORMAL_PRIORITY
 
         if self.priority == PAUSED_PRIORITY:
             self.pause()
