@@ -994,6 +994,43 @@ input[type="checkbox"] {
     opacity: 0.7;
 }
 
+.Servers .server-amounts-text {
+    width: 20%;
+    float: left;
+}
+
+.Servers .server-chart {
+    float: right;
+    width: calc(100% - 250px - 25%);
+    text-align: center;
+    position: relative;
+}
+
+.Servers .ct-series-a .ct-line {
+    stroke: #666666;
+}
+
+.Servers .ct-label {
+    font-size: 1em;
+    color: black;
+}
+
+.Servers .ct-axis-title {
+    position: absolute;
+    display: block;
+    top: -5px;
+    left: 50%;
+    margin-left: -7%;
+    background-color: white;
+    padding: 2px 6px;
+    border: 1px solid #B9B9B9;
+    min-width: initial;
+}
+
+.Servers .ct-grid.ct-vertical:last-of-type {
+    display: none;
+}
+
 .advanced-settings {
     display: none;
 }
@@ -1170,6 +1207,15 @@ input[type="checkbox"] {
 
     .Servers .col2 button:first-of-type {
         margin-bottom: 0;
+    }
+
+    .Servers .server-chart {
+        display: none;
+    }
+
+    .Servers .server-amounts-text {
+        padding: 0px 15px 10px;
+        width: inherit;
     }
 }
 
