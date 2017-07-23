@@ -126,22 +126,34 @@
         axisY: {
             labelOffset: {
                 y: 7
-            }
+            },
+            scaleMinSpace: 30
         },
         chartPadding: {
             top: 9,
             bottom: 0,
-            left: 30
+            left: 30,
+            right: 20
         }
     }
 </script>
-
+<!--
+    We need to find how many months we have recorded so far, so we
+     loop over all the dates to find the lowest value and then use
+     the number of days passed as an estimate of the months we have.
+-->
 <!--#import json#-->
 <!--#import datetime#-->
-<!--#def show_date_selector($id)#-->
-    <!--#set $month_names = [$T('January'), $T('February'), $T('March'), $T('April'), $T('May'), $T('June'), $T('July'), $T('August'), $T('September'), $T('October'), $T('November'), $T('December')] #-->
+<!--#def show_date_selector($server, $id)#-->
+    <!--#set month_names = [$T('January'), $T('February'), $T('March'), $T('April'), $T('May'), $T('June'), $T('July'), $T('August'), $T('September'), $T('October'), $T('November'), $T('December')] #-->
+    <!--#set min_date = datetime.date.today()#-->
+    <!--#for date in $server['amounts'][4]#-->
+        <!--#set split_date = $date.split('-')#-->
+        <!--#set min_date = min(min_date, datetime.date(int(split_date[0]), int(split_date[1]), int(split_date[2])))#-->
+    <!--#end for#-->
+    <!--#set months_recorded = int((datetime.date.today()-min_date).days / (365/12))#-->
     <select class="chart-selector" name="chart-selector-${id}" id="chart-selector-${id}" data-id="${id}">
-        <!--#for $i in range(12)#-->
+        <!--#for $i in range(months_recorded+1)#-->
             <!--#set cur_date = (datetime.date.today() - datetime.timedelta($i*365/12))#-->
             <option value="<!--#echo '%d-%02d' % ($cur_date.year, $cur_date.month)#-->">$month_names[$cur_date.month-1] $cur_date.year</option>
         <!--#end for#-->
@@ -281,7 +293,7 @@
                     $T('thisMonth'): $(server['amounts'][1])B
                 </div>
                 <div class="server-chart">
-                    $show_date_selector($cur)
+                    $show_date_selector($server, $cur)
                     <div id="server-chart-${cur}" class="ct-chart"></div>
                 </div>
                 <script type="text/javascript">
@@ -319,7 +331,7 @@
             series: [[]]
         };
         var largestVal = 0
-        for(var i = 1; i <= maxDaysInMonth; i++) {
+        for(var i = 1; i < maxDaysInMonth+1; i++) {
             // Add X-label
             if(i % 3 == 1) {
                 data['labels'].push(i)
@@ -329,19 +341,18 @@
 
             // Get formatted date
             baseDate.setDate(i)
-            var dateCheck = baseDate.toJSON().slice(0,10)
+            var dateCheck = toFormattedDate(baseDate)
 
             // Add data if we have it
             if(dateCheck in serverData[server_id]) {
                 data['series'][0].push(serverData[server_id][dateCheck])
                 largestVal = Math.max(largestVal, serverData[server_id][dateCheck])
-            } else if(thisDay.getMonth() == baseDate.getMonth() && thisDay.getDate() < i) {
+            } else if(thisDay.getYear() == baseDate.getYear() && thisDay.getMonth() == baseDate.getMonth() && thisDay.getDate() < i) {
                 data['series'][0].push(NaN)
             } else {
                 data['series'][0].push(0)
             }
         }
-        console.log(data['series'][0])
 
         // Check if we should shrink the Y-axis values
         var devideBy = 1024
@@ -380,6 +391,13 @@
                 elmn.innerHTML += axisLabel
             })
         });
+    }
+
+    // Need to mitigate timezone effects!
+    function toFormattedDate(date) {
+        var local = new Date(date);
+        local.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        return local.toJSON().slice(0, 10);
     }
 
     /**
