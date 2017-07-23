@@ -547,6 +547,8 @@ def process_job(nzo):
     # Add the nzo to the database. Only the path, script and time taken is passed
     # Other information is obtained from the nzo
     history_db.add_history_db(nzo, clip_path(workdir_complete), nzo.downpath, postproc_time, script_log, script_line)
+    # Purge items
+    history_db.auto_history_purge()
     # The connection is only used once, so close it here
     history_db.close()
     sabnzbd.history_updated()

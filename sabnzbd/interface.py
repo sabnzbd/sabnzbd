@@ -1305,7 +1305,7 @@ SWITCH_LIST = \
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots',
              'ignore_samples', 'pause_on_post_processing', 'nice', 'ionice',
              'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
-             'quota_size', 'quota_day', 'quota_resume', 'quota_period',
+             'quota_size', 'quota_day', 'quota_resume', 'quota_period', 'history_retention',
              'pre_check', 'max_art_tries', 'fail_hopeless_jobs', 'enable_all_par',
              'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
              'unwanted_extensions', 'action_on_unwanted_extensions', 'sanitize_safe',

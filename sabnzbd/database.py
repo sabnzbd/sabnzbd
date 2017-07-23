@@ -40,7 +40,7 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import get_all_passwords
+from sabnzbd.misc import get_all_passwords, int_conv
 
 DB_LOCK = threading.RLock()
 
@@ -248,6 +248,30 @@ class HistoryDB(object):
                 logging.info('Removing job %s from history', job)
 
         self.save()
+
+    def auto_history_purge(self):
+        """ Remove history items based on the configured history-retention """
+        if sabnzbd.cfg.history_retention() == "0":
+            return
+
+        if sabnzbd.cfg.history_retention() == "-1":
+            # Delete all non-failed ones
+            self.remove_completed()
+
+        if "d" in sabnzbd.cfg.history_retention():
+            # How many days to keep?
+            days_to_keep = int_conv(sabnzbd.cfg.history_retention().strip()[:-1])
+            seconds_to_keep = int(time.time()) - days_to_keep*3600*24
+            if days_to_keep > 0:
+                logging.info('Removing completed jobs older than %s days from history', days_to_keep)
+                return self.execute("""DELETE FROM history WHERE status = 'Completed' AND completed < ?""", (seconds_to_keep,), save=True)
+        else:
+            # How many to keep?
+            to_keep = int_conv(sabnzbd.cfg.history_retention())
+            if to_keep > 0:
+                logging.info('Removing all but last %s completed jobs from history', to_keep)
+                return self.execute("""DELETE FROM history WHERE id NOT IN ( SELECT id FROM history WHERE status = 'Completed' ORDER BY completed DESC LIMIT ? )""", (to_keep,), save=True)
+
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
         """ Add a new job entry to the database """
