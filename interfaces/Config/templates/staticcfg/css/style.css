@@ -1015,19 +1015,17 @@ input[type="checkbox"] {
     color: black;
 }
 
-.Servers .ct-axis-title {
+.Servers .chart-selector {
     position: absolute;
     display: block;
-    top: -5px;
+    top: -7px;
     left: 50%;
     margin-left: -7%;
-    background-color: white;
-    padding: 2px 6px;
-    border: 1px solid #B9B9B9;
     min-width: initial;
 }
 
-.Servers .ct-grid.ct-vertical:last-of-type {
+.Servers .ct-grid.ct-vertical:last-of-type,
+.Servers .ct-grid.ct-vertical:first-of-type {
     display: none;
 }
 
