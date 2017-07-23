@@ -564,6 +564,13 @@ def unpack_history_info(item):
     return item
 
 
+def midnight_history_purge():
+    logging.info('Scheduled history purge')
+    history_db = HistoryDB()
+    history_db.auto_history_purge()
+    history_db.close()
+
+
 def decode_factory(text):
     """ Recursively looks through the supplied argument
         and converts and text to Unicode
