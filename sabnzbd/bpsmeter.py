@@ -118,6 +118,9 @@ class BPSMeter(object):
         self.month_total = {}
         self.grand_total = {}
 
+        self.timeline_total = {}
+
+        self.day_label = time.strftime("%Y-%m-%d")
         self.end_of_day = tomorrow(t)      # Time that current day will end
         self.end_of_week = next_week(t)    # Time that current day will end
         self.end_of_month = next_month(t)  # Time that current month will end
@@ -136,7 +139,7 @@ class BPSMeter(object):
         data = (self.last_update, self.grand_total,
                 self.day_total, self.week_total, self.month_total,
                 self.end_of_day, self.end_of_week, self.end_of_month,
-                self.quota, self.left, self.q_time
+                self.quota, self.left, self.q_time, self.timeline_total
                )
         sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
@@ -171,12 +174,15 @@ class BPSMeter(object):
             self.last_update, self.grand_total, \
                 self.day_total, self.week_total, self.month_total, \
                 self.end_of_day, self.end_of_week, self.end_of_month = data[:8]
-            if len(data) == 11:
-                self.quota, self.left, self.q_time = data[8:]
+            if len(data) >= 11:
+                self.quota, self.left, self.q_time = data[8:11]
                 logging.debug('Read quota q=%s l=%s reset=%s',
                               self.quota, self.left, self.q_time)
                 if abs(quota - self.quota) > 0.5:
                     self.change_quota()
+                # Get timeline stats
+                if len(data) == 12:
+                    self.timeline_total = data[11]
             else:
                 self.quota = self.left = cfg.quota_size.get_float()
             res = self.reset_quota()
@@ -199,6 +205,7 @@ class BPSMeter(object):
             t = time.time()
         if t > self.end_of_day:
             # current day passed. get new end of day
+            self.day_label = time.strftime("%Y-%m-%d")
             self.day_total = {}
             self.end_of_day = tomorrow(t) - 1.0
 
@@ -226,6 +233,12 @@ class BPSMeter(object):
             if server not in self.grand_total:
                 self.grand_total[server] = 0L
             self.grand_total[server] += amount
+
+            if server not in self.timeline_total:
+                self.timeline_total[server] = {}
+            if self.day_label not in self.timeline_total[server]:
+                self.timeline_total[server][self.day_label]= 0L
+            self.timeline_total[server][self.day_label] += amount
 
             # Quota check
             if self.have_quota and self.quota_enabled:
@@ -290,7 +303,8 @@ class BPSMeter(object):
         return self.grand_total.get(server, 0L), \
                self.month_total.get(server, 0L), \
                self.week_total.get(server, 0L),  \
-               self.day_total.get(server, 0L)
+               self.day_total.get(server, 0L), \
+               self.timeline_total.get(server, {})
 
     def clear_server(self, server):
         """ Clean counters for specified server """
@@ -302,6 +316,8 @@ class BPSMeter(object):
             del self.month_total[server]
         if server in self.grand_total:
             del self.grand_total[server]
+        if server in self.timeline_total:
+            del self.timeline_total[server]
         self.save()
 
     def get_bps(self):

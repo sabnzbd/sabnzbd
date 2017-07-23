@@ -1612,9 +1612,9 @@ class ConfigServer(object):
         server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
         for svr in server_names:
             new.append(servers[svr].get_dict(safe=True))
-            t, m, w, d = BPSMeter.do.amounts(svr)
+            t, m, w, d, timeline = BPSMeter.do.amounts(svr)
             if t:
-                new[-1]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d)
+                new[-1]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d), timeline
         conf['servers'] = new
         conf['cats'] = list_cats(default=True)
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT

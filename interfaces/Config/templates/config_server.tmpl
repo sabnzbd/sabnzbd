@@ -110,6 +110,44 @@
     </div><!-- /section -->
 </form>
 
+<script type="text/javascript" src="${root}staticcfg/js/chartist.min.js"></script>
+<script type="text/javascript">
+    // Define variables needed for the server-plots
+    var serverData = {}
+    var chartOptions = {
+        fullWidth: true,
+        showPoint: false,
+        axisX: {
+            labelOffset: {
+                x: -5
+            },
+            showGrid: false
+        },
+        axisY: {
+            labelOffset: {
+                y: 7
+            }
+        },
+        chartPadding: {
+            top: 9,
+            bottom: 0,
+            left: 30
+        }
+    }
+</script>
+
+<!--#import json#-->
+<!--#import datetime#-->
+<!--#def show_date_selector($id)#-->
+    <!--#set $month_names = [$T('January'), $T('February'), $T('March'), $T('April'), $T('May'), $T('June'), $T('July'), $T('August'), $T('September'), $T('October'), $T('November'), $T('December')] #-->
+    <select class="ct-axis-title chart-selector" name="chart-selector-${id}" id="chart-selector-${id}" data-id="${id}">
+        <!--#for $i in range(12)#-->
+            <!--#set cur_date = (datetime.date.today() - datetime.timedelta($i*365/12))#-->
+            <option value="<!--#echo '%d-%02d' % ($cur_date.year, $cur_date.month)#-->">$month_names[$cur_date.month-1] $cur_date.year</option>
+        <!--#end for#-->
+    </select>
+<!--#end def#-->
+
 <!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
 <!--#set $cur_prio_color = -1 #-->
 <!--#set $last_prio = -1 #-->
@@ -232,166 +270,270 @@
                     <div class="alert"></div>
                 </div>
             </fieldset>
-        </div><!-- /col1 -->
-        <div class="col2"  style="display:block;">
-        <!--#if 'amounts' in $server#-->
-            <b>$T('srv-bandwidth'):</b><br/>
-            $T('total'): $(server['amounts'][0])B<br/>
-            $T('today'): $(server['amounts'][3])B<br/>
-            $T('thisWeek'): $(server['amounts'][2])B<br/>
-            $T('thisMonth'): $(server['amounts'][1])B
-        <!--#end if#-->
         </div>
-    </div><!-- /section -->
+        <div class="col1" style="display:block;">
+            <!--#if 'amounts' in $server#-->
+                <div class="server-amounts-text">
+                    <b>$T('srv-bandwidth'):</b><br/>
+                    $T('total'): $(server['amounts'][0])B<br/>
+                    $T('today'): $(server['amounts'][3])B<br/>
+                    $T('thisWeek'): $(server['amounts'][2])B<br/>
+                    $T('thisMonth'): $(server['amounts'][1])B
+                </div>
+                <div class="server-chart">
+                    $show_date_selector($cur)
+                    <div id="server-chart-${cur}" class="ct-chart"></div>
+                </div>
+                <script type="text/javascript">
+                    // Server data
+                    serverData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
+                    \$(document).ready(function() {
+                        showChart(${cur})
+                    })
+                </script>
+            <!--#end if#-->
+        </div>
+    </div>
     </form>
 <!--#end for#-->
 
 </div><!-- /colmask -->
 
 <script type="text/javascript">
-\$(document).ready(function(){
-    // Exception when change of priority, reload
-    \$('input[name="priority"], input[name="displayname"]').on('change', function() {
-        \$('.fullform').submit(function() {
-            // Skip the fancy stuff, just submit
-            this.submit()
-        })
-    })
+    function showChart(server_id, month) {
+        // What month are we doing?
+        if(month) {
+            var inputDate = new Date(month+'-01')
+        } else {
+            var inputDate = new Date()
+        }
+        var baseDate = new Date(inputDate.getFullYear(), inputDate.getMonth(), 1)
+        var maxDaysInMonth = new Date(baseDate.getYear(), baseDate.getMonth()+1, 0).getDate()
 
-    /**
-        Message on no Default category selected
-    **/
-    function checkServerCats() {
-        // Now we check all of them
-        var hasDefault = false;
-        // Only check the active servers, not the add-server one
-        \$('.section:not(#addServerContent) select[name="categories"]').each(function() {
-            // See if this server is enabled
-            if(!\$(this).parents('.section').find('.col2').hasClass('server-disabled') ) {
-                // Is there Default?
-                if(\$(this).val() && \$(this).val().indexOf('Default') > -1) {
-                    // Hide
-                    \$('.alert-no-category').hide()
-                    hasDefault = true
-                    // All good!
-                    return true
-                }
+        // Fill the data array
+        var data = {
+            labels: [],
+            series: [[]]
+        };
+        var largestVal = 0
+        for(var i = 1; i <= maxDaysInMonth; i++) {
+            // Add X-label
+            if(i % 3 == 1) {
+                data['labels'].push(i)
+            } else {
+                data['labels'].push(NaN)
             }
+
+            // Get formatted date
+            baseDate.setDate(i)
+            var dateCheck = baseDate.toJSON().slice(0,10)
+
+            // Add data if we have it
+            if(dateCheck in serverData[server_id]) {
+                data['series'][0].push(serverData[server_id][dateCheck])
+                largestVal = Math.max(largestVal, serverData[server_id][dateCheck])
+            } else {
+                data['series'][0].push(0)
+            }
+        }
+
+        // Check if we should shrink the Y-axis values
+        var devideBy = 1024
+        var axisLabel = 'KB'
+        if(largestVal > 1024*1024) {
+            devideBy = 1024*1024
+            axisLabel = 'MB'
+        }
+        if(largestVal > 1024*1024*1024) {
+            devideBy = 1024*1024*1024
+            axisLabel = 'GB'
+        }
+        if(largestVal > 1024*1024*1024*1024) {
+            devideBy = 1024*1024*1024*1024
+            axisLabel = 'TB'
+        }
+
+        // Shrink the value
+        data['series'][0] = data['series'][0].map(function(num) {
+            return num / devideBy;
         })
-        // We found nothing.. Let's show a warning
-        if(!hasDefault) \$('.alert-no-category').show()
+
+        // Show the chart
+        chart = new Chartist.Line('#server-chart-'+server_id, data, chartOptions);
+        chart.on('created', function(context) {
+            context.svg.elem('rect', {
+                x: context.chartRect.x1,
+                y: context.chartRect.y2+1,
+                width: context.chartRect.width(),
+                height: context.chartRect.height()+2,
+                fill: 'none',
+                stroke: '#B9B9B9',
+                'stroke-width': '1px'
+            })
+            \$('#server-chart-'+server_id+' .ct-label.ct-vertical').each(function(index, elmn) {
+                elmn.innerHTML += axisLabel
+            })
+        });
     }
 
-    \$('select[name="categories"]').on('change', checkServerCats)
-    checkServerCats()
-
     /**
-        Click events
+        When finished loading
     **/
-    \$('.showserver').click(function () {
-        if(\$(this).parent().hasClass('server-disabled')) {
-            \$(this).parent().parent().toggleClass('server-disabled')
-        }
-        \$(this).parent().next().toggle();
-        \$(this).parent().next().next().toggle();
-        if (\$(this).attr("value") == "$T('showDetails')") {
-            \$(this).attr("value", "$T('hideDetails')");
-        } else {
-            \$(this).attr("value", "$T('showDetails')");
-        }
-    });
+    \$(document).ready(function(){
+        // Exception when change of priority, reload
+        \$('input[name="priority"], input[name="displayname"]').on('change', function() {
+            \$('.fullform').submit(function() {
+                // Skip the fancy stuff, just submit
+                this.submit()
+            })
+        })
 
-    \$('#addServerButton').click(function(){
-        \$('#addServer').hide();
-        \$('#addServerContent').show();
-    });
+        /**
+            Update charts when changed
+        **/
+        \$('.chart-selector').on('change', function(elemn) {
+            showChart(\$(elemn.target).data('id'), \$(elemn.target).val())
+            // Lets us leave (needs to be called after the change event)
+            setTimeout(function() {
+                formWasSubmitted = true;
+                formHasChanged = false;
+            }, 100)
+        })
 
-    \$('[name="ssl"]').click(function() {
-        // Use CSS transitions to do some highlighting
-        var portBox = \$(this).parent().parent().find('[name="port"]')
-        if(this.checked) {
-            // Enabled SSL change port when not already a custom port
-            if(portBox.val() == '119') {
-                portBox.val('563')
-                portBox.addClass('port-highlight')
+        /**
+            Message on no Default category selected
+        **/
+        function checkServerCats() {
+            // Now we check all of them
+            var hasDefault = false;
+            // Only check the active servers, not the add-server one
+            \$('.section:not(#addServerContent) select[name="categories"]').each(function() {
+                // See if this server is enabled
+                if(!\$(this).parents('.section').find('.col2').hasClass('server-disabled') ) {
+                    // Is there Default?
+                    if(\$(this).val() && \$(this).val().indexOf('Default') > -1) {
+                        // Hide
+                        \$('.alert-no-category').hide()
+                        hasDefault = true
+                        // All good!
+                        return true
+                    }
+                }
+            })
+            // We found nothing.. Let's show a warning
+            if(!hasDefault) \$('.alert-no-category').show()
+        }
+
+        \$('select[name="categories"]').on('change', checkServerCats)
+        checkServerCats()
+
+        /**
+            Click events
+        **/
+        \$('.showserver').click(function () {
+            if(\$(this).parent().hasClass('server-disabled')) {
+                \$(this).parent().parent().toggleClass('server-disabled')
             }
-        } else {
-            // Remove SSL port
-            if(portBox.val() == '563') {
-                portBox.val('119')
-                portBox.addClass('port-highlight')
-            }
-        }
-        setTimeout(function() { portBox.removeClass('port-highlight') }, 2000)
-    })
-
-    \$('.testServer').click(function(event){
-        removeObfuscation()
-        var theButton = \$(this)
-        var resultBox = theButton.parents('.col1').find('.result-box .alert');
-        theButton.attr("disabled", "disabled")
-        theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
-        \$.ajax({
-            type: "POST",
-            url: "../../tapi",
-            data: "mode=config&output=json&name=test_server&" + \$(this).parents('form:first').serialize()
-        }).then(function(data) {
-            // Let's replace the link
-            msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
-            msg = msg.replace('-', '<br>')
-            // Fill the box and enable the button
-            resultBox.removeClass('alert-success alert-danger').show()
-            resultBox.html(msg)
-            theButton.removeAttr("disabled")
-            theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
-
-            // Succes or not?
-            if(data.value.result) {
-                resultBox.addClass('alert-success')
-                resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+            \$(this).parent().next().toggle();
+            \$(this).parent().next().next().toggle();
+            if (\$(this).attr("value") == "$T('showDetails')") {
+                \$(this).attr("value", "$T('hideDetails')");
             } else {
-                resultBox.addClass('alert-danger')
-                resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
+                \$(this).attr("value", "$T('showDetails')");
             }
         });
-    });
 
-    \$('.delServer').click(function(){
-        if( confirm("$T('Plush-confirm')") ) {
-            \$(this).parents('form:first').attr('action','delServer').submit();
-            // Let us leave!
-            formWasSubmitted = true;
-            formHasChanged = false;
-            setTimeout(function() { location.reload(); }, 500)
-        }
-        return false;
-    });
+        \$('#addServerButton').click(function(){
+            \$('#addServer').hide();
+            \$('#addServerContent').show();
+        });
 
-    \$('.clrServer').click(function(){
-        if( confirm("$T('Plush-confirm')") ) {
-            \$(this).parents('form:first').attr('action','clrServer').submit();
-            // Let us leave!
-            formWasSubmitted = true;
-            formHasChanged = false;
-            setTimeout(function() { location.reload(); }, 500)
-        }
-        return false;
-    });
+        \$('[name="ssl"]').click(function() {
+            // Use CSS transitions to do some highlighting
+            var portBox = \$(this).parent().parent().find('[name="port"]')
+            if(this.checked) {
+                // Enabled SSL change port when not already a custom port
+                if(portBox.val() == '119') {
+                    portBox.val('563')
+                    portBox.addClass('port-highlight')
+                }
+            } else {
+                // Remove SSL port
+                if(portBox.val() == '563') {
+                    portBox.val('119')
+                    portBox.addClass('port-highlight')
+                }
+            }
+            setTimeout(function() { portBox.removeClass('port-highlight') }, 2000)
+        })
 
-    \$('.toggleServerCheckbox').click(function(){
-        var whichServer = \$(this).attr("name");
-        \$.ajax({
-            type: "POST",
-            url: "toggleServer",
-            data: {server: whichServer, session: "$session" }
-        }).done(function() {
-            // Let us leave!
-            formWasSubmitted = true;
-            formHasChanged = false;
-            setTimeout(function() { location.reload(); }, 100)
+        \$('.testServer').click(function(event){
+            removeObfuscation()
+            var theButton = \$(this)
+            var resultBox = theButton.parents('.col1').find('.result-box .alert');
+            theButton.attr("disabled", "disabled")
+            theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
+            \$.ajax({
+                type: "POST",
+                url: "../../tapi",
+                data: "mode=config&output=json&name=test_server&" + \$(this).parents('form:first').serialize()
+            }).then(function(data) {
+                // Let's replace the link
+                msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
+                msg = msg.replace('-', '<br>')
+                // Fill the box and enable the button
+                resultBox.removeClass('alert-success alert-danger').show()
+                resultBox.html(msg)
+                theButton.removeAttr("disabled")
+                theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
+
+                // Succes or not?
+                if(data.value.result) {
+                    resultBox.addClass('alert-success')
+                    resultBox.prepend('<span class="glyphicon glyphicon-ok-sign"></span> ')
+                } else {
+                    resultBox.addClass('alert-danger')
+                    resultBox.prepend('<span class="glyphicon glyphicon-exclamation-sign"></span> ')
+                }
+            });
+        });
+
+        \$('.delServer').click(function(){
+            if( confirm("$T('Plush-confirm')") ) {
+                \$(this).parents('form:first').attr('action','delServer').submit();
+                // Let us leave!
+                formWasSubmitted = true;
+                formHasChanged = false;
+                setTimeout(function() { location.reload(); }, 500)
+            }
+            return false;
+        });
+
+        \$('.clrServer').click(function(){
+            if( confirm("$T('Plush-confirm')") ) {
+                \$(this).parents('form:first').attr('action','clrServer').submit();
+                // Let us leave!
+                formWasSubmitted = true;
+                formHasChanged = false;
+                setTimeout(function() { location.reload(); }, 500)
+            }
+            return false;
+        });
+
+        \$('.toggleServerCheckbox').click(function(){
+            var whichServer = \$(this).attr("name");
+            \$.ajax({
+                type: "POST",
+                url: "toggleServer",
+                data: {server: whichServer, session: "$session" }
+            }).done(function() {
+                // Let us leave!
+                formWasSubmitted = true;
+                formHasChanged = false;
+                setTimeout(function() { location.reload(); }, 100)
+            });
         });
     });
-});
 </script>
 
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->
