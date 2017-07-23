@@ -1022,9 +1022,13 @@ input[type="checkbox"] {
     left: 50%;
     margin-left: -7%;
     min-width: initial;
+    opacity: 0.8;
 }
 
-.Servers .ct-grid.ct-vertical:last-of-type,
+.Servers .chart-selector:hover {
+    opacity: 1;
+}
+
 .Servers .ct-grid.ct-vertical:first-of-type {
     display: none;
 }
