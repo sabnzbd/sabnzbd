@@ -468,7 +468,7 @@
             retention_number.show()
             // Days or number?
             if(retention_select.indexOf("d") !== -1) {
-                retention_number.attr('placeholder', '$T('days')')
+                retention_number.attr('placeholder', '$T('days').capitalize()')
                 if(retention_number.val()) {
                     retention_setting.val(retention_number.val() + 'd')
                 } else if(parseInt(retention_setting.val()) > 0) {

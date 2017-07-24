@@ -369,7 +369,7 @@ SKIN_TEXT = {
     'history_retention-number' : TT('Keep maximum number of completed jobs'),
     'history_retention-days' : TT('Keep completed jobs maximum number of days'),
     'history_retention-none' : TT('Do not keep any completed jobs'),
-    'history_retention-limit': TT('History item limit'),
+    'history_retention-limit': TT('Jobs'),
     'button-saveChanges' : TT('Save Changes'),
     'button-restoreDefaults' : TT('Restore Defaults'),
     'explain-restoreDefaults' : TT('Reset'),
