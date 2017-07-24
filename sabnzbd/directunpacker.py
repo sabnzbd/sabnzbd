@@ -177,7 +177,7 @@ class DirectUnpacker(threading.Thread):
                 # Add to success
                 self.success_sets.append(self.cur_setname)
                 logging.info('DirectUnpack completed for %s', self.cur_setname)
-                self.nzo.set_action_line(T('Unpacking'), T('Completed'))
+                self.nzo.set_action_line(T('Direct Unpack'), T('Completed'))
 
                 # Write current log
                 unrar_log.append(linebuf.strip())
@@ -222,7 +222,7 @@ class DirectUnpacker(threading.Thread):
                     if not last_volume_linebuf or last_volume_linebuf != linebuf:
                         # Next volume
                         self.cur_volume += 1
-                        self.nzo.set_action_line(T('Unpacking'), self.get_formatted_stats())
+                        self.nzo.set_action_line(T('Direct Unpack'), self.get_formatted_stats())
                         logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
                     last_volume_linebuf = linebuf
 
