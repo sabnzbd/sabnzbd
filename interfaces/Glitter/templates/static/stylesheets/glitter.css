@@ -533,9 +533,16 @@ tbody>tr>td:last-child {
 }
 
 .hover-button.disabled,
-.hover-button.disabled:hover {
+.hover-button.disabled:hover,
+.name-options.disabled .hover-button,
+.name-options.disabled .hover-button:hover {
     cursor: not-allowed !important;
     opacity: 0.1 !important;
+    pointer-events: none;
+}
+
+.name-options.disabled {
+    cursor: not-allowed !important;
 }
 
 .info-container {
@@ -656,12 +663,14 @@ td.name .name-icons {
     text-decoration: none !important;
 }
 
-.queue-table td.name:hover .name-icons {
-    display: none;
-}
-
 td.name .name-icons .glyphicon {
     margin-left: 2px;
+    top: 2px;
+    font-weight: bold;
+}
+
+.glyphicon-chevron-down,
+.glyphicon-chevron-up  {
     top: 2px;
     font-weight: bold;
 }

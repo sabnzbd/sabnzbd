@@ -1020,7 +1020,8 @@ input[type="checkbox"] {
     display: block;
     top: -7px;
     left: 50%;
-    margin-left: -7%;
+    width: 120px;
+    margin-left: -40px;
     min-width: initial;
     opacity: 0.8;
 }

@@ -800,6 +800,7 @@ SKIN_TEXT = {
     'Glitter-page' : TT('page'),
     'Glitter-loading' : TT('Loading'),
     'Glitter-articles' : TT('articles'),
+    'Glitter-rename' : TT('Rename'),
     'Glitter-repairQueue' : TT('Queue repair'),
     'Glitter-showActiveConnections' : TT('Show active connections'),
     'Glitter-unblockServer' : TT('Unblock'),
