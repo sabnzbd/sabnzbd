@@ -859,7 +859,7 @@ class NzbObject(TryList):
         if duplicate or self.priority == DUP_PRIORITY:
             if cfg.no_dupes() == 4 or cfg.no_series_dupes() == 4:
                 if cfg.warn_dupl_jobs():
-                    logging.warning(T('Tagging duplicate NZB "%s"'), filename)
+                    logging.warning('%s: "%s"', T('Duplicate NZB'), filename)
                 self.duplicate = True
                 self.priority = NORMAL_PRIORITY
             else:
