@@ -1346,9 +1346,12 @@ class NzbObject(TryList):
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
                 self.set_unpack_info('Source', self.url, unique=True)
-            servers = config.get_servers()
+
             if len(self.servercount) > 0:
-                msgs = ['%s=%sB' % (servers[server].displayname(), to_units(self.servercount[server])) for server in self.servercount if server in servers]
+                # Sort the servers first
+                servers = config.get_servers()
+                server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
+                msgs = ['%s=%sB' % (servers[server_name].displayname(), to_units(self.servercount[server_name])) for server_name in server_names if server_name in self.servercount]
                 self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
     @synchronized(NZO_LOCK)
