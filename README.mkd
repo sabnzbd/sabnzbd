@@ -1,10 +1,21 @@
-Release Notes  -  SABnzbd 2.2.0 Beta 1
+Release Notes  -  SABnzbd 2.2.0 Beta 2
 =========================================================
 
 NOTE: Due to changes in this release, the queue will be converted when 2.2.0
 is started for the first time. Job order, settings and data will be
 preserved, but all jobs will be unpaused and URL's that did not finish
 fetching before the upgrade will be lost!
+
+## Bugfixes and changes since Beta 1
+- Graphical overview of daily server usage on Servers page
+- New option History Retention to limit number of jobs in History
+- Add Retry All Failed button to Glitter
+- Add option to only tag a duplicate job without pausing or removing it
+- Remove video and audio rating icons from Queue
+- Show vote buttons instead of video and audio rating buttons in History
+- Direct Unpack could crash
+- Wizard was always accessible, even with username and password set
+- Several styling fixes in the interface
 
 ## Bugfixes since Alpha 3
 - Bugfixes and stability updates for Direct Unpack
