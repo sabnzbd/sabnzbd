@@ -95,7 +95,8 @@ def set_bonjour(host=None, port=None):
             domain=domain,
             host=zhost,
             port=int(port),
-            txtRecord=pybonjour.TXTRecord({'path': '/sabnzbd/'}),
+            txtRecord=pybonjour.TXTRecord({'path': '/sabnzbd/',
+                                           'https': cfg.enable_https()}),
             callBack=_zeroconf_callback)
     except sabnzbd.utils.pybonjour.BonjourError:
         _BONJOUR_OBJECT = None
