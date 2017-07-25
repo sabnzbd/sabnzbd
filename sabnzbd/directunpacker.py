@@ -224,8 +224,15 @@ class DirectUnpacker(threading.Thread):
                         self.cur_volume += 1
                         self.nzo.set_action_line(T('Direct Unpack'), self.get_formatted_stats())
                         logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
+
+                    # If lines did not change and we don't have the next volume, this download is missing files!
+                    if last_volume_linebuf == linebuf and not self.have_next_volume():
+                        logging.info('DirectUnpack failed due to missing files %s', self.cur_setname)
+                        self.abort()
+
                     last_volume_linebuf = linebuf
 
+            # Show the log
             if linebuf.endswith('\n'):
                 unrar_log.append(linebuf.strip())
                 linebuf = ''
