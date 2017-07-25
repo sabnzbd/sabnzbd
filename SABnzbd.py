@@ -1374,7 +1374,14 @@ def main():
 
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
-    sabnzbd.zconfig.set_bonjour(cherryhost, cherryport)
+
+    # Bonjour needs a ip. Lets try to find it.
+    try:
+        z_host = socket.gethostbyname(socket.gethostname())
+    except socket.gaierror:
+        z_host = cherryhost
+
+    sabnzbd.zconfig.set_bonjour(z_host, cherryport)
 
     mail = None
     if sabnzbd.WIN32:
