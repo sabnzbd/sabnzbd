@@ -376,7 +376,7 @@ def analyze_rar_filename(filename):
         return m.group(1), int_conv(m.group(3))
     else:
         # Detect if first of "rxx" set
-        if filename.endswith('.rar') and '.part' not in filename:
+        if filename.endswith('.rar'):
             return os.path.splitext(filename)[0], 1
     return None, None
 
