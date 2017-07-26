@@ -32,6 +32,7 @@ from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_s
 from sabnzbd.encoding import unicoder
 from sabnzbd.newsunpack import build_command
 from sabnzbd.postproc import prepare_extraction_path
+from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 if sabnzbd.WIN32:
@@ -58,6 +59,7 @@ class DirectUnpacker(threading.Thread):
         self.next_file_lock = threading.Condition(threading.RLock())
 
         self.unpack_dir_info = None
+        self.rarfile_nzf = None
         self.cur_setname = None
         self.cur_volume = 0
         self.total_volumes = {}
@@ -78,6 +80,7 @@ class DirectUnpacker(threading.Thread):
         self.active_instance = None
         self.cur_setname = None
         self.cur_volume = 0
+        self.rarfile_nzf = None
 
     def check_requirements(self):
         if not cfg.direct_unpack() or self.killed or not self.nzo.unpack or self.nzo.bad_articles or sabnzbd.newsunpack.RAR_PROBLEM:
@@ -292,10 +295,10 @@ class DirectUnpacker(threading.Thread):
             action = 'x'
 
         # The first NZF
-        rarfile_nzf = self.have_next_volume()
+        self.rarfile_nzf = self.have_next_volume()
 
         # Generate command
-        rarfile_path = os.path.join(self.nzo.downpath, rarfile_nzf.filename)
+        rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
         if sabnzbd.WIN32:
             if not has_win_device(rarfile_path):
                 command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
@@ -331,6 +334,9 @@ class DirectUnpacker(threading.Thread):
             logging.info('Aborting DirectUnpack for %s', self.cur_setname)
             self.killed = True
 
+            # Save reference to the first rarfile
+            rarfile_nzf = self.rarfile_nzf
+
             # Abort Unrar
             if self.active_instance:
                 self.active_instance.kill()
@@ -347,8 +353,24 @@ class DirectUnpacker(threading.Thread):
 
             # Remove files
             if self.unpack_dir_info:
-                extraction_path, _, _, _, _ = self.unpack_dir_info
-                remove_all(extraction_path, recursive=True)
+                extraction_path, _, _, one_folder, _ = self.unpack_dir_info
+                # In case of flat-unpack we need to remove the files manually
+                if one_folder or cfg.flat_unpack():
+                    # RarFile can fail for mysterious reasons
+                    try:
+                        rar_contents = RarFile(os.path.join(self.nzo.downpath, rarfile_nzf.filename), all_names=True).filelist()
+                        for rm_file in rar_contents:
+                            # Flat-unpack, so remove foldername from RarFile output
+                            f = os.path.join(extraction_path, os.path.basename(rm_file))
+                            logging.debug('Removing file %s', f)
+                            os.remove(f)
+                    except:
+                        # The user will have to remove it themselves
+                        logging.info('Failed to clean Direct Unpack after aborting %s', rarfile_nzf.filename, exc_info=True)
+                        pass
+                else:
+                    # We can just remove the whole path
+                    remove_all(extraction_path, recursive=True)
                 # Remove dir-info
                 self.unpack_dir_info = None
 
