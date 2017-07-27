@@ -571,7 +571,10 @@ def prepare_extraction_path(nzo):
     complete_dir = long_path(complete_dir)
 
     # TV/Movie/Date Renaming code part 1 - detect and construct paths
-    file_sorter = Sorter(nzo, nzo.cat)
+    if cfg.enable_meta():
+        file_sorter = Sorter(nzo, nzo.cat)
+    else:
+        file_sorter = Sorter(None, nzo.cat)
     complete_dir = file_sorter.detect(nzo.final_name, complete_dir)
     if file_sorter.sort_file:
         one_folder = False
