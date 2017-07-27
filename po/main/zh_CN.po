@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-17 18:42+0000\n"
+"POT-Creation-Date: 2017-07-24 08:21+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-18 05:27+0000\n"
+"X-Launchpad-Export-Date: 2017-07-25 06:11+0000\n"
 "X-Generator: Launchpad (build 18419)\n"
 
 #: SABnzbd.py [Error message]
@@ -100,7 +100,7 @@ msgid "Error"
 msgstr "错误"
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/interface.py
-#: sabnzbd/osxmenu.py
+#: sabnzbd/osxmenu.py # sabnzbd/wizard.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd 关闭完成"
 
@@ -423,11 +423,15 @@ msgstr "检测到 UUencode，但是仅有 yEnc 编码受支持 [%s]"
 msgid "%s => missing from all servers, discarding"
 msgstr "%s => 所有服务器均缺失，正在舍弃"
 
-#: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py
-msgid "Unpacking"
-msgstr "正在解压"
+#: sabnzbd/directunpacker.py # sabnzbd/directunpacker.py
+#: sabnzbd/directunpacker.py # sabnzbd/skintext.py
+msgid "Direct Unpack"
+msgstr ""
+
+#: sabnzbd/directunpacker.py # sabnzbd/skintext.py [PP status]
+#: sabnzbd/skintext.py [History: job status]
+msgid "Completed"
+msgstr "完成"
 
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
@@ -818,6 +822,11 @@ msgstr "正在尝试 unrar，使用密码 \"%s\""
 msgid "Unpacking failed, archive requires a password"
 msgstr "解压失败，压缩文件需要密码"
 
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Unpacking"
+msgstr "正在解压"
+
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP phase "unpack"]
 msgid "Unpack"
 msgstr "解压"
@@ -984,12 +993,12 @@ msgstr "磁盘空间已满"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Verifying"
 msgstr "正在验证"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/skintext.py [PP status]
+#: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
 msgstr "正在检查"
 
@@ -1148,7 +1157,7 @@ msgstr "正在忽略重复 NZB \"%s\""
 msgid "Failing duplicate NZB \"%s\""
 msgstr "失败于重复的 NZB 文件 \"%s\""
 
-#: sabnzbd/nzbstuff.py
+#: sabnzbd/nzbstuff.py # sabnzbd/nzbstuff.py [Warning message]
 msgid "Duplicate NZB"
 msgstr "重复的 NZB 文件"
 
@@ -1255,7 +1264,7 @@ msgid "Limit Speed"
 msgstr "限速"
 
 #: sabnzbd/osxmenu.py # sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py
-#: sabnzbd/skintext.py [#: Config->Scheduler] # sabnzbd/skintext.py [Pause downloading] # sabnzbd/skintext.py [Three way switch for duplicates]
+#: sabnzbd/skintext.py [#: Config->Scheduler] # sabnzbd/skintext.py [Pause downloading] # sabnzbd/skintext.py [Four way switch for duplicates]
 #: sabnzbd/skintext.py [Config->Scheduling]
 msgid "Pause"
 msgstr "暂停"
@@ -1681,10 +1690,6 @@ msgstr "服务器"
 msgid "Failure"
 msgstr "失败"
 
-#: sabnzbd/skintext.py [PP status] # sabnzbd/skintext.py [History: job status]
-msgid "Completed"
-msgstr "完成"
-
 #: sabnzbd/skintext.py [PP status] # sabnzbd/skintext.py
 msgid "Failed"
 msgstr "失败"
@@ -1892,6 +1897,54 @@ msgstr "月"
 #: sabnzbd/skintext.py
 msgid "Year"
 msgstr "年"
+
+#: sabnzbd/skintext.py
+msgid "January"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "February"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "March"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "April"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "May"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "June"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "July"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "August"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "September"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "October"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "November"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "December"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Day of month"
@@ -2697,6 +2750,36 @@ msgid ""
 msgstr "下载后应删除的文件扩展名列表。<br />例如: <b>nfo</b> 或 <b>nfo, sfv</b>"
 
 #: sabnzbd/skintext.py
+msgid "History Retention"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Automatically delete completed jobs from History. Beware that Duplicate "
+"Detection and some external tools rely on History information."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Keep all jobs"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Keep maximum number of completed jobs"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Keep completed jobs maximum number of days"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Do not keep any completed jobs"
+msgstr ""
+
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "History item limit"
+msgstr "历史数目限制"
+
+#: sabnzbd/skintext.py
 msgid "Save Changes"
 msgstr "保存更改"
 
@@ -3002,13 +3085,17 @@ msgid ""
 "items in your History)"
 msgstr "在剧目中检测相同的剧集 (基于您的历史项目，参照 \"name/season/episode\" 的规则)"
 
-#: sabnzbd/skintext.py [Three way switch for duplicates]
+#: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Discard"
 msgstr "舍弃"
 
-#: sabnzbd/skintext.py [Three way switch for duplicates]
+#: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Fail job (move to History)"
 msgstr "失败的任务 (移动到历史)"
+
+#: sabnzbd/skintext.py [Four way switch for duplicates]
+msgid "Tag job"
+msgstr ""
 
 #: sabnzbd/skintext.py [Three way switch for encrypted posts]
 msgid "Abort"
@@ -3102,10 +3189,6 @@ msgstr "按发布时间排列"
 #: sabnzbd/skintext.py
 msgid "Automatically sort items by (average) age."
 msgstr "自动按 (平均) 发布时间排列项目。"
-
-#: sabnzbd/skintext.py
-msgid "Direct Unpack"
-msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4159,10 +4242,6 @@ msgid "Queue item limit"
 msgstr "队列数目限制"
 
 #: sabnzbd/skintext.py
-msgid "History item limit"
-msgstr "历史数目限制"
-
-#: sabnzbd/skintext.py
 msgid "Date format"
 msgstr "日期格式"
 
@@ -4185,6 +4264,10 @@ msgstr "正在加载"
 #: sabnzbd/skintext.py
 msgid "articles"
 msgstr "篇文章"
+
+#: sabnzbd/skintext.py
+msgid "Rename"
+msgstr "重命名"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Queue repair"
@@ -5114,9 +5197,6 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Pause for 24 hours"
 #~ msgstr "暂停 24 小时"
-
-#~ msgid "Rename"
-#~ msgstr "重命名"
 
 #~ msgid "Left"
 #~ msgstr "剩余"
