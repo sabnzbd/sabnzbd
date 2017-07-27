@@ -135,7 +135,7 @@
                     <div class="field-pair">
                         <label class="config" for="direct_unpack">$T('opt-direct_unpack')</label>
                         <input type="checkbox" name="direct_unpack" id="direct_unpack" value="1" <!--#if int($direct_unpack) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-direct_unpack')</span>
+                        <span class="desc">$T('explain-direct_unpack').replace('. ', '.<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
@@ -213,11 +213,15 @@
                         <span class="desc">$T('explain-ignore_samples') $T('igsam-del').</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
+                        <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_meta').replace('. ', '.<br/>')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                         <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>
                         <span class="desc">$T('explain-cleanup_list')</span>
                     </div>
-
                     <div class="field-pair">
                         <label class="config" for="history_retention_select">$T('opt-history_retention')</label>
                         <input type="hidden" name="history_retention" id="history_retention" value="$history_retention">
@@ -230,7 +234,6 @@
                         <input type="number" id="history_retention_number" name="history_retention_number" min="1">
                         <span class="desc">$T('explain-history_retention').replace('. ', '.<br/>')</span>
                     </div>
-
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                         <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
@@ -247,7 +250,7 @@
                     <div class="field-pair">
                         <label class="config" for="folder_rename">$T('opt-folder_rename')</label>
                         <input type="checkbox" name="folder_rename" id="folder_rename" value="1" <!--#if int($folder_rename) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-folder_rename')</span>
+                        <span class="desc">$T('explain-folder_rename').replace('. ', '.<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="replace_spaces">$T('opt-replace_spaces')</label>
@@ -266,11 +269,6 @@
                         <span class="desc">$T('explain-sanitize_safe')</span>
                     </div>
                     <!--#end if#-->
-                    <div class="field-pair">
-                        <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
-                        <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_meta')</span>
-                    </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                         <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>

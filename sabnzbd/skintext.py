@@ -461,7 +461,7 @@ SKIN_TEXT = {
     'opt-new_nzb_on_failure' : TT('On failure, try alternative NZB'),
     'explain-new_nzb_on_failure' : TT('Some servers provide an alternative NZB when a download fails.'),
     'opt-enable_meta' : TT('Use tags from indexer'),
-    'explain-enable_meta' : TT('Use tags from indexer for title, season, episode, etc. Otherwise all naming is derived from the NZB name.'),
+    'explain-enable_meta' : TT('When sorting, use tags from indexer for title, season, episode, etc. Otherwise all naming is derived from the NZB name.'),
     'opt-folder_rename' : TT('Enable folder rename'),
     'explain-folder_rename' : TT('Use temporary names during post processing. Disable when your system doesn\'t handle that properly.'),
     'opt-pre_script' : TT('Pre-queue user script'),

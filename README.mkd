@@ -11,7 +11,7 @@ fetching before the upgrade will be lost!
   post-processing time but requires capable hard drive. Only works for jobs that
   do not need repair. Will be enabled if your incomplete folder-speed > 40MB/s
 - Reduced memory usage, especially with larger queues
-- Graphical overview of daily server-usage on Servers page
+- Graphical overview of server-usage on Servers page
 - Notifications can now be limited to certain Categories
 - Removed 5 second delay between fetching URLs
 - Each item in the Queue and File list now has Move to Top/Bottom buttons
