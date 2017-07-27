@@ -187,6 +187,7 @@ SKIN_TEXT = {
     'ft-newRelease@1' : TT('New release %s available at'), # Used in Footer
 
 # Main page
+    'useGlitter': TT('Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin.'),
     'shutdownOK?' : TT('Are you sure you want to shutdown SABnzbd?'),
     'link-shutdown' : TT('Shutdown'), #: Shutdown SABnzbd
     'link-pause' : TT('Pause'), #: Pause downloading

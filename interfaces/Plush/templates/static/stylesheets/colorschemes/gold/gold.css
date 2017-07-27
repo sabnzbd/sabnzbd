@@ -109,11 +109,6 @@ body {
   font-weight: bold;
 }
 
-#new_release {
-  color: green;
-  font-weight: bold;
-}
-
 #livetip {
   position: absolute;
   background-color: #cfc;
@@ -343,6 +338,7 @@ body {
   clear:left;
   padding: 0 20px 0 25px;
   font-size:90%;
+  font-weight: bold;
 }
 #nav_text_left a, #nav_text_right a {
   color:#000;
@@ -1083,7 +1079,7 @@ tr:hover .history_added { color: black; }
   color: red;
   margin-left: 10px;
 }
- 
+
 .rating_icon_vision {
   width: 16px;
   height: 16px;

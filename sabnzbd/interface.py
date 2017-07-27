@@ -327,7 +327,7 @@ class MainPage(object):
         if not check_login():
             raise NeedLogin()
 
-        if not cfg.notified_new_skin() and cfg.web_dir() != 'Glitter':
+        if not cfg.notified_new_skin() and cfg.web_dir() not in ('Glitter', 'Plush'):
             logging.warning(T('Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin.'))
         if not cfg.notified_new_skin():
             cfg.notified_new_skin.set(1)
