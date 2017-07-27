@@ -173,7 +173,7 @@ quota_resume = OptionBool('misc', 'quota_resume', False)
 quota_period = OptionStr('misc', 'quota_period', 'm')
 
 rating_enable = OptionBool('misc', 'rating_enable', False)
-rating_host = OptionStr('misc', 'rating_host', 'api.oznzb.com')
+rating_host = OptionStr('misc', 'rating_host')
 rating_api_key = OptionStr('misc', 'rating_api_key')
 rating_filter_enable = OptionBool('misc', 'rating_filter_enable', False)
 rating_filter_abort_audio = OptionNumber('misc', 'rating_filter_abort_audio', 0)

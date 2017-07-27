@@ -311,9 +311,6 @@ def _analyse(fn, url):
         logging.debug('Received nothing from indexer, retry after 60 sec')
         return None, fn.msg, True, 60, data
 
-    if '.oznzb.com' in url and 'login?' in fn.url:
-        return None, T('Unauthorized access'), False, 0, data
-
     return fn, fn.msg, False, 0, data
 
 

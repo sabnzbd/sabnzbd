@@ -271,7 +271,9 @@ class Rating(Thread):
         api_key = cfg.rating_api_key()
         rating_host = cfg.rating_host()
         rating_url = _RATING_URL
+
         if not api_key:
+            _warn('%s: %s - %s' % (T('Cannot send, missing required data'), T('API Key'), T('This key provides identity to indexer. Check your profile on the indexer\'s website.')))
             return True
 
         requests = []
@@ -284,6 +286,7 @@ class Rating(Thread):
             if host_parsed.path and host_parsed.path != '/':
                 rating_url = host_parsed.path + '?' + host_parsed.query if host_parsed.query else host_parsed.path
         if not rating_host:
+            _warn('%s: %s' % (T('Cannot send, missing required data'), T('Server address')))
             return True
         if rating.changed & Rating.CHANGED_USER_VIDEO:
             requests.append({'m': 'r', 'r': 'videoQuality', 'rn': rating.user_video})

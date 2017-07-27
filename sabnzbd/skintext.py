@@ -521,7 +521,7 @@ SKIN_TEXT = {
     'opt-fail_hopeless_jobs' : TT('Abort jobs that cannot be completed'),
     'explain-fail_hopeless_jobs' : TT('When during download it becomes clear that too much data is missing, abort the job'),
     'opt-rating_enable' : TT('Enable Indexer Integration'),
-    'explain-rating_enable' : TT('Indexers can supply rating information when a job is added and SABnzbd can report to the indexer if a job couldn\'t be completed. Depending on your indexer, the API key setting can be left blank.'),
+    'explain-rating_enable' : TT('Indexers can supply rating information when a job is added and SABnzbd can report to the indexer if a job couldn\'t be completed.'),
     'opt-rating_api_key' : TT('API Key'),
     'explain-rating_api_key' : TT('This key provides identity to indexer. Check your profile on the indexer\'s website.'),
     'opt-rating_filter_enable' : TT('Enable Filtering'),
