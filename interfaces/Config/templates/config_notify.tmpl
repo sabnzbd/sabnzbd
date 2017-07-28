@@ -178,6 +178,45 @@
        </div>
     </div>
     <!--#end if#-->
+    <div class="section" id="nscript">
+        <div class="col2">
+            <h3>$T('section-NScript')</h3>
+            <table>
+                <tr>
+                    <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
+                    <td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
+                </tr>
+            </table>
+            <em>$T('explain-nscript_enable')</em><br><a href="$helpuri$help_uri#nscript" target="_blank">$T('readwiki')</a>
+            $show_cat_box('nscript')
+        </div>
+        <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
+                    <select name="nscript_script">
+                        <!--#for $sc in $scripts#-->
+                        <option value="$sc" <!--#if $nscript_script == $sc then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
+                        <!--#end for#-->
+                    </select>
+                    <span class="desc">$T('explain-nscript_script')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="nscript_parameters">$T('opt-nscript_parameters')</label>
+                    <input type="text" name="nscript_parameters" id="nscript_parameters" value="$nscript_parameters" />
+                    <span class="desc">$T('Optional') - $T('explain-nscript_parameters')</span>
+                </div>
+                $show_notify_checkboxes('nscript')
+                <div class="field-pair">
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                    <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
+                </div>
+                <div class="field-pair result-box">
+                    <div class="alert"></div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
     <div class="section" id="growl">
         <div class="col2">
             <h3>$T('growlSettings') <a href="$helpuri$help_uri#toc3" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
@@ -349,45 +388,6 @@
                 </div>
            </fieldset>
        </div>
-    </div>
-    <div class="section" id="nscript">
-        <div class="col2">
-            <h3>$T('section-NScript')</h3>
-            <table>
-                <tr>
-                    <td><input type="checkbox" name="nscript_enable" id="nscript_enable" value="1" <!--#if int($nscript_enable) > 0 then 'checked="checked"' else ""#--> /></td>
-                    <td><label for="nscript_enable"> $T('opt-nscript_enable')</label></td>
-                </tr>
-            </table>
-            <em>$T('explain-nscript_enable')</em>
-            $show_cat_box('nscript')
-        </div>
-        <div class="col1" <!--#if int($nscript_enable) > 0 then '' else 'style="display:none"'#-->>
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
-                    <select name="nscript_script">
-                        <!--#for $sc in $scripts#-->
-                        <option value="$sc" <!--#if $nscript_script == $sc then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
-                        <!--#end for#-->
-                    </select>
-                    <span class="desc">$T('explain-nscript_script')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="nscript_parameters">$T('opt-nscript_parameters')</label>
-                    <input type="text" name="nscript_parameters" id="nscript_parameters" value="$nscript_parameters" />
-                    <span class="desc">$T('Optional') - $T('explain-nscript_parameters')</span>
-                </div>
-                $show_notify_checkboxes('nscript')
-                <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                    <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
-                </div>
-            </fieldset>
-        </div>
     </div>
     </form>
 </div><!-- /colmask -->
