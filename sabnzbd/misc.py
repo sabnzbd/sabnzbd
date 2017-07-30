@@ -843,9 +843,11 @@ def get_cache_limit():
 
 
 ##############################################################################
-# Directory operations
+# Locked directory operations to avoid problems with simultaneous add/remove
 ##############################################################################
+DIR_LOCK = threading.RLock()
 
+@synchronized(DIR_LOCK)
 def get_unique_path(dirpath, n=0, create_dir=True):
     """ Determine a unique folder or filename """
 
@@ -865,6 +867,7 @@ def get_unique_path(dirpath, n=0, create_dir=True):
         return get_unique_path(dirpath, n=n + 1, create_dir=create_dir)
 
 
+@synchronized(DIR_LOCK)
 def get_unique_filename(path):
     """ Check if path is unique. If not, add number like: "/path/name.NUM.ext". """
     num = 1
@@ -877,6 +880,7 @@ def get_unique_filename(path):
     return path
 
 
+@synchronized(DIR_LOCK)
 def create_dirs(dirpath):
     """ Create directory tree, obeying permissions """
     if not os.path.exists(dirpath):
@@ -887,6 +891,7 @@ def create_dirs(dirpath):
     return dirpath
 
 
+@synchronized(DIR_LOCK)
 def move_to_path(path, new_path):
     """ Move a file to a new path, optionally give unique filename
         Return (ok, new_path)
@@ -927,6 +932,7 @@ def move_to_path(path, new_path):
     return ok, new_path
 
 
+@synchronized(DIR_LOCK)
 def cleanup_empty_directories(path):
     """ Remove all empty folders inside (and including) 'path' """
     path = os.path.normpath(path)
@@ -947,6 +953,7 @@ def cleanup_empty_directories(path):
         pass
 
 
+@synchronized(DIR_LOCK)
 def get_filepath(path, nzo, filename):
     """ Create unique filepath """
     # This procedure is only used by the Assembler thread
@@ -981,6 +988,94 @@ def get_filepath(path, nzo, filename):
             break
 
     return fullPath
+
+
+@synchronized(DIR_LOCK)
+def renamer(old, new):
+    """ Rename file/folder with retries for Win32 """
+    # Sanitize last part of new name
+    path, name = os.path.split(new)
+    # Use the more stringent folder rename to end up with a nicer name,
+    # but do not trim size
+    new = os.path.join(path, sanitize_foldername(name, False))
+
+    logging.debug('Renaming "%s" to "%s"', old, new)
+    if sabnzbd.WIN32:
+        retries = 15
+        while retries > 0:
+            # First we try 3 times with os.rename
+            if retries > 12:
+                try:
+                    os.rename(old, new)
+                    return
+                except:
+                    retries -= 1
+                    time.sleep(3)
+                    continue
+
+            # Now we try the back-up method
+            logging.debug('Could not rename, trying move for %s to %s', old, new)
+            try:
+                shutil.move(old, new)
+                return
+            except WindowsError, err:
+                logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
+                if err[0] == 32:
+                    logging.debug('Retry rename %s to %s', old, new)
+                    retries -= 1
+                else:
+                    raise WindowsError(err)
+            time.sleep(3)
+        raise WindowsError(err)
+    else:
+        shutil.move(old, new)
+
+
+@synchronized(DIR_LOCK)
+def remove_dir(path):
+    """ Remove directory with retries for Win32 """
+    logging.debug('Removing dir %s', path)
+    if sabnzbd.WIN32:
+        retries = 15
+        while retries > 0:
+            try:
+                os.rmdir(path)
+                return
+            except WindowsError, err:
+                if err[0] == 32:
+                    logging.debug('Retry delete %s', path)
+                    retries -= 1
+                else:
+                    raise WindowsError(err)
+            time.sleep(3)
+        raise WindowsError(err)
+    else:
+        os.rmdir(path)
+
+
+@synchronized(DIR_LOCK)
+def remove_all(path, pattern='*', keep_folder=False, recursive=False):
+    """ Remove folder and all its content (optionally recursive) """
+    if os.path.exists(path):
+        files = globber_full(path, pattern)
+        if pattern == '*' and not sabnzbd.WIN32:
+            files.extend(globber_full(path, '.*'))
+
+        for f in files:
+            if os.path.isfile(f):
+                try:
+                    logging.debug('Removing file %s', f)
+                    os.remove(f)
+                except:
+                    logging.info('Cannot remove file %s', f)
+            elif recursive:
+                remove_all(f, pattern, False, True)
+        if not keep_folder:
+            try:
+                logging.debug('Removing dir %s', path)
+                os.rmdir(path)
+            except:
+                logging.info('Cannot remove folder %s', path)
 
 
 def trim_win_path(path):
@@ -1328,91 +1423,6 @@ def ip_extract():
             if m and m.group(2):
                 ips.append(m.group(2))
     return ips
-
-
-def renamer(old, new):
-    """ Rename file/folder with retries for Win32 """
-    # Sanitize last part of new name
-    path, name = os.path.split(new)
-    # Use the more stringent folder rename to end up with a nicer name,
-    # but do not trim size
-    new = os.path.join(path, sanitize_foldername(name, False))
-
-    logging.debug('Renaming "%s" to "%s"', old, new)
-    if sabnzbd.WIN32:
-        retries = 15
-        while retries > 0:
-            # First we try 3 times with os.rename
-            if retries > 12:
-                try:
-                    os.rename(old, new)
-                    return
-                except:
-                    retries -= 1
-                    time.sleep(3)
-                    continue
-
-            # Now we try the back-up method
-            logging.debug('Could not rename, trying move for %s to %s', old, new)
-            try:
-                shutil.move(old, new)
-                return
-            except WindowsError, err:
-                logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
-                if err[0] == 32:
-                    logging.debug('Retry rename %s to %s', old, new)
-                    retries -= 1
-                else:
-                    raise WindowsError(err)
-            time.sleep(3)
-        raise WindowsError(err)
-    else:
-        shutil.move(old, new)
-
-
-def remove_dir(path):
-    """ Remove directory with retries for Win32 """
-    logging.debug('Removing dir %s', path)
-    if sabnzbd.WIN32:
-        retries = 15
-        while retries > 0:
-            try:
-                os.rmdir(path)
-                return
-            except WindowsError, err:
-                if err[0] == 32:
-                    logging.debug('Retry delete %s', path)
-                    retries -= 1
-                else:
-                    raise WindowsError(err)
-            time.sleep(3)
-        raise WindowsError(err)
-    else:
-        os.rmdir(path)
-
-
-def remove_all(path, pattern='*', keep_folder=False, recursive=False):
-    """ Remove folder and all its content (optionally recursive) """
-    if os.path.exists(path):
-        files = globber_full(path, pattern)
-        if pattern == '*' and not sabnzbd.WIN32:
-            files.extend(globber_full(path, '.*'))
-
-        for f in files:
-            if os.path.isfile(f):
-                try:
-                    logging.debug('Removing file %s', f)
-                    os.remove(f)
-                except:
-                    logging.info('Cannot remove file %s', f)
-            elif recursive:
-                remove_all(f, pattern, False, True)
-        if not keep_folder:
-            try:
-                logging.debug('Removing dir %s', path)
-                os.rmdir(path)
-            except:
-                logging.info('Cannot remove folder %s', path)
 
 
 def is_writable(path):
