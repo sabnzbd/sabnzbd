@@ -1217,6 +1217,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
         verifytotal = 0
         verified = 0
 
+        in_verify_repaired = False
+
         # Loop over the output, whee
         while 1:
             char = proc.read(1)
@@ -1278,6 +1280,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                               format_time_string(time.time() - start))
                 start = time.time()
                 verified = 1
+                # Reset to use them again for verification of repair
+                verifytotal = 0
+                verifynum = 0
 
             elif line.startswith('Loading "'):
                 # Found an extra par2 file. Only the next line will tell whether it's usable
@@ -1369,9 +1374,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
 
                         else:
                             block_table.pop(block_size)
-
-                    logging.info('Added %s blocks to %s',
-                                 added_blocks, nzo.final_name)
+                    logging.info('Added %s blocks to %s', added_blocks, nzo.final_name)
 
                     if not force:
                         msg = T('Fetching %s blocks...') % str(added_blocks)
@@ -1400,6 +1403,20 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 nzo.set_unpack_info('Repair', msg)
                 logging.info('Repaired in %s', format_time_string(time.time() - start))
                 finished = 1
+
+            elif verified and line.endswith(('are missing.', 'exist but are damaged.')):
+                # Files that will later be verified after repair
+                chunks = line.split()
+                verifytotal += int(chunks[0])
+
+            elif line.startswith('Verifying repaired files'):
+                in_verify_repaired = True
+                nzo.set_action_line(T('Verifying repair'), '%02d/%02d' % (verifynum, verifytotal))
+
+            elif in_verify_repaired and line.startswith('Target'):
+                verifynum += 1
+                if verifynum <= verifytotal:
+                    nzo.set_action_line(T('Verifying repair'), '%02d/%02d' % (verifynum, verifytotal))
 
             elif line.startswith('File:') and line.find('data blocks from') > 0:
                 m = _RE_BLOCK_FOUND.search(line)
