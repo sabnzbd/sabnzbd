@@ -279,7 +279,7 @@ class NzbFile(TryList):
                 self.decodetable[partnum] = article
 
             self.import_finished = True
-        else:
+        elif not self.nzo.is_gone():
             # TEMPORARY ERRORS
             if not os.path.exists(os.path.join(self.nzf_id, self.nzo.workpath)):
                 logging.warning('Article DB file not found %s', self)
