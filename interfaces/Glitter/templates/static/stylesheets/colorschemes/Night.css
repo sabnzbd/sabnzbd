@@ -159,7 +159,9 @@ select.form-control,
 .retry-button, .retry-button-inactive,
 .history-options-show-failed,
 .queue-error-info,
-.options-bad-status {
+.options-bad-status,
+.history-failed-download:hover .retry-button .glyphicon:before,
+.retry-button:hover .glyphicon:before {
     color: #F95151 !important;
 }
 
