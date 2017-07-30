@@ -76,7 +76,7 @@ legend,
     background-color: #666;
 }
 
-.navbar-collapse.in .dropdown-menu {
+.navbar-collapse.in .dropdown-menu, {
     border: none;
 }
 
@@ -111,6 +111,7 @@ legend,
     color: #EBEBEB;
 }
 
+table,
 .table-striped>tbody>tr:nth-child(even)>td,
 .table>tbody>tr:nth-child(even)>td,
 .table th,
@@ -205,6 +206,10 @@ hr {
     border-bottom: none !important;
 }
 
+#modal-item-files .item-files-table {
+    border-bottom: 1px solid black;
+}
+
 .history-queue-swicher .nav-tabs>li>a,
 .history-queue-swicher .nav-tabs>li.active>a  {
     border-bottom: none;
@@ -220,6 +225,11 @@ hr {
 .container-compact .progress,
 .container-compact .queue .progress-bar {
     box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 1);
+}
+
+.modal-content {
+    border-color: #727272;
+    border-top: none;
 }
 
 /* Placeholders - Will not work if grouped! */
