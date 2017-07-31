@@ -653,6 +653,9 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         lines.append(line)
 
         if line.startswith('Extracting from'):
+            filename = TRANS((re.search(EXTRACTFROM_RE, line).group(1)))
+            if filename not in rarfiles:
+                rarfiles.append(filename)
             curr += 1
             nzo.set_action_line(T('Unpacking'), '%02d/%02d' % (curr, numrars))
 
