@@ -30,13 +30,13 @@
         <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="./staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
         <link rel="apple-touch-icon" sizes="192x192" href="./staticcfg/ico/android-192x192.png" />
-        <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico?v=1.0.0" data-bind="attr: { 'href': SABIcon }" />
+        <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico?v=$version" data-bind="attr: { 'href': SABIcon }" />
 
-        <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?p=$pid" />
-        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?p=$pid" />
-        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?p=$pid" media="all and (max-width: 768px)" />
+        <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?v=$version" />
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?v=$version" />
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?v=$version" media="all and (max-width: 768px)" />
         <!--#if $color_scheme not in ('Default', '') #-->
-        <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?p=$pid"/>
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?v=$version"/>
         <!--#end if#-->
 
         <!-- Make translations available in scripts -->
