@@ -851,6 +851,8 @@ def CheckFreeSpace():
             # Pause downloader, but don't save, since the disk is almost full!
             Downloader.do.pause(save=False)
             emailer.diskfull()
+            # Abort all direct unpackers, just to be sure
+            directunpacker.abort_all()
 
 
 ################################################################################
