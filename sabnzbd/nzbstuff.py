@@ -985,8 +985,8 @@ class NzbObject(TryList):
                 head, vol, block = analyse_par2(name)
                 if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
-                    # Don't postpone if all par2 should be kept
-                    if cfg.enable_par_cleanup():
+                    # Don't postpone if all par2 are desired and should be kept
+                    if not(cfg.enable_all_par() and not cfg.enable_par_cleanup()):
                         self.extrapars[parset].append(xnzf)
                         self.files.remove(xnzf)
 
