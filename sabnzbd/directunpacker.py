@@ -246,7 +246,9 @@ class DirectUnpacker(threading.Thread):
 
         # Save information if success
         if self.success_sets:
-            msg = T('Unpacked %s files/folders in %s') % (len(globber(self.unpack_dir_info[0])), format_time_string(self.unpack_time))
+            # The number is wrong if one_folder, just leave empty
+            nr_files = '' if self.unpack_dir_info[3] else len(globber(self.unpack_dir_info[0]))
+            msg = T('Unpacked %s files/folders in %s') % (nr_files, format_time_string(self.unpack_time))
             msg = '%s - %s' % (T('Direct Unpack'), msg)
             self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
 
