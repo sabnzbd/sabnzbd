@@ -355,7 +355,7 @@ class DirectUnpacker(threading.Thread):
             if self.unpack_dir_info:
                 extraction_path, _, _, one_folder, _ = self.unpack_dir_info
                 # In case of flat-unpack we need to remove the files manually
-                if one_folder or cfg.flat_unpack():
+                if one_folder:
                     # RarFile can fail for mysterious reasons
                     try:
                         rar_contents = RarFile(os.path.join(self.nzo.downpath, rarfile_nzf.filename), all_names=True).filelist()
