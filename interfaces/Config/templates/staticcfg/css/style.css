@@ -1010,6 +1010,15 @@ input[type="checkbox"] {
     stroke: #666666;
 }
 
+.Servers .ct-series-a .ct-point {
+    stroke: #666666;
+    stroke-width: 4px;
+}
+
+.Servers .ct-series-a .ct-area {
+    fill: #666666
+}
+
 .Servers .ct-label {
     font-size: 1em;
     color: black;

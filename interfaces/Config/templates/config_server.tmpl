@@ -116,7 +116,7 @@
     var serverData = {}
     var chartOptions = {
         fullWidth: true,
-        showPoint: false,
+        showArea: true,
         axisX: {
             labelOffset: {
                 x: -5
@@ -149,7 +149,7 @@
     <!--#set min_date = datetime.date.today()#-->
     <!--#for date in $server['amounts'][4]#-->
         <!--#set split_date = $date.split('-')#-->
-        <!--#set min_date = min(min_date, datetime.date(int(split_date[0]), int(split_date[1]), int(split_date[2])))#-->
+        <!--#set min_date = min(min_date, datetime.date(int(split_date[0]), int(split_date[1]), 1))#-->
     <!--#end for#-->
     <!--#set months_recorded = int((datetime.date.today()-min_date).days / (365/12))#-->
     <select class="chart-selector" name="chart-selector-${id}" id="chart-selector-${id}" data-id="${id}">
@@ -378,15 +378,16 @@
         // Show the chart
         chart = new Chartist.Line('#server-chart-'+server_id, data, chartOptions);
         chart.on('created', function(context) {
+            // Make sure to add this as the first child so it's at the bottom
             context.svg.elem('rect', {
                 x: context.chartRect.x1,
-                y: context.chartRect.y2,
+                y: context.chartRect.y2-1,
                 width: context.chartRect.width(),
                 height: context.chartRect.height()+2,
                 fill: 'none',
                 stroke: '#B9B9B9',
                 'stroke-width': '1px'
-            })
+            }, '', context.svg, true)
             \$('#server-chart-'+server_id+' .ct-label.ct-vertical').each(function(index, elmn) {
                 elmn.innerHTML += axisLabel
             })
