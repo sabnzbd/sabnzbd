@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-07-27 15:58+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-08-02 12:48+W. Europe Daylight Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -947,6 +947,11 @@ msgid "[%s] Repaired in %s"
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr ""
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/notifier.py [Notification]
 msgid "Disk full"
 msgstr ""
@@ -960,10 +965,6 @@ msgstr ""
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
-msgstr ""
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
 msgstr ""
 
 #: sabnzbd/newsunpack.py [Error message]
@@ -1121,6 +1122,10 @@ msgstr ""
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
+msgstr ""
+
+#: sabnzbd/nzbstuff.py [Warning message]
+msgid "%d files with duplicate filenames were discared for \"%s\". Enable \"allow_duplicate_files\" to allow duplicate filenames."
 msgstr ""
 
 #: sabnzbd/nzbstuff.py
