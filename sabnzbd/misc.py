@@ -104,9 +104,11 @@ def globber(path, pattern=u'*'):
     """ Return matching base file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
-        return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
-    else:
-        return []
+        try:
+            return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+        except:
+            pass
+    return []
 
 
 def globber_full(path, pattern=u'*'):
