@@ -100,14 +100,21 @@ def safe_lower(txt):
         return ''
 
 
+def safe_fnmatch(path, pattern):
+    """ fnmatch will fail if the pattern contains any of it's
+        key characters, like [, ] or !.
+    """
+    try:
+        return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+    except re.error:
+        return []
+
+
 def globber(path, pattern=u'*'):
     """ Return matching base file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
-        try:
-            return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
-        except:
-            pass
+        return safe_fnmatch(path, pattern)
     return []
 
 
@@ -116,13 +123,12 @@ def globber_full(path, pattern=u'*'):
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
         try:
-            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+            return safe_fnmatch(path, pattern)
         except UnicodeDecodeError:
             # This happens on Linux when names are incorrectly encoded, retry using a non-Unicode path
             path = path.encode('utf-8')
-            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
-    else:
-        return []
+            return safe_fnmatch(path, pattern)
+    return []
 
 
 def cat_to_opts(cat, pp=None, script=None, priority=None):
