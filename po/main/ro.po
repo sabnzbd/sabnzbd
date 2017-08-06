@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-24 08:21+0000\n"
+"POT-Creation-Date: 2017-07-27 15:12+0000\n"
 "PO-Revision-Date: 2016-07-29 16:20+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-25 06:11+0000\n"
-"X-Generator: Launchpad (build 18419)\n"
+"X-Launchpad-Export-Date: 2017-07-28 05:30+0000\n"
+"X-Generator: Launchpad (build 18439)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -656,7 +656,7 @@ msgstr ""
 "Autentificare lipsă, vă rugăm să introduceţi numele de utilizator/parola de "
 "la Configurare->General în programul dumneavoastră terţ:"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -1091,7 +1091,7 @@ msgid "Not available"
 msgstr "Indisponibil"
 
 #: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "Nu pot trimite, informații necesare lipsă"
 
@@ -1639,6 +1639,20 @@ msgstr "Eroare la oprirea sistemului"
 #: sabnzbd/rating.py [Warning message]
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Id-ul indexului (%s) nu a fost găsit pentru fișierul de rating"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+msgid "Server address"
+msgstr "Adresă server"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Cheie API"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py
+msgid ""
+"This key provides identity to indexer. Check your profile on the indexer's "
+"website."
+msgstr ""
 
 #: sabnzbd/rss.py [Error message] # sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -2825,9 +2839,9 @@ msgstr ""
 msgid "Do not keep any completed jobs"
 msgstr ""
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "History item limit"
-msgstr "Limită maximă la Istoric"
+#: sabnzbd/skintext.py
+msgid "Jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
@@ -2854,10 +2868,6 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
-
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Cheie API"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3220,6 +3230,16 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "Unele server oferă o alternativă dacă un NZB eșuează."
 
 #: sabnzbd/skintext.py
+msgid "Use tags from indexer"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"When sorting, use tags from indexer for title, season, episode, etc. "
+"Otherwise all naming is derived from the NZB name."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Activează redenumire dosar"
 
@@ -3449,14 +3469,7 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid ""
 "Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed. Depending on your "
-"indexer, the API key setting can be left blank."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
+"report to the indexer if a job couldn't be completed."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3811,10 +3824,6 @@ msgstr "Activează Growl"
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Trimite notificări Growl"
-
-#: sabnzbd/skintext.py [Address of Growl server]
-msgid "Server address"
-msgstr "Adresă server"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
@@ -4334,6 +4343,10 @@ msgstr "Folosește setările globale de interfață"
 #: sabnzbd/skintext.py
 msgid "Queue item limit"
 msgstr "Limită maximă la coadă"
+
+#: sabnzbd/skintext.py
+msgid "History item limit"
+msgstr "Limită maximă la Istoric"
 
 #: sabnzbd/skintext.py
 msgid "Date format"
@@ -4865,7 +4878,7 @@ msgstr "Redenumire fişiere similare : %s în %s nereuşită"
 msgid "Server name does not resolve"
 msgstr "Numele de server nu se rezolvă la DNS"
 
-#: sabnzbd/urlgrabber.py # sabnzbd/urlgrabber.py
+#: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
 msgstr "Acces neautorizat"
 

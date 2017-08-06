@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-24 08:21+0000\n"
-"PO-Revision-Date: 2017-07-18 20:20+0000\n"
+"POT-Creation-Date: 2017-07-27 15:12+0000\n"
+"PO-Revision-Date: 2017-07-28 22:09+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-25 06:11+0000\n"
-"X-Generator: Launchpad (build 18419)\n"
+"X-Launchpad-Export-Date: 2017-07-29 05:16+0000\n"
+"X-Generator: Launchpad (build 18441)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -648,7 +648,7 @@ msgstr ""
 ":אימות חסר, אנא הכנס שם משתמש/סיסמה מתוך תצורה->כללי לתוך תכנית הצד השלישי "
 "שלך"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -1081,7 +1081,7 @@ msgid "Not available"
 msgstr "לא זמין"
 
 #: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "לא ניתן לשלוח, נתונים דרושים חסרים"
 
@@ -1607,7 +1607,7 @@ msgstr "נכשלו בוידוא RAR קבצי"
 
 #: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py [Error message]
 msgid "Removing %s failed"
-msgstr "הסרת %s נכשלה"
+msgstr "נכשלה %s הסרת"
 
 #: sabnzbd/powersup.py [Error message]
 msgid "Failed to hibernate system"
@@ -1624,6 +1624,20 @@ msgstr "שגיאה בזמן כיבוי מערכת"
 #: sabnzbd/rating.py [Warning message]
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "לא נמצאה עבור קובץ מידרגים (%s) זהות מדדן"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+msgid "Server address"
+msgstr "כתובת שרת"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API מפתח"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py
+msgid ""
+"This key provides identity to indexer. Check your profile on the indexer's "
+"website."
+msgstr ".מפתח זה מספק זהות למדדן. בדוק את המתאר שלך באתר של המדדן"
 
 #: sabnzbd/rss.py [Error message] # sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -1801,7 +1815,7 @@ msgstr "RSS קרא הזנות"
 
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Remove failed jobs"
-msgstr "הסר עבודות כושלות"
+msgstr "הסר עבודות נכשלות"
 
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Remove completed jobs"
@@ -1921,51 +1935,51 @@ msgstr "שנה"
 
 #: sabnzbd/skintext.py
 msgid "January"
-msgstr ""
+msgstr "ינואר"
 
 #: sabnzbd/skintext.py
 msgid "February"
-msgstr ""
+msgstr "פברואר"
 
 #: sabnzbd/skintext.py
 msgid "March"
-msgstr ""
+msgstr "מרץ"
 
 #: sabnzbd/skintext.py
 msgid "April"
-msgstr ""
+msgstr "אפריל"
 
 #: sabnzbd/skintext.py
 msgid "May"
-msgstr ""
+msgstr "מאי"
 
 #: sabnzbd/skintext.py
 msgid "June"
-msgstr ""
+msgstr "יוני"
 
 #: sabnzbd/skintext.py
 msgid "July"
-msgstr ""
+msgstr "יולי"
 
 #: sabnzbd/skintext.py
 msgid "August"
-msgstr ""
+msgstr "אוגוסט"
 
 #: sabnzbd/skintext.py
 msgid "September"
-msgstr ""
+msgstr "ספטמבר"
 
 #: sabnzbd/skintext.py
 msgid "October"
-msgstr ""
+msgstr "אוקטובר"
 
 #: sabnzbd/skintext.py
 msgid "November"
-msgstr ""
+msgstr "נובמבר"
 
 #: sabnzbd/skintext.py
 msgid "December"
-msgstr ""
+msgstr "דצמבר"
 
 #: sabnzbd/skintext.py
 msgid "Day of month"
@@ -2306,15 +2320,15 @@ msgstr "ומחק קבצים NZB טהר"
 
 #: sabnzbd/skintext.py [Retry all failed jobs dialog box]
 msgid "Retry all failed jobs"
-msgstr "נסה שוב את כל העבודות שנכשלו"
+msgstr "נסה שוב את כל העבודות הנכשלות"
 
 #: sabnzbd/skintext.py [Queue page button]
 msgid "Remove NZB"
-msgstr "הסר NZB"
+msgstr "NZB הסר"
 
 #: sabnzbd/skintext.py [Queue page button] # sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
-msgstr "הסר NZB ומחק קבצים"
+msgstr "ומחק קבצים NZB הסר"
 
 #: sabnzbd/skintext.py [Queue page, as in "4G *of* 10G"]
 msgid "of"
@@ -2362,11 +2376,11 @@ msgstr "גודל"
 
 #: sabnzbd/skintext.py [Button to delete all failed jobs in History]
 msgid "Purge Failed NZBs"
-msgstr "שנכשלו NZB טהר"
+msgstr "נכשלים NZB טהר"
 
 #: sabnzbd/skintext.py [Button to delete all failed jobs in History, including files]
 msgid "Purge Failed NZBs & Delete Files"
-msgstr "שנכשלו ומחק קבצים NZB טהר"
+msgstr "נכשלים ומחק קבצים NZB טהר"
 
 #: sabnzbd/skintext.py [Button to delete all completed jobs in History]
 msgid "Purge Completed NZBs"
@@ -2783,33 +2797,35 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
-msgstr ""
+msgstr "שימור היסטוריה"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Automatically delete completed jobs from History. Beware that Duplicate "
 "Detection and some external tools rely on History information."
 msgstr ""
+".מחק באופן אוטומטי עבודות שלמות מההיסטוריה. שים לב ששימור כפול ומספר כלים "
+"חיצוניים מסתמכים על מידע היסטוריה"
 
 #: sabnzbd/skintext.py
 msgid "Keep all jobs"
-msgstr ""
+msgstr "שמור את כל העבודות"
 
 #: sabnzbd/skintext.py
 msgid "Keep maximum number of completed jobs"
-msgstr ""
+msgstr "שמור מספר מרבי של עבודות שלמות"
 
 #: sabnzbd/skintext.py
 msgid "Keep completed jobs maximum number of days"
-msgstr ""
+msgstr "שמור מספר ימים מרבי של עבודות שלמות"
 
 #: sabnzbd/skintext.py
 msgid "Do not keep any completed jobs"
-msgstr ""
+msgstr "אל תשמור עבודות שלמות כלשהן"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "History item limit"
-msgstr "מגבלת פריטי היסטוריה"
+#: sabnzbd/skintext.py
+msgid "Jobs"
+msgstr "עבודות"
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
@@ -2838,10 +2854,6 @@ msgid ""
 msgstr ""
 "!לעברית SABnzbd עזור לנו לתרגם את<br/>הוסף מלל לא מתורגם או שפר תרגומים "
 "קיימים כאן:"
-
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API מפתח"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3147,7 +3159,7 @@ msgstr "הכשל עבודה (העבר להיסטוריה)"
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Tag job"
-msgstr ""
+msgstr "הצמד תג לעבודה"
 
 #: sabnzbd/skintext.py [Three way switch for encrypted posts]
 msgid "Abort"
@@ -3197,6 +3209,18 @@ msgstr "חלופי NZB בכישלון, נסה"
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ".חלופי כאשר הורדת נכשלת NZB מספר שרתים מספקים"
+
+#: sabnzbd/skintext.py
+msgid "Use tags from indexer"
+msgstr "השתמש בתגים ממדדן"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When sorting, use tags from indexer for title, season, episode, etc. "
+"Otherwise all naming is derived from the NZB name."
+msgstr ""
+".NZB-בעת מיון, השתמש בתגים ממדדן עבור כותרת, עונה, פרק וכדומה. אחרת כל מתן "
+"השמות נגזר משם ה"
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
@@ -3421,18 +3445,10 @@ msgstr "אפשר מיזוג מדדן"
 #: sabnzbd/skintext.py
 msgid ""
 "Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed. Depending on your "
-"indexer, the API key setting can be left blank."
+"report to the indexer if a job couldn't be completed."
 msgstr ""
-".יכול לדווח למדדן במקרה שעבודה לא יכלה להיות מושלמת SABnzbd-מדדנים יכולים "
-"לספק מידע מידרג כאשר עבודה מתווספת ו\r\n"
-".שלך יכולה להישאר ריקה API-תלוי במדדן שלך, קביעת מפתח ה"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr ".מפתח זה מספק זהות למדדן. בדוק את המתאר שלך באתר של המדדן"
+"יכול לדווח למדדן במקרה שעבודה לא יכלה להישלם SABnzbd-מדדנים יכולים לספק מידע "
+"מידרג כאשר עבודה מתווספת ו"
 
 #: sabnzbd/skintext.py
 msgid "Enable Filtering"
@@ -3785,10 +3801,6 @@ msgstr "Growl אפשר"
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Growl שלח התראות אל"
-
-#: sabnzbd/skintext.py [Address of Growl server]
-msgid "Server address"
-msgstr "כתובת שרת"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
@@ -4312,6 +4324,10 @@ msgid "Queue item limit"
 msgstr "מגבלת פריטי תור"
 
 #: sabnzbd/skintext.py
+msgid "History item limit"
+msgstr "מגבלת פריטי היסטוריה"
+
+#: sabnzbd/skintext.py
 msgid "Date format"
 msgstr "תסדיר תאריך"
 
@@ -4337,7 +4353,7 @@ msgstr "מאמרים"
 
 #: sabnzbd/skintext.py
 msgid "Rename"
-msgstr ""
+msgstr "שנה שם"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Queue repair"
@@ -4569,7 +4585,7 @@ msgstr "?לטהר את התור"
 
 #: sabnzbd/skintext.py
 msgid "Retry all failed jobs in History?"
-msgstr "לנסות שוב את כל העבודות שנכשלו בהיסטוריה?"
+msgstr "לנסות שוב את כל העבודות הנכשלות בהיסטוריה?"
 
 #: sabnzbd/skintext.py
 msgid "Purge"
@@ -4647,7 +4663,7 @@ msgstr "מחק שלמים"
 
 #: sabnzbd/skintext.py
 msgid "Delete the all failed items from the history?"
-msgstr "למחוק את כל הפריטים שנכשלו מההיסטוריה?"
+msgstr "למחוק את כל הפריטים הנכשלים מההיסטוריה?"
 
 #: sabnzbd/skintext.py
 msgid "Delete Failed"
@@ -4655,7 +4671,7 @@ msgstr "מחק נכשלים"
 
 #: sabnzbd/skintext.py
 msgid "Retry all failed jobs?"
-msgstr "לנסות שוב את העבודות שנכשלו?"
+msgstr "לנסות שוב את העבודות הנכשלות?"
 
 #: sabnzbd/skintext.py
 msgid "Links"
@@ -4836,7 +4852,7 @@ msgstr "%s אל %s :נכשל בשינוי שם של קובץ דומה"
 msgid "Server name does not resolve"
 msgstr "שם השרת אינו פותר"
 
-#: sabnzbd/urlgrabber.py # sabnzbd/urlgrabber.py
+#: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
 msgstr "גישה בלתי מורשת"
 

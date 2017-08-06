@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-24 08:21+0000\n"
-"PO-Revision-Date: 2017-07-25 11:01+0000\n"
+"POT-Creation-Date: 2017-07-27 15:12+0000\n"
+"PO-Revision-Date: 2017-07-27 19:33+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-26 05:37+0000\n"
-"X-Generator: Launchpad (build 18419)\n"
+"X-Launchpad-Export-Date: 2017-07-28 05:29+0000\n"
+"X-Generator: Launchpad (build 18439)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -673,7 +673,7 @@ msgstr ""
 "Autenticatie ontbreekt; vul gebruikersnaam en wachtwoord van 'Configuratie' "
 "=> 'Algemeen' in bij het externe programma:"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -1110,7 +1110,7 @@ msgid "Not available"
 msgstr "Niet beschikbaar"
 
 #: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "Versturen kan niet, vereiste gegevens ontbreken"
 
@@ -1658,6 +1658,22 @@ msgstr "Fout bij het afsluiten van het systeem"
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Indexer id (%s) niet gevonden in het bestand met beoordelingen"
 
+#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+msgid "Server address"
+msgstr "Server adres"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API-sleutel"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py
+msgid ""
+"This key provides identity to indexer. Check your profile on the indexer's "
+"website."
+msgstr ""
+"Deze sleutel is voor je identificatie door de indexer. Kijk in je profiel op "
+"de website van de  indexer."
+
 #: sabnzbd/rss.py [Error message] # sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
 msgstr "Foutieve RSS-feed definitie \"%s\""
@@ -1838,7 +1854,7 @@ msgstr "Verwijder mislukte opdrachten"
 
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Remove completed jobs"
-msgstr "Verwijder afgehandelde taken"
+msgstr "Verwijder voltooide opdrachten"
 
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Pause low prioirty jobs"
@@ -2857,9 +2873,9 @@ msgstr "Behoud voltooide downloads maximaal aantal dagen"
 msgid "Do not keep any completed jobs"
 msgstr "Behoud geen enkele download"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "History item limit"
-msgstr "Items in geschiedenis"
+#: sabnzbd/skintext.py
+msgid "Jobs"
+msgstr "Downloads"
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
@@ -2888,10 +2904,6 @@ msgid ""
 msgstr ""
 "Help ons om SABnzbd in jouw taal te vertalen! <br/>Met nieuwe vertalingen of "
 "verbeteringen kun je hier terecht:"
-
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API-sleutel"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3261,6 +3273,19 @@ msgstr ""
 "Sommige indexers hebben een alternatieve NZB wanneer een download mislukt"
 
 #: sabnzbd/skintext.py
+msgid "Use tags from indexer"
+msgstr "Gebruik indexer informatie"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When sorting, use tags from indexer for title, season, episode, etc. "
+"Otherwise all naming is derived from the NZB name."
+msgstr ""
+"Maak tijdens het sorteren gebruik van informatie van de indexer zoals titel, "
+"seizoen, aflevering, enz. Anders wordt alle informatie uit de naam van de "
+"download gehaald."
+
+#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Gebruik tijdelijke mapnamen"
 
@@ -3493,20 +3518,11 @@ msgstr "Sta integratie met index websites toe"
 #: sabnzbd/skintext.py
 msgid ""
 "Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed. Depending on your "
-"indexer, the API key setting can be left blank."
+"report to the indexer if a job couldn't be completed."
 msgstr ""
-"Indexers kunnen waarderingsinformatie leveren wanneer een NZB wordt "
-"opgehaald. SABnzbd kan mislukte downloads aanmelden bij de indexer. Sommige "
-"indexers hebben een API sleutel nodig."
-
-#: sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr ""
-"Deze sleutel is voor je identificatie door de indexer. Kijk in je profiel op "
-"de website van de  indexer."
+"Indexers kunnen beoordelingen meesturen wanneer een opdracht wordt "
+"toegevoegd en SABnzbd kan de indexer informeren wanneer een download niet "
+"slaagt."
 
 #: sabnzbd/skintext.py
 msgid "Enable Filtering"
@@ -3867,10 +3883,6 @@ msgstr "Growl meldingen activeren"
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Zend meldingen naar Growl"
-
-#: sabnzbd/skintext.py [Address of Growl server]
-msgid "Server address"
-msgstr "Server adres"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
@@ -4397,6 +4409,10 @@ msgstr "Instellen voor alle sessies"
 #: sabnzbd/skintext.py
 msgid "Queue item limit"
 msgstr "Items in wachtrij"
+
+#: sabnzbd/skintext.py
+msgid "History item limit"
+msgstr "Items in geschiedenis"
 
 #: sabnzbd/skintext.py
 msgid "Date format"
@@ -4926,7 +4942,7 @@ msgstr "Hernoemen van gelijkaardig bestand %s naar %s mislukt"
 msgid "Server name does not resolve"
 msgstr "Servernaam niet te vinden"
 
-#: sabnzbd/urlgrabber.py # sabnzbd/urlgrabber.py
+#: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
 msgstr "Geen toegangsrechten"
 

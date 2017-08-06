@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-24 08:21+0000\n"
+"POT-Creation-Date: 2017-07-27 15:12+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-25 06:11+0000\n"
-"X-Generator: Launchpad (build 18419)\n"
+"X-Launchpad-Export-Date: 2017-07-28 05:30+0000\n"
+"X-Generator: Launchpad (build 18439)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 #: SABnzbd.py [Error message]
@@ -646,7 +646,7 @@ msgstr ""
 "Отсутствуют учётные данные. Введите в сторонней программе имя пользователя и "
 "пароль из раздела «Настройка -> Общие»:"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -1079,7 +1079,7 @@ msgid "Not available"
 msgstr ""
 
 #: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr ""
 
@@ -1624,6 +1624,20 @@ msgstr "Не удалось завершить работу системы"
 
 #: sabnzbd/rating.py [Warning message]
 msgid "Indexer id (%s) not found for ratings file"
+msgstr ""
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+msgid "Server address"
+msgstr "Адрес сервера"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Ключ API"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py
+msgid ""
+"This key provides identity to indexer. Check your profile on the indexer's "
+"website."
 msgstr ""
 
 #: sabnzbd/rss.py [Error message] # sabnzbd/rss.py
@@ -2807,8 +2821,8 @@ msgstr ""
 msgid "Do not keep any completed jobs"
 msgstr ""
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "History item limit"
+#: sabnzbd/skintext.py
+msgid "Jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -2836,10 +2850,6 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
-
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Ключ API"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3199,6 +3209,16 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Use tags from indexer"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"When sorting, use tags from indexer for title, season, episode, etc. "
+"Otherwise all naming is derived from the NZB name."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Переименовывать папки"
 
@@ -3424,14 +3444,7 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid ""
 "Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed. Depending on your "
-"indexer, the API key setting can be left blank."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
+"report to the indexer if a job couldn't be completed."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3789,10 +3802,6 @@ msgstr "Использовать Growl"
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Отправлять уведомления в Growl"
-
-#: sabnzbd/skintext.py [Address of Growl server]
-msgid "Server address"
-msgstr "Адрес сервера"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
@@ -4311,6 +4320,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Queue item limit"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "History item limit"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4842,7 +4855,7 @@ msgstr "Не удалось переименовать похожий файл: 
 msgid "Server name does not resolve"
 msgstr ""
 
-#: sabnzbd/urlgrabber.py # sabnzbd/urlgrabber.py
+#: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
 msgstr ""
 

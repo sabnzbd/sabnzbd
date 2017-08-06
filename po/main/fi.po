@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-24 08:21+0000\n"
+"POT-Creation-Date: 2017-07-27 15:12+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-25 06:10+0000\n"
-"X-Generator: Launchpad (build 18419)\n"
+"X-Launchpad-Export-Date: 2017-07-28 05:29+0000\n"
+"X-Generator: Launchpad (build 18439)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -655,7 +655,7 @@ msgstr ""
 "Authentikointi puuttuu, ole hyvä ja syötä käyttäjänimi/salasana Asetukset-"
 ">Yleiset kolmannen osapuolen ohjelmaasi:"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -1089,7 +1089,7 @@ msgid "Not available"
 msgstr "Ei saatavilla"
 
 #: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "Ei voida lähettää, vaaditut tiedot ovat puutteelliset"
 
@@ -1635,6 +1635,20 @@ msgstr "Virhe sammutettaessa järjestelmää"
 #: sabnzbd/rating.py [Warning message]
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Indeksoijan id:tä (%s) ei löydetty arviointitiedostolle"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+msgid "Server address"
+msgstr "Palvelimen osoite"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API avain"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py
+msgid ""
+"This key provides identity to indexer. Check your profile on the indexer's "
+"website."
+msgstr ""
 
 #: sabnzbd/rss.py [Error message] # sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -2830,9 +2844,9 @@ msgstr ""
 msgid "Do not keep any completed jobs"
 msgstr ""
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "History item limit"
-msgstr "Historian pituusrajoitus"
+#: sabnzbd/skintext.py
+msgid "Jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
@@ -2861,10 +2875,6 @@ msgid ""
 msgstr ""
 "Auta meitä kääntämään SABnzbd sinun kielellesi!<br/>Käännä tai muokkaa "
 "olemassaolevia käännöksiä täällä:"
-
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API avain"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3239,6 +3249,16 @@ msgstr ""
 "Jotkin palvelimet tarjoavat vaihtoehtoisen NZB:n kun lataus epäonnistuu."
 
 #: sabnzbd/skintext.py
+msgid "Use tags from indexer"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"When sorting, use tags from indexer for title, season, episode, etc. "
+"Otherwise all naming is derived from the NZB name."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Kansion uudelleennimeäminen käytössä"
 
@@ -3468,14 +3488,7 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid ""
 "Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed. Depending on your "
-"indexer, the API key setting can be left blank."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
+"report to the indexer if a job couldn't be completed."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3830,10 +3843,6 @@ msgstr "Growl käytössä"
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Lähetä ilmoitukset Growliin"
-
-#: sabnzbd/skintext.py [Address of Growl server]
-msgid "Server address"
-msgstr "Palvelimen osoite"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
@@ -4360,6 +4369,10 @@ msgstr "Käytä yleisiä käyttöliittymän asetuksia"
 #: sabnzbd/skintext.py
 msgid "Queue item limit"
 msgstr "Jonon pituusrajoitus"
+
+#: sabnzbd/skintext.py
+msgid "History item limit"
+msgstr "Historian pituusrajoitus"
 
 #: sabnzbd/skintext.py
 msgid "Date format"
@@ -4891,7 +4904,7 @@ msgstr "Samankaltaisen tiedoston uudelleennimeäminen epäonnistui: %s %s"
 msgid "Server name does not resolve"
 msgstr "Palvelimen osoitetta ei voitu selvittää"
 
-#: sabnzbd/urlgrabber.py # sabnzbd/urlgrabber.py
+#: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
 msgstr "Luvaton käyttö"
 

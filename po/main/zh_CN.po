@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-24 08:21+0000\n"
+"POT-Creation-Date: 2017-07-27 15:12+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-25 06:11+0000\n"
-"X-Generator: Launchpad (build 18419)\n"
+"X-Launchpad-Export-Date: 2017-07-28 05:31+0000\n"
+"X-Generator: Launchpad (build 18439)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -636,7 +636,7 @@ msgid ""
 "into your 3rd party program:"
 msgstr "缺身份认证信息，请在第三方程序中输入“配置”->“常规”中的用户名/密码:"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -1065,7 +1065,7 @@ msgid "Not available"
 msgstr "不可用"
 
 #: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "无法发送，缺少必要的数据"
 
@@ -1603,6 +1603,20 @@ msgstr "关闭系统时出错"
 #: sabnzbd/rating.py [Warning message]
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "评分文件的索引器 id (%s) 未找到"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+msgid "Server address"
+msgstr "服务器地址"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "API Key"
+msgstr "API Key"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py
+msgid ""
+"This key provides identity to indexer. Check your profile on the indexer's "
+"website."
+msgstr "这个密钥用来向服务器表明身份。查看您在索引网站上的个人档案。"
 
 #: sabnzbd/rss.py [Error message] # sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -2775,9 +2789,9 @@ msgstr ""
 msgid "Do not keep any completed jobs"
 msgstr ""
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "History item limit"
-msgstr "历史数目限制"
+#: sabnzbd/skintext.py
+msgid "Jobs"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
@@ -2804,10 +2818,6 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr "帮助我们来本地化 SABnzbd ！<br/>您可以在这里来添加未被翻译的文字或者改进现有的翻译："
-
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "API Key"
-msgstr "API Key"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3145,6 +3155,16 @@ msgid "Some servers provide an alternative NZB when a download fails."
 msgstr "部分服务器在下载失败时可提供备用 NZB 文件。"
 
 #: sabnzbd/skintext.py
+msgid "Use tags from indexer"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"When sorting, use tags from indexer for title, season, episode, etc. "
+"Otherwise all naming is derived from the NZB name."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "启用文件夹重命名"
 
@@ -3361,16 +3381,8 @@ msgstr "启用索引集成"
 #: sabnzbd/skintext.py
 msgid ""
 "Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed. Depending on your "
-"indexer, the API key setting can be left blank."
+"report to the indexer if a job couldn't be completed."
 msgstr ""
-"当任务添加时，索引服务可提供评分信息。当任务无法完成时，SABnzbd 也可发送报告给索引服务。有些时候 API 密钥设定可以留空，取决于索引服务的要求。"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr "这个密钥用来向服务器表明身份。查看您在索引网站上的个人档案。"
 
 #: sabnzbd/skintext.py
 msgid "Enable Filtering"
@@ -3718,10 +3730,6 @@ msgstr "启用 Growl"
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "将通知发送到 Growl"
-
-#: sabnzbd/skintext.py [Address of Growl server]
-msgid "Server address"
-msgstr "服务器地址"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
@@ -4240,6 +4248,10 @@ msgstr "使用全局界面设置"
 #: sabnzbd/skintext.py
 msgid "Queue item limit"
 msgstr "队列数目限制"
+
+#: sabnzbd/skintext.py
+msgid "History item limit"
+msgstr "历史数目限制"
 
 #: sabnzbd/skintext.py
 msgid "Date format"
@@ -4762,7 +4774,7 @@ msgstr "重命名相似文件失败: %s 为 %s"
 msgid "Server name does not resolve"
 msgstr "服务器名无法解析"
 
-#: sabnzbd/urlgrabber.py # sabnzbd/urlgrabber.py
+#: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
 msgstr "未授权访问"
 

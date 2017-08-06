@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-24 08:21+0000\n"
-"PO-Revision-Date: 2017-07-24 20:58+0000\n"
+"POT-Creation-Date: 2017-07-27 15:12+0000\n"
+"PO-Revision-Date: 2017-07-28 18:53+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-25 06:10+0000\n"
-"X-Generator: Launchpad (build 18419)\n"
+"X-Launchpad-Export-Date: 2017-07-29 05:16+0000\n"
+"X-Generator: Launchpad (build 18441)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -684,7 +684,7 @@ msgstr ""
 "Authentification manquante, entrez vos identifiant/mot de passe de la "
 "configuration générale dans votre application tierce :"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -1132,7 +1132,7 @@ msgid "Not available"
 msgstr "Non disponible"
 
 #: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "Impossible d'envoyer, données requises manquantes"
 
@@ -1689,6 +1689,22 @@ msgstr "Erreur lors de l'arrêt du système"
 #: sabnzbd/rating.py [Warning message]
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "id de l'Indexer (%s) non trouvé pour le fichier des classements"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+msgid "Server address"
+msgstr "Adresse du serveur"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "API Key"
+msgstr "Clé API"
+
+#: sabnzbd/rating.py # sabnzbd/skintext.py
+msgid ""
+"This key provides identity to indexer. Check your profile on the indexer's "
+"website."
+msgstr ""
+"Cette clé fournit l'identité à l'indexeur. Vérifiez votre profil sur le site "
+"web de l'indexeur."
 
 #: sabnzbd/rss.py [Error message] # sabnzbd/rss.py
 msgid "Incorrect RSS feed description \"%s\""
@@ -2894,9 +2910,9 @@ msgstr "Durée maximale d'historisation des tâches complétées"
 msgid "Do not keep any completed jobs"
 msgstr "Ne conserver aucune tâche terminée"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "History item limit"
-msgstr "Limite des éléments historisés"
+#: sabnzbd/skintext.py
+msgid "Jobs"
+msgstr "Tâches"
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
@@ -2925,10 +2941,6 @@ msgid ""
 msgstr ""
 "Aidez-nous à traduire SABnzbd dans votre langue ! <br/>Améliorez les "
 "traductions existantes ou ajoutez celles qui manquent ici :"
-
-#: sabnzbd/skintext.py # sabnzbd/skintext.py
-msgid "API Key"
-msgstr "Clé API"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3314,6 +3326,19 @@ msgstr ""
 "échoue."
 
 #: sabnzbd/skintext.py
+msgid "Use tags from indexer"
+msgstr "Utiliser les tags de l'indexeur"
+
+#: sabnzbd/skintext.py
+msgid ""
+"When sorting, use tags from indexer for title, season, episode, etc. "
+"Otherwise all naming is derived from the NZB name."
+msgstr ""
+"Lors du tri, utiliser les tags de l'indexeur pour le titre, la saison, "
+"l'episode, etc. Sinon, toutes les dénominations seront dérivées du fichier "
+"NZB."
+
+#: sabnzbd/skintext.py
 msgid "Enable folder rename"
 msgstr "Activer le renommage du dossier"
 
@@ -3551,21 +3576,11 @@ msgstr "Activer l'intégration de l'indexeur"
 #: sabnzbd/skintext.py
 msgid ""
 "Indexers can supply rating information when a job is added and SABnzbd can "
-"report to the indexer if a job couldn't be completed. Depending on your "
-"indexer, the API key setting can be left blank."
+"report to the indexer if a job couldn't be completed."
 msgstr ""
 "Les indexeurs peuvent fournir des informations de notation lorsqu'une tâche "
-"est ajoutée, et SABnzbd peut signaler à l'indexeur si une tâche n'a pu être "
-"terminée. Le paramètre de clé API peut être laissé vide en fonction de votre "
-"indexeur."
-
-#: sabnzbd/skintext.py
-msgid ""
-"This key provides identity to indexer. Check your profile on the indexer's "
-"website."
-msgstr ""
-"Cette clé fournit l'identité à l'indexeur. Vérifiez votre profil sur le site "
-"web de l'indexeur."
+"est ajoutée, et SABnzbd peut signaler à l'indexeur si une tâche n'a pas pu "
+"être terminée."
 
 #: sabnzbd/skintext.py
 msgid "Enable Filtering"
@@ -3926,10 +3941,6 @@ msgstr "Activer Growl"
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Send notifications to Growl"
 msgstr "Envoie les notifications à Growl"
-
-#: sabnzbd/skintext.py [Address of Growl server]
-msgid "Server address"
-msgstr "Adresse du serveur"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
@@ -4458,6 +4469,10 @@ msgstr "Utiliser les paramètres globaux de l'interface"
 #: sabnzbd/skintext.py
 msgid "Queue item limit"
 msgstr "Limite des éléments de la file d'attente"
+
+#: sabnzbd/skintext.py
+msgid "History item limit"
+msgstr "Limite des éléments historisés"
 
 #: sabnzbd/skintext.py
 msgid "Date format"
@@ -4992,7 +5007,7 @@ msgstr "Impossible de renommer le fichier similaire : %s en %s"
 msgid "Server name does not resolve"
 msgstr "Resolution du nom de serveur impossible"
 
-#: sabnzbd/urlgrabber.py # sabnzbd/urlgrabber.py
+#: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
 msgstr "Accès non autorisé"
 
