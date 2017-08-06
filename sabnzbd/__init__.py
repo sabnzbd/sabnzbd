@@ -108,7 +108,7 @@ import sabnzbd.lang as lang
 import sabnzbd.api
 import sabnzbd.directunpacker as directunpacker
 from sabnzbd.decorators import synchronized, notify_downloader
-from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
+from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, \
     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
 import sabnzbd.getipaddress as getipaddress
 
@@ -841,18 +841,6 @@ def keep_awake():
                         sleepless.keep_awake(u'SABnzbd is busy downloading and/or post-processing')
             if not awake and sleepless:
                 sleepless.allow_sleep()
-
-
-def CheckFreeSpace():
-    """ Check if enough disk space is free, if not pause downloader and send email """
-    if cfg.download_free() and not sabnzbd.downloader.Downloader.do.paused:
-        if misc.diskspace(force=True)['download_dir'][1] < cfg.download_free.get_float() / GIGI:
-            logging.warning(T('Too little diskspace forcing PAUSE'))
-            # Pause downloader, but don't save, since the disk is almost full!
-            Downloader.do.pause(save=False)
-            emailer.diskfull()
-            # Abort all direct unpackers, just to be sure
-            directunpacker.abort_all()
 
 
 ################################################################################

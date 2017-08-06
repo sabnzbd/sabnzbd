@@ -30,8 +30,8 @@ import hashlib
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-    set_permissions, long_path, clip_path, has_win_device, get_all_passwords
-from sabnzbd.constants import Status
+    set_permissions, long_path, clip_path, has_win_device, get_all_passwords, diskspace
+from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
@@ -69,8 +69,23 @@ class Assembler(Thread):
             nzo, nzf = job
 
             if nzf:
-                sabnzbd.CheckFreeSpace()
+                # Check if enough disk space is free, if not pause downloader and send email
+                if diskspace(force=True)['download_dir'][1] < (cfg.download_free.get_float() + nzf.bytes) / GIGI:
+                    # Only warn and email once
+                    if not sabnzbd.downloader.Downloader.do.paused:
+                        logging.warning(T('Too little diskspace forcing PAUSE'))
+                        # Pause downloader, but don't save, since the disk is almost full!
+                        sabnzbd.downloader.Downloader.do.pause(save=False)
+                        sabnzbd.emailer.diskfull()
+                        # Abort all direct unpackers, just to be sure
+                        sabnzbd.directunpacker.abort_all()
 
+                    # Place job back in queue and wait 30 seconds to hope it gets resolved
+                    self.process(job)
+                    sleep(30)
+                    continue
+
+                # Prepare filename
                 filename = sanitize_filename(nzf.filename)
                 nzf.filename = filename
                 dupe = nzo.check_for_dupe(nzf)
