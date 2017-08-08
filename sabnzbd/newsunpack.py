@@ -226,9 +226,10 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
         # First time, ignore anything in workdir_complete
         xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir)
     else:
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete, check_both=dele)
 
     rerun = False
+    force_rerun = False
     newfiles = []
     error = 0
     new_joins = new_rars = new_zips = new_ts = None
@@ -290,7 +291,14 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     if nzo.reuse and depth == 1 and any(build_filelists(workdir, workdir_complete)):
         rerun = True
 
-    if rerun and (cfg.enable_recursive() or new_ts or new_joins):
+    # Double-check that we didn't miss any files in workdir
+    # But only if dele=True, otherwise of course there will be files left
+    if rerun and dele and depth == 1 and any(build_filelists(workdir)):
+        force_rerun = True
+        # Clear lists to force re-scan of files
+        xjoinables, xzips, xrars, xsevens, xts = ([], [], [], [], [])
+
+    if rerun and (cfg.enable_recursive() or new_ts or new_joins or force_rerun):
         z, y = unpack_magic(nzo, workdir, workdir_complete, dele, one_folder,
                             xjoinables, xzips, xrars, xsevens, xts, depth)
         if z:
@@ -2066,8 +2074,9 @@ def rar_sort(a, b):
         return cmp(a, b)
 
 
-def build_filelists(workdir, workdir_complete=None, check_rar=True):
+def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
+        Optionally scan both directories.
         Optionally test content to establish RAR-ness
     """
     sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
@@ -2083,7 +2092,7 @@ def build_filelists(workdir, workdir_complete=None, check_rar=True):
                         # Just skip failing names
                         pass
 
-    if workdir and not filelist:
+    if workdir and (not filelist or check_both):
         for root, dirs, files in os.walk(workdir):
             for _file in files:
                 if '.AppleDouble' not in root and '.DS_Store' not in root:
