@@ -982,17 +982,21 @@ def get_rss():
         # We have to remove non-seperator commas by detecting if they are valid URL's
         for feed_key in database['rss']:
             feed = database['rss'][feed_key]
+            # Only modify if we have to, to prevent repeated config-saving
+            have_new_uri = False
             # Create a new corrected list
             new_feed_uris = []
             for feed_uri in feed.uri():
                 if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
                     # Current one has no scheme but previous one does, append to previous
                     new_feed_uris[-1] += '%2C' + feed_uri
+                    have_new_uri = True
                     continue
                 # Add full working URL
                 new_feed_uris.append(feed_uri)
             # Set new list
-            feed.uri.set(new_feed_uris)
+            if have_new_uri:
+                feed.uri.set(new_feed_uris)
 
         return database['rss']
     except KeyError:
