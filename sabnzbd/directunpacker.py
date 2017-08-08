@@ -29,8 +29,8 @@ import logging
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_string, has_win_device
-from sabnzbd.encoding import unicoder
-from sabnzbd.newsunpack import build_command
+from sabnzbd.encoding import TRANS, unicoder
+from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
@@ -65,7 +65,7 @@ class DirectUnpacker(threading.Thread):
         self.total_volumes = {}
         self.unpack_time = 0.0
 
-        self.success_sets = []
+        self.success_sets = {}
         self.next_sets = []
 
         nzo.direct_unpacker = self
@@ -149,6 +149,7 @@ class DirectUnpacker(threading.Thread):
         linebuf = ''
         last_volume_linebuf = ''
         unrar_log = []
+        rarfiles = []
         start_time = time.time()
 
         # Need to read char-by-char because there's no newline after new-disk message
@@ -171,6 +172,11 @@ class DirectUnpacker(threading.Thread):
                 logging.info('Error in DirectUnpack of %s', self.cur_setname)
                 self.abort()
 
+            if linebuf.startswith('Extracting from') and linebuf.endswith('\n'):
+                filename = TRANS((re.search(EXTRACTFROM_RE, linebuf.strip()).group(1)))
+                if filename not in rarfiles:
+                    rarfiles.append(filename)
+
             # Did we reach the end?
             if linebuf.endswith('All OK'):
                 # Stop timer and finish
@@ -178,15 +184,17 @@ class DirectUnpacker(threading.Thread):
                 ACTIVE_UNPACKERS.remove(self)
 
                 # Add to success
-                self.success_sets.append(self.cur_setname)
+                rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
+                self.success_sets[self.cur_setname] = rar_volumelist(rarfile_path, self.nzo.password, rarfiles)
                 logging.info('DirectUnpack completed for %s', self.cur_setname)
                 self.nzo.set_action_line(T('Direct Unpack'), T('Completed'))
 
-                # Write current log
+                # Write current log and clear
                 unrar_log.append(linebuf.strip())
                 linebuf = ''
                 logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
                 unrar_log = []
+                rarfiles = []
 
                 # Are there more files left?
                 while self.nzo.files and not self.next_sets:
@@ -351,7 +359,7 @@ class DirectUnpacker(threading.Thread):
 
             # No new sets
             self.next_sets = []
-            self.success_sets = []
+            self.success_sets = {}
 
             # Remove files
             if self.unpack_dir_info:

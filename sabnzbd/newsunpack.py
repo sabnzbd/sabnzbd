@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicoder, platform_encode, deunicod
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
-    has_win_device, calc_age
+    has_win_device, calc_age, long_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -491,11 +491,10 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         # Did we already direct-unpack it? Not when recursive-unpacking
         if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
             logging.info("Set %s completed by DirectUnpack", rar_set)
-            fail = 0
-            success = 1
-            rars = rar_sets[rar_set]
+            fail = False
+            success = True
+            rars = nzo.direct_unpacker.success_sets.pop(rar_set)
             newfiles = globber(extraction_path)
-            nzo.direct_unpacker.success_sets.remove(rar_set)
         else:
             logging.info("Extracting rarfile %s (belonging to %s) to %s",
                          rarpath, rar_set, extraction_path)
@@ -504,7 +503,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                                              one_folder, nzo, rar_set, extraction_path)
                 # Was it aborted?
                 if not nzo.pp_active:
-                    fail = 1
+                    fail = True
                     break
                 success = not fail
             except:
@@ -623,8 +622,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
-    rarfiles = rarfile.RarFile(rarfile_path).volumelist()
-
     logging.debug("Running unrar %s", command)
     p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -639,6 +636,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     # Loop over the output from rar!
     curr = 0
     extracted = []
+    rarfiles = []
     fail = 0
     inrecovery = False
     lines = []
@@ -787,6 +785,9 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     if proc:
         proc.close()
     p.wait()
+
+    # Which files did we use to extract this?
+    rarfiles = rar_volumelist(rarfile_path, password, rarfiles)
 
     logging.debug('UNRAR output %s', '\n'.join(lines))
     nzo.fail_msg = ''
@@ -2007,6 +2008,7 @@ def userxbit(filename):
     xbitset = (rwxbits & userxbit) > 0
     return xbitset
 
+
 def build_command(command):
     """ Prepare list from running an external program """
     if not sabnzbd.WIN32:
@@ -2056,6 +2058,28 @@ def build_command(command):
             command = list2cmdline(command)
 
     return stup, need_shell, command, creationflags
+
+
+def rar_volumelist(rarfile_path, password, known_volumes):
+    """ Extract volumes that are part of this rarset
+        and merge them with existing list, removing duplicates
+    """
+    zf = rarfile.RarFile(rarfile_path)
+    if password:
+        try:
+            # setpassword can fail due to bugs in RarFile
+            zf.setpassword(password)
+        except:
+            pass
+    zf_volumes = zf.volumelist()
+
+    # Remove duplicates
+    known_volumes_base = [os.path.basename(vol) for vol in known_volumes]
+    for zf_volume in zf_volumes:
+        if os.path.basename(zf_volume) not in known_volumes_base:
+            # Long-path notation just to be sure
+            known_volumes.append(long_path(zf_volume))
+    return known_volumes
 
 
 # Sort the various RAR filename formats properly :\
