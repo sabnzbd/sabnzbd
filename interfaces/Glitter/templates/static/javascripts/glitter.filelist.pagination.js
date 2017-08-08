@@ -37,19 +37,10 @@ function Fileslisting(parent) {
 
     // Move to top and bottom buttons
     self.moveButton = function (item,event) {
-        var ITEMKEY = "ko_sortItem",
-            INDEXKEY = "ko_sourceIndex",
-            LISTKEY = "ko_sortList",
-            PARENTKEY = "ko_parentList",
-            DRAGKEY = "ko_dragItem",
-            unwrap = ko.utils.unwrapObservable,
-            dataGet = ko.utils.domData.get,
-            dataSet = ko.utils.domData.set;
-        var targetRow,sourceRow,tbody;
+        var targetRow, sourceRow, tbody;
         sourceRow = $(event.currentTarget).parents("tr").filter(":first");
         tbody = sourceRow.parents("tbody").filter(":first");
-        //debugger;
-        dataSet(sourceRow[0], INDEXKEY, ko.utils.arrayIndexOf(sourceRow.parent().children(), sourceRow[0]));
+        ko.utils.domData.set(sourceRow[0], "ko_sourceIndex", ko.utils.arrayIndexOf(sourceRow.parent().children(), sourceRow[0]));
         sourceRow = sourceRow.detach();
         if ($(event.currentTarget).is(".buttonMoveToTop")) {
             // we are moving to the top
@@ -67,7 +58,7 @@ function Fileslisting(parent) {
         }
         tbody.sortable('option', 'update').call(tbody[0],null, { item: sourceRow });
     };
-   
+
     // Trigger update
     self.triggerUpdate = function() {
         // Call API
@@ -230,9 +221,9 @@ function FileslistingModel(parent, data) {
     self.nzf_id = ko.observable(data.nzf_id);
     self.file_age = ko.observable(data.age);
     self.mb = ko.observable(data.mb);
-    self.percentage = ko.observable(fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
     self.canselect = ko.observable(data.status != "finished" && data.status != "queued");
     self.isdone =  ko.observable(data.status == "finished");
+    self.percentage = ko.observable(self.isdone() ? fixPercentages(100) : fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
 
     // Update internally
     self.updateFromData = function(data) {
@@ -240,9 +231,10 @@ function FileslistingModel(parent, data) {
         self.nzf_id(data.nzf_id)
         self.file_age(data.age)
         self.mb(data.mb)
-        self.percentage(fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)));
         self.canselect(data.status != "finished" && data.status != "queued")
         self.isdone(data.status == "finished")
+        // Data is given in MB, would always show 0% for small files even if completed
+        self.percentage(self.isdone() ? fixPercentages(100) : fixPercentages((100 - (data.mbleft / data.mb * 100)).toFixed(0)))
     }
 }
 
