@@ -105,3 +105,6 @@ msgstr "Posts will be paused until they are at least this age. Setting job prior
 msgid "Support the project, Donate!"
 msgstr "Support the project, donate!"
 
+msgid  "%d files with duplicate filenames were discared for "%s". Enable "allow_duplicate_files" to allow duplicate filenames."
+msgstr "%d files with duplicate filenames were discarded for "%s". Enable "allow_duplicate_files" to allow duplicate filenames."
+
