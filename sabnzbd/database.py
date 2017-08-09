@@ -154,7 +154,8 @@ class HistoryDB(object):
                     return 'duplicate column name' not in error
                 else:
                     logging.error(T('SQL Command Failed, see log'))
-                    logging.debug("SQL: %s", command)
+                    logging.info("SQL: %s", command)
+                    logging.info("Arguments: %s", repr(args))
                     logging.info("Traceback: ", exc_info=True)
                     try:
                         self.con.rollback()
@@ -286,19 +287,20 @@ class HistoryDB(object):
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
         """ Return records for specified jobs """
-        search = convert_search(search)
+        command_args = [convert_search(search)]
 
         post = ''
         if categories:
             categories = ['*' if c == 'Default' else c for c in categories]
-            post = " AND (CATEGORY = '"
-            post += "' OR CATEGORY = '".join(categories)
-            post += "' )"
+            post = " AND (CATEGORY = ?"
+            post += " OR CATEGORY = ? " * (len(categories)-1)
+            post += ")"
+            command_args.extend(categories)
         if failed_only:
             post += ' AND STATUS = "Failed"'
 
         cmd = 'SELECT COUNT(*) FROM history WHERE name LIKE ?'
-        res = self.execute(cmd + post, (search,))
+        res = self.execute(cmd + post, tuple(command_args))
         total_items = -1
         if res:
             try:
@@ -311,9 +313,9 @@ class HistoryDB(object):
         if not limit:
             limit = total_items
 
-        t = (search, start, limit)
+        command_args.extend([start, limit])
         cmd = 'SELECT * FROM history WHERE name LIKE ?'
-        fetch_ok = self.execute(cmd + post + ' ORDER BY completed desc LIMIT ?, ?', t)
+        fetch_ok = self.execute(cmd + post + ' ORDER BY completed desc LIMIT ?, ?', tuple(command_args))
 
         if fetch_ok:
             items = self.c.fetchall()
