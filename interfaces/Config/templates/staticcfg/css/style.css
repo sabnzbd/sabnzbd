@@ -619,7 +619,6 @@ h2.activeRSS {
     padding: 0 0 .5em;
 }
 .feed-row div {
-    padding-right: 10px;
     overflow:hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
