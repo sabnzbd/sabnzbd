@@ -1,10 +1,27 @@
-Release Notes  -  SABnzbd 2.2.0 Release Candidate 1
+Release Notes  -  SABnzbd 2.2.0 Release Candidate 2
 =========================================================
 
 NOTE: Due to changes in this release, the queue will be converted when 2.2.0
 is started for the first time. Job order, settings and data will be
 preserved, but all jobs will be unpaused and URLs that did not finish
 fetching before the upgrade will be lost!
+
+## Changes since 2.2.0 Release Candidate 1
+- Not all RAR files were correctly removed for encrypted downloads
+- Better indication of verification process before and after repair
+- All par2 files are only downloaded when enabled, not on enable_par_cleanup
+- Disk-space is now checked before writing files
+- Server usage graphs did not always list all available months
+- Warning is shown when many files with duplicate filenames are discarded
+- Special characters like []!* in filenames could break repair
+- In some cases not all RAR-sets were unpacked
+- Categories with ' in them could result in SQL errors
+- Faulty pynotify could stop shutdown
+- Various CSS fixes in Glitter and the Config
+- macOS: Really catch "Protocol wrong type for socket" errors
+
+- NOTE: Option to limit Servers to specific Categories is now scheduled
+  to be removed in the next release.
 
 ## Changes since 2.1.0
 - Direct Unpack: Jobs will start unpacking during the download, reduces
@@ -25,14 +42,12 @@ fetching before the upgrade will be lost!
 - Correct value in "Speed" Extra History Column
 - Remove video and audio rating icons from Queue
 - Show vote buttons instead of video and audio rating buttons in History
-- If enable_par_cleanup is disabled all par2 files be downloaded
 - If enabled, replace dots in filenames also when there are spaces already
 - Update GNTP bindings to 1.0.3
 - max_art_opt and replace_illegal moved from Switches to Specials
 - Removed Specials par2_multicore and allow_streaming
 - Windows: Full unicode support when calling repair and unpack
 - Windows: Move enable_MultiPar to Specials
-- Windows: Better indication of verification process before and after repair
 - Windows: MultiPar verification of a job is skipped after blocks are fetched
 - Windows & macOS: removed par2cmdline in favor of par2tbb/MultiPar
 
