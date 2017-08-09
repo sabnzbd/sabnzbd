@@ -1167,7 +1167,7 @@ input[type="checkbox"] {
 
     .navbar-nav {
         /* For extra wide languages like Polish */
-        margin-right: -50px;
+        margin-right: -150px;
     }
 }
 
