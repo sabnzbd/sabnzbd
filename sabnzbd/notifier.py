@@ -42,12 +42,14 @@ from sabnzbd.newsunpack import external_script
 from gntp.core import GNTPRegister
 from gntp.notifier import GrowlNotifier
 import gntp.errors
+
 try:
     import Growl
     # Detect classic Growl (older than 1.3)
     _HAVE_CLASSIC_GROWL = os.path.isfile('/Library/PreferencePanes/Growl.prefPane/Contents/MacOS/Growl')
 except ImportError:
     _HAVE_CLASSIC_GROWL = False
+
 try:
     import warnings
     # Make any warnings exceptions, so that pynotify is ignored
@@ -56,6 +58,10 @@ try:
         warnings.simplefilter("error")
         import pynotify
     _HAVE_NTFOSD = True
+
+    # Check for working version, not all pynotify are the same
+    if not hasattr(pynotify, 'init'):
+         _HAVE_NTFOSD = False
 except:
     _HAVE_NTFOSD = False
 
