@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-27 15:12+0000\n"
+"POT-Creation-Date: 2017-08-06 09:51+0000\n"
 "PO-Revision-Date: 2017-07-27 19:33+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-07-28 05:29+0000\n"
-"X-Generator: Launchpad (build 18439)\n"
+"X-Launchpad-Export-Date: 2017-08-07 05:53+0000\n"
+"X-Generator: Launchpad (build 18441)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -1029,6 +1029,11 @@ msgid "[%s] Repaired in %s"
 msgstr "[%s] Reparatie in %s"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr "Reparatie controleren"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/notifier.py [Notification]
 msgid "Disk full"
 msgstr "Schijf is vol"
@@ -1043,10 +1048,6 @@ msgstr "Verifiëren"
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
 msgstr "Controleren"
-
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
-msgstr "Reparatie controleren"
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
@@ -1209,6 +1210,12 @@ msgstr "Dubbele NZB"
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pauzeer dubbele NZB \"%s\""
+
+#: sabnzbd/nzbstuff.py [Warning message]
+msgid ""
+"%d files with duplicate filenames were discared for \"%s\". Enable "
+"\"allow_duplicate_files\" to allow duplicate filenames."
+msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"

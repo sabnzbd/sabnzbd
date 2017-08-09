@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-07-27 15:12+0000\n"
-"PO-Revision-Date: 2017-08-03 05:32+0000\n"
-"Last-Translator: Michael Arlt <info@michael-arlt.de>\n"
+"POT-Creation-Date: 2017-08-06 09:51+0000\n"
+"PO-Revision-Date: 2017-08-06 20:37+0000\n"
+"Last-Translator: fox <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-04 05:25+0000\n"
+"X-Launchpad-Export-Date: 2017-08-07 05:53+0000\n"
 "X-Generator: Launchpad (build 18441)\n"
 
 #: SABnzbd.py [Error message]
@@ -477,6 +477,9 @@ msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
 msgstr ""
+"Aufträge werden bereits während des Download-Vorgangs entpackt, um die "
+"Nachbearbeitungszeit zu verkürzen. Nur für Aufträge, die nicht repariert "
+"werden müssen."
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error removing %s"
@@ -1040,6 +1043,11 @@ msgid "[%s] Repaired in %s"
 msgstr "[%s] Repariert in %s"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
+msgid "Verifying repair"
+msgstr "Überprüfe Reparatur"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/notifier.py [Notification]
 msgid "Disk full"
 msgstr "Festplatte voll"
@@ -1055,10 +1063,6 @@ msgstr "Überprüfen"
 msgid "Checking"
 msgstr "Wird überprüft"
 
-#: sabnzbd/newsunpack.py
-msgid "Verifying repair"
-msgstr ""
-
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Dem Pythonskript \"%s\" fehlen die Ausführenrechte (+x)"
@@ -1072,10 +1076,13 @@ msgid ""
 "Certificate hostname mismatch: the server hostname is not listed in the "
 "certificate. This is a server issue."
 msgstr ""
+"Zertifikat ungültig: Der Server-Host ist nicht im angegeben Zertifikat "
+"enthalten. Dies ist ein Serverproblem."
 
 #: sabnzbd/newswrapper.py
 msgid "Certificate not valid. This is most probably a server issue."
 msgstr ""
+"Zertifikat ist nicht gültig. Dies ist wahrscheinlich ein Serverproblem."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
@@ -1222,6 +1229,14 @@ msgstr "Doppelte NZB"
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Doppelt vorhandene NZB \"%s\" angehalten"
+
+#: sabnzbd/nzbstuff.py [Warning message]
+msgid ""
+"%d files with duplicate filenames were discared for \"%s\". Enable "
+"\"allow_duplicate_files\" to allow duplicate filenames."
+msgstr ""
+"%s Dateien mit doppelten Dateinamen wurden für \"%s\" verworfen. Aktiviere "
+"\"allow_duplicate_files\" um doppelte Dateinamen zu erlauben."
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -1512,6 +1527,8 @@ msgid ""
 "Unable to bind to port %s on %s. Some other software uses the port or "
 "SABnzbd is already running."
 msgstr ""
+"Konnte nicht an Port %s auf %s starten. Eine andere Software nutzt diesen "
+"Port oder SABnzbd läuft bereits."
 
 #: sabnzbd/panic.py # sabnzbd/panic.py
 msgid "Fatal error"
@@ -2663,7 +2680,7 @@ msgstr "7zip aktivieren"
 
 #: sabnzbd/skintext.py
 msgid "Multicore Par2"
-msgstr ""
+msgstr "Multicore Par2"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2867,17 +2884,19 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
-msgstr ""
+msgstr "Verlaufsgröße"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Automatically delete completed jobs from History. Beware that Duplicate "
 "Detection and some external tools rely on History information."
 msgstr ""
+"Fertige Aufträge automatisch aus dem Verlauf entfernen. Duplikatserkennung "
+"und manche externe Skripte benötigen Informationen aus dem Verlauf."
 
 #: sabnzbd/skintext.py
 msgid "Keep all jobs"
-msgstr ""
+msgstr "Alle Aufträge behalten"
 
 #: sabnzbd/skintext.py
 msgid "Keep maximum number of completed jobs"
@@ -2889,11 +2908,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Do not keep any completed jobs"
-msgstr ""
+msgstr "Fertige Aufträge nicht behalten"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
-msgstr ""
+msgstr "Aufträge"
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
@@ -3693,7 +3712,7 @@ msgstr "Optional"
 
 #: sabnzbd/skintext.py [Explain server optional tickbox]
 msgid "For unreliable servers, will be ignored longer in case of failures"
-msgstr ""
+msgstr "Für unzuverlässige Server, wird bei Fehlern länger ignoriert"
 
 #: sabnzbd/skintext.py [Enable server tickbox]
 msgid "Enable"
