@@ -31,8 +31,8 @@ from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABY
 import sabnzbd.articlecache
 import sabnzbd.downloader
 import sabnzbd.nzbqueue
-from sabnzbd.encoding import yenc_name_fixer, platform_encode
-from sabnzbd.misc import match_str, is_obfuscated_filename
+from sabnzbd.encoding import yenc_name_fixer
+from sabnzbd.misc import match_str
 
 # Check for basic-yEnc
 try:
@@ -336,26 +336,8 @@ class Decoder(Thread):
         if article.partnum == nzf.lowest_partnum:
             nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
 
-        # If we have the md5, use it to rename
-        if nzf.md5of16k:
-            # Don't check again, even if no match
-            nzf.filename_checked = True
-            # Find the match and rename
-            if nzf.md5of16k in nzf.nzo.md5of16k:
-                new_filename = platform_encode(nzf.nzo.md5of16k[nzf.md5of16k])
-                # Was it even new?
-                if new_filename != nzf.filename:
-                    logging.info('Detected filename based on par2: %s -> %s', nzf.filename, new_filename)
-                    nzf.nzo.renamed_file(new_filename, nzf.filename)
-                    nzf.filename = new_filename
-                return
-
-        # Fallback to yenc/nzb name (also when there is no partnum=1)
-        # We also keep the NZB name in case it ends with ".par2" (usually correct)
-        if yenc_filename != nzf.filename and not is_obfuscated_filename(yenc_filename) and not nzf.filename.endswith('.par2'):
-            logging.info('Detected filename from yenc: %s -> %s', nzf.filename, yenc_filename)
-            nzf.nzo.renamed_file(yenc_filename, nzf.filename)
-            nzf.filename = yenc_filename
+        # Try the rename
+        nzf.nzo.verify_nzf_filename(nzf, yenc_filename)
 
 
 def yCheck(data):

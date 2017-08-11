@@ -42,9 +42,11 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, special_fixer, gUTF
 
-RE_VERSION = re.compile(r'(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
-RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
+RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
+RE_VERSION = re.compile(r'(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
+RE_IP4 = re.compile(r'inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)')
+RE_IP6 = re.compile(r'inet6\s+(addr:\s*){0,1}([0-9a-f:]+)', re.I)
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime('%p', time.localtime()))
@@ -1397,8 +1399,6 @@ def find_on_path(targets):
     return None
 
 
-_RE_IP4 = re.compile(r'inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)')
-_RE_IP6 = re.compile(r'inet6\s+(addr:\s*){0,1}([0-9a-f:]+)', re.I)
 def ip_extract():
     """ Return list of IP addresses of this system """
     ips = []
@@ -1425,9 +1425,9 @@ def ip_extract():
         output = p.stdout.read()
         p.wait()
         for line in output.split('\n'):
-            m = _RE_IP4.search(line)
+            m = RE_IP4.search(line)
             if not (m and m.group(2)):
-                m = _RE_IP6.search(line)
+                m = RE_IP6.search(line)
             if m and m.group(2):
                 ips.append(m.group(2))
     return ips

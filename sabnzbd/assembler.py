@@ -86,15 +86,14 @@ class Assembler(Thread):
                     continue
 
                 # Prepare filename
-                filename = sanitize_filename(nzf.filename)
-                nzf.filename = filename
-                dupe = nzo.check_for_dupe(nzf)
-                filepath = get_filepath(long_path(cfg.download_dir.get_path()), nzo, filename)
+                nzo.verify_nzf_filename(nzf)
+                nzf.filename = sanitize_filename(nzf.filename)
+                filepath = get_filepath(long_path(cfg.download_dir.get_path()), nzo, nzf.filename)
 
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.type)
                     try:
-                        filepath = self.assemble(nzf, filepath, dupe)
+                        filepath = self.assemble(nzf, filepath)
                     except IOError, (errno, strerror):
                         # If job was deleted, ignore error
                         if not nzo.is_gone():
@@ -110,19 +109,23 @@ class Assembler(Thread):
                         logging.error(T('Fatal error in Assembler'), exc_info=True)
                         break
 
+                    # Clean-up admin data
                     nzf.remove_admin()
-                    setname = nzf.setname
-                    if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack = self.parse_par2_file(filepath, nzo.md5of16k)
-                        if pack:
-                            nzo.md5packs[setname] = pack
-                            logging.debug('Got md5pack for set %s', setname)
-                            # Valid md5pack, so use this par2-file as main par2 file for the set
-                            if setname in nzo.partable:
-                                # First copy the set of extrapars, we need them later
-                                nzf.extrapars = nzo.partable[setname].extrapars
-                                nzo.partable[setname] = nzf
 
+                    # Parse par2 files
+                    if nzf.is_par2:
+                        # Always parse par2 files to get new md5of16k info
+                        pack = self.parse_par2_file(nzf, filepath)
+                        if pack and (nzo.md5packs.get(nzf.setname) is None):
+                            nzo.md5packs[nzf.setname] = pack
+                            logging.debug('Got md5pack for set %s', nzf.setname)
+                            # Valid md5pack, so use this par2-file as main par2 file for the set
+                            if nzf.setname in nzo.partable:
+                                # First copy the set of extrapars, we need them later
+                                nzf.extrapars = nzo.partable[nzf.setname].extrapars
+                                nzo.partable[nzf.setname] = nzf
+
+                    # Encryption and unwanted extension detection
                     rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
                     if rar_encrypted:
                         if cfg.pause_on_pwrar() == 1:
@@ -161,15 +164,8 @@ class Assembler(Thread):
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)
 
-    def assemble(self, nzf, path, dupe):
+    def assemble(self, nzf, path):
         """ Assemble a NZF from its table of articles """
-        if os.path.exists(path):
-            unique_path = get_unique_filename(path)
-            if dupe:
-                path = unique_path
-            else:
-                renamer(path, unique_path)
-
         md5 = hashlib.md5()
         fout = open(path, 'ab')
         decodetable = nzf.decodetable
@@ -200,7 +196,7 @@ class Assembler(Thread):
 
         return path
 
-    def parse_par2_file(self, fname, table16k):
+    def parse_par2_file(self, nzf, fname):
         """ Get the hash table and the first-16k hash table from a PAR2 file
             Return as dictionary, indexed on names or hashes for the first-16 table
             For a full description of the par2 specification, visit:
@@ -220,8 +216,8 @@ class Assembler(Thread):
                 name, hash, hash16k = parse_par2_file_packet(f, header)
                 if name:
                     table[name] = hash
-                    if hash16k not in table16k:
-                        table16k[hash16k] = name
+                    if hash16k not in nzf.nzo.md5of16k:
+                        nzf.nzo.md5of16k[hash16k] = name
                     else:
                         # Not unique, remove to avoid false-renames
                         duplicates16k.append(hash16k)
@@ -240,9 +236,17 @@ class Assembler(Thread):
         # Have to remove duplicates at the end to make sure
         # no trace is left in case of multi-duplicates
         for hash16k in duplicates16k:
-            if hash16k in table16k:
-                old_name = table16k.pop(hash16k)
+            if hash16k in nzf.nzo.md5of16k:
+                old_name = nzf.nzo.md5of16k.pop(hash16k)
                 logging.debug('Par2-16k signature of %s not unique, discarding', old_name)
+
+        # If the filename was changed (duplicate filename) check if we already have the set
+        base_fname = os.path.split(fname)[1]
+        if table and base_fname != nzf.filename and table not in nzf.nzo.md5packs.values():
+            # Re-parse this par2 file to create new set
+            nzf.filename = base_fname
+            nzf.is_par2 = False
+            nzf.nzo.handle_par2(nzf, True)
 
         return table
 

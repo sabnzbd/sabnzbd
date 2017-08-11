@@ -45,7 +45,7 @@ from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
-    fix_unix_encoding, calc_age
+    fix_unix_encoding, calc_age, is_obfuscated_filename
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -558,7 +558,7 @@ NzbObjectSaver = (
     'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'bytes_tried',
     'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date', 'md5of16k',
     'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
-    'avg_bps_freq', 'avg_bps_total', 'priority', 'dupe_table', 'saved_articles', 'nzo_id',
+    'avg_bps_freq', 'avg_bps_total', 'priority', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted', 'bad_articles',
     'duplicate', 'oversized', 'precheck', 'incomplete', 'reuse', 'meta',
@@ -650,8 +650,6 @@ class NzbObject(TryList):
         except:
             priority = DEFAULT_PRIORITY
         self.priority = priority
-
-        self.dupe_table = {}
 
         self.saved_articles = []
 
@@ -939,21 +937,6 @@ class NzbObject(TryList):
             # Raise error, so it's not added
             raise TypeError
 
-    def check_for_dupe(self, nzf):
-        filename = nzf.filename
-
-        dupe = False
-
-        if filename in self.dupe_table:
-            old_nzf = self.dupe_table[filename]
-            if nzf.article_count <= old_nzf.article_count:
-                dupe = True
-
-        if not dupe:
-            self.dupe_table[filename] = nzf
-
-        return dupe
-
     @synchronized(NZO_LOCK)
     def update_download_stats(self, bps, serverid, bytes):
         if bps:
@@ -995,7 +978,8 @@ class NzbObject(TryList):
                 if head and matcher(lparset, head.lower()):
                     xnzf.set_par2(parset, vol, block)
                     # Don't postpone if all par2 are desired and should be kept
-                    if not(cfg.enable_all_par() and not cfg.enable_par_cleanup()):
+                    # Also don't postpone header-only-files, to extract all possible md5of16k
+                    if not(cfg.enable_all_par() and not cfg.enable_par_cleanup()) and block:
                         self.extrapars[parset].append(xnzf)
                         self.files.remove(xnzf)
 
@@ -1488,6 +1472,33 @@ class NzbObject(TryList):
                     if tmp_nzf.nzf_id not in nzf_ids:
                         self.files[pos + 1] = nzf
                         self.files[pos] = tmp_nzf
+
+    def verify_nzf_filename(self, nzf, yenc_filename=None):
+        """ Get filename from par2-info or from yenc """
+        # Already done?
+        if nzf.filename_checked:
+            return
+
+        # If we have the md5, use it to rename
+        if nzf.md5of16k and self.md5of16k:
+            # Don't check again, even if no match
+            nzf.filename_checked = True
+            # Find the match and rename
+            if nzf.md5of16k in self.md5of16k:
+                new_filename = platform_encode(self.md5of16k[nzf.md5of16k])
+                # Was it even new?
+                if new_filename != nzf.filename:
+                    logging.info('Detected filename based on par2: %s -> %s', nzf.filename, new_filename)
+                    self.renamed_file(new_filename, nzf.filename)
+                    nzf.filename = new_filename
+                return
+
+        # Fallback to yenc/nzb name (also when there is no partnum=1)
+        # We also keep the NZB name in case it ends with ".par2" (usually correct)
+        if yenc_filename and yenc_filename != nzf.filename and not is_obfuscated_filename(yenc_filename) and not nzf.filename.endswith('.par2'):
+            logging.info('Detected filename from yenc: %s -> %s', nzf.filename, yenc_filename)
+            self.renamed_file(yenc_filename, nzf.filename)
+            nzf.filename = yenc_filename
 
     @synchronized(NZO_LOCK)
     def renamed_file(self, name_set, old_name=None):
