@@ -75,32 +75,44 @@ class TryList(object):
     """ TryList keeps track of which servers have been tried for a specific article
     """
     # Pre-define attributes to save memory
-    __slots__ = ('__try_list', 'fetcher_priority')
+    __slots__ = ('try_list', 'fetcher_priority')
 
     def __init__(self):
-        self.__try_list = []
+        self.try_list = []
         self.fetcher_priority = 0
 
     def server_in_try_list(self, server):
         """ Return whether specified server has been tried """
         with TRYLIST_LOCK:
-            return server in self.__try_list
+            return server in self.try_list
 
     def add_to_try_list(self, server):
         """ Register server as having been tried already """
         with TRYLIST_LOCK:
-            if server not in self.__try_list:
-                self.__try_list.append(server)
+            if server not in self.try_list:
+                self.try_list.append(server)
 
     def try_list_size(self):
         """ How many servers are listed as tried """
         with TRYLIST_LOCK:
-            return len(self.__try_list)
+            return len(self.try_list)
 
     def reset_try_list(self):
         """ Clean the list """
         with TRYLIST_LOCK:
-            self.__try_list = []
+            self.try_list = []
+
+    def __getstate__(self):
+        """ Save the servers """
+        return [server.id for server in self.try_list]
+
+    def __setstate__(self, servers_ids):
+        self.try_list = []
+        for server_id in servers_ids:
+            for server in sabnzbd.downloader.Downloader.do.servers:
+                if server.id == server_id:
+                    self.add_to_try_list(server)
+                    break
 
 
 ##############################################################################
@@ -193,6 +205,7 @@ class Article(TryList):
         dict_ = {}
         for item in ArticleSaver:
             dict_[item] = getattr(self, item)
+        dict_['try_list'] = TryList.__getstate__(self)
         return dict_
 
     def __setstate__(self, dict_):
@@ -203,9 +216,9 @@ class Article(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        TryList.__init__(self)
-        self.fetcher = None
+        TryList.__setstate__(self, dict_['try_list'])
         self.fetcher_priority = 0
+        self.fetcher = None
         self.tries = 0
 
     def __repr__(self):
@@ -345,6 +358,7 @@ class NzbFile(TryList):
         dict_ = {}
         for item in NzbFileSaver:
             dict_[item] = getattr(self, item)
+        dict_['try_list'] = TryList.__getstate__(self)
         return dict_
 
     def __setstate__(self, dict_):
@@ -355,7 +369,7 @@ class NzbFile(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        TryList.__init__(self)
+        TryList.__setstate__(self, dict_['try_list'])
 
     def __repr__(self):
         return "<NzbFile: filename=%s, type=%s>" % (self.filename, self.type)
@@ -1709,17 +1723,21 @@ class NzbObject(TryList):
         """ Save to pickle file, selecting attributes """
         dict_ = {}
         for item in NzbObjectSaver:
-            dict_[item] = self.__dict__[item]
+            dict_[item] = getattr(self, item)
+        dict_['try_list'] = TryList.__getstate__(self)
         return dict_
 
     def __setstate__(self, dict_):
         """ Load from pickle file, selecting attributes """
         for item in NzbObjectSaver:
             try:
-                self.__dict__[item] = dict_[item]
+                setattr(self, item, dict_[item])
             except KeyError:
                 # Handle new attributes
-                self.__dict__[item] = None
+                setattr(self, item, None)
+        TryList.__setstate__(self, dict_['try_list'])
+
+        # Set non-transferable values
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
         self.wait = None
@@ -1743,7 +1761,6 @@ class NzbObject(TryList):
                 self.bytes_tried += nzf.bytes
             for nzf in self.files:
                 self.bytes_tried += nzf.bytes - nzf.bytes_left
-        TryList.__init__(self)
 
     def __repr__(self):
         return "<NzbObject: filename=%s>" % self.filename

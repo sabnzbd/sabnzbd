@@ -325,9 +325,9 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     Assembler()
 
-    NzbQueue.do.read_queue(repair)
-
     Downloader(pause_downloader or paused)
+
+    NzbQueue.do.read_queue(repair)
 
     DirScanner()
 
