@@ -105,6 +105,11 @@
                         <span class="desc">$T('explain-no_series_dupes')</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="series_propercheck">$T('opt-series_propercheck')</label>
+                        <input type="checkbox" name="series_propercheck" id="series_propercheck" value="1" <!--#if int($series_propercheck) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-series_propercheck')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="pause_on_pwrar">$T('opt-pause_on_pwrar')</label>
                         <select name="pause_on_pwrar" id="pause_on_pwrar">
                             <option value="0" <!--#if int($pause_on_pwrar) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>

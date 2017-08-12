@@ -74,8 +74,8 @@ class HistoryDB(object):
     """
     # These class attributes will be accessed directly because
     # they need to be shared by all instances
-    db_path = None        # Will contain full path to history database
-    done_cleaning = False # Ensure we only do one Vacuum per session
+    db_path = None         # Will contain full path to history database
+    done_cleaning = False  # Ensure we only do one Vacuum per session
 
     @synchronized(DB_LOCK)
     def __init__(self):
@@ -84,7 +84,6 @@ class HistoryDB(object):
         if not HistoryDB.db_path:
             HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
         self.connect()
-
 
     def connect(self):
         """ Create a connection to the database """
@@ -117,7 +116,6 @@ class HistoryDB(object):
             # Use "and" to stop when database has been reset due to corruption
             _ = self.execute('PRAGMA user_version = 2;') and \
                 self.execute('ALTER TABLE "history" ADD COLUMN password TEXT;')
-
 
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
@@ -262,7 +260,7 @@ class HistoryDB(object):
         if "d" in sabnzbd.cfg.history_retention():
             # How many days to keep?
             days_to_keep = int_conv(sabnzbd.cfg.history_retention().strip()[:-1])
-            seconds_to_keep = int(time.time()) - days_to_keep*3600*24
+            seconds_to_keep = int(time.time()) - days_to_keep * 86400
             if days_to_keep > 0:
                 logging.info('Removing completed jobs older than %s days from history', days_to_keep)
                 return self.execute("""DELETE FROM history WHERE status = 'Completed' AND completed < ?""", (seconds_to_keep,), save=True)
@@ -272,7 +270,6 @@ class HistoryDB(object):
             if to_keep > 0:
                 logging.info('Removing all but last %s completed jobs from history', to_keep)
                 return self.execute("""DELETE FROM history WHERE id NOT IN ( SELECT id FROM history WHERE status = 'Completed' ORDER BY completed DESC LIMIT ? )""", (to_keep,), save=True)
-
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
         """ Add a new job entry to the database """
@@ -293,7 +290,7 @@ class HistoryDB(object):
         if categories:
             categories = ['*' if c == 'Default' else c for c in categories]
             post = " AND (CATEGORY = ?"
-            post += " OR CATEGORY = ? " * (len(categories)-1)
+            post += " OR CATEGORY = ? " * (len(categories) - 1)
             post += ")"
             command_args.extend(categories)
         if failed_only:
@@ -516,7 +513,6 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path,
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness,
             fail_message, url_info, bytes, series, nzo.md5sum, password)
-
 
 
 def unpack_history_info(item):

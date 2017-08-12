@@ -62,6 +62,7 @@ REJECT_PAR2_RE = re.compile(r'\.par2\.\d+', re.I)  # Reject duplicate par2 files
 RE_NORMAL_NAME = re.compile(r'\.\w{2,5}$')  # Test reasonably sized extension at the end
 RE_QUICK_PAR2_CHECK = re.compile(r'\.par2\W*', re.I)
 RE_RAR = re.compile(r'(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$', re.I)
+RE_PROPER = re.compile(r'(^|[\. _-])(PROPER|REAL|REPACK)([\. _-]|$)')
 
 
 ##############################################################################
@@ -1676,14 +1677,16 @@ class NzbObject(TryList):
             where "res" is True when this is a duplicate
             where "series" is True when this is an episode
         """
-        series = False
+
         no_dupes = cfg.no_dupes()
         no_series_dupes = cfg.no_series_dupes()
+        series_propercheck = cfg.series_propercheck()
 
         # abort logic if dupe check is off for both nzb+series
         if not no_dupes and not no_series_dupes:
             return False, False
 
+        series = False
         res = False
         history_db = HistoryDB()
 
@@ -1696,10 +1699,12 @@ class NzbObject(TryList):
                 logging.debug('Dupe checking NZB against backup: filename=%s, result=%s', self.filename, res)
         # dupe check off nzb filename
         if not res and no_series_dupes:
-            series, season, episode, dummy = sabnzbd.newsunpack.analyse_show(self.final_name)
-            res = history_db.have_episode(series, season, episode)
-            series = res
-            logging.debug('Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s', series, season, episode, res)
+            series, season, episode, misc = sabnzbd.newsunpack.analyse_show(self.final_name)
+            if RE_PROPER.match(misc) and series_propercheck:
+                logging.debug('Dupe checking series+season+ep in history aborted due to PROPER/REAL/REPACK found')
+            else:
+                res = history_db.have_episode(series, season, episode)
+                logging.debug('Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s', series, season, episode, res)
 
         history_db.close()
         return res, series
