@@ -91,6 +91,11 @@ class TryList(object):
             if server not in self.__try_list:
                 self.__try_list.append(server)
 
+    def try_list_size(self):
+        """ How many servers are listed as tried """
+        with TRYLIST_LOCK:
+            return len(self.__try_list)
+
     def reset_try_list(self):
         """ Clean the list """
         with TRYLIST_LOCK:
@@ -1396,6 +1401,7 @@ class NzbObject(TryList):
         for nzf in nzf_remove_list:
             nzf.deleted = True
             self.files.remove(nzf)
+
         # If cleanup emptied the active files list, end this job
         if nzf_remove_list and not self.files:
             sabnzbd.NzbQueue.do.end_job(self)
