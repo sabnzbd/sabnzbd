@@ -86,16 +86,19 @@ def CreateProcess(executable, args, _p_attr, _t_attr,
     Python implementation of CreateProcess using CreateProcessW for Win32
 
     """
-
     si = STARTUPINFOW(
         dwFlags=startup_info.dwFlags,
         wShowWindow=startup_info.wShowWindow,
         cb=sizeof(STARTUPINFOW),
-        ## XXXvlab: not sure of the casting here to ints.
-        hStdInput=int(startup_info.hStdInput),
-        hStdOutput=int(startup_info.hStdOutput),
-        hStdError=int(startup_info.hStdError),
     )
+
+    # Only cast to ints when it's given
+    if startup_info.hStdInput:
+        si.hStdInput = int(startup_info.hStdInput)
+    if startup_info.hStdOutput:
+        si.hStdOutput = int(startup_info.hStdOutput)
+    if startup_info.hStdError:
+        si.hStdError = int(startup_info.hStdError)
 
     wenv = None
     if env is not None:
