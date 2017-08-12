@@ -715,15 +715,13 @@ class NzbQueue(object):
     def get_article(self, server, servers):
         for nzo in self.__nzo_list:
             # Not when queue paused and not a forced item
-            if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
+            if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == TOP_PRIORITY:
                 # Check if past propagation delay, or forced
                 if not cfg.propagation_delay() or nzo.priority == TOP_PRIORITY or (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) < time.time():
-                    # Don't try to get an article if server is in try_list of nzo and category allowed by server
-                    if nzo.server_allowed(server):
-                        if not nzo.server_in_try_list(server):
-                            article = nzo.get_article(server, servers)
-                            if article:
-                                return article
+                    if not nzo.server_in_try_list(server):
+                        article = nzo.get_article(server, servers)
+                        if article:
+                            return article
                     # Stop after first job that wasn't paused/propagating/etc
                     if self.__top_only:
                         return

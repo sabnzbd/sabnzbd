@@ -79,17 +79,6 @@
                     <span class="desc">$T('explain-optional')</span>
                 </div>
                 <div class="field-pair advanced-settings">
-                    <label class="config" for="categories">$T('srv-categories')</label>
-                    <select name="categories" id="categories" multiple>
-                    <!--#for $cat in $cats#-->
-                        <option value="$cat" <!--#if $cat == "Default"#-->selected<!--#end if#-->>
-                            <!--#if $cat == "Default" then $T('Default') else $cat#-->
-                        </option>
-                    <!--#end for#-->
-                    </select>
-                    <span class="desc">$T('srv-explain-categories')</span>
-                </div>
-                <div class="field-pair advanced-settings">
                     <label class="config" for="displayname">$T('srv-displayname')</label>
                     <input type="text" name="displayname" id="displayname" />
                 </div>
@@ -253,21 +242,6 @@
                     <span class="desc">$T('srv-explain-send_group')</span>
                 </div>
                 <div class="field-pair advanced-settings">
-                    <label class="config" for="categories$cur">$T('srv-categories')</label>
-                    <select name="categories" id="categories$cur" multiple>
-                    <!--#for $cat in $cats#-->
-                        <option value="$cat" <!--#if $cat in $server['categories'] then 'selected' else ""#-->>
-                            <!--#if $cat == "Default" then $T('Default') else $cat#-->
-                        </option>
-                    <!--#end for#-->
-                    </select>
-                    <span class="desc">$T('srv-explain-categories')<br><span class="label label-warning">$T('warning').upper()</span> <strong>This option is scheduled to be removed in the next release of SABnzbd.</strong></span>
-                    <div class="alert alert-info alert-no-category">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                        $T('srv-explain-no-categories')
-                    </div>
-                </div>
-                <div class="field-pair advanced-settings">
                     <label class="config" for="displayname$cur">$T('srv-displayname')</label>
                     <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
                 </div>
@@ -423,33 +397,6 @@
                 formHasChanged = false;
             }, 100)
         })
-
-        /**
-            Message on no Default category selected
-        **/
-        function checkServerCats() {
-            // Now we check all of them
-            var hasDefault = false;
-            // Only check the active servers, not the add-server one
-            \$('.section:not(#addServerContent) select[name="categories"]').each(function() {
-                // See if this server is enabled
-                if(!\$(this).parents('.section').find('.col2').hasClass('server-disabled') ) {
-                    // Is there Default?
-                    if(\$(this).val() && \$(this).val().indexOf('Default') > -1) {
-                        // Hide
-                        \$('.alert-no-category').hide()
-                        hasDefault = true
-                        // All good!
-                        return true
-                    }
-                }
-            })
-            // We found nothing.. Let's show a warning
-            if(!hasDefault) \$('.alert-no-category').show()
-        }
-
-        \$('select[name="categories"]').on('change', checkServerCats)
-        checkServerCats()
 
         /**
             Click events

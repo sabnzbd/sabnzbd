@@ -61,7 +61,7 @@ TIMER_LOCK = RLock()
 class Server(object):
 
     def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, send_group, username=None,
-                 password=None, optional=False, retention=0, categories=None):
+                 password=None, optional=False, retention=0):
 
         self.id = id
         self.newid = None
@@ -80,12 +80,6 @@ class Server(object):
 
         self.username = username
         self.password = password
-
-        self.categories = categories
-
-        # Temporary deprication warning
-        if categories and (len(categories) > 1 or 'Default' not in categories):
-            logging.warning('[%s] Server specific categories option is scheduled to be removed in the next release of SABnzbd', self.host)
 
         self.busy_threads = []
         self.idle_threads = []
@@ -235,7 +229,6 @@ class Downloader(Thread):
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
-            categories = srv.categories()
             retention = float(srv.retention() * 24 * 3600)  # days ==> seconds
             send_group = srv.send_group()
             create = True
@@ -252,7 +245,7 @@ class Downloader(Thread):
 
         if create and enabled and host and port and threads:
             self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
-                                            send_group, username, password, optional, retention, categories=categories))
+                                            send_group, username, password, optional, retention))
 
         return
 
