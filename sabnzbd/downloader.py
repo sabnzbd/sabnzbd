@@ -84,7 +84,7 @@ class Server(object):
         self.categories = categories
 
         # Temporary deprication warning
-        if len(categories) > 1 or 'Default' not in categories:
+        if categories and (len(categories) > 1 or 'Default' not in categories):
             logging.warning('[%s] Server specific categories option is scheduled to be removed in the next release of SABnzbd', self.host)
 
         self.busy_threads = []
