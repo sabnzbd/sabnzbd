@@ -216,7 +216,7 @@ class Article(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        TryList.__setstate__(self, dict_['try_list'])
+        TryList.__setstate__(self, dict_.get('try_list', []))
         self.fetcher_priority = 0
         self.fetcher = None
         self.tries = 0
@@ -369,7 +369,7 @@ class NzbFile(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        TryList.__setstate__(self, dict_['try_list'])
+        TryList.__setstate__(self, dict_.get('try_list', []))
 
     def __repr__(self):
         return "<NzbFile: filename=%s, type=%s>" % (self.filename, self.type)
@@ -1735,7 +1735,7 @@ class NzbObject(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        TryList.__setstate__(self, dict_['try_list'])
+        TryList.__setstate__(self, dict_.get('try_list', []))
 
         # Set non-transferable values
         self.pp_active = False
