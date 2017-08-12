@@ -28,12 +28,28 @@ import time
 ##############################################################################
 # Power management for Windows
 ##############################################################################
+try:
+    import win32security
+    import win32api
+    import ntsecuritycon
+except ImportError:
+    pass
+
+
+def win_power_privileges():
+    """ To do any power-options, the process needs higher privileges """
+    flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
+    htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
+    id_ = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
+    newPrivileges = [(id_, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
+    win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
+
 
 def win_hibernate():
     """ Hibernate Windows system, returns after wakeup """
     try:
-        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Hibernate")
-        time.sleep(10)
+        win_power_privileges()
+        win32api.SetSystemPowerState(False, True)
     except:
         logging.error(T('Failed to hibernate system'))
         logging.info("Traceback: ", exc_info=True)
@@ -42,8 +58,8 @@ def win_hibernate():
 def win_standby():
     """ Standby Windows system, returns after wakeup """
     try:
-        subprocess.Popen("rundll32 powrprof.dll,SetSuspendState Standby")
-        time.sleep(10)
+        win_power_privileges()
+        win32api.SetSystemPowerState(True, True)
     except:
         logging.error(T('Failed to standby system'))
         logging.info("Traceback: ", exc_info=True)
@@ -52,15 +68,7 @@ def win_standby():
 def win_shutdown():
     """ Shutdown Windows system, never returns """
     try:
-        import win32security
-        import win32api
-        import ntsecuritycon
-
-        flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
-        htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
-        id_ = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
-        newPrivileges = [(id_, ntsecuritycon.SE_PRIVILEGE_ENABLED)]
-        win32security.AdjustTokenPrivileges(htoken, 0, newPrivileges)
+        win_power_privileges()
         win32api.InitiateSystemShutdown("", "", 30, 1, 0)
     finally:
         os._exit(0)
