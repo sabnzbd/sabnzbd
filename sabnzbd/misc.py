@@ -94,6 +94,15 @@ def calc_age(date, trans=False):
     return age
 
 
+def monthrange(start, finish):
+    """ Calculate months between 2 dates, used in the Config template """
+    months = (finish.year - start.year) * 12 + finish.month + 1
+    for i in xrange(start.month, months):
+        year  = (i - 1) / 12 + start.year
+        month = (i - 1) % 12 + 1
+        yield datetime.date(year, month, 1)
+
+
 def safe_lower(txt):
     """ Return lowercased string. Return '' for None """
     if txt:

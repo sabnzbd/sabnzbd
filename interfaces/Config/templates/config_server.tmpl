@@ -140,10 +140,13 @@
 <!--
     We need to find how many months we have recorded so far, so we
      loop over all the dates to find the lowest value and then use
-     the number of days passed as an estimate of the months we have.
+     this to calculate the date-selector
 -->
+
 <!--#import json#-->
 <!--#import datetime#-->
+<!--#import sabnzbd.misc#-->
+
 <!--#def show_date_selector($server, $id)#-->
     <!--#set month_names = [$T('January'), $T('February'), $T('March'), $T('April'), $T('May'), $T('June'), $T('July'), $T('August'), $T('September'), $T('October'), $T('November'), $T('December')] #-->
     <!--#set min_date = datetime.date.today()#-->
@@ -151,10 +154,10 @@
         <!--#set split_date = $date.split('-')#-->
         <!--#set min_date = min(min_date, datetime.date(int(split_date[0]), int(split_date[1]), 1))#-->
     <!--#end for#-->
-    <!--#set months_recorded = int((datetime.date.today()-min_date).days / (365/12))#-->
+    <!--#set months_recorded = list(sabnzbd.misc.monthrange(min_date, datetime.date.today()))#-->
+    <!--#$months_recorded.reverse()#-->
     <select class="chart-selector" name="chart-selector-${id}" id="chart-selector-${id}" data-id="${id}">
-        <!--#for $i in range(months_recorded+1)#-->
-            <!--#set cur_date = (datetime.date.today() - datetime.timedelta($i*365/12))#-->
+        <!--#for $cur_date in months_recorded#-->
             <option value="<!--#echo '%d-%02d' % ($cur_date.year, $cur_date.month)#-->">$month_names[$cur_date.month-1] $cur_date.year</option>
         <!--#end for#-->
     </select>
@@ -300,7 +303,7 @@
                     // Server data
                     serverData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
                     \$(document).ready(function() {
-                        showChart(${cur})
+                        showChart(${cur}, \$('#chart-selector-${cur}').val())
                     })
                 </script>
             <!--#end if#-->
@@ -317,13 +320,9 @@
         var thisDay = new Date()
 
         // What month are we doing?
-        if(month) {
-            var inputDate = new Date(month+'-01')
-        } else {
-            var inputDate = new Date()
-        }
-        var baseDate = new Date(inputDate.getFullYear(), inputDate.getMonth(), 1)
-        var maxDaysInMonth = new Date(baseDate.getYear(), baseDate.getMonth()+1, 0).getDate()
+        var inputDate = new Date(month+'-01')
+        var baseDate = new Date(inputDate.getUTCFullYear(), inputDate.getUTCMonth(), 1)
+        var maxDaysInMonth = new Date(baseDate.getFullYear(), baseDate.getMonth()+1, 0).getDate()
 
         // Fill the data array
         var data = {
