@@ -444,6 +444,8 @@ SKIN_TEXT = {
     'explain-no_dupes' : TT('Detect identical NZB files (based on items in your History or files in .nzb Backup Folder)'),
     'opt-no_series_dupes' : TT('Detect duplicate episodes in series'),
     'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode" of items in your History)'),
+    'opt-series_propercheck' : TT('Allow proper releases through'),
+    'explain-series_propercheck' : TT('Bypass series dupe detection if PROPER/REAL/REPACK are detected in the release name'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
     'nodupes-ignore' : TT('Discard'), #: Four way switch for duplicates
     'nodupes-pause' : TT('Pause'), #: Four way switch for duplicates
