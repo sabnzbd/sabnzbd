@@ -191,6 +191,7 @@ class Downloader(Thread):
         self.write_fds = {}
 
         self.servers = []
+        self.server_dict = {} # For faster lookups, but is not updated later!
         self._timers = {}
 
         for server in config.get_servers():
@@ -244,8 +245,10 @@ class Downloader(Thread):
                     break
 
         if create and enabled and host and port and threads:
-            self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
-                                            send_group, username, password, optional, retention))
+            server = Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
+                                            send_group, username, password, optional, retention)
+            self.servers.append(server)
+            self.server_dict[newserver] = server
 
         return
 

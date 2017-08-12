@@ -109,10 +109,8 @@ class TryList(object):
     def __setstate__(self, servers_ids):
         self.try_list = []
         for server_id in servers_ids:
-            for server in sabnzbd.downloader.Downloader.do.servers:
-                if server.id == server_id:
-                    self.add_to_try_list(server)
-                    break
+            if server_id in sabnzbd.downloader.Downloader.do.server_dict:
+                self.add_to_try_list(sabnzbd.downloader.Downloader.do.server_dict[server_id])
 
 
 ##############################################################################
