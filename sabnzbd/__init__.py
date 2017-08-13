@@ -863,6 +863,7 @@ def get_new_id(prefix, folder, check_list=None):
         except:
             logging.error(T('Failure in tempfile.mkstemp'))
             logging.info("Traceback: ", exc_info=True)
+            break
     # Cannot create unique id, crash the process
     raise IOError
 
