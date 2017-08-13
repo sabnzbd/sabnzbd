@@ -1174,13 +1174,25 @@ def main():
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in preferredencoding.lower() and '8' in preferredencoding.lower()):
         logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % preferredencoding)
 
+    # SSL Information
+    logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
+    logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
+
     # Load extra certificates
     if hasattr(sys, "frozen"):
         # The certifi package brings the latest certificates on build
         # This will cause the create_default_context to load it automatically
-        import certifi
-        os.environ["SSL_CERT_FILE"] = certifi.where()
+        if sabnzbd.DARWIN:
+            import certifi
+            os.environ["SSL_CERT_FILE"] = certifi.where()
+        if sabnzbd.WIN32:
+            os.environ["SSL_CERT_FILE"] = os.path.join(sabnzbd.DIR_PROG, 'cacert.pem')
         logging.info('Loaded additional certificates from %s', os.environ["SSL_CERT_FILE"])
+
+        # List the number of certificates available
+        import ssl
+        ctx = ssl.create_default_context()
+        logging.info('Available certificates: %s', repr(ctx.cert_store_stats()))
 
     # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
@@ -1257,12 +1269,9 @@ def main():
 
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
-
     print_modules()
 
-    logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
-    logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
-
+    # HTTPS certificate generation
     https_cert = sabnzbd.cfg.https_cert.get_path()
     https_key = sabnzbd.cfg.https_key.get_path()
     https_chain = sabnzbd.cfg.https_chain.get_path()
@@ -1278,6 +1287,7 @@ def main():
             logging.warning(T('Disabled HTTPS because of missing CERT and KEY files'))
             enable_https = False
 
+    # Starting of the webserver
     # Determine if this system has multiple definitions for 'localhost'
     hosts = all_localhosts()
     multilocal = len(hosts) > 1 and cherryhost in ('localhost', '0.0.0.0')
