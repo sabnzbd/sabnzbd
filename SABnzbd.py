@@ -1174,6 +1174,15 @@ def main():
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in preferredencoding.lower() and '8' in preferredencoding.lower()):
         logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % preferredencoding)
 
+    # Load extra certificates
+    if hasattr(sys, "frozen"):
+        # The certifi package brings the latest certificates on build
+        # This will cause the create_default_context to load it automatically
+        import certifi
+        os.environ["SSL_CERT_FILE"] = certifi.where()
+        logging.info('Loaded additional certificates from %s', os.environ["SSL_CERT_FILE"])
+
+    # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
         from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 
@@ -1686,9 +1695,8 @@ if __name__ == '__main__':
             main()
 
     elif getattr(sys, 'frozen', None) == 'macosx_app':
-        # OSX binary
-
         try:
+            # OSX binary runner
             from PyObjCTools import AppHelper
             from sabnzbd.osxmenu import SABnzbdDelegate
 
@@ -1713,9 +1721,7 @@ if __name__ == '__main__':
             sabApp = startApp()
             sabApp.start()
             AppHelper.runEventLoop()
-
         except:
             main()
-
     else:
         main()
