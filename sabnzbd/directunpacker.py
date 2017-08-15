@@ -430,4 +430,4 @@ def test_disk_performance():
     else:
         logging.info('Direct Unpack was not enabled, incomplete folder disk speed below 40MB/s')
     cfg.direct_unpack_tested.set(True)
-    config.save_config()
+    sabnzbd.config.save_config()
