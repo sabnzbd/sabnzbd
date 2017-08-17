@@ -1,15 +1,28 @@
+#!/usr/bin/python -OO
+# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+"""
+sabnzbd.utils.sslinfo - Information on the system's SSL setup
+"""
+
 # v23 indicates "negotiate highest possible"
 _ALL_PROTOCOLS = ('v23', 't12', 't11', 't1', 'v3', 'v2')
 _SSL_PROTOCOLS = {}
 _SSL_PROTOCOLS_LABELS = []
-
-def ssl_potential():
-    ''' Return a list of potentially supported SSL protocols'''
-    try:
-        import ssl
-    except ImportError:
-        return []
-    return [p[9:] for p in dir(ssl) if p.startswith('PROTOCOL_')]
 
 try:
     import ssl
@@ -40,18 +53,6 @@ try:
     _SSL_PROTOCOLS_LABELS.reverse()
 except:
     pass
-
-
-def ssl_method(method):
-    ''' Translate SSL acronym to a method value '''
-    if method in _SSL_PROTOCOLS:
-        return _SSL_PROTOCOLS[method]
-    else:
-        # The default is "negotiate a protocol"
-        try:
-            return ssl.PROTOCOL_SSLv23
-        except AttributeError:
-            return _SSL_PROTOCOLS[0]
 
 
 def ssl_protocols():

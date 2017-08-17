@@ -30,14 +30,14 @@ import hashlib
 
 import sabnzbd
 from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-    set_permissions, flag_file, long_path, clip_path, has_win_device, get_all_passwords
-from sabnzbd.constants import QCHECK_FILE, Status
+    set_permissions, long_path, clip_path, has_win_device, get_all_passwords, diskspace
+from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.encoding import unicoder, deunicode, is_utf8
+from sabnzbd.encoding import unicoder, is_utf8
 from sabnzbd.rating import Rating
 
 
@@ -69,19 +69,31 @@ class Assembler(Thread):
             nzo, nzf = job
 
             if nzf:
-                sabnzbd.CheckFreeSpace()
-                # We allow win_devices because otherwise par2cmdline fails to repair
-                filename = sanitize_filename(nzf.filename, allow_win_devices=True)
-                nzf.filename = filename
+                # Check if enough disk space is free, if not pause downloader and send email
+                if diskspace(force=True)['download_dir'][1] < (cfg.download_free.get_float() + nzf.bytes) / GIGI:
+                    # Only warn and email once
+                    if not sabnzbd.downloader.Downloader.do.paused:
+                        logging.warning(T('Too little diskspace forcing PAUSE'))
+                        # Pause downloader, but don't save, since the disk is almost full!
+                        sabnzbd.downloader.Downloader.do.pause(save=False)
+                        sabnzbd.emailer.diskfull()
+                        # Abort all direct unpackers, just to be sure
+                        sabnzbd.directunpacker.abort_all()
 
-                dupe = nzo.check_for_dupe(nzf)
+                    # Place job back in queue and wait 30 seconds to hope it gets resolved
+                    self.process(job)
+                    sleep(30)
+                    continue
 
-                filepath = get_filepath(long_path(cfg.download_dir.get_path()), nzo, filename)
+                # Prepare filename
+                nzo.verify_nzf_filename(nzf)
+                nzf.filename = sanitize_filename(nzf.filename)
+                filepath = get_filepath(long_path(cfg.download_dir.get_path()), nzo, nzf.filename)
 
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.type)
                     try:
-                        filepath = _assemble(nzf, filepath, dupe)
+                        filepath = self.assemble(nzf, filepath)
                     except IOError, (errno, strerror):
                         # If job was deleted, ignore error
                         if not nzo.is_gone():
@@ -97,31 +109,35 @@ class Assembler(Thread):
                         logging.error(T('Fatal error in Assembler'), exc_info=True)
                         break
 
+                    # Clean-up admin data
                     nzf.remove_admin()
-                    setname = nzf.setname
-                    if nzf.is_par2 and (nzo.md5packs.get(setname) is None):
-                        pack = GetMD5Hashes(filepath)[0]
-                        if pack:
-                            nzo.md5packs[setname] = pack
-                            logging.debug('Got md5pack for set %s', setname)
-                            # Valid md5pack, so use this par2-file as main par2 file for the set
-                            if setname in nzo.partable:
-                                # First copy the set of extrapars, we need them later
-                                nzf.extrapars = nzo.partable[setname].extrapars
-                                nzo.partable[setname] = nzf
 
+                    # Parse par2 files
+                    if nzf.is_par2:
+                        # Always parse par2 files to get new md5of16k info
+                        pack = self.parse_par2_file(nzf, filepath)
+                        if pack and (nzo.md5packs.get(nzf.setname) is None):
+                            nzo.md5packs[nzf.setname] = pack
+                            logging.debug('Got md5pack for set %s', nzf.setname)
+                            # Valid md5pack, so use this par2-file as main par2 file for the set
+                            if nzf.setname in nzo.partable:
+                                # First copy the set of extrapars, we need them later
+                                nzf.extrapars = nzo.partable[nzf.setname].extrapars
+                                nzo.partable[nzf.setname] = nzf
+
+                    # Encryption and unwanted extension detection
                     rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
                     if rar_encrypted:
                         if cfg.pause_on_pwrar() == 1:
-                            logging.warning(T('WARNING: Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'), nzo.final_name)
+                            logging.warning(remove_warning_label(T('WARNING: Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)')), nzo.final_name)
                             nzo.pause()
                         else:
-                            logging.warning(T('WARNING: Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'), nzo.final_name)
+                            logging.warning(remove_warning_label(T('WARNING: Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)')), nzo.final_name)
                             nzo.fail_msg = T('Aborted, encryption detected')
                             sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
                     if unwanted_file:
-                        logging.warning(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s '), nzo.final_name, unwanted_file)
+                        logging.warning(remove_warning_label(T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s ')), nzo.final_name, unwanted_file)
                         logging.debug(T('Unwanted extension is in rar file %s'), filepath)
                         if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                             logging.debug('Unwanted extension ... pausing')
@@ -134,56 +150,105 @@ class Assembler(Thread):
 
                     filter, reason = nzo_filtered_by_rating(nzo)
                     if filter == 1:
-                        logging.warning(Ta('WARNING: Paused job "%s" because of rating (%s)'), nzo.final_name, reason)
+                        logging.warning(remove_warning_label(T('WARNING: Paused job "%s" because of rating (%s)')), nzo.final_name, reason)
                         nzo.pause()
                     elif filter == 2:
-                        logging.warning(Ta('WARNING: Aborted job "%s" because of rating (%s)'), nzo.final_name, reason)
+                        logging.warning(remove_warning_label(T('WARNING: Aborted job "%s" because of rating (%s)')), nzo.final_name, reason)
                         nzo.fail_msg = T('Aborted, rating filter matched (%s)') % reason
                         sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
 
-                    nzf.completed = True
+                    if rarfile.is_rarfile(filepath):
+                        nzo.add_to_direct_unpacker(nzf)
+
             else:
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)
 
+    def assemble(self, nzf, path):
+        """ Assemble a NZF from its table of articles """
+        md5 = hashlib.md5()
+        fout = open(path, 'ab')
+        decodetable = nzf.decodetable
 
-def _assemble(nzf, path, dupe):
-    if os.path.exists(path):
-        unique_path = get_unique_filename(path)
-        if dupe:
-            path = unique_path
-        else:
-            renamer(path, unique_path)
+        for articlenum in decodetable:
+            # Break if deleted during writing
+            if nzf.nzo.status is Status.DELETED:
+                break
 
-    md5 = hashlib.md5()
-    fout = open(path, 'ab')
-    decodetable = nzf.decodetable
+            # Sleep to allow decoder/assembler switching
+            sleep(0.0001)
+            article = decodetable[articlenum]
 
-    for articlenum in decodetable:
-        # Break if deleted during writing
-        if nzf.nzo.status is Status.DELETED:
-            break
+            data = ArticleCache.do.load_article(article)
 
-        # Sleep to allow decoder/assembler switching
-        sleep(0.0001)
-        article = decodetable[articlenum]
+            if not data:
+                logging.info(T('%s missing'), article)
+            else:
+                # yenc data already decoded, flush it out
+                fout.write(data)
+                md5.update(data)
 
-        data = ArticleCache.do.load_article(article)
+        fout.flush()
+        fout.close()
+        set_permissions(path)
+        nzf.md5sum = md5.digest()
+        del md5
 
-        if not data:
-            logging.info(T('%s missing'), article)
-        else:
-            # yenc data already decoded, flush it out
-            fout.write(data)
-            md5.update(data)
+        return path
 
-    fout.flush()
-    fout.close()
-    set_permissions(path)
-    nzf.md5sum = md5.digest()
-    del md5
+    def parse_par2_file(self, nzf, fname):
+        """ Get the hash table and the first-16k hash table from a PAR2 file
+            Return as dictionary, indexed on names or hashes for the first-16 table
+            For a full description of the par2 specification, visit:
+            http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
+        """
+        table = {}
+        duplicates16k = []
 
-    return path
+        try:
+            f = open(fname, 'rb')
+        except:
+            return table
+
+        try:
+            header = f.read(8)
+            while header:
+                name, hash, hash16k = parse_par2_file_packet(f, header)
+                if name:
+                    table[name] = hash
+                    if hash16k not in nzf.nzo.md5of16k:
+                        nzf.nzo.md5of16k[hash16k] = name
+                    else:
+                        # Not unique, remove to avoid false-renames
+                        duplicates16k.append(hash16k)
+
+                header = f.read(8)
+
+        except (struct.error, IndexError):
+            logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
+            table = {}
+        except:
+            logging.debug('QuickCheck parser crashed in file %s', fname)
+            logging.info('Traceback: ', exc_info=True)
+            table = {}
+        f.close()
+
+        # Have to remove duplicates at the end to make sure
+        # no trace is left in case of multi-duplicates
+        for hash16k in duplicates16k:
+            if hash16k in nzf.nzo.md5of16k:
+                old_name = nzf.nzo.md5of16k.pop(hash16k)
+                logging.debug('Par2-16k signature of %s not unique, discarding', old_name)
+
+        # If the filename was changed (duplicate filename) check if we already have the set
+        base_fname = os.path.split(fname)[1]
+        if table and base_fname != nzf.filename and table not in nzf.nzo.md5packs.values():
+            # Re-parse this par2 file to create new set
+            nzf.filename = base_fname
+            nzf.is_par2 = False
+            nzf.nzo.handle_par2(nzf, True)
+
+        return table
 
 
 def file_has_articles(nzf):
@@ -201,47 +266,10 @@ def file_has_articles(nzf):
     return has
 
 
-# For a full description of the par2 specification, visit:
-# http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
-
-def GetMD5Hashes(fname, force=False):
-    """ Get the hash table from a PAR2 file
-        Return as dictionary, indexed on names and True for utf8-encoded names
-    """
-    new_encoding = True
-    table = {}
-    if force or not flag_file(os.path.split(fname)[0], QCHECK_FILE):
-        try:
-            f = open(fname, 'rb')
-        except:
-            return table, new_encoding
-
-        new_encoding = False
-        try:
-            header = f.read(8)
-            while header:
-                name, hash = ParseFilePacket(f, header)
-                new_encoding |= is_utf8(name)
-                if name:
-                    table[name] = hash
-                header = f.read(8)
-
-        except (struct.error, IndexError):
-            logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
-            table = {}
-        except:
-            logging.debug('QuickCheck parser crashed in file %s', fname)
-            logging.info('Traceback: ', exc_info=True)
-            table = {}
-
-        f.close()
-    return table, new_encoding
-
-
-def ParseFilePacket(f, header):
+def parse_par2_file_packet(f, header):
     """ Look up and analyze a FileDesc package """
 
-    nothing = None, None
+    nothing = None, None, None
 
     if header != 'PAR2\0PKT':
         return nothing
@@ -273,8 +301,9 @@ def ParseFilePacket(f, header):
     for offset in range(0, len, 8):
         if data[offset:offset + 16] == "PAR 2.0\0FileDesc":
             hash = data[offset + 32:offset + 48]
+            hash16k = data[offset + 48:offset + 64]
             filename = data[offset + 72:].strip('\0')
-            return filename, hash
+            return filename, hash, hash16k
 
     return nothing
 
@@ -431,3 +460,11 @@ def rating_filtered(rating, filename, abort):
     if any(check_keyword(k) for k in keywords.split(',')):
         return T('keywords')
     return None
+
+
+def remove_warning_label(msg):
+    """ Standardize errors by removing obsolete
+        "WARNING:" part in all languages """
+    if ':' in msg:
+        return msg.split(':')[1]
+    return msg

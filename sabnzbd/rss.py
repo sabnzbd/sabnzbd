@@ -59,12 +59,6 @@ def stop():
             pass
 
 
-def del_feed(feed):
-    global __RSS
-    if __RSS:
-        __RSS.delete(feed)
-
-
 def run_feed(feed, download, ignoreFirst=False, force=False, readout=True):
     global __RSS
     if __RSS:
@@ -173,16 +167,6 @@ LOCK = threading.RLock()
 class RSSQueue(object):
 
     def __init__(self):
-        def check_str(p):
-            return p is None or p == '' or isinstance(p, basestring)
-
-        def check_int(p):
-            try:
-                int(p)
-                return True
-            except:
-                return False
-
         self.jobs = {}
         self.next_run = time.time()
         self.shutdown = False
@@ -197,7 +181,6 @@ class RSSQueue(object):
                         continue
                     self.jobs[feed] = {}
                     for link in feeds[feed]:
-                        data = feeds[feed][link]
                         # Consistency check on data
                         try:
                             item = feeds[feed][link]

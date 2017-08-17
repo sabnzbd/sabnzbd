@@ -70,6 +70,7 @@ LanguageTable = {
     'fr': ('French', 'Français'),
     'gl': ('Galician', 'Galego'),
     'de': ('German', 'Deutsch'),
+    'he': ('Hebrew', 'עִבְרִית‎'),
     'hz': ('Herero', 'Otjiherero'),
     'ho': ('Hiri Motu', 'Hiri Motu'),
     'hu': ('Hungarian', 'Magyar'),
@@ -195,7 +196,7 @@ def make_templates():
         os.makedirs('email')
     for path in glob.glob(os.path.join(MO_DIR, '*')):
         lng = os.path.split(path)[1]
-        if lng != 'en':
+        if lng != 'en' and os.path.exists(os.path.join(POE_DIR,lng+'.po')):
             print 'Create email template for %s' % lng
             trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False, codeset='latin-1')
             # The unicode flag will make _() return Unicode

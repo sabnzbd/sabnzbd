@@ -27,7 +27,7 @@ import time
 import json
 import cherrypy
 import locale
-import socket
+
 from threading import Thread
 try:
     locale.setlocale(locale.LC_ALL, "")
@@ -40,15 +40,14 @@ try:
 except ImportError:
     pass
 
-
 import sabnzbd
 from sabnzbd.constants import VALID_ARCHIVES, Status, \
-     TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
+     TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
      KIBI, MEBI, GIGI, JOB_ADMIN
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Downloader
-from sabnzbd.nzbqueue import NzbQueue, set_priority, sort_queue, scan_jobs, repair_job
+from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.json import JsonWriter
@@ -165,14 +164,8 @@ def _api_del_config(name, output, kwargs):
 
 def _api_qstatus(name, output, kwargs):
     """ API: accepts output """
-    if output == 'json':
-        # Compatibility Fix:
-        # Old qstatus did not have a keyword, so do not use one now.
-        keyword = ''
-    else:
-        keyword = 'queue'
     info, pnfo_list, bytespersec = build_queue()
-    return report(output, keyword='', data=remove_callable(info))
+    return report(output, data=remove_callable(info))
 
 
 def _api_queue(name, output, kwargs):
@@ -253,7 +246,7 @@ def _api_queue_priority(output, value, kwargs):
                 priority = int(value2)
             except:
                 return report(output, _MSG_INT_VALUE)
-            pos = set_priority(value, priority)
+            pos = NzbQueue.do.set_priority(value, priority)
             # Returns the position in the queue, -1 is incorrect job-id
             return report(output, keyword='position', data=pos)
         except:
@@ -267,7 +260,7 @@ def _api_queue_sort(output, value, kwargs):
     sort = kwargs.get('sort')
     direction = kwargs.get('dir', '')
     if sort:
-        sort_queue(sort, direction)
+        NzbQueue.do.sort_queue(sort, direction)
         return report(output)
     else:
         return report(output, _MSG_NO_VALUE2)
@@ -491,13 +484,14 @@ def _api_history(name, output, kwargs):
     value = kwargs.get('value', '')
     start = int_conv(kwargs.get('start'))
     limit = int_conv(kwargs.get('limit'))
+    last_history_update = int_conv(kwargs.get('last_history_update', 0))
     search = kwargs.get('search')
     failed_only = kwargs.get('failed_only')
     categories = kwargs.get('category')
-    last_history_update = kwargs.get('last_history_update', 0)
+
 
     # Do we need to send anything?
-    if int(last_history_update) == int(sabnzbd.LAST_HISTORY_UPDATE):
+    if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
         return report(output, keyword='history', data=False)
 
     if categories and not isinstance(categories, list):
@@ -517,15 +511,13 @@ def _api_history(name, output, kwargs):
                 history_db.remove_failed(search)
             if special in ('all', 'completed'):
                 history_db.remove_completed(search)
-            # Update the last check time
-            sabnzbd.LAST_HISTORY_UPDATE = time.time()
+            sabnzbd.history_updated()
             return report(output)
         elif value:
             jobs = value.split(',')
             for job in jobs:
                 del_hist_job(job, del_files)
-            # Update the last check time
-            sabnzbd.LAST_HISTORY_UPDATE = time.time()
+            sabnzbd.history_updated()
             return report(output)
         else:
             return report(output, _MSG_NO_VALUE)
@@ -539,7 +531,7 @@ def _api_history(name, output, kwargs):
                                                                               search=search, failed_only=failed_only,
                                                                               categories=categories,
                                                                               output=output)
-        history['last_history_update'] = int(sabnzbd.LAST_HISTORY_UPDATE)
+        history['last_history_update'] = sabnzbd.LAST_HISTORY_UPDATE
         history['version'] = sabnzbd.__version__
         return report(output, keyword='history', data=remove_callable(history))
     else:
@@ -686,7 +678,7 @@ def _api_osx_icon(name, output, kwargs):
 
 def _api_rescan(name, output, kwargs):
     """ API: accepts output """
-    scan_jobs(all=False, action=True)
+    NzbQueue.do.scan_jobs(all=False, action=True)
     return report(output)
 
 
@@ -914,7 +906,7 @@ def _api_server_stats(name, output, kwargs):
 
     stats['servers'] = {}
     for svr in config.get_servers():
-        t, m, w, d = BPSMeter.do.amounts(svr)
+        t, m, w, d, _ = BPSMeter.do.amounts(svr)
         stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0}
 
     return report(output, keyword='', data=stats)
@@ -1196,7 +1188,7 @@ def build_status(skip_dashboard=False, output=None):
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
     info['loglevel'] = str(cfg.log_level())
-    info['folders'] = [xml_name(item) for item in sabnzbd.nzbqueue.scan_jobs(all=False, action=False)]
+    info['folders'] = [xml_name(item) for item in NzbQueue.do.scan_jobs(all=False, action=False)]
     info['configfn'] = xml_name(config.get_filename())
 
     # Dashboard: Speed of System
@@ -1340,7 +1332,6 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         priority = pnfo.priority
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
-        missing = pnfo.missing
 
         slot = {'index': n, 'nzo_id': str(nzo_id)}
         slot['unpackopts'] = str(sabnzbd.opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
@@ -1355,6 +1346,8 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['sizeleft'] = format_bytes(bytesleft)
         slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else '0'
         slot['missing'] = pnfo.missing
+        slot['mbmissing'] = "%.2f" % (pnfo.bytes_missing / MEBI)
+        slot['direct_unpack'] = pnfo.direct_unpack
         if not output:
             slot['mb_fmt'] = locale.format('%d', int(mb), True)
             slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
@@ -1525,7 +1518,6 @@ def options_list(output):
     return report(output, keyword='options', data={
         'yenc': sabnzbd.decoder.HAVE_YENC,
         'par2': sabnzbd.newsunpack.PAR2_COMMAND,
-        'par2c': sabnzbd.newsunpack.PAR2C_COMMAND,
         'multipar': sabnzbd.newsunpack.MULTIPAR_COMMAND,
         'rar': sabnzbd.newsunpack.RAR_COMMAND,
         'zip': sabnzbd.newsunpack.ZIP_COMMAND,
@@ -1548,7 +1540,7 @@ def retry_job(job, new_nzb, password):
         else:
             path = history_db.get_path(job)
             if path:
-                nzo_id = repair_job(platform_encode(path), new_nzb, password)
+                nzo_id = NzbQueue.do.repair_job(platform_encode(path), new_nzb, password)
                 history_db.remove_history(job)
                 return nzo_id
     return None
@@ -1592,6 +1584,7 @@ def Tspec(txt):
     else:
         return txt
 
+
 _SKIN_CACHE = {}    # Stores pre-translated acronyms
 # This special is to be used in interface.py for template processing
 # to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
@@ -1629,8 +1622,7 @@ def build_header(webdir='', output=None):
     if speed_limit_abs <= 0:
         speed_limit_abs = ''
 
-    disk_total1, disk_free1 = diskspace(cfg.download_dir.get_path())
-    disk_total2, disk_free2 = diskspace(cfg.complete_dir.get_path())
+    diskspace_info = diskspace()
 
     header = {}
 
@@ -1662,18 +1654,17 @@ def build_header(webdir='', output=None):
         header['session'] = cfg.api_key()
         header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
 
-
     header['version'] = sabnzbd.__version__
     header['paused'] = Downloader.do.paused or Downloader.do.postproc
     header['pause_int'] = scheduler.pause_int()
     header['paused_all'] = sabnzbd.PAUSED_ALL
 
-    header['diskspace1'] = "%.2f" % disk_free1
-    header['diskspace2'] = "%.2f" % disk_free2
-    header['diskspace1_norm'] = to_units(disk_free1 * GIGI)
-    header['diskspace2_norm'] = to_units(disk_free2 * GIGI)
-    header['diskspacetotal1'] = "%.2f" % disk_total1
-    header['diskspacetotal2'] = "%.2f" % disk_total2
+    header['diskspace1'] = "%.2f" % diskspace_info['download_dir'][1]
+    header['diskspace2'] = "%.2f" % diskspace_info['complete_dir'][1]
+    header['diskspace1_norm'] = to_units(diskspace_info['download_dir'][1] * GIGI)
+    header['diskspace2_norm'] = to_units(diskspace_info['complete_dir'][1] * GIGI)
+    header['diskspacetotal1'] = "%.2f" % diskspace_info['download_dir'][0]
+    header['diskspacetotal2'] = "%.2f" % diskspace_info['complete_dir'][0]
     header['loadavg'] = loadavg()
     header['speedlimit'] = "{1:0.{0}f}".format(int(speed_limit % 1 > 0), speed_limit)
     header['speedlimit_abs'] = "%s" % speed_limit_abs
@@ -1812,9 +1803,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     cookie = cherrypy.request.cookie
     if 'history_verbosity' in cookie:
         k = cookie['history_verbosity'].value
-        c_path = cookie['history_verbosity']['path']
-        c_age = cookie['history_verbosity']['max-age']
-        c_version = cookie['history_verbosity']['version']
 
         if k == 'all':
             details_show_all = True

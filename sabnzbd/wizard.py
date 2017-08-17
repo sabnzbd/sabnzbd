@@ -27,7 +27,6 @@ from Cheetah.Template import Template
 import sabnzbd
 import sabnzbd.api
 from sabnzbd.lang import list_languages, set_language
-from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.api import Ttemplate
 import sabnzbd.interface
 import sabnzbd.config as config
@@ -48,6 +47,11 @@ class Wizard(object):
     @cherrypy.expose
     def index(self, **kwargs):
         """ Show the language selection page """
+        if cfg.configlock() or not sabnzbd.interface.check_access():
+            return sabnzbd.interface.Protected()
+        if not sabnzbd.interface.check_login():
+            raise sabnzbd.interface.NeedLogin()
+
         info = self.info.copy()
         lng = None
         if sabnzbd.WIN32:
@@ -73,15 +77,25 @@ class Wizard(object):
     @cherrypy.expose
     def exit(self, **kwargs):
         """ Stop SABnzbd """
-        yield "Initiating shutdown..."
+        if cfg.configlock() or not sabnzbd.interface.check_access():
+            return sabnzbd.interface.Protected()
+        if not sabnzbd.interface.check_login():
+            raise sabnzbd.interface.NeedLogin()
+
+        logging.info('Shutdown requested by wizard')
         sabnzbd.halt()
-        yield "<br>SABnzbd-%s shutdown finished" % sabnzbd.__version__
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
+        return T('SABnzbd shutdown finished')
 
     @cherrypy.expose
     def one(self, **kwargs):
         """ Accept language and show server page """
+        if cfg.configlock() or not sabnzbd.interface.check_access():
+            return sabnzbd.interface.Protected()
+        if not sabnzbd.interface.check_login():
+            raise sabnzbd.interface.NeedLogin()
+
         language = kwargs.get('lang') if kwargs.get('lang') else cfg.language()
         cfg.language.set(language)
         set_language(language)
@@ -126,6 +140,11 @@ class Wizard(object):
     @cherrypy.expose
     def two(self, **kwargs):
         """ Accept server and show the final page for restart """
+        if cfg.configlock() or not sabnzbd.interface.check_access():
+            return sabnzbd.interface.Protected()
+        if not sabnzbd.interface.check_login():
+            raise sabnzbd.interface.NeedLogin()
+
         # Save server details
         if kwargs:
             kwargs['enable'] = 1
@@ -226,8 +245,3 @@ class Wizard(object):
             access_url = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.cherryport())
 
         return access_url, urls
-
-    @cherrypy.expose
-    def servertest(self, **kwargs):
-        _result, msg = test_nntp_server_dict(kwargs)
-        return msg

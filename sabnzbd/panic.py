@@ -30,11 +30,9 @@ except ImportError:
 import sabnzbd
 import sabnzbd.cfg as cfg
 
-PANIC_NONE = 0
 PANIC_PORT = 1
 PANIC_TEMPL = 2
 PANIC_QUEUE = 3
-PANIC_FWALL = 4
 PANIC_OTHER = 5
 PANIC_SQLITE = 7
 PANIC_HOST = 8
@@ -57,16 +55,6 @@ def MSG_BAD_NEWS():
     </body>
 </html>
 '''
-
-
-def MSG_BAD_FWALL():
-    return Ta(r'''
-    SABnzbd is not compatible with some software firewalls.<br>
-    %s<br>
-    Sorry, but we cannot solve this incompatibility right now.<br>
-    Please file a complaint at your firewall supplier.<br>
-    <br>
-''')
 
 
 def MSG_BAD_PORT():
@@ -127,15 +115,6 @@ def MSG_OTHER():
     return T('SABnzbd detected a fatal error:') + '<br>%s<br><br>%s<br>'
 
 
-def MSG_OLD_QUEUE():
-    return Ta(r'''
-    SABnzbd detected a queue from an older release.<br><br>
-    You can convert the queue by clicking "Repair" in Status-&gt;"Queue Repair".<br><br>
-    You may choose to stop SABnzbd and finish the queue with the older program.<br><br>
-    Click OK to proceed to SABnzbd''') + \
-        ('''<br><br><FORM><input type="button" onclick="this.form.action='/.'; this.form.submit(); return false;" value="%s"/></FORM>''' % T('OK'))
-
-
 def MSG_SQLITE():
     return Ta(r'''
     SABnzbd detected that the file sqlite3.dll is missing.<br><br>
@@ -162,11 +141,6 @@ def panic_message(panic, a=None, b=None):
         msg = MSG_BAD_TEMPL() % a
     elif panic == PANIC_QUEUE:
         msg = MSG_BAD_QUEUE() % (a, os_str, prog_path)
-    elif panic == PANIC_FWALL:
-        if a:
-            msg = MSG_BAD_FWALL() % T('It is likely that you are using ZoneAlarm on Vista.<br>')
-        else:
-            msg = MSG_BAD_FWALL() % "<br>"
     elif panic == PANIC_SQLITE:
         msg = MSG_SQLITE()
     elif panic == PANIC_HOST:
@@ -189,10 +163,6 @@ def panic_message(panic, a=None, b=None):
     return url
 
 
-def panic_fwall(vista):
-    launch_a_browser(panic_message(PANIC_FWALL, vista))
-
-
 def panic_port(host, port):
     print "\n%s:\n  %s" % (T('Fatal error'), T('Unable to bind to port %s on %s. Some other software uses the port or SABnzbd is already running.') % (port, host))
     launch_a_browser(panic_message(PANIC_PORT, host, port))
@@ -212,11 +182,6 @@ def panic_tmpl(name):
 
 def panic_sqlite(name):
     launch_a_browser(panic_message(PANIC_SQLITE, name, 0))
-
-
-def panic_old_queue():
-    msg = MSG_OLD_QUEUE()
-    return MSG_BAD_NEWS() % (sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.MY_NAME, sabnzbd.__version__, msg, '')
 
 
 def panic(reason, remedy=""):

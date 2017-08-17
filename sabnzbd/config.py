@@ -24,6 +24,10 @@ import re
 import logging
 import threading
 import shutil
+import time
+import random
+from hashlib import md5
+from urlparse import urlparse
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
 from sabnzbd.utils import configobj
@@ -765,9 +769,6 @@ def _read_config(path, try_backup=False):
     CFG['__encoding__'] = u'utf-8'
     CFG['__version__'] = unicode(CONFIG_VERSION)
 
-    if 'misc' in CFG:
-        compatibility_fix(CFG['misc'])
-
     # Use CFG data to set values for all static options
     for section in database:
         if section not in ('servers', 'categories', 'rss'):
@@ -791,7 +792,6 @@ def _read_config(path, try_backup=False):
 def save_config(force=False):
     """ Update Setup file with current option values """
     global CFG, database, modified
-    if 0: assert isinstance(CFG, configobj.ConfigObj)
 
     if not (modified or force):
         return True
@@ -852,6 +852,7 @@ def save_config(force=False):
 
     # Write new config file
     try:
+        logging.info('Writing settings to INI file %s', filename)
         CFG.write()
         shutil.copymode(bakname, filename)
         modified = False
@@ -978,6 +979,25 @@ def define_rss():
 def get_rss():
     global database
     try:
+        # We have to remove non-seperator commas by detecting if they are valid URL's
+        for feed_key in database['rss']:
+            feed = database['rss'][feed_key]
+            # Only modify if we have to, to prevent repeated config-saving
+            have_new_uri = False
+            # Create a new corrected list
+            new_feed_uris = []
+            for feed_uri in feed.uri():
+                if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
+                    # Current one has no scheme but previous one does, append to previous
+                    new_feed_uris[-1] += '%2C' + feed_uri
+                    have_new_uri = True
+                    continue
+                # Add full working URL
+                new_feed_uris.append(feed_uri)
+            # Set new list
+            if have_new_uri:
+                feed.uri.set(new_feed_uris)
+
         return database['rss']
     except KeyError:
         return {}
@@ -1065,15 +1085,6 @@ def validate_safedir(root, value, default):
         return T('Error: Queue not empty, cannot change folder.'), None
 
 
-def validate_dir_exists(root, value, default):
-    """ Check if directory exists """
-    p = sabnzbd.misc.real_path(root, value)
-    if os.path.exists(p):
-        return None, value
-    else:
-        return T('Folder "%s" does not exist') % p, None
-
-
 def validate_notempty(root, value, default):
     """ If value is empty, return default """
     if value:
@@ -1084,12 +1095,6 @@ def validate_notempty(root, value, default):
 
 def create_api_key():
     """ Return a new randomized API_KEY """
-    import time
-    try:
-        from hashlib import md5
-    except ImportError:
-        from md5 import md5
-    import random
     # Create some values to seed md5
     t = str(time.time())
     r = str(random.random())
@@ -1100,22 +1105,3 @@ def create_api_key():
 
     # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
     return m.hexdigest()
-
-
-_FIXES = (
-    ('enable_par_multicore', 'par2_multicore'),
-)
-
-
-def compatibility_fix(cf):
-    """ Convert obsolete INI entries """
-    for item in _FIXES:
-        old, new = item
-        try:
-            cf[new]
-        except KeyError:
-            try:
-                cf[new] = cf[old]
-                del cf[old]
-            except KeyError:
-                pass

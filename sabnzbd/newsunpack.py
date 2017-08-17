@@ -24,21 +24,19 @@ import sys
 import re
 import subprocess
 import logging
-from time import time
+import time
 import binascii
 import shutil
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicode2local, \
-    reliable_unpack_names, unicoder, platform_encode, deunicode
+from sabnzbd.encoding import TRANS, UNTRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    flag_file, real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
-    has_win_device, calc_age
+    real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
+    has_win_device, calc_age, long_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import Status, QCHECK_FILE, RENAMES_FILE
-load_data = save_data = None
+from sabnzbd.constants import Status
 
 if sabnzbd.WIN32:
     try:
@@ -47,15 +45,18 @@ if sabnzbd.WIN32:
         from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
     except ImportError:
         pass
+    # Load the POpen from the fixed unicode-subprocess
+    from sabnzbd.utils.subprocess_fix import Popen
 else:
     # Define dummy WindowsError for non-Windows
     class WindowsError(Exception):
-
         def __init__(self, value):
             self.parameter = value
 
         def __str__(self):
             return repr(self.parameter)
+    # Load the regular POpen
+    from subprocess import Popen
 
 # Regex globals
 RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d)$', re.I)
@@ -68,12 +69,10 @@ SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
 SEVENZIP_RE = re.compile(r'\.7z$', re.I)
 SEVENMULTI_RE = re.compile(r'\.7z\.\d+$', re.I)
-VOLPAR2_RE = re.compile(r'\.*vol[0-9]+\+[0-9]+\.par2', re.I)
 FULLVOLPAR2_RE = re.compile(r'(.*[^.])(\.*vol[0-9]+\+[0-9]+\.par2)', re.I)
 TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
 
 PAR2_COMMAND = None
-PAR2C_COMMAND = None
 MULTIPAR_COMMAND = None
 RAR_COMMAND = None
 NICE_COMMAND = None
@@ -87,8 +86,6 @@ RAR_VERSION = 0
 
 def find_programs(curdir):
     """ Find external programs """
-    global load_data, save_data
-
     def check(path, program):
         p = os.path.abspath(os.path.join(path, program))
         if os.access(p, os.X_OK):
@@ -96,12 +93,7 @@ def find_programs(curdir):
         else:
             return None
 
-    # Another crazy Python import bug work-around
-    load_data = sabnzbd.load_data
-    save_data = sabnzbd.save_data
-
     if sabnzbd.DARWIN:
-        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'osx/par2/par2-classic')
         sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'osx/par2/par2-sl64')
         sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'osx/unrar/unrar')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'osx/7zip/7za')
@@ -109,15 +101,13 @@ def find_programs(curdir):
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
             # 64 bit versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/x64/par2.exe')
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/par2/multipar/par2j64.exe')
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/x64/UnRAR.exe')
         else:
             # 32 bit versions
-            sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/par2/multipar/par2j.exe')
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/UnRAR.exe')
-        sabnzbd.newsunpack.PAR2C_COMMAND = check(curdir, 'win/par2/par2cmdline.exe')
+        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
         sabnzbd.newsunpack.ZIP_COMMAND = check(curdir, 'win/unzip/unzip.exe')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'win/7zip/7za.exe')
     else:
@@ -133,9 +123,6 @@ def find_programs(curdir):
             sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7za')
         if not sabnzbd.newsunpack.SEVEN_COMMAND:
             sabnzbd.newsunpack.SEVEN_COMMAND = find_on_path('7z')
-
-    if not sabnzbd.newsunpack.PAR2C_COMMAND:
-        sabnzbd.newsunpack.PAR2C_COMMAND = sabnzbd.newsunpack.PAR2_COMMAND
 
     if not (sabnzbd.WIN32 or sabnzbd.DARWIN):
         # Run check on rar version
@@ -175,7 +162,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
 
         logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
                      extern_proc, complete_dir, nzo.filename, nicename, '', nzo.cat, nzo.group, status, failure_url)
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
 
@@ -216,7 +203,7 @@ def external_script(script, p1, p2, p3=None, p4=None):
         stup, need_shell, command, creationflags = build_command(command)
         env = create_env()
         logging.info('Running user script %s(%s, %s)', script, p1, p2)
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             startupinfo=stup, env=env, creationflags=creationflags)
     except:
@@ -239,9 +226,10 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
         # First time, ignore anything in workdir_complete
         xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir)
     else:
-        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete)
+        xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete, check_both=dele)
 
     rerun = False
+    force_rerun = False
     newfiles = []
     error = 0
     new_joins = new_rars = new_zips = new_ts = None
@@ -303,7 +291,14 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     if nzo.reuse and depth == 1 and any(build_filelists(workdir, workdir_complete)):
         rerun = True
 
-    if rerun and (cfg.enable_recursive() or new_ts or new_joins):
+    # Double-check that we didn't miss any files in workdir
+    # But only if dele=True, otherwise of course there will be files left
+    if rerun and dele and depth == 1 and any(build_filelists(workdir)):
+        force_rerun = True
+        # Clear lists to force re-scan of files
+        xjoinables, xzips, xrars, xsevens, xts = ([], [], [], [], [])
+
+    if rerun and (cfg.enable_recursive() or new_ts or new_joins or force_rerun):
         z, y = unpack_magic(nzo, workdir, workdir_complete, dele, one_folder,
                             xjoinables, xzips, xrars, xsevens, xts, depth)
         if z:
@@ -484,27 +479,43 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         else:
             extraction_path = os.path.split(rarpath)[0]
 
-        logging.info("Extracting rarfile %s (belonging to %s) to %s",
-                     rarpath, rar_set, extraction_path)
+        # Is the direct-unpacker still running? We wait for it
+        if nzo.direct_unpacker:
+            while nzo.direct_unpacker.is_alive():
+                logging.debug('DirectUnpacker still alive for %s', nzo)
+                # Bump the file-lock in case it's stuck
+                with nzo.direct_unpacker.next_file_lock:
+                    nzo.direct_unpacker.next_file_lock.notify()
+                time.sleep(2)
 
-        try:
-            fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
-                                         one_folder, nzo, rar_set, extraction_path)
-            # Was it aborted?
-            if not nzo.pp_active:
-                fail = 1
-                break
-            success = not fail
-        except:
-            success = False
-            fail = True
-            msg = sys.exc_info()[1]
-            nzo.set_fail = T('Unpacking failed, %s') % msg
-            setname = nzo.final_name
-            nzo.set_unpack_info('Unpack', T('[%s] Error "%s" while unpacking RAR files') % (unicoder(setname), msg))
+        # Did we already direct-unpack it? Not when recursive-unpacking
+        if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
+            logging.info("Set %s completed by DirectUnpack", rar_set)
+            fail = False
+            success = True
+            rars = nzo.direct_unpacker.success_sets.pop(rar_set)
+            newfiles = globber(extraction_path)
+        else:
+            logging.info("Extracting rarfile %s (belonging to %s) to %s",
+                         rarpath, rar_set, extraction_path)
+            try:
+                fail, newfiles, rars = rar_extract(rarpath, len(rar_sets[rar_set]),
+                                             one_folder, nzo, rar_set, extraction_path)
+                # Was it aborted?
+                if not nzo.pp_active:
+                    fail = True
+                    break
+                success = not fail
+            except:
+                success = False
+                fail = True
+                msg = sys.exc_info()[1]
+                nzo.fail_msg = T('Unpacking failed, %s') % msg
+                setname = nzo.final_name
+                nzo.set_unpack_info('Unpack', T('[%s] Error "%s" while unpacking RAR files') % (unicoder(setname), msg))
 
-            logging.error(T('Error "%s" while running rar_unpack on %s'), msg, setname)
-            logging.debug("Traceback: ", exc_info=True)
+                logging.error(T('Error "%s" while running rar_unpack on %s'), msg, setname)
+                logging.debug("Traceback: ", exc_info=True)
 
         if success:
             logging.debug('rar_unpack(): Rars: %s', rars)
@@ -539,7 +550,6 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
         with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
     """
-
     fail = 0
     new_files = None
     rars = []
@@ -564,7 +574,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     """ Unpack single rar set 'rarfile_path' to 'extraction_path'
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
-    start = time()
+    start = time.time()
 
     logging.debug("rar_extract(): Extractionpath: %s", extraction_path)
 
@@ -588,13 +598,14 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     if sabnzbd.WIN32:
         # Use all flags
-        # See: https://github.com/sabnzbd/sabnzbd/pull/771
-        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
-                   '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+        if not has_win_device(rarfile_path):
+            command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
+                       '%s' % clip_path(rarfile_path), clip_path(extraction_path)]
+        else:
+            # Need long-path notation in case of forbidden-names
+            command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
+                       '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
 
-        # If this is the retry without leading \\.\, we need to remove the \ at the end (yes..)
-        if not extraction_path.startswith('\\\\?\\'):
-            command[-1] = command[-1][:-1]
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password_command,
@@ -609,9 +620,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
     stup, need_shell, command, creationflags = build_command(command)
 
+    # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     logging.debug("Running unrar %s", command)
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
@@ -692,12 +704,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             logging.error(T('ERROR: write error (%s)'), line[11:])
             fail = 1
 
-        elif line.startswith('Cannot create') and sabnzbd.WIN32 and extraction_path.startswith('\\\\?\\'):
-            # Can be due to Unicode problems on Windows, let's retry
-            fail = 4
-            # Kill the process (can stay in endless loop on Windows Server)
-            p.kill()
-
         elif line.startswith('Cannot create'):
             line2 = proc.readline()
             if 'must not exceed 260' in line2:
@@ -710,6 +716,8 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
                 logging.error(T('ERROR: write error (%s)'), unicoder(line[13:]))
             nzo.set_unpack_info('Unpack', unicoder(msg))
             fail = 1
+            # Kill the process (can stay in endless loop on Windows Server)
+            p.kill()
 
         elif line.startswith('ERROR: '):
             nzo.fail_msg = T('Unpacking failed, see log')
@@ -772,21 +780,18 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
                 proc.close()
             p.wait()
             logging.debug('UNRAR output %s', '\n'.join(lines))
-
-            # Unicode problems, lets start again but now we try without \\?\
-            # This will only fail if the download contains forbidden-Windows-names
-            if fail == 4:
-                return rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, clip_path(extraction_path), password)
-            else:
-                return fail, (), ()
+            return fail, (), ()
 
     if proc:
         proc.close()
     p.wait()
 
+    # Which files did we use to extract this?
+    rarfiles = rar_volumelist(rarfile_path, password, rarfiles)
+
     logging.debug('UNRAR output %s', '\n'.join(lines))
     nzo.fail_msg = ''
-    msg = T('Unpacked %s files/folders in %s') % (str(len(extracted)), format_time_string(time() - start))
+    msg = T('Unpacked %s files/folders in %s') % (str(len(extracted)), format_time_string(time.time() - start))
     nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(setname), msg))
     logging.info('%s', msg)
 
@@ -804,11 +809,11 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
     try:
         i = 0
         unzip_failed = False
-        tms = time()
+        tms = time.time()
 
         for _zip in zips:
             logging.info("Starting extract on zipfile: %s ", _zip)
-            nzo.set_action_line(T('Unpacking'), '%s' % unicoder(_zip))
+            nzo.set_action_line(T('Unpacking'), '%s' % unicoder(os.path.basename(_zip)))
 
             if workdir_complete and _zip.startswith(workdir):
                 extraction_path = workdir_complete
@@ -820,7 +825,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
             else:
                 i += 1
 
-        msg = T('%s files in %s') % (str(i), format_time_string(time() - tms))
+        msg = T('%s files in %s') % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info('Unpack', msg)
 
         # Delete the old files if we have to
@@ -863,7 +868,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting unzip: %s', command)
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
@@ -884,7 +889,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
     """
     i = 0
     unseven_failed = False
-    tms = time()
+    tms = time.time()
 
     # Find multi-volume sets, because 7zip will not provide actual set members
     sets = {}
@@ -918,7 +923,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
             i += 1
 
     if not unseven_failed:
-        msg = T('%s files in %s') % (str(i), format_time_string(time() - tms))
+        msg = T('%s files in %s') % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info('Unpack', msg)
 
     return unseven_failed
@@ -985,7 +990,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 
     stup, need_shell, command, creationflags = build_command(command)
     logging.debug('Starting 7za: %s', command)
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
@@ -1029,6 +1034,9 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             if os.path.exists(test_parfile):
                 parfile_nzf = new_par
                 break
+        else:
+            # No file was found, we assume this set already finished
+            return False, True
 
     # Shorten just the workdir on Windows
     parfile = os.path.join(workdir, parfile_nzf.filename)
@@ -1062,7 +1070,6 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             return readd, result
 
     if not result:
-        flag_file(workdir, QCHECK_FILE, True)
         nzo.status = Status.REPAIRING
         result = False
         readd = False
@@ -1082,8 +1089,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
 
             if finished:
                 result = True
-                logging.info('Par verify finished ok on %s!',
-                             parfile)
+                logging.info('Par verify finished ok on %s!', parfile)
 
                 # Remove this set so we don't try to check it again
                 nzo.remove_parset(parfile_nzf.setname)
@@ -1105,59 +1111,35 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             return readd, result
 
     try:
-        new_dir_content = os.listdir(workdir)
+        if cfg.enable_par_cleanup():
+            deletables = []
+            new_dir_content = os.listdir(workdir)
 
-        for path in new_dir_content:
-            if os.path.splitext(path)[1] == '.1' and path not in old_dir_content:
-                try:
-                    path = os.path.join(workdir, path)
+            # Remove extra files created during repair and par2 base files
+            for path in new_dir_content:
+                if os.path.splitext(path)[1] == '.1' and path not in old_dir_content:
+                    deletables.append(os.path.join(workdir, path))
+            deletables.append(os.path.join(workdir, setname + '.par2'))
+            deletables.append(os.path.join(workdir, setname + '.PAR2'))
+            deletables.append(parfile)
 
-                    logging.info("Deleting %s", path)
-                    os.remove(path)
-                except:
-                    logging.warning(T('Deleting %s failed!'), path)
+            # Add output of par2-repair to remove
+            deletables.extend(used_joinables)
+            deletables.extend([os.path.join(workdir, f) for f in used_for_repair])
 
-        path = os.path.join(workdir, setname + '.par2')
-        path2 = os.path.join(workdir, setname + '.PAR2')
+            # Delete pars of the set and maybe extra ones that par2 found
+            deletables.extend([os.path.join(workdir, f) for f in setpars])
+            deletables.extend([os.path.join(workdir, f) for f in pars])
 
-        if os.path.exists(path):
-            try:
-                logging.info("Deleting %s", path)
-                os.remove(path)
-            except:
-                logging.warning(T('Deleting %s failed!'), path)
-
-        if os.path.exists(path2):
-            try:
-                logging.info("Deleting %s", path2)
-                os.remove(path2)
-            except:
-                logging.warning(T('Deleting %s failed!'), path2)
-
-        if os.path.exists(parfile):
-            try:
-                logging.info("Deleting %s", parfile)
-                os.remove(parfile)
-            except OSError:
-                logging.warning(T('Deleting %s failed!'), parfile)
-
-        deletables = []
-        deletables.extend(used_joinables)
-        deletables.extend(used_for_repair)
-
-        # Delete pars of the set and maybe extra ones that par2 found
-        deletables.extend([os.path.join(workdir, f) for f in setpars])
-        deletables.extend([os.path.join(workdir, f) for f in pars])
-
-        for filepath in deletables:
-            if filepath in joinables:
-                joinables.remove(filepath)
-            if os.path.exists(filepath):
-                logging.info("Deleting %s", filepath)
-                try:
-                    os.remove(filepath)
-                except OSError:
-                    logging.warning(T('Deleting %s failed!'), filepath)
+            for filepath in deletables:
+                if filepath in joinables:
+                    joinables.remove(filepath)
+                if os.path.exists(filepath):
+                    logging.info("Deleting %s", filepath)
+                    try:
+                        os.remove(filepath)
+                    except OSError:
+                        logging.warning(T('Deleting %s failed!'), filepath)
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Repairing failed, %s') % msg
@@ -1172,36 +1154,17 @@ _RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
 _RE_LOADED_PAR2 = re.compile(r'Loaded (\d+) new packets')
 
 
-def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
+def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
     """ Run par2 on par-set """
-    retry_classic = False
     used_joinables = []
     used_for_repair = []
     extra_par2_name = None
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
-    start = time()
+    start = time.time()
+
     options = cfg.par_option().strip()
-
-    classic = classic or not cfg.par2_multicore()
-    if sabnzbd.WIN32:
-        # If filenames are UTF-8 then we must use par2-tbb, unless this is a retry with classic
-        tbb = (sabnzbd.assembler.GetMD5Hashes(parfile, True)[1] and not classic) or not PAR2C_COMMAND
-    else:
-        tbb = False
-    if tbb and options:
-        command = [str(PAR2_COMMAND), 'r', options, parfile]
-    else:
-        if classic:
-            command = [str(PAR2C_COMMAND), 'r', parfile]
-        else:
-            command = [str(PAR2_COMMAND), 'r', parfile]
-
-        # Allow options if not classic or when classic and non-classic are the same
-        if (not classic or (PAR2_COMMAND == PAR2C_COMMAND)):
-            command.insert(2, options)
-
-    logging.debug('Par2-classic/cmdline = %s', classic)
+    command = [str(PAR2_COMMAND), 'r', options, parfile]
 
     # Append the wildcard for this set
     parfolder = os.path.split(parfile)[0]
@@ -1222,7 +1185,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     # We need to check for the bad par2cmdline that skips blocks
     # Or the one that complains about basepath
     # Only if we're not doing multicore
-    if not tbb:
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         par2text = run_simple([command[0], '-h'])
         if 'No data skipping' in par2text:
             logging.info('Detected par2cmdline version that skips blocks, adding -N parameter')
@@ -1235,19 +1198,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
     stup, need_shell, command, creationflags = build_command(command)
 
     # par2multicore wants to see \\.\ paths on Windows
-    # But par2cmdline doesn't support that notation, or \\?\ notation
     # See: https://github.com/sabnzbd/sabnzbd/pull/771
-    if sabnzbd.WIN32 and (tbb or has_win_device(parfile)):
+    if sabnzbd.WIN32:
         command = [x.replace('\\\\?\\', '\\\\.\\', 1) if x.startswith('\\\\?\\') else x for x in command]
-    elif sabnzbd.WIN32:
-        # For par2cmdline on Windows we need clipped paths
-        command = [clip_path(x) if x.startswith('\\\\?\\') else x for x in command]
 
     # Run the external command
     logging.debug('Starting par2: %s', command)
     lines = []
     try:
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              startupinfo=stup, creationflags=creationflags)
 
@@ -1269,6 +1228,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
         verifynum = 1
         verifytotal = 0
         verified = 0
+
+        in_verify_repaired = False
 
         # Loop over the output, whee
         while 1:
@@ -1306,31 +1267,34 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             if extra_par2_name and line.startswith('Loaded '):
                 m = _RE_LOADED_PAR2.search(line)
                 if m and int(m.group(1)) > 0:
-                    used_for_repair.append(os.path.join(nzo.downpath, extra_par2_name))
+                    used_for_repair.append(extra_par2_name)
                 extra_par2_name = None
                 continue
             extra_par2_name = None
 
-            if line.startswith('Invalid option specified') or line.startswith('Cannot specify recovery file count'):
+            if line.startswith(('Invalid option specified', 'Invalid thread option', 'Cannot specify recovery file count')):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg)
                 nzo.status = Status.FAILED
                 logging.error(msg)
 
             elif line.startswith('All files are correct'):
-                msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
+                msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time.time() - start))
                 nzo.set_unpack_info('Repair', msg)
                 logging.info('Verified in %s, all files correct',
-                             format_time_string(time() - start))
+                             format_time_string(time.time() - start))
                 finished = 1
 
             elif line.startswith('Repair is required'):
-                msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time() - start))
+                msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time.time() - start))
                 nzo.set_unpack_info('Repair', msg)
                 logging.info('Verified in %s, repair is required',
-                              format_time_string(time() - start))
-                start = time()
+                              format_time_string(time.time() - start))
+                start = time.time()
                 verified = 1
+                # Reset to use them again for verification of repair
+                verifytotal = 0
+                verifynum = 0
 
             elif line.startswith('Loading "'):
                 # Found an extra par2 file. Only the next line will tell whether it's usable
@@ -1341,9 +1305,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 # Initialparfile probably didn't decode properly,
                 logging.info(T('Main packet not found...'))
-
                 extrapars = parfile_nzf.extrapars
-
                 logging.info("Extra pars = %s", extrapars)
 
                 # Look for the smallest par2file
@@ -1354,7 +1316,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
                 if block_table:
                     nzf = block_table[min(block_table.keys())]
-
                     logging.info("Found new par2file %s", nzf.filename)
 
                     # Move from extrapar list to files to be downloaded
@@ -1373,22 +1334,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.status = Status.FAILED
 
             elif line.startswith('You need'):
-                # Because par2cmdline doesn't handle split files correctly
-                # if there are joinables, let's join them first and try again
-                # Only when in the par2-detection also only 1 output-file was mentioned
-                if joinables and len(datafiles) == 1:
-                    error, newf = file_join(nzo, parfolder, parfolder, True, joinables)
-                    # Only do it again if we had a good join
-                    if newf:
-                        retry_classic = True
-                        # Save the renames in case of retry
-                        for jn in joinables:
-                            renames[datafiles[0]] = os.path.split(jn)[1]
-                        joinables = []
-                        # Need to set it to 1 so the renames get saved
-                        finished = 1
-                        break
-
                 chunks = line.split()
                 needed_blocks = int(chunks[2])
                 avail_blocks = 0
@@ -1441,9 +1386,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
                         else:
                             block_table.pop(block_size)
-
-                    logging.info('Added %s blocks to %s',
-                                 added_blocks, nzo.final_name)
+                    logging.info('Added %s blocks to %s', added_blocks, nzo.final_name)
 
                     if not force:
                         msg = T('Fetching %s blocks...') % str(added_blocks)
@@ -1458,7 +1401,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                     nzo.status = Status.FAILED
 
             elif line.startswith('Repair is possible'):
-                start = time()
+                start = time.time()
                 nzo.set_action_line(T('Repairing'), '%2d%%' % (0))
 
             elif line.startswith('Repairing:'):
@@ -1468,10 +1411,24 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                 nzo.status = Status.REPAIRING
 
             elif line.startswith('Repair complete'):
-                msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time() - start))
+                msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time.time() - start))
                 nzo.set_unpack_info('Repair', msg)
-                logging.info('Repaired in %s', format_time_string(time() - start))
+                logging.info('Repaired in %s', format_time_string(time.time() - start))
                 finished = 1
+
+            elif verified and line.endswith(('are missing.', 'exist but are damaged.')):
+                # Files that will later be verified after repair
+                chunks = line.split()
+                verifytotal += int(chunks[0])
+
+            elif line.startswith('Verifying repaired files'):
+                in_verify_repaired = True
+                nzo.set_action_line(T('Verifying repair'), '%02d/%02d' % (verifynum, verifytotal))
+
+            elif in_verify_repaired and line.startswith('Target'):
+                verifynum += 1
+                if verifynum <= verifytotal:
+                    nzo.set_action_line(T('Verifying repair'), '%02d/%02d' % (verifynum, verifytotal))
 
             elif line.startswith('File:') and line.find('data blocks from') > 0:
                 m = _RE_BLOCK_FOUND.search(line)
@@ -1494,27 +1451,20 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
                         logging.debug('PAR2 will reconstruct "%s" from "%s"', new_name, old_name)
                         reconstructed.append(os.path.join(workdir, old_name))
 
-            elif 'Could not write' in line and 'at offset 0:' in line and not classic:
+            elif 'Could not write' in line and 'at offset 0:' in line:
                 # If there are joinables, this error will only happen in case of 100% complete files
                 # We can just skip the retry, because par2cmdline will fail in those cases
                 # becauses it refuses to scan the ".001" file
                 if joinables:
                     finished = 1
                     used_joinables = []
-                else:
-                    # Hit a bug in par2-tbb, retry with par2-classic
-                    retry_classic = sabnzbd.WIN32
 
             elif ' cannot be renamed to ' in line:
-                if not classic and sabnzbd.WIN32:
-                    # Hit a bug in par2-tbb, retry with par2-classic
-                    retry_classic = True
-                else:
-                    msg = unicoder(line.strip())
-                    nzo.fail_msg = msg
-                    msg = u'[%s] %s' % (unicoder(setname), msg)
-                    nzo.set_unpack_info('Repair', msg)
-                    nzo.status = Status.FAILED
+                msg = unicoder(line.strip())
+                nzo.fail_msg = msg
+                msg = u'[%s] %s' % (unicoder(setname), msg)
+                nzo.set_unpack_info('Repair', msg)
+                nzo.status = Status.FAILED
 
             elif 'There is not enough space on the disk' in line:
                 # Oops, disk is full!
@@ -1581,47 +1531,36 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, sin
 
         p.wait()
     except WindowsError, err:
-        if err[0] == '87' and not classic:
-            # Hit a bug in par2-tbb, retry with par2-classic
-            retry_classic = True
-        else:
-            raise WindowsError(err)
+        raise WindowsError(err)
 
     logging.debug('PAR2 output was\n%s', '\n'.join(lines))
 
     # If successful, add renamed files to the collection
     if finished and renames:
-        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
-        for name in previous or {}:
-            renames[name] = previous[name]
-        save_data(renames, RENAMES_FILE, nzo.workpath)
+        nzo.renamed_file(renames)
 
     # If successful and files were reconstructed, remove incomplete original files
     if finished and reconstructed:
         # Use 'used_joinables' as a vehicle to get rid of the files
         used_joinables.extend(reconstructed)
 
-    if retry_classic:
-        logging.debug('Retry PAR2-joining with par2-classic/cmdline')
-        return PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=True, single=single)
-    else:
-        return finished, readd, pars, datafiles, used_joinables, used_for_repair
+    return finished, readd, pars, datafiles, used_joinables, used_for_repair
 
 _RE_FILENAME = re.compile(r'"([^"]+)"')
 
-def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False, single=False):
+def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
     """ Run par2 on par-set """
+    parfolder = os.path.split(parfile)[0]
     used_joinables = []
     used_for_repair = []
 
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
-    start = time()
+    start = time.time()
 
-    # Can implement caching of verification by adding:
-    # '-vs2', '-vd%s' % parfolder
+    # Caching of verification implemented by adding:
     # But not really required due to prospective-par2
-    command = [str(MULTIPAR_COMMAND), 'r', parfile]
+    command = [str(MULTIPAR_COMMAND), 'r', '-vs2', '-vd%s' % parfolder, parfile]
 
     # Only add user-options if supplied
     options = cfg.par_option().strip()
@@ -1629,7 +1568,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         command.insert(2, options)
 
     # Append the wildcard for this set
-    parfolder = os.path.split(parfile)[0]
     if single or len(globber(parfolder, setname + '*')) < 2:
         # Support bizarre naming conventions
         wildcard = '*'
@@ -1643,7 +1581,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     logging.info('Starting MultiPar: %s', command)
 
     lines = []
-    p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
@@ -1669,6 +1607,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     in_check = False
     in_verify = False
     in_repair = False
+    in_verify_repaired = False
     misnamed_files = False
     old_name = None
 
@@ -1698,8 +1637,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
         # Skip empty lines
         if line == '':
-            # Empty lines also end every section
-            in_repair = False
             continue
 
         # Save it all
@@ -1731,7 +1668,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
 
                 # Move from extrapar list to files to be downloaded
                 nzo.add_parfile(nzf)
-                extrapars.remove(nzf)
                 # Now set new par2 file as primary par2
                 nzo.partable[setname] = nzf
                 nzf.extrapars = extrapars
@@ -1752,7 +1688,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             nzo.set_unpack_info('Repair', msg)
             nzo.status = Status.FAILED
 
-        # ----------------- Verify stage
+        # ----------------- Start check/verify stage
         # List of Par2 files we will use today
         if line.startswith('PAR File list'):
             in_parlist = True
@@ -1762,9 +1698,20 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         elif in_parlist:
             m = _RE_FILENAME.search(line)
             if m:
-                used_for_repair.append(os.path.join(nzo.downpath, TRANS(m.group(1))))
+                used_for_repair.append(TRANS(m.group(1)))
                 pars.append(TRANS(m.group(1)))
 
+        elif line.startswith('Recovery Set ID'):
+            # Remove files were MultiPar stores verification result when repaired succesfull
+            recovery_id = line.split()[-1]
+            used_for_repair.append('2_%s.bin' % recovery_id)
+            used_for_repair.append('2_%s.ini' % recovery_id)
+
+        elif line.startswith('Input File total count'):
+            # How many files will it try to find?
+            verifytotal = int(line.split()[-1])
+
+        # ----------------- Misnamed-detection stage
         # Misnamed files
         elif line.startswith('Searching misnamed file'):
             # We are in the misnamed files block
@@ -1788,22 +1735,31 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                 datafiles.append(new_name)
                 reconstructed.append(old_name)
 
-        # How many files will it try to find?
-        elif line.startswith('Input File total count'):
-            verifytotal = int(line.split()[-1])
-
+        # ----------------- Checking stage
         # Checking input files
         elif line.startswith('Complete file count'):
             in_check = False
             verifynum = 0
+            old_name = None
         elif line.startswith('Verifying Input File'):
             in_check = True
             nzo.status = Status.VERIFYING
         elif in_check:
             m = _RE_FILENAME.search(line)
             if m:
-                verifynum += 1
+                # Only increase counter if it was really the detection line
+                if line.startswith('= ') or '%' not in line:
+                    verifynum += 1
                 nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
+                old_name = TRANS(m.group(1))
+
+        # ----------------- Verify stage
+        # Which files need extra verification?
+        elif line.startswith('Damaged file count'):
+            verifytotal = int(line.split()[-1])
+
+        elif line.startswith('Missing file count'):
+            verifytotal += int(line.split()[-1])
 
         # Actual verification
         elif line.startswith('Input File Slice found'):
@@ -1814,6 +1770,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         elif line.startswith('Finding available slice'):
             # The actual scanning of the files
             in_verify = True
+            nzo.set_action_line(T('Verifying'), T('Checking'))
         elif in_verify:
             m = _RE_FILENAME.search(line)
             if m:
@@ -1845,7 +1802,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
                     datafiles.pop()
                     datafiles.append(new_name)
                     # Need to remove the old file after repair (Multipar keeps it)
-                    used_for_repair.append(os.path.join(parfolder, old_name))
+                    used_for_repair.append(old_name)
                     # Need to reset it to avoid collision
                     old_name = None
 
@@ -1924,19 +1881,20 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         # Result of verification
         elif line.startswith('All Files Complete'):
             # Completed without damage!
-            msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time() - start))
+            msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time.time() - start))
             nzo.set_unpack_info('Repair', msg)
             logging.info('Verified in %s, all files correct',
-                        format_time_string(time() - start))
+                        format_time_string(time.time() - start))
             finished = 1
-        elif line.startswith('Ready to repair') or line.startswith('Ready to rejoin'):
+
+        elif line.startswith(('Ready to repair', 'Ready to rejoin')):
             # Ready to repair!
             # Or we are re-joining a split file when there's no damage but takes time
-            msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time() - start))
+            msg = T('[%s] Verified in %s, repair is required') % (unicoder(setname), format_time_string(time.time() - start))
             nzo.set_unpack_info('Repair', msg)
             logging.info('Verified in %s, repair is required',
-                          format_time_string(time() - start))
-            start = time()
+                          format_time_string(time.time() - start))
+            start = time.time()
 
             # Set message for user in case of joining
             if line.startswith('Ready to rejoin'):
@@ -1945,9 +1903,17 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
         # ----------------- Repair stage
         elif 'Recovering slice' in line:
             # Before this it will calculate matrix, here is where it starts
-            start = time()
+            start = time.time()
             in_repair = True
             nzo.set_action_line(T('Repairing'), '%2d%%' % (0))
+
+        elif in_repair and line.startswith('Verifying repair'):
+            in_repair = False
+            in_verify_repaired = True
+            # How many will be checked?
+            verifytotal = int(line.split()[-1])
+            verifynum = 0
+
         elif in_repair:
             # Line with percentage of repair (nothing else)
             per = float(line[:-1])
@@ -1955,10 +1921,16 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
             nzo.status = Status.REPAIRING
 
         elif line.startswith('Repaired successfully'):
-            msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time() - start))
+            msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time.time() - start))
             nzo.set_unpack_info('Repair', msg)
-            logging.info('Repaired in %s', format_time_string(time() - start))
+            logging.info('Repaired in %s', format_time_string(time.time() - start))
             finished = 1
+
+        elif in_verify_repaired and line.startswith('Repaired :'):
+            # Track verification of repaired files (can sometimes take a while)
+            verifynum += 1
+            nzo.set_action_line(T('Verifying repair'), '%02d/%02d' % (verifynum, verifytotal))
+
 
     p.wait()
 
@@ -1969,15 +1941,12 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, classic=False
     # Even if the repair did not complete fully it will rename those!
     # But the ones in 'Finding available slices'-section will only be renamed after succesfull repair
     if renames:
-        # Adding to the collection
-        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
-        for name in previous or {}:
-            renames[name] = previous[name]
-        save_data(renames, RENAMES_FILE, nzo.workpath)
-
         # If succes, we also remove the possibly previously renamed ones
-        if finished and previous:
-            reconstructed.extend(previous.values())
+        if finished:
+            reconstructed.extend(nzo.renames)
+
+        # Adding to the collection
+        nzo.renamed_file(renames)
 
         # Remove renamed original files
         workdir = os.path.split(parfile)[0]
@@ -2039,12 +2008,9 @@ def userxbit(filename):
     xbitset = (rwxbits & userxbit) > 0
     return xbitset
 
+
 def build_command(command):
     """ Prepare list from running an external program """
-    for n in xrange(len(command)):
-        if isinstance(command[n], unicode):
-            command[n] = deunicode(command[n])
-
     if not sabnzbd.WIN32:
         if command[0].endswith('.py'):
             with open(command[0], 'r') as script_file:
@@ -2094,6 +2060,28 @@ def build_command(command):
     return stup, need_shell, command, creationflags
 
 
+def rar_volumelist(rarfile_path, password, known_volumes):
+    """ Extract volumes that are part of this rarset
+        and merge them with existing list, removing duplicates
+    """
+    zf = rarfile.RarFile(rarfile_path)
+    if password:
+        try:
+            # setpassword can fail due to bugs in RarFile
+            zf.setpassword(password)
+        except:
+            pass
+    zf_volumes = zf.volumelist()
+
+    # Remove duplicates
+    known_volumes_base = [os.path.basename(vol) for vol in known_volumes]
+    for zf_volume in zf_volumes:
+        if os.path.basename(zf_volume) not in known_volumes_base:
+            # Long-path notation just to be sure
+            known_volumes.append(long_path(zf_volume))
+    return known_volumes
+
+
 # Sort the various RAR filename formats properly :\
 def rar_sort(a, b):
     """ Define sort method for rar file names """
@@ -2110,22 +2098,9 @@ def rar_sort(a, b):
         return cmp(a, b)
 
 
-# Sort the various PAR filename formats properly :\
-def par_sort(a, b):
-    """ Define sort method for par2 file names """
-    aext = a.lower().split('.')[-1]
-    bext = b.lower().split('.')[-1]
-
-    if aext == bext:
-        return cmp(a, b)
-    elif aext == 'par2':
-        return -1
-    elif bext == 'par2':
-        return 1
-
-
-def build_filelists(workdir, workdir_complete=None, check_rar=True):
+def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=True):
     """ Build filelists, if workdir_complete has files, ignore workdir.
+        Optionally scan both directories.
         Optionally test content to establish RAR-ness
     """
     sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
@@ -2141,7 +2116,7 @@ def build_filelists(workdir, workdir_complete=None, check_rar=True):
                         # Just skip failing names
                         pass
 
-    if workdir and not filelist:
+    if workdir and (not filelist or check_both):
         for root, dirs, files in os.walk(workdir):
             for _file in files:
                 if '.AppleDouble' not in root and '.DS_Store' not in root:
@@ -2248,10 +2223,8 @@ def QuickCheck(set, nzo):
 
     # Save renames
     if renames:
-        previous = load_data(RENAMES_FILE, nzo.workpath, remove=False)
-        for name in previous or {}:
-            renames[name] = previous[name]
-        save_data(renames, RENAMES_FILE, nzo.workpath)
+        nzo.renamed_file(renames)
+
     return result
 
 
@@ -2263,14 +2236,6 @@ def pars_of_set(wdir, setname):
         if m and m.group(1) == setname and m.group(2):
             list.append(file)
     return list
-
-
-def add_s(i):
-    """ Return an "s" when 'i' > 1 """
-    if i > 1:
-        return 's'
-    else:
-        return ''
 
 
 def unrar_check(rar):
@@ -2390,7 +2355,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
             stup, need_shell, command, creationflags = build_command(command)
             env = create_env()
             logging.info('Running pre-queue script %s', command)
-            p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+            p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 startupinfo=stup, env=env, creationflags=creationflags)
         except:
@@ -2460,7 +2425,7 @@ class SevenZip(object):
         command = [SEVEN_COMMAND, 'l', '-p', '-y', '-slt', self.path]
         stup, need_shell, command, creationflags = build_command(command)
 
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              startupinfo=stup, creationflags=creationflags)
 
@@ -2487,7 +2452,7 @@ class SevenZip(object):
         else:
             stderr = open('/dev/null', 'w')
 
-        p = subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=stderr,
                              startupinfo=stup, creationflags=creationflags)
 
@@ -2503,7 +2468,7 @@ class SevenZip(object):
 
 def run_simple(cmd):
     """ Run simple external command and return output """
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     txt = p.stdout.read()
     p.wait()
     return txt

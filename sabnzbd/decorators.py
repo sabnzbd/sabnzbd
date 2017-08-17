@@ -20,9 +20,7 @@
 ##############################################################################
 from threading import RLock, Condition
 
-NZBQUEUE_LOCK = RLock()
-CV = Condition(NZBQUEUE_LOCK)
-IO_LOCK = RLock()
+DOWNLOADER_CV = Condition(RLock())
 
 def synchronized(lock):
     def wrap(f):
@@ -36,13 +34,13 @@ def synchronized(lock):
     return wrap
 
 
-def synchronized_CV(func):
-    global CV
+def notify_downloader(func):
+    global DOWNLOADER_CV
     def call_func(*params, **kparams):
-        CV.acquire()
+        DOWNLOADER_CV.acquire()
         try:
             return func(*params, **kparams)
         finally:
-            CV.notifyAll()
-            CV.release()
+            DOWNLOADER_CV.notify_all()
+            DOWNLOADER_CV.release()
     return call_func

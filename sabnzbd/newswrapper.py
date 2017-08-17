@@ -26,7 +26,6 @@ from nntplib import NNTPPermanentError
 import time
 import logging
 import re
-import select
 import ssl
 
 import sabnzbd
@@ -114,7 +113,6 @@ def get_ssl_version(sock):
 
 
 def con(sock, host, port, sslenabled, write_fds, nntp):
-    if 0: assert isinstance(nntp, NNTP) # Assert only for debug purposes
     try:
         sock.connect((host, port))
         sock.setblocking(0)
@@ -164,9 +162,10 @@ def probablyipv6(ip):
 
 
 class NNTP(object):
+    # Pre-define attributes to save memory
+    __slots__ = ('host', 'port', 'nw', 'blocking', 'error_msg', 'sock')
 
     def __init__(self, host, port, info, sslenabled, send_group, nw, user=None, password=None, block=False, write_fds=None):
-        if 0: assert isinstance(nw, NewsWrapper) # Assert only for debug purposes
         self.host = host
         self.port = port
         self.nw = nw
@@ -248,16 +247,31 @@ class NNTP(object):
                 self.error(e)
 
     def error(self, error):
-        if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in str(error):
+        raw_error_str = str(error)
+        if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in raw_error_str:
             error = T('This server does not allow SSL on this port')
 
         # Catch certificate errors
-        if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in str(error):
-            error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, str(error))
-            error += ' - https://sabnzbd.org/certificate-errors'
+        if type(error) == CertificateError or 'CERTIFICATE_VERIFY_FAILED' in raw_error_str:
+            # Log the raw message for debug purposes
+            logging.info('Certificate error for host %s: %s', self.nw.server.host, raw_error_str)
+
+            # Try to see if we should catch this message and provide better text
+            if 'hostname' in raw_error_str:
+                raw_error_str = T('Certificate hostname mismatch: the server hostname is not listed in the certificate. This is a server issue.')
+            elif 'certificate verify failed' in raw_error_str:
+                raw_error_str = T('Certificate not valid. This is most probably a server issue.')
+
+            # Reformat error
+            error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, raw_error_str)
+            error = '%s - %s: %s' % (error, T('Wiki'), 'https://sabnzbd.org/certificate-errors')
+
             # Prevent throwing a lot of errors or when testing server
-            if error not in self.nw.server.warning and self.nw.server.id != -1:
+            if error not in self.nw.server.warning and not self.blocking:
                 logging.error(error)
+            # Pass to server-test
+            if self.blocking:
+                raise CertificateError(error)
 
         # Blocking = server-test, pass directly to display code
         if self.blocking:
@@ -271,6 +285,9 @@ class NNTP(object):
 
 
 class NewsWrapper(object):
+    # Pre-define attributes to save memory
+    __slots__ = ('server', 'thrdnum', 'blocking', 'timeout', 'article', 'data', 'lines', 'last_line',  'nntp',
+                 'recv', 'connected', 'user_sent', 'pass_sent', 'group', 'user_ok', 'pass_ok', 'force_login')
 
     def __init__(self, server, thrdnum, block=False):
         self.server = server

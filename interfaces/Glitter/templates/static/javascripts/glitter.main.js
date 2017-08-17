@@ -331,6 +331,13 @@ function ViewModel() {
                 // Split title & speed
                 var dataSplit = data.split('|||');
 
+                // Maybe the result is actually the login page?
+                if(dataSplit[0].substring(0, 11) === '<html lang=') {
+                    // Redirect
+                    document.location = document.location
+                    return
+                }
+
                 // Set title
                 self.title(dataSplit[0]);
 
@@ -538,7 +545,7 @@ function ViewModel() {
                 // Go over all warnings and add
                 $.each(response.warnings, function(index, warning) {
                     // Split warning into parts
-                    var warningSplit = warning.split(/\n/);
+                    var warningSplit = convertHTMLtoText(warning).split(/\n/);
 
                     // Reformat CSS label and date
                     var warningData = {

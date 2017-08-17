@@ -25,9 +25,9 @@ POSTPROC_QUEUE_VERSION = 2
 
 REC_RAR_VERSION = 500
 
-PNFO = namedtuple('PNFO', 'repair unpack delete script nzo_id filename password '
-                          'unpackstrht msgid category url bytes_left bytes avg_stamp '
-                          'avg_date finished_files active_files queued_files status priority missing')
+PNFO = namedtuple('PNFO', 'repair unpack delete script nzo_id filename password unpackstrht '
+                          'msgid category url bytes_left bytes avg_stamp avg_date finished_files '
+                          'active_files queued_files status priority missing bytes_missing direct_unpack')
 
 QNFO = namedtuple('QNFO', 'bytes bytes_left bytes_left_previous_page list q_size_list q_fullsize')
 
@@ -47,7 +47,6 @@ SCAN_FILE_NAME = 'watched_data2.sab'
 FUTURE_Q_FOLDER = 'future'
 JOB_ADMIN = '__ADMIN__'
 VERIFIED_FILE = '__verified__'
-QCHECK_FILE = '__skip_qcheck__'
 RENAMES_FILE = '__renames__'
 ATTRIB_FILE = 'SABnzbd_attrib'
 REPAIR_REQUEST = 'repair-all.sab'
@@ -55,19 +54,14 @@ REPAIR_REQUEST = 'repair-all.sab'
 SABYENC_VERSION_REQUIRED = '3.0.2'
 
 DB_HISTORY_VERSION = 1
-DB_QUEUE_VERSION = 1
-
 DB_HISTORY_NAME = 'history%s.db' % DB_HISTORY_VERSION
-DB_QUEUE_NAME = 'queue%s.db' % DB_QUEUE_VERSION
 
 DEF_DOWNLOAD_DIR = 'Downloads/incomplete'
 DEF_COMPLETE_DIR = 'Downloads/complete'
 DEF_ADMIN_DIR = 'admin'
-DEF_LOG_DIR = 'logs'
 DEF_NZBBACK_DIR = ''
 DEF_LANGUAGE = 'locale'
 DEF_INTERFACES = 'interfaces'
-DEF_INT_LANGUAGE = 'locale'
 DEF_EMAIL_TMPL = 'email'
 DEF_STDCONFIG = 'Config'
 DEF_STDINTF = 'Glitter'
@@ -82,11 +76,7 @@ DEF_LOG_ERRFILE = 'sabnzbd.error.log'
 DEF_LOG_CHERRY = 'cherrypy.log'
 DEF_CACHE_LIMIT = '450M'
 DEF_TIMEOUT = 60
-MIN_TIMEOUT = 10
-MAX_TIMEOUT = 200
-DEF_LOGLEVEL = 1
 DEF_SCANRATE = 5
-DEF_QRATE = 0
 MAX_DECODE_QUEUE = 10
 LIMIT_DECODE_QUEUE = 100
 MAX_WARNINGS = 20

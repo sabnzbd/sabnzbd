@@ -98,6 +98,12 @@ class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
                 # The connection can safely be dropped.
                 return None, {}
             raise
+        except:
+            # Temporary fix for https://github.com/cherrypy/cherrypy/issues/1618
+            e = sys.exc_info()[1]
+            if e.args == (0, 'Error'):
+                return None, {}
+            raise
         return s, self.get_environ(s)
 
     # TODO: fill this out more with mod ssl env

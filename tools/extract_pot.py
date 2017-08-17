@@ -104,6 +104,9 @@ def get_context(line):
                 context = 'Error message'
             elif 'logging.warning(' in srcline:
                 context = 'Warning message'
+        # Remove line-number
+        item = item.split(':')[0]
+
         if context:
             newlines.append('%s [%s]' % (item, context))
         else:
@@ -189,12 +192,10 @@ if os.path.exists(NSIS):
     dst = open(os.path.join(PON_DIR, DOMAIN_NSIS + '.pot'), 'wb')
     dst.write(HEADER.replace('__TYPE__', 'NSIS'))
     dst.write('\n')
-    count = 0
     for line in src:
-        count += 1
         m = RE_NSIS.search(line)
         if m and 'MsgLangCode' not in line:
-            dst.write('#: %s:%s\n' % (NSIS, count))
+            dst.write('#: %s\n' % NSIS)
             text = m.group(1).replace('$\\"', '\\"').replace('$\\', '\\\\')
             dst.write('msgid %s\n' % text)
             dst.write('msgstr ""\n\n')

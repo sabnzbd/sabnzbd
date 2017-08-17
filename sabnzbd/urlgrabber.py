@@ -42,7 +42,7 @@ import sabnzbd.notifier as notifier
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
 _RARTING_FIELDS = ('x-rating-id', 'x-rating-url', 'x-rating-host', 'x-rating-video', 'x-rating-videocnt', 'x-rating-audio', 'x-rating-audiocnt',
-                    'x-rating-voteup', 'x-rating-votedown', 'x-rating-spam', 'x-rating-confirmed-spam', 'x-rating-passworded', 'x-rating-confirmed-passworded')
+    'x-rating-voteup', 'x-rating-votedown', 'x-rating-spam', 'x-rating-confirmed-spam', 'x-rating-passworded', 'x-rating-confirmed-passworded')
 
 
 class URLGrabber(Thread):
@@ -73,9 +73,6 @@ class URLGrabber(Thread):
         self.shutdown = False
 
         while not self.shutdown:
-            # Don't pound the website!
-            time.sleep(5.0)
-
             (url, future_nzo) = self.queue.get()
 
             if not url:
@@ -215,6 +212,8 @@ class URLGrabber(Thread):
                         data = fn.read()
                     except (IncompleteRead, IOError):
                         bad_fetch(future_nzo, url, T('Server could not complete request'))
+                        fn.close()
+                        continue
                 fn.close()
 
                 if '<nzb' in data and misc.get_ext(filename) != '.nzb':
@@ -312,9 +311,6 @@ def _analyse(fn, url):
         logging.debug('Received nothing from indexer, retry after 60 sec')
         return None, fn.msg, True, 60, data
 
-    if '.oznzb.com' in url and 'login?' in fn.url:
-        return None, T('Unauthorized access'), False, 0, data
-
     return fn, fn.msg, False, 0, data
 
 
@@ -359,7 +355,7 @@ def bad_fetch(nzo, url, msg='', content=False):
 
     nzo.fail_msg = msg
 
-    notifier.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other')
+    notifier.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other', nzo.cat)
     if cfg.email_endjob() > 0:
         emailer.badfetch_mail(msg, url)
 

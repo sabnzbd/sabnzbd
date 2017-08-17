@@ -6,8 +6,6 @@
 #  override doUpdates to perform actions inside the icon thread
 
 import os
-import sys
-
 import pywintypes
 import win32api
 import win32con
@@ -204,7 +202,7 @@ class SysTrayIconThread(Thread):
             win32gui.PostMessage(self.hwnd, win32con.WM_NULL, 0, 0)
         except pywintypes.error:
             # Weird PyWin/win32gui bug, just ignore it for now
-            logging.debug('win32gui problem, cannot show SysTray menu')
+            pass
 
     def create_menu(self, menu, menu_options):
         for option_text, option_icon, option_action, option_id in menu_options[::-1]:

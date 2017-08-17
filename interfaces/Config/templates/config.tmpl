@@ -1,5 +1,5 @@
 <!--#set global $pane="Config"#-->
-<!--#set global $help_uri="configuration/2.1/configure"#-->
+<!--#set global $help_uri="configuration/2.2/configure"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#from locale import getpreferredencoding#-->
@@ -41,12 +41,16 @@
                     </td>
                 </tr>
                 <!--#end if#-->
-                <!--#if not $have_mt_par2#-->
+                <!--#if not $nt and not $darwin#-->
                 <tr>
-                    <th scope="row">Multicore Par2</th>
+                    <th scope="row">$T('opt-multicore-par2')</th>
                     <td>
+                        <!--#if $have_mt_par2#-->
+                        <span class="glyphicon glyphicon-ok"></span>
+                        <!--#else#-->
                         <span class="label label-warning">$T('notAvailable')</span> $T('explain-getpar2mt')
                         <a href="${helpuri}installation/multicore-par2" target="_blank">${helpuri}installation/multicore-par2</a>
+                        <!--#end if#-->
                     </td>
                 </tr>
                 <!--#end if#-->
@@ -105,7 +109,7 @@
             <tbody>
                 <tr>
                     <th scope="row">$T('homePage') </th>
-                    <td><a href="http://sabnzbd.org/" target="_blank">http://sabnzbd.org/</a></td>
+                    <td><a href="https://sabnzbd.org/" target="_blank">https://sabnzbd.org/</a></td>
                 </tr>
                 <tr>
                     <th scope="row">$T('menu-wiki') </th>
@@ -113,7 +117,7 @@
                 </tr>
                 <tr>
                     <th scope="row">$T('menu-forums') </th>
-                    <td><a href="http://forums.sabnzbd.org/" target="_blank">http://forums.sabnzbd.org/</a></td>
+                    <td><a href="https://forums.sabnzbd.org/" target="_blank">https://forums.sabnzbd.org/</a></td>
                 </tr>
                 <tr>
                     <th scope="row">$T('source') </th>
@@ -126,6 +130,10 @@
                 <tr>
                     <th scope="row">$T('menu-issues') </th>
                     <td><a href="https://sabnzbd.org/wiki/introduction/known-issues" target="_blank">https://sabnzbd.org/wiki/introduction/known-issues</a></td>
+                </tr>
+                <tr>
+                    <th scope="row">$T('menu-donate') </th>
+                    <td><a href="https://sabnzbd.org/donate" target="_blank">https://sabnzbd.org/donate</a></td>
                 </tr>
             </tbody>
         </table>

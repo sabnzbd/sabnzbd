@@ -15,9 +15,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+# Imported to be referenced from other files directly
 from sabnzbd.version import __version__, __baseline__
-__configversion__ = 18
-__queueversion__ = 8
 
 import os
 import logging
@@ -25,8 +24,6 @@ import datetime
 import tempfile
 import cPickle
 import pickle
-import zipfile
-import glob
 import gzip
 import subprocess
 import time
@@ -34,7 +31,7 @@ import socket
 import cherrypy
 import sys
 import re
-from threading import RLock, Lock, Condition, Thread
+from threading import Lock, Thread
 try:
     import sleepless
 except ImportError:
@@ -43,7 +40,7 @@ except ImportError:
 ##############################################################################
 # Determine platform flags
 ##############################################################################
-WIN32 = DARWIN = POSIX = FOUNDATION = WIN64 = False
+WIN32 = DARWIN = FOUNDATION = WIN64 = False
 KERNEL32 = None
 
 if os.name == 'nt':
@@ -57,7 +54,6 @@ if os.name == 'nt':
 elif os.name == 'posix':
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
-    POSIX = True
     import platform
     if platform.system().lower() == 'darwin':
         DARWIN = True
@@ -110,9 +106,10 @@ import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.api
-from sabnzbd.decorators import synchronized, synchronized_CV, IO_LOCK
-from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, GIGI, \
-     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
+import sabnzbd.directunpacker as directunpacker
+from sabnzbd.decorators import synchronized, notify_downloader
+from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, \
+    REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
 import sabnzbd.getipaddress as getipaddress
 
 LINUX_POWER = powersup.HAVE_DBUS
@@ -161,7 +158,7 @@ WEBUI_READY = False
 LAST_WARNING = None
 LAST_ERROR = None
 EXTERNAL_IPV6 = False
-LAST_HISTORY_UPDATE = time.time()
+LAST_HISTORY_UPDATE = 1
 
 # Performance measure for dashboard
 PYSTONE_SCORE = 0
@@ -177,10 +174,10 @@ __SHUTTING_DOWN__ = False
 ##############################################################################
 def sig_handler(signum=None, frame=None):
     global SABSTOP, WINTRAY
-    if sabnzbd.WIN32 and type(signum) != type(None) and DAEMON and signum == 5:
+    if sabnzbd.WIN32 and signum is not None and DAEMON and signum == 5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
-    if type(signum) != type(None):
+    if signum is not None:
         logging.warning(T('Signal %s caught, saving and exiting...'), signum)
     try:
         save_state()
@@ -311,6 +308,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     if cfg.sched_converted() != 2:
         cfg.schedules.set(['%s %s' % (1, schedule) for schedule in cfg.schedules()])
         cfg.sched_converted.set(2)
+        config.save_config()
 
     if check_repair_request():
         repair = 2
@@ -386,6 +384,8 @@ def halt():
             sabnzbd.WINTRAY.terminate = True
 
         sabnzbd.zconfig.remove_server()
+
+        sabnzbd.directunpacker.abort_all()
 
         rss.stop()
 
@@ -580,12 +580,9 @@ def unpause_all():
 
 
 ##############################################################################
-# NZB_LOCK Methods
+# NZB Saving Methods
 ##############################################################################
-NZB_LOCK = Lock()
 
-
-@synchronized(NZB_LOCK)
 def backup_exists(filename):
     """ Return True if backup exists and no_dupes is set """
     path = cfg.nzb_backup_dir.get_path()
@@ -599,7 +596,6 @@ def backup_nzb(filename, data):
         save_compressed(path, filename, data)
 
 
-@synchronized(NZB_LOCK)
 def save_compressed(folder, filename, data):
     """ Save compressed NZB file in folder """
     # Need to go to the save folder to
@@ -625,9 +621,9 @@ def save_compressed(folder, filename, data):
 
 
 ##############################################################################
-# CV synchronized (notifies downloader)
+# Unsynchronized methods
 ##############################################################################
-@synchronized_CV
+
 def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False, password=None):
     """ Add disk-based NZB file, optional attributes,
         'reuse' flag will suppress duplicate detection
@@ -697,9 +693,6 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
                                  keep=keep, reuse=reuse, password=password)
 
 
-##############################################################################
-# Unsynchronized methods
-##############################################################################
 def enable_server(server):
     """ Enable server (scheduler only) """
     try:
@@ -809,7 +802,6 @@ def change_queue_complete_action(action, new=True):
 
     # keep the name of the action for matching the current select in queue.tmpl
     QUEUECOMPLETE = action
-
     QUEUECOMPLETEACTION = _action
     QUEUECOMPLETEARG = _argument
 
@@ -851,21 +843,10 @@ def keep_awake():
                 sleepless.allow_sleep()
 
 
-def CheckFreeSpace():
-    """ Check if enough disk space is free, if not pause downloader and send email """
-    if cfg.download_free() and not sabnzbd.downloader.Downloader.do.paused:
-        if misc.diskspace(cfg.download_dir.get_path(), force=True)[1] < cfg.download_free.get_float() / GIGI:
-            logging.warning(T('Too little diskspace forcing PAUSE'))
-            # Pause downloader, but don't save, since the disk is almost full!
-            Downloader.do.pause(save=False)
-            emailer.diskfull()
-
-
 ################################################################################
 # Data IO                                                                      #
 ################################################################################
 
-@synchronized(IO_LOCK)
 def get_new_id(prefix, folder, check_list=None):
     """ Return unique prefixed admin identifier within folder
         optionally making sure that id is not in the check_list.
@@ -886,7 +867,6 @@ def get_new_id(prefix, folder, check_list=None):
     raise IOError
 
 
-@synchronized(IO_LOCK)
 def save_data(data, _id, path, do_pickle=True, silent=False):
     """ Save data to a diskfile """
     if not silent:
@@ -899,14 +879,17 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
             with open(path, 'wb') as data_file:
                 if do_pickle:
                     if cfg.use_pickle():
-                        cPickle.dump(data, data_file)
-                    else:
                         pickle.dump(data, data_file)
+                    else:
+                        cPickle.dump(data, data_file)
                 else:
                     data_file.write(data)
             break
         except:
-            if t == 2:
+            if silent:
+                # This can happen, probably a removed folder
+                pass
+            elif t == 2:
                 logging.error(T('Saving %s failed'), path)
                 logging.info("Traceback: ", exc_info=True)
             else:
@@ -914,7 +897,6 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
                 time.sleep(0.1)
 
 
-@synchronized(IO_LOCK)
 def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     """ Read data from disk file """
     path = os.path.join(path, _id)
@@ -946,7 +928,6 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     return data
 
 
-@synchronized(IO_LOCK)
 def remove_data(_id, path):
     """ Remove admin file """
     path = os.path.join(path, _id)
@@ -958,7 +939,6 @@ def remove_data(_id, path):
         logging.debug("Failed to remove %s", path)
 
 
-@synchronized(IO_LOCK)
 def save_admin(data, _id):
     """ Save data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
@@ -982,7 +962,6 @@ def save_admin(data, _id):
                 time.sleep(0.1)
 
 
-@synchronized(IO_LOCK)
 def load_admin(_id, remove=False, silent=False):
     """ Read data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
@@ -1170,10 +1149,6 @@ def highest_server(me):
     return sabnzbd.downloader.Downloader.do.highest_server(me)
 
 
-def proxy_pre_queue(name, pp, cat, script, priority, size, groups):
-    return sabnzbd.newsunpack.pre_queue(name, pp, cat, script, priority, size, groups)
-
-
 def test_ipv6():
     """ Check if external IPv6 addresses are reachable """
     if not cfg.selftest_host():
@@ -1199,3 +1174,11 @@ def test_ipv6():
     except:
         logging.debug('Test IPv6: Problem during IPv6 connect. Disabling IPv6. Reason: %s', sys.exc_info()[0])
         return False
+
+
+def history_updated():
+    """ To make sure we always have a fresh history """
+    sabnzbd.LAST_HISTORY_UPDATE += 1
+    # Never go over the limit
+    if sabnzbd.LAST_HISTORY_UPDATE+1 >= sys.maxint:
+        sabnzbd.LAST_HISTORY_UPDATE = 1

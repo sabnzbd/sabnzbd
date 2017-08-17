@@ -132,6 +132,11 @@ h2 {
     max-width: calc(100% - 45px);
 }
 
+.queue-table .buttonMoveToBottom,
+.queue-table .buttonMoveToTop {
+    display: none;
+}
+
 tr.queue-item>td:first-child>a {
     margin-top: 3px;
 }

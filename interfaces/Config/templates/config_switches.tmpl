@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configuration/2.1/switches"#-->
+<!--#set global $help_uri="configuration/2.2/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -31,12 +31,6 @@
                         <input type="number" name="max_art_tries" id="max_art_tries" value="$max_art_tries" min="2" max="2000" />
                         <span class="desc">$T('explain-max_art_tries')</span>
                     </div>
-                    <div class="field-pair">
-                        <label class="config" for="max_art_opt">$T('opt-max_art_opt')</label>
-                        <input type="checkbox" name="max_art_opt" id="max_art_opt" value="1" <!--#if int($max_art_opt) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-max_art_opt')</span>
-                    </div>
-
                     <div class="field-pair">
                         <label class="config" for="auto_disconnect">$T('opt-auto_disconnect')</label>
                         <input type="checkbox" name="auto_disconnect" id="auto_disconnect" value="1" <!--#if int($auto_disconnect) > 0 then 'checked="checked"' else ""#--> />
@@ -92,6 +86,7 @@
                         <label class="config" for="no_dupes">$T('opt-no_dupes')</label>
                         <select name="no_dupes" id="no_dupes">
                             <option value="0" <!--#if int($no_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="4" <!--#if int($no_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
                             <option value="2" <!--#if int($no_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
                             <option value="3" <!--#if int($no_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
                             <option value="1" <!--#if int($no_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
@@ -102,6 +97,7 @@
                         <label class="config" for="no_series_dupes">$T('opt-no_series_dupes')</label>
                         <select name="no_series_dupes" id="no_series_dupes">
                             <option value="0" <!--#if int($no_series_dupes) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
+                            <option value="4" <!--#if int($no_series_dupes) == 4 then 'selected="selected"' else ""#--> >$T('nodupes-tag')</option>
                             <option value="2" <!--#if int($no_series_dupes) == 2 then 'selected="selected"' else ""#--> >$T('nodupes-pause')</option>
                             <option value="3" <!--#if int($no_series_dupes) == 3 then 'selected="selected"' else ""#--> >$T('nodupes-fail')</option>
                             <option value="1" <!--#if int($no_series_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
@@ -137,6 +133,11 @@
                         <span class="desc">$T('explain-auto_sort')</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="direct_unpack">$T('opt-direct_unpack')</label>
+                        <input type="checkbox" name="direct_unpack" id="direct_unpack" value="1" <!--#if int($direct_unpack) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-direct_unpack').replace('. ', '.<br/>')</span>
+                    </div>
+                    <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                         <button class="btn btn-default restoreDefaults"><span class="glyphicon glyphicon-asterisk"></span> $T('button-restoreDefaults')</button>
                     </div>
@@ -159,13 +160,6 @@
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
-                    <!--#if $nt#-->
-                    <div class="field-pair">
-                        <label class="config" for="multipar">$T('opt-par2_multipar')</label>
-                        <input type="checkbox" name="multipar" id="multipar" value="1" <!--#if int($multipar) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-par2_multipar')</span>
-                    </div>
-                    <!--#end if#-->
                     <div class="field-pair">
                         <label class="config" for="par_option">$T('opt-par_option')</label>
                         <input type="text" name="par_option" id="par_option" value="$par_option" />
@@ -219,9 +213,26 @@
                         <span class="desc">$T('explain-ignore_samples') $T('igsam-del').</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
+                        <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_meta').replace('. ', '.<br/>')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="cleanup_list">$T('opt-cleanup_list')</label>
                         <input type="text" name="cleanup_list" id="cleanup_list" value="$cleanup_list"/>
                         <span class="desc">$T('explain-cleanup_list')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="history_retention_select">$T('opt-history_retention')</label>
+                        <input type="hidden" name="history_retention" id="history_retention" value="$history_retention">
+                        <select name="history_retention_select" id="history_retention_select">
+                            <option value="0">$T('history_retention-all')</option>
+                            <option value="n">$T('history_retention-number')</option>
+                            <option value="d">$T('history_retention-days')</option>
+                            <option value="-1">$T('history_retention-none')</option>
+                        </select>
+                        <input type="number" id="history_retention_number" name="history_retention_number" min="1">
+                        <span class="desc">$T('explain-history_retention').replace('. ', '.<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
@@ -239,7 +250,7 @@
                     <div class="field-pair">
                         <label class="config" for="folder_rename">$T('opt-folder_rename')</label>
                         <input type="checkbox" name="folder_rename" id="folder_rename" value="1" <!--#if int($folder_rename) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-folder_rename')</span>
+                        <span class="desc">$T('explain-folder_rename').replace('. ', '.<br/>')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="replace_spaces">$T('opt-replace_spaces')</label>
@@ -250,11 +261,6 @@
                         <label class="config" for="replace_dots">$T('opt-replace_dots')</label>
                         <input type="checkbox" name="replace_dots" id="replace_dots" value="1" <!--#if int($replace_dots) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-replace_dots')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="replace_illegal">$T('opt-replace_illegal')</label>
-                        <input type="checkbox" name="replace_illegal" id="replace_illegal" value="1" <!--#if int($replace_illegal) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-replace_illegal')</span>
                     </div>
                     <!--#if not $nt#-->
                     <div class="field-pair">
@@ -449,6 +455,53 @@
             \$("#rating_filter_pause").hide();
         }
     });
+
+    \$('#history_retention_select, #history_retention_number').on('change', updateHistoryRetention)
+    function updateHistoryRetention() {
+        var retention_setting = \$('#history_retention')
+        var retention_select = \$('#history_retention_select').val()
+        var retention_number = \$('#history_retention_number')
+        // Keep all or keep none
+        if(retention_select == "0" || retention_select == "-1") {
+            retention_number.hide()
+            retention_number.val('')
+            retention_number.attr('placeholder', '')
+            retention_setting.val(retention_select)
+        } else {
+            retention_number.show()
+            // Days or number?
+            if(retention_select.indexOf("d") !== -1) {
+                retention_number.attr('placeholder', '$T('days').capitalize()')
+                if(retention_number.val()) {
+                    retention_setting.val(retention_number.val() + 'd')
+                } else if(parseInt(retention_setting.val()) > 0) {
+                    retention_number.val(parseInt(retention_setting.val()))
+                }
+            } else {
+                retention_number.attr('placeholder', '$T('history_retention-limit')')
+                if(retention_number.val()) {
+                    retention_setting.val(retention_number.val())
+                } else if(parseInt(retention_setting.val()) > 0) {
+                    retention_number.val(parseInt(retention_setting.val()))
+                }
+            }
+        }
+    }
+    // Set the history-retention settig
+    var retention_setting_value = \$('#history_retention').val()
+    if(parseInt(retention_setting_value) > 0) {
+        // Days or number?
+        if(retention_setting_value.indexOf("d") !== -1) {
+            \$('#history_retention_select').val("d")
+        } else {
+            \$('#history_retention_select').val("n")
+        }
+        \$('#history_retention_number').val(parseInt(retention_setting_value))
+    } else {
+        // Keep all or keep none
+        \$('#history_retention_select').val(retention_setting_value)
+        \$('#history_retention_number').hide()
+    }
 
     \$('.restoreDefaults').click(function(e) {
         // Get section name

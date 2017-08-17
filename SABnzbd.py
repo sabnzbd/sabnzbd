@@ -56,8 +56,6 @@ if [int(n) for n in cherrypy.__version__.split('.')] < [8, 1, 2]:
     print 'Sorry, requires Python module Cherrypy 8.1.2+ (use the included version)'
     sys.exit(1)
 
-from cherrypy import _cpserver
-
 SQLITE_DLL = True
 try:
     from sqlite3 import version as sqlite3_version
@@ -90,7 +88,7 @@ from sabnzbd.misc import real_path, \
     check_latest_version, exit_sab, \
     split_host, get_ext, create_https_certificates, \
     windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full
-from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic_fwall, \
+from sabnzbd.panic import panic_tmpl, panic_port, panic_host, \
     panic_sqlite, panic, launch_a_browser
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
@@ -430,9 +428,6 @@ def print_modules():
     else:
         logging.error(T('par2 binary... NOT found!'))
 
-    if sabnzbd.newsunpack.PAR2C_COMMAND:
-        logging.info("par2cmdline binary... found (%s)", sabnzbd.newsunpack.PAR2C_COMMAND)
-
     if sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
 
@@ -725,24 +720,6 @@ def evaluate_inipath(path):
             return inipath
         else:
             return path
-
-
-def cherrypy_logging(log_path, log_handler):
-    """ Setup CherryPy logging """
-    log = cherrypy.log
-    log.access_file = ''
-    log.error_file = ''
-    # Max size of 512KB
-    maxBytes = getattr(log, "rot_maxBytes", 524288)
-    # cherrypy.log cherrypy.log.1 cherrypy.log.2
-    backupCount = getattr(log, "rot_backupCount", 3)
-
-    # Make a new RotatingFileHandler for the error log.
-    fname = getattr(log, "rot_error_file", log_path)
-    h = log_handler(fname, 'a', maxBytes, backupCount)
-    h.setLevel(logging.DEBUG)
-    h.setFormatter(cherrypy._cplogging.logfmt)
-    log.error_log.addHandler(h)
 
 
 def commandline_handler(frozen=True):
@@ -1353,7 +1330,6 @@ def main():
                             'error_page.404': sabnzbd.panic.error_page_404
                             })
 
-
     # Do we want CherryPy Logging? Cannot be done via the config
     if cherrypylogging:
         sabnzbd.WEBLOGFILE = os.path.join(logdir, DEF_LOG_CHERRY)
@@ -1398,7 +1374,14 @@ def main():
 
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
-    sabnzbd.zconfig.set_bonjour(cherryhost, cherryport)
+
+    # Bonjour needs a ip. Lets try to find it.
+    try:
+        z_host = socket.gethostbyname(socket.gethostname())
+    except socket.gaierror:
+        z_host = cherryhost
+
+    sabnzbd.zconfig.set_bonjour(z_host, cherryport)
 
     mail = None
     if sabnzbd.WIN32:

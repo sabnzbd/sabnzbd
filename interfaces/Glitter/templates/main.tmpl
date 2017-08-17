@@ -16,7 +16,7 @@
         <title data-bind="text: title">SABnzbd</title>
 
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="SABnzbd">
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -30,13 +30,13 @@
         <link rel="apple-touch-icon" sizes="152x152" href="./staticcfg/ico/apple-touch-icon-152x152-precomposed.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="./staticcfg/ico/apple-touch-icon-180x180-precomposed.png" />
         <link rel="apple-touch-icon" sizes="192x192" href="./staticcfg/ico/android-192x192.png" />
-        <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico?v=1.0.0" data-bind="attr: { 'href': SABIcon }" />
+        <link rel="shortcut icon" type="image/ico" href="./staticcfg/ico/favicon.ico?v=$version" data-bind="attr: { 'href': SABIcon }" />
 
-        <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?p=$pid" />
-        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?p=$pid" />
-        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?p=$pid" media="all and (max-width: 768px)" />
+        <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?v=$version" />
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?v=$version" />
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?v=$version" media="all and (max-width: 768px)" />
         <!--#if $color_scheme not in ('Default', '') #-->
-        <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?p=$pid"/>
+        <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?v=$version"/>
         <!--#end if#-->
 
         <!-- Make translations available in scripts -->
@@ -58,10 +58,11 @@
             glitterTranslate.pauseFor = "$T('pauseFor')"
             glitterTranslate.minutes = "$T('mins')"
             glitterTranslate.shutdown = "$T('shutdownOK?')";
-            glitterTranslate.restart = "$T('explain-Restart')".replace(/<br \/>/g, "\n");
+            glitterTranslate.restart = "$T('explain-Restart') $T('explain-needNewLogin')".replace(/\<br(\s*\/|)\>/g, '\n');
             glitterTranslate.repair = "$T('explain-Repair')".replace(/<br \/>/g, "\n").replace(/&quot;/g,'"');
             glitterTranslate.removeDown = "$T('Glitter-confirmClearDownloads')";
             glitterTranslate.removeDow1 = "$T('Glitter-confirmClear1Download')";
+            glitterTranslate.retryAll = "$T('link-retryAll')?";
             glitterTranslate.encrypted = "$T('Glitter-encrypted')";
             glitterTranslate.duplicate = "$T('Glitter-duplicate')";
             glitterTranslate.tooLarge = "$T('Glitter-tooLarge')";

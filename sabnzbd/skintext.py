@@ -84,7 +84,6 @@ SKIN_TEXT = {
     'pushover-off'       : TT('Off'), #: Prowl priority
     'pushover-low'       : TT('Low'), #: Prowl priority
     'pushover-high'      : TT('High'), #: Prowl priority
-    'pushover-confirm'   : TT('Confirm'), #: Prowl priority
 
 # General texts
     'default' : TT('Default'), #: Default value, used in dropdown menus
@@ -103,6 +102,18 @@ SKIN_TEXT = {
     'week' : TT('week'),
     'month' : TT('Month'),
     'year' : TT('Year'),
+    'January': TT('January'),
+    'February': TT('February'),
+    'March': TT('March'),
+    'April': TT('April'),
+    'May': TT('May'),
+    'June': TT('June'),
+    'July': TT('July'),
+    'August': TT('August'),
+    'September': TT('September'),
+    'October': TT('October'),
+    'November': TT('November'),
+    'December': TT('December'),
     'monday' : TT('Monday'),
     'tuesday' : TT('Tuesday'),
     'wednesday' : TT('Wednesday'),
@@ -140,7 +151,6 @@ SKIN_TEXT = {
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
     'button-save' : TT('Save'), #: "Save" button
-    'queued' : TT('Queued'), #: "Queued" used to show amount of jobs
     'confirm' : TT('Are you sure?'), #: Used in confirmation popups
     'delFiles' : TT('Delete all downloaded files?'),  #: Used in confirmation popups
 
@@ -155,6 +165,7 @@ SKIN_TEXT = {
     'menu-forums' : TT('Forum'), #: Main menu item
     'menu-irc' : TT('IRC'), #: Main menu item
     'menu-issues' : TT('Issues'), #: Main menu item
+    'menu-donate' : TT('Support the project, Donate!'), #: Main menu item
     'cmenu-general' : TT('General'), #: Main menu item
     'cmenu-folders' : TT('Folders'), #: Main menu item
     'cmenu-switches' : TT('Switches'), #: Main menu item
@@ -173,10 +184,10 @@ SKIN_TEXT = {
     'ft-paused' : TT('PAUSED'), # Used in Footer
     'ft-buffer@2' : TT('Cached %s articles (%s)'), # Used in Footer
     'ft-sysload' : TT('Sysload'), # Used in Footer
-    'ft-warning' : TT('WARNINGS'), # Used in Footer
     'ft-newRelease@1' : TT('New release %s available at'), # Used in Footer
 
 # Main page
+    'useGlitter': TT('Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin.'),
     'shutdownOK?' : TT('Are you sure you want to shutdown SABnzbd?'),
     'link-shutdown' : TT('Shutdown'), #: Shutdown SABnzbd
     'link-pause' : TT('Pause'), #: Pause downloading
@@ -204,8 +215,6 @@ SKIN_TEXT = {
     'enterURL' : TT('Enter URL'), #: Add NZB Dialog
 
 # Queue page
-    'link-hideFiles' : TT('Hide files'), #: Queue page button
-    'link-showFiles' : TT('Show files'), #: Queue page button
     'onQueueFinish' : TT('On queue finish'),  #: Queue page selection menu
     'shutdownPc' : TT('Shutdown PC'), #: Queue page end-of-queue action
     'standbyPc' : TT('Standby PC'), #: Queue page end-of-queue action
@@ -268,7 +277,6 @@ SKIN_TEXT = {
     'log-info' : TT('+ Info'), #: Status page logging selection value
     'log-debug' : TT('+ Debug'), #: Status page logging selection value
     'connections' : TT('Connections'), #: Status page tab header
-    'emailResult' : TT('Email Test Result'), #: Status page, title for email test result
     'lastWarnings' : TT('Latest Warnings'), #: Status page, table header
     'clearWarnings' : TT('clear'),  #: Status page button
     'server-blocked' : TT('Unblock'), #: Status page button
@@ -299,7 +307,7 @@ SKIN_TEXT = {
 # Configuration
     'confgFile' : TT('Config File'),
     'cache' : TT('Used cache'), #: Main config page, how much cache is in use
-    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.') + TT('<br />If authentication is enabled, you will need to login again.'),
+    'explain-Restart' : TT('This will restart SABnzbd.<br />Use it when you think the program has a stability problem.<br />Downloading will be paused before the restart and resume afterwards.'),
     'explain-needNewLogin' : TT('<br />If authentication is enabled, you will need to login again.'),
     'button-advanced' : TT('Advanced'),
     'button-restart' : TT('Restart'),
@@ -311,6 +319,7 @@ SKIN_TEXT = {
     #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'opt-enable_unzip' : TT('Enable Unzip'),
     'opt-enable_7zip' : TT('Enable 7zip'),
+    'opt-multicore-par2' : TT('Multicore Par2'),
     'explain-nosslcontext' : TT('Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server\'s identity using its certificates is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-date local CA certificates are required.'),
     'explain-getpar2mt': TT('Speed up repairs by installing multicore Par2, it is available for many platforms.'),
     'version' : TT('Version'),
@@ -333,7 +342,6 @@ SKIN_TEXT = {
     'opt-web_password' : TT('SABnzbd Password'),
     'explain-web_password' : TT('Optional authentication password.'),
     'security' : TT('Security'),
-    'httpsSupport' : TT('HTTPS Support'),
     'opt-enable_https' : TT('Enable HTTPS'),
     'opt-notInstalled' : TT('not installed'),
     'explain-enable_https' : TT('Enable accessing the interface from a HTTPS address.'),
@@ -356,6 +364,13 @@ SKIN_TEXT = {
     'explain-cache_limitstr' : TT('Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'),
     'opt-cleanup_list' : TT('Cleanup List'),
     'explain-cleanup_list' : TT('List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>'),
+    'opt-history_retention' : TT('History Retention'),
+    'explain-history_retention' : TT('Automatically delete completed jobs from History. Beware that Duplicate Detection and some external tools rely on History information.'),
+    'history_retention-all' : TT('Keep all jobs'),
+    'history_retention-number' : TT('Keep maximum number of completed jobs'),
+    'history_retention-days' : TT('Keep completed jobs maximum number of days'),
+    'history_retention-none' : TT('Do not keep any completed jobs'),
+    'history_retention-limit': TT('Jobs'),
     'button-saveChanges' : TT('Save Changes'),
     'button-restoreDefaults' : TT('Restore Defaults'),
     'explain-restoreDefaults' : TT('Reset'),
@@ -430,9 +445,10 @@ SKIN_TEXT = {
     'opt-no_series_dupes' : TT('Detect duplicate episodes in series'),
     'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode" of items in your History)'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
-    'nodupes-ignore' : TT('Discard'), #: Three way switch for duplicates
-    'nodupes-pause' : TT('Pause'), #: Three way switch for duplicates
-    'nodupes-fail' : TT('Fail job (move to History)'), #: Three way switch for duplicates
+    'nodupes-ignore' : TT('Discard'), #: Four way switch for duplicates
+    'nodupes-pause' : TT('Pause'), #: Four way switch for duplicates
+    'nodupes-fail' : TT('Fail job (move to History)'), #: Four way switch for duplicates
+    'nodupes-tag' : TT('Tag job'), #: Four way switch for duplicates
     'abort' : TT('Abort'), #: Three way switch for encrypted posts
     'opt-action_on_unwanted_extensions' : TT('Action when unwanted extension detected'),
     'explain-action_on_unwanted_extensions' : TT('Action when an unwanted extension is detected in RAR files'),
@@ -444,14 +460,12 @@ SKIN_TEXT = {
     'explain-script_can_fail' : TT('When the user script returns a non-zero exit code, the job will be flagged as failed.'),
     'opt-new_nzb_on_failure' : TT('On failure, try alternative NZB'),
     'explain-new_nzb_on_failure' : TT('Some servers provide an alternative NZB when a download fails.'),
+    'opt-enable_meta' : TT('Use tags from indexer'),
+    'explain-enable_meta' : TT('When sorting, use tags from indexer for title, season, episode, etc. Otherwise all naming is derived from the NZB name.'),
     'opt-folder_rename' : TT('Enable folder rename'),
     'explain-folder_rename' : TT('Use temporary names during post processing. Disable when your system doesn\'t handle that properly.'),
     'opt-pre_script' : TT('Pre-queue user script'),
     'explain-pre_script' : TT('Used before an NZB enters the queue.'),
-    'opt-par2_multicore' : TT('Enable MultiCore Par2'),
-    'explain-par2_multicore' : TT('Read the Wiki Help on this!'),
-    'opt-par2_multipar' : TT('Enable MultiPar'),
-    'explain-par2_multipar' : TT('MultiPar is the fastest par2 verification and repair implementation, using multiple cores and the GPU (if available).'),
     'opt-par_option' : TT('Extra PAR2 Parameters'),
     'explain-par_option' : TT('Read the Wiki Help on this!'),
     'opt-nice' : TT('Nice Parameters'),
@@ -462,6 +476,8 @@ SKIN_TEXT = {
     'explain-auto_disconnect' : TT('Disconnect from Usenet server(s) when queue is empty or paused.'),
     'opt-auto_sort' : TT('Sort by Age'),
     'explain-auto_sort' : TT('Automatically sort items by (average) age.'),
+    'opt-direct_unpack' : TT('Direct Unpack'),
+    'explain-direct_unpack' : TT('Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair.'),
     'opt-propagation_delay' : TT('Propagation delay'),
     'explain-propagation_delay' : TT('Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay.'),
     'opt-check_new_rel' : TT('Check for New Release'),
@@ -471,8 +487,6 @@ SKIN_TEXT = {
     'explain-replace_spaces' : TT('Replace spaces with underscores in folder names.'),
     'opt-replace_dots' : TT('Replace dots in Foldername'),
     'explain-replace_dots' : TT('Replace dots with spaces in folder names.'),
-    'opt-replace_illegal' : TT('Replace Illegal Characters in Folder Names'),
-    'explain-replace_illegal' : TT('Replace illegal characters in folder names by equivalents (otherwise remove).'),
     'opt-sanitize_safe' : TT('Make Windows compatible'),
     'explain-sanitize_safe' : TT('For servers: make sure names are compatible with Windows.'),
     'opt-auto_browser' : TT('Launch Browser on Startup'),
@@ -481,11 +495,9 @@ SKIN_TEXT = {
     'explain-pause_on_post_processing' : TT('Pauses downloading at the start of post processing and resumes when finished.'),
     'opt-ignore_samples' : TT('Ignore Samples'),
     'explain-ignore_samples' : TT('Filter out sample files (e.g. video samples).'),
-    'igsam-off' : TT('Off'),
     'igsam-del' : TT('Delete after download'),
     'opt-enable_https_verification' : TT('HTTPS certificate verification'),
     'explain-enable_https_verification' : TT('Verify certificates when connecting to indexers and RSS-sources using HTTPS.'),
-    'swtag-general' : TT('General'),
     'swtag-server' : TT('Server'),
     'swtag-queue' : TT('Queue'),
     'swtag-pp' : TT('Post processing'),
@@ -506,12 +518,10 @@ SKIN_TEXT = {
     'explain-ssl_ciphers' : TT('Increase performance by forcing a lower SSL encryption strength.'),
     'opt-max_art_tries' : TT('Maximum retries'),
     'explain-max_art_tries' : TT('Maximum number of retries per server'),
-    'opt-max_art_opt' : TT('Only for optional servers'),
-    'explain-max_art_opt' : TT('Apply maximum retries only to optional servers'),
     'opt-fail_hopeless_jobs' : TT('Abort jobs that cannot be completed'),
     'explain-fail_hopeless_jobs' : TT('When during download it becomes clear that too much data is missing, abort the job'),
     'opt-rating_enable' : TT('Enable Indexer Integration'),
-    'explain-rating_enable' : TT('Indexers can supply rating information when a job is added and SABnzbd can report to the indexer if a job couldn\'t be completed. Depending on your indexer, the API key setting can be left blank.'),
+    'explain-rating_enable' : TT('Indexers can supply rating information when a job is added and SABnzbd can report to the indexer if a job couldn\'t be completed.'),
     'opt-rating_api_key' : TT('API Key'),
     'explain-rating_api_key' : TT('This key provides identity to indexer. Check your profile on the indexer\'s website.'),
     'opt-rating_filter_enable' : TT('Enable Filtering'),
@@ -588,7 +598,6 @@ SKIN_TEXT = {
     'rss-order' : TT('Order'), #: Config->RSS table column header
     'rss-type' : TT('Type'), #: Config->RSS table column header
     'rss-filter' : TT('Filter'), #: Config->RSS table column header
-    'rss-skip' : TT('Skip'), #: Config->RSS table column header
     'rss-accept' : TT('Accept'), #: Config->RSS filter-type selection menu
     'rss-reject' : TT('Reject'), #: Config->RSS filter-type selection menu
     'rss-must' : TT('Requires'), #: Config->RSS filter-type selection menu
@@ -800,9 +809,9 @@ SKIN_TEXT = {
     'Glitter-showExtraQueueColumn' : TT('Extra queue column'),
     'Glitter-showExtraHistoryColumn' : TT('Extra history column'),
     'Glitter-page' : TT('page'),
-    'Glitter-everything' : TT('Everything'),
     'Glitter-loading' : TT('Loading'),
     'Glitter-articles' : TT('articles'),
+    'Glitter-rename' : TT('Rename'),
     'Glitter-repairQueue' : TT('Queue repair'),
     'Glitter-showActiveConnections' : TT('Show active connections'),
     'Glitter-unblockServer' : TT('Unblock'),
@@ -822,6 +831,8 @@ SKIN_TEXT = {
     'Glitter-noSelect' : TT('Nothing selected!'),
     'Glitter-removeSelected' : TT('Remove all selected files'),
     'Glitter-toggleCompletedFiles' : TT('Hide/show completed files'),
+    'Glitter-top' : TT('Top'),
+    'Glitter-bottom' : TT('Bottom'),
     'Glitter-retryJob' : TT('Retry'),
     'Glitter-more' : TT('More'),
     'Glitter-scriptLog' : TT('View Script Log'),
@@ -982,5 +993,6 @@ SKIN_TEXT = {
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
-''')
+'''),
+    'wizard-ad': TT('In order to download from Usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended. Don\'t have a Usenet provider? We recommend trying %s.''')
     }

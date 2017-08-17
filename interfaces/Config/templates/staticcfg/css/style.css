@@ -137,7 +137,8 @@ input[type="checkbox"]+.desc {
     font-style: italic;
     padding: 0 1px;
 }
-.col2 p {
+.col2 p,
+.col2-cats {
     font-size: 12px;
     color: #666;
     margin: 1em 0;
@@ -618,7 +619,6 @@ h2.activeRSS {
     padding: 0 0 .5em;
 }
 .feed-row div {
-    padding-right: 10px;
     overflow:hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -993,6 +993,55 @@ input[type="checkbox"] {
     opacity: 0.7;
 }
 
+.Servers .server-amounts-text {
+    width: 20%;
+    float: left;
+}
+
+.Servers .server-chart {
+    float: right;
+    width: calc(100% - 250px - 25%);
+    text-align: center;
+    position: relative;
+}
+
+.Servers .ct-series-a .ct-line {
+    stroke: #666666;
+}
+
+.Servers .ct-series-a .ct-point {
+    stroke: #666666;
+    stroke-width: 4px;
+}
+
+.Servers .ct-series-a .ct-area {
+    fill: #666666
+}
+
+.Servers .ct-label {
+    font-size: 1em;
+    color: black;
+}
+
+.Servers .chart-selector {
+    position: absolute;
+    display: block;
+    top: -7px;
+    left: 50%;
+    width: 120px;
+    margin-left: -40px;
+    min-width: initial;
+    opacity: 0.8;
+}
+
+.Servers .chart-selector:hover {
+    opacity: 1;
+}
+
+.Servers .ct-grid.ct-vertical:first-of-type {
+    display: none;
+}
+
 .advanced-settings {
     display: none;
 }
@@ -1118,7 +1167,7 @@ input[type="checkbox"] {
 
     .navbar-nav {
         /* For extra wide languages like Polish */
-        margin-right: -50px;
+        margin-right: -150px;
     }
 }
 
@@ -1169,6 +1218,15 @@ input[type="checkbox"] {
 
     .Servers .col2 button:first-of-type {
         margin-bottom: 0;
+    }
+
+    .Servers .server-chart {
+        display: none;
+    }
+
+    .Servers .server-amounts-text {
+        padding: 0px 15px 10px;
+        width: inherit;
     }
 }
 

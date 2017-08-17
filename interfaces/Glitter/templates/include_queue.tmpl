@@ -95,19 +95,18 @@
                             <span data-bind="text: password"></span>
                         </small>
                         <!-- /ko -->
-                        <!-- ko if: (rating_avg_video() !== false)  -->
-                        <div class="name-ratings hover-button">
-                            <span class="glyphicon glyphicon-facetime-video"></span> <span data-bind="text: rating_avg_video"></span>
-                            <span class="glyphicon glyphicon-volume-up"></span> <span data-bind="text: rating_avg_audio"></span>
+                        <div class="name-icons direct-unpack hover-button" data-bind="visible: direct_unpack">
+                            <span class="glyphicon glyphicon-compressed"></span> <span data-bind="text: direct_unpack"></span>
                         </div>
-                        <!-- /ko -->
                     </div>
                     <form data-bind="submit: editingNameSubmit">
                         <input type="text" data-bind="value: nameForEdit, visible: editingName(), hasfocus: editingName" />
                     </form>
-                    <div class="name-options" data-bind="visible: !editingName()">
-                        <a href="#" data-bind="click: editName, css: { disabled: isGrabbing() }" class="hover-button"><span class="glyphicon glyphicon-pencil"></span></a>
-                        <a href="#" data-bind="click: showFiles, css: { disabled: isGrabbing() }" class="hover-button" title="$T('nzoDetails') - $T('srv-password')"><span class="glyphicon glyphicon-folder-open"></span></a>
+                    <div class="name-options" data-bind="visible: !editingName(), css: { disabled: isGrabbing() }">
+                        <a href="#" data-bind="click: \$parent.queue.moveButton" class="hover-button buttonMoveToTop" title="$T('Glitter-top')"><span class="glyphicon glyphicon-chevron-up"></span></a>
+                        <a href="#" data-bind="click: \$parent.queue.moveButton" class="hover-button buttonMoveToBottom" title="$T('Glitter-bottom')"><span class="glyphicon glyphicon-chevron-down"></span></a>
+                        <a href="#" data-bind="click: editName" class="hover-button" title="$T('Glitter-rename')"><span class="glyphicon glyphicon-pencil"></span></a>
+                        <a href="#" data-bind="click: showFiles" class="hover-button" title="$T('nzoDetails') - $T('srv-password')"><span class="glyphicon glyphicon-folder-open"></span></a>
                         <small data-bind="text: avg_age"></small>
                     </div>
                 </td>

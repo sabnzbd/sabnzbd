@@ -42,9 +42,11 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, special_fixer, gUTF
 
-RE_VERSION = re.compile(r'(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
-RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
+RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
+RE_VERSION = re.compile(r'(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
+RE_IP4 = re.compile(r'inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)')
+RE_IP6 = re.compile(r'inet6\s+(addr:\s*){0,1}([0-9a-f:]+)', re.I)
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime('%p', time.localtime()))
@@ -92,6 +94,15 @@ def calc_age(date, trans=False):
     return age
 
 
+def monthrange(start, finish):
+    """ Calculate months between 2 dates, used in the Config template """
+    months = (finish.year - start.year) * 12 + finish.month + 1
+    for i in xrange(start.month, months):
+        year  = (i - 1) / 12 + start.year
+        month = (i - 1) % 12 + 1
+        yield datetime.date(year, month, 1)
+
+
 def safe_lower(txt):
     """ Return lowercased string. Return '' for None """
     if txt:
@@ -100,13 +111,22 @@ def safe_lower(txt):
         return ''
 
 
+def safe_fnmatch(f, pattern):
+    """ fnmatch will fail if the pattern contains any of it's
+        key characters, like [, ] or !.
+    """
+    try:
+        return fnmatch.fnmatch(f, pattern)
+    except re.error:
+        return False
+
+
 def globber(path, pattern=u'*'):
     """ Return matching base file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
-        return [f for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
-    else:
-        return []
+        return [f for f in os.listdir(path) if safe_fnmatch(f, pattern)]
+    return []
 
 
 def globber_full(path, pattern=u'*'):
@@ -114,13 +134,12 @@ def globber_full(path, pattern=u'*'):
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
         try:
-            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
+            return [os.path.join(path, f) for f in os.listdir(path) if safe_fnmatch(f, pattern)]
         except UnicodeDecodeError:
             # This happens on Linux when names are incorrectly encoded, retry using a non-Unicode path
             path = path.encode('utf-8')
-            return [os.path.join(path, f) for f in os.listdir(path) if fnmatch.fnmatch(f, pattern)]
-    else:
-        return []
+            return [os.path.join(path, f) for f in os.listdir(path) if safe_fnmatch(f, pattern)]
+    return []
 
 
 def cat_to_opts(cat, pp=None, script=None, priority=None):
@@ -237,15 +256,21 @@ def replace_win_devices(name):
             if lname == dev or lname.startswith(dev + '.'):
                 name = '_' + name
                 break
+
+    # Remove special NTFS filename
+    if lname.startswith('$mft'):
+        name = name.replace('$', 'S', 1)
+
     return name
 
 
 def has_win_device(p):
     """ Return True if filename part contains forbidden name
+        Before and after sanitizing
     """
     p = os.path.split(p)[1].lower()
     for dev in _DEVICES:
-        if p == dev or p.startswith(dev + '.'):
+        if p == dev or p.startswith(dev + '.') or p.startswith('_' + dev + '.'):
             return True
     return False
 
@@ -259,7 +284,7 @@ else:
     CH_LEGAL = '+'
 
 
-def sanitize_filename(name, allow_win_devices=False):
+def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
@@ -276,7 +301,7 @@ def sanitize_filename(name, allow_win_devices=False):
             # Compensate for the foolish way par2 on OSX handles a colon character
             name = name[name.rfind(':') + 1:]
 
-    if sabnzbd.WIN32 and not allow_win_devices:
+    if sabnzbd.WIN32 or cfg.sanitize_safe():
         name = replace_win_devices(name)
 
     lst = []
@@ -392,20 +417,11 @@ def sanitize_files_in_folder(folder):
     return lst
 
 
-def flag_file(path, flag, create=False):
-    """ Create verify flag file or return True if it already exists """
-    path = os.path.join(path, JOB_ADMIN)
-    path = os.path.join(path, flag)
-    if create:
-        try:
-            f = open(path, 'w')
-            f.write('ok\n')
-            f.close()
-            return True
-        except IOError:
-            return False
-    else:
-        return os.path.exists(path)
+def is_obfuscated_filename(filename):
+    """ Check if this file has an extension, if not, it's
+        probably obfuscated and we don't use it
+    """
+    return (os.path.splitext(filename)[1] == '')
 
 
 ##############################################################################
@@ -846,10 +862,9 @@ def get_cache_limit():
 
 
 ##############################################################################
-# Locked directory operations
+# Locked directory operations to avoid problems with simultaneous add/remove
 ##############################################################################
 DIR_LOCK = threading.RLock()
-
 
 @synchronized(DIR_LOCK)
 def get_unique_path(dirpath, n=0, create_dir=True):
@@ -912,8 +927,7 @@ def move_to_path(path, new_path):
         new_path = get_unique_filename(new_path)
 
     if new_path:
-        logging.debug("Moving. Old path: %s New path: %s Overwrite: %s",
-                                                  path, new_path, overwrite)
+        logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
         try:
             # First try cheap rename
             renamer(path, new_path)
@@ -965,11 +979,8 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
-    dirname = nzo.work_name
-    created = nzo.created
-
-    dName = dirname
-    if not created:
+    dName = nzo.work_name
+    if not nzo.created:
         for n in xrange(200):
             dName = dirname
             if n:
@@ -998,6 +1009,94 @@ def get_filepath(path, nzo, filename):
     return fullPath
 
 
+@synchronized(DIR_LOCK)
+def renamer(old, new):
+    """ Rename file/folder with retries for Win32 """
+    # Sanitize last part of new name
+    path, name = os.path.split(new)
+    # Use the more stringent folder rename to end up with a nicer name,
+    # but do not trim size
+    new = os.path.join(path, sanitize_foldername(name, False))
+
+    logging.debug('Renaming "%s" to "%s"', old, new)
+    if sabnzbd.WIN32:
+        retries = 15
+        while retries > 0:
+            # First we try 3 times with os.rename
+            if retries > 12:
+                try:
+                    os.rename(old, new)
+                    return
+                except:
+                    retries -= 1
+                    time.sleep(3)
+                    continue
+
+            # Now we try the back-up method
+            logging.debug('Could not rename, trying move for %s to %s', old, new)
+            try:
+                shutil.move(old, new)
+                return
+            except WindowsError, err:
+                logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
+                if err[0] == 32:
+                    logging.debug('Retry rename %s to %s', old, new)
+                    retries -= 1
+                else:
+                    raise WindowsError(err)
+            time.sleep(3)
+        raise WindowsError(err)
+    else:
+        shutil.move(old, new)
+
+
+@synchronized(DIR_LOCK)
+def remove_dir(path):
+    """ Remove directory with retries for Win32 """
+    logging.debug('Removing dir %s', path)
+    if sabnzbd.WIN32:
+        retries = 15
+        while retries > 0:
+            try:
+                os.rmdir(path)
+                return
+            except WindowsError, err:
+                if err[0] == 32:
+                    logging.debug('Retry delete %s', path)
+                    retries -= 1
+                else:
+                    raise WindowsError(err)
+            time.sleep(3)
+        raise WindowsError(err)
+    else:
+        os.rmdir(path)
+
+
+@synchronized(DIR_LOCK)
+def remove_all(path, pattern='*', keep_folder=False, recursive=False):
+    """ Remove folder and all its content (optionally recursive) """
+    if os.path.exists(path):
+        files = globber_full(path, pattern)
+        if pattern == '*' and not sabnzbd.WIN32:
+            files.extend(globber_full(path, '.*'))
+
+        for f in files:
+            if os.path.isfile(f):
+                try:
+                    logging.debug('Removing file %s', f)
+                    os.remove(f)
+                except:
+                    logging.info('Cannot remove file %s', f)
+            elif recursive:
+                remove_all(f, pattern, False, True)
+        if not keep_folder:
+            try:
+                logging.debug('Removing dir %s', path)
+                os.rmdir(path)
+            except:
+                logging.info('Cannot remove folder %s', path)
+
+
 def trim_win_path(path):
     """ Make sure Windows path stays below 70 by trimming last part """
     if sabnzbd.WIN32 and len(path) > 69:
@@ -1007,15 +1106,6 @@ def trim_win_path(path):
             folder = folder[:maxlen]
         path = os.path.join(path, folder).rstrip('. ')
     return path
-
-
-def check_win_maxpath(folder):
-    """ Return False if any file path in folder exceeds the Windows maximum """
-    if sabnzbd.WIN32:
-        for p in os.listdir(folder):
-            if len(os.path.join(folder, p)) > 259:
-                return False
-    return True
 
 
 def make_script_path(script):
@@ -1198,24 +1288,40 @@ else:
             return 20.0, 10.0
 
 
-__LAST_DISK_RESULT = {}
-__LAST_DISK_CALL = {}
-def diskspace(_dir, force=False):
+# Store all results to speed things up
+__DIRS_CHECKED = []
+__DISKS_SAME = None
+__LAST_DISK_RESULT = {'download_dir': [], 'complete_dir': []}
+__LAST_DISK_CALL = 0
+
+def diskspace(force=False):
     """ Wrapper to cache results """
-    if _dir not in __LAST_DISK_RESULT:
-        __LAST_DISK_RESULT[_dir] = [0.0, 0.0]
-        __LAST_DISK_CALL[_dir] = 0.0
+    global __DIRS_CHECKED, __DISKS_SAME, __LAST_DISK_RESULT, __LAST_DISK_CALL
+
+    # Reset everything when folders changed
+    dirs_to_check = [cfg.download_dir.get_path(), cfg.complete_dir.get_path()]
+    if __DIRS_CHECKED != dirs_to_check:
+        __DIRS_CHECKED = dirs_to_check
+        __DISKS_SAME = None
+        __LAST_DISK_RESULT = {'download_dir': [], 'complete_dir': []}
+        __LAST_DISK_CALL = 0
 
     # When forced, ignore any cache to avoid problems in UI
     if force:
-        return diskspace_base(_dir)
+        __LAST_DISK_CALL = 0
 
     # Check against cache
-    if time.time() > __LAST_DISK_CALL[_dir] + 10.0:
-        __LAST_DISK_RESULT[_dir] = diskspace_base(_dir)
-        __LAST_DISK_CALL[_dir] = time.time()
+    if time.time() > __LAST_DISK_CALL + 10.0:
+        # Same disk? Then copy-paste
+        __LAST_DISK_RESULT['download_dir'] = diskspace_base(cfg.download_dir.get_path())
+        __LAST_DISK_RESULT['complete_dir'] = __LAST_DISK_RESULT['download_dir'] if __DISKS_SAME else diskspace_base(cfg.complete_dir.get_path())
+        __LAST_DISK_CALL = time.time()
 
-    return __LAST_DISK_RESULT[_dir]
+    # Do we know if it's same disk?
+    if __DISKS_SAME is None:
+        __DISKS_SAME = (__LAST_DISK_RESULT['download_dir'] == __LAST_DISK_RESULT['complete_dir'])
+
+    return __LAST_DISK_RESULT
 
 
 ##############################################################################
@@ -1231,7 +1337,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
         private_key = generate_key(key_size=2048, output_file=ssl_key)
-        cert = generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost')
+        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost')
         logging.info('Self-signed certificates generated successfully')
     except:
         logging.error(T('Error creating SSL key and certificate'))
@@ -1302,8 +1408,6 @@ def find_on_path(targets):
     return None
 
 
-_RE_IP4 = re.compile(r'inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)')
-_RE_IP6 = re.compile(r'inet6\s+(addr:\s*){0,1}([0-9a-f:]+)', re.I)
 def ip_extract():
     """ Return list of IP addresses of this system """
     ips = []
@@ -1330,94 +1434,12 @@ def ip_extract():
         output = p.stdout.read()
         p.wait()
         for line in output.split('\n'):
-            m = _RE_IP4.search(line)
+            m = RE_IP4.search(line)
             if not (m and m.group(2)):
-                m = _RE_IP6.search(line)
+                m = RE_IP6.search(line)
             if m and m.group(2):
                 ips.append(m.group(2))
     return ips
-
-
-def renamer(old, new):
-    """ Rename file/folder with retries for Win32 """
-    # Sanitize last part of new name
-    path, name = os.path.split(new)
-    # Use the more stringent folder rename to end up with a nicer name,
-    # but do not trim size
-    new = os.path.join(path, sanitize_foldername(name, False))
-
-    logging.debug('Renaming "%s" to "%s"', old, new)
-    if sabnzbd.WIN32:
-        retries = 15
-        while retries > 0:
-            # First we try 3 times with os.rename
-            if retries > 12:
-                try:
-                    os.rename(old, new)
-                    return
-                except:
-                    retries -= 1
-                    time.sleep(3)
-                    continue
-
-            # Now we try the back-up method
-            logging.debug('Could not rename, trying move for %s to %s', old, new)
-            try:
-                shutil.move(old, new)
-                return
-            except WindowsError, err:
-                logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
-                if err[0] == 32:
-                    logging.debug('Retry rename %s to %s', old, new)
-                    retries -= 1
-                else:
-                    raise WindowsError(err)
-            time.sleep(3)
-        raise WindowsError(err)
-    else:
-        shutil.move(old, new)
-
-
-def remove_dir(path):
-    """ Remove directory with retries for Win32 """
-    if sabnzbd.WIN32:
-        retries = 15
-        while retries > 0:
-            try:
-                os.rmdir(path)
-                return
-            except WindowsError, err:
-                if err[0] == 32:
-                    logging.debug('Retry delete %s', path)
-                    retries -= 1
-                else:
-                    raise WindowsError(err)
-            time.sleep(3)
-        raise WindowsError(err)
-    else:
-        os.rmdir(path)
-
-
-def remove_all(path, pattern='*', keep_folder=False, recursive=False):
-    """ Remove folder and all its content (optionally recursive) """
-    if os.path.exists(path):
-        files = globber_full(path, pattern)
-        if pattern == '*' and not sabnzbd.WIN32:
-            files.extend(globber_full(path, '.*'))
-
-        for f in files:
-            if os.path.isfile(f):
-                try:
-                    os.remove(f)
-                except:
-                    logging.info('Cannot remove file %s', f)
-            elif recursive:
-                remove_all(f, pattern, False, True)
-        if not keep_folder:
-            try:
-                os.rmdir(path)
-            except:
-                logging.info('Cannot remove folder %s', path)
 
 
 def is_writable(path):
@@ -1466,6 +1488,7 @@ def starts_with_path(path, prefix):
 def set_chmod(path, permissions, report):
     """ Set 'permissions' on 'path', report any errors when 'report' is True """
     try:
+        logging.debug('Applying permissions %s (octal) to %s', oct(permissions), path)
         os.chmod(path, permissions)
     except:
         lpath = path.lower()

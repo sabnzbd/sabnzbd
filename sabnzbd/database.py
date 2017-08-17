@@ -40,7 +40,7 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import get_all_passwords
+from sabnzbd.misc import get_all_passwords, int_conv
 
 DB_LOCK = threading.RLock()
 
@@ -154,7 +154,8 @@ class HistoryDB(object):
                     return 'duplicate column name' not in error
                 else:
                     logging.error(T('SQL Command Failed, see log'))
-                    logging.debug("SQL: %s", command)
+                    logging.info("SQL: %s", command)
+                    logging.info("Arguments: %s", repr(args))
                     logging.info("Traceback: ", exc_info=True)
                     try:
                         self.con.rollback()
@@ -217,6 +218,7 @@ class HistoryDB(object):
     def remove_completed(self, search=None):
         """ Remove all completed jobs from the database, optional with `search` pattern """
         search = convert_search(search)
+        logging.info('Removing all completed jobs from history')
         return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Completed'""", (search,), save=True)
 
     def get_failed_paths(self, search=None):
@@ -231,6 +233,7 @@ class HistoryDB(object):
     def remove_failed(self, search=None):
         """ Remove all failed jobs from the database, optional with `search` pattern """
         search = convert_search(search)
+        logging.info('Removing all failed jobs from history')
         return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Failed'""", (search,), save=True)
 
     def remove_history(self, jobs=None):
@@ -243,8 +246,33 @@ class HistoryDB(object):
 
             for job in jobs:
                 self.execute("""DELETE FROM history WHERE nzo_id=?""", (job,))
+                logging.info('Removing job %s from history', job)
 
         self.save()
+
+    def auto_history_purge(self):
+        """ Remove history items based on the configured history-retention """
+        if sabnzbd.cfg.history_retention() == "0":
+            return
+
+        if sabnzbd.cfg.history_retention() == "-1":
+            # Delete all non-failed ones
+            self.remove_completed()
+
+        if "d" in sabnzbd.cfg.history_retention():
+            # How many days to keep?
+            days_to_keep = int_conv(sabnzbd.cfg.history_retention().strip()[:-1])
+            seconds_to_keep = int(time.time()) - days_to_keep*3600*24
+            if days_to_keep > 0:
+                logging.info('Removing completed jobs older than %s days from history', days_to_keep)
+                return self.execute("""DELETE FROM history WHERE status = 'Completed' AND completed < ?""", (seconds_to_keep,), save=True)
+        else:
+            # How many to keep?
+            to_keep = int_conv(sabnzbd.cfg.history_retention())
+            if to_keep > 0:
+                logging.info('Removing all but last %s completed jobs from history', to_keep)
+                return self.execute("""DELETE FROM history WHERE id NOT IN ( SELECT id FROM history WHERE status = 'Completed' ORDER BY completed DESC LIMIT ? )""", (to_keep,), save=True)
+
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
         """ Add a new job entry to the database """
@@ -255,22 +283,24 @@ class HistoryDB(object):
         downloaded, completeness, fail_message, url_info, bytes, series, md5sum, password)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
             self.save()
+        logging.info('Added job %s to history', nzo.final_name)
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
         """ Return records for specified jobs """
-        search = convert_search(search)
+        command_args = [convert_search(search)]
 
         post = ''
         if categories:
             categories = ['*' if c == 'Default' else c for c in categories]
-            post = " AND (CATEGORY = '"
-            post += "' OR CATEGORY = '".join(categories)
-            post += "' )"
+            post = " AND (CATEGORY = ?"
+            post += " OR CATEGORY = ? " * (len(categories)-1)
+            post += ")"
+            command_args.extend(categories)
         if failed_only:
             post += ' AND STATUS = "Failed"'
 
         cmd = 'SELECT COUNT(*) FROM history WHERE name LIKE ?'
-        res = self.execute(cmd + post, (search,))
+        res = self.execute(cmd + post, tuple(command_args))
         total_items = -1
         if res:
             try:
@@ -283,9 +313,9 @@ class HistoryDB(object):
         if not limit:
             limit = total_items
 
-        t = (search, start, limit)
+        command_args.extend([start, limit])
         cmd = 'SELECT * FROM history WHERE name LIKE ?'
-        fetch_ok = self.execute(cmd + post + ' ORDER BY completed desc LIMIT ?, ?', t)
+        fetch_ok = self.execute(cmd + post + ' ORDER BY completed desc LIMIT ?, ?', tuple(command_args))
 
         if fetch_ok:
             items = self.c.fetchall()
@@ -531,9 +561,16 @@ def unpack_history_info(item):
     if item['script_log']:
         item['script_log'] = ''
     # The action line is only available for items in the postproc queue
-    if not item.has_key('action_line'):
+    if 'action_line' not in item:
         item['action_line'] = ''
     return item
+
+
+def midnight_history_purge():
+    logging.info('Scheduled history purge')
+    history_db = HistoryDB()
+    history_db.auto_history_purge()
+    history_db.close()
 
 
 def decode_factory(text):

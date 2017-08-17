@@ -50,7 +50,8 @@ legend,
     color: white !important;
 }
 
-.hover-button {
+.hover-button,
+.fileControls a:hover {
     opacity: 0.7;
 }
 
@@ -75,13 +76,14 @@ legend,
     background-color: #666;
 }
 
-.navbar-collapse.in .dropdown-menu {
+.navbar-collapse.in .dropdown-menu, {
     border: none;
 }
 
 .max-speed-input-clear,
 .max-speed-input-clear:hover,
-.nav-tabs>li>a:hover {
+.nav-tabs>li>a:hover,
+.fileControls a {
     color: black;
 }
 
@@ -109,6 +111,7 @@ legend,
     color: #EBEBEB;
 }
 
+table,
 .table-striped>tbody>tr:nth-child(even)>td,
 .table>tbody>tr:nth-child(even)>td,
 .table th,
@@ -156,7 +159,9 @@ select.form-control,
 .retry-button, .retry-button-inactive,
 .history-options-show-failed,
 .queue-error-info,
-.options-bad-status {
+.options-bad-status,
+.history-failed-download:hover .retry-button .glyphicon:before,
+.retry-button:hover .glyphicon:before {
     color: #F95151 !important;
 }
 
@@ -175,7 +180,7 @@ tbody .caret {
     color: #D6D6D6;
 }
 
-td.name .name-ratings span,
+td.name .name-icons span,
 .navbar-nav .open .dropdown-menu>li>a,
 .dropdown-header,
 #modal-help small,
@@ -203,6 +208,10 @@ hr {
     border-bottom: none !important;
 }
 
+#modal-item-files .item-files-table {
+    border-bottom: 1px solid black;
+}
+
 .history-queue-swicher .nav-tabs>li>a,
 .history-queue-swicher .nav-tabs>li.active>a  {
     border-bottom: none;
@@ -218,6 +227,11 @@ hr {
 .container-compact .progress,
 .container-compact .queue .progress-bar {
     box-shadow: inset 1px 0px 1px rgba(0, 0, 0, 1);
+}
+
+.modal-content {
+    border-color: #727272;
+    border-top: none;
 }
 
 /* Placeholders - Will not work if grouped! */

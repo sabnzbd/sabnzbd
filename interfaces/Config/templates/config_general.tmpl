@@ -1,5 +1,5 @@
 <!--#set global $pane="General"#-->
-<!--#set global $help_uri="configuration/2.1/general"#-->
+<!--#set global $help_uri="configuration/2.2/general"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -25,7 +25,7 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="enable_https">$T('opt-enable_https')</label>
-                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked"' else ""#-->/>
+                    <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked" data-original="1"' else ""#-->/>
                     <span class="desc">$T('explain-enable_https')</span>
                 </div>
                 <div class="field-pair">
@@ -240,7 +240,17 @@
             \$('.alert-translate').show()
         }
     }
-    \$('#language').on('change', hideOrShowTranslate)
+    \$('#language').on('change', function() {
+        // Show message
+        hideOrShowTranslate()
+        // Re-load page on submit
+        \$('.fullform').submit(function() {
+            // Skip the fancy stuff, just submit
+            this.submit()
+        })
+        // No JSON reponse
+        \$('#ajax').val('')
+    })
     hideOrShowTranslate()
 
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
@@ -314,14 +324,20 @@
     if(bandwidthLimit) {
         var bandwithLimitNumber = parseFloat(bandwidthLimit)
         var bandwithLimitText = bandwidthLimit.replace(/[^a-zA-Z]+/g, '');
-        \$('#bandwidth_max_value').val(bandwithLimitNumber)
-        \$('#bandwidth_max_dropdown').val(bandwithLimitText)
+        if(bandwithLimitNumber) {
+            \$('#bandwidth_max_value').val(bandwithLimitNumber)
+            \$('#bandwidth_max_dropdown').val(bandwithLimitText)
+        }
     }
 
 
     // Update the value
     \$('#bandwidth_max_value, #bandwidth_max_dropdown').on('change', function() {
-        \$('#bandwidth_max').val(\$('#bandwidth_max_value').val() + \$('#bandwidth_max_dropdown').val())
+        if(\$('#bandwidth_max_value').val()) {
+            \$('#bandwidth_max').val(\$('#bandwidth_max_value').val() + \$('#bandwidth_max_dropdown').val())
+        } else {
+            \$('#bandwidth_max').val('')
+        }
     })
 
 });

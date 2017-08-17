@@ -36,7 +36,6 @@ from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 __SCHED = None  # Global pointer to Scheduler instance
 
-RSSTASK_MINUTE = random.randint(0, 59)
 SCHEDULE_GUARD_FLAG = False
 PP_PAUSE_EVENT = False
 
@@ -193,6 +192,11 @@ def init():
         logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
         __SCHED.add_daytime_task(action, 'quota_reset', range(1, 8), None, (hour, minute),
                                  kronos.method.sequential, [], None)
+
+    if sabnzbd.misc.int_conv(cfg.history_retention()) > 0:
+        logging.info('Setting schedule for midnight auto history-purge')
+        __SCHED.add_daytime_task(sabnzbd.database.midnight_history_purge, 'midnight_history_purge', range(1, 8), None, (0, 0),
+                                kronos.method.sequential, [], None)
 
     logging.info('Setting schedule for midnight BPS reset')
     __SCHED.add_daytime_task(sabnzbd.bpsmeter.midnight_action, 'midnight_bps', range(1, 8), None, (0, 0),

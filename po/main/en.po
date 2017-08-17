@@ -15,27 +15,21 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: sabnzbd/skintext.py:67 [Config->Scheduler]
 msgid "Pause low prioirty jobs"
 msgstr "Pause low priority jobs"
 
-#: sabnzbd/skintext.py:68 [Config->Scheduler]
 msgid "Pause normal prioirty jobs"
 msgstr "Pause normal priority jobs"
 
-#: sabnzbd/skintext.py:69 [Config->Scheduler]
 msgid "Pause high prioirty jobs"
 msgstr "Pause high priority jobs"
 
-#: sabnzbd/skintext.py:70 [Config->Scheduler]
 msgid "Resume low prioirty jobs"
 msgstr "Resume low priority jobs"
 
-#: sabnzbd/skintext.py:71 [Config->Scheduler]
 msgid "Resume normal prioirty jobs"
 msgstr "Resume normal priority jobs"
 
-#: sabnzbd/skintext.py:72 [Config->Scheduler]
 msgid "Resume high prioirty jobs"
 msgstr "Resume high priority jobs"
 
@@ -48,80 +42,74 @@ msgstr ""
 "click the button below.<br /><br /><strong><a "
 "href=\"..\">Refresh</a></strong><br />"
 
-#: sabnzbd/skintext.py:251 [Retry all failed jobs in History]
 msgid "Retry all failed"
 msgstr "Retry All Failed"
 
-#: sabnzbd/skintext.py:54 [#: Config->Scheduler]
 msgid "disable server"
 msgstr "Disable server:"
 
-#: sabnzbd/skintext.py:55 [#: Config->Scheduler]
 msgid "enable server"
 msgstr "Enable server:"
 
-#: sabnzbd/emailer.py:117
 msgid "The server didn't reply properly to the helo greeting"
 msgstr "The server didn't reply properly to the hello greeting"
 
-#: sabnzbd/interface.py:226
 msgid "API Key missing, please enter the api key from Config->General into your 3rd party program:"
 msgstr "API key missing, please enter the API key from Config->General into your 3rd party program:"
 
-#: sabnzbd/interface.py:233
 msgid "API Key incorrect, Use the api key from Config->General in your 3rd party program:"
 msgstr "API key incorrect, Use the API key from Config->General in your 3rd party program:"
 
-#: sabnzbd/skintext.py:330
 msgid "HTTPS Chain Certifcates"
 msgstr "HTTPS Chain Certificates"
 
-#: sabnzbd/skintext.py:465
 msgid "Replace Spaces in Foldername"
 msgstr "Replace spaces in folder name"
 
-#: sabnzbd/skintext.py:467
 msgid "Replace dots in Foldername"
 msgstr "Replace dots in folder name"
 
-#: sabnzbd/skintext.py:693
 msgid "Original Foldername"
 msgstr "Original folder name"
 
-#: sabnzbd/skintext.py:808
 msgid "How long or untill when do you want to pause? (in English!)"
 msgstr "How long or until when do you want to pause? (in English!)"
 
-#: sabnzbd/skintext.py:917
 msgid "Timeleft"
 msgstr "Time left"
 
-#: sabnzbd/skintext.py:791 # sabnzbd/skintext.py:871
 msgid "Optionally specify a filename"
 msgstr "Optionally specify a name"
 
-#: sabnzbd/skintext.py:819 # sabnzbd/skintext.py:880
 msgid "Confirm Queue Deletions"
 msgstr "Confirm queue deletions"
 
-#: sabnzbd/skintext.py:820 # sabnzbd/skintext.py:881
 msgid "Confirm History Deletions"
 msgstr "Confirm history deletions"
 
-#: sabnzbd/skintext.py:288 [Do not translate Pystone]
 msgid "System Performance (Pystone)"
 msgstr "System performance (Pystone)"
 
-#: sabnzbd/skintext.py:317 # sabnzbd/skintext.py:779
 msgid "Web Interface"
 msgstr "Web interface"
 
-#: sabnzbd/notifier.py
 msgid "Script returned exit code %s and output \"%s\""
 msgstr "Notification script returned exit code %s and output \"%s\""
 
-#: sabnzbd/skintext.py:333
 msgid "If empty, the standard port will only listen to HTTPS."
 msgstr "If empty, the SABnzbd Port set above will listen to HTTPS."
 
+msgid "Posts will be paused untill they are at least this age. Setting job priority to Force will skip the delay."
+msgstr "Posts will be paused until they are at least this age. Setting job priority to Force will skip the delay."
 
+msgid "Support the project, Donate!"
+msgstr "Support the project, donate!"
+
+msgid  "%d files with duplicate filenames were discared for \"%s\". Enable \"allow_duplicate_files\" to allow duplicate filenames."
+msgstr "%d files with duplicate filenames were discarded for \"%s\". Enable \"allow_duplicate_files\" to allow duplicate filenames."
+
+msgid "User script can flag job as failed"
+msgstr "Post-processing script can flag job as failed"
+
+msgid "When the user script returns a non-zero exit code, the job will be flagged as failed."
+msgstr "When the post-processing script returns a non-zero exit code, the job will be flagged as failed."

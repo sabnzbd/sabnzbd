@@ -52,8 +52,8 @@ h2 {
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
     background-color: #ffffff;
     border: 1px solid #cccccc;
-    margin-left: -150px;
-    margin-top: 4px;
+    margin-left: -220px;
+    margin-top: 5px;
 }
 
 .navbar-collapse.in .dropdown-menu a,
@@ -533,9 +533,16 @@ tbody>tr>td:last-child {
 }
 
 .hover-button.disabled,
-.hover-button.disabled:hover {
+.hover-button.disabled:hover,
+.name-options.disabled .hover-button,
+.name-options.disabled .hover-button:hover {
     cursor: not-allowed !important;
     opacity: 0.1 !important;
+    pointer-events: none;
+}
+
+.name-options.disabled {
+    cursor: not-allowed !important;
 }
 
 .info-container {
@@ -617,6 +624,7 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name .name-options small,
+.queue-table td.name .direct-unpack,
 .queue-item-password {
     opacity: 0.5;
 }
@@ -626,7 +634,7 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name:hover .row-wrap-text {
-    max-width: calc(100% - 85px);
+    max-width: calc(100% - 125px);
  /* Change for each size! */
 }
 
@@ -648,19 +656,23 @@ td.name .row-wrap-text {
     border: 1px solid #ccc;
 }
 
-td.name .name-ratings {
+td.name .name-icons {
     display: inline;
     margin-left: 5px;
     color: black !important;
     text-decoration: none !important;
 }
 
-.queue-table td.name:hover .name-ratings {
-    display: none;
+td.name .name-icons .glyphicon {
+    margin-left: 2px;
+    top: 2px;
+    font-weight: bold;
 }
 
-td.name .name-ratings .glyphicon {
-    margin-left: 2px;
+.glyphicon-chevron-down,
+.glyphicon-chevron-up  {
+    top: 2px;
+    font-weight: bold;
 }
 
 tbody.no-downloads tr td {
@@ -767,6 +779,35 @@ tr.queue-item>td:first-child>a {
     width: 100%;
     color: #404040;
     padding-right: 10px;
+}
+
+.item-files-table tr .fileControls{
+    float:right;
+    display:none;
+}
+
+.item-files-table tr.files-sortable:hover .fileControls{
+    float:right;
+    display:block;
+    margin-left:5px;
+}
+
+.progress .progress-bar .fileDetails {
+    display:inline;
+    text-align: left;
+    margin-left: 70px;
+    line-height: 25px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    font-size: 12px;
+    color: #404040;
+    padding-right: 0px;
+}
+
+.progress .progress-bar .fileDetails>span {
+    float: left;
 }
 
 .progress strong {
@@ -1035,7 +1076,7 @@ tr.queue-item>td:first-child>a {
     opacity: 1;
 }
 
-.history-ratings .name-ratings {
+.history-ratings .name-icons {
     float: none !important;
 }
 
@@ -1623,6 +1664,11 @@ input[name="nzbURL"] {
 
 #modal-item-files .item-files-table .progress small {
     color: #727272 !important;
+    margin-left: 5px;
+}
+
+#modal-item-files .item-files-table tr.files-sortable:hover .progress small {
+    display:none;
 }
 
 #modal-item-files .item-files-table td {
@@ -1810,7 +1856,7 @@ input[name="nzbURL"] {
 }
 
 @media screen and (max-width: 1200px) {
-    td.name .name-ratings {
+    td.name .name-icons {
         margin-left: 0px;
         margin-right: -5px;
         display: block;
@@ -1856,6 +1902,11 @@ input[name="nzbURL"] {
 
     .queue .sortable-placeholder td {
         padding: 9px 0px 8px !important;
+    }
+
+    .queue-table .buttonMoveToBottom,
+    .queue-table .buttonMoveToTop {
+        display: inline;
     }
 }
 
@@ -1921,49 +1972,6 @@ input[name="nzbURL"] {
     }
 }
 
-/***
-    SPECIAL FOR FIREFOX
-    It uses very high CPU for anything animated (Sep 2015)
-    Disable animations on progress-bar and make the History-'processing' a block animation
-    Can be removed if it's performance gets better in the future..
-***/
-@supports (-moz-transform: translate(0, 0)) {
-    .progress-bar {
-        transform: none !important;
-        animation: none !important;
-        transition: none !important;
-    }
-
-    @keyframes stretchdelay {
-        0%, 60% {
-            transform: scaleY(0.4);
-        }
-
-        61%, 100% {
-            transform: scaleY(1.0);
-        }
-    }
-
-    .processing-download > div {
-        animation: stretchdelay 2s infinite linear;
-    }
-
-    .processing-download .loader-bar-two {
-        animation-delay: 0.2s;
-    }
-
-    .processing-download .loader-bar-three {
-        animation-delay: 0.4s;
-    }
-
-    .processing-download .loader-bar-four {
-        animation-delay: 0.6s;
-    }
-
-    .queue-table td.name input {
-        margin-left: -2px;
-    }
-}
 
 /***
     Bootstrap overwrites

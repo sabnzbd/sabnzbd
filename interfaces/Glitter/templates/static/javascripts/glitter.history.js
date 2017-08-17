@@ -169,7 +169,6 @@ function HistoryListModel(parent) {
 
     // Toggle showing failed
     self.toggleShowFailed = function(data, event) {
-
         // Set the loader so it doesn't flicker and then switch
         self.isLoading(true)
         self.showFailed(!self.showFailed())
@@ -177,7 +176,20 @@ function HistoryListModel(parent) {
         $('#history-options a').tooltip('hide')
         // Force refresh
         self.parent.refresh(true)
+    }
 
+    // Retry all failed
+    self.retryAllFailed = function(data, event) {
+        // Ask to be sure
+        if(confirm(glitterTranslate.retryAll)) {
+            // Send the command
+            callAPI({
+                mode: 'retry_all'
+            }).then(function() {
+                // Force refresh
+                self.parent.refresh(true)
+            })
+        }
     }
 
     // Empty history options
@@ -328,16 +340,14 @@ function HistoryModel(parent, data) {
             case 'speed':
                 // Anything to calculate?
                 if(self.historyStatus.bytes() > 0 && self.historyStatus.download_time() > 0) {
-                    var theSpeed = self.historyStatus.bytes()/self.historyStatus.download_time();
-                    theSpeed = theSpeed/1024;
-
-                    // MB/s or KB/s
-                    if(theSpeed > 1024) {
-                        theSpeed = theSpeed/1024;
-                        return theSpeed.toFixed(1) + ' MB/s'
-                    } else {
-                        return Math.round(theSpeed) + ' KB/s'
-                    }
+                    try {
+                        // Extract the Download section
+                        var downloadLog = ko.utils.arrayFirst(self.historyStatus.stage_log(), function(item) {
+                            return item.name() == 'Download'
+                        });
+                        // Extract the speed
+                        return downloadLog.actions()[0].match(/(\S*\s\S+)(?=<br\/>)/)[0]
+                    } catch(err) { }
                 }
                 return;
             case 'category':

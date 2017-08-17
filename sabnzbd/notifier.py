@@ -39,14 +39,17 @@ from sabnzbd.constants import NOTIFY_KEYS
 from sabnzbd.misc import split_host, make_script_path
 from sabnzbd.newsunpack import external_script
 
-from gntp import GNTPRegister
+from gntp.core import GNTPRegister
 from gntp.notifier import GrowlNotifier
+import gntp.errors
+
 try:
     import Growl
     # Detect classic Growl (older than 1.3)
     _HAVE_CLASSIC_GROWL = os.path.isfile('/Library/PreferencePanes/Growl.prefPane/Contents/MacOS/Growl')
 except ImportError:
     _HAVE_CLASSIC_GROWL = False
+
 try:
     import warnings
     # Make any warnings exceptions, so that pynotify is ignored
@@ -55,8 +58,13 @@ try:
         warnings.simplefilter("error")
         import pynotify
     _HAVE_NTFOSD = True
+
+    # Check for working version, not all pynotify are the same
+    if not hasattr(pynotify, 'init'):
+         _HAVE_NTFOSD = False
 except:
     _HAVE_NTFOSD = False
+
 
 ##############################################################################
 # Define translatable message table
@@ -89,13 +97,9 @@ def get_icon():
     if not os.path.isfile(icon):
         icon = os.path.join(sabnzbd.DIR_PROG, 'sabnzbd.ico')
     if os.path.isfile(icon):
-        if sabnzbd.WIN32 or sabnzbd.DARWIN:
-            fp = open(icon, 'rb')
-            icon = fp.read()
-            fp.close()
-        else:
-            # Due to a bug in GNTP, need this work-around for Linux/Unix
-            icon = 'http://sabnzbdplus.sourceforge.net/version/sabnzbd.ico'
+        fp = open(icon, 'rb')
+        icon = fp.read()
+        fp.close()
     else:
         icon = None
     return icon
@@ -122,7 +126,7 @@ def check_classes(gtype, section):
 
 
 def get_prio(gtype, section):
-    """ Check if `gtype` is enabled in `section` """
+    """ Check prio of `gtype` in `section` """
     try:
         return sabnzbd.config.get_config(section, '%s_prio_%s' % (section, gtype))()
     except TypeError:
@@ -130,20 +134,32 @@ def get_prio(gtype, section):
         return -1000
 
 
-def send_notification(title, msg, gtype):
+def check_cat(section, job_cat):
+    """ Check if `job_cat` is enabled in `section`. * = All """
+    if not job_cat:
+        return True
+    try:
+        section_cats = sabnzbd.config.get_config(section, '%s_cats' % section)()
+        return ('*' in section_cats or job_cat in section_cats)
+    except TypeError:
+        logging.debug('Incorrect Notify option %s:%s_cats', section, section)
+        return True
+
+
+def send_notification(title, msg, gtype, job_cat=None):
     """ Send Notification message """
     # Notification Center
     if sabnzbd.DARWIN and sabnzbd.cfg.ncenter_enable():
-        if check_classes(gtype, 'ncenter'):
+        if check_classes(gtype, 'ncenter') and check_cat('ncenter', job_cat):
             send_notification_center(title, msg, gtype)
 
     # Windows
     if sabnzbd.WIN32 and sabnzbd.cfg.acenter_enable():
-        if check_classes(gtype, 'acenter'):
+        if check_classes(gtype, 'acenter') and check_cat('acenter', job_cat):
             send_windows(title, msg, gtype)
 
     # Growl
-    if sabnzbd.cfg.growl_enable() and check_classes(gtype, 'growl'):
+    if sabnzbd.cfg.growl_enable() and check_classes(gtype, 'growl') and check_cat('growl', job_cat):
         if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
             return send_local_growl(title, msg, gtype)
         else:
@@ -151,32 +167,33 @@ def send_notification(title, msg, gtype):
             time.sleep(0.5)
 
     # Prowl
-    if sabnzbd.cfg.prowl_enable():
+    if sabnzbd.cfg.prowl_enable() and check_cat('prowl', job_cat):
         if sabnzbd.cfg.prowl_apikey():
             Thread(target=send_prowl, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # Pushover
-    if sabnzbd.cfg.pushover_enable():
+    if sabnzbd.cfg.pushover_enable() and check_cat('pushover', job_cat):
         if sabnzbd.cfg.pushover_token():
             Thread(target=send_pushover, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # Pushbullet
-    if sabnzbd.cfg.pushbullet_enable():
+    if sabnzbd.cfg.pushbullet_enable() and check_cat('pushbullet', job_cat):
         if sabnzbd.cfg.pushbullet_apikey() and check_classes(gtype, 'pushbullet'):
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # Notification script.
-    if sabnzbd.cfg.nscript_enable():
+    if sabnzbd.cfg.nscript_enable() and check_cat('nscript', job_cat):
         if sabnzbd.cfg.nscript_script():
             Thread(target=send_nscript, args=(title, msg, gtype)).start()
             time.sleep(0.5)
 
     # NTFOSD
-    if have_ntfosd() and sabnzbd.cfg.ntfosd_enable() and check_classes(gtype, 'ntfosd'):
-        send_notify_osd(title, msg)
+    if have_ntfosd() and sabnzbd.cfg.ntfosd_enable():
+        if check_classes(gtype, 'ntfosd') and check_cat('ntfosd', job_cat):
+            send_notify_osd(title, msg)
 
 
 def reset_growl():
@@ -192,6 +209,9 @@ def register_growl(growl_server, growl_password):
     host, port = split_host(growl_server or '')
 
     sys_name = hostname(host)
+
+    # Reduce logging of Growl in Debug/Info mode
+    logging.getLogger('gntp').setLevel(logging.WARNING)
 
     # Clean up persistent data in GNTP to make re-registration work
     GNTPRegister.notifications = []
@@ -216,7 +236,7 @@ def register_growl(growl_server, growl_password):
             logging.debug(error)
             del growler
             ret = None
-    except socket.error, err:
+    except (gntp.errors.NetworkError, gntp.errors.AuthError) as err:
         error = 'Cannot register with Growl %s' % str(err)
         logging.debug(error)
         del growler
@@ -251,7 +271,6 @@ def send_growl(title, msg, gtype, test=None):
         if not _GROWL:
             _GROWL, error = register_growl(growl_server, growl_password)
         if _GROWL:
-            if 0: assert isinstance(_GROWL, GrowlNotifier) # Assert only for debug purposes
             _GROWL_REG = True
             if isinstance(msg, unicode):
                 msg = msg.decode('utf-8')
@@ -271,7 +290,7 @@ def send_growl(title, msg, gtype, test=None):
                 else:
                     logging.debug('Growl error %s', ret)
                     return 'Growl error %s', ret
-            except socket.error, err:
+            except (gntp.errors.NetworkError, gntp.errors.AuthError) as err:
                 error = 'Growl error %s' % err
                 logging.debug(error)
                 return error
