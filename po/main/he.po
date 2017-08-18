@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
-"PO-Revision-Date: 2017-08-15 20:47+0000\n"
+"POT-Creation-Date: 2017-08-17 08:51+0000\n"
+"PO-Revision-Date: 2017-08-17 21:43+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-16 05:16+0000\n"
+"X-Launchpad-Export-Date: 2017-08-18 05:29+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -188,10 +188,6 @@ msgstr "%s לא ניתן ליצור קובץ זמני עבור"
 msgid "Trying to set status of non-existing server %s"
 msgstr "%s מנסה לקבוע מצב של שרת בלתי-קיים"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "שטח דיסק קטן מדי, מאלץ השהיה"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "tempfile.mkstemp-כישלון ב"
@@ -238,6 +234,10 @@ msgstr "בלתי ידוע"
 #: sabnzbd/api.py [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "%s :עבור מונח חיפוש regex נכשל בליקוט"
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "שטח דיסק קטן מדי, מאלץ השהיה"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -2129,7 +2129,7 @@ msgstr "סוגיות"
 
 #: sabnzbd/skintext.py [Main menu item]
 msgid "Support the project, Donate!"
-msgstr "תמוך במיזם, תרום!"
+msgstr "!תמוך במיזם, תרום"
 
 #: sabnzbd/skintext.py [Main menu item]
 msgid "General"
@@ -2565,12 +2565,12 @@ msgid ""
 "stability problem.<br />Downloading will be paused before the restart and "
 "resume afterwards."
 msgstr ""
-"SABnzbd זה יפעיל מחדש את.<br />השתמש בזה כשאתה חושב שלתכנית יש בעית "
+".SABnzbd זה יפעיל מחדש את<br />השתמש בזה כשאתה חושב שלתכנית יש בעית "
 "יציבות.<br />הורדה תושהה לפני ההפעלה מחדש ותומשך לאחר מכן."
 
 #: sabnzbd/skintext.py
 msgid "<br />If authentication is enabled, you will need to login again."
-msgstr "<br />.אם אימות מאופשר, תצטרך להיכנס שוב"
+msgstr "<br />אם אימות מאופשר, תצטרך להיכנס שוב."
 
 #: sabnzbd/skintext.py
 msgid "Advanced"
@@ -4843,6 +4843,15 @@ msgstr ""
 ".גרסה 2 או (לבחירתך) כל גרסה שהיא מאוחרת יותר GNU מגיע בהחלט ללא אחריות. זו "
 "תוכנה חינמית, ואתה מוזמן להפיצה מחדש תחת תנאים מסוימים. היא ברשיון תחת רשיון "
 "ציבורי כללי של SABnzbd\n"
+
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+".%s אנחנו ממליצים לנסות את ?Usenet נדרשת גישה אל ספק. ספק האינטרנט שלך עשוי "
+"לספק לך גישה, אמנם ספק פרימיום הוא מומלץ. אין לך ספק Usenet-על מנת להוריד מ"
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
