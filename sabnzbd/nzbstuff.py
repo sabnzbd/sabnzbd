@@ -1270,7 +1270,7 @@ class NzbObject(TryList):
                         blocks_already = blocks_already + int_conv(new_nzf.blocks)
                         logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
                     # Reset NZO TryList
-                    self.reset_try_list()
+                    self.reset_all_try_lists()
 
     def add_to_direct_unpacker(self, nzf):
         """ Start or add to DirectUnpacker """
