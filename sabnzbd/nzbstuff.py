@@ -41,7 +41,7 @@ import sabnzbd
 from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
     DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
     PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
-    RENAMES_FILE, Status, PNFO
+    RENAMES_FILE, MAX_BAD_ARTICLES, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
@@ -1064,7 +1064,7 @@ class NzbObject(TryList):
                 self.prospective_add(nzf)
 
             # Sometimes a few CRC errors are still fine, so we continue
-            if self.bad_articles > 5:
+            if self.bad_articles > MAX_BAD_ARTICLES:
                 self.abort_direct_unpacker()
 
         post_done = False
@@ -1287,6 +1287,12 @@ class NzbObject(TryList):
         """ Determine amount of articles present on servers
             and return (gross available, nett) bytes
         """
+        # Few missing articles in RAR-only job might still work
+        if self.bad_articles <= MAX_BAD_ARTICLES:
+            logging.debug('Download Quality: bad-articles=%s', self.bad_articles)
+            return True, 200
+
+        # Do the full check
         need = 0L
         pars = 0L
         short = 0L
