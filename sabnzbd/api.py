@@ -1380,8 +1380,9 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
                 datestart = datetime.datetime.now()
                 slot['eta'] = 'unknown'
 
-        if status == Status.GRABBING:
-            slot['avg_age'] = '---'
+        # Do not show age when it's not known
+        if average_date.year < 2000:
+            slot['avg_age'] = '-'
         else:
             slot['avg_age'] = calc_age(average_date, bool(trans))
 
