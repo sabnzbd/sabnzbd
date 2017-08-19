@@ -1176,7 +1176,7 @@ def main():
 
     # SSL Information
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
-    logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
+    logging.info("SSL known protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
 
     # Load (extra) certificates in the distributions
     if hasattr(sys, "frozen"):
