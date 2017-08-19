@@ -494,13 +494,13 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, link, title, size, age, season, episode, 'G', category, myCat, myPP, myScript,
-                                    act, star, order, priority=myPrio, rule=str(n))
+                        _HandleLink(jobs, feed, link, title, size, age, season, episode, 'G', category, myCat, myPP,
+                                     myScript, act, star, order, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, link, title, size, age, season, episode, 'B', category, myCat, myPP, myScript,
-                                    False, star, order, priority=myPrio, rule=str(n))
+                        _HandleLink(jobs, feed, link, title, size, age, season, episode, 'B', category, myCat, myPP,
+                                     myScript, False, star, order, priority=myPrio, rule=str(n))
             order += 1
 
         # Send email if wanted and not "forced"
@@ -601,8 +601,8 @@ class RSSQueue(object):
         return ''
 
 
-def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat, pp, script, download, star,
-                order, priority=NORMAL_PRIORITY, rule=0):
+def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgcat, cat, pp, script,
+                download, star, order, priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '':
         script = None
@@ -634,7 +634,7 @@ def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat
         jobs[link]['status'] = 'D'
         jobs[link]['time_downloaded'] = time.localtime()
         logging.info("Adding %s (%s) to queue", link, title)
-        sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
+        sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, feed_name=feed)
     else:
         if star:
             jobs[link]['status'] = flag + '*'

@@ -535,7 +535,7 @@ def guard_https_ver():
     set_https_verification(cfg.enable_https_verification())
 
 
-def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
+def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None, feed_name=None):
     """ Add NZB based on a URL, attributes optional """
     if 'http' not in url:
         return
@@ -546,7 +546,13 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     if cat and cat.lower() == 'default':
         cat = None
     logging.info('Fetching %s', url)
+
+    # Add feed name if it came from RSS
     msg = T('Trying to fetch NZB from %s') % url
+    if feed_name:
+        msg = '%s - %s' % (feed_name, msg)
+
+    # Generate the placeholder
     future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
     URLGrabber.do.add(url, future_nzo)
     return future_nzo.nzo_id

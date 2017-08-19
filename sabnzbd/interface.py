@@ -2079,7 +2079,7 @@ class ConfigRss(object):
             prio = att.get('prio')
 
             if url:
-                sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
+                sabnzbd.add_url(url, pp, script, cat, prio, nzbname, feed_name=feed)
             # Need to pass the title instead
             sabnzbd.rss.flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)
