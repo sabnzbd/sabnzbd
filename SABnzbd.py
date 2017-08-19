@@ -1178,14 +1178,11 @@ def main():
     logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
     logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
 
-    # Load extra certificates
+    # Load (extra) certificates in the distributions
     if hasattr(sys, "frozen"):
         # The certifi package brings the latest certificates on build
         # This will cause the create_default_context to load it automatically
-        if sabnzbd.DARWIN:
-            import certifi
-            os.environ["SSL_CERT_FILE"] = certifi.where()
-        if sabnzbd.WIN32:
+        if sabnzbd.WIN32 or sabnzbd.DARWIN:
             os.environ["SSL_CERT_FILE"] = os.path.join(sabnzbd.DIR_PROG, 'cacert.pem')
         logging.info('Loaded additional certificates from %s', os.environ["SSL_CERT_FILE"])
 
