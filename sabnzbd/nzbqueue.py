@@ -882,25 +882,25 @@ class NzbQueue(object):
 
     def pause_on_prio(self, priority):
         for nzo in self.__nzo_list:
-            if not nzo.futuretype and nzo.priority == priority:
+            if nzo.priority == priority:
                 nzo.pause()
 
     @notify_downloader
     def resume_on_prio(self, priority):
         for nzo in self.__nzo_list:
-            if not nzo.futuretype and nzo.priority == priority:
+            if nzo.priority == priority:
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
 
     def pause_on_cat(self, cat):
         for nzo in self.__nzo_list:
-            if not nzo.futuretype and nzo.cat == cat:
+            if nzo.cat == cat:
                 nzo.pause()
 
     @notify_downloader
     def resume_on_cat(self, cat):
         for nzo in self.__nzo_list:
-            if not nzo.futuretype and nzo.cat == cat:
+            if nzo.cat == cat:
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
 
