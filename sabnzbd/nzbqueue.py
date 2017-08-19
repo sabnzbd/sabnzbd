@@ -892,6 +892,18 @@ class NzbQueue(object):
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
 
+    def pause_on_cat(self, cat):
+        for nzo in self.__nzo_list:
+            if not nzo.futuretype and nzo.cat == cat:
+                nzo.pause()
+
+    @notify_downloader
+    def resume_on_cat(self, cat):
+        for nzo in self.__nzo_list:
+            if not nzo.futuretype and nzo.cat == cat:
+                # Don't use nzo.resume() to avoid resetting job warning flags
+                nzo.status = Status.QUEUED
+
     def get_urls(self):
         """ Return list of future-types needing URL """
         lst = []

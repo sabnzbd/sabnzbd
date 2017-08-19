@@ -59,6 +59,13 @@ else:
                                 <option value="$server" data-action="0" data-noarg="1">$T('sch-disable_server') "$actions_servers[$server]"</option>
                             <!--#end for#-->
                         </optgroup>
+                        <optgroup label="$T('cmenu-cat')">
+                            <!--#for $cat in $categories#-->
+                                <!--#set $cat_text = $T('Default') if $cat == '*' else $cat#-->
+                                <option value="pause_cat" data-action="$cat" data-noarg="1">$T('sch-pause_cat') "$cat_text"</option>
+                                <option value="resume_cat" data-action="$cat" data-noarg="1">$T('sch-resume_cat') "$cat_text"</option>
+                            <!--#end for#-->
+                        </optgroup>
                     </select>
                 </div>
                 <div class="field-pair" id="hidden_arguments" style="display: none">

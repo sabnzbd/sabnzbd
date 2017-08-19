@@ -2132,6 +2132,7 @@ class ConfigScheduling(object):
         actions = []
         actions.extend(_SCHED_ACTIONS)
         day_names = get_days()
+        categories = list_cats(False)
         snum = 1
         conf['schedlines'] = []
         conf['taskinfo'] = []
@@ -2164,6 +2165,13 @@ class ConfigScheduling(object):
                     except KeyError:
                         value = '"%s" <<< %s' % (value, T('Undefined server!'))
                     action = Ttemplate("sch-" + action)
+                if action in ('pause_cat', 'resume_cat'):
+                    action = Ttemplate("sch-" + action)
+                    if value not in categories:
+                        # Category name change
+                        value = '"%s" <<< %s' % (value, T('Incorrect parameter'))
+                    else:
+                        value = '"%s"' % value
 
             if day_numbers == "1234567":
                 days_of_week = "Daily"
@@ -2191,6 +2199,7 @@ class ConfigScheduling(object):
         conf['actions_servers'] = actions_servers
         conf['actions'] = actions
         conf['actions_lng'] = actions_lng
+        conf['categories'] = categories
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_scheduling.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2203,6 +2212,7 @@ class ConfigScheduling(object):
             return msg
 
         servers = config.get_servers()
+        categories = list_cats(False)
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
         days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])
@@ -2230,7 +2240,12 @@ class ConfigScheduling(object):
                 else:
                     arguments = action
                     action = 'disable_server'
+
+            elif action in ('pause_cat', 'resume_cat'):
+                # Need original category name, not lowercased
+                arguments = arguments.strip()
             else:
+                # Something else, leave empty
                 action = None
 
             if action:

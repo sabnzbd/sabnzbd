@@ -73,6 +73,8 @@ SKIN_TEXT = {
     'sch-resume_all_high': TT('Resume high prioirty jobs'), #: Config->Scheduler
     'sch-enable_quota'   : TT('Enable quota management'), #: Config->Scheduler
     'sch-disable_quota'  : TT('Disable quota management'), #: Config->Scheduler
+    'sch-pause_cat'      : TT('Pause jobs with category'), #: Config->Scheduler
+    'sch-resume_cat'     : TT('Resume jobs with category'), #: Config->Scheduler
 
     'prowl-off'          : TT('Off'), #: Prowl priority
     'prowl-very-low'     : TT('Very Low'), #: Prowl priority

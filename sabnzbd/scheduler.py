@@ -152,6 +152,12 @@ def init():
         elif action_name == 'resume_all_high':
             action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
             arguments = [HIGH_PRIORITY]
+        elif action_name == 'pause_cat':
+            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_cat
+            arguments = [argument_list]
+        elif action_name == 'resume_cat':
+            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_cat
+            arguments = [argument_list]
         else:
             logging.warning(T('Unknown action: %s'), action_name)
             continue
@@ -270,6 +276,7 @@ def sort_schedules(all_events, now=None):
     for schedule in cfg.schedules():
         parms = None
         try:
+            # Note: the last parameter can have spaces (category name)!
             enabled, m, h, dd, action, parms = schedule.split(None, 5)
         except:
             try:
