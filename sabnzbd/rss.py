@@ -172,26 +172,12 @@ class RSSQueue(object):
         self.shutdown = False
 
         try:
-            defined = config.get_rss().keys()
-            feeds = sabnzbd.load_admin(RSS_FILE_NAME)
-            if type(feeds) == type({}):
-                for feed in feeds:
-                    if feed not in defined:
-                        logging.debug('Dropping obsolete data for feed "%s"', feed)
-                        continue
-                    self.jobs[feed] = {}
-                    for link in feeds[feed]:
-                        # Consistency check on data
-                        try:
-                            item = feeds[feed][link]
-                            if not isinstance(item, dict) or not isinstance(item.get('title'), unicode):
-                                raise IndexError
-                            self.jobs[feed][link] = item
-                        except (KeyError, IndexError):
-                            logging.info('Incorrect entry in %s detected, discarding %s', RSS_FILE_NAME, item)
-                    remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
-        except IOError:
-            logging.debug('Cannot read file %s', RSS_FILE_NAME)
+            self.jobs = sabnzbd.load_admin(RSS_FILE_NAME)
+            for feed in self.jobs:
+                remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
+        except:
+            logging.warning(T('Cannot read %s'), RSS_FILE_NAME)
+            logging.info("Traceback: ", exc_info=True)
 
         # jobs is a NAME-indexed dictionary
         #    Each element is link-indexed dictionary
