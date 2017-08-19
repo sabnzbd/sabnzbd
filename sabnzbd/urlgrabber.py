@@ -78,11 +78,18 @@ class URLGrabber(Thread):
             if not url:
                 # stop signal, go test self.shutdown
                 continue
-            if future_nzo and future_nzo.wait and future_nzo.wait > time.time():
-                # Re-queue when too early and still active
 
-                self.add(url, future_nzo)
-                continue
+            if future_nzo:
+                # Re-queue when too early and still active
+                if future_nzo.wait and future_nzo.wait > time.time():
+                    self.add(url, future_nzo)
+                    continue
+                # Paused
+                if future_nzo.status == Status.PAUSED:
+                    self.add(url, future_nzo)
+                    time.sleep(1.0)
+                    continue
+
             url = url.replace(' ', '')
 
             try:
