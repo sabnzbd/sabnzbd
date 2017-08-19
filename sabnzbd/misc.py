@@ -1359,6 +1359,7 @@ def get_all_passwords(nzo):
     pw = nzo.nzo_info.get('password')
     if pw:
         meta_passwords.append(pw)
+
     if meta_passwords:
         if nzo.password == meta_passwords[0]:
             # this nzo.password came from meta, so don't use it twice
@@ -1366,19 +1367,23 @@ def get_all_passwords(nzo):
         else:
             passwords.extend(meta_passwords)
         logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
+
     pw_file = cfg.password_file.get_path()
     if pw_file:
         try:
-            pwf = open(pw_file, 'r')
-            lines = pwf.read().split('\n')
+            with open(pw_file, 'r') as pwf:
+                lines = pwf.read().split('\n')
             # Remove empty lines and space-only passwords and remove surrounding spaces
             pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
             logging.debug('Read these passwords from file: %s', pws)
             passwords.extend(pws)
-            pwf.close()
             logging.info('Read %s passwords from file %s', len(pws), pw_file)
-        except IOError:
-            logging.info('Failed to read the passwords file %s', pw_file)
+        except:
+            logging.warning('Failed to read the passwords file %s', pw_file)
+
+    # Check size
+    if len(passwords) > 30:
+        logging.warning(T('Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords.'))
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
