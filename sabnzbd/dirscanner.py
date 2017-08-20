@@ -222,6 +222,8 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             # Looks like an incomplete file, retry
             return -2, nzo_ids
         else:
+            # Something else is wrong, show error
+            logging.error(T('Error while adding %s, removing'), name, exc_info=True)
             return -1, nzo_ids
 
     if nzo:
