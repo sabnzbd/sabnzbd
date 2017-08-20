@@ -1327,7 +1327,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                     # mark for readd
                     readd = True
                 else:
-                    msg = T('Invalid par2 files, cannot verify or repair')
+                    msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg)
@@ -1675,7 +1675,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 # mark for readd
                 readd = True
             else:
-                msg = T('Invalid par2 files, cannot verify or repair')
+                msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
                 nzo.fail_msg = msg
                 msg = u'[%s] %s' % (unicoder(setname), msg)
                 nzo.set_unpack_info('Repair', msg)
