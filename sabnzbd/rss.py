@@ -306,14 +306,17 @@ class RSSQueue(object):
                 all_entries.extend(entries)
             entries = all_entries
 
-        # Error in readout
-        if readout and not entries:
-            return unicoder(msg)
-
         # In case of a new feed
         if feed not in self.jobs:
             self.jobs[feed] = {}
         jobs = self.jobs[feed]
+
+        # Error in readout or now new readout
+        if readout:
+            if not entries:
+                return unicoder(msg)
+        else:
+            entries = jobs.keys()
 
         # Filter out valid new links
         for entry in entries:
