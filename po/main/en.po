@@ -113,3 +113,7 @@ msgstr "Post-processing script can flag job as failed"
 
 msgid "When the user script returns a non-zero exit code, the job will be flagged as failed."
 msgstr "When the post-processing script returns a non-zero exit code, the job will be flagged as failed."
+
+msgid "unrar binary... NOT found"
+msgstr "unrar binary... NOT found!"
+

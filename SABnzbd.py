@@ -426,10 +426,12 @@ def print_modules():
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
-        logging.error(T('par2 binary... NOT found!'))
+        logging.error('%s %s' % (T('par2 binary... NOT found!'), T('Verification and repair will not be possible.')))
 
     if sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
+    elif sabnzbd.WIN32:
+        logging.error('%s %s' % (T('MultiPar binary... NOT found!'), T('Verification and repair will not be possible.')))
 
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
@@ -440,9 +442,9 @@ def print_modules():
             want_str = '%.2f' % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
             logging.warning(T('Your UNRAR version is %s, we recommend version %s or higher.<br />') % (have_str, want_str))
         elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
-            logging.debug('UNRAR binary version %.2f', (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
+            logging.info('UNRAR binary version %.2f', (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
-        logging.error(T('unrar binary... NOT found'))
+        logging.error('%s %s' % (T('unrar binary... NOT found'), T('Downloads will not be unpacked.')))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
