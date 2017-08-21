@@ -2064,10 +2064,13 @@ def rar_volumelist(rarfile_path, password, known_volumes):
     """ Extract volumes that are part of this rarset
         and merge them with existing list, removing duplicates
     """
+    # UnRar is required to read some RAR files
+    rarfile.UNRAR_TOOL = RAR_COMMAND
     zf = rarfile.RarFile(rarfile_path)
+
+    # setpassword can fail due to bugs in RarFile
     if password:
         try:
-            # setpassword can fail due to bugs in RarFile
             zf.setpassword(password)
         except:
             pass
