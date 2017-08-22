@@ -173,8 +173,9 @@ class RSSQueue(object):
 
         try:
             self.jobs = sabnzbd.load_admin(RSS_FILE_NAME)
-            for feed in self.jobs:
-                remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
+            if self.jobs:
+                for feed in self.jobs:
+                    remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
         except:
             logging.warning(T('Cannot read %s'), RSS_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
