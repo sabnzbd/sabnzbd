@@ -232,7 +232,7 @@ function do_restart() {
     var portsUnchanged  = ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))
 
     // Are we on settings page or did nothing change?
-    if(!$('body').hasClass('General') || (!switchedHTTPS && !portsUnchanged)) {
+    if(!$('body').hasClass('General') || (!switchedHTTPS && portsUnchanged)) {
         // Same as before
         var urlTotal = window.location.origin + urlPath
     } else {
