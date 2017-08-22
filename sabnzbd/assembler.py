@@ -218,8 +218,9 @@ class Assembler(Thread):
                     table[name] = hash
                     if hash16k not in nzf.nzo.md5of16k:
                         nzf.nzo.md5of16k[hash16k] = name
-                    else:
-                        # Not unique, remove to avoid false-renames
+                    elif nzf.nzo.md5of16k[hash16k] != name:
+                        # Not unique and not already linked to this file
+                        # Remove to avoid false-renames
                         duplicates16k.append(hash16k)
 
                 header = f.read(8)
