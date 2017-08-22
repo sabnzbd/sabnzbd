@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-08-16 13:33+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-08-19 16:05+W. Europe Daylight Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -710,6 +710,10 @@ msgstr ""
 
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
+msgstr ""
+
+#: sabnzbd/misc.py [Warning message]
+msgid "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
 msgstr ""
 
 #: sabnzbd/misc.py [Error message]
