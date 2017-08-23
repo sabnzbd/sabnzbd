@@ -91,11 +91,6 @@ class TryList(object):
             if server not in self.__try_list:
                 self.__try_list.append(server)
 
-    def try_list_size(self):
-        """ How many servers are listed as tried """
-        with TRYLIST_LOCK:
-            return len(self.__try_list)
-
     def reset_try_list(self):
         """ Clean the list """
         with TRYLIST_LOCK:
@@ -312,13 +307,27 @@ class NzbFile(TryList):
         self.blocks = int(blocks)
 
     def get_article(self, server, servers):
-        """ Get next article to be downloaded """
+        """ Get next article to be downloaded from this server
+            Returns None when there are still articles to try
+            Returns False when all articles are tried
+        """
+        # Make sure all articles have tried this server before
+        # adding to the NZF-TryList, otherwise there will be stalls!
+        tried_all_articles = True
         for article in self.articles:
-            article = article.get_article(server, servers)
-            if article:
-                return article
+            article_return = article.get_article(server, servers)
+            if article_return:
+                return article_return
+            elif tried_all_articles and not article.server_in_try_list(server):
+                tried_all_articles = False
 
-        self.add_to_try_list(server)
+        # We are sure they are all tried
+        if tried_all_articles:
+            self.add_to_try_list(server)
+            return False
+
+        # Still articles left to try
+        return None
 
     def reset_all_try_lists(self):
         """ Clear all lists of visited servers """
@@ -1264,13 +1273,13 @@ class NzbObject(TryList):
                     while blocks_already < self.bad_articles and extrapars_sorted:
                         new_nzf = extrapars_sorted.pop()
                         # Reset NZF TryList, in case something was on it before it became extrapar
-                        new_nzf.reset_try_list()
+                        new_nzf.reset_all_try_lists()
                         self.add_parfile(new_nzf)
                         self.extrapars[parset] = extrapars_sorted
                         blocks_already = blocks_already + int_conv(new_nzf.blocks)
                         logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
                     # Reset NZO TryList
-                    self.reset_all_try_lists()
+                    self.reset_try_list()
 
     def add_to_direct_unpacker(self, nzf):
         """ Start or add to DirectUnpacker """
@@ -1379,6 +1388,7 @@ class NzbObject(TryList):
     def get_article(self, server, servers):
         article = None
         nzf_remove_list = []
+        tried_all_articles = True
 
         for nzf in self.files:
             if nzf.deleted:
@@ -1402,6 +1412,9 @@ class NzbObject(TryList):
                     article = nzf.get_article(server, servers)
                     if article:
                         break
+                    if article == None:
+                        # None is returned by NZF when server is not tried for all articles
+                        tried_all_articles = False
 
         # Remove all files for which admin could not be read
         for nzf in nzf_remove_list:
@@ -1412,7 +1425,8 @@ class NzbObject(TryList):
         if nzf_remove_list and not self.files:
             sabnzbd.NzbQueue.do.end_job(self)
 
-        if not article:
+        # Only add to trylist when server has been tried for all articles of all NZF's
+        if not article and tried_all_articles:
             # No articles for this server, block for next time
             self.add_to_try_list(server)
         return article
