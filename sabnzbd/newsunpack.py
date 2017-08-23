@@ -606,6 +606,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
                        '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
 
+        # The subprocess_fix requires time to clear the buffers to work,
+        # otherwise the inputs get send incorrectly and unrar breaks
+        time.sleep(0.5)
+
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
         command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, password_command,
