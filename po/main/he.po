@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-19 18:33+0000\n"
-"PO-Revision-Date: 2017-08-17 21:43+0000\n"
+"POT-Creation-Date: 2017-08-21 15:54+0000\n"
+"PO-Revision-Date: 2017-08-21 19:38+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-20 05:43+0000\n"
+"X-Launchpad-Export-Date: 2017-08-22 05:49+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -41,23 +41,35 @@ msgstr "!לא נמצא ..._yenc פירקן"
 
 #: SABnzbd.py [Error message]
 msgid "par2 binary... NOT found!"
-msgstr "!לא נמצא ...par2 בינארי"
+msgstr "!בינארי... לא נמצא par2"
+
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ".וידוא ותיקון לא יהיו אפשריים"
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr "!בינארי... לא נמצא MultiPar"
 
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ".שלך היא %s אנו ממליצים על גרסה %s או גבוהה יותר UNRAR גרסת<br />"
 
 #: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ".הורדות לא ייפרקו"
+
+#: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
-msgstr "לא נמצא ...unrar בינארי"
+msgstr "בינארי... לא נמצא unrar"
 
 #: SABnzbd.py
 msgid "unzip binary... NOT found!"
-msgstr "!לא נמצא ...unzip בינארי"
+msgstr "!בינארי... לא נמצא unzip"
 
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
-msgstr "!לא נמצא ...za7 בינארי"
+msgstr "!בינארי... לא נמצא za7"
 
 #: SABnzbd.py [Warning message]
 msgid ""
@@ -459,9 +471,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "%s שגיאה בהסרת"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "לא יכול לקרוא את %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "מסיר ,%s שגיאה בזמן הוספת"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -717,7 +733,7 @@ msgstr "כבוי"
 msgid "Undefined server!"
 msgstr "!שרת בלתי מוגדר"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "משתנה לא נכון"
 
@@ -770,6 +786,8 @@ msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
 msgstr ""
+".קובץ הסיסמאות שלך מכיל יותר מ-30 סיסמאות, בחינת כל הסיסמאות האלו תיקח זמן "
+"רב. נסה לכתוב ברשימה רק סיסמאות שימושיות"
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -981,8 +999,10 @@ msgid "Main packet not found..."
 msgstr "...חפיסה ראשית לא נמצאה"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "בלתי תקפים, לא יכול לוודא או לתקן par2 קבצי"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
+"בלתי תקפים, לא יכול לוודא או לתקן PAR2 בלתי תקפים או פרמטרי par2 קבצי"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1867,6 +1887,14 @@ msgstr "אפשר ניהול מיכסה"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "השבת ניהול מיכסה"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr "השהה עבודות עם מדור"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr "המשך עבודות עם מדור"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3166,13 +3194,14 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
-msgstr ""
+msgstr "התר שחרורים תקינים"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
 "the download name"
 msgstr ""
+".מתגלים בשם ההורדה REPACK או PROPER, REAL עקוף גילוי כפילויות סדרה אם"
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Discard"
@@ -4953,8 +4982,8 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "אינה קיימת \"%s\" התיקייה"
 
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "מסיר ,%s שגיאה בזמן הוספת"
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "בלתי תקפים, לא יכול לוודא או לתקן par2 קבצי"
 
 #~ msgid "It is likely that you are using ZoneAlarm on Vista.<br>"
 #~ msgstr ".Vista על ZoneAlarm-סביר להניח שאתה משתמש ב<br>"

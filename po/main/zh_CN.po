@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-19 18:33+0000\n"
+"POT-Creation-Date: 2017-08-21 15:54+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-20 05:44+0000\n"
+"X-Launchpad-Export-Date: 2017-08-22 05:50+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -43,9 +43,21 @@ msgstr "_yenc 模块... *未* 找到!"
 msgid "par2 binary... NOT found!"
 msgstr "par2 可执行程序... *未* 找到!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "您的 UNRAR 程序版本为 %s，我们建议使用 %s 或更高版本。<br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -451,9 +463,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "移除 %s 时出错"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "无法读取 %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "加载 %s 出错，正在移除"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -703,7 +719,7 @@ msgstr "关"
 msgid "Undefined server!"
 msgstr "未定义服务器!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "参数不正确"
 
@@ -967,8 +983,9 @@ msgid "Main packet not found..."
 msgstr "主数据包未找到..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "par2 文件无效，无法验证或修复"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1844,6 +1861,14 @@ msgstr "启用配额管理"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "禁用配额管理"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -4887,11 +4912,11 @@ msgstr "URL 装取失败; %s"
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "解压失败，缺这些文件:"
 
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "par2 文件无效，无法验证或修复"
+
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "导入 OpenSSL 模块出错。正在通过非 SSL 连接"
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "加载 %s 出错，正在移除"
 
 #~ msgid ""
 #~ "\n"

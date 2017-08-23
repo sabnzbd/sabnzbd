@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-19 18:33+0000\n"
+"POT-Creation-Date: 2017-08-21 15:54+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-20 05:44+0000\n"
+"X-Launchpad-Export-Date: 2017-08-22 05:49+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -45,10 +45,22 @@ msgstr "módulo _yenc... NO encontrado!"
 msgid "par2 binary... NOT found!"
 msgstr "par2 binario... NO encontrado!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Su versión UnRAR es %s, recomendamos la versión %s o superior. <br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -464,9 +476,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Error al quitar %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "No se puede leer %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Error al añadir %s, eliminando"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -729,7 +745,7 @@ msgstr "desactivado"
 msgid "Undefined server!"
 msgstr "¡Servidor no definido!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Parámetro incorrecto"
 
@@ -999,8 +1015,9 @@ msgid "Main packet not found..."
 msgstr "Paquete principal no encontrado..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Ficheros par2 inválidos, no se puede verificar o reparar"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1893,6 +1910,14 @@ msgstr "Habilitar la administración de cuota"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Gestión de cuotas Desactivar"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -5032,11 +5057,11 @@ msgstr "Error al recuperar la URL; %s"
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Falta el siguiente archivo: %s => ¿Error al descomprimir?"
 
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Ficheros par2 inválidos, no se puede verificar o reparar"
+
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Error al importar módulo OpenSSL. Conectando sin SSL"
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Error al añadir %s, eliminando"
 
 #~ msgid ""
 #~ "\n"
