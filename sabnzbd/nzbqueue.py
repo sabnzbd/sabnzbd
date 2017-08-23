@@ -868,22 +868,6 @@ class NzbQueue(object):
                     empty.append(nzo)
                     continue
 
-                # Check if maybe stalled by checking if all files
-                # have all servers in their TryList indicating a lock-up
-                for file in nzo.files:
-                    if file.try_list_size() < nr_servers:
-                        # Not yet all tried
-                        break
-                else:
-                    # Only executed if all files are stuck
-                    logging.info('Job files %s seem stalled, resetting', nzo.final_name)
-                    nzo.reset_all_try_lists()
-
-                # Do basic reset of the main try-list if it's full
-                if nzo.try_list_size() == nr_servers:
-                    logging.info('Job %s possibly stalled, resetting', nzo.final_name)
-                    nzo.reset_try_list()
-
         for nzo in empty:
             self.end_job(nzo)
 
