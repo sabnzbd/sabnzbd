@@ -854,19 +854,11 @@ class NzbQueue(object):
         ArticleCache.do.purge_articles(nzo.saved_articles)
 
     def stop_idle_jobs(self):
-        """ Detect jobs that have zero files left or are stalled
-            and send them to post-processing
-        """
-        # Only active servers that are not on time-out
-        nr_servers = len([server for server in sabnzbd.downloader.Downloader.do.servers if server.active])
-
+        """ Detect jobs that have zero files left and send them to post processing """
         empty = []
         for nzo in self.__nzo_list:
-            if not nzo.futuretype and nzo.status not in (Status.PAUSED, Status.GRABBING):
-                # Finished, but not yet ended
-                if not nzo.files:
-                    empty.append(nzo)
-                    continue
+            if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
+                empty.append(nzo)
 
         for nzo in empty:
             self.end_job(nzo)

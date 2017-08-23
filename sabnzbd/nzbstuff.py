@@ -92,11 +92,6 @@ class TryList(object):
             if server not in self.try_list:
                 self.try_list.append(server)
 
-    def try_list_size(self):
-        """ How many servers are listed as tried """
-        with TRYLIST_LOCK:
-            return len(self.try_list)
-
     def reset_try_list(self):
         """ Clean the list """
         with TRYLIST_LOCK:
