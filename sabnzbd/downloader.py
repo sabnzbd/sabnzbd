@@ -655,7 +655,7 @@ class Downloader(Thread):
                                         logging.error(T('Failed login for server %s'), server.id)
                                 penalty = _PENALTY_PERM
                                 block = True
-                            elif ecode == '502':
+                            elif ecode in ('502', '482'):
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
                                     errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
@@ -939,7 +939,8 @@ def clues_too_many(text):
     """ Check for any "too many connections" clues in the response code """
     text = text.lower()
     for clue in ('exceed', 'connections', 'too many', 'threads', 'limit'):
-        if clue in text:
+        # Not 'download limit exceeded' error
+        if (clue in text) and ('download' not in text):
             return True
     return False
 
@@ -956,7 +957,7 @@ def clues_too_many_ip(text):
 def clues_pay(text):
     """ Check for messages about payments """
     text = text.lower()
-    for clue in ('credits', 'paym', 'expired'):
+    for clue in ('credits', 'paym', 'expired', 'exceeded'):
         if clue in text:
             return True
     return False
