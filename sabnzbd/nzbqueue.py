@@ -859,7 +859,9 @@ class NzbQueue(object):
         """ Detect jobs that have zero files left or are stalled
             and send them to post-processing
         """
-        nr_servers = len(sabnzbd.downloader.Downloader.do.servers)
+        # Only active servers that are not on time-out
+        nr_servers = len([server for server in sabnzbd.downloader.Downloader.do.servers if server.active])
+
         empty = []
         for nzo in self.__nzo_list:
             if not nzo.futuretype and nzo.status not in (Status.PAUSED, Status.GRABBING):
