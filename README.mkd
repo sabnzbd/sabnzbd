@@ -1,8 +1,15 @@
-Release Notes  -  SABnzbd 2.2.1 Release Candidate 1
+Release Notes  -  SABnzbd 2.2.1 Release Candidate 2
 =========================================================
 
 ## Bugfixes since 2.2.0
-- Some users were experiencing downloads being stuck at 99%
+- Some users were experiencing downloads or pre-check being stuck at 99%
+- Allow up to 5 bad articles for jobs with no or little par2
+- Fixed RarFile error during unpacking
+- Unpacking of many archives could fail
+- Warn user when password-file is too large
+- Remove email addresses settings from log export
+- Block server longer on 'Download limit exceeded' errors
+- Only auto-disconnect after first run of verification
 
 ## Upgrading from 2.1.x and older
 - Finish queue
