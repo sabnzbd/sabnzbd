@@ -117,3 +117,6 @@ msgstr "When the post-processing script returns a non-zero exit code, the job wi
 msgid "unrar binary... NOT found"
 msgstr "unrar binary... NOT found!"
 
+msgid "Downloads will not unpacked."
+msgstr "Downloads will not be unpacked."
+

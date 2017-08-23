@@ -444,7 +444,7 @@ def print_modules():
         elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
             logging.info('UNRAR binary version %.2f', (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
-        logging.error('%s %s' % (T('unrar binary... NOT found'), T('Downloads will not be unpacked.')))
+        logging.error('%s %s' % (T('unrar binary... NOT found'), T('Downloads will not unpacked.')))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
