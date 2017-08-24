@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-21 15:54+0000\n"
+"POT-Creation-Date: 2017-08-23 23:21+0000\n"
 "PO-Revision-Date: 2017-08-22 21:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-23 05:29+0000\n"
+"X-Launchpad-Export-Date: 2017-08-24 05:27+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -46,22 +46,10 @@ msgstr "_yenc-module niet gevonden."
 msgid "par2 binary... NOT found!"
 msgstr "par2-programma niet gevonden."
 
-#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
-msgid "Verification and repair will not be possible."
-msgstr "Verificatie en reparatie zal niet mogelijk zijn."
-
-#: SABnzbd.py [Error message]
-msgid "MultiPar binary... NOT found!"
-msgstr "MultiPar niet gevonden!"
-
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "De UNRAR-versie is %s, we adviseren versie %s of hoger te gebruiken.<br />"
-
-#: SABnzbd.py [Error message]
-msgid "Downloads will not unpacked."
-msgstr "Het zal niet mogelijk zijn downloads uit te pakken."
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -492,13 +480,9 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Fout bij verwijderen van %s"
 
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message]
 msgid "Cannot read %s"
 msgstr "%s kan niet gelezen worden"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr "Fout bij toevoegen van %s, wordt weer verwijderd"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -760,7 +744,7 @@ msgstr "uit"
 msgid "Undefined server!"
 msgstr "Onbekende server."
 
-#: sabnzbd/interface.py # sabnzbd/interface.py
+#: sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Incorrecte parameter"
 
@@ -1028,11 +1012,8 @@ msgid "Main packet not found..."
 msgstr "Hoofdpakket niet gevonden..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid ""
-"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
-msgstr ""
-"Ongeldige par2 bestanden of ongeldige Par2 parameters, kan niet verifiëren "
-"en repareren."
+msgid "Invalid par2 files, cannot verify or repair"
+msgstr "Ongeldige par2-bestanden, verificatie of reparatie niet mogelijk"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1925,14 +1906,6 @@ msgstr "Schakel quotum beheer in"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Schakel quotum beheer uit"
-
-#: sabnzbd/skintext.py [Config->Scheduler]
-msgid "Pause jobs with category"
-msgstr "Pauzeer downloads met categorie"
-
-#: sabnzbd/skintext.py [Config->Scheduler]
-msgid "Resume jobs with category"
-msgstr "Hervat downloads met categorie"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3255,18 +3228,6 @@ msgid ""
 msgstr ""
 "Detecteer identieke afleveringen in series (gebaseerd op "
 "\"naam/seizoen/aflevering\" van downloads in je Geschiedenis)."
-
-#: sabnzbd/skintext.py
-msgid "Allow proper releases"
-msgstr "Sta verbeterde downloads toe"
-
-#: sabnzbd/skintext.py
-msgid ""
-"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-"the download name"
-msgstr ""
-"Sla dubbele download detectie over als er in de naam van de download PROPER, "
-"REAL of REPACK bevat"
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Discard"
@@ -5082,6 +5043,9 @@ msgstr "URL ophalen mislukt; %s"
 #~ msgid "pyopenssl module missing, please install for https access"
 #~ msgstr "Module \"pyopenssl\" ontbreekt, geen HTTPS mogelijk"
 
+#~ msgid "Error while adding %s, removing"
+#~ msgstr "Fout bij toevoegen van %s, wordt weer verwijderd"
+
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr "Verwijderen van nzo van nabewerkingswachtrij mislukt"
 
@@ -5590,8 +5554,36 @@ msgstr "URL ophalen mislukt; %s"
 #~ msgid "Unpacking failed, an expected file was not unpacked"
 #~ msgstr "Uitpakken mislukt, een gewenst bestand is niet uitgepakt"
 
-#~ msgid "Invalid par2 files, cannot verify or repair"
-#~ msgstr "Ongeldige par2-bestanden, verificatie of reparatie niet mogelijk"
-
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Fout bij importeren van OpenSSL-module, probeer NON-SSL"
+
+#~ msgid "Pause jobs with category"
+#~ msgstr "Pauzeer downloads met categorie"
+
+#~ msgid ""
+#~ "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+#~ msgstr ""
+#~ "Ongeldige par2 bestanden of ongeldige Par2 parameters, kan niet verifiëren "
+#~ "en repareren."
+
+#~ msgid "Resume jobs with category"
+#~ msgstr "Hervat downloads met categorie"
+
+#~ msgid "Verification and repair will not be possible."
+#~ msgstr "Verificatie en reparatie zal niet mogelijk zijn."
+
+#~ msgid "Downloads will not unpacked."
+#~ msgstr "Het zal niet mogelijk zijn downloads uit te pakken."
+
+#~ msgid "MultiPar binary... NOT found!"
+#~ msgstr "MultiPar niet gevonden!"
+
+#~ msgid "Allow proper releases"
+#~ msgstr "Sta verbeterde downloads toe"
+
+#~ msgid ""
+#~ "Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+#~ "the download name"
+#~ msgstr ""
+#~ "Sla dubbele download detectie over als er in de naam van de download PROPER, "
+#~ "REAL of REPACK bevat"
