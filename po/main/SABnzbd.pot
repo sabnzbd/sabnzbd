@@ -5,14 +5,14 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-2.2.0-develop\n"
+"Project-Id-Version: SABnzbd-2.3.0-develop\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: shypike@sabnzbd.org\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-08-19 16:05+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-08-21 16:24+W. Europe Daylight Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -40,8 +40,20 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr ""
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
 msgstr ""
 
 #: SABnzbd.py [Error message]
@@ -435,8 +447,12 @@ msgstr ""
 msgid "Error removing %s"
 msgstr ""
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
+msgstr ""
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
 msgstr ""
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
@@ -664,7 +680,7 @@ msgstr ""
 msgid "Undefined server!"
 msgstr ""
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr ""
 
@@ -925,7 +941,7 @@ msgid "Main packet not found..."
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
+msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1761,6 +1777,14 @@ msgstr ""
 
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
 msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
@@ -2967,6 +2991,14 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Detect identical episodes in series (based on \"name/season/episode\" of items in your History)"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Bypass series duplicate detection if PROPER, REAL or REPACK is detected in the download name"
 msgstr ""
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
