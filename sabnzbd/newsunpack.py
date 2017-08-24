@@ -1947,7 +1947,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
     if renames:
         # If succes, we also remove the possibly previously renamed ones
         if finished:
-            reconstructed.extend(nzo.renames)
+            reconstructed.extend(renames.values())
 
         # Adding to the collection
         nzo.renamed_file(renames)
