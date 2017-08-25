@@ -525,6 +525,16 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         # Do not fail if this was a recursive unpack
         if fail and rarpath.startswith(workdir_complete):
             # Do not delete the files, leave it to user!
+            logging.info('Ignoring failure to do recursive unpack of %s', rarpath)
+            fail = 0
+            success = True
+            newfiles = []
+
+        # Do not fail if this was maybe just some duplicate fileset
+        # Multipar and par2tbb will detect and log them, par2cmdline will not
+        if fail and rar_set.endswith(('.1', '.2')):
+            # Just in case, we leave the raw files
+            logging.info('Ignoring failure of unpack for possible duplicate file %s', rarpath)
             fail = 0
             success = True
             newfiles = []
