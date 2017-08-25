@@ -76,11 +76,11 @@ RESOLVE_RELATIVE_URIS = 1
 
 # If you want feedparser to automatically sanitize all potentially unsafe
 # HTML content, set this to 1.
-SANITIZE_HTML = 1
+SANITIZE_HTML = 0
 
 # If you want feedparser to automatically parse microformat content embedded
 # in entry contents, set this to 1
-PARSE_MICROFORMATS = 1
+PARSE_MICROFORMATS = 0
 
 # ---------- Python 3 modules (make it work if possible) ----------
 try:
