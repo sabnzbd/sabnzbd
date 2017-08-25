@@ -998,5 +998,6 @@ SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 '''),
-    'wizard-ad': TT('In order to download from Usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended. Don\'t have a Usenet provider? We recommend trying %s.''')
+    'wizard-ad-1': TT('In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended.'),
+    'wizard-ad-2': TT('Don\'t have a usenet provider? We recommend trying %s.'),
     }
