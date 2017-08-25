@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-07 05:54+0000\n"
-"X-Generator: Launchpad (build 18441)\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:50+0000\n"
+"X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -45,10 +45,22 @@ msgstr "módulo _yenc... NO encontrado!"
 msgid "par2 binary... NOT found!"
 msgstr "par2 binario... NO encontrado!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Su versión UnRAR es %s, recomendamos la versión %s o superior. <br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -192,10 +204,6 @@ msgstr "No se puede crear el archivo temporal para %s"
 msgid "Trying to set status of non-existing server %s"
 msgstr "Intentando cambiar el estado de servidor inexistente %s"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "Muy poco espacio en disco forzando PAUSA"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Fallo en tempfile.mkstemp"
@@ -242,6 +250,10 @@ msgstr "desconocido"
 #: sabnzbd/api.py [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Compilación de regex para término fallo: %s"
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "Muy poco espacio en disco forzando PAUSA"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -464,9 +476,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Error al quitar %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "No se puede leer %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Error al añadir %s, eliminando"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -729,7 +745,7 @@ msgstr "desactivado"
 msgid "Undefined server!"
 msgstr "¡Servidor no definido!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Parámetro incorrecto"
 
@@ -776,6 +792,12 @@ msgstr "Error al mover %s a %s"
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Error al crear la llave SSL y el certificado"
+
+#: sabnzbd/misc.py [Warning message]
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -993,8 +1015,9 @@ msgid "Main packet not found..."
 msgstr "Paquete principal no encontrado..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Ficheros par2 inválidos, no se puede verificar o reparar"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1887,6 +1910,14 @@ msgstr "Habilitar la administración de cuota"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Gestión de cuotas Desactivar"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3196,6 +3227,16 @@ msgstr "Detectar episodios duplicadas en serie"
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
 msgstr ""
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
@@ -4903,6 +4944,13 @@ msgstr ""
 "Está licenciado bajo la versión 2 ó posterior de GNU GENERAL PUBLIC "
 "LICENSE.\n"
 
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Error al recuperar info de la serie (%s)"
@@ -5009,11 +5057,11 @@ msgstr "Error al recuperar la URL; %s"
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Falta el siguiente archivo: %s => ¿Error al descomprimir?"
 
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Ficheros par2 inválidos, no se puede verificar o reparar"
+
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Error al importar módulo OpenSSL. Conectando sin SSL"
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Error al añadir %s, eliminando"
 
 #~ msgid ""
 #~ "\n"

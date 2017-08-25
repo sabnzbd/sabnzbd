@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
 "PO-Revision-Date: 2016-02-20 20:34+0000\n"
 "Last-Translator: shypike <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-07 05:54+0000\n"
-"X-Generator: Launchpad (build 18441)\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:50+0000\n"
+"X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -43,10 +43,22 @@ msgstr "_yenc modul... EJ funnen!"
 msgid "par2 binary... NOT found!"
 msgstr "par2 binär... EJ funnen!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Din UNRAR version är %s, vi rekommenderar version %s eller högre.<br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -190,10 +202,6 @@ msgstr "Kan inte skapa temp -fil för %s"
 msgid "Trying to set status of non-existing server %s"
 msgstr "Försöker att sätta status på icke existerande server %s"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "För lite diskutrymme pausar systemet"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Fel i tempfile.mkstemp"
@@ -240,6 +248,10 @@ msgstr "okänd"
 #: sabnzbd/api.py [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Det gick inte att kompilera regex för sök-sträng: %s"
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "För lite diskutrymme pausar systemet"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -457,9 +469,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Fel vid borttagning av %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Kan ej läsa %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Det gick inte att lägga till  %s, tar bort"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -720,7 +736,7 @@ msgstr "av"
 msgid "Undefined server!"
 msgstr "Odefinerad server!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Fel parameter"
 
@@ -767,6 +783,12 @@ msgstr "Det gick inte att flyta %s till %s"
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Det gick inte att skapa SSL-nyckel eller certifikat."
+
+#: sabnzbd/misc.py [Warning message]
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -980,8 +1002,9 @@ msgid "Main packet not found..."
 msgstr "Huvudarkiv saknas..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Korrupta par2 filer, kan inte verifiera eller reparera"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1865,6 +1888,14 @@ msgstr "Aktivera kvothantering"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Avaktivera kvothantering"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3159,6 +3190,16 @@ msgstr "Hitta dublettavsnitt i serier"
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
 msgstr ""
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
@@ -4846,6 +4887,13 @@ msgstr ""
 "Det är licensierat under GNU GENERAL PUBLIC LICENSE Version 2 eller (ditt "
 "val) en senare version.\n"
 
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Det gick inte att hämta TV info (%s)"
@@ -4947,9 +4995,6 @@ msgstr "URL hämtning misslyckades; %s"
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Misslyckades med importering av OpenSSL modul. Ansluter utan SSL"
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Det gick inte att lägga till  %s, tar bort"
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr "Det gick inte att ta bort nzo från efterbehandlings kön (id)"
@@ -5272,6 +5317,9 @@ msgstr "URL hämtning misslyckades; %s"
 
 #~ msgid "Step Five"
 #~ msgstr "Steg fem"
+
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Korrupta par2 filer, kan inte verifiera eller reparera"
 
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "Uppackning misslyckades, dessa filer saknas:"

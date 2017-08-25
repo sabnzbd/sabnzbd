@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
-"PO-Revision-Date: 2017-08-15 20:47+0000\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"PO-Revision-Date: 2017-08-21 19:38+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-16 05:16+0000\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -41,23 +41,35 @@ msgstr "!לא נמצא ..._yenc פירקן"
 
 #: SABnzbd.py [Error message]
 msgid "par2 binary... NOT found!"
-msgstr "!לא נמצא ...par2 בינארי"
+msgstr "!בינארי... לא נמצא par2"
+
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ".וידוא ותיקון לא יהיו אפשריים"
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr "!בינארי... לא נמצא MultiPar"
 
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ".שלך היא %s אנו ממליצים על גרסה %s או גבוהה יותר UNRAR גרסת<br />"
 
 #: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ".הורדות לא ייפרקו"
+
+#: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
-msgstr "לא נמצא ...unrar בינארי"
+msgstr "בינארי... לא נמצא unrar"
 
 #: SABnzbd.py
 msgid "unzip binary... NOT found!"
-msgstr "!לא נמצא ...unzip בינארי"
+msgstr "!בינארי... לא נמצא unzip"
 
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
-msgstr "!לא נמצא ...za7 בינארי"
+msgstr "!בינארי... לא נמצא za7"
 
 #: SABnzbd.py [Warning message]
 msgid ""
@@ -188,10 +200,6 @@ msgstr "%s לא ניתן ליצור קובץ זמני עבור"
 msgid "Trying to set status of non-existing server %s"
 msgstr "%s מנסה לקבוע מצב של שרת בלתי-קיים"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "שטח דיסק קטן מדי, מאלץ השהיה"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "tempfile.mkstemp-כישלון ב"
@@ -238,6 +246,10 @@ msgstr "בלתי ידוע"
 #: sabnzbd/api.py [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "%s :עבור מונח חיפוש regex נכשל בליקוט"
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "שטח דיסק קטן מדי, מאלץ השהיה"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -459,9 +471,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "%s שגיאה בהסרת"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "לא יכול לקרוא את %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "מסיר ,%s שגיאה בזמן הוספת"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -717,7 +733,7 @@ msgstr "כבוי"
 msgid "Undefined server!"
 msgstr "!שרת בלתי מוגדר"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "משתנה לא נכון"
 
@@ -764,6 +780,14 @@ msgstr "%s אל %s נכשל בהעברת"
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "SSL נכשל ביצירה של מפתח ואישור של"
+
+#: sabnzbd/misc.py [Warning message]
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+".קובץ הסיסמאות שלך מכיל יותר מ-30 סיסמאות, בחינת כל הסיסמאות האלו תיקח זמן "
+"רב. נסה לכתוב ברשימה רק סיסמאות שימושיות"
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -975,8 +999,10 @@ msgid "Main packet not found..."
 msgstr "...חפיסה ראשית לא נמצאה"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "בלתי תקפים, לא יכול לוודא או לתקן par2 קבצי"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
+"בלתי תקפים, לא יכול לוודא או לתקן PAR2 בלתי תקפים או פרמטרי par2 קבצי"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1862,6 +1888,14 @@ msgstr "אפשר ניהול מיכסה"
 msgid "Disable quota management"
 msgstr "השבת ניהול מיכסה"
 
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr "השהה עבודות עם מדור"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr "המשך עבודות עם מדור"
+
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
 msgstr "כבוי"
@@ -2129,7 +2163,7 @@ msgstr "סוגיות"
 
 #: sabnzbd/skintext.py [Main menu item]
 msgid "Support the project, Donate!"
-msgstr "תמוך במיזם, תרום!"
+msgstr "!תמוך במיזם, תרום"
 
 #: sabnzbd/skintext.py [Main menu item]
 msgid "General"
@@ -2565,12 +2599,12 @@ msgid ""
 "stability problem.<br />Downloading will be paused before the restart and "
 "resume afterwards."
 msgstr ""
-"SABnzbd זה יפעיל מחדש את.<br />השתמש בזה כשאתה חושב שלתכנית יש בעית "
+".SABnzbd זה יפעיל מחדש את<br />השתמש בזה כשאתה חושב שלתכנית יש בעית "
 "יציבות.<br />הורדה תושהה לפני ההפעלה מחדש ותומשך לאחר מכן."
 
 #: sabnzbd/skintext.py
 msgid "<br />If authentication is enabled, you will need to login again."
-msgstr "<br />.אם אימות מאופשר, תצטרך להיכנס שוב"
+msgstr "<br />אם אימות מאופשר, תצטרך להיכנס שוב."
 
 #: sabnzbd/skintext.py
 msgid "Advanced"
@@ -3157,6 +3191,17 @@ msgid ""
 "items in your History)"
 msgstr ""
 "(גלה פרקים זהים בסדרות (על סמך \"שם/עונה/פרק\" של פריטים בהיסטוריה שלך"
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr "התר שחרורים תקינים"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
+msgstr ""
+".מתגלים בשם ההורדה REPACK או PROPER, REAL עקוף גילוי כפילויות סדרה אם"
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Discard"
@@ -4844,6 +4889,15 @@ msgstr ""
 "תוכנה חינמית, ואתה מוזמן להפיצה מחדש תחת תנאים מסוימים. היא ברשיון תחת רשיון "
 "ציבורי כללי של SABnzbd\n"
 
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+".%s אנחנו ממליצים לנסות את ?Usenet נדרשת גישה אל ספק. ספק האינטרנט שלך עשוי "
+"לספק לך גישה, אמנם ספק פרימיום הוא מומלץ. אין לך ספק Usenet-על מנת להוריד מ"
+
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "(%s) שגיאה בהשגת מידע טלוויזיה"
@@ -4928,8 +4982,8 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "אינה קיימת \"%s\" התיקייה"
 
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "מסיר ,%s שגיאה בזמן הוספת"
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "בלתי תקפים, לא יכול לוודא או לתקן par2 קבצי"
 
 #~ msgid "It is likely that you are using ZoneAlarm on Vista.<br>"
 #~ msgstr ".Vista על ZoneAlarm-סביר להניח שאתה משתמש ב<br>"

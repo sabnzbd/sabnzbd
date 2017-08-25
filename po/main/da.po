@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-07 05:53+0000\n"
-"X-Generator: Launchpad (build 18441)\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
+"X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -43,9 +43,21 @@ msgstr "_yenc modul... IKKE fundet!"
 msgid "par2 binary... NOT found!"
 msgstr "par2 binær... IKKE fundet!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Din Unrar version er %s, vi anbefaler version %s eller højere.<br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -192,10 +204,6 @@ msgstr "Kan ikke oprette temp fil for %s"
 msgid "Trying to set status of non-existing server %s"
 msgstr "Forsøger at sætte status på ikke eksisterende server %s"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "For lidt diskplads tvinger system i PAUSE"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Fejl i tempfile.mkstemp"
@@ -242,6 +250,10 @@ msgstr "Ukendt"
 #: sabnzbd/api.py [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Det lykkedes ikke at kompilere regex for søgestreng: %s"
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "For lidt diskplads tvinger system i PAUSE"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -463,9 +475,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Fejl ved fjernelse af  %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Kan ikke læse %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Det lykkedes ikke at tilføje  %s, slette"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -727,7 +743,7 @@ msgstr "slået fra"
 msgid "Undefined server!"
 msgstr "Udefineret server"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Fejl parameter"
 
@@ -774,6 +790,12 @@ msgstr "Det lykkedes ikke at flytte %s til %s"
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Fejl ved oprettelse af SSL-nøgle og certifikat."
+
+#: sabnzbd/misc.py [Warning message]
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -987,8 +1009,9 @@ msgid "Main packet not found..."
 msgstr "Hovedarkiv mangler..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Ugyldig PAR2 filer, kan ikke kontrollere eller reparere"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1868,6 +1891,14 @@ msgstr "Aktivere kvota styring"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Deaktivere kvota styring"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3183,6 +3214,16 @@ msgid ""
 msgstr ""
 "Fundet identiske episoder i serie (baseret på \"navn /sæson /episode\" af "
 "elementer i din historik)"
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
+msgstr ""
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Discard"
@@ -4878,6 +4919,13 @@ msgstr ""
 "Den er licenseret under GNU General Public License version 2 eller (efter "
 "eget valg) enhver senere version\n"
 
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Det lykkedes ikke at hente TV info (%s)"
@@ -4979,9 +5027,6 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Mislykkedes med importering af OpenSSL modul. Tilslutter uden SSL"
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Det lykkedes ikke at tilføje  %s, slette"
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr "Det lykkedes ikke at fjerne nzo fra efterbehandlings køen (id)"
@@ -5394,6 +5439,9 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Apply maximum retries only to optional servers"
 #~ msgstr "Påfør maksimalt antal forsøg kun til valgfri servere"
+
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Ugyldig PAR2 filer, kan ikke kontrollere eller reparere"
 
 #~ msgid "QR Code"
 #~ msgstr "QR kode"

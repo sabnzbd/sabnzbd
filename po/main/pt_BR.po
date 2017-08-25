@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
 "PO-Revision-Date: 2016-01-01 22:58+0000\n"
 "Last-Translator: lrrosa <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-07 05:54+0000\n"
-"X-Generator: Launchpad (build 18441)\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:50+0000\n"
+"X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -44,10 +44,22 @@ msgstr "módulo _yenc... NÃO encontrado!"
 msgid "par2 binary... NOT found!"
 msgstr "aplicativo par2... NÃO encontrado!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Sua versão UNRAR é %s, nós recomendamos a versão %s ou superior.<br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -192,10 +204,6 @@ msgstr "Não é possível criar um arquivo temporário para %s"
 msgid "Trying to set status of non-existing server %s"
 msgstr "Tentando definir o status do servidor inexistente %s"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "Muito pouco espaço em disco. Forçando PAUSE"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Falha em tempfile.mkstemp"
@@ -242,6 +250,10 @@ msgstr "desconhecido"
 #: sabnzbd/api.py [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Falha ao compilar a expressão para o termo pesquisado: %s"
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "Muito pouco espaço em disco. Forçando PAUSE"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -461,9 +473,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Erro ao remover %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Não é possível ler %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Erro ao adicionar %s. Removendo"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -724,7 +740,7 @@ msgstr "desligado"
 msgid "Undefined server!"
 msgstr "Servidor não definido!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Parâmetro incorreto"
 
@@ -771,6 +787,12 @@ msgstr "Falha ao mover %s para %s"
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Erro ao criar chave SSL e certificado"
+
+#: sabnzbd/misc.py [Warning message]
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -983,8 +1005,9 @@ msgid "Main packet not found..."
 msgstr "Pacote principal não encontrado..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Arquivos PAR2 inválidos. Não é possível verificar ou reparar"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1869,6 +1892,14 @@ msgstr "Ativar gerenciamento de cota"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Desativar gerenciamento de cota"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3171,6 +3202,16 @@ msgstr "Detecta episódios duplicados em séries"
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
 msgstr ""
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
@@ -4862,6 +4903,13 @@ msgstr ""
 "Está licenciado sob a LICENÇA PÚBLICA GERAL GNU Versão 2 ou (a seu critério) "
 "qualquer versão posterior.\n"
 
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Erro ao obter informações de TV (%s)"
@@ -4962,6 +5010,9 @@ msgstr "A busca da URL falhou; %s"
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Faltando arquivo esperado: %s => erro no unrar?"
 
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Arquivos PAR2 inválidos. Não é possível verificar ou reparar"
+
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "A descompactação falhou. Este(s) arquivo(s) estão faltando:"
 
@@ -4970,9 +5021,6 @@ msgstr "A busca da URL falhou; %s"
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Erro ao importar o módulo OpenSSL. Conectando-se sem SSL"
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Erro ao adicionar %s. Removendo"
 
 #~ msgid ""
 #~ "\n"

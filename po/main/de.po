@@ -7,15 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
-"PO-Revision-Date: 2017-08-09 21:46+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"PO-Revision-Date: 2017-08-24 15:39+0000\n"
+"Last-Translator: jcfp <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-10 06:03+0000\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr "MultiPar Programmdatei nicht gefunden!"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -48,10 +52,18 @@ msgstr "_yenc-Modul nicht gefunden!"
 msgid "par2 binary... NOT found!"
 msgstr "par2-Programmdatei nicht gefunden!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr "Überprüfung und Reparatur sind nicht möglich."
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Deine UNRAR-Version ist %s, Wir empfehlen Version %s oder höher.<br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr "Downloads werden nicht enpackt."
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -63,7 +75,7 @@ msgstr "unzip-Programmdatei nicht gefunden!"
 
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
-msgstr "7za-Programm … NICHT gefunden!"
+msgstr "7za-Programmdatei nicht gefunden"
 
 #: SABnzbd.py [Warning message]
 msgid ""
@@ -203,10 +215,6 @@ msgstr "Temporäre Datei für %s konnte nicht angelegt werden"
 msgid "Trying to set status of non-existing server %s"
 msgstr "Status für nicht vorhandenen Server wird versucht %s einzustellen"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "Angehalten wegen zu wenig freiem Speicherplatz"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Fehler in tempfile.mkstemp"
@@ -254,6 +262,10 @@ msgstr "unbekannt"
 msgid "Failed to compile regex for search term: %s"
 msgstr ""
 "Kompilieren des regulären Ausdrucks für den Suchbegriff %s fehlgeschlagen."
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "Angehalten wegen zu wenig freiem Speicherplatz"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -485,9 +497,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Fehler beim Entfernen von %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "%s kann nicht gelesen werden"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Fehler beim Hinzufügen von %s. Entferne."
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -751,7 +767,7 @@ msgstr "Aus"
 msgid "Undefined server!"
 msgstr "Undefinierter Server!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Fehlerhafter Parameter"
 
@@ -798,6 +814,15 @@ msgstr "Verschieben von %s nach %s fehlgeschlagen"
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Fehler beim Anlegen des SSL-Schlüssels und -Zertifikats."
+
+#: sabnzbd/misc.py [Warning message]
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+"Ihre Passwort-Datei enthält mehr als 30 Passwörter, das Testen aller "
+"Passwörter dauert sehr lange. Versuchen Sie, nur nützliche Passwörter "
+"aufzulisten."
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -1015,8 +1040,11 @@ msgid "Main packet not found..."
 msgstr "Hauptpaket nicht gefunden …"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Ungültige PAR2-Dateien. Überprüfung oder Reparatur nicht möglich."
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
+"Ungültige par2-Dateien oder ungültige PAR2-Parameter, Auftrag konnte nicht "
+"überprüft oder repariert werden"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1923,6 +1951,14 @@ msgstr "Quoten-Management einschalten"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Quoten-Management ausschalten"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr "Aufträge mit Kategorie pausieren"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr "Aufträge mit Kategorie fortsetzen"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -2900,11 +2936,11 @@ msgstr "Alle Aufträge behalten"
 
 #: sabnzbd/skintext.py
 msgid "Keep maximum number of completed jobs"
-msgstr ""
+msgstr "Behalte maximale Anzahl an abgeschlossenen Aufträgen"
 
 #: sabnzbd/skintext.py
 msgid "Keep completed jobs maximum number of days"
-msgstr ""
+msgstr "Behalte abgeschlossene Aufträge maximal X Tage"
 
 #: sabnzbd/skintext.py
 msgid "Do not keep any completed jobs"
@@ -3258,6 +3294,18 @@ msgstr ""
 "Identische Episoden in den Serien entdeckt (basierend auf "
 "\"name/season/episode\") der Einträge in der Historie"
 
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr "Erlaube \"Proper\" Releases"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
+msgstr ""
+"Umgehe Serien Duplikat-Erkennung, wenn PROPER, REAL oder REPACK im Download-"
+"Namen erkannt wird"
+
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Discard"
 msgstr "Verwerfen"
@@ -3268,7 +3316,7 @@ msgstr "Aufgabe abgebrochen (verschoben in die Historie)"
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Tag job"
-msgstr ""
+msgstr "Markiere Auftrag"
 
 #: sabnzbd/skintext.py [Three way switch for encrypted posts]
 msgid "Abort"
@@ -3325,13 +3373,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Use tags from indexer"
-msgstr ""
+msgstr "Übernehme Markierungen vom Indexer"
 
 #: sabnzbd/skintext.py
 msgid ""
 "When sorting, use tags from indexer for title, season, episode, etc. "
 "Otherwise all naming is derived from the NZB name."
 msgstr ""
+"Beim Sortieren, verwende Tags aus Indexer für Titel, Saison, Episode, usw. "
+"Andernfalls wird alle Namensgebung aus dem NZB-Namen abgeleitet."
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
@@ -3577,6 +3627,9 @@ msgid ""
 "Indexers can supply rating information when a job is added and SABnzbd can "
 "report to the indexer if a job couldn't be completed."
 msgstr ""
+"Indexer können Rating Informationen liefern, wenn ein Job hinzugefügt wird "
+"und SABnzbd kann dem Indexer melden, wenn ein Job nicht abgeschlossen werden "
+"konnte."
 
 #: sabnzbd/skintext.py
 msgid "Enable Filtering"
@@ -3830,7 +3883,7 @@ msgstr "Von SxxExx"
 
 #: sabnzbd/skintext.py [Config->RSS filter-type selection menu "From Show Season/Episode"]
 msgid "From Show SxxEyy"
-msgstr ""
+msgstr "Von Show SxxEyy"
 
 #: sabnzbd/skintext.py [Config->RSS section header]
 msgid "Matched"
@@ -4082,6 +4135,12 @@ msgid ""
 "separate terms. Wildcards in the terms are supported. <br>More information "
 "can be found on the Wiki."
 msgstr ""
+"Indexer können eine Kategorie innerhalb des NZB liefern, welche SABnzbd "
+"versuchen wird, mit den unten definierten Kategorien entsprechen. Darüber "
+"hinaus kannst du Begriffe zu \"Indexer Kategorien / Gruppen\" hinzufügen, um "
+"mehreren Kategorien zu entsprechen. Verwende Kommas, um Begriffe zu trennen. "
+"Wildcards in den Begriffen werden unterstützt. <br> Weitere Informationen "
+"können im Wiki gefunden werden."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4972,6 +5031,17 @@ msgstr ""
 "Sie steht unter der GNU GENERAL PUBLIC LICENSE Version 2 oder (nach Ihrer "
 "Option) jeder späteren Version.\n"
 
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+"Um aus dem Usenet herunterzuladen, wird ein Zugang zu einem Provider "
+"benötigt. Dein ISP kann dir Zugriff gewähren, allerdings wird ein Premium-"
+"Anbieter empfohlen. Noch keinen Usenet-Provider? Wir empfehlen, %s zu "
+"versuchen."
+
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Fehler beim Abrufen der TV-Informationen: %s"
@@ -5080,9 +5150,6 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr ""
 #~ "Fehler beim Importieren des OpenSSL-Moduls. Stelle Verbindung ohne SSL her."
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Fehler beim Hinzufügen von %s. Entferne."
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr ""
@@ -5510,6 +5577,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "E.g. 119 or 563 for SSL"
 #~ msgstr "Z.B. 119 oder 563 für SSL"
+
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Ungültige PAR2-Dateien. Überprüfung oder Reparatur nicht möglich."
 
 #~ msgid "Filters"
 #~ msgstr "Filter"

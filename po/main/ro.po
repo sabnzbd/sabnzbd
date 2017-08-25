@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
 "PO-Revision-Date: 2016-07-29 16:20+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-07 05:53+0000\n"
-"X-Generator: Launchpad (build 18441)\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
+"X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -43,11 +43,23 @@ msgstr "modulul _yenc ... Negăsit!"
 msgid "par2 binary... NOT found!"
 msgstr "binar par2 ... Negăsit!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Versiunea ta de UNRAR este %s,  noi recomandăm versiunea %s sau mai mare.<br "
 "/>"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -195,10 +207,6 @@ msgstr "Nu pot crea fişier temporar pentru %s"
 msgid "Trying to set status of non-existing server %s"
 msgstr "Încerc să setez starea unui server nexistent %s"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "Prea puţin spaţiu disc forţez PAUZĂ"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Eroare în tempfile.mkstemp"
@@ -245,6 +253,10 @@ msgstr "necunoscut"
 #: sabnzbd/api.py [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Compilarea unei căutări regex nereuşită: %s"
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "Prea puţin spaţiu disc forţez PAUZĂ"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -463,9 +475,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Eroare ştergere %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Nu pot citi %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Eroare adăugare %s, ştergem"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -727,7 +743,7 @@ msgstr "dezactivat"
 msgid "Undefined server!"
 msgstr "Server nedefinit!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Parametru Incorect"
 
@@ -774,6 +790,12 @@ msgstr "Mutare %s în %s nereuşită"
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Eroare la crearea cheiei şi certificatlui SSL"
+
+#: sabnzbd/misc.py [Warning message]
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -987,8 +1009,9 @@ msgid "Main packet not found..."
 msgstr "Pachet principal negăsit..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Fișier par2 invalid, nu pot verifica sau repara"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1874,6 +1897,14 @@ msgstr "Activează gestionarea cotelor"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Dezactivează gestionarea cotelor"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3172,6 +3203,16 @@ msgstr "Detectează episoade duplicate în seriale"
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
 msgstr ""
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
@@ -4868,6 +4909,13 @@ msgstr ""
 "Este licenţiat sub GNU General Public License versiunea 2 sau (la opţiunea "
 "dumneavoastră) orice versiune ulterioară.\n"
 
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Eroare obţinere info TV (%s)"
@@ -4999,9 +5047,6 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Eroare importare modul OpenSSL . Se conectează folosind NON-SSL"
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Eroare adăugare %s, ştergem"
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr "Ştergere nzo din coadă post-procesare nereuşită (id)"
@@ -5420,6 +5465,9 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgstr ""
 #~ "Verifică rezultatul dezarhivării ( trebuie să fie dezactivat pentru unele "
 #~ "sisteme de fișiere )"
+
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Fișier par2 invalid, nu pot verifica sau repara"
 
 #~ msgid "Only for optional servers"
 #~ msgstr "Doar pentru servere opționale"

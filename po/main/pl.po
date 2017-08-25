@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-06 09:51+0000\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
 "PO-Revision-Date: 2015-12-28 10:22+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-07 05:53+0000\n"
-"X-Generator: Launchpad (build 18441)\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
+"X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -43,9 +43,21 @@ msgstr "Moduł _yenc... NIE znaleziono!"
 msgid "par2 binary... NOT found!"
 msgstr "Program par2 ... NIE znaleziono!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Twoja wersja unrar to %s, zalecana jest wersja %s lub wyższa.<br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -192,10 +204,6 @@ msgstr "Nie można utworzyć tymczasowego pliku dla %s"
 msgid "Trying to set status of non-existing server %s"
 msgstr "Próba ustawienia statusu nieistniejącego serwera %s"
 
-#: sabnzbd/__init__.py [Warning message]
-msgid "Too little diskspace forcing PAUSE"
-msgstr "Zbyt mało miejsca na dysku, wymuszanie WSTRZYMANIA"
-
 #: sabnzbd/__init__.py [Error message]
 msgid "Failure in tempfile.mkstemp"
 msgstr "Błąd w tempfile.mkstemp"
@@ -242,6 +250,10 @@ msgstr "nieznany"
 #: sabnzbd/api.py [Error message]
 msgid "Failed to compile regex for search term: %s"
 msgstr "Błąd kompilacji wyrażenia regularnego dla wyszukiwania: %s"
+
+#: sabnzbd/assembler.py [Warning message]
+msgid "Too little diskspace forcing PAUSE"
+msgstr "Zbyt mało miejsca na dysku, wymuszanie WSTRZYMANIA"
 
 #: sabnzbd/assembler.py [Error message]
 msgid "Disk full! Forcing Pause"
@@ -459,9 +471,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Błąd podczas usuwania %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Nie można odczytać %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Błąd podczas dodawania %s, usuwanie"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -724,7 +740,7 @@ msgstr "wyłączone"
 msgid "Undefined server!"
 msgstr "Niezdefiniowany serwer!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Błędny parametr"
 
@@ -771,6 +787,12 @@ msgstr "Nie udało się przenieść %s do %s"
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Błąd tworzenia klucza i certyfikatu SSL"
+
+#: sabnzbd/misc.py [Warning message]
+msgid ""
+"Your password file contains more than 30 passwords, testing all these "
+"passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
@@ -984,8 +1006,9 @@ msgid "Main packet not found..."
 msgstr "Główny pakiet nieznaleziony..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Nieprawidłowe pliki par2, nie można zweryfikować lub naprawić"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1870,6 +1893,14 @@ msgstr "Włącz zarządzanie limitem"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Wyłącz zarządzanie limitem"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3171,6 +3202,16 @@ msgstr "Wykryj zduplikowane odcinki seriali"
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
 msgstr ""
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
@@ -4862,6 +4903,13 @@ msgstr ""
 "Program jest wydawany na licencji GNU GENERAL PUBLIC LICENSE w wersji 2 lub "
 "(według twojego wyboru) którejś z późniejszych wersji.\n"
 
+#: sabnzbd/skintext.py
+msgid ""
+"In order to download from Usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended. "
+"Don't have a Usenet provider? We recommend trying %s."
+msgstr ""
+
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Błąd pobierania informacji TV (%s)"
@@ -5021,6 +5069,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 
 #~ msgid "E.g. 119 or 563 for SSL"
 #~ msgstr "Np. 119 lub 563 dla SSL"
+
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Nieprawidłowe pliki par2, nie można zweryfikować lub naprawić"
 
 #~ msgid "Folder configuration"
 #~ msgstr "Konfiguracja katalogów"
@@ -5197,9 +5248,6 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Błąd importu modułu OpenSSL. Łączenie bez SSL"
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Błąd podczas dodawania %s, usuwanie"
 
 #~ msgid ""
 #~ "\n"
