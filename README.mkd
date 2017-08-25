@@ -1,15 +1,98 @@
-Release Notes  -  SABnzbd 2.2.1 Release Candidate 2
+Release Notes  -  SABnzbd 2.2.1
 =========================================================
+
+## Changes since 2.2.0
+- Allow up to 5 bad articles for jobs with no or little par2
+- Only auto-disconnect after first run of verification
+- Warning is shown when password-file is too large
+- Failure of recursive unpacking no longer fails whole job
+- Failure of unpacking of duplicate RAR no longer fails whole job
 
 ## Bugfixes since 2.2.0
 - Some users were experiencing downloads or pre-check being stuck at 99%
-- Allow up to 5 bad articles for jobs with no or little par2
 - Fixed RarFile error during unpacking
-- Unpacking of many archives could fail
-- Warn user when password-file is too large
 - Remove email addresses settings from log export
 - Block server longer on 'Download limit exceeded' errors
-- Only auto-disconnect after first run of verification
+- Windows: If repair renamed a job the correct renamed file was deleted
+- Windows: Unpacking of downloads with many archives could fail
+- macOS: Adding jobs could fail without any error
+
+
+Release Notes  -  SABnzbd 2.2.0
+=========================================================
+
+NOTE: Due to changes in this release, the queue will be converted when 2.2.0
+is started for the first time. Job order, settings and data will be
+preserved, but all jobs will be unpaused and URLs that did not finish
+fetching before the upgrade will be lost!
+
+## Changes since 2.1.0
+- Direct Unpack: Jobs will start unpacking during the download, reduces
+  post-processing time but requires capable hard drive. Only works for jobs that
+  do not need repair. Will be enabled if your incomplete folder-speed > 40MB/s
+- Reduced memory usage, especially with larger queues
+- Graphical overview of server-usage on Servers page
+- Notifications can now be limited to certain Categories
+- Removed 5 second delay between fetching URLs
+- Each item in the Queue and File list now has Move to Top/Bottom buttons
+- Add option to only tag a duplicate job without pausing or removing it
+- New option "History Retention" to automatically purge jobs from History
+- Jobs outside server retention are processed faster
+- Obfuscated filenames are renamed during downloading, if possible
+- Disk-space is now checked before writing files
+- Add "Retry All Failed" button to Glitter
+- Smoother animations in Firefox (disabled previously due to FF high-CPU usage)
+- Show missing articles in MB instead of number of articles
+- Better indication of verification process before and after repair
+- Remove video and audio rating icons from Queue
+- Show vote buttons instead of video and audio rating buttons in History
+- If enabled, replace dots in filenames also when there are spaces already
+- Handling of par2 files made more robust
+- All par2 files are only downloaded when enabled, not on enable_par_cleanup
+- Update GNTP bindings to 1.0.3
+- max_art_opt and replace_illegal moved from Switches to Specials
+- Removed Specials par2_multicore and allow_streaming
+- Windows: Full unicode support when calling repair and unpack
+- Windows: Move enable_multipar to Specials
+- Windows: MultiPar verification of a job is skipped after blocks are fetched
+- Windows & macOS: removed par2cmdline in favor of par2tbb/MultiPar
+- Windows & macOS: Updated WinRAR to 5.5.0
+
+## Bugfixes since 2.1.0
+- Shutdown/suspend did not work on some Linux systems
+- Standby/Hibernate was not working on Windows
+- Deleting a job could result in write errors
+- Display warning if "Extra par2 parameters" turn out to be wrong
+- RSS URLs with commas in the URL were broken
+- Fixed some "Saving failed" errors
+- Fixed crashing URLGrabber
+- Jobs with renamed files are now correctly handled when using Retry
+- Disk-space readings could be updated incorrectly
+- Correct redirect after enabling HTTPS in the Config
+- Fix race-condition in Post-processing
+- History would not always show latest changes
+- Convert HTML in error messages
+- In some cases not all RAR-sets were unpacked
+- Fixed unicode error during Sorting
+- Faulty pynotify could stop shutdown
+- Categories with ' in them could result in SQL errors
+- Special characters like []!* in filenames could break repair
+- Wizard was always accessible, even with username and password set
+- Correct value in "Speed" Extra History Column
+- Not all texts were shown in the selected Language
+- Various CSS fixes in Glitter and the Config
+- Catch "error 0" when using HTTPS on some Linux platforms
+- Warning is shown when many files with duplicate filenames are discarded
+- Improve zeroconf/bonjour by sending HTTPS setting and auto-discover of IP
+- Windows: Fix error in MultiPar-code when first par2-file was damaged
+- macOS: Catch "Protocol wrong type for socket" errors
+
+## Translations
+- Added Hebrew translation by ION IL, many other languages updated.
+
+## Depreciation notices
+- Option to limit Servers to specific Categories is now scheduled
+  to be removed in the next release.
 
 ## Upgrading from 2.1.x and older
 - Finish queue
