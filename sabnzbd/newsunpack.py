@@ -1542,7 +1542,12 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                         verifynum += 1
                         nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
                         nzo.status = Status.VERIFYING
-                    datafiles.append(TRANS(m.group(1)))
+
+                    # Remove redundant extra files that are just duplicates of original ones
+                    if 'duplicate data blocks' in line:
+                        used_for_repair.append(TRANS(m.group(1)))
+                    else:
+                        datafiles.append(TRANS(m.group(1)))
                     continue
 
                 # Verify done
