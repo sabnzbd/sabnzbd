@@ -7,18 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-23 23:21+0000\n"
-"PO-Revision-Date: 2017-08-22 08:15+0000\n"
-"Last-Translator: Benjamin Hecht <Unknown>\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"PO-Revision-Date: 2017-08-24 15:39+0000\n"
+"Last-Translator: jcfp <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-24 05:27+0000\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
-#~ msgid "MultiPar binary... NOT found!"
-#~ msgstr "MultiPar Programmdatei nicht gefunden!"
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr "MultiPar Programmdatei nicht gefunden!"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -51,10 +52,18 @@ msgstr "_yenc-Modul nicht gefunden!"
 msgid "par2 binary... NOT found!"
 msgstr "par2-Programmdatei nicht gefunden!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr "Überprüfung und Reparatur sind nicht möglich."
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Deine UNRAR-Version ist %s, Wir empfehlen Version %s oder höher.<br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr "Downloads werden nicht enpackt."
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -488,9 +497,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Fehler beim Entfernen von %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "%s kann nicht gelesen werden"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Fehler beim Hinzufügen von %s. Entferne."
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -754,7 +767,7 @@ msgstr "Aus"
 msgid "Undefined server!"
 msgstr "Undefinierter Server!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Fehlerhafter Parameter"
 
@@ -1027,8 +1040,11 @@ msgid "Main packet not found..."
 msgstr "Hauptpaket nicht gefunden …"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Ungültige PAR2-Dateien. Überprüfung oder Reparatur nicht möglich."
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
+"Ungültige par2-Dateien oder ungültige PAR2-Parameter, Auftrag konnte nicht "
+"überprüft oder repariert werden"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1935,6 +1951,14 @@ msgstr "Quoten-Management einschalten"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Quoten-Management ausschalten"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr "Aufträge mit Kategorie pausieren"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr "Aufträge mit Kategorie fortsetzen"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3269,6 +3293,18 @@ msgid ""
 msgstr ""
 "Identische Episoden in den Serien entdeckt (basierend auf "
 "\"name/season/episode\") der Einträge in der Historie"
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr "Erlaube \"Proper\" Releases"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
+msgstr ""
+"Umgehe Serien Duplikat-Erkennung, wenn PROPER, REAL oder REPACK im Download-"
+"Namen erkannt wird"
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Discard"
@@ -5003,7 +5039,7 @@ msgid ""
 msgstr ""
 "Um aus dem Usenet herunterzuladen, wird ein Zugang zu einem Provider "
 "benötigt. Dein ISP kann dir Zugriff gewähren, allerdings wird ein Premium-"
-"Anbieter empfohlen. Noch keinen Usenet-Provider? Wir empfehlen,% s zu "
+"Anbieter empfohlen. Noch keinen Usenet-Provider? Wir empfehlen, %s zu "
 "versuchen."
 
 #: sabnzbd/tvsort.py [Error message]
@@ -5114,9 +5150,6 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr ""
 #~ "Fehler beim Importieren des OpenSSL-Moduls. Stelle Verbindung ohne SSL her."
-
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Fehler beim Hinzufügen von %s. Entferne."
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr ""
@@ -5545,6 +5578,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "E.g. 119 or 563 for SSL"
 #~ msgstr "Z.B. 119 oder 563 für SSL"
 
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Ungültige PAR2-Dateien. Überprüfung oder Reparatur nicht möglich."
+
 #~ msgid "Filters"
 #~ msgstr "Filter"
 
@@ -5620,31 +5656,3 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgstr ""
 #~ "Dieser Schlüssel identifiziert dich gegenüber des Indexers. Siehe auch "
 #~ "https://www.oznzb.com/profile."
-
-#~ msgid "Verification and repair will not be possible."
-#~ msgstr "Überprüfung und Reparatur sind nicht möglich."
-
-#~ msgid "Downloads will not unpacked."
-#~ msgstr "Downloads werden nicht enpackt."
-
-#~ msgid "Pause jobs with category"
-#~ msgstr "Aufträge mit Kategorie pausieren"
-
-#~ msgid "Resume jobs with category"
-#~ msgstr "Aufträge mit Kategorie fortsetzen"
-
-#~ msgid ""
-#~ "Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
-#~ "the download name"
-#~ msgstr ""
-#~ "Umgehe Serien Duplikat-Erkennung, wenn PROPER, REAL oder REPACK im Download-"
-#~ "Namen erkannt wird"
-
-#~ msgid ""
-#~ "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
-#~ msgstr ""
-#~ "Ungültige par2-Dateien oder ungültige PAR2-Parameter, Auftrag konnte nicht "
-#~ "überprüft oder repariert werden"
-
-#~ msgid "Allow proper releases"
-#~ msgstr "Erlaube \"Proper\" Releases"

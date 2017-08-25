@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2017-08-23 23:21+0000\n"
+"POT-Creation-Date: 2017-08-24 15:30+0000\n"
 "PO-Revision-Date: 2015-12-28 10:25+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-24 05:27+0000\n"
+"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -43,10 +43,22 @@ msgstr "_yenc modul... NIJE pronađen!"
 msgid "par2 binary... NOT found!"
 msgstr "par2 program...NIJE pronađen!"
 
+#: SABnzbd.py [Error message] # SABnzbd.py [Error message]
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Verzija vašeg UNRAR-a je %s, mi preporučujemo verziju %s ili noviju.<br />"
+
+#: SABnzbd.py [Error message]
+msgid "Downloads will not unpacked."
+msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -456,9 +468,13 @@ msgstr ""
 msgid "Error removing %s"
 msgstr "Greška pri uklanjanju %s"
 
-#: sabnzbd/dirscanner.py [Warning message]
+#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Неуспешно читање %s"
+
+#: sabnzbd/dirscanner.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Грешка додавања %s, уклањање"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -716,7 +732,7 @@ msgstr "искљ."
 msgid "Undefined server!"
 msgstr "Server nije definisan!"
 
-#: sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Погрешан параметар"
 
@@ -982,8 +998,9 @@ msgid "Main packet not found..."
 msgstr "Главни пакет није нађен..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Invalid par2 files, cannot verify or repair"
-msgstr "Погрешне par2 дат., не може да се провери/поправи"
+msgid ""
+"Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1860,6 +1877,14 @@ msgstr "Омогући управљање квота"
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Disable quota management"
 msgstr "Онемогући управљање квота"
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Pause jobs with category"
+msgstr ""
+
+#: sabnzbd/skintext.py [Config->Scheduler]
+msgid "Resume jobs with category"
+msgstr ""
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -3153,6 +3178,16 @@ msgstr "Откриј дупле епизоде у серије"
 msgid ""
 "Detect identical episodes in series (based on \"name/season/episode\" of "
 "items in your History)"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Allow proper releases"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Bypass series duplicate detection if PROPER, REAL or REPACK is detected in "
+"the download name"
 msgstr ""
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
@@ -5170,9 +5205,6 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "You have no permisson to use port %s"
 #~ msgstr "Није Вам дозвољено да користите порт %s"
 
-#~ msgid "Error while adding %s, removing"
-#~ msgstr "Грешка додавања %s, уклањање"
-
 #~ msgid "Initiating restart...<br />"
 #~ msgstr "Иницирање поновног покретања...<br />"
 
@@ -5243,6 +5275,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "Check result of unpacking (needs to be off for some file systems)."
 #~ msgstr ""
 #~ "Провери резултат издвоја (треба да се угаси за неке системе датотеке)."
+
+#~ msgid "Invalid par2 files, cannot verify or repair"
+#~ msgstr "Погрешне par2 дат., не може да се провери/поправи"
 
 #~ msgid "Only for optional servers"
 #~ msgstr "Само за опционе сервере"
