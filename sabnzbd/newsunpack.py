@@ -522,6 +522,13 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
             logging.debug('rar_unpack(): Newfiles: %s', newfiles)
             extracted_files.extend(newfiles)
 
+        # Do not fail if this was a recursive unpack
+        if fail and rarpath.startswith(workdir_complete):
+            # Do not delete the files, leave it to user!
+            fail = 0
+            success = True
+            newfiles = []
+
         # Delete the old files if we have to
         if success and delete and newfiles:
             for rar in rars:
