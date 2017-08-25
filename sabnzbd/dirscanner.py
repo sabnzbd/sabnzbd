@@ -73,6 +73,7 @@ def is_archive(path):
             zf = zipfile.ZipFile(path)
             return 0, zf, '.zip'
         except:
+            logging.info(T('Cannot read %s'), path, exc_info=True)
             return -1, None, ''
     elif rarfile.is_rarfile(path):
         try:
@@ -81,14 +82,17 @@ def is_archive(path):
             zf = rarfile.RarFile(path)
             return 0, zf, '.rar'
         except:
+            logging.info(T('Cannot read %s'), path, exc_info=True)
             return -1, None, ''
     elif is_sevenfile(path):
         try:
             zf = SevenZip(path)
             return 0, zf, '.7z'
         except:
+            logging.info(T('Cannot read %s'), path, exc_info=True)
             return -1, None, ''
     else:
+        logging.info('Archive %s is not a real archive!', os.path.basename(path))
         return 1, None, ''
 
 
@@ -127,17 +131,24 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                 try:
                     data = zf.read(name)
                 except:
+                    logging.error(T('Cannot read %s'), name, exc_info=True)
                     zf.close()
                     return -1, []
                 name = os.path.basename(name)
                 if data:
+                    nzo = None
                     try:
                         nzo = nzbstuff.NzbObject(name, pp, script, data, cat=cat, url=url,
                                                  priority=priority, nzbname=nzbname)
                         if not nzo.password:
                             nzo.password = password
+                    except (TypeError, ValueError) as e:
+                        # Duplicate or empty, ignore
+                        pass
                     except:
-                        nzo = None
+                        # Something else is wrong, show error
+                        logging.error(T('Error while adding %s, removing'), name, exc_info=True)
+
                     if nzo:
                         if nzo_id:
                             # Re-use existing nzo_id, when a "future" job gets it payload
