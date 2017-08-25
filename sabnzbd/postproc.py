@@ -308,6 +308,11 @@ def process_job(nzo):
                 # Try to get more par files
                 return False
 
+        # If we don't need extra par2, we can disconnect
+        if sabnzbd.nzbqueue.NzbQueue.do.actives(grabs=False) == 0 and cfg.autodisconnect():
+            # This was the last job, close server connections
+            sabnzbd.downloader.Downloader.do.disconnect()
+
         # Sanitize the resulting files
         if sabnzbd.WIN32:
             sanitize_files_in_folder(workdir)

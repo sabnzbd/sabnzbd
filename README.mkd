@@ -1,3 +1,23 @@
+Release Notes  -  SABnzbd 2.2.1
+=========================================================
+
+## Changes since 2.2.0
+- Allow up to 5 bad articles for jobs with no or little par2
+- Only auto-disconnect after first run of verification
+- Warning is shown when password-file is too large
+- Failure of recursive unpacking no longer fails whole job
+- Failure of unpacking of duplicate RAR no longer fails whole job
+
+## Bugfixes since 2.2.0
+- Some users were experiencing downloads or pre-check being stuck at 99%
+- Fixed RarFile error during unpacking
+- Remove email addresses settings from log export
+- Block server longer on 'Download limit exceeded' errors
+- Windows: If repair renamed a job the correct renamed file was deleted
+- Windows: Unpacking of downloads with many archives could fail
+- macOS: Adding jobs could fail without any error
+
+
 Release Notes  -  SABnzbd 2.2.0
 =========================================================
 
@@ -81,6 +101,10 @@ fetching before the upgrade will be lost!
 - Start SABnzbd
 
 ## Upgrade notices
+- Due to changes in this release, the queue will be converted when 2.2.x
+  is started for the first time. Job order, settings and data will be
+  preserved, but all jobs will be unpaused and URLs that did not finish
+  fetching before the upgrade will be lost!
 - The organization of the download queue is different from 0.7.x releases.
   This version will not see the old queue, but you restore the jobs by going
   to Status page and use Queue Repair.

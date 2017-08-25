@@ -522,6 +522,23 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
             logging.debug('rar_unpack(): Newfiles: %s', newfiles)
             extracted_files.extend(newfiles)
 
+        # Do not fail if this was a recursive unpack
+        if fail and rarpath.startswith(workdir_complete):
+            # Do not delete the files, leave it to user!
+            logging.info('Ignoring failure to do recursive unpack of %s', rarpath)
+            fail = 0
+            success = True
+            newfiles = []
+
+        # Do not fail if this was maybe just some duplicate fileset
+        # Multipar and par2tbb will detect and log them, par2cmdline will not
+        if fail and rar_set.endswith(('.1', '.2')):
+            # Just in case, we leave the raw files
+            logging.info('Ignoring failure of unpack for possible duplicate file %s', rarpath)
+            fail = 0
+            success = True
+            newfiles = []
+
         # Delete the old files if we have to
         if success and delete and newfiles:
             for rar in rars:
@@ -605,6 +622,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             # Need long-path notation in case of forbidden-names
             command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
                        '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+
+        # The subprocess_fix requires time to clear the buffers to work,
+        # otherwise the inputs get send incorrectly and unrar breaks
+        time.sleep(0.5)
 
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
@@ -1521,7 +1542,12 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                         verifynum += 1
                         nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
                         nzo.status = Status.VERIFYING
-                    datafiles.append(TRANS(m.group(1)))
+
+                    # Remove redundant extra files that are just duplicates of original ones
+                    if 'duplicate data blocks' in line:
+                        used_for_repair.append(TRANS(m.group(1)))
+                    else:
+                        datafiles.append(TRANS(m.group(1)))
                     continue
 
                 # Verify done
@@ -1943,7 +1969,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
     if renames:
         # If succes, we also remove the possibly previously renamed ones
         if finished:
-            reconstructed.extend(nzo.renames)
+            reconstructed.extend(renames.values())
 
         # Adding to the collection
         nzo.renamed_file(renames)
@@ -2064,10 +2090,13 @@ def rar_volumelist(rarfile_path, password, known_volumes):
     """ Extract volumes that are part of this rarset
         and merge them with existing list, removing duplicates
     """
+    # UnRar is required to read some RAR files
+    rarfile.UNRAR_TOOL = RAR_COMMAND
     zf = rarfile.RarFile(rarfile_path)
+
+    # setpassword can fail due to bugs in RarFile
     if password:
         try:
-            # setpassword can fail due to bugs in RarFile
             zf.setpassword(password)
         except:
             pass

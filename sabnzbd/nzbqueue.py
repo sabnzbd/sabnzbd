@@ -768,10 +768,6 @@ class NzbQueue(object):
     def end_job(self, nzo):
         """ Send NZO to the post-processing queue """
         logging.info('Ending job %s', nzo.final_name)
-        if self.actives(grabs=False) < 2 and cfg.autodisconnect():
-            # This was the last job, close server connections
-            if sabnzbd.downloader.Downloader.do:
-                sabnzbd.downloader.Downloader.do.disconnect()
 
         # Notify assembler to call postprocessor
         if not nzo.deleted:
@@ -861,6 +857,7 @@ class NzbQueue(object):
         for nzo in self.__nzo_list:
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 empty.append(nzo)
+
         for nzo in empty:
             self.end_job(nzo)
 

@@ -41,7 +41,7 @@ import sabnzbd
 from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
     DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
     PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
-    RENAMES_FILE, Status, PNFO
+    RENAMES_FILE, MAX_BAD_ARTICLES, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
@@ -307,13 +307,27 @@ class NzbFile(TryList):
         self.blocks = int(blocks)
 
     def get_article(self, server, servers):
-        """ Get next article to be downloaded """
+        """ Get next article to be downloaded from this server
+            Returns None when there are still articles to try
+            Returns False when all articles are tried
+        """
+        # Make sure all articles have tried this server before
+        # adding to the NZF-TryList, otherwise there will be stalls!
+        tried_all_articles = True
         for article in self.articles:
-            article = article.get_article(server, servers)
-            if article:
-                return article
+            article_return = article.get_article(server, servers)
+            if article_return:
+                return article_return
+            elif tried_all_articles and not article.server_in_try_list(server):
+                tried_all_articles = False
 
-        self.add_to_try_list(server)
+        # We are sure they are all tried
+        if tried_all_articles:
+            self.add_to_try_list(server)
+            return False
+
+        # Still articles left to try
+        return None
 
     def reset_all_try_lists(self):
         """ Clear all lists of visited servers """
@@ -1059,7 +1073,7 @@ class NzbObject(TryList):
                 self.prospective_add(nzf)
 
             # Sometimes a few CRC errors are still fine, so we continue
-            if self.bad_articles > 5:
+            if self.bad_articles > MAX_BAD_ARTICLES:
                 self.abort_direct_unpacker()
 
         post_done = False
@@ -1259,7 +1273,7 @@ class NzbObject(TryList):
                     while blocks_already < self.bad_articles and extrapars_sorted:
                         new_nzf = extrapars_sorted.pop()
                         # Reset NZF TryList, in case something was on it before it became extrapar
-                        new_nzf.reset_try_list()
+                        new_nzf.reset_all_try_lists()
                         self.add_parfile(new_nzf)
                         self.extrapars[parset] = extrapars_sorted
                         blocks_already = blocks_already + int_conv(new_nzf.blocks)
@@ -1282,6 +1296,12 @@ class NzbObject(TryList):
         """ Determine amount of articles present on servers
             and return (gross available, nett) bytes
         """
+        # Few missing articles in RAR-only job might still work
+        if self.bad_articles <= MAX_BAD_ARTICLES:
+            logging.debug('Download Quality: bad-articles=%s', self.bad_articles)
+            return True, 200
+
+        # Do the full check
         need = 0L
         pars = 0L
         short = 0L
@@ -1368,6 +1388,7 @@ class NzbObject(TryList):
     def get_article(self, server, servers):
         article = None
         nzf_remove_list = []
+        tried_all_articles = True
 
         for nzf in self.files:
             if nzf.deleted:
@@ -1391,16 +1412,21 @@ class NzbObject(TryList):
                     article = nzf.get_article(server, servers)
                     if article:
                         break
+                    if article == None:
+                        # None is returned by NZF when server is not tried for all articles
+                        tried_all_articles = False
 
         # Remove all files for which admin could not be read
         for nzf in nzf_remove_list:
             nzf.deleted = True
             self.files.remove(nzf)
+
         # If cleanup emptied the active files list, end this job
         if nzf_remove_list and not self.files:
             sabnzbd.NzbQueue.do.end_job(self)
 
-        if not article:
+        # Only add to trylist when server has been tried for all articles of all NZF's
+        if not article and tried_all_articles:
             # No articles for this server, block for next time
             self.add_to_try_list(server)
         return article
