@@ -1760,7 +1760,7 @@ class ConfigRss(object):
         self.__refresh_force = False        # True if forced download of all matches is required
         self.__refresh_ignore = False       # True if first batch of new feed must be ignored
         self.__evaluate = False             # True if feed needs to be re-filtered
-        self.__show_eval_button = True      # True if the "Apply filers" button should be shown
+        self.__show_eval_button = False     # True if the "Apply filers" button should be shown
         self.__last_msg = ''                # Last error message from RSS reader
 
     @cherrypy.expose
