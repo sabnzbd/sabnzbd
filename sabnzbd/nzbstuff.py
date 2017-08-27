@@ -1257,7 +1257,7 @@ class NzbObject(TryList):
         """ Add parfile to the files to be downloaded
             Resets trylist just to be sure
         """
-        if not parfile.completed and parfile not in self.files:
+        if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
             parfile.reset_all_try_lists()
             self.files.append(parfile)
 
@@ -1278,30 +1278,23 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def prospective_add(self, nzf):
         """ Add par2 files to compensate for missing articles
+            This fails in case of multi-sets with identical setnames
         """
-        # How many do we already have?
-        blocks_already = 0
-        for nzf_check in self.files:
-            # Only par2 files have a blocks attribute
-            if nzf_check.blocks:
-                blocks_already = blocks_already + int_conv(nzf_check.blocks)
-
         # Make sure to also select a parset if it was in the original filename
         original_filename = self.renames.get(nzf.filename, '')
 
-        # Need more?
-        if not nzf.is_par2 and blocks_already < self.bad_articles:
+        # Get some blocks!
+        if not nzf.is_par2:
             # We have to find the right par-set
+            blocks_new = 0
             for parset in self.extrapars.keys():
                 if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
                     for new_nzf in self.extrapars[parset]:
-                        # Already downloaded?
-                        if not new_nzf.completed:
-                            self.add_parfile(new_nzf)
-                            blocks_already = blocks_already + int_conv(new_nzf.blocks)
-                            logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
+                        self.add_parfile(new_nzf)
+                        blocks_new += int_conv(new_nzf.blocks)
                         # Enough now?
-                        if blocks_already >= self.bad_articles:
+                        if blocks_new >= self.bad_articles:
+                            logging.info('Prospectively added %s repair blocks to %s', blocks_new, self.final_name)
                             break
                     # Reset NZO TryList
                     self.reset_try_list()
