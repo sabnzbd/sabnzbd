@@ -45,7 +45,8 @@ from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
-    fix_unix_encoding, calc_age, is_obfuscated_filename
+    fix_unix_encoding, calc_age, is_obfuscated_filename, get_ext, get_filename, \
+    get_unique_filename, renamer
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -577,7 +578,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 NzbObjectSaver = (
     'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'bytes_tried',
     'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date', 'md5of16k',
-    'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
+    'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
     'avg_bps_freq', 'avg_bps_total', 'priority', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted', 'bad_articles',
@@ -649,6 +650,7 @@ class NzbObject(TryList):
         self.avg_date = datetime.datetime.fromtimestamp(0.0)
         self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
 
+        self.partable = {}          # Holds one parfile-name for each set
         self.extrapars = {}         # Holds the extra parfile names for all sets
         self.md5packs = {}          # Holds the md5pack for each set (name: hash)
         self.md5of16k = {}          # Holds the md5s of the first-16k of all files in the NZB (hash: name)
@@ -985,12 +987,19 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def postpone_pars(self, nzf, parset):
         """ Move all vol-par files matching 'parset' to the extrapars table """
+        # Create new extrapars if it didn't already exist
+        # For example if created when the first par2 file was missing
+        if parset not in self.extrapars:
+            self.extrapars[parset] = []
+
+        # Set this one as the main one
+        self.partable[parset] = nzf
+
         lparset = parset.lower()
         for xnzf in self.files[:]:
             name = xnzf.filename or platform_encode(xnzf.subject)
             # Move only when not current NZF and filename was extractable from subject
-            # and not when we already know it's a par2, it was put back for a reason!
-            if name and not xnzf.is_par2:
+            if name:
                 setname, vol, block = sabnzbd.par2file.analyse_par2(name)
                 # Don't postpone header-only-files, to extract all possible md5of16k
                 if setname and block and matcher(lparset, setname.lower()):
@@ -999,6 +1008,9 @@ class NzbObject(TryList):
                     if not(cfg.enable_all_par() and not cfg.enable_par_cleanup()):
                         self.extrapars[parset].append(xnzf)
                         self.files.remove(xnzf)
+        # Sort the sets
+        for setname in self.extrapars:
+            self.extrapars[parset].sort(key=lambda x: x.blocks)
 
     @synchronized(NZO_LOCK)
     def handle_par2(self, nzf, filepath):
@@ -1010,12 +1022,10 @@ class NzbObject(TryList):
         pack = sabnzbd.par2file.parse_par2_file(nzf, filepath)
 
         # If we couldn't parse it, we ignore it
-        # TODO: In case of failure, move another par2-file to the top
         if pack:
             if pack not in self.md5packs.values():
                 logging.debug('Got md5pack for set %s', nzf.setname)
                 self.md5packs[setname] = pack
-                self.extrapars[setname] = [nzf]
                 # See if we need to postpone some pars
                 if self.repair:
                     self.postpone_pars(nzf, setname)
@@ -1024,10 +1034,47 @@ class NzbObject(TryList):
                 for setname in self.md5packs:
                     if self.md5packs[setname] == pack:
                         break
+
                 # Change the properties
                 nzf.set_par2(setname, vol, block)
                 logging.debug('Got additional md5pack for set %s', nzf.setname)
-                self.extrapars[setname].append(nzf)
+
+                # Did we know about this one?
+                if nzf not in self.extrapars[setname]:
+                    self.extrapars[setname].append(nzf)
+
+        elif self.repair:
+            # For some reason this par2 file is broken but we still want repair
+            self.promote_par2(nzf)
+
+        # Is it an obfuscated file?
+        if get_ext(nzf.filename) != '.par2':
+            # Do cheap renaming so it gets better picked up by par2
+            # Only basename has to be the same
+            new_fname = get_unique_filename(os.path.join(self.downpath, '%s.par2' % setname))
+            renamer(filepath, new_fname)
+            self.renamed_file(get_filename(new_fname), nzf.filename)
+            nzf.filename = get_filename(new_fname)
+
+    @synchronized(NZO_LOCK)
+    def promote_par2(self, nzf):
+        """ In case of a broken par2 or missing par2, move another
+            of the same set to the top (if we can find it)
+        """
+        setname, vol, block = sabnzbd.par2file.analyse_par2(nzf.filename)
+        # Now we need to identify if we have more in this set
+        if setname and self.repair:
+            # Maybe it was the first one
+            if setname not in self.extrapars:
+                self.postpone_pars(nzf, setname)
+            # Get the next one
+            for new_nzf in self.extrapars[setname]:
+                if not new_nzf.completed:
+                    self.add_parfile(new_nzf)
+                    # Add it to the top
+                    self.files.remove(new_nzf)
+                    self.files.insert(0, new_nzf)
+                    break
 
     @synchronized(NZO_LOCK)
     def remove_article(self, article, found):
@@ -1208,17 +1255,18 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def add_parfile(self, parfile):
         """ Add parfile to the files to be downloaded
-            Removes it from the extrapars and resets trylist just to be sure
+            Resets trylist just to be sure
         """
         if not parfile.completed and parfile not in self.files:
             parfile.reset_all_try_lists()
             self.files.append(parfile)
-        self.remove_extrapar(parfile)
 
     @synchronized(NZO_LOCK)
     def remove_parset(self, setname):
         if setname in self.extrapars:
             self.extrapars.pop(setname)
+        if setname in self.partable:
+            self.partable.pop(setname)
 
     @synchronized(NZO_LOCK)
     def remove_extrapar(self, parfile):
@@ -1246,13 +1294,15 @@ class NzbObject(TryList):
             # We have to find the right par-set
             for parset in self.extrapars.keys():
                 if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
-                    extrapars_sorted = sorted(self.extrapars[parset], key=lambda x: x.blocks, reverse=True)
-                    # Loop until we have enough
-                    while blocks_already < self.bad_articles and extrapars_sorted:
-                        new_nzf = extrapars_sorted.pop()
-                        self.add_parfile(new_nzf)
-                        blocks_already = blocks_already + int_conv(new_nzf.blocks)
-                        logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
+                    for new_nzf in self.extrapars[parset]:
+                        # Already downloaded?
+                        if not new_nzf.completed:
+                            self.add_parfile(new_nzf)
+                            blocks_already = blocks_already + int_conv(new_nzf.blocks)
+                            logging.info('Prospectively added %s repair blocks to %s', new_nzf.blocks, self.final_name)
+                        # Enough now?
+                        if blocks_already >= self.bad_articles:
+                            break
                     # Reset NZO TryList
                     self.reset_try_list()
 

@@ -756,7 +756,9 @@ class NzbQueue(object):
                     # Only start decoding if we have a filename and type
                     if filename and _type:
                         Assembler.do.process((nzo, nzf))
-
+                    elif filename.lower().endswith('.par2'):
+                        # Broken par2 file, try to get another one
+                        nzo.promote_par2(nzf)
                     else:
                         if file_has_articles(nzf):
                             logging.warning(T('%s -> Unknown encoding'), filename)

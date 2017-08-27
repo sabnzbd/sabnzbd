@@ -1043,10 +1043,6 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 ##############################################################################
 def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
-    # set the current nzo status to "Repairing". Used in History
-
-    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
-
     # Check if file exists, otherwise see if another is done
     parfile_path = os.path.join(workdir, parfile_nzf.filename)
     if not os.path.exists(parfile_path) and nzo.extrapars[setname]:

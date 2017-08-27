@@ -634,10 +634,10 @@ def parring(nzo, workdir):
                 continue
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
-                parfile_nzf = nzo.extrapars[setname][0]
+                parfile_nzf = nzo.partable[setname]
 
                 # Check if file maybe wasn't deleted and if we maybe have more files in the parset
-                if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or len(nzo.extrapars[setname]) > 1:
+                if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or nzo.extrapars[setname]:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
 
                     # Was it aborted?
