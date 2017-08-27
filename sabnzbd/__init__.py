@@ -105,6 +105,7 @@ from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
+import sabnzbd.par2file as par2file
 import sabnzbd.api
 import sabnzbd.directunpacker as directunpacker
 from sabnzbd.decorators import synchronized, notify_downloader

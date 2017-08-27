@@ -1049,8 +1049,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
 
     # Check if file exists, otherwise see if another is done
     parfile_path = os.path.join(workdir, parfile_nzf.filename)
-    if not os.path.exists(parfile_path) and parfile_nzf.extrapars:
-        for new_par in parfile_nzf.extrapars:
+    if not os.path.exists(parfile_path) and nzo.extrapars[setname]:
+        for new_par in nzo.extrapars[setname]:
             test_parfile = os.path.join(workdir, new_par.filename)
             if os.path.exists(test_parfile):
                 parfile_nzf = new_par
@@ -1081,9 +1081,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     if not result and cfg.enable_all_par():
         # Download all par2 files that haven't been downloaded yet
         readd = False
-        for extrapar in parfile_nzf.extrapars[:]:
-            parfile_nzf.extrapars.remove(extrapar)
-            parfile_nzf.nzo.remove_extrapar(extrapar)
+        for extrapar in nzo.extrapars[setname][:]:
             if extrapar not in nzo.finished_files and extrapar not in nzo.files:
                 nzo.add_parfile(extrapar)
                 readd = True
@@ -1326,12 +1324,11 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 # Initialparfile probably didn't decode properly,
                 logging.info(T('Main packet not found...'))
-                extrapars = parfile_nzf.extrapars
-                logging.info("Extra pars = %s", extrapars)
+                logging.info("Extra pars = %s", nzo.extrapars[setname])
 
                 # Look for the smallest par2file
                 block_table = {}
-                for nzf in extrapars:
+                for nzf in nzo.extrapars[setname]:
                     if not nzf.completed:
                         block_table[int_conv(nzf.blocks)] = nzf
 
@@ -1340,12 +1337,8 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                     logging.info("Found new par2file %s", nzf.filename)
 
                     # Move from extrapar list to files to be downloaded
+                    # and remove it from the extrapars list
                     nzo.add_parfile(nzf)
-                    # Now set new par2 file as primary par2
-                    nzo.partable[setname] = nzf
-                    nzf.extrapars = extrapars
-                    parfile_nzf = []
-                    # mark for readd
                     readd = True
                 else:
                     msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
@@ -1360,20 +1353,16 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 avail_blocks = 0
                 logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-                extrapars = parfile_nzf.extrapars
                 block_table = {}
-                for nzf in extrapars:
+                for nzf in nzo.extrapars[setname]:
                     # Don't count extrapars that are completed already
                     if nzf.completed:
                         continue
 
                     blocks = int_conv(nzf.blocks)
-
                     avail_blocks += blocks
-
                     if blocks not in block_table:
                         block_table[blocks] = []
-
                     block_table[blocks].append(nzf)
 
                 logging.info('%s blocks available', avail_blocks)
@@ -1401,12 +1390,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                         if extrapar_list:
                             new_nzf = extrapar_list.pop()
                             nzo.add_parfile(new_nzf)
-                            if new_nzf in extrapars:
-                                extrapars.remove(new_nzf)
                             added_blocks += block_size
-
                         else:
                             block_table.pop(block_size)
+
                     logging.info('Added %s blocks to %s', added_blocks, nzo.final_name)
 
                     if not force:
@@ -1678,13 +1665,12 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
 
         elif line.startswith('valid file is not found'):
             # Initialparfile probably didn't decode properly,
-            extrapars = parfile_nzf.extrapars
             logging.info(T('Main packet not found...'))
-            logging.info("Extra pars = %s", extrapars)
+            logging.info("Extra pars = %s", nzo.extrapars[setname])
 
             # Look for the smallest par2file
             block_table = {}
-            for nzf in extrapars:
+            for nzf in nzo.extrapars[setname]:
                 if not nzf.completed:
                     block_table[int_conv(nzf.blocks)] = nzf
 
@@ -1693,12 +1679,8 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 logging.info("Found new par2file %s", nzf.filename)
 
                 # Move from extrapar list to files to be downloaded
+                # and remove it from the extrapars list
                 nzo.add_parfile(nzf)
-                # Now set new par2 file as primary par2
-                nzo.partable[setname] = nzf
-                nzf.extrapars = extrapars
-                parfile_nzf = []
-                # mark for readd
                 readd = True
             else:
                 msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
@@ -1846,19 +1828,20 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             chunks = line.split()
             needed_blocks = int(chunks[1])
             avail_blocks = 0
-            extrapars = parfile_nzf.extrapars
             block_table = {}
             logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-            for nzf in extrapars:
+            for nzf in nzo.extrapars[setname]:
                 # Don't count extrapars that are completed already
                 if nzf.completed:
                     continue
+
                 blocks = int_conv(nzf.blocks)
                 avail_blocks += blocks
                 if blocks not in block_table:
                     block_table[blocks] = []
                 block_table[blocks].append(nzf)
+
             logging.info('%s blocks available', avail_blocks)
 
             force = False
@@ -1880,17 +1863,15 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 while added_blocks < needed_blocks:
                     block_size = min(block_table.keys())
                     extrapar_list = block_table[block_size]
+
                     if extrapar_list:
                         new_nzf = extrapar_list.pop()
                         nzo.add_parfile(new_nzf)
-                        if new_nzf in extrapars:
-                            extrapars.remove(new_nzf)
                         added_blocks += block_size
                     else:
                         block_table.pop(block_size)
 
-                logging.info('Added %s blocks to %s',
-                             added_blocks, nzo.final_name)
+                logging.info('Added %s blocks to %s', added_blocks, nzo.final_name)
 
                 if not force:
                     msg = T('Fetching %s blocks...') % str(added_blocks)
