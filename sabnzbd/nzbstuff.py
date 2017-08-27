@@ -1185,10 +1185,12 @@ class NzbObject(TryList):
         for filename in files[:]:
             for nzf in nzfs:
                 subject = sanitize_filename(name_extractor(nzf.subject))
+                filepath = os.path.join(wdir, filename)
                 if (nzf.filename == filename) or (subject == filename) or (filename in subject):
                     nzf.filename = filename
                     nzf.bytes_left = 0
-                    self.handle_par2(nzf, file_done=True)
+                    if sabnzbd.par2file.is_parfile(filepath):
+                        self.handle_par2(nzf, os.path.join(wdir, filename))
                     self.remove_nzf(nzf)
                     nzfs.remove(nzf)
                     files.remove(filename)
@@ -1207,7 +1209,9 @@ class NzbObject(TryList):
                 self.bytes += nzf.bytes
                 nzf.filename = filename
                 nzf.bytes_left = 0
-                self.handle_par2(nzf, file_done=True)
+                filepath = os.path.join(wdir, filename)
+                if sabnzbd.par2file.is_parfile(filepath):
+                    self.handle_par2(nzf, filepath)
                 self.remove_nzf(nzf)
                 logging.info('File %s added to job', filename)
         except:
