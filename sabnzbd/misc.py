@@ -888,14 +888,16 @@ def get_unique_path(dirpath, n=0, create_dir=True):
 
 @synchronized(DIR_LOCK)
 def get_unique_filename(path):
-    """ Check if path is unique. If not, add number like: "/path/name.NUM.ext". """
+    """ Check if path is unique.
+        If not, add number like: "/path/name.NUM.ext".
+    """
     num = 1
+    new_path, fname = os.path.split(path)
+    name, ext = os.path.splitext(fname)
     while os.path.exists(path):
-        path, fname = os.path.split(path)
-        name, ext = os.path.splitext(fname)
         fname = "%s.%d%s" % (name, num, ext)
         num += 1
-        path = os.path.join(path, fname)
+        path = os.path.join(new_path, fname)
     return path
 
 
