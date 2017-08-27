@@ -1215,10 +1215,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
     # par2multicore wants to see \\.\ paths on Windows
     # See: https://github.com/sabnzbd/sabnzbd/pull/771
     if sabnzbd.WIN32:
-        command = [x.replace('\\\\?\\', '\\\\.\\', 1) if x.startswith('\\\\?\\') else x for x in command]
+        command = [clip_path(x) if x.startswith('\\\\?\\') else x for x in command]
 
     # Run the external command
-    logging.debug('Starting par2: %s', command)
+    logging.info('Starting par2: %s', command)
     lines = []
     try:
         p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -1517,6 +1517,9 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                     if m:
                         pars.append(TRANS(m.group(1)))
                         continue
+                    # Remove par2-files that do not belong to this set
+                    if line.startswith('No new packets found') and pars:
+                        pars.pop()
 
                 # Target files
                 m = TARGET_RE.match(line)
@@ -1586,7 +1589,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
     command.append(os.path.join(parfolder, wildcard))
 
     stup, need_shell, command, creationflags = build_command(command)
-    # CHANGE TO DEBUG LATER
     logging.info('Starting MultiPar: %s', command)
 
     lines = []
@@ -1694,16 +1696,18 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
 
         # ----------------- Start check/verify stage
         # List of Par2 files we will use today
-        if line.startswith('PAR File list'):
+        if line.startswith('Loading PAR File'):
             in_parlist = True
-        if line.startswith('PAR File total size'):
+        if line.startswith(('Recovery Slice count', 'Recovery Slice found')):
             # Ende of the Par2 listing
             in_parlist = False
         elif in_parlist:
             m = _RE_FILENAME.search(line)
             if m:
-                used_for_repair.append(TRANS(m.group(1)))
-                pars.append(TRANS(m.group(1)))
+                # Only files that belong to this set!
+                if 'Useless' not in line:
+                    used_for_repair.append(TRANS(m.group(1)))
+                    pars.append(TRANS(m.group(1)))
 
         elif line.startswith('Recovery Set ID'):
             # Remove files were MultiPar stores verification result when repaired succesfull

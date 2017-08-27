@@ -90,7 +90,7 @@ class Assembler(Thread):
                 nzo.verify_nzf_filename(nzf)
                 nzf.filename = sanitize_filename(nzf.filename)
                 filepath = get_filepath(long_path(cfg.download_dir.get_path()), nzo, nzf.filename)
-                nzf.filename = get_filename(nzf.filename)
+                nzf.filename = get_filename(filepath)
 
                 if filepath:
                     logging.info('Decoding %s %s', filepath, nzf.type)
