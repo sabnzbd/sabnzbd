@@ -69,7 +69,6 @@ SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
 SEVENZIP_RE = re.compile(r'\.7z$', re.I)
 SEVENMULTI_RE = re.compile(r'\.7z\.\d+$', re.I)
-FULLVOLPAR2_RE = re.compile(r'(.*[^.])(\.*vol[0-9]+\+[0-9]+\.par2)', re.I)
 TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
 
 PAR2_COMMAND = None
@@ -1055,15 +1054,15 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             # No file was found, we assume this set already finished
             return False, True
 
-    # Shorten just the workdir on Windows
     parfile = os.path.join(workdir, parfile_nzf.filename)
-
     old_dir_content = os.listdir(workdir)
     used_joinables = ()
     joinables = ()
     used_for_repair = ()
-    setpars = pars_of_set(workdir, setname)
     result = readd = False
+
+    # Need to copy now, gets pop-ed during repair
+    setpars = nzo.extrapars[setname][:]
 
     nzo.status = Status.QUICK_CHECK
     nzo.set_action_line(T('Repair'), T('Quick Checking'))
@@ -1958,7 +1957,9 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
         # Remove renamed original files
         workdir = os.path.split(parfile)[0]
         used_joinables.extend([os.path.join(workdir, name) for name in reconstructed])
-
+    import pprint
+    pprint.pprint(pars)
+    pprint.pprint(used_for_repair)
     return finished, readd, pars, datafiles, used_joinables, used_for_repair
 
 def create_env(nzo=None, extra_env_fields=None):
@@ -2236,16 +2237,6 @@ def QuickCheck(set, nzo):
         nzo.renamed_file(renames)
 
     return result
-
-
-def pars_of_set(wdir, setname):
-    """ Return list of par2 files (pathless) matching the set """
-    list = []
-    for file in os.listdir(wdir):
-        m = FULLVOLPAR2_RE.search(file)
-        if m and m.group(1) == setname and m.group(2):
-            list.append(file)
-    return list
 
 
 def unrar_check(rar):
