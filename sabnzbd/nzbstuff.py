@@ -30,6 +30,7 @@ import xml.sax
 import xml.sax.handler
 import xml.sax.xmlreader
 import hashlib
+import difflib
 
 try:
     from cStringIO import StringIO
@@ -1015,6 +1016,10 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def handle_par2(self, nzf, filepath):
         """ Check if file is a par2 and build up par2 collection """
+        # Need to remove it from the other set it might be in
+        self.remove_extrapar(nzf)
+
+        # Reparse
         setname, vol, block = sabnzbd.par2file.analyse_par2(nzf.filename, filepath)
         nzf.set_par2(setname, vol, block)
 
@@ -1038,10 +1043,7 @@ class NzbObject(TryList):
                 # Change the properties
                 nzf.set_par2(setname, vol, block)
                 logging.debug('Got additional md5pack for set %s', nzf.setname)
-
-                # Did we know about this one?
-                if nzf not in self.extrapars[setname]:
-                    self.extrapars[setname].append(nzf)
+                self.extrapars[setname].append(nzf)
 
         elif self.repair:
             # For some reason this par2 file is broken but we still want repair
@@ -1075,6 +1077,47 @@ class NzbObject(TryList):
                     self.files.remove(new_nzf)
                     self.files.insert(0, new_nzf)
                     break
+
+    def get_extra_blocks(self, setname, needed_blocks):
+        """ We want par2-files of all sets that are similar to this one
+            So that we also can handle multi-sets with duplicate filenames
+            Block-table has as keys the nr-blocks
+            Returns number of added blocks in case they are available
+        """
+        logging.info('Need %s more blocks, checking blocks', needed_blocks)
+        avail_blocks = 0
+        block_table = {}
+        for setname_search in self.extrapars:
+            # Do it for our set, or highlight matching one
+            # We might catch to many par2's, but that's okay
+            if setname_search == setname or difflib.SequenceMatcher(None, setname, setname_search).ratio() > 0.85:
+                for nzf in self.extrapars[setname_search]:
+                    # Don't count extrapars that are completed already
+                    if nzf.completed:
+                        continue
+                    blocks = int_conv(nzf.blocks)
+                    if blocks not in block_table:
+                        block_table[blocks] = []
+                        # We assume same block-vol-naming for each set
+                        avail_blocks += blocks
+                    block_table[blocks].append(nzf)
+
+        logging.info('%s blocks available', avail_blocks)
+
+        # Enough?
+        if avail_blocks >= needed_blocks:
+            added_blocks = 0
+            while added_blocks < needed_blocks:
+                block_size = min(block_table.keys())
+                for new_nzf in block_table[block_size]:
+                    self.add_parfile(new_nzf)
+                added_blocks += block_size
+                block_table.pop(block_size)
+            logging.info('Added %s blocks to %s', added_blocks, self.final_name)
+            return added_blocks
+        else:
+            # Not enough
+            return False
 
     @synchronized(NZO_LOCK)
     def remove_article(self, article, found):

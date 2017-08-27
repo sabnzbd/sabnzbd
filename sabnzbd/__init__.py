@@ -320,13 +320,14 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     paused = BPSMeter.do.read()
 
-    PostProcessor()
 
     NzbQueue()
 
+    Downloader(pause_downloader or paused)
+
     Assembler()
 
-    Downloader(pause_downloader or paused)
+    PostProcessor()
 
     NzbQueue.do.read_queue(repair)
 

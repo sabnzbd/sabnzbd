@@ -1154,7 +1154,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Repairing failed, %s') % msg
-        logging.error(T('Error "%s" while running par2_repair on set %s'), msg, setname)
+        logging.error(T('Error "%s" while running par2_repair on set %s'), msg, setname, exc_info=True)
 
     return readd, result
 
@@ -1322,60 +1322,19 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                     nzo.status = Status.FAILED
 
             elif line.startswith('You need'):
+                # We need more blocks, but are they available?
                 chunks = line.split()
                 needed_blocks = int(chunks[2])
-                avail_blocks = 0
-                logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-                block_table = {}
-                for nzf in nzo.extrapars[setname]:
-                    # Don't count extrapars that are completed already
-                    if nzf.completed:
-                        continue
-
-                    blocks = int_conv(nzf.blocks)
-                    avail_blocks += blocks
-                    if blocks not in block_table:
-                        block_table[blocks] = []
-                    block_table[blocks].append(nzf)
-
-                logging.info('%s blocks available', avail_blocks)
-
-                force = False
-                if (avail_blocks < needed_blocks) and (avail_blocks > 0):
-                    # Tell SAB that we always have enough blocks, so that
-                    # it will try to load all pars anyway
-                    msg = T('Repair failed, not enough repair blocks (%s short)') % str(int(needed_blocks - avail_blocks))
-                    nzo.fail_msg = msg
-                    msg = u'[%s] %s' % (unicoder(setname), msg)
-                    nzo.set_unpack_info('Repair', msg)
+                # Check if we have enough blocks
+                added_blocks = nzo.get_extra_blocks(setname, needed_blocks)
+                if added_blocks:
+                    msg = T('Fetching %s blocks...') % str(added_blocks)
+                    nzo.set_action_line(T('Fetching'), msg)
                     nzo.status = Status.FETCHING
-                    needed_blocks = avail_blocks
-                    force = True
-
-                if avail_blocks >= needed_blocks:
-                    added_blocks = 0
                     readd = True
-
-                    while added_blocks < needed_blocks:
-                        block_size = min(block_table.keys())
-                        extrapar_list = block_table[block_size]
-
-                        if extrapar_list:
-                            new_nzf = extrapar_list.pop()
-                            nzo.add_parfile(new_nzf)
-                            added_blocks += block_size
-                        else:
-                            block_table.pop(block_size)
-
-                    logging.info('Added %s blocks to %s', added_blocks, nzo.final_name)
-
-                    if not force:
-                        msg = T('Fetching %s blocks...') % str(added_blocks)
-                        nzo.status = Status.FETCHING
-                        nzo.set_action_line(T('Fetching'), msg)
-
                 else:
+                    # Failed
                     msg = T('Repair failed, not enough repair blocks (%s short)') % str(needed_blocks)
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
@@ -1776,61 +1735,19 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                             break
 
         elif line.startswith('Need'):
-            # We need more blocks, but are they there?
+            # We need more blocks, but are they available?
             chunks = line.split()
             needed_blocks = int(chunks[1])
-            avail_blocks = 0
-            block_table = {}
-            logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-            for nzf in nzo.extrapars[setname]:
-                # Don't count extrapars that are completed already
-                if nzf.completed:
-                    continue
-
-                blocks = int_conv(nzf.blocks)
-                avail_blocks += blocks
-                if blocks not in block_table:
-                    block_table[blocks] = []
-                block_table[blocks].append(nzf)
-
-            logging.info('%s blocks available', avail_blocks)
-
-            force = False
-            if (avail_blocks < needed_blocks) and (avail_blocks > 0):
-                # Tell SAB that we always have enough blocks, so that
-                # it will try to load all pars anyway
-                msg = T('Repair failed, not enough repair blocks (%s short)') % str(int(needed_blocks - avail_blocks))
-                nzo.fail_msg = msg
-                msg = u'[%s] %s' % (unicoder(setname), msg)
-                nzo.set_unpack_info('Repair', msg)
+            # Check if we have enough blocks
+            added_blocks = nzo.get_extra_blocks(setname, needed_blocks)
+            if added_blocks:
+                msg = T('Fetching %s blocks...') % str(added_blocks)
+                nzo.set_action_line(T('Fetching'), msg)
                 nzo.status = Status.FETCHING
-                needed_blocks = avail_blocks
-                force = True
-
-            if avail_blocks >= needed_blocks:
-                added_blocks = 0
                 readd = True
-
-                while added_blocks < needed_blocks:
-                    block_size = min(block_table.keys())
-                    extrapar_list = block_table[block_size]
-
-                    if extrapar_list:
-                        new_nzf = extrapar_list.pop()
-                        nzo.add_parfile(new_nzf)
-                        added_blocks += block_size
-                    else:
-                        block_table.pop(block_size)
-
-                logging.info('Added %s blocks to %s', added_blocks, nzo.final_name)
-
-                if not force:
-                    msg = T('Fetching %s blocks...') % str(added_blocks)
-                    nzo.status = Status.FETCHING
-                    nzo.set_action_line(T('Fetching'), msg)
-
             else:
+                # Failed
                 msg = T('Repair failed, not enough repair blocks (%s short)') % str(needed_blocks)
                 nzo.fail_msg = msg
                 msg = u'[%s] %s' % (unicoder(setname), msg)
@@ -1911,7 +1828,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
         workdir = os.path.split(parfile)[0]
         used_joinables.extend([os.path.join(workdir, name) for name in reconstructed])
 
-    return finished, readd,  datafiles, used_joinables, used_for_repair
+    return finished, readd, datafiles, used_joinables, used_for_repair
 
 def create_env(nzo=None, extra_env_fields=None):
     """ Modify the environment for pp-scripts with extra information
