@@ -1639,7 +1639,7 @@ class NzbObject(TryList):
             for _set in self.extrapars:
                 for nzf in self.extrapars[_set]:
                     # Don't show files twice
-                    if nzf not in self.finished_files:
+                    if not nzf.completed and nzf not in self.files:
                         queued_files.append(nzf)
 
         return PNFO(self.repair, self.unpack, self.delete, self.script,
