@@ -478,7 +478,7 @@ function QueueModel(parent, data) {
     self.password = ko.observable(data.password);
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
-    self.isGrabbing = ko.observable(data.status == 'Grabbing')
+    self.isGrabbing = ko.observable(data.status == 'Grabbing' || data.avg_age == '-')
     self.totalMB = ko.observable(parseFloat(data.mb));
     self.remainingMB = ko.observable(parseFloat(data.mbleft));
     self.avg_age = ko.observable(data.avg_age)
@@ -578,7 +578,7 @@ function QueueModel(parent, data) {
         self.password(data.password);
         self.index(data.index);
         self.status(data.status)
-        self.isGrabbing(data.status == 'Grabbing')
+        self.isGrabbing(data.status == 'Grabbing' || data.avg_age == '-')
         self.totalMB(parseFloat(data.mb));
         self.remainingMB(parseFloat(data.mbleft));
         self.avg_age(data.avg_age)
