@@ -641,7 +641,8 @@ class Downloader(Thread):
                                         server.errormsg = errormsg
                                         name = ' (%s)' % server.id
                                         logging.warning(T('Probable account sharing') + name)
-                                    penalty = _PENALTY_SHARE
+                                penalty = _PENALTY_SHARE
+                                block = True
                             elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
@@ -676,7 +677,8 @@ class Downloader(Thread):
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
                                         logging.warning(T('Cannot connect to server %s [%s]'), server.id, msg)
-                                    penalty = _PENALTY_UNKNOWN
+                                penalty = _PENALTY_UNKNOWN
+                                block = True
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
