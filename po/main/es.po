@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"POT-Creation-Date: 2017-08-25 07:48+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:50+0000\n"
+"X-Launchpad-Export-Date: 2017-08-26 05:31+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -4946,10 +4946,16 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
+"Para poder descargar de Usenet, necesitas acceso con un proveedor. Tu "
+"proveedor de acceso a internet te lo puede dar, aunque recomendamos "
+"proveedores premium."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "¿No tienes proveedor de Usenet? Nosotros recomendamos probar %s."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -5474,17 +5480,6 @@ msgstr "Error al recuperar la URL; %s"
 #~ msgstr ""
 #~ "Lanzar mi navegador de interner con la página de SABnzbd al arrancar el "
 #~ "programa."
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "Para poder descargar de Usenet, necesitas acceso con un proveedor. Tu "
-#~ "proveedor de acceso a internet te lo puede dar, aunque recomendamos "
-#~ "proveedores premium."
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "¿No tienes proveedor de Usenet? Nosotros recomendamos probar %s."
 
 #~ msgid "Please enter a whole number."
 #~ msgstr "Por favor introduzca un número completo."

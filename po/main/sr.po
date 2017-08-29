@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"POT-Creation-Date: 2017-08-25 07:48+0000\n"
 "PO-Revision-Date: 2015-12-28 10:25+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
+"X-Launchpad-Export-Date: 2017-08-26 05:31+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -4871,10 +4871,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
+"За преузимање са 'usenet' треба Вам приступ привајдеру. Можда Вам Ваш ISP "
+"пружа приступ, било како премијум провајдер је препоручен."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Немате 'usenet' провајдер? Препоручујемо Вам %s."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -4937,9 +4942,6 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "This field is required."
 #~ msgstr "Ово поље је обавезно."
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "Немате 'usenet' провајдер? Препоручујемо Вам %s."
 
 #~ msgid "Access"
 #~ msgstr "Приступ"
@@ -5386,13 +5388,6 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid ""
 #~ "Launch my internet browser with the SABnzbd page when the program starts."
 #~ msgstr "Покрени мој претраживач са SABnzbd листом при покретању."
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "За преузимање са 'usenet' треба Вам приступ привајдеру. Можда Вам Ваш ISP "
-#~ "пружа приступ, било како премијум провајдер је препоручен."
 
 #~ msgid ""
 #~ "After SABnzbd has finished restarting you will be able to access it at the "

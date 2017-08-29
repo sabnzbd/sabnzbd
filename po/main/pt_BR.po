@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"POT-Creation-Date: 2017-08-25 07:48+0000\n"
 "PO-Revision-Date: 2016-01-01 22:58+0000\n"
 "Last-Translator: lrrosa <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:50+0000\n"
+"X-Launchpad-Export-Date: 2017-08-26 05:31+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -4905,10 +4905,16 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
+"Para baixar a partir da usenet você precisa ter acesso a um provedor. Seu "
+"provedor de Internet pode fornecer-lhe acesso, no entanto, um provedor "
+"exclusivo é recomendado."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Não tem um provedor usenet? Recomendamos testar %s."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -5399,17 +5405,6 @@ msgstr "A busca da URL falhou; %s"
 
 #~ msgid "Misc"
 #~ msgstr "Diversos"
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "Para baixar a partir da usenet você precisa ter acesso a um provedor. Seu "
-#~ "provedor de Internet pode fornecer-lhe acesso, no entanto, um provedor "
-#~ "exclusivo é recomendado."
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "Não tem um provedor usenet? Recomendamos testar %s."
 
 #~ msgid "This field is required."
 #~ msgstr "Este campo é necessário."

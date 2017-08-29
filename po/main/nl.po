@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
-"PO-Revision-Date: 2017-08-22 21:06+0000\n"
+"POT-Creation-Date: 2017-08-25 07:48+0000\n"
+"PO-Revision-Date: 2017-08-27 09:56+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
+"X-Launchpad-Export-Date: 2017-08-28 05:25+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -102,7 +102,7 @@ msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT- en KEY-bestanden"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
-msgstr "Gebruikersinterface kon niet gestart worden: "
+msgstr "Webinterface kon niet gestart worden: "
 
 #: SABnzbd.py [Error message]
 msgid "Cannot reach the SABHelper service"
@@ -1435,8 +1435,8 @@ msgid ""
 "    Please restart SABnzbd with a different port number."
 msgstr ""
 "\n"
-"    SABnzbd heeft een vrije TCP/IP poort nodig voor de interne web "
-"server.<br>\n"
+"    SABnzbd heeft een vrije TCP/IP poort nodig voor de interne "
+"webserver.<br>\n"
 "Poort %s op %s is geprobeerd, maar is niet beschikbaar.<br>\n"
 "Een ander programma gebruikt de poort al of SABnzbd is al actief.<br>\n"
 "<br>\n"
@@ -1457,7 +1457,7 @@ msgid ""
 "    Please restart SABnzbd with a proper host address."
 msgstr ""
 "\n"
-"    SABnzbd heeft een geldig host adres voor de interne web server.<br>\n"
+"    SABnzbd heeft een geldig host adres voor de interne webserver.<br>\n"
 "Je hebt een onbruikbaar adres opgegeven.<br>\n"
 "Veilige waarden zijn <b>localhost</b> en <b>0.0.0.0</b><br>\n"
 "<br>\n"
@@ -1746,7 +1746,7 @@ msgstr "Lege RSS-feed gevonden (%s)"
 
 #: sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py
 msgid "Show interface"
-msgstr "Toon Interface"
+msgstr "Toon webinterface"
 
 #: sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py
 msgid "Open complete folder"
@@ -2739,7 +2739,7 @@ msgstr "Wijzigingen worden pas actief na herstart!"
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Web Server"
-msgstr "Web server"
+msgstr "Webserver"
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Host"
@@ -2759,7 +2759,7 @@ msgstr "Poort waar op SABnzbd luistert."
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Web Interface"
-msgstr "Gebruikersinterface"
+msgstr "Webinterface"
 
 #: sabnzbd/skintext.py
 msgid "Choose a skin."
@@ -2854,11 +2854,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Maximum line speed"
-msgstr "Maximale snelheid internet verbinding"
+msgstr "Maximale snelheid internetverbinding"
 
 #: sabnzbd/skintext.py
 msgid "Percentage of line speed"
-msgstr "Percentage van snelheid internet verbinding"
+msgstr "Percentage van snelheid internetverbinding"
 
 #: sabnzbd/skintext.py
 msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
@@ -3014,7 +3014,7 @@ msgstr "Volledige API"
 
 #: sabnzbd/skintext.py
 msgid "Full Web interface"
-msgstr "Volledig web interface"
+msgstr "Volledig webinterface"
 
 #: sabnzbd/skintext.py
 msgid "Only external access requires login"
@@ -3457,7 +3457,7 @@ msgstr "Onderbreek downloaden tijdens nabewerken."
 
 #: sabnzbd/skintext.py
 msgid "Ignore Samples"
-msgstr "Verwerking van \"sample\"-bestanden"
+msgstr "Negeer samples"
 
 #: sabnzbd/skintext.py
 msgid "Filter out sample files (e.g. video samples)."
@@ -3634,7 +3634,7 @@ msgstr "Balanceren van server belasting"
 
 #: sabnzbd/skintext.py
 msgid "Prevent load-balancing"
-msgstr "Schaken balancering uit"
+msgstr "Schakel balancering uit"
 
 #: sabnzbd/skintext.py
 msgid "Allow load-balancing"
@@ -4444,7 +4444,7 @@ msgstr "Start SABnzbd opnieuw"
 
 #: sabnzbd/skintext.py
 msgid "Status and interface options"
-msgstr "Status en interface opties"
+msgstr "Status en webinterface opties"
 
 #: sabnzbd/skintext.py
 msgid "Or drag and drop files in the window!"
@@ -4950,7 +4950,7 @@ msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
 msgstr ""
-"Tip: maak een \"Bladwijzer\" of \"Favoriet\" voor deze lokatie, zodat je "
+"Tip: maak een \"Bladwijzer\" of \"Favoriet\" voor deze locatie, zodat je "
 "SABnzbd gemakkelijk terug kunt vinden."
 
 #: sabnzbd/skintext.py [Will be appended with a wiki-link, adjust word order accordingly]
@@ -4987,13 +4987,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
-"Om te kunnen downloaden van Usenet, heb je een provider nodig. Het kan dat "
-"je internet provider dit aanbiedt, maar we bevelen een betaalde server aan. "
-"Heb je nog geen Usenet provider? Wij bevelen %s aan."
+"Om te kunnen downloaden van Usenet, heb je een provider nodig. Je Internet "
+"bedrijf heeft misschien een server, maar we bevelen een betaalde server aan."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Heb je nog geen Usenet provider? Wij bevelen %s aan."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -5318,16 +5320,6 @@ msgstr "URL ophalen mislukt; %s"
 #~ msgid ""
 #~ "Launch my internet browser with the SABnzbd page when the program starts."
 #~ msgstr "Start de web browser wanneer SABnzbd opstart."
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "Om te kunnen downloaden van Usenet, heb je een provider nodig. Je Internet "
-#~ "bedrijf heeft misschien een server, maar we bevelen een betaalde server aan."
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "Heb je nog geen Usenet provider? Wij bevelen %s aan."
 
 #~ msgid "This field is required."
 #~ msgstr "Verplicht veld"
