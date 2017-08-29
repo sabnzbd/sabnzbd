@@ -17,6 +17,7 @@ Release Notes - SABnzbd 2.3.0
 - macOS and Windows: Installers include Mozilla CA certificates
 
 ## Bugfixes since 2.2.1
+- Fix yet another potential stalling issue
 - Unexpected behavior when diskspace becomes critically low
 - API: Correct listing of downloaded and queued files in get_files
 - API: Jobs with Force priority should always have status 'Downloading'
