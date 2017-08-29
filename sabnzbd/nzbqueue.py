@@ -441,6 +441,12 @@ class NzbQueue(object):
                 removed.append(nzo_id)
         # Save with invalid nzo_id, to that only queue file is saved
         self.save('x')
+
+        # Any files left? Otherwise let's disconnect
+        if self.actives(grabs=False) == 0 and cfg.autodisconnect():
+            # This was the last job, close server connections
+            sabnzbd.downloader.Downloader.do.disconnect()
+
         return removed
 
     def remove_all(self, search=None):
