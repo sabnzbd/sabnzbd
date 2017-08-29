@@ -325,7 +325,7 @@ class NzbFile(TryList):
             article_return = article.get_article(server, servers)
             if article_return:
                 return article_return
-            elif tried_all_articles and not article.server_in_try_list(server):
+            elif tried_all_articles:
                 tried_all_articles = False
 
         # We are sure they are all tried
