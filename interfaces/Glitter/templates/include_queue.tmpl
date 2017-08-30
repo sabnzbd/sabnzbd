@@ -39,6 +39,11 @@
             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft2"></span>B $T('Glitter-free')
         </div>
         <!-- /ko -->
+        <div class="info-container-box-sorting" style="display: none" data-bind="visible: refreshRate() > 2">
+            <a href="#" data-bind="click: refresh">
+                <span class="glyphicon glyphicon-repeat" data-tooltip="true" data-placement="left" title="$T('Glitter-refresh')"></span>
+            </a>
+        </div>
         <div class="info-container-box-sorting dropdown" data-bind="visible: hasQueue()">
             <a href="#" data-toggle="dropdown">
                 <span class="glyphicon glyphicon-sort-by-alphabet" data-tooltip="true" data-placement="left" title="$T('cmenu-sorting')"></span>

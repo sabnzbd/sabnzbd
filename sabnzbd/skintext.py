@@ -856,6 +856,7 @@ SKIN_TEXT = {
     'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'),
     'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. Try again.'),
     'Glitter-pauseFor' : TT('Pause for...'),
+    'Glitter-refresh' : TT('Refresh'),
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
     'Glitter-sortAgeDesc' : TT('Sort by Age <small>Newest&rarr;Oldest</small>'),
     'Glitter-sortNameAsc' : TT('Sort by Name <small>A&rarr;Z</small>'),
