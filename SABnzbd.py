@@ -822,7 +822,7 @@ def main():
     logging_level = None
     web_dir = None
     vista_plus = False
-    vista64 = False
+    win64 = False
     repair = 0
     api_url = None
     no_login = False
@@ -947,8 +947,8 @@ def main():
 
     # Detect Windows variant
     if sabnzbd.WIN32:
-        vista_plus, vista64 = windows_variant()
-        sabnzbd.WIN64 = vista64
+        vista_plus, win64 = windows_variant()
+        sabnzbd.WIN64 = win64
 
     if not SQLITE_DLL:
         panic_sqlite(sabnzbd.MY_FULLNAME)
@@ -1151,14 +1151,12 @@ def main():
     logging.info('Full executable path = %s', sabnzbd.MY_FULLNAME)
     if sabnzbd.WIN32:
         suffix = ''
-        if vista_plus:
-            suffix = ' (=Vista+)'
-        if vista64:
-            suffix = ' (=Vista+ x64)'
+        if win64:
+            suffix = '(win64)'
         try:
-            logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
+            logging.info('Platform = %s %s', platform.platform(), suffix)
         except:
-            logging.info('Platform=%s <unknown> Class=%s', suffix, os.name)
+            logging.info('Platform = %s <unknown>', suffix)
     else:
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
@@ -1177,7 +1175,7 @@ def main():
         logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % preferredencoding)
 
     # SSL Information
-    logging.info("SSL version %s", ssl.OPENSSL_VERSION)
+    logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
     # Load (extra) certificates in the binary distributions
     if hasattr(sys, "frozen") and (sabnzbd.WIN32 or sabnzbd.DARWIN):
@@ -1190,7 +1188,7 @@ def main():
     if sabnzbd.cfg.log_level() > 1:
         # List the number of certificates available (can take up to 1.5 seconds)
         ctx = ssl.create_default_context()
-        logging.debug('Available certificates: %s', repr(ctx.cert_store_stats()))
+        logging.debug('Available certificates = %s', repr(ctx.cert_store_stats()))
 
         # Show IPv4/IPv6 address
         from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
@@ -1217,12 +1215,12 @@ def main():
         from sabnzbd.utils.getperformance import getpystone, getcpu
         pystoneperf = getpystone()
         if pystoneperf:
-            logging.debug('CPU Pystone available performance is %s', pystoneperf)
+            logging.debug('CPU Pystone available performance = %s', pystoneperf)
         else:
             logging.debug('CPU Pystone available performance could not be calculated')
         cpumodel = getcpu()  # Linux only
         if cpumodel:
-            logging.debug('CPU model name is %s', cpumodel)
+            logging.debug('CPU model = %s', cpumodel)
 
     logging.info('Read INI file %s', inifile)
 
