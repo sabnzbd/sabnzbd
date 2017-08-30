@@ -1179,20 +1179,20 @@ def main():
     # SSL Information
     logging.info("SSL version %s", ssl.OPENSSL_VERSION)
 
-    # Load (extra) certificates in the distributions
-    if hasattr(sys, "frozen"):
+    # Load (extra) certificates in the binary distributions
+    if hasattr(sys, "frozen") and (sabnzbd.WIN32 or sabnzbd.DARWIN):
         # The certifi package brings the latest certificates on build
         # This will cause the create_default_context to load it automatically
-        if sabnzbd.WIN32 or sabnzbd.DARWIN:
-            os.environ["SSL_CERT_FILE"] = os.path.join(sabnzbd.DIR_PROG, 'cacert.pem')
+        os.environ["SSL_CERT_FILE"] = os.path.join(sabnzbd.DIR_PROG, 'cacert.pem')
         logging.info('Loaded additional certificates from %s', os.environ["SSL_CERT_FILE"])
-
-        # List the number of certificates available
-        ctx = ssl.create_default_context()
-        logging.info('Available certificates: %s', repr(ctx.cert_store_stats()))
 
     # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
+        # List the number of certificates available (can take up to 1.5 seconds)
+        ctx = ssl.create_default_context()
+        logging.debug('Available certificates: %s', repr(ctx.cert_store_stats()))
+
+        # Show IPv4/IPv6 address
         from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 
         mylocalipv4 = localipv4()
