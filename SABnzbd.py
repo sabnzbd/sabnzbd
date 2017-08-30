@@ -1391,14 +1391,7 @@ def main():
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
-    # Bonjour needs a ip. Lets try to find it.
-    try:
-        z_host = socket.gethostbyname(socket.gethostname())
-    except socket.gaierror:
-        z_host = cherryhost
-
-    sabnzbd.zconfig.set_bonjour(z_host, cherryport)
-
+    # Window Service support
     mail = None
     if sabnzbd.WIN32:
         if enable_https:
@@ -1453,6 +1446,13 @@ def main():
         # Now's the time to check for a new version
         check_latest_version()
     autorestarted = False
+
+    # ZeroConfig/Bonjour needs a ip. Lets try to find it.
+    try:
+        z_host = socket.gethostbyname(socket.gethostname())
+    except socket.gaierror:
+        z_host = cherryhost
+    sabnzbd.zconfig.set_bonjour(z_host, cherryport)
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0
