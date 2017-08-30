@@ -98,9 +98,12 @@ def set_bonjour(host=None, port=None):
             txtRecord=pybonjour.TXTRecord({'path': '/sabnzbd/',
                                            'https': cfg.enable_https()}),
             callBack=_zeroconf_callback)
-    except sabnzbd.utils.pybonjour.BonjourError:
+    except sabnzbd.utils.pybonjour.BonjourError as e:
         _BONJOUR_OBJECT = None
-        logging.debug('Failed to start Bonjour service')
+        logging.debug('Failed to start Bonjour service: %s', str(e))
+    except:
+        _BONJOUR_OBJECT = None
+        logging.debug('Failed to start Bonjour service due to non-pybonjour related problem', exc_info=True)
     else:
         Thread(target=_bonjour_server, args=(refObject,))
         _BONJOUR_OBJECT = refObject
