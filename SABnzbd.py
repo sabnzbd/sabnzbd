@@ -37,6 +37,7 @@ import getopt
 import signal
 import socket
 import platform
+import ssl
 import time
 import re
 
@@ -97,7 +98,6 @@ import sabnzbd.downloader
 from sabnzbd.encoding import unicoder, deunicode
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-import sabnzbd.utils.sslinfo
 
 from threading import Thread
 
@@ -1177,8 +1177,7 @@ def main():
         logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % preferredencoding)
 
     # SSL Information
-    logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
-    logging.info("SSL known protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
+    logging.info("SSL version %s", ssl.OPENSSL_VERSION)
 
     # Load (extra) certificates in the distributions
     if hasattr(sys, "frozen"):
@@ -1189,7 +1188,6 @@ def main():
         logging.info('Loaded additional certificates from %s', os.environ["SSL_CERT_FILE"])
 
         # List the number of certificates available
-        import ssl
         ctx = ssl.create_default_context()
         logging.info('Available certificates: %s', repr(ctx.cert_store_stats()))
 

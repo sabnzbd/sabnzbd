@@ -27,6 +27,7 @@ import urllib
 import json
 import re
 import hashlib
+import ssl
 from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
@@ -54,7 +55,6 @@ from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.decoder import HAVE_YENC, SABYENC_ENABLED
-from sabnzbd.utils.sslinfo import ssl_version, ssl_protocols_labels
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 
@@ -1156,8 +1156,7 @@ class ConfigPage(object):
         conf['have_mt_par2'] = sabnzbd.newsunpack.PAR2_MT
 
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
-        conf['ssl_version'] = ssl_version()
-        conf['ssl_protocols'] = ', '.join(ssl_protocols_labels())
+        conf['ssl_version'] = ssl.OPENSSL_VERSION
 
         new = {}
         for svr in config.get_servers():
