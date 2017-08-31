@@ -1187,8 +1187,9 @@ def main():
     # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
         # List the number of certificates available (can take up to 1.5 seconds)
-        ctx = ssl.create_default_context()
-        logging.debug('Available certificates = %s', repr(ctx.cert_store_stats()))
+        if sabnzbd.HAVE_SSL_CONTEXT:
+            ctx = ssl.create_default_context()
+            logging.debug('Available certificates: %s', repr(ctx.cert_store_stats()))
 
         # Show IPv4/IPv6 address
         from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
