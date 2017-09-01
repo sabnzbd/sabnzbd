@@ -793,8 +793,8 @@ class Downloader(Thread):
                 # Remove this server from try_list
                 article.fetcher = None
 
-            # Allow all servers to iterate over each nzo/nzf again
-            sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
+                # Allow all servers to iterate over each nzo/nzf again
+                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
 
         if destroy:
             nw.terminate(quit=quit)
