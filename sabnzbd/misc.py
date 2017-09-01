@@ -1380,12 +1380,12 @@ def get_all_passwords(nzo):
             logging.debug('Read these passwords from file: %s', pws)
             passwords.extend(pws)
             logging.info('Read %s passwords from file %s', len(pws), pw_file)
+
+            # Check size
+            if len(pws) > 30:
+                logging.warning(T('Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords.'))
         except:
             logging.warning('Failed to read the passwords file %s', pw_file)
-
-    # Check size
-    if len(passwords) > 30:
-        logging.warning(T('Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords.'))
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
