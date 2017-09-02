@@ -125,8 +125,8 @@ def Raiser(root='', **kwargs):
     # Add extras
     if args:
         root = '%s?%s' % (root, urllib.urlencode(args))
-    # Optionally add the leading /sabnzbd/
-    if not root.startswith('/sabnzbd'):
+    # Optionally add the leading /sabnzbd/ (or what the user set)
+    if not root.startswith(cfg.url_base()):
         root = cherrypy.request.script_name + root
     # Send the redirect
     return cherrypy.HTTPRedirect(root)
@@ -224,9 +224,7 @@ def set_auth(conf):
         conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': 'SABnzbd',
                      'tools.basic_auth.users': get_users, 'tools.basic_auth.encrypt': encrypt_pwd})
         conf.update({'/api': {'tools.basic_auth.on': False},
-                     '/m/api': {'tools.basic_auth.on': False},
-                     '/sabnzbd/api': {'tools.basic_auth.on': False},
-                     '/sabnzbd/m/api': {'tools.basic_auth.on': False},
+                     '%s/api' % cfg.url_base(): {'tools.basic_auth.on': False},
                      })
     else:
         conf.update({'tools.basic_auth.on': False})
@@ -376,7 +374,7 @@ class MainPage(object):
             return template.respond()
         else:
             # Redirect to the setup wizard
-            raise cherrypy.HTTPRedirect('/sabnzbd/wizard/')
+            raise cherrypy.HTTPRedirect('%s/wizard/' % cfg.url_base())
 
     @cherrypy.expose
     def addFile(self, **kwargs):
@@ -1383,7 +1381,7 @@ SPECIAL_BOOL_LIST = \
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'req_completion_rate', 'wait_ext_drive', 'show_sysload',
+              'req_completion_rate', 'wait_ext_drive', 'show_sysload', 'url_base',
               'direct_unpack_threads', 'ipv6_servers', 'selftest_host', 'rating_host'
      )
 SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore')
@@ -1521,7 +1519,7 @@ class ConfigGeneral(object):
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_ranges'] = cfg.local_ranges.get_string()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
-        conf['caller_url'] = cherrypy.request.base + '/sabnzbd/'
+        conf['caller_url'] = cherrypy.request.base + cfg.url_base()
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)

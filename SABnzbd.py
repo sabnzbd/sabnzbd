@@ -1027,7 +1027,7 @@ def main():
                 pass
             else:
                 if not url:
-                    url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
+                    url = 'https://%s:%s%s/api?' % (browserhost, port, sabnzbd.cfg.url_base())
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
@@ -1056,7 +1056,7 @@ def main():
                 pass
             else:
                 if not url:
-                    url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
+                    url = 'http://%s:%s%s/api?' % (browserhost, cherryport, sabnzbd.cfg.url_base())
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
@@ -1373,7 +1373,7 @@ def main():
     # Make available from both URLs
     main_page = sabnzbd.interface.MainPage()
     cherrypy.tree.mount(main_page, '/', config=appconfig)
-    cherrypy.tree.mount(main_page, '/sabnzbd/', config=appconfig)
+    cherrypy.tree.mount(main_page, sabnzbd.cfg.url_base(), config=appconfig)
 
     # Set authentication for CherryPy
     sabnzbd.interface.set_auth(cherrypy.config)
@@ -1398,7 +1398,7 @@ def main():
             mode = 's'
         else:
             mode = ''
-        api_url = 'http%s://%s:%s/sabnzbd/api?apikey=%s' % (mode, browserhost, cherryport, sabnzbd.cfg.api_key())
+        api_url = 'http%s://%s:%s%s/api?apikey=%s' % (mode, browserhost, cherryport, sabnzbd.cfg.url_base(), sabnzbd.cfg.api_key())
 
         if sabnzbd.WIN_SERVICE:
             mail = MailSlot()
@@ -1431,9 +1431,9 @@ def main():
 
     # Set URL for browser
     if enable_https:
-        browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
+        browser_url = "https://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
     else:
-        browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
+        browser_url = "http://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
     sabnzbd.BROWSER_URL = browser_url
 
     if not autorestarted:

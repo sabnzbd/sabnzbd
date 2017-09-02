@@ -226,15 +226,13 @@ function do_restart() {
     $('.main-restarting').show()
 
     // What template
-    var arrPath = window.location.pathname.split('/');
-    var urlPath = (arrPath[1] == "m" || arrPath[2] == "m") ? '/sabnzbd/m/' : '/sabnzbd/';
     var switchedHTTPS = ($('#enable_https').is(':checked') == ($('#enable_https').data('original') === undefined))
     var portsUnchanged  = ($('#port').val() == $('#port').data('original')) && ($('#https_port').val() == $('#https_port').data('original'))
 
     // Are we on settings page or did nothing change?
     if(!$('body').hasClass('General') || (!switchedHTTPS && portsUnchanged)) {
         // Same as before
-        var urlTotal = window.location.origin + urlPath
+        var urlTotal = window.location.origin + urlBase
     } else {
         // Protocol and port depend on http(s) setting
         if($('#enable_https').is(':checked') && (window.location.protocol == 'https:' || !$('#https_port').val())) {
@@ -248,7 +246,7 @@ function do_restart() {
         }
 
         // We cannot make a good guess for the IP, so at least we assume that stays the same
-        var urlTotal = urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlPath;
+        var urlTotal = urlProtocol + '//' + window.location.hostname + ':' + urlPort + urlBase;
     }
 
     // Show where we are going to connect

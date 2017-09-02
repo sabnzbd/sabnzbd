@@ -275,7 +275,7 @@ history_limit = OptionNumber('misc', 'history_limit', 10, 0)
 wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
 marker_file = OptionStr('misc', 'nomedia_marker', '')
 ipv6_servers = OptionNumber('misc', 'ipv6_servers', 1, 0, 2)
-
+url_base = OptionStr('misc', 'url_base', '/sabnzbd')
 
 ##############################################################################
 # Config - Notifications

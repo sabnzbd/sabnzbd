@@ -1460,8 +1460,7 @@ def rss_qstatus():
     rss = RSS()
     rss.channel.title = "SABnzbd Queue"
     rss.channel.description = "Overview of current downloads"
-    rss.channel.link = "http://%s:%s/sabnzbd/queue" % (
-        cfg.cherryhost(), cfg.cherryport())
+    rss.channel.link = "http://%s:%s%s/queue" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
     rss.channel.language = "en"
 
     item = Item()
@@ -1492,7 +1491,7 @@ def rss_qstatus():
 
         item = Item()
         item.title = name
-        item.link = "http://%s:%s/sabnzbd/history" % (cfg.cherryhost(), cfg.cherryport())
+        item.link = "http://%s:%s%s/history" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
         item.guid = nzo_id
         status_line = []
         status_line.append('<tr>')
@@ -1642,6 +1641,7 @@ def build_header(webdir='', output=None):
         header['my_lcldata'] = sabnzbd.DIR_LCLDATA
         header['my_home'] = sabnzbd.DIR_HOME
         header['webdir'] = webdir or sabnzbd.WEB_DIR
+        header['url_base'] = cfg.url_base()
 
         header['nt'] = sabnzbd.WIN32
         header['darwin'] = sabnzbd.DARWIN
