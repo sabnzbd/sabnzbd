@@ -20,6 +20,7 @@
 ##############################################################################
 from threading import RLock, Condition
 
+DIR_LOCK = RLock()
 DOWNLOADER_CV = Condition(RLock())
 
 def synchronized(lock):
