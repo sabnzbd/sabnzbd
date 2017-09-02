@@ -502,14 +502,10 @@ class NzbParser(xml.sax.handler.ContentHandler):
             nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
 
             # Check if file was added with same name
-            if not cfg.allow_duplicate_files():
+            if cfg.reject_duplicate_files():
                 nzo_matches = filter(lambda x: (x.filename == nzf.filename), self.nzo.files)
                 if nzo_matches:
                     logging.info('File %s occured twice in NZB, discarding smaller file', nzf.filename)
-                    # Keep some logging how many were duplicates
-                    if 'duplicate_files' not in self.nzo.nzo_info:
-                        self.nzo.nzo_info['duplicate_files'] = 0
-                    self.nzo.nzo_info['duplicate_files'] += 1
 
                     # Which is smaller? Current or old one
                     if nzo_matches[0].bytes >= nzf.bytes:
@@ -897,10 +893,6 @@ class NzbObject(TryList):
             self.files.sort(cmp=nzf_cmp_date)
         else:
             self.files.sort(cmp=nzf_cmp_name)
-
-        # Warn if there were many duplicate files
-        if 'duplicate_files' in self.nzo_info and self.nzo_info['duplicate_files'] >= 10:
-            logging.warning(T('%d files with duplicate filenames were discared for "%s". Enable "allow_duplicate_files" to allow duplicate filenames.'), self.nzo_info['duplicate_files'], self.final_name)
 
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
