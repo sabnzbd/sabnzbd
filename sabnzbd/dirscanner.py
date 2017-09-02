@@ -30,7 +30,6 @@ import threading
 import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.decorators import synchronized, DIR_LOCK
 from sabnzbd.encoding import platform_encode
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
@@ -341,7 +340,6 @@ class DirScanner(threading.Thread):
 
     def scan(self):
         """ Do one scan of the watched folder """
-        @synchronized(DIR_LOCK)
         def run_dir(folder, catdir):
             try:
                 files = os.listdir(folder)

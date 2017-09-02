@@ -35,7 +35,7 @@ import stat
 from urlparse import urlparse
 
 import sabnzbd
-from sabnzbd.decorators import synchronized, DIR_LOCK
+from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
      GIGI, MEBI, DEF_CACHE_LIMIT
 import sabnzbd.config as config
@@ -864,6 +864,7 @@ def get_cache_limit():
 ##############################################################################
 # Locked directory operations to avoid problems with simultaneous add/remove
 ##############################################################################
+DIR_LOCK = threading.RLock()
 
 @synchronized(DIR_LOCK)
 def get_unique_path(dirpath, n=0, create_dir=True):
