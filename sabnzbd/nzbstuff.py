@@ -306,7 +306,7 @@ class NzbFile(TryList):
 
             # The parent is not in sync with the child, reset child and parent
             # This prevents stalling when server is placed on TryList too soon
-            if self.try_list != self.nzo.try_list:
+            if len(self.try_list) < len(self.nzo.try_list):
                 self.reset_try_list()
                 self.nzo.reset_try_list()
 
