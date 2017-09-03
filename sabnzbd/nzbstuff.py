@@ -990,10 +990,11 @@ class NzbObject(TryList):
                 # Don't postpone header-only-files, to extract all possible md5of16k
                 if setname and block and matcher(lparset, setname.lower()):
                     xnzf.set_par2(parset, vol, block)
-                    # Don't postpone if all par2 are desired and should be kept
-                    if not(cfg.enable_all_par() and not cfg.enable_par_cleanup()):
+                    # Don't postpone if all par2 are desired and should be kept or not repairing
+                    if self.repair and not(cfg.enable_all_par() and not cfg.enable_par_cleanup()):
                         self.extrapars[parset].append(xnzf)
                         self.files.remove(xnzf)
+
         # Sort the sets
         for setname in self.extrapars:
             self.extrapars[parset].sort(key=lambda x: x.blocks)
@@ -1017,8 +1018,7 @@ class NzbObject(TryList):
                 logging.debug('Got md5pack for set %s', nzf.setname)
                 self.md5packs[setname] = pack
                 # See if we need to postpone some pars
-                if self.repair:
-                    self.postpone_pars(nzf, setname)
+                self.postpone_pars(nzf, setname)
             else:
                 # Need to add this to the set, first need setname
                 for setname in self.md5packs:
