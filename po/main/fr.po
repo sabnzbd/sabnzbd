@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-25 07:48+0000\n"
+"POT-Creation-Date: 2017-09-02 13:51+0000\n"
 "PO-Revision-Date: 2017-08-21 19:45+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-26 05:30+0000\n"
+"X-Launchpad-Export-Date: 2017-09-03 05:49+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -495,17 +495,18 @@ msgstr ""
 "temps de post-traitement. Fonctionne uniquement pour les tâches qui ne "
 "nécessitent aucune réparation."
 
-#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Erreur lors de la suppression de %s"
-
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Impossible de lire %s"
 
-#: sabnzbd/dirscanner.py [Error message]
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error while adding %s, removing"
 msgstr "Erreur lors de l'ajout de %s, suppression"
+
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
+msgid "Error removing %s"
+msgstr "Erreur lors de la suppression de %s"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -1054,17 +1055,16 @@ msgstr ""
 "Paramètres ou fichiers PAR2 non valides, impossible de vérifier ou réparer."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr "Échec de la réparation, pas assez de blocs de réparation (manque %s)"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
 msgstr "Récupération de %s blocs..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
 msgstr "Récupération en cours"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "Échec de la réparation, pas assez de blocs de réparation (manque %s)"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1261,14 +1261,6 @@ msgstr "Dupliquer NZB"
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Mise en pause du doublon NZB \"%s\""
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid ""
-"%d files with duplicate filenames were discared for \"%s\". Enable "
-"\"allow_duplicate_files\" to allow duplicate filenames."
-msgstr ""
-"%d fichiers avec des noms en double ont été rejetés pour \"%s\". Cochez "
-"\"allow_duplicate_files\" pour autoriser les noms de fichiers en double."
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -4680,6 +4672,10 @@ msgstr "Désolé, nous n'avons pas pu interpréter ça. Essayez encore."
 msgid "Pause for..."
 msgstr "Mettre en pause pour…"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "Rafraîchir"
+
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Trier par Age <small>Moins récent&rarr;Plus récent</small>"
@@ -4735,10 +4731,6 @@ msgstr "Vider l'historique ?"
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "Vous devez activer JavaScript pour que Plush puisse fonctionner !"
-
-#: sabnzbd/skintext.py
-msgid "Refresh"
-msgstr "Rafraîchir"
 
 #: sabnzbd/skintext.py
 msgid "Options"
