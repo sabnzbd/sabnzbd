@@ -304,9 +304,9 @@ class NzbFile(TryList):
                 if self.nzo.precheck:
                     self.nzo.bytes_downloaded += article.bytes
 
-            # The parent is not in sync with the child, reset child and parent
-            # This prevents stalling when server is placed on TryList too soon
-            if len(self.try_list) < len(self.nzo.try_list):
+            # The parent trylist is filled to the top, maybe too soon
+            # This is a CPU-cheaper alternative to prevent stalling
+            if len(self.nzo.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
                 self.reset_try_list()
                 self.nzo.reset_try_list()
 

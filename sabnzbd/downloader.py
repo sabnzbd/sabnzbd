@@ -192,6 +192,7 @@ class Downloader(Thread):
 
         self.servers = []
         self.server_dict = {} # For faster lookups, but is not updated later!
+        self.server_nr = 0
         self._timers = {}
 
         for server in config.get_servers():
@@ -249,6 +250,9 @@ class Downloader(Thread):
                                             send_group, username, password, optional, retention)
             self.servers.append(server)
             self.server_dict[newserver] = server
+
+        # Update server-count
+        self.server_nr = len(self.servers)
 
         return
 
