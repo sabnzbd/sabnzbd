@@ -1725,6 +1725,13 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                     # Need to reset it to avoid collision
                     old_name = None
 
+                else:
+                    # It's scanning extra files that don't belong to the set
+                    # This can take a while
+                    verifynum += 1
+                    nzo.status = Status.VERIFYING
+                    nzo.set_action_line(T('Checking extra files'), '%02d' % verifynum)
+
                 if joinables:
                     # Find out if a joinable file has been used for joining
                     uline = unicoder(line)
