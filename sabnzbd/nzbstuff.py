@@ -300,9 +300,7 @@ class NzbFile(TryList):
             self.articles.remove(article)
             if found:
                 self.bytes_left -= article.bytes
-                # To keep counter correct for pre-check
-                if self.nzo.precheck:
-                    self.nzo.bytes_downloaded += article.bytes
+                self.nzo.bytes_downloaded += article.bytes
 
             # The parent trylist is filled to the top, maybe too soon
             # This is a CPU-cheaper alternative to prevent stalling
@@ -953,7 +951,6 @@ class NzbObject(TryList):
             self.servercount[serverid] += bytes
         else:
             self.servercount[serverid] = bytes
-        self.bytes_downloaded += bytes
 
     @synchronized(NZO_LOCK)
     def remove_nzf(self, nzf):
