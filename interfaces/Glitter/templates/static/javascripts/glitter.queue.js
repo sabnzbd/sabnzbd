@@ -502,8 +502,8 @@ function QueueModel(parent, data) {
         if(self.status() == 'Checking') {
             return '#58A9FA'
         }
-        // Check for missing data, the value is arbitrary! (3%)
-        if(self.missing()/self.totalMB() > 0.03) {
+        // Check for missing data, the value is arbitrary! (2%)
+        if(self.missing()/self.totalMB() > 0.02) {
             return '#F8A34E'
         }
         // Set to grey, only when not Force download
@@ -527,8 +527,8 @@ function QueueModel(parent, data) {
 
     // Texts
     self.missingText= ko.pureComputed(function() {
-        // Check for missing data, the value is arbitrary! (3%)
-        if(self.missing()/self.totalMB() > 0.03) {
+        // Check for missing data, the value is arbitrary! (2%)
+        if(self.missing()/self.totalMB() > 0.02) {
             return self.missing().toFixed(0) + ' MB ' + glitterTranslate.misingArt
         }
         return;
