@@ -1357,7 +1357,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
                 slot['status'] = Status.DOWNLOADING
         else:
             # Ensure compatibility of API status
-            if status == Status.DELETED or (priority == TOP_PRIORITY and status != Status.PAUSED):
+            if status == Status.DELETED or priority == TOP_PRIORITY:
                 status = Status.DOWNLOADING
             slot['status'] = "%s" % (status)
 
