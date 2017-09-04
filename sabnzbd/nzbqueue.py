@@ -818,7 +818,7 @@ class NzbQueue(object):
 
         for nzo in self.__nzo_list:
             if nzo.status not in (Status.PAUSED, Status.CHECKING):
-                b_left = nzo.remaining()
+                b_left = nzo.remaining
                 bytes_total += nzo.bytes
                 bytes_left += b_left
                 q_size += 1
@@ -840,7 +840,7 @@ class NzbQueue(object):
         bytes_left = 0
         for nzo in self.__nzo_list:
             if nzo.status != 'Paused':
-                bytes_left += nzo.remaining()
+                bytes_left += nzo.remaining
         return bytes_left
 
     def is_empty(self):

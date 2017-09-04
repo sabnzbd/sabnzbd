@@ -300,7 +300,6 @@ class NzbFile(TryList):
             self.articles.remove(article)
             if found:
                 self.bytes_left -= article.bytes
-                self.nzo.bytes_downloaded += article.bytes
 
             # The parent trylist is filled to the top, maybe too soon
             # This is a CPU-cheaper alternative to prevent stalling
@@ -308,7 +307,6 @@ class NzbFile(TryList):
                 self.reset_try_list()
                 self.nzo.reset_try_list()
 
-            self.nzo.bytes_tried += article.bytes
         return (not self.articles)
 
     def set_par2(self, setname, vol, blocks):
@@ -564,9 +562,9 @@ class NzbParser(xml.sax.handler.ContentHandler):
 ##############################################################################
 NzbObjectSaver = (
     'filename', 'work_name', 'final_name', 'created', 'bytes', 'bytes_downloaded', 'bytes_tried',
-    'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date', 'md5of16k',
-    'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files', 'status',
-    'avg_bps_freq', 'avg_bps_total', 'priority', 'saved_articles', 'nzo_id',
+    'bytes_missing', 'repair', 'unpack', 'delete', 'script', 'cat', 'url', 'groups', 'avg_date',
+    'md5of16k', 'partable', 'extrapars', 'md5packs', 'files', 'files_table', 'finished_files',
+    'status', 'avg_bps_freq', 'avg_bps_total', 'priority', 'saved_articles', 'nzo_id',
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted', 'bad_articles',
     'duplicate', 'oversized', 'precheck', 'incomplete', 'reuse', 'meta',
@@ -624,6 +622,7 @@ class NzbObject(TryList):
         self.bytes = 0              # Original bytesize
         self.bytes_downloaded = 0   # Downloaded byte
         self.bytes_tried = 0        # Which bytes did we try
+        self.bytes_missing = 0      # Bytes missing
         self.bad_articles = 0       # How many bad (non-recoverable) articles
         self.repair = r             # True if we want to repair this set
         self.unpack = u             # True if we want to unpack this set
@@ -991,6 +990,8 @@ class NzbObject(TryList):
                     if self.repair and not(cfg.enable_all_par() and not cfg.enable_par_cleanup()):
                         self.extrapars[parset].append(xnzf)
                         self.files.remove(xnzf)
+                        # Already count these bytes as done
+                        self.bytes_tried += xnzf.bytes_left
 
         # Sort the sets
         for setname in self.extrapars:
@@ -1125,6 +1126,14 @@ class NzbObject(TryList):
             # Sometimes a few CRC errors are still fine, so we continue
             if self.bad_articles > MAX_BAD_ARTICLES:
                 self.abort_direct_unpacker()
+
+            # Increase missing bytes counter
+            self.bytes_missing += article.bytes
+        else:
+            # Increase counter of actually finished bytes
+            self.bytes_downloaded += article.bytes
+        # All the bytes that were tried
+        self.bytes_tried += article.bytes
 
         post_done = False
         if not self.files:
@@ -1285,10 +1294,12 @@ class NzbObject(TryList):
     def add_parfile(self, parfile):
         """ Add parfile to the files to be downloaded
             Resets trylist just to be sure
+            Adjust download-size accordingly
         """
         if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
             parfile.reset_all_try_lists()
             self.files.append(parfile)
+            self.bytes_tried -= parfile.bytes_left
 
     @synchronized(NZO_LOCK)
     def remove_parset(self, setname):
@@ -1610,6 +1621,11 @@ class NzbObject(TryList):
         else:
             return None
 
+    @property
+    def remaining(self):
+        """ Return remaining bytes """
+        return self.bytes - self.bytes_tried
+
     @synchronized(NZO_LOCK)
     def purge_data(self, keep_basic=False, del_files=False):
         """ Remove all admin info, 'keep_basic' preserves attribs and nzb """
@@ -1640,16 +1656,6 @@ class NzbObject(TryList):
                 except:
                     pass
 
-    def remaining(self):
-        """ Return remaining bytes """
-        bytes_par2 = 0
-        for _set in self.extrapars:
-            for nzf in self.extrapars[_set]:
-                bytes_par2 += nzf.bytes_left
-        # Subtract PAR2 sets and already downloaded bytes
-        bytes_left = self.bytes - self.bytes_tried - bytes_par2
-        return bytes_left
-
     def gather_info(self, full=False):
         queued_files = []
         if full:
@@ -1659,17 +1665,11 @@ class NzbObject(TryList):
                     if not nzf.completed and nzf not in self.files:
                         queued_files.append(nzf)
 
-        return PNFO(self.repair, self.unpack, self.delete, self.script,
-                self.nzo_id, self.final_name_labeled, self.password, {},
-                '', self.cat, self.url,
-                self.remaining(), self.bytes, self.avg_stamp, self.avg_date,
-                self.finished_files if full else [],
-                self.files if full else [],
-                queued_files,
-                self.status, self.priority,
-                self.nzo_info.get('missing_articles', 0),
-                self.bytes_tried - self.bytes_downloaded,
-                self.direct_unpacker.get_formatted_stats() if self.direct_unpacker else 0)
+        return PNFO(self.repair, self.unpack, self.delete, self.script, self.nzo_id,
+                self.final_name_labeled, self.password, {}, '', self.cat, self.url, self.remaining,
+                self.bytes, self.avg_stamp, self.avg_date, self.finished_files if full else [],
+                self.files if full else [], queued_files, self.status, self.priority,
+                self.bytes_missing, self.direct_unpacker.get_formatted_stats() if self.direct_unpacker else 0)
 
     def get_nzf_by_id(self, nzf_id):
         if nzf_id in self.files_table:
@@ -1805,6 +1805,8 @@ class NzbObject(TryList):
             self.renames = {}
         if self.bad_articles is None:
             self.bad_articles = 0
+        if self.bytes_missing is None:
+            self.bytes_missing = 0
         if self.bytes_tried is None:
             # Fill with old info
             self.bytes_tried = 0

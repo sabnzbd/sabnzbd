@@ -480,9 +480,9 @@ function QueueModel(parent, data) {
     self.status = ko.observable(data.status);
     self.isGrabbing = ko.observable(data.status == 'Grabbing' || data.avg_age == '-')
     self.totalMB = ko.observable(parseFloat(data.mb));
-    self.remainingMB = ko.observable(parseFloat(data.mbleft));
+    self.remainingMB = ko.observable(parseFloat(data.mbleft))
+    self.missingMB = ko.observable(parseFloat(data.mbmissing))
     self.avg_age = ko.observable(data.avg_age)
-    self.missing = ko.observable(parseFloat(data.mbmissing))
     self.direct_unpack = ko.observable(data.direct_unpack)
     self.category = ko.observable(data.cat);
     self.priority = ko.observable(parent.priorityName[data.priority]);
@@ -503,7 +503,7 @@ function QueueModel(parent, data) {
             return '#58A9FA'
         }
         // Check for missing data, the value is arbitrary! (2%)
-        if(self.missing()/self.totalMB() > 0.02) {
+        if(self.missingMB()/self.totalMB() > 0.02) {
             return '#F8A34E'
         }
         // Set to grey, only when not Force download
@@ -527,9 +527,9 @@ function QueueModel(parent, data) {
 
     // Texts
     self.missingText= ko.pureComputed(function() {
-        // Check for missing data, the value is arbitrary! (2%)
-        if(self.missing()/self.totalMB() > 0.02) {
-            return self.missing().toFixed(0) + ' MB ' + glitterTranslate.misingArt
+        // Check for missing data, the value is arbitrary! (1%)
+        if(self.missingMB()/self.totalMB() > 0.01) {
+            return self.missingMB().toFixed(0) + ' MB ' + glitterTranslate.misingArt
         }
         return;
     })
@@ -594,7 +594,7 @@ function QueueModel(parent, data) {
         self.totalMB(parseFloat(data.mb));
         self.remainingMB(parseFloat(data.mbleft));
         self.avg_age(data.avg_age)
-        self.missing(parseFloat(data.mbmissing))
+        self.missingMB(parseFloat(data.mbmissing))
         self.direct_unpack(data.direct_unpack)
         self.category(data.cat);
         self.priority(parent.priorityName[data.priority]);
