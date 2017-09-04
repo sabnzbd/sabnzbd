@@ -1168,43 +1168,54 @@ class NzbObject(TryList):
         # Looking for the longest name first, minimizes the chance on a mismatch
         files.sort(lambda x, y: len(y) - len(x))
 
-        nzfs = self.files[:]
         # The NZFs should be tried shortest first, to improve the chance on a proper match
+        nzfs = self.files[:]
         nzfs.sort(lambda x, y: len(x.subject) - len(y.subject))
 
         # Flag files from NZB that already exist as finished
         for filename in files[:]:
             for nzf in nzfs:
                 subject = sanitize_filename(name_extractor(nzf.subject))
-                filepath = os.path.join(wdir, filename)
                 if (nzf.filename == filename) or (subject == filename) or (filename in subject):
                     nzf.filename = filename
                     nzf.bytes_left = 0
-                    if sabnzbd.par2file.is_parfile(filepath):
-                        self.handle_par2(nzf, os.path.join(wdir, filename))
                     self.remove_nzf(nzf)
                     nzfs.remove(nzf)
                     files.remove(filename)
+
+                    # Set bytes correctly
                     self.bytes_tried += nzf.bytes
                     self.bytes_downloaded += nzf.bytes
+
+                    # Process par2 files
+                    filepath = os.path.join(wdir, filename)
+                    if sabnzbd.par2file.is_parfile(filepath):
+                        self.handle_par2(nzf, filepath)
                     break
 
+        # Create an NZF for each remaining existing file
         try:
-            # Create an NZF for each remaining existing file
             for filename in files:
-                tup = os.stat(os.path.join(wdir, filename))
-                tm = datetime.datetime.fromtimestamp(tup.st_mtime)
-                nzf = NzbFile(tm, '"%s"' % filename, [], tup.st_size, self)
-                self.files.append(nzf)
-                self.files_table[nzf.nzf_id] = nzf
-                self.bytes += nzf.bytes
-                nzf.filename = filename
-                nzf.bytes_left = 0
+                # Create NZB's using basic information
                 filepath = os.path.join(wdir, filename)
-                if sabnzbd.par2file.is_parfile(filepath):
-                    self.handle_par2(nzf, filepath)
-                self.remove_nzf(nzf)
-                logging.info('File %s added to job', filename)
+                if os.path.exists(filepath):
+                    tup = os.stat(filepath)
+                    tm = datetime.datetime.fromtimestamp(tup.st_mtime)
+                    nzf = NzbFile(tm, filename, [], tup.st_size, self)
+                    self.files.append(nzf)
+                    self.files_table[nzf.nzf_id] = nzf
+                    nzf.filename = filename
+                    self.remove_nzf(nzf)
+
+                    # Set bytes correctly
+                    self.bytes += nzf.bytes
+                    self.bytes_tried += nzf.bytes
+                    self.bytes_downloaded += nzf.bytes
+
+                    # Process par2 files
+                    if sabnzbd.par2file.is_parfile(filepath):
+                        self.handle_par2(nzf, filepath)
+                    logging.info('Existing file %s added to job', filename)
         except:
             logging.debug('Bad NZB handling')
             logging.info("Traceback: ", exc_info=True)
