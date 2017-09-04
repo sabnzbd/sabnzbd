@@ -546,6 +546,18 @@ function QueueModel(parent, data) {
         return rewriteTime(self.timeLeft());
     });
 
+    // Icon to better show force-priority
+    self.queueIcon = ko.computed(function() {
+        // Force comes first
+        if(self.pausedStatus()) {
+            return 'glyphicon-play'
+        }
+        if(self.priority() == 2) {
+            return 'glyphicon-forward'
+        }
+        return 'glyphicon-pause'
+    })
+
     // Extra queue column
     self.extraText = ko.pureComputed(function() {
         // Picked anything?

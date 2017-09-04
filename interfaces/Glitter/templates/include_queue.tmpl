@@ -88,7 +88,7 @@
             <tr class="queue-item">
                 <td>
                     <a href="#" data-bind="click: pauseToggle, attr: { 'title': pausedStatus() ? '$T('link-resume')' : '$T('link-pause')' }">
-                        <span class="hover-button glyphicon" data-bind="css: { 'glyphicon-play': pausedStatus(), 'glyphicon-pause': !pausedStatus() }"></span>
+                        <span class="hover-button glyphicon" data-bind="css: queueIcon"></span>
                     </a>
                 </td>
                 <td class="name">
