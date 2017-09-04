@@ -1451,10 +1451,12 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 # Target files
                 m = TARGET_RE.match(line)
                 if m:
+                    nzo.status = Status.VERIFYING
+                    verifynum += 1
                     if verifytotal == 0 or verifynum < verifytotal:
-                        verifynum += 1
                         nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
-                        nzo.status = Status.VERIFYING
+                    else:
+                        nzo.set_action_line(T('Checking extra files'), '%02d' % verifynum)
 
                     # Remove redundant extra files that are just duplicates of original ones
                     if 'duplicate data blocks' in line:
@@ -1696,9 +1698,9 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 # It prints the filename couple of times, so we save it to check
                 # 'datafiles' will not contain all data-files in par-set, only the
                 # ones that got scanned, but it's ouput is never used!
+                nzo.status = Status.VERIFYING
                 if line.split()[1] in ('Damaged', 'Found'):
                     verifynum += 1
-                    nzo.status = Status.VERIFYING
                     datafiles.append(TRANS(m.group(1)))
 
                     # Set old_name in case it was misnamed and found (not when we are joining)
@@ -1729,7 +1731,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                     # It's scanning extra files that don't belong to the set
                     # This can take a while
                     verifynum += 1
-                    nzo.status = Status.VERIFYING
                     nzo.set_action_line(T('Checking extra files'), '%02d' % verifynum)
 
                 if joinables:
