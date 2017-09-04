@@ -549,11 +549,11 @@ function QueueModel(parent, data) {
     // Icon to better show force-priority
     self.queueIcon = ko.computed(function() {
         // Force comes first
-        if(self.pausedStatus()) {
-            return 'glyphicon-play'
-        }
         if(self.priority() == 2) {
             return 'glyphicon-forward'
+        }
+        if(self.pausedStatus()) {
+            return 'glyphicon-play'
         }
         return 'glyphicon-pause'
     })

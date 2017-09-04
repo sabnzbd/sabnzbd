@@ -817,7 +817,7 @@ class NzbQueue(object):
         n = 0
 
         for nzo in self.__nzo_list:
-            if nzo.status not in (Status.PAUSED, Status.CHECKING):
+            if nzo.status not in (Status.PAUSED, Status.CHECKING) or nzo.priority == TOP_PRIORITY:
                 b_left = nzo.remaining
                 bytes_total += nzo.bytes
                 bytes_left += b_left
