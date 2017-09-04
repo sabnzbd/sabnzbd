@@ -1729,9 +1729,10 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
 
                 else:
                     # It's scanning extra files that don't belong to the set
-                    # This can take a while
+                    # For damaged files it reports the filename twice, so only then start
                     verifynum += 1
-                    nzo.set_action_line(T('Checking extra files'), '%02d' % verifynum)
+                    if verifynum / 2 > verifytotal:
+                        nzo.set_action_line(T('Checking extra files'), '%02d' % verifynum)
 
                 if joinables:
                     # Find out if a joinable file has been used for joining
