@@ -864,6 +864,17 @@ class NzbQueue(object):
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 empty.append(nzo)
 
+            # Stall prevention by checking if all servers are in the trylist
+            # This is a CPU-cheaper alternative to prevent stalling
+            if len(nzo.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
+                # Maybe the NZF's need a reset too?
+                for nzf in nzo.files:
+                    if len(nzf.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
+                        # We do not want to reset all article trylists, they are good
+                        nzf.reset_try_list()
+                # Reset main trylist, minimal performance impact
+                nzo.reset_try_list()
+
         for nzo in empty:
             self.end_job(nzo)
 

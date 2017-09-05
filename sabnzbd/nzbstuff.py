@@ -301,12 +301,6 @@ class NzbFile(TryList):
             if found:
                 self.bytes_left -= article.bytes
 
-            # The parent trylist is filled to the top, maybe too soon
-            # This is a CPU-cheaper alternative to prevent stalling
-            if len(self.nzo.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
-                self.reset_try_list()
-                self.nzo.reset_try_list()
-
         return (not self.articles)
 
     def set_par2(self, setname, vol, blocks):
