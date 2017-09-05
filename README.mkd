@@ -1,5 +1,17 @@
-Release Notes - SABnzbd 2.3.0 Alpha 1
+Release Notes - SABnzbd 2.3.0 Alpha 2
 =========================================================
+
+## Changes and bugfixes since 2.3.0 Alpha 1
+- Specials Config page could not be loaded
+- Crash when adding new jobs
+- Further stalling-detection improvements
+- Crash when a job was set to only Download
+- Display of download progress and missing data improved
+- Retried jobs would show incorrect download progress
+- Different icon for downloads with Force priority
+- Show progress during verification of extra files
+- API: 'missing' field removed, use 'mbmissing'
+
 
 ## Changes since 2.2.1
 - Option to limit Servers to specific Categories removed
