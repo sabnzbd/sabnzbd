@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-09-02 13:51+0000\n"
-"PO-Revision-Date: 2017-09-01 09:37+0000\n"
+"PO-Revision-Date: 2017-09-04 13:02+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-03 05:49+0000\n"
+"X-Launchpad-Export-Date: 2017-09-05 04:59+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -1037,7 +1037,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
-msgstr "Ophalen van %s blokken..."
+msgstr "%s herstelblokken downloaden..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
@@ -1054,7 +1054,7 @@ msgstr "Repareren"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Repaired in %s"
-msgstr "[%s] Reparatie in %s"
+msgstr "[%s] Gerepareerd in %s"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py
@@ -1815,7 +1815,7 @@ msgstr "Script uitvoeren..."
 
 #: sabnzbd/skintext.py [PP status]
 msgid "Fetching extra blocks..."
-msgstr "Extra blokken ophalen..."
+msgstr "Extra herstelblokken downloaden..."
 
 #: sabnzbd/skintext.py [PP status]
 msgid "Quick Check..."
