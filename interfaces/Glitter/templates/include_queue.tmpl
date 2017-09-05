@@ -121,8 +121,8 @@
                 </td>
                 <td class="progress-indicator">
                     <div class="progress">
-                        <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentageRounded() + '; background-color: ' + progressColor() + ';' }">
-                            <strong data-bind="text: percentageRounded"></strong>
+                        <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentage() + '%; background-color: ' + progressColor() + ';' }">
+                            <strong data-bind="text: percentage() + '%'"></strong>
                             <i data-bind="text: missingText"></i>
                         </div>
                         <span data-bind="text: progressText"></span>

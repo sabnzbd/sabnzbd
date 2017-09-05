@@ -482,6 +482,7 @@ function QueueModel(parent, data) {
     self.totalMB = ko.observable(parseFloat(data.mb));
     self.remainingMB = ko.observable(parseFloat(data.mbleft))
     self.missingMB = ko.observable(parseFloat(data.mbmissing))
+    self.percentage = ko.observable(parseInt(data.percentage))
     self.avg_age = ko.observable(data.avg_age)
     self.direct_unpack = ko.observable(data.direct_unpack)
     self.category = ko.observable(data.cat);
@@ -514,15 +515,9 @@ function QueueModel(parent, data) {
         return '';
     });
 
-    // MB's and percentages
-    self.downloadedMB = ko.computed(function() {
-        return(self.totalMB() - self.remainingMB()).toFixed(0);
-    });
-    self.percentageRounded = ko.pureComputed(function() {
-        return fixPercentages(((self.downloadedMB() / self.totalMB()) * 100).toFixed(2))
-    })
+    // MB's
     self.progressText = ko.pureComputed(function() {
-        return self.downloadedMB() + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
+        return (self.totalMB() - self.remainingMB()).toFixed(0) + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
     })
 
     // Texts
@@ -593,8 +588,9 @@ function QueueModel(parent, data) {
         self.isGrabbing(data.status == 'Grabbing' || data.avg_age == '-')
         self.totalMB(parseFloat(data.mb));
         self.remainingMB(parseFloat(data.mbleft));
-        self.avg_age(data.avg_age)
         self.missingMB(parseFloat(data.mbmissing))
+        self.percentage(parseInt(data.percentage))
+        self.avg_age(data.avg_age)
         self.direct_unpack(data.direct_unpack)
         self.category(data.cat);
         self.priority(parent.priorityName[data.priority]);
