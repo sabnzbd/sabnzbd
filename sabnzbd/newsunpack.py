@@ -1764,8 +1764,10 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 nzo.status = Status.FAILED
 
         # Result of verification
-        elif line.startswith('All Files Complete'):
+        elif line.startswith('All Files Complete') or line.endswith('PAR File(s) Incomplete'):
             # Completed without damage!
+            # 'PAR File(s) Incomplete' is reported for success
+            # but when there are very similar filenames in the folder
             msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time.time() - start))
             nzo.set_unpack_info('Repair', msg)
             logging.info('Verified in %s, all files correct',
