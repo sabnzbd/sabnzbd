@@ -19,6 +19,10 @@ SABnzbd*.dmg
 # WingIDE project files
 *.wp[ru]
 
+# Testing folders
+.cache
+.xprocess
+
 # General junk
 *.keep
 *.bak
