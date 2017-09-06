@@ -176,6 +176,9 @@ class RSSQueue(object):
             if self.jobs:
                 for feed in self.jobs:
                     remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
+            else:
+                # Needs to be set to something
+                self.jobs = {}
         except:
             logging.warning(T('Cannot read %s'), RSS_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
