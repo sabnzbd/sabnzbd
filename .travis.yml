@@ -5,3 +5,7 @@ install:
   - pip install --upgrade -r tests/requirements.txt
 script:
   - pytest
+notifications:
+  email:
+    on_success: never
+    on_failure: always
