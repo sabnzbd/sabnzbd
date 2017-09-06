@@ -40,8 +40,8 @@ except ImportError:
 # SABnzbd modules
 import sabnzbd
 from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
-    DEFAULT_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, \
-    PAUSED_PRIORITY, TOP_PRIORITY, DUP_PRIORITY, REPAIR_PRIORITY, \
+    REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, \
+    LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY, \
     RENAMES_FILE, MAX_BAD_ARTICLES, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
@@ -618,6 +618,7 @@ class NzbObject(TryList):
         self.bytes_tried = 0        # Which bytes did we try
         self.bytes_missing = 0      # Bytes missing
         self.bad_articles = 0       # How many bad (non-recoverable) articles
+        self.set_priority(priority) # Parse priority
         self.repair = r             # True if we want to repair this set
         self.unpack = u             # True if we want to unpack this set
         self.delete = d             # True if we want to delete this set
@@ -647,11 +648,6 @@ class NzbObject(TryList):
         self.status = status
         self.avg_bps_freq = 0
         self.avg_bps_total = 0
-        try:
-            priority = int(priority)
-        except:
-            priority = DEFAULT_PRIORITY
-        self.priority = priority
 
         self.saved_articles = []
 
@@ -806,7 +802,8 @@ class NzbObject(TryList):
                 self.password = unicoder(password, True)
 
         # Determine category and find pp/script values
-        self.cat, pp_tmp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
+        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, priority)
+        self.set_priority(priority)
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp_tmp)
 
         # Run user pre-queue script if needed
@@ -819,10 +816,6 @@ class NzbObject(TryList):
                 pp = int(pp)
             except:
                 pp = None
-            try:
-                priority = int(priority)
-            except:
-                priority = None
             if accept < 1:
                 self.purge_data()
                 raise TypeError
@@ -834,7 +827,8 @@ class NzbObject(TryList):
                 self.fail_msg = T('Pre-queue script marked job as failed')
 
             # Re-evaluate results from pre-queue script
-            self.cat, pp, self.script, self.priority = cat_to_opts(cat, pp, script, priority)
+            self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, int_conv(priority))
+            self.set_priority(priority)
             self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
         else:
             accept = 1
@@ -1227,7 +1221,13 @@ class NzbObject(TryList):
         # Abort unpacking if not desired anymore
         if not self.unpack:
             self.abort_direct_unpacker()
-        self.save_to_disk()
+
+    def set_priority(self, value):
+        """ Check if this is a valid priority """
+        value = int_conv(value)
+        if value in (REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, \
+             LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY):
+            self.priority = value
 
     @property
     def final_name_labeled(self):

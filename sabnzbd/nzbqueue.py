@@ -27,7 +27,7 @@ import datetime
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, \
-    get_admin_path, remove_all, globber_full
+    get_admin_path, remove_all, globber_full, int_conv
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import notify_downloader
@@ -620,7 +620,7 @@ class NzbQueue(object):
     def __set_priority(self, nzo_id, priority):
         """ Sets the priority on the nzo and places it in the queue at the appropriate position """
         try:
-            priority = int(priority)
+            priority = int_conv(priority)
             nzo = self.__nzo_table[nzo_id]
             nzo_id_pos1 = -1
             pos = -1
@@ -640,7 +640,7 @@ class NzbQueue(object):
             if priority == self.__nzo_list[nzo_id_pos1].priority:
                 return nzo_id_pos1
 
-            nzo.priority = priority
+            nzo.set_priority(priority)
             if sabnzbd.scheduler.analyse(False, priority) and \
                nzo.status in (Status.CHECKING, Status.DOWNLOADING, Status.QUEUED):
                 nzo.status = Status.PAUSED
