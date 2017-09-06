@@ -21,12 +21,30 @@ tests.testhelper - Basic helper functions
 
 import urllib2
 import json
+import requests
 
 SAB_HOST = 'localhost'
 SAB_PORT = 8081
 
-def get_url_result(url=''):
-    return urllib2.urlopen('http://%s:%s/%s/?session=apikey' % (SAB_HOST, SAB_PORT, url)).read()
 
-def get_api_result(method='', args=''):
-    return json.loads(urllib2.urlopen('http://%s:%s/api?apikey=apikey&output=json&mode=%s&%s' % (SAB_HOST, SAB_PORT, method, args)).read())
+def get_url_result(url=''):
+    """ Do basic request to web page """
+    arguments = {'session': 'apikey'}
+    return requests.get('http://%s:%s/%s/' % (SAB_HOST, SAB_PORT, url), params=arguments).text
+
+
+def get_api_result(mode, extra_arguments={}):
+    """ Build JSON request to SABnzbd """
+    arguments = {'apikey': 'apikey', 'output': 'json', 'mode': mode}
+    arguments.update(extra_arguments)
+    r = requests.get('http://%s:%s/api' % (SAB_HOST, SAB_PORT), params=arguments)
+    return r.json()
+
+
+def upload_nzb(file):
+    """ Upload file and return request to queue-API call """
+    files = {'name': open(file, 'rb')}
+    arguments ={'apikey':'apikey', 'mode':'addfile'}
+    requests.post(url, files=files, data=arguments)
+    # Return what the queue looks like now
+    return get_api_result('queue')

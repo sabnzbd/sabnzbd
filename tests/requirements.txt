@@ -2,7 +2,7 @@
 cheetah
 cryptography
 sabyenc
-certifi
 
 # Testing
 pytest-xprocess
+requests

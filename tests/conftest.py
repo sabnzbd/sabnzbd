@@ -29,7 +29,7 @@ import testhelper
 
 from xprocess import ProcessStarter
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def sabnzbd(request, xprocess):
     # Get cache directory
     base_path = os.path.dirname(os.path.abspath(__file__))
