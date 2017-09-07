@@ -16,26 +16,37 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_startup - The most basic testing if things work
+tests.test_api_pages - The most basic testing if things work
 """
 
 import pytest
 import testhelper
 
-def test_main_pages(sabnzbd):
+
+def test_basic_api(sabnzbd_connect):
+    # Basic API test
+    assert 'queue' in testhelper.get_api_result('queue')
+    assert 'history' in testhelper.get_api_result('history')
+    assert 'status' in testhelper.get_api_result('fullstatus')
+    assert 'config' in testhelper.get_api_result('get_config')
+
+
+def test_main_pages(sabnzbd_connect):
     # See if the basic pages work
     assert 'Traceback' not in testhelper.get_url_result()
     assert 'Traceback' not in testhelper.get_url_result('history')
     assert 'Traceback' not in testhelper.get_url_result('queue')
     assert 'Traceback' not in testhelper.get_url_result('status')
 
-def test_wizard_pages(sabnzbd):
+
+def test_wizard_pages(sabnzbd_connect):
     # Test if wizard pages work
     assert 'Traceback' not in testhelper.get_url_result('wizard')
     assert 'Traceback' not in testhelper.get_url_result('wizard/one')
     assert 'Traceback' not in testhelper.get_url_result('wizard/two')
 
-def test_config_pages(sabnzbd):
+
+def test_config_pages(sabnzbd_connect):
     # Test if config pages work
     assert 'Traceback' not in testhelper.get_url_result('config')
     assert 'Traceback' not in testhelper.get_url_result('config/general')
@@ -48,9 +59,3 @@ def test_config_pages(sabnzbd):
     assert 'Traceback' not in testhelper.get_url_result('config/rss')
     assert 'Traceback' not in testhelper.get_url_result('config/special')
 
-def test_basic_api(sabnzbd):
-    # Basic API test
-    assert 'queue' in testhelper.get_api_result('queue')
-    assert 'history' in testhelper.get_api_result('history')
-    assert 'status' in testhelper.get_api_result('fullstatus')
-    assert 'config' in testhelper.get_api_result('get_config')

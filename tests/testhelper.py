@@ -42,9 +42,7 @@ def get_api_result(mode, extra_arguments={}):
 
 
 def upload_nzb(file):
-    """ Upload file and return request to queue-API call """
+    """ Upload file and return nzo_id reponse """
     files = {'name': open(file, 'rb')}
-    arguments ={'apikey':'apikey', 'mode':'addfile'}
-    requests.post(url, files=files, data=arguments)
-    # Return what the queue looks like now
-    return get_api_result('queue')
+    arguments ={'apikey':'apikey', 'mode':'addfile', 'output': 'json'}
+    return requests.post('http://%s:%s/api' % (SAB_HOST, SAB_PORT), files=files, data=arguments).json()

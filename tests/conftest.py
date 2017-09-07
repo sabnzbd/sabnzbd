@@ -30,7 +30,7 @@ import testhelper
 from xprocess import ProcessStarter
 
 @pytest.fixture(scope='session')
-def sabnzbd(request, xprocess):
+def sabnzbd_connect(request, xprocess):
     # Get cache directory
     base_path = os.path.dirname(os.path.abspath(__file__))
     cache_dir = os.path.join(base_path, 'cache')
@@ -58,9 +58,13 @@ def sabnzbd(request, xprocess):
     def shutdown_sabnzbd():
         # Gracefull shutdown request
         testhelper.get_url_result('shutdown')
-        # Wait 5s before removing, to finish shutdown
-        time.sleep(5)
-        shutil.rmtree(cache_dir)
+        # Takes a second to shutdown
+        for x in range(5):
+            try:
+                shutil.rmtree(cache_dir)
+                break
+            except:
+                time.sleep(1)
     request.addfinalizer(shutdown_sabnzbd)
 
     return xprocess.ensure("sabnzbd", Starter)
