@@ -7,7 +7,7 @@
     <input type="hidden" name="session" value="$session" />
     <div id="addServer">
         <div class="padding alt">
-            <button type="button" class="btn btn-default"  id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+            <button type="button" class="btn btn-default" id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
         </div>
     </div>
     <div class="section" id="addServerContent" style="display: none;">
@@ -407,10 +407,10 @@
             }
             \$(this).parent().next().toggle();
             \$(this).parent().next().next().toggle();
-            if (\$(this).attr("value") == "$T('showDetails')") {
-                \$(this).attr("value", "$T('hideDetails')");
+            if (\$(this).text().indexOf("$T('showDetails')") > 0) {
+                \$(this).html(\$(this).html().replace("$T('showDetails')", "$T('hideDetails')"));
             } else {
-                \$(this).attr("value", "$T('showDetails')");
+                \$(this).html(\$(this).html().replace("$T('hideDetails')", "$T('showDetails')"));
             }
         });
 
