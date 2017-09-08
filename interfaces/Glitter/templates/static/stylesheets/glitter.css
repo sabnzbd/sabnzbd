@@ -404,7 +404,6 @@ thead {
 
 tr th {
     border-bottom: none !important;
-    visibility: hidden;
     padding: 0px !important;
     height: 0px;
 }
