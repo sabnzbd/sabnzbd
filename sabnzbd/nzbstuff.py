@@ -1638,7 +1638,7 @@ class NzbObject(TryList):
         for nzf in self.files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
 
-        for _set in self.extrapars:
+        for _set in list(self.extrapars):
             for nzf in self.extrapars[_set]:
                 sabnzbd.remove_data(nzf.nzf_id, wpath)
 
