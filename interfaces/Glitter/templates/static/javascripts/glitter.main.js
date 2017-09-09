@@ -547,17 +547,15 @@ function ViewModel() {
                     // Split warning into parts
                     var warningSplit = convertHTMLtoText(warning).split(/\n/);
 
-                    // Reformat CSS label and date
+                    // Reformat CSS label and date (correcting for UTC offset)
                     var warningData = {
                         index: index,
                         type: glitterTranslate.status[warningSplit[1]].slice(0, -1),
                         text: warningSplit.slice(2).join('<br/>').replace(/ /g, '\u00A0'), // Recombine if multiple lines
-                        date: displayDateTime(warningSplit[0], self.dateFormat(), 'YYYY-MM-DD HH:mm'),
-                        timestamp: moment(warningSplit[0], 'YYYY-MM-DD HH:mm').unix(),
+                        timestamp: moment.utc(warningSplit[0] , 'YYYY-MM-DD HH:mm').add(utcOffset,'s').unix(),
                         css: (warningSplit[1] == "ERROR" ? "danger" : warningSplit[1] == "WARNING" ? "warning" : "info"),
                         clear: self.clearWarnings
                     };
-
                     self.allWarnings.push(warningData)
                 })
             }

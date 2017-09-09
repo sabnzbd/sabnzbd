@@ -29,6 +29,7 @@ import threading
 import subprocess
 import socket
 import time
+import calendar
 import datetime
 import fnmatch
 import stat
@@ -58,6 +59,11 @@ def time_format(fmt):
         return fmt.replace('%H:%M:%S', '%I:%M:%S %p').replace('%H:%M', '%I:%M %p')
     else:
         return fmt
+
+
+def utc_offset():
+    """ Return the number of seconds the current timezone is from UTC """
+    return calendar.timegm(time.gmtime()) - calendar.timegm(time.localtime())
 
 
 def calc_age(date, trans=False):

@@ -55,7 +55,7 @@ from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
-from sabnzbd.misc import loadavg, to_units, diskspace, get_ext, \
+from sabnzbd.misc import loadavg, to_units, diskspace, get_ext, utc_offset, \
     get_filename, int_conv, globber, globber_full, time_format, remove_all, \
     starts_with_path, cat_convert, clip_path, create_https_certificates, calc_age
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
@@ -1628,6 +1628,7 @@ def build_header(webdir='', output=None):
         header['Tspec'] = Tspec
         header['Tx'] = Ttemplate
         header['uptime'] = uptime
+        header['utc_offset'] = utc_offset()
         header['color_scheme'] = sabnzbd.WEB_COLOR or ''
         header['helpuri'] = 'https://sabnzbd.org/wiki/'
 
