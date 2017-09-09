@@ -32,6 +32,7 @@ except:
 
 import logging
 import logging.handlers
+import traceback
 import os
 import getopt
 import signal
@@ -150,7 +151,11 @@ class guiHandler(logging.Handler):
             # Loose the oldest record
             self.store.pop(0)
         try:
-            self.store.append(self.format(record))
+            # Append traceback, if available
+            warning = {'type': record.levelname, 'text': record.msg % record.args, 'time': int(time.time())}
+            if record.exc_info:
+                warning['text'] = '%s\n%s' % (warning['text'], traceback.format_exc())
+            self.store.append(warning)
         except UnicodeDecodeError:
             # Catch elusive Unicode conversion problems
             pass

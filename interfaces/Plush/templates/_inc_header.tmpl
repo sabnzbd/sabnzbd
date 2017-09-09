@@ -99,7 +99,7 @@
         #if $loadavg#$T('ft-sysload'):&nbsp;<span id="loadavg">$loadavg</span>#end if#
       </div>
       <div id="nav_text_left">
-        <span id="warning_box"><b><a href="${path}status/#tabs-warnings" id="last_warning" title="#echo $last_warning.replace("\n"," ").replace('"',"'") #"><span id="have_warnings">$have_warnings</span> $T('warnings')</a></b></span>
+        <span id="warning_box"><b><a href="${path}status/#tabs-warnings" id="last_warning"><span id="have_warnings">$have_warnings</span> $T('warnings')</a></b></span>
         #if $pane=="Main"#
           &sdot; <a href="${path}config/general#web_dir">#echo $T('useGlitter').split('.')[0]#.</a>
           #if $new_release#&sdot; <a href="$new_rel_url" id="new_release" target="_blank">$T('Plush-updateAvailable').replace(' ','&nbsp;')</a>#end if#

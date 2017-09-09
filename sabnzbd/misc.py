@@ -61,11 +61,6 @@ def time_format(fmt):
         return fmt
 
 
-def utc_offset():
-    """ Return the number of seconds the current timezone is from UTC """
-    return calendar.timegm(time.gmtime()) - calendar.timegm(time.localtime())
-
-
 def calc_age(date, trans=False):
     """ Calculate the age difference between now and date.
         Value is returned as either days, hours, or minutes.

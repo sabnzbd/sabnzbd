@@ -55,7 +55,7 @@ from sabnzbd.utils.json import JsonWriter
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
-from sabnzbd.misc import loadavg, to_units, diskspace, get_ext, utc_offset, \
+from sabnzbd.misc import loadavg, to_units, diskspace, get_ext, \
     get_filename, int_conv, globber, globber_full, time_format, remove_all, \
     starts_with_path, cat_convert, clip_path, create_https_certificates, calc_age
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
@@ -1277,11 +1277,7 @@ def build_status(skip_dashboard=False, output=None):
             info['servers'].append((server.displayname, '', connected, serverconnections, server.ssl,
                                       server.active, server.errormsg, server.priority, server.optional))
 
-    wlist = []
-    for w in sabnzbd.GUIHANDLER.content():
-        w = w.replace('WARNING', T('WARNING:')).replace('ERROR', T('ERROR:'))
-        wlist.insert(0, unicoder(w))
-    info['warnings'] = wlist
+    info['warnings'] = sabnzbd.GUIHANDLER.content()
 
     return info
 
@@ -1628,14 +1624,11 @@ def build_header(webdir='', output=None):
         header['Tspec'] = Tspec
         header['Tx'] = Ttemplate
         header['uptime'] = uptime
-        header['utc_offset'] = utc_offset()
         header['color_scheme'] = sabnzbd.WEB_COLOR or ''
         header['helpuri'] = 'https://sabnzbd.org/wiki/'
 
         header['restart_req'] = sabnzbd.RESTART_REQ
         header['pid'] = os.getpid()
-
-        header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', ('WARNING:')).replace('ERROR', T('ERROR:'))
         header['active_lang'] = cfg.language()
 
         header['my_lcldata'] = sabnzbd.DIR_LCLDATA

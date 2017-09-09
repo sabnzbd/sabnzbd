@@ -6,7 +6,7 @@
     $.plush.queuenoofslots = $noofslots;
     $.plush.SetQueueSpeedLimit('$speedlimit', '$speedlimit_abs');
     $.plush.SetQueueFinishAction('$finishaction');
-    $.plush.SetWarnings($have_warnings,"<!--#echo $last_warning.replace("\n"," ").replace('"',"'").replace('\\','\\\\') #-->");
+    $.plush.SetWarnings($have_warnings,"");
     $.plush.SetQueuePauseInfo(<!--#if $paused#-->true<!--#else#-->false<!--#end if#-->,'$pause_int');
     $.plush.SetQueueETAStats("<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->",<!--#echo "%.0f" % float($kbpersec)#-->,'$timeleft','$T('eta'): $eta');
 
