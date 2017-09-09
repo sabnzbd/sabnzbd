@@ -1664,11 +1664,13 @@ class NzbObject(TryList):
     def gather_info(self, full=False):
         queued_files = []
         if full:
-            for _set in self.extrapars:
-                for nzf in self.extrapars[_set]:
-                    # Don't show files twice
-                    if not nzf.completed and nzf not in self.files:
-                        queued_files.append(nzf)
+            # extrapars can change during iteration
+            with NZO_LOCK:
+                for _set in self.extrapars:
+                    for nzf in self.extrapars[_set]:
+                        # Don't show files twice
+                        if not nzf.completed and nzf not in self.files:
+                            queued_files.append(nzf)
 
         return PNFO(self.repair, self.unpack, self.delete, self.script, self.nzo_id,
                 self.final_name_labeled, self.password, {}, '', self.cat, self.url, self.remaining,
