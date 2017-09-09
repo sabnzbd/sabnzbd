@@ -1763,6 +1763,10 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 nzo.set_unpack_info('Repair', msg)
                 nzo.status = Status.FAILED
 
+            # MultiPar can say 'PAR File(s) Incomplete' also when it needs more blocks
+            # But the Need-more-blocks message is always last, so force failure
+            finished = 0
+
         # Result of verification
         elif line.startswith('All Files Complete') or line.endswith('PAR File(s) Incomplete'):
             # Completed without damage!
