@@ -166,12 +166,6 @@ class guiHandler(logging.Handler):
     def count(self):
         return len(self.store)
 
-    def last(self):
-        if self.store:
-            return self.store[len(self.store) - 1]
-        else:
-            return ""
-
     def content(self):
         """ Return an array with last records """
         return self.store
@@ -207,11 +201,11 @@ def print_help():
     print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
+    print "      --ipv6_hosting <0|1> Listen on IPv6 address [::1] [*]"
     print "      --no-login           Start with username and password reset"
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
-    print "      --ipv6_hosting <0|1> Listen on IPv6 address [::1]"
 
 
 def print_version():
