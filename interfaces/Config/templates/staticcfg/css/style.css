@@ -1082,6 +1082,12 @@ input[type="checkbox"] {
     color: #666;
 }
 
+.host-warning {
+    color: #404040;
+    margin-left: 7px;
+    top: 3px;
+}
+
 .fileBrowser .glyphicon {
     margin-right: 2px;
     top: 1px;

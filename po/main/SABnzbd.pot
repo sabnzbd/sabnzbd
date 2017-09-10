@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-09-04 13:27+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-09-10 21:44+W. Europe Daylight Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -210,15 +210,6 @@ msgstr ""
 
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
-msgstr ""
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr ""
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
 msgstr ""
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
@@ -621,7 +612,7 @@ msgstr ""
 msgid "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
 msgstr ""
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid "Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin."
 msgstr ""
 
@@ -687,6 +678,10 @@ msgstr ""
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
+msgstr ""
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
 msgstr ""
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -983,12 +978,12 @@ msgid "Verifying"
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
-msgid "Checking"
+msgid "Checking extra files"
 msgstr ""
 
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
+msgid "Checking"
 msgstr ""
 
 #: sabnzbd/newsunpack.py [Error message]
@@ -2602,6 +2597,10 @@ msgid "Optional authentication password."
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "If the SABnzbd Host or Port is exposed to the internet, your current settings allow full external access to the SABnzbd interface."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Security"
 msgstr ""
 
@@ -4099,6 +4098,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "WARNING:"
 msgstr ""
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py

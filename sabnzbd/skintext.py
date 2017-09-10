@@ -342,6 +342,7 @@ SKIN_TEXT = {
     'explain-web_username' : TT('Optional authentication username.'),
     'opt-web_password' : TT('SABnzbd Password'),
     'explain-web_password' : TT('Optional authentication password.'),
+    'checkSafety' : TT('If the SABnzbd Host or Port is exposed to the internet, your current settings allow full external access to the SABnzbd interface.'),
     'security' : TT('Security'),
     'opt-enable_https' : TT('Enable HTTPS'),
     'opt-notInstalled' : TT('not installed'),
