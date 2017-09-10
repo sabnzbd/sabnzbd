@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-02 13:51+0000\n"
-"PO-Revision-Date: 2017-08-21 19:45+0000\n"
+"POT-Creation-Date: 2017-09-05 20:07+0000\n"
+"PO-Revision-Date: 2017-09-06 18:59+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-03 05:49+0000\n"
+"X-Launchpad-Export-Date: 2017-09-07 05:06+0000\n"
 "X-Generator: Launchpad (build 18446)\n"
 
 #: SABnzbd.py [Error message]
@@ -1095,6 +1095,10 @@ msgstr "Vérification en cours"
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
 msgstr "Vérification"
+
+#: sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr "Vérification des fichiers supplémentaires"
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
