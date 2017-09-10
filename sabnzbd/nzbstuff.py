@@ -1014,6 +1014,10 @@ class NzbObject(TryList):
                 # Change the properties
                 nzf.set_par2(setname, vol, block)
                 logging.debug('Got additional md5pack for set %s', nzf.setname)
+
+                # Make sure it exists, could be removed by newsunpack
+                if setname not in self.extrapars:
+                    self.extrapars[setname] = []
                 self.extrapars[setname].append(nzf)
 
         elif self.repair:
