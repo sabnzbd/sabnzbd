@@ -83,6 +83,7 @@ class URLGrabber(Thread):
                 # Re-queue when too early and still active
                 if future_nzo.wait and future_nzo.wait > time.time():
                     self.add(url, future_nzo)
+                    time.sleep(1.0)
                     continue
                 # Paused
                 if future_nzo.status == Status.PAUSED:
@@ -171,7 +172,6 @@ class URLGrabber(Thread):
                         elif item == 'x-dnzb-password':
                             nzo_info['password'] = value
                         elif item == 'retry-after':
-                            # For NZBFinder
                             wait = misc.int_conv(value)
 
                         # Rating fields
