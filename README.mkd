@@ -1,17 +1,5 @@
-Release Notes - SABnzbd 2.3.0 Alpha 2
+Release Notes - SABnzbd 2.3.0 RC 1
 =========================================================
-
-## Changes and bugfixes since 2.3.0 Alpha 1
-- Specials Config page could not be loaded
-- Crash when adding new jobs
-- Further stalling-detection improvements
-- Crash when a job was set to only Download
-- Display of download progress and missing data improved
-- Retried jobs would show incorrect download progress
-- Different icon for downloads with Force priority
-- Show progress during verification of extra files
-- API: 'missing' field removed, use 'mbmissing'
-
 
 ## Changes since 2.2.1
 - Option to limit Servers to specific Categories removed
@@ -26,6 +14,11 @@ Release Notes - SABnzbd 2.3.0 Alpha 2
 - Scheduler can pause/unpause jobs in specific category
 - Series Duplicate Checker can allow PROPER/REAL/REPACK versions
 - Refresh-icon in Glitter when refresh rate is above 2 seconds
+- Different icon for downloads with Force priority
+- Show progress during verification of extra files
+- All dates and times are now time zone independent
+- API: 'missing' field removed from 'queue', use 'mbmissing'
+- API: 'warnings' method now returns array for better handling
 - macOS: Bundled new OpenSSL version with support for TLSv1.2
 - macOS: No longer linked to system certificate store
 - macOS and Windows: Installers include Mozilla CA certificates
@@ -36,9 +29,12 @@ Release Notes - SABnzbd 2.3.0 Alpha 2
 - Remove Timeout tracebacks
 - Only warn if number of actual passwords is larger than 30
 - Unexpected behavior when diskspace becomes critically low
-- MacOS: Direct Unpack could hang in case of special charters in names
-- API: Correct listing of downloaded and queued files in get_files
+- Retried jobs would show incorrect download progress
+- API: Correct listing of downloaded and queued files in 'get_files'
+- API: Number of bytes missing and downloaded could be slightly off
 - API: Jobs with Force priority should always have status 'Downloading'
+- MacOS: Direct Unpack could hang in case of special characters in names
+- Windows: Download with many par2 sets could get listed as failed
 
 ## Upgrading from 2.1.x and older
 - Finish queue
