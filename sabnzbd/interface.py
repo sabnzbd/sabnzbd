@@ -2734,7 +2734,7 @@ LIST_PROWL = ('prowl_enable', 'prowl_cats', 'prowl_apikey',
 LIST_PUSHOVER = ('pushover_enable', 'pushover_cats', 'pushover_token', 'pushover_userkey', 'pushover_device',
                  'pushover_prio_startup', 'pushover_prio_download', 'pushover_prio_pp', 'pushover_prio_complete', 'pushover_prio_failed',
                  'pushover_prio_disk_full', 'pushover_prio_warning', 'pushover_prio_error', 'pushover_prio_queue_done', 'pushover_prio_other',
-                 'pushover_prio_new_login')
+                 'pushover_prio_new_login', 'pushover_emergency_retry', 'pushover_emergency_expire')
 LIST_PUSHBULLET = ('pushbullet_enable', 'pushbullet_cats', 'pushbullet_apikey', 'pushbullet_device',
                    'pushbullet_prio_startup', 'pushbullet_prio_download', 'pushbullet_prio_pp', 'pushbullet_prio_complete', 'pushbullet_prio_failed',
                    'pushbullet_prio_disk_full', 'pushbullet_prio_warning', 'pushbullet_prio_error', 'pushbullet_prio_queue_done', 'pushbullet_prio_other',
