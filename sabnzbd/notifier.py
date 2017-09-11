@@ -443,6 +443,8 @@ def send_pushover(title, msg, gtype, force=False, test=None):
         apikey = sabnzbd.cfg.pushover_token()
         userkey = sabnzbd.cfg.pushover_userkey()
         device = sabnzbd.cfg.pushover_device()
+        emergency_retry = sabnzbd.cfg.pushover_emergency_retry()
+        emergency_expire = sabnzbd.cfg.pushover_emergency_expire()
     if not apikey or not userkey:
         return T('Cannot send, missing required data')
 
@@ -452,27 +454,42 @@ def send_pushover(title, msg, gtype, force=False, test=None):
     if force:
         prio = 1
 
-    if prio > -3:
-        try:
-            conn = httplib.HTTPSConnection("api.pushover.net:443")
-            conn.request("POST", "/1/messages.json", urllib.urlencode({
-                "token": apikey,
-                "user": userkey,
-                "device": device,
-                "title": title,
-                "message": msg,
-                "priority": prio
-            }), {"Content-type": "application/x-www-form-urlencoded"})
-            res = conn.getresponse()
-            if res.status != 200:
-                logging.error(T('Bad response from Pushover (%s): %s'), res.status, res.read())
+    if prio == 2:
+        body = { "token": apikey,
+                 "user": userkey,
+                 "device": device,
+                 "title": title,
+                 "message": msg,
+                 "priority": prio,
+                 "retry": emergency_retry,
+                 "expire": emergency_expire
+        }
+        return do_send_pushover(body)
+    if prio > -3 and prio < 2:
+        body = { "token": apikey,
+                 "user": userkey,
+                 "device": device,
+                 "title": title,
+                 "message": msg,
+                 "priority": prio,
+        }
+        return do_send_pushover(body)
 
-        except:
-            logging.warning(T('Failed to send pushover message'))
-            logging.info("Traceback: ", exc_info=True)
+def do_send_pushover(body):
+    try:
+        conn = httplib.HTTPSConnection("api.pushover.net:443")
+        conn.request("POST", "/1/messages.json", urllib.urlencode(body),
+                     {"Content-type": "application/x-www-form-urlencoded"})
+        res = conn.getresponse()
+        if res.status != 200:
+            logging.error(T('Bad response from Pushover (%s): %s'), res.status, res.read())
             return T('Failed to send pushover message')
-    return ''
-
+        else:
+            return ''
+    except:
+        logging.warning(T('Failed to send pushover message'))
+        logging.info("Traceback: ", exc_info=True)
+        return T('Failed to send pushover message')
 
 def send_pushbullet(title, msg, gtype, force=False, test=None):
     """ Send message to Pushbullet """

@@ -666,6 +666,10 @@ SKIN_TEXT = {
     'explain-pushover_userkey' : TT('User Key (required)'), #: Pushover settings
     'opt-pushover_device' : TT('Device(s)'), #: Pushover settings
     'explain-pushover_device' : TT('Device(s) to which message should be sent'), #: Pushover settings
+    'opt-pushover_emergency_retry' : TT('Emergency retry'), #: Pushover settings
+    'explain-pushover_emergency_retry' : TT('How often (in seconds) the same notification will be sent'), #: Pushover settings
+    'opt-pushover_emergency_expire' : TT('Emergency expire'), #: Pushover settings
+    'explain-pushover_emergency_expire' : TT('How many seconds your notification will continue to be retried'), #: Pushover settings
     'section-Pushbullet' : TT('Pushbullet'), #: Header for Pushbullet notification section
     'opt-pushbullet_enable' : TT('Enable Pushbullet notifications'), #: Pushbullet settings
     'explain-pushbullet_enable' : TT('Requires a Pushbullet account'), #: Pushbulletsettings
