@@ -504,15 +504,9 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
         if seriesname and season and episode:
             series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
 
-    # See whatever the first password was, for the Retry
-    password = ''
-    passwords = get_all_passwords(nzo)
-    if passwords:
-        password = passwords[0]
-
     return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path,
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness,
-            fail_message, url_info, bytes, series, nzo.md5sum, password)
+            fail_message, url_info, bytes, series, nzo.md5sum, nzo.password)
 
 
 def unpack_history_info(item):
