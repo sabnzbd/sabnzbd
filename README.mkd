@@ -4,7 +4,7 @@ Release Notes - SABnzbd 2.3.0 RC 2
 ## Changes since 2.3.0 RC 1
 - Improved download performance 10-15% on CPU limited devices
   by removing redundant article verification.
-- Linux: Update of SABYenc to version 3.1.0 is required.
+- Linux: Update of SABYenc to version 3.1.1 is required.
 - Password file was loaded from disk excessively
 
 ## Changes since 2.2.1
