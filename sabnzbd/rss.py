@@ -622,7 +622,7 @@ def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgca
         jobs[link]['status'] = 'D'
         jobs[link]['time_downloaded'] = time.localtime()
         logging.info("Adding %s (%s) to queue", link, title)
-        sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname, feed_name=feed)
+        sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
     else:
         if star:
             jobs[link]['status'] = flag + '*'

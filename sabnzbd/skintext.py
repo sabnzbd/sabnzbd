@@ -804,6 +804,7 @@ SKIN_TEXT = {
     'Glitter-filtered' : TT('FILTERED'),
     'Glitter-waitSec' : TT('WAIT %s sec'),
     'Glitter-error' : TT('ERROR:'),
+    'Glitter-fetch' : TT('Fetch'),
     'Glitter-interfaceOptions' : TT('Web Interface'),
     'Glitter-interfaceRefresh' : TT('Refresh rate'),
     'Glitter-useGlobalOptions' : TT('Use global interface settings'),

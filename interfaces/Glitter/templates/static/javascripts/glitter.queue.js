@@ -533,6 +533,10 @@ function QueueModel(parent, data) {
         if(self.status() == 'Checking') {
             return glitterTranslate.checking
         }
+        // Grabbing
+        if(self.status() == 'Grabbing') {
+            return glitterTranslate.fetch
+        }
         // Pausing status
         if((self.parent.parent.downloadsPaused() && self.priority() != 2) || self.pausedStatus()) {
             return glitterTranslate.paused;
