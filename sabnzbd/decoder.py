@@ -144,7 +144,7 @@ class Decoder(Thread):
                     register = False
 
                 except CrcError, e:
-                    logme = T('CRC Error in %s (%s -> %s)') % (art_id, e.needcrc, e.gotcrc)
+                    logme = T('CRC Error in %s') % art_id
                     logging.info(logme)
 
                     data = e.data
