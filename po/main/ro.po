@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-05 20:07+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
 "PO-Revision-Date: 2016-07-29 16:20+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-06 05:07+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-11 06:25+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -228,15 +228,6 @@ msgstr "Notificări Test"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Reolvare adresă"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "EROARE:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "ATENŢIE:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -673,7 +664,7 @@ msgstr ""
 "Autentificare lipsă, vă rugăm să introduceţi numele de utilizator/parola de "
 "la Configurare->General în programul dumneavoastră terţ:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -751,6 +742,10 @@ msgstr "Parametru Incorect"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "Înapoi"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "EROARE:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1052,13 +1047,13 @@ msgid "Verifying"
 msgstr "Se verifică"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr ""
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
 msgstr "Se verifică"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr ""
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
@@ -2745,6 +2740,12 @@ msgid "Optional authentication password."
 msgstr "Parolă autentificare opţională"
 
 #: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Security"
 msgstr ""
 
@@ -4377,6 +4378,10 @@ msgstr "Am pierdut conexiunea cu SABnzbd.."
 #: sabnzbd/skintext.py
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "În cazul repornirii SABnzbd acest ecran va dispărea în mod automat!"
+
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "ATENŢIE:"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"

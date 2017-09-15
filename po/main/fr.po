@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-05 20:07+0000\n"
-"PO-Revision-Date: 2017-09-06 18:59+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"PO-Revision-Date: 2017-09-12 18:26+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-07 05:06+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-13 05:28+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -38,7 +38,7 @@ msgstr ""
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
-"Module SABYenc... NON trouvé! v%s attendue - https://sabnzbd.org/sabyenc"
+"Module SABYenc... NON trouvé ! v%s attendue - https://sabnzbd.org/sabyenc"
 
 #: SABnzbd.py [Error message]
 msgid "_yenc module... NOT found!"
@@ -237,15 +237,6 @@ msgstr "Test de Notification"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Résolution de l'adresse"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "ERREUR:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "AVERTISSEMENT :"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -701,7 +692,7 @@ msgstr ""
 "Authentification manquante, entrez vos identifiant/mot de passe de la "
 "configuration générale dans votre application tierce :"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -779,6 +770,10 @@ msgstr "Paramètre incorrect"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "Retour"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "ERREUR:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1092,13 +1087,13 @@ msgid "Verifying"
 msgstr "Vérification en cours"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr "Vérification des fichiers supplémentaires"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
 msgstr "Vérification"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr "Vérification des fichiers supplémentaires"
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
@@ -2813,6 +2808,14 @@ msgid "Optional authentication password."
 msgstr "Mot de passe pour l'authentification (facultatif)."
 
 #: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
+"Vos paramètres actuels permettent un accès externe complet à l'interface "
+"SABnzbd si l'hôte ou le port SABnzbd est ouvert vers l'internet."
+
+#: sabnzbd/skintext.py
 msgid "Security"
 msgstr "Sécurité"
 
@@ -4509,6 +4512,10 @@ msgstr "Connexion à SABnzbd perdue..."
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr ""
 "En cas de redémarrage de SABnzbd cet écran disparaîtra automatiquement!"
+
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "AVERTISSEMENT :"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"

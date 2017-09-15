@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-05 20:07+0000\n"
-"PO-Revision-Date: 2017-09-06 21:02+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"PO-Revision-Date: 2017-09-11 21:29+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-07 05:06+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-12 05:29+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -221,15 +221,6 @@ msgstr "בחן התראה"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;פותר כתובת"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "שגיאה:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "אזהרה:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -665,7 +656,7 @@ msgstr ""
 ":אימות חסר, אנא הכנס שם משתמש/סיסמה מתוך תצורה->כללי לתוך תכנית הצד השלישי "
 "שלך"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -741,6 +732,10 @@ msgstr "משתנה לא נכון"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "הקודם"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "שגיאה:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1043,13 +1038,13 @@ msgid "Verifying"
 msgstr "מוודא"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr "בודק קבצי תוספת"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
 msgstr "בודק"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr "בודק קבצי תוספת"
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
@@ -2732,6 +2727,14 @@ msgid "Optional authentication password."
 msgstr "סיסמת אימות רשותית"
 
 #: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
+".SABnzbd חשופים לאינטרנט, ההגדרות הנוכחיות שלך מאפשרות גישה חיצונית מלאה אל "
+"ממשק SABnzbd אם המארח או הפתחה של"
+
+#: sabnzbd/skintext.py
 msgid "Security"
 msgstr "אבטחה"
 
@@ -4360,6 +4363,10 @@ msgstr "..SABnzbd אבד חיבור אל"
 #: sabnzbd/skintext.py
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "!המסך יעלם באופן אוטומטי SABnzbd במקרה של הפעלה מחדש של"
+
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "אזהרה:"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"

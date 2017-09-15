@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-05 20:07+0000\n"
-"PO-Revision-Date: 2017-09-06 22:12+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"PO-Revision-Date: 2017-09-11 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-07 05:06+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-12 05:29+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -232,15 +232,6 @@ msgstr "Test melding"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Adres opzoeken"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "FOUT:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "WAARSCHUWING:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -690,7 +681,7 @@ msgstr ""
 "Autenticatie ontbreekt; vul gebruikersnaam en wachtwoord van 'Configuratie' "
 "=> 'Algemeen' in bij het externe programma:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -768,6 +759,10 @@ msgstr "Incorrecte parameter"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "Terug"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "FOUT:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1073,13 +1068,13 @@ msgid "Verifying"
 msgstr "Verifiëren"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr "Controleren van extra bestanden"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
 msgstr "Controleren"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr "Controleren van extra bestanden"
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
@@ -2777,6 +2772,15 @@ msgid "Optional authentication password."
 msgstr "Wachtwoord voor web login."
 
 #: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
+"Als de Host of Poort open is gesteld naar het internet zorgen de huidige "
+"instellingen ervoor dat de webinterface volledig beschikbaar is voor "
+"externen."
+
+#: sabnzbd/skintext.py
 msgid "Security"
 msgstr "Beveiliging"
 
@@ -4452,6 +4456,10 @@ msgstr "Verbinding met SABnzbd verbroken"
 #: sabnzbd/skintext.py
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "Wanneer SABnzbd opnieuw is gestart, gaat dit venster vanzelf weg!"
+
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "WAARSCHUWING:"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"

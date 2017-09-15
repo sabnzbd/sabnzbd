@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-05 20:07+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-06 05:08+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-11 06:25+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -219,15 +219,6 @@ msgstr "测试通知"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;正在解析地址"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "错误:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "警告:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -653,7 +644,7 @@ msgid ""
 "into your 3rd party program:"
 msgstr "缺身份认证信息，请在第三方程序中输入“配置”->“常规”中的用户名/密码:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -727,6 +718,10 @@ msgstr "参数不正确"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "返回"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "错误:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1026,13 +1021,13 @@ msgid "Verifying"
 msgstr "正在验证"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr ""
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
 msgstr "正在检查"
-
-#: sabnzbd/newsunpack.py
-msgid "Checking extra files"
-msgstr ""
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
@@ -2700,6 +2695,12 @@ msgid "Optional authentication password."
 msgstr "可选身份验证密码。"
 
 #: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Security"
 msgstr "安全"
 
@@ -4282,6 +4283,10 @@ msgstr "失去与 SABnzbd 的连接.."
 #: sabnzbd/skintext.py
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "SABnzbd 重启后本画面将自动消失!"
+
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "警告:"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
