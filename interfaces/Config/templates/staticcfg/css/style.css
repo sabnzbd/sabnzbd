@@ -1028,8 +1028,8 @@ input[type="checkbox"] {
     display: block;
     top: -7px;
     left: 50%;
-    width: 120px;
-    margin-left: -40px;
+    width: 150px;
+    margin-left: -50px;
     min-width: initial;
     opacity: 0.8;
 }
