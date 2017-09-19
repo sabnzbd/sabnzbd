@@ -550,7 +550,7 @@ function ViewModel() {
                     var warningData = {
                         index: index,
                         type: glitterTranslate.status[warning.type].slice(0, -1),
-                        text: warning.text.replace(/ /g, '\u00A0').replace(/(?:\r\n|\r|\n)/g, '<br />'),
+                        text: convertHTMLtoText(warning.text).replace(/ /g, '\u00A0').replace(/(?:\r\n|\r|\n)/g, '<br />'),
                         timestamp: warning.time,
                         css: (warning.type == "ERROR" ? "danger" : warning.type == "WARNING" ? "warning" : "info"),
                         clear: self.clearWarnings
