@@ -126,7 +126,7 @@ class HistoryDB(object):
                 else:
                     self.c.execute(command)
                 if save:
-                    self.save()
+                    self.con.commit()
                 return True
             except:
                 error = str(sys.exc_value)
@@ -196,14 +196,6 @@ class HistoryDB(object):
         """)
         self.execute('PRAGMA user_version = 2;')
 
-    def save(self):
-        """ Save database to disk """
-        try:
-            self.con.commit()
-        except:
-            logging.error(T('SQL Commit Failed, see log'))
-            logging.info("Traceback: ", exc_info=True)
-
     def close(self):
         """ Close database connection """
         try:
@@ -243,10 +235,8 @@ class HistoryDB(object):
                 jobs = [jobs]
 
             for job in jobs:
-                self.execute("""DELETE FROM history WHERE nzo_id=?""", (job,))
+                self.execute("""DELETE FROM history WHERE nzo_id=?""", (job,), save=True)
                 logging.info('Removing job %s from history', job)
-
-        self.save()
 
     def auto_history_purge(self):
         """ Remove history items based on the configured history-retention """
@@ -275,11 +265,10 @@ class HistoryDB(object):
         """ Add a new job entry to the database """
         t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
 
-        if self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
-        url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-        downloaded, completeness, fail_message, url_info, bytes, series, md5sum, password)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t):
-            self.save()
+        self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
+            url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
+            downloaded, completeness, fail_message, url_info, bytes, series, md5sum, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", t, save=True)
         logging.info('Added job %s to history', nzo.final_name)
 
     def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
