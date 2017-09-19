@@ -1461,6 +1461,7 @@ class NzbObject(TryList):
                             if not nzf.import_finished and not self.is_gone():
                                 logging.error(T('Error importing %s'), nzf)
                                 nzf_remove_list.append(nzf)
+                                nzf.nzo.pause()
                                 continue
                         else:
                             continue
