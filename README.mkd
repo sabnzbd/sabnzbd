@@ -1,11 +1,12 @@
-Release Notes - SABnzbd 2.3.0 RC 2
+Release Notes - SABnzbd 2.3.0
 =========================================================
 
-## Changes since 2.3.0 RC 1
+## SABYenc updated
 - Improved download performance 10-15% on CPU limited devices
-  by removing redundant article verification.
-- Linux: Update of SABYenc to version 3.1.1 is required.
-- Password file was loaded from disk excessively
+  by optimizations and by removing redundant article verification.
+  Linux/NAS: Update of SABYenc to version 3.3.1 is required.
+  Update your package or see https://sabnzbd.org/sabyenc
+  Windows/macOS: Update is included in the installers.
 
 ## Changes since 2.2.1
 - Option to limit Servers to specific Categories removed
@@ -15,7 +16,7 @@ Release Notes - SABnzbd 2.3.0 RC 2
 - Article-state (which servers are tried) is preserved after restart
 - Auto disconnect (if enabled) only after verification of last item
 - Slight performance improvement when fetching RSS-feeds
-- RSS-feed title is shown for URLs being grabbed
+- Job title from RSS-feed is shown for URLs being grabbed
 - URL grabbing can now be individually paused
 - Scheduler can pause/unpause jobs in specific category
 - Series Duplicate Checker can allow PROPER/REAL/REPACK versions
@@ -33,13 +34,16 @@ Release Notes - SABnzbd 2.3.0 RC 2
 - Reduce CPU usage with multiple servers
 - Fix yet another potential stalling issue
 - Remove Timeout tracebacks
+- Handle locked history database better
 - Only warn if number of actual passwords is larger than 30
 - Unexpected behavior when diskspace becomes critically low
 - Retried jobs would show incorrect download progress
+- Password file was loaded from disk excessively
 - API: Correct listing of downloaded and queued files in 'get_files'
 - API: Number of bytes missing and downloaded could be slightly off
 - API: Jobs with Force priority should always have status 'Downloading'
 - MacOS: Direct Unpack could hang in case of special characters in names
+- Windows: Unpack could fail if started instantly after previous one
 - Windows: Download with many par2 sets could get listed as failed
 
 ## Upgrading from 2.1.x and older
