@@ -105,11 +105,15 @@ msgstr "Posts will be paused until they are at least this age. Setting job prior
 msgid "Support the project, Donate!"
 msgstr "Support the project, donate!"
 
-msgid  "%d files with duplicate filenames were discared for \"%s\". Enable \"allow_duplicate_files\" to allow duplicate filenames."
-msgstr "%d files with duplicate filenames were discarded for \"%s\". Enable \"allow_duplicate_files\" to allow duplicate filenames."
-
 msgid "User script can flag job as failed"
 msgstr "Post-processing script can flag job as failed"
 
 msgid "When the user script returns a non-zero exit code, the job will be flagged as failed."
 msgstr "When the post-processing script returns a non-zero exit code, the job will be flagged as failed."
+
+msgid "unrar binary... NOT found"
+msgstr "unrar binary... NOT found!"
+
+msgid "Downloads will not unpacked."
+msgstr "Downloads will not be unpacked."
+

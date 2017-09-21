@@ -6,6 +6,7 @@
 
 ## issue: https://bugs.python.org/issue19264
 import os
+import time
 import ctypes
 import subprocess
 import _subprocess
@@ -13,6 +14,13 @@ from ctypes import byref, windll, c_char_p, c_wchar_p, c_void_p, \
      Structure, sizeof, c_wchar, WinError
 from ctypes.wintypes import BYTE, WORD, LPWSTR, BOOL, DWORD, LPVOID, \
      HANDLE
+
+
+##
+## Special counter because this function cannot
+## be called within 1 second from each other!
+##
+_NEXT_PROCESS_START = 0.0
 
 
 ##
@@ -86,6 +94,16 @@ def CreateProcess(executable, args, _p_attr, _t_attr,
     Python implementation of CreateProcess using CreateProcessW for Win32
 
     """
+    # Do we need to delay?
+    global _NEXT_PROCESS_START
+    diff_start = _NEXT_PROCESS_START - time.time()
+    if(diff_start > 0.0):
+        # Wait ourselves and make sure others also wait
+        _NEXT_PROCESS_START += 1.0
+        time.sleep(diff_start)
+    else:
+        _NEXT_PROCESS_START = time.time() + 1.0
+
     si = STARTUPINFOW(
         dwFlags=startup_info.dwFlags,
         wShowWindow=startup_info.wShowWindow,

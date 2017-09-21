@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:50+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-11 06:25+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -219,15 +219,6 @@ msgstr "测试通知"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;正在解析地址"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "错误:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "警告:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -459,17 +450,18 @@ msgid ""
 "time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "移除 %s 时出错"
-
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "无法读取 %s"
 
-#: sabnzbd/dirscanner.py [Error message]
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error while adding %s, removing"
 msgstr "加载 %s 出错，正在移除"
+
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
+msgid "Error removing %s"
+msgstr "移除 %s 时出错"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -652,7 +644,7 @@ msgid ""
 "into your 3rd party program:"
 msgstr "缺身份认证信息，请在第三方程序中输入“配置”->“常规”中的用户名/密码:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -726,6 +718,10 @@ msgstr "参数不正确"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "返回"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "错误:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -988,17 +984,16 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr "修复失败，修复块不足 (缺 %s 块)"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
 msgstr "正在装取 %s 块..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
 msgstr "正在装取"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "修复失败，修复块不足 (缺 %s 块)"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1024,6 +1019,10 @@ msgstr "磁盘空间已满"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Verifying"
 msgstr "正在验证"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
@@ -1188,12 +1187,6 @@ msgstr "重复的 NZB 文件"
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "正在暂停重复 NZB \"%s\""
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid ""
-"%d files with duplicate filenames were discared for \"%s\". Enable "
-"\"allow_duplicate_files\" to allow duplicate filenames."
-msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -2700,6 +2693,12 @@ msgstr "SABnzbd 密码"
 #: sabnzbd/skintext.py
 msgid "Optional authentication password."
 msgstr "可选身份验证密码。"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Security"
@@ -4285,6 +4284,10 @@ msgstr "失去与 SABnzbd 的连接.."
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "SABnzbd 重启后本画面将自动消失!"
 
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "警告:"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "刷新频率"
@@ -4447,6 +4450,10 @@ msgstr "抱歉，无法理解您的输入。请重试。"
 msgid "Pause for..."
 msgstr "暂停..."
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "刷新"
+
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "按发布时间排序 <small>最早&rarr;最新</small>"
@@ -4502,10 +4509,6 @@ msgstr "清空历史?"
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "您必须启用 JavaScript 才能使用 Plush 模板!"
-
-#: sabnzbd/skintext.py
-msgid "Refresh"
-msgstr "刷新"
 
 #: sabnzbd/skintext.py
 msgid "Options"
@@ -4807,10 +4810,13 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
-msgstr ""
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
+msgstr "要从 usenet 下载您需要有一家提供商的访问权限。您的 ISP 可能会为您提供权限，但推荐您选用付费的高级提供商。"
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "还没有 usenet 提供商r? 我们推荐试试 %s。"
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -5310,14 +5316,6 @@ msgstr "URL 装取失败; %s"
 #~ msgid ""
 #~ "Launch my internet browser with the SABnzbd page when the program starts."
 #~ msgstr "程序启动时启动互联网浏览器打开 SABnzbd 页面。"
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr "要从 usenet 下载您需要有一家提供商的访问权限。您的 ISP 可能会为您提供权限，但推荐您选用付费的高级提供商。"
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "还没有 usenet 提供商r? 我们推荐试试 %s。"
 
 #~ msgid "This field is required."
 #~ msgstr "该字段必填。"

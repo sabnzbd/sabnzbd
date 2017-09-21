@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-11 06:24+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -225,15 +225,6 @@ msgstr "Afprøv notifikation"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp; Server løsning"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "FEJL:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "ADVARSEL:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -471,17 +462,18 @@ msgid ""
 "time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Fejl ved fjernelse af  %s"
-
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Kan ikke læse %s"
 
-#: sabnzbd/dirscanner.py [Error message]
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error while adding %s, removing"
 msgstr "Det lykkedes ikke at tilføje  %s, slette"
+
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
+msgid "Error removing %s"
+msgstr "Fejl ved fjernelse af  %s"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -672,7 +664,7 @@ msgstr ""
 "Brugeroplysninger mangler, indtast brugernavn / password fra Konfiguration-> "
 "Generelt i dit tredjepartsprogram:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -750,6 +742,10 @@ msgstr "Fejl parameter"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "Tilbage"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "FEJL:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1014,17 +1010,16 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr "Reparation mislykkedes, ikke nok reparation blokke (%s mangler)"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
 msgstr "Henter %s block..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
 msgstr "Henter"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "Reparation mislykkedes, ikke nok reparation blokke (%s mangler)"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1050,6 +1045,10 @@ msgstr "Disk fuld"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Verifying"
 msgstr "Bekræfter"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
@@ -1214,12 +1213,6 @@ msgstr "Dublet NZB"
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Pause duplikeret NZB \"%s\""
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid ""
-"%d files with duplicate filenames were discared for \"%s\". Enable "
-"\"allow_duplicate_files\" to allow duplicate filenames."
-msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -2744,6 +2737,12 @@ msgstr "SABnzbd password"
 #: sabnzbd/skintext.py
 msgid "Optional authentication password."
 msgstr "Valgfrit password."
+
+#: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Security"
@@ -4391,6 +4390,10 @@ msgstr "Mistet forbindelsen til SABnzbd.."
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "I tilfælde af SABnzbd genstart vil denne skærm forsvinde automatisk!"
 
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "ADVARSEL:"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Opdateringsfrekvens"
@@ -4555,6 +4558,10 @@ msgstr "Vi kunne desværre ikke fortolke denne. Prøv igen."
 msgid "Pause for..."
 msgstr "Pause i..."
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "Opdatere"
+
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Sortere efter alder <small>Ældst&rarr;Nyeste</small>"
@@ -4610,10 +4617,6 @@ msgstr "Vil du virkelig tømme historiken?"
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "Du skal aktivere JavaScript for at få Plush til virke!"
-
-#: sabnzbd/skintext.py
-msgid "Refresh"
-msgstr "Opdatere"
 
 #: sabnzbd/skintext.py
 msgid "Options"
@@ -4921,10 +4924,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
+"For at hente fra usenet kræves der adgang fra en udbyder. Din "
+"internetudbyder kan give dig adgang, men en præmie udbyder anbefales."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Har du ingen usenet leverandør? Vi anbefaler at prøve %s."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -5258,16 +5266,6 @@ msgstr "URL hentning mislykkedes; %s"
 #~ msgid ""
 #~ "Launch my internet browser with the SABnzbd page when the program starts."
 #~ msgstr "Start webbrowseren med SABnzbd's siden når programmet startes."
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "For at hente fra usenet kræves der adgang fra en udbyder. Din "
-#~ "internetudbyder kan give dig adgang, men en præmie udbyder anbefales."
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "Har du ingen usenet leverandør? Vi anbefaler at prøve %s."
 
 #~ msgid "Please enter a whole number."
 #~ msgstr "Angiv et helt tal."

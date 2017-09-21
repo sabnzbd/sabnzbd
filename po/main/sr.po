@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
 "PO-Revision-Date: 2015-12-28 10:25+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-11 06:25+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -222,15 +222,6 @@ msgstr "Probno obaveštenje"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Решавање адресе"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "ГРЕШКА:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "ПАЖЊА:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -464,17 +455,18 @@ msgid ""
 "time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Greška pri uklanjanju %s"
-
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Неуспешно читање %s"
 
-#: sabnzbd/dirscanner.py [Error message]
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error while adding %s, removing"
 msgstr "Грешка додавања %s, уклањање"
+
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
+msgid "Error removing %s"
+msgstr "Greška pri uklanjanju %s"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -662,7 +654,7 @@ msgstr ""
 "Недостаје аутентификација, унети у спољни програм име/лозинку из Подешавања-"
 ">Опште:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -739,6 +731,10 @@ msgstr "Погрешан параметар"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "Назад"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "ГРЕШКА:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1003,17 +999,16 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr "Погрешна поправка, нема довољно блокова за поправку (фали %s)"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
 msgstr "Учитавање %s блокова..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
 msgstr "Добављам"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "Погрешна поправка, нема довољно блокова за поправку (фали %s)"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1039,6 +1034,10 @@ msgstr "Диск је пун"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Verifying"
 msgstr "Проверавање"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
@@ -1203,12 +1202,6 @@ msgstr ""
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Паузирам због дуплог NZB-а \"%s\""
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid ""
-"%d files with duplicate filenames were discared for \"%s\". Enable "
-"\"allow_duplicate_files\" to allow duplicate filenames."
-msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -2720,6 +2713,12 @@ msgstr "Лозинка SABnzbd-а"
 #: sabnzbd/skintext.py
 msgid "Optional authentication password."
 msgstr "Лозинка за аутентификацију (опционо)"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Security"
@@ -4345,6 +4344,10 @@ msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr ""
 "U slučaju ponovnog pokretanja SABnzbd-a ovaj prozor će nestati automatski!"
 
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "ПАЖЊА:"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Брзина освежавања"
@@ -4507,6 +4510,10 @@ msgstr "Žao nam je, nismo mogli to da interpretiramo. Pokušajte ponovo."
 msgid "Pause for..."
 msgstr "Паузирај за..."
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "Освежи"
+
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Среди по старост <small>Старије&rarr;Новије</small>"
@@ -4562,10 +4569,6 @@ msgstr "Очисти хронологију?"
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "За функционисање Plush-а упалите JavaScript!"
-
-#: sabnzbd/skintext.py
-msgid "Refresh"
-msgstr "Освежи"
 
 #: sabnzbd/skintext.py
 msgid "Options"
@@ -4871,10 +4874,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
+"За преузимање са 'usenet' треба Вам приступ привајдеру. Можда Вам Ваш ISP "
+"пружа приступ, било како премијум провајдер је препоручен."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Немате 'usenet' провајдер? Препоручујемо Вам %s."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -4937,9 +4945,6 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "This field is required."
 #~ msgstr "Ово поље је обавезно."
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "Немате 'usenet' провајдер? Препоручујемо Вам %s."
 
 #~ msgid "Access"
 #~ msgstr "Приступ"
@@ -5386,13 +5391,6 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid ""
 #~ "Launch my internet browser with the SABnzbd page when the program starts."
 #~ msgstr "Покрени мој претраживач са SABnzbd листом при покретању."
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "За преузимање са 'usenet' треба Вам приступ привајдеру. Можда Вам Ваш ISP "
-#~ "пружа приступ, било како премијум провајдер је препоручен."
 
 #~ msgid ""
 #~ "After SABnzbd has finished restarting you will be able to access it at the "

@@ -1,3 +1,4 @@
+<!--#import datetime#-->
 <script type="text/javascript">
 window.onload = function() {
   location = "../#/status"
@@ -36,7 +37,10 @@ $T('logging'):
 <!--#if $warnings#-->
   <h2>$T('lastWarnings') (<a class="config" onClick="lr('status/clearwarnings','', '-1', this.parentNode.id);">$T('clearWarnings')</a>)</h2>
   <!--#for $warn in $warnings#-->
-    $warn<br/>
+    <!--#set when = datetime.datetime.fromtimestamp($warn.time) #-->
+    $when<br>
+    $warn.type<br>
+    $warn.text<br>
   <!--#end for#-->
 <!--#end if#-->
 

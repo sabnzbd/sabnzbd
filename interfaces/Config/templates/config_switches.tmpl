@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configuration/2.2/switches"#-->
+<!--#set global $help_uri="configuration/2.3/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -103,6 +103,11 @@
                             <option value="1" <!--#if int($no_series_dupes) == 1 then 'selected="selected"' else ""#--> >$T('nodupes-ignore')</option>
                         </select>
                         <span class="desc">$T('explain-no_series_dupes')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="series_propercheck">$T('opt-series_propercheck')</label>
+                        <input type="checkbox" name="series_propercheck" id="series_propercheck" value="1" <!--#if int($series_propercheck) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-series_propercheck')</span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="pause_on_pwrar">$T('opt-pause_on_pwrar')</label>

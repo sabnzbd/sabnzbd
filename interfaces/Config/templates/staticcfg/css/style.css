@@ -1028,8 +1028,8 @@ input[type="checkbox"] {
     display: block;
     top: -7px;
     left: 50%;
-    width: 120px;
-    margin-left: -40px;
+    width: 150px;
+    margin-left: -50px;
     min-width: initial;
     opacity: 0.8;
 }
@@ -1067,7 +1067,6 @@ input[type="checkbox"] {
     display: none;
 }
 
-.alert-no-category,
 .alert-translate {
     display: none;
     margin: 5px 0px 0px;
@@ -1081,6 +1080,12 @@ input[type="checkbox"] {
     margin-left: 8px;
     top: 3px;
     color: #666;
+}
+
+.host-warning {
+    color: #404040;
+    margin-left: 7px;
+    top: 3px;
 }
 
 .fileBrowser .glyphicon {

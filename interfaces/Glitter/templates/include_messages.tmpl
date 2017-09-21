@@ -18,7 +18,7 @@
                 <tr>
                     <td class="table-messages-label">
                         <span class="label" data-bind="css: 'label-' + css, text: type"></span>
-                        <strong data-bind="text: date, attr: { 'data-timestamp': timestamp }"></strong>
+                        <strong data-bind="text: displayDateTime(timestamp, \$parent.dateFormat(), 'X'), attr: { 'data-timestamp': timestamp }"></strong>
                         <span class="queue-message-text" data-bind="html: text"></span>
                     </td>
                 </tr>

@@ -27,7 +27,7 @@ import datetime
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, \
-    get_admin_path, remove_all, globber_full
+    get_admin_path, remove_all, globber_full, int_conv
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import notify_downloader
@@ -441,6 +441,12 @@ class NzbQueue(object):
                 removed.append(nzo_id)
         # Save with invalid nzo_id, to that only queue file is saved
         self.save('x')
+
+        # Any files left? Otherwise let's disconnect
+        if self.actives(grabs=False) == 0 and cfg.autodisconnect():
+            # This was the last job, close server connections
+            sabnzbd.downloader.Downloader.do.disconnect()
+
         return removed
 
     def remove_all(self, search=None):
@@ -614,7 +620,7 @@ class NzbQueue(object):
     def __set_priority(self, nzo_id, priority):
         """ Sets the priority on the nzo and places it in the queue at the appropriate position """
         try:
-            priority = int(priority)
+            priority = int_conv(priority)
             nzo = self.__nzo_table[nzo_id]
             nzo_id_pos1 = -1
             pos = -1
@@ -634,7 +640,7 @@ class NzbQueue(object):
             if priority == self.__nzo_list[nzo_id_pos1].priority:
                 return nzo_id_pos1
 
-            nzo.priority = priority
+            nzo.set_priority(priority)
             if sabnzbd.scheduler.analyse(False, priority) and \
                nzo.status in (Status.CHECKING, Status.DOWNLOADING, Status.QUEUED):
                 nzo.status = Status.PAUSED
@@ -715,15 +721,13 @@ class NzbQueue(object):
     def get_article(self, server, servers):
         for nzo in self.__nzo_list:
             # Not when queue paused and not a forced item
-            if (nzo.status not in (Status.PAUSED, Status.GRABBING) and not sabnzbd.downloader.Downloader.do.paused) or nzo.priority == TOP_PRIORITY:
+            if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == TOP_PRIORITY:
                 # Check if past propagation delay, or forced
                 if not cfg.propagation_delay() or nzo.priority == TOP_PRIORITY or (nzo.avg_stamp + float(cfg.propagation_delay() * 60)) < time.time():
-                    # Don't try to get an article if server is in try_list of nzo and category allowed by server
-                    if nzo.server_allowed(server):
-                        if not nzo.server_in_try_list(server):
-                            article = nzo.get_article(server, servers)
-                            if article:
-                                return article
+                    if not nzo.server_in_try_list(server):
+                        article = nzo.get_article(server, servers)
+                        if article:
+                            return article
                     # Stop after first job that wasn't paused/propagating/etc
                     if self.__top_only:
                         return
@@ -758,7 +762,9 @@ class NzbQueue(object):
                     # Only start decoding if we have a filename and type
                     if filename and _type:
                         Assembler.do.process((nzo, nzf))
-
+                    elif filename.lower().endswith('.par2'):
+                        # Broken par2 file, try to get another one
+                        nzo.promote_par2(nzf)
                     else:
                         if file_has_articles(nzf):
                             logging.warning(T('%s -> Unknown encoding'), filename)
@@ -811,8 +817,8 @@ class NzbQueue(object):
         n = 0
 
         for nzo in self.__nzo_list:
-            if nzo.status not in (Status.PAUSED, Status.CHECKING):
-                b_left = nzo.remaining()
+            if nzo.status not in (Status.PAUSED, Status.CHECKING) or nzo.priority == TOP_PRIORITY:
+                b_left = nzo.remaining
                 bytes_total += nzo.bytes
                 bytes_left += b_left
                 q_size += 1
@@ -834,7 +840,7 @@ class NzbQueue(object):
         bytes_left = 0
         for nzo in self.__nzo_list:
             if nzo.status != 'Paused':
-                bytes_left += nzo.remaining()
+                bytes_left += nzo.remaining
         return bytes_left
 
     def is_empty(self):
@@ -858,18 +864,41 @@ class NzbQueue(object):
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 empty.append(nzo)
 
+            # Stall prevention by checking if all servers are in the trylist
+            # This is a CPU-cheaper alternative to prevent stalling
+            if len(nzo.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
+                # Maybe the NZF's need a reset too?
+                for nzf in nzo.files:
+                    if len(nzf.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
+                        # We do not want to reset all article trylists, they are good
+                        nzf.reset_try_list()
+                # Reset main trylist, minimal performance impact
+                nzo.reset_try_list()
+
         for nzo in empty:
             self.end_job(nzo)
 
     def pause_on_prio(self, priority):
         for nzo in self.__nzo_list:
-            if not nzo.futuretype and nzo.priority == priority:
+            if nzo.priority == priority:
                 nzo.pause()
 
     @notify_downloader
     def resume_on_prio(self, priority):
         for nzo in self.__nzo_list:
-            if not nzo.futuretype and nzo.priority == priority:
+            if nzo.priority == priority:
+                # Don't use nzo.resume() to avoid resetting job warning flags
+                nzo.status = Status.QUEUED
+
+    def pause_on_cat(self, cat):
+        for nzo in self.__nzo_list:
+            if nzo.cat == cat:
+                nzo.pause()
+
+    @notify_downloader
+    def resume_on_cat(self, cat):
+        for nzo in self.__nzo_list:
+            if nzo.cat == cat:
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
 

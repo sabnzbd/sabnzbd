@@ -229,19 +229,19 @@ class Wizard(object):
         for sock in socks:
             if sock:
                 if cfg.enable_https() and cfg.https_port():
-                    url = 'https://%s:%s/sabnzbd/' % (sock, cfg.https_port())
+                    url = 'https://%s:%s%s' % (sock, cfg.https_port(), cfg.url_base())
                 elif cfg.enable_https():
-                    url = 'https://%s:%s/sabnzbd/' % (sock, cfg.cherryport())
+                    url = 'https://%s:%s%s' % (sock, cfg.cherryport(), cfg.url_base())
                 else:
-                    url = 'http://%s:%s/sabnzbd/' % (sock, cfg.cherryport())
+                    url = 'http://%s:%s%s' % (sock, cfg.cherryport(), cfg.url_base())
 
                 urls.append(url)
 
         if cfg.enable_https() and cfg.https_port():
-            access_url = 'https://%s:%s/sabnzbd/' % (sock, cfg.https_port())
+            access_url = 'https://%s:%s%s' % (sock, cfg.https_port(), cfg.url_base())
         elif cfg.enable_https():
-            access_url = 'https://%s:%s/sabnzbd/' % (access_uri, cfg.cherryport())
+            access_url = 'https://%s:%s%s' % (access_uri, cfg.cherryport(), cfg.url_base())
         else:
-            access_url = 'http://%s:%s/sabnzbd/' % (access_uri, cfg.cherryport())
+            access_url = 'http://%s:%s%s' % (access_uri, cfg.cherryport(), cfg.url_base())
 
         return access_url, urls

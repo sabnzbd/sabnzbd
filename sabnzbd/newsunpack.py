@@ -69,7 +69,6 @@ SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
 SEVENZIP_RE = re.compile(r'\.7z$', re.I)
 SEVENMULTI_RE = re.compile(r'\.7z\.\d+$', re.I)
-FULLVOLPAR2_RE = re.compile(r'(.*[^.])(\.*vol[0-9]+\+[0-9]+\.par2)', re.I)
 TS_RE = re.compile(r'\.(\d+)\.(ts$)', re.I)
 
 PAR2_COMMAND = None
@@ -1043,14 +1042,10 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 ##############################################################################
 def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
-    # set the current nzo status to "Repairing". Used in History
-
-    assert isinstance(nzo, sabnzbd.nzbstuff.NzbObject)
-
     # Check if file exists, otherwise see if another is done
     parfile_path = os.path.join(workdir, parfile_nzf.filename)
-    if not os.path.exists(parfile_path) and parfile_nzf.extrapars:
-        for new_par in parfile_nzf.extrapars:
+    if not os.path.exists(parfile_path) and nzo.extrapars[setname]:
+        for new_par in nzo.extrapars[setname]:
             test_parfile = os.path.join(workdir, new_par.filename)
             if os.path.exists(test_parfile):
                 parfile_nzf = new_par
@@ -1059,31 +1054,29 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             # No file was found, we assume this set already finished
             return False, True
 
-    # Shorten just the workdir on Windows
     parfile = os.path.join(workdir, parfile_nzf.filename)
-
     old_dir_content = os.listdir(workdir)
     used_joinables = ()
     joinables = ()
     used_for_repair = ()
-    setpars = pars_of_set(workdir, setname)
     result = readd = False
 
+    # Need to copy now, gets pop-ed during repair
+    setpars = nzo.extrapars[setname][:]
+
+    # Start QuickCheck
     nzo.status = Status.QUICK_CHECK
     nzo.set_action_line(T('Repair'), T('Quick Checking'))
     qc_result = QuickCheck(setname, nzo)
     if qc_result:
         logging.info("Quick-check for %s is OK, skipping repair", setname)
         nzo.set_unpack_info('Repair', T('[%s] Quick Check OK') % unicoder(setname))
-        pars = setpars
         result = True
 
     if not result and cfg.enable_all_par():
         # Download all par2 files that haven't been downloaded yet
         readd = False
-        for extrapar in parfile_nzf.extrapars[:]:
-            parfile_nzf.extrapars.remove(extrapar)
-            parfile_nzf.nzo.remove_extrapar(extrapar)
+        for extrapar in nzo.extrapars[setname][:]:
             if extrapar not in nzo.finished_files and extrapar not in nzo.files:
                 nzo.add_parfile(extrapar)
                 readd = True
@@ -1102,11 +1095,9 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
 
             # Multipar or not?
             if sabnzbd.WIN32 and cfg.multipar():
-                finished, readd, pars, datafiles, used_joinables, used_for_repair = MultiPar_Verify(parfile, parfile_nzf, nzo,
-                                                                                     setname, joinables, single=single)
+                finished, readd, datafiles, used_joinables, used_for_repair = MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=single)
             else:
-                finished, readd, pars, datafiles, used_joinables, used_for_repair = PAR_Verify(parfile, parfile_nzf, nzo,
-                                                                                     setname, joinables, single=single)
+                finished, readd, datafiles, used_joinables, used_for_repair = PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=single)
 
             if finished:
                 result = True
@@ -1148,9 +1139,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
             deletables.extend(used_joinables)
             deletables.extend([os.path.join(workdir, f) for f in used_for_repair])
 
-            # Delete pars of the set and maybe extra ones that par2 found
-            deletables.extend([os.path.join(workdir, f) for f in setpars])
-            deletables.extend([os.path.join(workdir, f) for f in pars])
+            # Delete pars of the set
+            deletables.extend([os.path.join(workdir, nzf.filename) for nzf in setpars])
 
             for filepath in deletables:
                 if filepath in joinables:
@@ -1164,7 +1154,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Repairing failed, %s') % msg
-        logging.error(T('Error "%s" while running par2_repair on set %s'), msg, setname)
+        logging.error(T('Error "%s" while running par2_repair on set %s'), msg, setname, exc_info=True)
 
     return readd, result
 
@@ -1179,7 +1169,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
     """ Run par2 on par-set """
     used_joinables = []
     used_for_repair = []
-    extra_par2_name = None
     # set the current nzo status to "Verifying...". Used in History
     nzo.status = Status.VERIFYING
     start = time.time()
@@ -1221,10 +1210,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
     # par2multicore wants to see \\.\ paths on Windows
     # See: https://github.com/sabnzbd/sabnzbd/pull/771
     if sabnzbd.WIN32:
-        command = [x.replace('\\\\?\\', '\\\\.\\', 1) if x.startswith('\\\\?\\') else x for x in command]
+        command = [clip_path(x) if x.startswith('\\\\?\\') else x for x in command]
 
     # Run the external command
-    logging.debug('Starting par2: %s', command)
+    logging.info('Starting par2: %s', command)
     lines = []
     try:
         p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
@@ -1237,7 +1226,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
             p.stdin.close()
 
         # Set up our variables
-        pars = []
         datafiles = []
         renames = {}
         reconstructed = []
@@ -1283,16 +1271,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
             if 'Repairing:' not in line:
                 lines.append(line)
 
-            if extra_par2_name and line.startswith('Loading:') and line.endswith('%'):
-                continue
-            if extra_par2_name and line.startswith('Loaded '):
-                m = _RE_LOADED_PAR2.search(line)
-                if m and int(m.group(1)) > 0:
-                    used_for_repair.append(extra_par2_name)
-                extra_par2_name = None
-                continue
-            extra_par2_name = None
-
             if line.startswith(('Invalid option specified', 'Invalid thread option', 'Cannot specify recovery file count')):
                 msg = T('[%s] PAR2 received incorrect options, check your Config->Switches settings') % unicoder(setname)
                 nzo.set_unpack_info('Repair', msg)
@@ -1317,21 +1295,14 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 verifytotal = 0
                 verifynum = 0
 
-            elif line.startswith('Loading "'):
-                # Found an extra par2 file. Only the next line will tell whether it's usable
-                m = _RE_LOADING_PAR2.search(line)
-                if m and m.group(1).lower().endswith('.par2'):
-                    extra_par2_name = TRANS(m.group(1))
-
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
                 # Initialparfile probably didn't decode properly,
                 logging.info(T('Main packet not found...'))
-                extrapars = parfile_nzf.extrapars
-                logging.info("Extra pars = %s", extrapars)
+                logging.info("Extra pars = %s", nzo.extrapars[setname])
 
                 # Look for the smallest par2file
                 block_table = {}
-                for nzf in extrapars:
+                for nzf in nzo.extrapars[setname]:
                     if not nzf.completed:
                         block_table[int_conv(nzf.blocks)] = nzf
 
@@ -1340,81 +1311,30 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                     logging.info("Found new par2file %s", nzf.filename)
 
                     # Move from extrapar list to files to be downloaded
+                    # and remove it from the extrapars list
                     nzo.add_parfile(nzf)
-                    # Now set new par2 file as primary par2
-                    nzo.partable[setname] = nzf
-                    nzf.extrapars = extrapars
-                    parfile_nzf = []
-                    # mark for readd
                     readd = True
                 else:
-                    msg = T('Invalid par2 files, cannot verify or repair')
+                    msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg)
                     nzo.status = Status.FAILED
 
             elif line.startswith('You need'):
+                # We need more blocks, but are they available?
                 chunks = line.split()
                 needed_blocks = int(chunks[2])
-                avail_blocks = 0
-                logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-                extrapars = parfile_nzf.extrapars
-                block_table = {}
-                for nzf in extrapars:
-                    # Don't count extrapars that are completed already
-                    if nzf.completed:
-                        continue
-
-                    blocks = int_conv(nzf.blocks)
-
-                    avail_blocks += blocks
-
-                    if blocks not in block_table:
-                        block_table[blocks] = []
-
-                    block_table[blocks].append(nzf)
-
-                logging.info('%s blocks available', avail_blocks)
-
-                force = False
-                if (avail_blocks < needed_blocks) and (avail_blocks > 0):
-                    # Tell SAB that we always have enough blocks, so that
-                    # it will try to load all pars anyway
-                    msg = T('Repair failed, not enough repair blocks (%s short)') % str(int(needed_blocks - avail_blocks))
-                    nzo.fail_msg = msg
-                    msg = u'[%s] %s' % (unicoder(setname), msg)
-                    nzo.set_unpack_info('Repair', msg)
+                # Check if we have enough blocks
+                added_blocks = nzo.get_extra_blocks(setname, needed_blocks)
+                if added_blocks:
+                    msg = T('Fetching %s blocks...') % str(added_blocks)
+                    nzo.set_action_line(T('Fetching'), msg)
                     nzo.status = Status.FETCHING
-                    needed_blocks = avail_blocks
-                    force = True
-
-                if avail_blocks >= needed_blocks:
-                    added_blocks = 0
                     readd = True
-
-                    while added_blocks < needed_blocks:
-                        block_size = min(block_table.keys())
-                        extrapar_list = block_table[block_size]
-
-                        if extrapar_list:
-                            new_nzf = extrapar_list.pop()
-                            nzo.add_parfile(new_nzf)
-                            if new_nzf in extrapars:
-                                extrapars.remove(new_nzf)
-                            added_blocks += block_size
-
-                        else:
-                            block_table.pop(block_size)
-                    logging.info('Added %s blocks to %s', added_blocks, nzo.final_name)
-
-                    if not force:
-                        msg = T('Fetching %s blocks...') % str(added_blocks)
-                        nzo.status = Status.FETCHING
-                        nzo.set_action_line(T('Fetching'), msg)
-
                 else:
+                    # Failed
                     msg = T('Repair failed, not enough repair blocks (%s short)') % str(needed_blocks)
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
@@ -1528,20 +1448,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 elif line.startswith('Scanning:'):
                     pass
 
-                else:
-                    # Loading parity files
-                    m = LOADING_RE.match(line)
-                    if m:
-                        pars.append(TRANS(m.group(1)))
-                        continue
-
                 # Target files
                 m = TARGET_RE.match(line)
                 if m:
+                    nzo.status = Status.VERIFYING
+                    verifynum += 1
                     if verifytotal == 0 or verifynum < verifytotal:
-                        verifynum += 1
                         nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
-                        nzo.status = Status.VERIFYING
+                    else:
+                        nzo.set_action_line(T('Checking extra files'), '%02d' % verifynum)
 
                     # Remove redundant extra files that are just duplicates of original ones
                     if 'duplicate data blocks' in line:
@@ -1570,7 +1485,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
         # Use 'used_joinables' as a vehicle to get rid of the files
         used_joinables.extend(reconstructed)
 
-    return finished, readd, pars, datafiles, used_joinables, used_for_repair
+    return finished, readd, datafiles, used_joinables, used_for_repair
 
 _RE_FILENAME = re.compile(r'"([^"]+)"')
 
@@ -1603,7 +1518,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
     command.append(os.path.join(parfolder, wildcard))
 
     stup, need_shell, command, creationflags = build_command(command)
-    # CHANGE TO DEBUG LATER
     logging.info('Starting MultiPar: %s', command)
 
     lines = []
@@ -1617,7 +1531,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
         p.stdin.close()
 
     # Set up our variables
-    pars = []
     datafiles = []
     renames = {}
     reconstructed = []
@@ -1629,7 +1542,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
     verifynum = 0
     verifytotal = 0
 
-    in_parlist = False
     in_check = False
     in_verify = False
     in_repair = False
@@ -1678,13 +1590,12 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
 
         elif line.startswith('valid file is not found'):
             # Initialparfile probably didn't decode properly,
-            extrapars = parfile_nzf.extrapars
             logging.info(T('Main packet not found...'))
-            logging.info("Extra pars = %s", extrapars)
+            logging.info("Extra pars = %s", nzo.extrapars[setname])
 
             # Look for the smallest par2file
             block_table = {}
-            for nzf in extrapars:
+            for nzf in nzo.extrapars[setname]:
                 if not nzf.completed:
                     block_table[int_conv(nzf.blocks)] = nzf
 
@@ -1693,15 +1604,11 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 logging.info("Found new par2file %s", nzf.filename)
 
                 # Move from extrapar list to files to be downloaded
+                # and remove it from the extrapars list
                 nzo.add_parfile(nzf)
-                # Now set new par2 file as primary par2
-                nzo.partable[setname] = nzf
-                nzf.extrapars = extrapars
-                parfile_nzf = []
-                # mark for readd
                 readd = True
             else:
-                msg = T('Invalid par2 files, cannot verify or repair')
+                msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
                 nzo.fail_msg = msg
                 msg = u'[%s] %s' % (unicoder(setname), msg)
                 nzo.set_unpack_info('Repair', msg)
@@ -1715,18 +1622,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             nzo.status = Status.FAILED
 
         # ----------------- Start check/verify stage
-        # List of Par2 files we will use today
-        if line.startswith('PAR File list'):
-            in_parlist = True
-        if line.startswith('PAR File total size'):
-            # Ende of the Par2 listing
-            in_parlist = False
-        elif in_parlist:
-            m = _RE_FILENAME.search(line)
-            if m:
-                used_for_repair.append(TRANS(m.group(1)))
-                pars.append(TRANS(m.group(1)))
-
         elif line.startswith('Recovery Set ID'):
             # Remove files were MultiPar stores verification result when repaired succesfull
             recovery_id = line.split()[-1]
@@ -1803,9 +1698,9 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 # It prints the filename couple of times, so we save it to check
                 # 'datafiles' will not contain all data-files in par-set, only the
                 # ones that got scanned, but it's ouput is never used!
+                nzo.status = Status.VERIFYING
                 if line.split()[1] in ('Damaged', 'Found'):
                     verifynum += 1
-                    nzo.status = Status.VERIFYING
                     datafiles.append(TRANS(m.group(1)))
 
                     # Set old_name in case it was misnamed and found (not when we are joining)
@@ -1832,6 +1727,13 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                     # Need to reset it to avoid collision
                     old_name = None
 
+                else:
+                    # It's scanning extra files that don't belong to the set
+                    # For damaged files it reports the filename twice, so only then start
+                    verifynum += 1
+                    if verifynum / 2 > verifytotal:
+                        nzo.set_action_line(T('Checking extra files'), '%02d' % verifynum)
+
                 if joinables:
                     # Find out if a joinable file has been used for joining
                     uline = unicoder(line)
@@ -1842,71 +1744,34 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                             break
 
         elif line.startswith('Need'):
-            # We need more blocks, but are they there?
+            # We need more blocks, but are they available?
             chunks = line.split()
             needed_blocks = int(chunks[1])
-            avail_blocks = 0
-            extrapars = parfile_nzf.extrapars
-            block_table = {}
-            logging.info('Need to fetch %s more blocks, checking blocks', needed_blocks)
 
-            for nzf in extrapars:
-                # Don't count extrapars that are completed already
-                if nzf.completed:
-                    continue
-                blocks = int_conv(nzf.blocks)
-                avail_blocks += blocks
-                if blocks not in block_table:
-                    block_table[blocks] = []
-                block_table[blocks].append(nzf)
-            logging.info('%s blocks available', avail_blocks)
-
-            force = False
-            if (avail_blocks < needed_blocks) and (avail_blocks > 0):
-                # Tell SAB that we always have enough blocks, so that
-                # it will try to load all pars anyway
-                msg = T('Repair failed, not enough repair blocks (%s short)') % str(int(needed_blocks - avail_blocks))
-                nzo.fail_msg = msg
-                msg = u'[%s] %s' % (unicoder(setname), msg)
-                nzo.set_unpack_info('Repair', msg)
+            # Check if we have enough blocks
+            added_blocks = nzo.get_extra_blocks(setname, needed_blocks)
+            if added_blocks:
+                msg = T('Fetching %s blocks...') % str(added_blocks)
+                nzo.set_action_line(T('Fetching'), msg)
                 nzo.status = Status.FETCHING
-                needed_blocks = avail_blocks
-                force = True
-
-            if avail_blocks >= needed_blocks:
-                added_blocks = 0
                 readd = True
-
-                while added_blocks < needed_blocks:
-                    block_size = min(block_table.keys())
-                    extrapar_list = block_table[block_size]
-                    if extrapar_list:
-                        new_nzf = extrapar_list.pop()
-                        nzo.add_parfile(new_nzf)
-                        if new_nzf in extrapars:
-                            extrapars.remove(new_nzf)
-                        added_blocks += block_size
-                    else:
-                        block_table.pop(block_size)
-
-                logging.info('Added %s blocks to %s',
-                             added_blocks, nzo.final_name)
-
-                if not force:
-                    msg = T('Fetching %s blocks...') % str(added_blocks)
-                    nzo.status = Status.FETCHING
-                    nzo.set_action_line(T('Fetching'), msg)
-
             else:
+                # Failed
                 msg = T('Repair failed, not enough repair blocks (%s short)') % str(needed_blocks)
                 nzo.fail_msg = msg
                 msg = u'[%s] %s' % (unicoder(setname), msg)
                 nzo.set_unpack_info('Repair', msg)
                 nzo.status = Status.FAILED
 
+            # MultiPar can say 'PAR File(s) Incomplete' also when it needs more blocks
+            # But the Need-more-blocks message is always last, so force failure
+            finished = 0
+
         # Result of verification
-        elif line.startswith('All Files Complete'):
+        elif line.startswith('All Files Complete') or line.endswith('PAR File(s) Incomplete'):
             # Completed without damage!
+            # 'PAR File(s) Incomplete' is reported for success
+            # but when there are very similar filenames in the folder
             msg = T('[%s] Verified in %s, all files correct') % (unicoder(setname), format_time_string(time.time() - start))
             nzo.set_unpack_info('Repair', msg)
             logging.info('Verified in %s, all files correct',
@@ -1978,7 +1843,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
         workdir = os.path.split(parfile)[0]
         used_joinables.extend([os.path.join(workdir, name) for name in reconstructed])
 
-    return finished, readd, pars, datafiles, used_joinables, used_for_repair
+    return finished, readd, datafiles, used_joinables, used_for_repair
 
 def create_env(nzo=None, extra_env_fields=None):
     """ Modify the environment for pp-scripts with extra information
@@ -2255,16 +2120,6 @@ def QuickCheck(set, nzo):
         nzo.renamed_file(renames)
 
     return result
-
-
-def pars_of_set(wdir, setname):
-    """ Return list of par2 files (pathless) matching the set """
-    list = []
-    for file in os.listdir(wdir):
-        m = FULLVOLPAR2_RE.search(file)
-        if m and m.group(1) == setname and m.group(2):
-            list.append(file)
-    return list
 
 
 def unrar_check(rar):

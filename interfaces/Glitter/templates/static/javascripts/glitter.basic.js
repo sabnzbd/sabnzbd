@@ -128,7 +128,7 @@ function displayDateTime(inDate, outFormat, inFormat) {
     if(inDate == '') {
         var theMoment = moment()
     } else {
-        var theMoment = moment(inDate, inFormat)
+        var theMoment = moment.utc(inDate, inFormat)
     }
     // Special format or regular format?
     if(outFormat == 'fromNow') {

@@ -84,8 +84,7 @@ def set_bonjour(host=None, port=None):
         suffix = ''
     else:
         suffix = '.local'
-    if hasattr(cherrypy.wsgiserver, 'redirect_url'):
-        cherrypy.wsgiserver.redirect_url("https://%s%s:%s/sabnzbd" % (name, suffix, port))
+
     logging.debug('Try to publish in Bonjour as "%s" (%s:%s)', name, host, port)
     try:
         refObject = pybonjour.DNSServiceRegister(
@@ -95,12 +94,15 @@ def set_bonjour(host=None, port=None):
             domain=domain,
             host=zhost,
             port=int(port),
-            txtRecord=pybonjour.TXTRecord({'path': '/sabnzbd/',
+            txtRecord=pybonjour.TXTRecord({'path': cfg.url_base(),
                                            'https': cfg.enable_https()}),
             callBack=_zeroconf_callback)
-    except sabnzbd.utils.pybonjour.BonjourError:
+    except sabnzbd.utils.pybonjour.BonjourError as e:
         _BONJOUR_OBJECT = None
-        logging.debug('Failed to start Bonjour service')
+        logging.debug('Failed to start Bonjour service: %s', str(e))
+    except:
+        _BONJOUR_OBJECT = None
+        logging.debug('Failed to start Bonjour service due to non-pybonjour related problem', exc_info=True)
     else:
         Thread(target=_bonjour_server, args=(refObject,))
         _BONJOUR_OBJECT = refObject

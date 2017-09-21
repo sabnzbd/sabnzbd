@@ -27,7 +27,7 @@ REC_RAR_VERSION = 500
 
 PNFO = namedtuple('PNFO', 'repair unpack delete script nzo_id filename password unpackstrht '
                           'msgid category url bytes_left bytes avg_stamp avg_date finished_files '
-                          'active_files queued_files status priority missing bytes_missing direct_unpack')
+                          'active_files queued_files status priority bytes_missing direct_unpack')
 
 QNFO = namedtuple('QNFO', 'bytes bytes_left bytes_left_previous_page list q_size_list q_fullsize')
 
@@ -51,7 +51,7 @@ RENAMES_FILE = '__renames__'
 ATTRIB_FILE = 'SABnzbd_attrib'
 REPAIR_REQUEST = 'repair-all.sab'
 
-SABYENC_VERSION_REQUIRED = '3.0.2'
+SABYENC_VERSION_REQUIRED = '3.3.1'
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = 'history%s.db' % DB_HISTORY_VERSION

@@ -146,7 +146,7 @@ jQuery(function($){
   $("#plush_options").colorbox({ inline:true, href:"#plush_options_modal", title:$("#plush_options").text(),
     innerWidth:"375px", innerHeight:"350px", initialWidth:"375px", initialHeight:"350px", speed:0, opacity:0.7
   });
-  
+
   // Save the type of speedlimit display
   $('#maxSpeed-label').change(function() {
     $.plush.speedLimitType = $(this).val();
@@ -159,19 +159,19 @@ jQuery(function($){
   $('#maxSpeed-label').val($.plush.speedLimitType)
 
   // Max Speed main menu input -- don't change value on refresh when focused
-  $("#maxSpeed-option").focus(function(){ 
-    $.plush.focusedOnSpeedChanger = true; 
-  }).blur(function(){ 
-    $.plush.focusedOnSpeedChanger = false; 
+  $("#maxSpeed-option").focus(function(){
+    $.plush.focusedOnSpeedChanger = true;
+  }).blur(function(){
+    $.plush.focusedOnSpeedChanger = false;
   }).keyup(function (e) {
     // Catch the enter
     if (e.keyCode == 13) {
       $("#maxSpeed-enable").click()
     }
   })
-  
+
   // Submit the new speedlimit
-  $("#maxSpeed-enable, #maxSpeed-disable").click( function(e) { 
+  $("#maxSpeed-enable, #maxSpeed-disable").click( function(e) {
     // Remove
     if ($(e.target).attr('id')=="maxSpeed-disable") {
         $('#maxSpeed-option').val('');
@@ -496,7 +496,7 @@ jQuery(function($){
 };
 
   // static-element tooltips
-  $('body').delegate('#pausefor_title, #last_warning, #time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
+  $('body').delegate('#pausefor_title, #time-left, #multi_delete, #explain-blockRefresh, #pause_resume, #hist_purge, #queueTable td.download-title a, #queueTable td.eta span, #queueTable td.options .icon_nzb_remove, #historyTable td.options .icon_nzb_remove, #historyTable td div.icon_history_verbose', 'mouseover mouseout mousemove', function(event) {
     var link = this,
       $link = $(this);
 
@@ -1095,7 +1095,7 @@ $("a","#multiops_inputs").click(function(e){
     title:function(){return $(this).text().replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");},
     innerWidth:"80%", innerHeight:"300px", initialWidth:"80%", initialHeight:"300px", speed:0, opacity:0.7 });
 
-  // modal for reporting issues  
+  // modal for reporting issues
   $("#historyTable .modal-report").colorbox({ inline:true,
     href: function(){return "#report-"+$(this).parent().parent().parent().attr('id');},
     title:function(){return $(this).text();},
@@ -1252,7 +1252,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
       $('#queue-pagination span').removeClass('loading');   // Remove spinner graphic from pagination
       $('#manual_refresh_wrapper').removeClass('refreshing'); // Refresh state notification
     },
-    error: function(xhr){ 
+    error: function(xhr){
       // Only reason for a 404 error could be a login failure -> redirect
       if(xhr.status == 404) {
         document.location=document.location;
@@ -1320,7 +1320,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
       $('#history .avg_rate').rateit({readonly: true, resetable: false, step: 0.5});
       $('#history .avg_rate').each(function() { $(this).rateit('value', $(this).attr('value') / 2); });
       $('#history .user_combo option').filter(function() {
-        return $(this).attr('value') == $(this).parent().parent().find('input.user_combo').attr('value'); 
+        return $(this).attr('value') == $(this).parent().parent().find('input.user_combo').attr('value');
       }).attr('selected', true);
       $('#history-pagination span').removeClass('loading'); // Remove spinner graphic from pagination
     }
@@ -1342,11 +1342,11 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
     // For switching using the select
     if(!speedLimit) speedLimit = $.plush.speedLimit;
     if(speedLimitAbs == undefined) speedLimitAbs = $.plush.speedLimitAbs;
-    
-    // Save 
+
+    // Save
     $.plush.speedLimit = speedLimit;
     $.plush.speedLimitAbs = speedLimitAbs;
-    
+
     // How do we format?
     switch($.plush.speedLimitType) {
         case '%':
@@ -1360,11 +1360,11 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
             speedlimitDisplay = speedLimitAbs/1024/1024;
             break;
     }
-    
+
     // In case nothing and we make the displaying of the float more pretty
     speedlimitDisplay = (isNaN(speedlimitDisplay) || speedlimitDisplay == '0') ? '' : speedlimitDisplay;
     speedlimitDisplay = Math.round(speedlimitDisplay*10)/10;
-    
+
     // Update
     if ($("#maxSpeed-option").val() != speedlimitDisplay && !$.plush.focusedOnSpeedChanger)
       $("#maxSpeed-option").val(speedlimitDisplay);

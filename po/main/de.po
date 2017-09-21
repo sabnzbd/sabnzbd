@@ -7,15 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
 "PO-Revision-Date: 2017-08-24 15:39+0000\n"
 "Last-Translator: jcfp <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-11 06:24+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
+
+#: SABnzbd.py [Error message]
+msgid "MultiPar binary... NOT found!"
+msgstr "MultiPar Programmdatei nicht gefunden!"
 
 #: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
@@ -236,15 +240,6 @@ msgstr "Benachrichtigungen testen"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Adresse wird aufgelöst …"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "FEHLER:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "WARNUNG:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -493,17 +488,18 @@ msgstr ""
 "Nachbearbeitungszeit zu verkürzen. Nur für Aufträge, die nicht repariert "
 "werden müssen."
 
-#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Fehler beim Entfernen von %s"
-
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "%s kann nicht gelesen werden"
 
-#: sabnzbd/dirscanner.py [Error message]
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error while adding %s, removing"
 msgstr "Fehler beim Hinzufügen von %s. Entferne."
+
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
+msgid "Error removing %s"
+msgstr "Fehler beim Entfernen von %s"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -697,7 +693,7 @@ msgstr ""
 "Authentifizierung fehlt. Bitte Benutzernamen und Passwort aus Einstellungen-"
 ">Allgemein in die externe Anwendung eingeben:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -774,6 +770,10 @@ msgstr "Fehlerhafter Parameter"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "Zurück"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "FEHLER:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1047,19 +1047,18 @@ msgstr ""
 "überprüft oder repariert werden"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr ""
-"Reparatur fehlgeschlagen. Nicht genug Reparatur-Blöcke vorhanden (%s zu "
-"wenig)"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
 msgstr "%s Blöcke werden abgerufen …"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
 msgstr "Abrufen"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr ""
+"Reparatur fehlgeschlagen. Nicht genug Reparatur-Blöcke vorhanden (%s zu "
+"wenig)"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1085,6 +1084,10 @@ msgstr "Festplatte voll"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Verifying"
 msgstr "Überprüfen"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
@@ -1257,14 +1260,6 @@ msgstr "Doppelte NZB"
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Doppelt vorhandene NZB \"%s\" angehalten"
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid ""
-"%d files with duplicate filenames were discared for \"%s\". Enable "
-"\"allow_duplicate_files\" to allow duplicate filenames."
-msgstr ""
-"%d Dateien mit doppelten Dateinamen wurden für \"%s\" verworfen. Aktiviere "
-"\"allow_duplicate_files\" um doppelte Dateinamen zu erlauben."
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -2807,6 +2802,12 @@ msgstr "SABnzbd-Passwort"
 #: sabnzbd/skintext.py
 msgid "Optional authentication password."
 msgstr "Optionale Anmeldung mit Passwort"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Security"
@@ -4501,6 +4502,10 @@ msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr ""
 "Wenn SABnzbd neustartet, wird diese Anzeige automatisch verschwinden!"
 
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "WARNUNG:"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Aktualisierungsrate"
@@ -4665,6 +4670,10 @@ msgstr "Sorry, damit konnten wir nichts anfangen. Versuchs nochmal."
 msgid "Pause for..."
 msgstr "Anhalten für …"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "Neu laden"
+
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Sortieren nach Alter <small>Älteste&rarr;Neuste</small>"
@@ -4720,10 +4729,6 @@ msgstr "Verlauf wirklich leeren?"
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "Sie müssen JavaScript aktivieren, damit Plush funktioniert!"
-
-#: sabnzbd/skintext.py
-msgid "Refresh"
-msgstr "Neu laden"
 
 #: sabnzbd/skintext.py
 msgid "Options"
@@ -5033,14 +5038,16 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
-"Um aus dem Usenet herunterzuladen, wird ein Zugang zu einem Provider "
-"benötigt. Dein ISP kann dir Zugriff gewähren, allerdings wird ein Premium-"
-"Anbieter empfohlen. Noch keinen Usenet-Provider? Wir empfehlen, %s zu "
-"versuchen."
+"Um aus dem Usenet herunterladen zu können, benötigen Sie Zugriff auf einen "
+"Usenet-Provider. Ihr ISP bieten dies möglicherweise an, jedoch werden "
+"kostenpflichtige Provider empfohlen."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Wenn Sie noch keinen Usenet-Provider haben, empfehlen wir Ihnen %s."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -5445,17 +5452,6 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid ""
 #~ "Launch my internet browser with the SABnzbd page when the program starts."
 #~ msgstr "SABnzbd in meinem Webbrowser öffnen, wenn es gestartet wird."
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "Um aus dem Usenet herunterladen zu können, benötigen Sie Zugriff auf einen "
-#~ "Usenet-Provider. Ihr ISP bieten dies möglicherweise an, jedoch werden "
-#~ "kostenpflichtige Provider empfohlen."
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "Wenn Sie noch keinen Usenet-Provider haben, empfehlen wir Ihnen %s."
 
 #~ msgid "This field is required."
 #~ msgstr "Dieses Feld wird benötigt."

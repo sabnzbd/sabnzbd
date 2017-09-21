@@ -27,6 +27,7 @@ import urllib
 import json
 import re
 import hashlib
+import ssl
 from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
@@ -54,7 +55,6 @@ from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.wizard
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.decoder import HAVE_YENC, SABYENC_ENABLED
-from sabnzbd.utils.sslinfo import ssl_version, ssl_protocols_labels
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 
@@ -125,8 +125,8 @@ def Raiser(root='', **kwargs):
     # Add extras
     if args:
         root = '%s?%s' % (root, urllib.urlencode(args))
-    # Optionally add the leading /sabnzbd/
-    if not root.startswith('/sabnzbd'):
+    # Optionally add the leading /sabnzbd/ (or what the user set)
+    if not root.startswith(cfg.url_base()):
         root = cherrypy.request.script_name + root
     # Send the redirect
     return cherrypy.HTTPRedirect(root)
@@ -224,9 +224,7 @@ def set_auth(conf):
         conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': 'SABnzbd',
                      'tools.basic_auth.users': get_users, 'tools.basic_auth.encrypt': encrypt_pwd})
         conf.update({'/api': {'tools.basic_auth.on': False},
-                     '/m/api': {'tools.basic_auth.on': False},
-                     '/sabnzbd/api': {'tools.basic_auth.on': False},
-                     '/sabnzbd/m/api': {'tools.basic_auth.on': False},
+                     '%s/api' % cfg.url_base(): {'tools.basic_auth.on': False},
                      })
     else:
         conf.update({'tools.basic_auth.on': False})
@@ -327,7 +325,7 @@ class MainPage(object):
         if not check_login():
             raise NeedLogin()
 
-        if not cfg.notified_new_skin() and cfg.web_dir() not in ('Glitter', 'Plush'):
+        if not cfg.notified_new_skin() and cfg.web_dir() != 'Glitter':
             logging.warning(T('Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin.'))
         if not cfg.notified_new_skin():
             cfg.notified_new_skin.set(1)
@@ -376,7 +374,7 @@ class MainPage(object):
             return template.respond()
         else:
             # Redirect to the setup wizard
-            raise cherrypy.HTTPRedirect('/sabnzbd/wizard/')
+            raise cherrypy.HTTPRedirect('%s/wizard/' % cfg.url_base())
 
     @cherrypy.expose
     def addFile(self, **kwargs):
@@ -1156,8 +1154,7 @@ class ConfigPage(object):
         conf['have_mt_par2'] = sabnzbd.newsunpack.PAR2_MT
 
         conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
-        conf['ssl_version'] = ssl_version()
-        conf['ssl_protocols'] = ', '.join(ssl_protocols_labels())
+        conf['ssl_version'] = ssl.OPENSSL_VERSION
 
         new = {}
         for svr in config.get_servers():
@@ -1307,8 +1304,8 @@ SWITCH_LIST = \
              'pre_script', 'pause_on_pwrar', 'sfv_check', 'folder_rename', 'load_balancing',
              'quota_size', 'quota_day', 'quota_resume', 'quota_period', 'history_retention',
              'pre_check', 'max_art_tries', 'fail_hopeless_jobs', 'enable_all_par',
-             'enable_recursive', 'no_series_dupes', 'script_can_fail', 'new_nzb_on_failure',
-             'unwanted_extensions', 'action_on_unwanted_extensions', 'sanitize_safe',
+             'enable_recursive', 'no_series_dupes', 'series_propercheck', 'script_can_fail',
+             'new_nzb_on_failure', 'unwanted_extensions', 'action_on_unwanted_extensions', 'sanitize_safe',
              'rating_enable', 'rating_api_key', 'rating_filter_enable',
              'rating_filter_abort_audio', 'rating_filter_abort_video', 'rating_filter_abort_encrypted',
              'rating_filter_abort_encrypted_confirm', 'rating_filter_abort_spam', 'rating_filter_abort_spam_confirm',
@@ -1379,12 +1376,12 @@ SPECIAL_BOOL_LIST = \
               'enable_filejoin', 'enable_tsjoin', 'ignore_unrar_dates',
               'multipar', 'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
-              'max_art_opt', 'warn_empty_nzb', 'enable_bonjour','allow_duplicate_files', 'warn_dupl_jobs',
+              'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'reject_duplicate_files', 'warn_dupl_jobs',
               'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging',
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'req_completion_rate', 'wait_ext_drive', 'show_sysload',
+              'req_completion_rate', 'wait_ext_drive', 'show_sysload', 'url_base',
               'direct_unpack_threads', 'ipv6_servers', 'selftest_host', 'rating_host'
      )
 SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore')
@@ -1522,7 +1519,7 @@ class ConfigGeneral(object):
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_ranges'] = cfg.local_ranges.get_string()
         conf['my_lcldata'] = cfg.admin_dir.get_path()
-        conf['caller_url'] = cherrypy.request.base + '/sabnzbd/'
+        conf['caller_url'] = cherrypy.request.base + cfg.url_base()
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_general.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -1760,7 +1757,7 @@ class ConfigRss(object):
         self.__refresh_force = False        # True if forced download of all matches is required
         self.__refresh_ignore = False       # True if first batch of new feed must be ignored
         self.__evaluate = False             # True if feed needs to be re-filtered
-        self.__show_eval_button = True      # True if the "Apply filers" button should be shown
+        self.__show_eval_button = False     # True if the "Apply filers" button should be shown
         self.__last_msg = ''                # Last error message from RSS reader
 
     @cherrypy.expose
@@ -2132,6 +2129,7 @@ class ConfigScheduling(object):
         actions = []
         actions.extend(_SCHED_ACTIONS)
         day_names = get_days()
+        categories = list_cats(False)
         snum = 1
         conf['schedlines'] = []
         conf['taskinfo'] = []
@@ -2164,6 +2162,13 @@ class ConfigScheduling(object):
                     except KeyError:
                         value = '"%s" <<< %s' % (value, T('Undefined server!'))
                     action = Ttemplate("sch-" + action)
+                if action in ('pause_cat', 'resume_cat'):
+                    action = Ttemplate("sch-" + action)
+                    if value not in categories:
+                        # Category name change
+                        value = '"%s" <<< %s' % (value, T('Incorrect parameter'))
+                    else:
+                        value = '"%s"' % value
 
             if day_numbers == "1234567":
                 days_of_week = "Daily"
@@ -2191,6 +2196,7 @@ class ConfigScheduling(object):
         conf['actions_servers'] = actions_servers
         conf['actions'] = actions
         conf['actions_lng'] = actions_lng
+        conf['categories'] = categories
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_scheduling.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
@@ -2203,6 +2209,7 @@ class ConfigScheduling(object):
             return msg
 
         servers = config.get_servers()
+        categories = list_cats(False)
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
         days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])
@@ -2230,7 +2237,12 @@ class ConfigScheduling(object):
                 else:
                     arguments = action
                     action = 'disable_server'
+
+            elif action in ('pause_cat', 'resume_cat'):
+                # Need original category name, not lowercased
+                arguments = arguments.strip()
             else:
+                # Something else, leave empty
                 action = None
 
             if action:

@@ -1,7 +1,7 @@
 <!--#set global $pane="Status"#-->
 <!--#set global $help_uri="GUI+Status-0-7"#-->
 <!--#include $webdir + "/_inc_header.tmpl"#-->
-
+<!--#import datetime#-->
 <div class="tabs">
   <ul>
     <li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
@@ -33,7 +33,11 @@
       <!--#for $warn in $warnings#-->
         <!--#set $odd = not $odd#-->
         <tr class="<!--#if $odd then "odd" else "even"#-->">
-          <td>$warn.replace("\n","</td><td>", 2)</td></tr>
+          <!--#set when = datetime.datetime.fromtimestamp($warn.time) #-->
+          <td>$when</td>
+          <td>$warn.type</td>
+          <td>$warn.text</td>
+        </tr>
       <!--#end for#-->
       </table>
     <!--#else#-->

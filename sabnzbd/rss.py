@@ -172,26 +172,17 @@ class RSSQueue(object):
         self.shutdown = False
 
         try:
-            defined = config.get_rss().keys()
-            feeds = sabnzbd.load_admin(RSS_FILE_NAME)
-            if type(feeds) == type({}):
-                for feed in feeds:
-                    if feed not in defined:
-                        logging.debug('Dropping obsolete data for feed "%s"', feed)
-                        continue
-                    self.jobs[feed] = {}
-                    for link in feeds[feed]:
-                        # Consistency check on data
-                        try:
-                            item = feeds[feed][link]
-                            if not isinstance(item, dict) or not isinstance(item.get('title'), unicode):
-                                raise IndexError
-                            self.jobs[feed][link] = item
-                        except (KeyError, IndexError):
-                            logging.info('Incorrect entry in %s detected, discarding %s', RSS_FILE_NAME, item)
+            self.jobs = sabnzbd.load_admin(RSS_FILE_NAME)
+            if self.jobs:
+                for feed in self.jobs:
                     remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
-        except IOError:
-            logging.debug('Cannot read file %s', RSS_FILE_NAME)
+        except:
+            logging.warning(T('Cannot read %s'), RSS_FILE_NAME)
+            logging.info("Traceback: ", exc_info=True)
+
+        # Storage needs to be dict
+        if not self.jobs:
+            self.jobs = {}
 
         # jobs is a NAME-indexed dictionary
         #    Each element is link-indexed dictionary
@@ -207,7 +198,6 @@ class RSSQueue(object):
         #           script : script
         #           prio : priority
         #           time : timestamp (used for time-based clean-up)
-        #           order : order in the RSS feed
         #           size : size in bytes
         #           age : age in datetime format as specified by feed
         #           season : season number (if applicable)
@@ -321,18 +311,18 @@ class RSSQueue(object):
                 all_entries.extend(entries)
             entries = all_entries
 
+        # In case of a new feed
         if feed not in self.jobs:
             self.jobs[feed] = {}
         jobs = self.jobs[feed]
+
+        # Error in readout or now new readout
         if readout:
             if not entries:
                 return unicoder(msg)
         else:
             entries = jobs.keys()
-            # Sort in the order the jobs came from the feed
-            entries.sort(lambda x, y: jobs[x].get('order', 0) - jobs[y].get('order', 0))
 
-        order = 0
         # Filter out valid new links
         for entry in entries:
             if self.shutdown:
@@ -398,7 +388,7 @@ class RSSQueue(object):
                         episode = int_conv(episode)
 
                     # Match against all filters until an positive or negative match
-                    logging.debug('Size %s for %s', size, title)
+                    logging.debug('Size %s', size)
                     for n in xrange(regcount):
                         if reEnabled[n]:
                             if category and reTypes[n] == 'C':
@@ -494,14 +484,13 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, link, title, size, age, season, episode, 'G', category, myCat, myPP, myScript,
-                                    act, star, order, priority=myPrio, rule=str(n))
+                        _HandleLink(jobs, feed, link, title, size, age, season, episode, 'G', category, myCat, myPP,
+                                     myScript, act, star, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, link, title, size, age, season, episode, 'B', category, myCat, myPP, myScript,
-                                    False, star, order, priority=myPrio, rule=str(n))
-            order += 1
+                        _HandleLink(jobs, feed, link, title, size, age, season, episode, 'B', category, myCat, myPP,
+                                     myScript, False, star, priority=myPrio, rule=str(n))
 
         # Send email if wanted and not "forced"
         if new_downloads and cfg.email_rss() and not force:
@@ -601,8 +590,8 @@ class RSSQueue(object):
         return ''
 
 
-def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat, pp, script, download, star,
-                order, priority=NORMAL_PRIORITY, rule=0):
+def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgcat, cat, pp, script,
+                download, star, priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '':
         script = None
@@ -616,7 +605,6 @@ def _HandleLink(jobs, link, title, size, age, season, episode, flag, orgcat, cat
     jobs[link]['pp'] = pp
     jobs[link]['script'] = script
     jobs[link]['prio'] = str(priority)
-    jobs[link]['order'] = order
     jobs[link]['orgcat'] = orgcat
     jobs[link]['size'] = size
     jobs[link]['age'] = age

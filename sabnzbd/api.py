@@ -105,9 +105,6 @@ def api_handler(kwargs):
     name = kwargs.get('name', '')
     callback = kwargs.get('callback', '')
 
-    # Extend the timeout of API calls to 10minutes
-    cherrypy.response.timeout = 600
-
     if isinstance(mode, list):
         mode = mode[0]
     if isinstance(output, list):
@@ -1280,11 +1277,7 @@ def build_status(skip_dashboard=False, output=None):
             info['servers'].append((server.displayname, '', connected, serverconnections, server.ssl,
                                       server.active, server.errormsg, server.priority, server.optional))
 
-    wlist = []
-    for w in sabnzbd.GUIHANDLER.content():
-        w = w.replace('WARNING', T('WARNING:')).replace('ERROR', T('ERROR:'))
-        wlist.insert(0, unicoder(w))
-    info['warnings'] = wlist
+    info['warnings'] = sabnzbd.GUIHANDLER.content()
 
     return info
 
@@ -1345,7 +1338,6 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
         slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else '0'
-        slot['missing'] = pnfo.missing
         slot['mbmissing'] = "%.2f" % (pnfo.bytes_missing / MEBI)
         slot['direct_unpack'] = pnfo.direct_unpack
         if not output:
@@ -1360,8 +1352,8 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
             else:
                 slot['status'] = Status.DOWNLOADING
         else:
-            # ensure compatibility of API status
-            if status in (Status.DELETED, ):
+            # Ensure compatibility of API status
+            if status == Status.DELETED or priority == TOP_PRIORITY:
                 status = Status.DOWNLOADING
             slot['status'] = "%s" % (status)
 
@@ -1380,8 +1372,9 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
                 datestart = datetime.datetime.now()
                 slot['eta'] = 'unknown'
 
-        if status == Status.GRABBING:
-            slot['avg_age'] = '---'
+        # Do not show age when it's not known
+        if average_date.year < 2000:
+            slot['avg_age'] = '-'
         else:
             slot['avg_age'] = calc_age(average_date, bool(trans))
 
@@ -1462,8 +1455,7 @@ def rss_qstatus():
     rss = RSS()
     rss.channel.title = "SABnzbd Queue"
     rss.channel.description = "Overview of current downloads"
-    rss.channel.link = "http://%s:%s/sabnzbd/queue" % (
-        cfg.cherryhost(), cfg.cherryport())
+    rss.channel.link = "http://%s:%s%s/queue" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
     rss.channel.language = "en"
 
     item = Item()
@@ -1494,7 +1486,7 @@ def rss_qstatus():
 
         item = Item()
         item.title = name
-        item.link = "http://%s:%s/sabnzbd/history" % (cfg.cherryhost(), cfg.cherryport())
+        item.link = "http://%s:%s%s/history" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
         item.guid = nzo_id
         status_line = []
         status_line.append('<tr>')
@@ -1637,13 +1629,12 @@ def build_header(webdir='', output=None):
 
         header['restart_req'] = sabnzbd.RESTART_REQ
         header['pid'] = os.getpid()
-
-        header['last_warning'] = sabnzbd.GUIHANDLER.last().replace('WARNING', ('WARNING:')).replace('ERROR', T('ERROR:'))
         header['active_lang'] = cfg.language()
 
         header['my_lcldata'] = sabnzbd.DIR_LCLDATA
         header['my_home'] = sabnzbd.DIR_HOME
         header['webdir'] = webdir or sabnzbd.WEB_DIR
+        header['url_base'] = cfg.url_base()
 
         header['nt'] = sabnzbd.WIN32
         header['darwin'] = sabnzbd.DARWIN

@@ -478,11 +478,12 @@ function QueueModel(parent, data) {
     self.password = ko.observable(data.password);
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
-    self.isGrabbing = ko.observable(data.status == 'Grabbing')
+    self.isGrabbing = ko.observable(data.status == 'Grabbing' || data.avg_age == '-')
     self.totalMB = ko.observable(parseFloat(data.mb));
-    self.remainingMB = ko.observable(parseFloat(data.mbleft));
+    self.remainingMB = ko.observable(parseFloat(data.mbleft))
+    self.missingMB = ko.observable(parseFloat(data.mbmissing))
+    self.percentage = ko.observable(parseInt(data.percentage))
     self.avg_age = ko.observable(data.avg_age)
-    self.missing = ko.observable(parseFloat(data.mbmissing))
     self.direct_unpack = ko.observable(data.direct_unpack)
     self.category = ko.observable(data.cat);
     self.priority = ko.observable(parent.priorityName[data.priority]);
@@ -502,8 +503,8 @@ function QueueModel(parent, data) {
         if(self.status() == 'Checking') {
             return '#58A9FA'
         }
-        // Check for missing data, the value is arbitrary! (3%)
-        if(self.missing()/self.totalMB() > 0.03) {
+        // Check for missing data, the value is arbitrary! (2%)
+        if(self.missingMB()/self.totalMB() > 0.02) {
             return '#F8A34E'
         }
         // Set to grey, only when not Force download
@@ -514,22 +515,16 @@ function QueueModel(parent, data) {
         return '';
     });
 
-    // MB's and percentages
-    self.downloadedMB = ko.computed(function() {
-        return(self.totalMB() - self.remainingMB()).toFixed(0);
-    });
-    self.percentageRounded = ko.pureComputed(function() {
-        return fixPercentages(((self.downloadedMB() / self.totalMB()) * 100).toFixed(2))
-    })
+    // MB's
     self.progressText = ko.pureComputed(function() {
-        return self.downloadedMB() + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
+        return (self.totalMB() - self.remainingMB()).toFixed(0) + " MB / " + (self.totalMB() * 1).toFixed(0) + " MB";
     })
 
     // Texts
     self.missingText= ko.pureComputed(function() {
-        // Check for missing data, the value is arbitrary! (3%)
-        if(self.missing()/self.totalMB() > 0.03) {
-            return self.missing().toFixed(0) + ' MB ' + glitterTranslate.misingArt
+        // Check for missing data, the value is arbitrary! (1%)
+        if(self.missingMB()/self.totalMB() > 0.01) {
+            return self.missingMB().toFixed(0) + ' MB ' + glitterTranslate.misingArt
         }
         return;
     })
@@ -538,6 +533,10 @@ function QueueModel(parent, data) {
         if(self.status() == 'Checking') {
             return glitterTranslate.checking
         }
+        // Grabbing
+        if(self.status() == 'Grabbing') {
+            return glitterTranslate.fetch
+        }
         // Pausing status
         if((self.parent.parent.downloadsPaused() && self.priority() != 2) || self.pausedStatus()) {
             return glitterTranslate.paused;
@@ -545,6 +544,18 @@ function QueueModel(parent, data) {
         // Just the time
         return rewriteTime(self.timeLeft());
     });
+
+    // Icon to better show force-priority
+    self.queueIcon = ko.computed(function() {
+        // Force comes first
+        if(self.priority() == 2) {
+            return 'glyphicon-forward'
+        }
+        if(self.pausedStatus()) {
+            return 'glyphicon-play'
+        }
+        return 'glyphicon-pause'
+    })
 
     // Extra queue column
     self.extraText = ko.pureComputed(function() {
@@ -578,11 +589,12 @@ function QueueModel(parent, data) {
         self.password(data.password);
         self.index(data.index);
         self.status(data.status)
-        self.isGrabbing(data.status == 'Grabbing')
+        self.isGrabbing(data.status == 'Grabbing' || data.avg_age == '-')
         self.totalMB(parseFloat(data.mb));
         self.remainingMB(parseFloat(data.mbleft));
+        self.missingMB(parseFloat(data.mbmissing))
+        self.percentage(parseInt(data.percentage))
         self.avg_age(data.avg_age)
-        self.missing(parseFloat(data.mbmissing))
         self.direct_unpack(data.direct_unpack)
         self.category(data.cat);
         self.priority(parent.priorityName[data.priority]);

@@ -6,7 +6,7 @@
     $.plush.queuenoofslots = $noofslots;
     $.plush.SetQueueSpeedLimit('$speedlimit', '$speedlimit_abs');
     $.plush.SetQueueFinishAction('$finishaction');
-    $.plush.SetWarnings($have_warnings,"<!--#echo $last_warning.replace("\n"," ").replace('"',"'").replace('\\','\\\\') #-->");
+    $.plush.SetWarnings($have_warnings,"");
     $.plush.SetQueuePauseInfo(<!--#if $paused#-->true<!--#else#-->false<!--#end if#-->,'$pause_int');
     $.plush.SetQueueETAStats("<!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->",<!--#echo "%.0f" % float($kbpersec)#-->,'$timeleft','$T('eta'): $eta');
 
@@ -56,7 +56,7 @@
   </td>
 
   <td class="download-title" <!--#if $rating_enable#-->style="width:35%"<!--#end if#-->>
-    <a href="nzb/$slot.nzo_id/" title="$T('status'): $T('post-'+$slot.status)<br/>$T('nzo-age'): $slot.avg_age<br/><!--#if $slot.missing#-->$T('missingArt'): $slot.missing<!--#end if#-->">$slot.filename.replace('.', '.&#8203;').replace('_', '_&#8203;')<!--#if $slot.password#--> /  $slot.password<!--#end if#--></a>
+    <a href="nzb/$slot.nzo_id/" title="$T('status'): $T('post-'+$slot.status)<br/>$T('nzo-age'): $slot.avg_age<br/><!--#if $slot.mbmissing!="0.00"#-->$T('missingArt'): $slot.mbmissing $T('MB')<!--#end if#-->">$slot.filename.replace('.', '.&#8203;').replace('_', '_&#8203;')<!--#if $slot.password#--> /  $slot.password<!--#end if#--></a>
   </td>
 
   <!--#if $rating_enable#-->

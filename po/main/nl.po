@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
-"PO-Revision-Date: 2017-08-22 21:06+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"PO-Revision-Date: 2017-09-11 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-12 05:29+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -102,7 +102,7 @@ msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT- en KEY-bestanden"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
-msgstr "Gebruikersinterface kon niet gestart worden: "
+msgstr "Webinterface kon niet gestart worden: "
 
 #: SABnzbd.py [Error message]
 msgid "Cannot reach the SABHelper service"
@@ -232,15 +232,6 @@ msgstr "Test melding"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Adres opzoeken"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "FOUT:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "WAARSCHUWING:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -488,17 +479,18 @@ msgstr ""
 "verkort de tijd die nodig is voor het nabewerken. Dit werkt alleen als de "
 "download niet beschadigd is."
 
-#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Fout bij verwijderen van %s"
-
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "%s kan niet gelezen worden"
 
-#: sabnzbd/dirscanner.py [Error message]
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error while adding %s, removing"
 msgstr "Fout bij toevoegen van %s, wordt weer verwijderd"
+
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
+msgid "Error removing %s"
+msgstr "Fout bij verwijderen van %s"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -689,7 +681,7 @@ msgstr ""
 "Autenticatie ontbreekt; vul gebruikersnaam en wachtwoord van 'Configuratie' "
 "=> 'Algemeen' in bij het externe programma:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -767,6 +759,10 @@ msgstr "Incorrecte parameter"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "Terug"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "FOUT:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1035,17 +1031,16 @@ msgstr ""
 "en repareren."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr "Reparatie mislukt, te weinig herstelblokken (%s tekort)"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
-msgstr "Ophalen van %s blokken..."
+msgstr "%s herstelblokken downloaden..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
 msgstr "Ophalen"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "Reparatie mislukt, te weinig herstelblokken (%s tekort)"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1054,7 +1049,7 @@ msgstr "Repareren"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Repaired in %s"
-msgstr "[%s] Reparatie in %s"
+msgstr "[%s] Gerepareerd in %s"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py
@@ -1071,6 +1066,10 @@ msgstr "Schijf is vol"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Verifying"
 msgstr "Verifiëren"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr "Controleren van extra bestanden"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
@@ -1239,15 +1238,6 @@ msgstr "Dubbele download"
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Dubbele download \"%s\" gepauzeerd"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid ""
-"%d files with duplicate filenames were discared for \"%s\". Enable "
-"\"allow_duplicate_files\" to allow duplicate filenames."
-msgstr ""
-"Er zijn %d bestanden met dezelfde bestandsnaam niet toegevoegd aan download "
-"\"%s\". Zet \"allow_duplicate_files\" aan om dubbele bestandsnamen toe te "
-"staan."
-
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
 msgstr "Afgebroken, kan niet voltooid worden"
@@ -1286,7 +1276,7 @@ msgstr "VERSPREIDINGSWACHTTIJD %s min"
 
 #: sabnzbd/nzbstuff.py
 msgid "Downloaded in %s at an average of %sB/s"
-msgstr "Gedownload in %s met een gemiddelde van %sB/sec"
+msgstr "Gedownload in %s met een gemiddelde snelheid van %sB/s"
 
 #: sabnzbd/nzbstuff.py # sabnzbd/skintext.py [Job details page, file age column header] # sabnzbd/skintext.py
 msgid "Age"
@@ -1385,7 +1375,7 @@ msgstr "Probleemoplosser"
 #: sabnzbd/sabtraylinux.py # sabnzbd/sabtraylinux.py
 #: sabnzbd/skintext.py [#: Config->Scheduler] # sabnzbd/skintext.py # sabnzbd/skintext.py [Config->Scheduling]
 msgid "Restart"
-msgstr "Herstarten"
+msgstr "Herstart"
 
 #: sabnzbd/osxmenu.py # sabnzbd/sabtray.py
 msgid "Restart without login"
@@ -1435,8 +1425,8 @@ msgid ""
 "    Please restart SABnzbd with a different port number."
 msgstr ""
 "\n"
-"    SABnzbd heeft een vrije TCP/IP poort nodig voor de interne web "
-"server.<br>\n"
+"    SABnzbd heeft een vrije TCP/IP poort nodig voor de interne "
+"webserver.<br>\n"
 "Poort %s op %s is geprobeerd, maar is niet beschikbaar.<br>\n"
 "Een ander programma gebruikt de poort al of SABnzbd is al actief.<br>\n"
 "<br>\n"
@@ -1457,7 +1447,7 @@ msgid ""
 "    Please restart SABnzbd with a proper host address."
 msgstr ""
 "\n"
-"    SABnzbd heeft een geldig host adres voor de interne web server.<br>\n"
+"    SABnzbd heeft een geldig host adres voor de interne webserver.<br>\n"
 "Je hebt een onbruikbaar adres opgegeven.<br>\n"
 "Veilige waarden zijn <b>localhost</b> en <b>0.0.0.0</b><br>\n"
 "<br>\n"
@@ -1746,7 +1736,7 @@ msgstr "Lege RSS-feed gevonden (%s)"
 
 #: sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py
 msgid "Show interface"
-msgstr "Toon Interface"
+msgstr "Toon webinterface"
 
 #: sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py
 msgid "Open complete folder"
@@ -1824,7 +1814,7 @@ msgstr "Script uitvoeren..."
 
 #: sabnzbd/skintext.py [PP status]
 msgid "Fetching extra blocks..."
-msgstr "Extra blokken ophalen..."
+msgstr "Extra herstelblokken downloaden..."
 
 #: sabnzbd/skintext.py [PP status]
 msgid "Quick Check..."
@@ -2739,7 +2729,7 @@ msgstr "Wijzigingen worden pas actief na herstart!"
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Web Server"
-msgstr "Web server"
+msgstr "Webserver"
 
 #: sabnzbd/skintext.py
 msgid "SABnzbd Host"
@@ -2759,7 +2749,7 @@ msgstr "Poort waar op SABnzbd luistert."
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Web Interface"
-msgstr "Gebruikersinterface"
+msgstr "Webinterface"
 
 #: sabnzbd/skintext.py
 msgid "Choose a skin."
@@ -2780,6 +2770,15 @@ msgstr "Wachtwoord"
 #: sabnzbd/skintext.py
 msgid "Optional authentication password."
 msgstr "Wachtwoord voor web login."
+
+#: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
+"Als de Host of Poort open is gesteld naar het internet zorgen de huidige "
+"instellingen ervoor dat de webinterface volledig beschikbaar is voor "
+"externen."
 
 #: sabnzbd/skintext.py
 msgid "Security"
@@ -2854,11 +2853,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Maximum line speed"
-msgstr "Maximale snelheid internet verbinding"
+msgstr "Maximale snelheid internetverbinding"
 
 #: sabnzbd/skintext.py
 msgid "Percentage of line speed"
-msgstr "Percentage van snelheid internet verbinding"
+msgstr "Percentage van snelheid internetverbinding"
 
 #: sabnzbd/skintext.py
 msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
@@ -3014,7 +3013,7 @@ msgstr "Volledige API"
 
 #: sabnzbd/skintext.py
 msgid "Full Web interface"
-msgstr "Volledig web interface"
+msgstr "Volledig webinterface"
 
 #: sabnzbd/skintext.py
 msgid "Only external access requires login"
@@ -3457,7 +3456,7 @@ msgstr "Onderbreek downloaden tijdens nabewerken."
 
 #: sabnzbd/skintext.py
 msgid "Ignore Samples"
-msgstr "Verwerking van \"sample\"-bestanden"
+msgstr "Negeer samples"
 
 #: sabnzbd/skintext.py
 msgid "Filter out sample files (e.g. video samples)."
@@ -3634,7 +3633,7 @@ msgstr "Balanceren van server belasting"
 
 #: sabnzbd/skintext.py
 msgid "Prevent load-balancing"
-msgstr "Schaken balancering uit"
+msgstr "Schakel balancering uit"
 
 #: sabnzbd/skintext.py
 msgid "Allow load-balancing"
@@ -4444,7 +4443,7 @@ msgstr "Start SABnzbd opnieuw"
 
 #: sabnzbd/skintext.py
 msgid "Status and interface options"
-msgstr "Status en interface opties"
+msgstr "Status en webinterface opties"
 
 #: sabnzbd/skintext.py
 msgid "Or drag and drop files in the window!"
@@ -4457,6 +4456,10 @@ msgstr "Verbinding met SABnzbd verbroken"
 #: sabnzbd/skintext.py
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "Wanneer SABnzbd opnieuw is gestart, gaat dit venster vanzelf weg!"
+
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "WAARSCHUWING:"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
@@ -4622,6 +4625,10 @@ msgstr "Sorry, het opgegeven kunnen wij niet verwerken. Probeer nogmaals."
 msgid "Pause for..."
 msgstr "Pauzeer..."
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "Ververs"
+
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Sorteer op Leeftijd <small>Oud&rarr;Nieuw</small>"
@@ -4677,10 +4684,6 @@ msgstr "Wis de volledige geschiedenis?"
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "JavaScript is nodig voor de werking van Plush!"
-
-#: sabnzbd/skintext.py
-msgid "Refresh"
-msgstr "Ververs"
 
 #: sabnzbd/skintext.py
 msgid "Options"
@@ -4950,7 +4953,7 @@ msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
 msgstr ""
-"Tip: maak een \"Bladwijzer\" of \"Favoriet\" voor deze lokatie, zodat je "
+"Tip: maak een \"Bladwijzer\" of \"Favoriet\" voor deze locatie, zodat je "
 "SABnzbd gemakkelijk terug kunt vinden."
 
 #: sabnzbd/skintext.py [Will be appended with a wiki-link, adjust word order accordingly]
@@ -4987,13 +4990,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
-"Om te kunnen downloaden van Usenet, heb je een provider nodig. Het kan dat "
-"je internet provider dit aanbiedt, maar we bevelen een betaalde server aan. "
-"Heb je nog geen Usenet provider? Wij bevelen %s aan."
+"Om te kunnen downloaden van Usenet, heb je een provider nodig. Je Internet "
+"bedrijf heeft misschien een server, maar we bevelen een betaalde server aan."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Heb je nog geen Usenet provider? Wij bevelen %s aan."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -5318,16 +5323,6 @@ msgstr "URL ophalen mislukt; %s"
 #~ msgid ""
 #~ "Launch my internet browser with the SABnzbd page when the program starts."
 #~ msgstr "Start de web browser wanneer SABnzbd opstart."
-
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "Om te kunnen downloaden van Usenet, heb je een provider nodig. Je Internet "
-#~ "bedrijf heeft misschien een server, maar we bevelen een betaalde server aan."
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "Heb je nog geen Usenet provider? Wij bevelen %s aan."
 
 #~ msgid "This field is required."
 #~ msgstr "Verplicht veld"

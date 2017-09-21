@@ -61,7 +61,7 @@ TIMER_LOCK = RLock()
 class Server(object):
 
     def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, send_group, username=None,
-                 password=None, optional=False, retention=0, categories=None):
+                 password=None, optional=False, retention=0):
 
         self.id = id
         self.newid = None
@@ -80,12 +80,6 @@ class Server(object):
 
         self.username = username
         self.password = password
-
-        self.categories = categories
-
-        # Temporary deprication warning
-        if categories and (len(categories) > 1 or 'Default' not in categories):
-            logging.warning('[%s] Server specific categories option is scheduled to be removed in the next release of SABnzbd', self.host)
 
         self.busy_threads = []
         self.idle_threads = []
@@ -197,6 +191,8 @@ class Downloader(Thread):
         self.write_fds = {}
 
         self.servers = []
+        self.server_dict = {} # For faster lookups, but is not updated later!
+        self.server_nr = 0
         self._timers = {}
 
         for server in config.get_servers():
@@ -235,7 +231,6 @@ class Downloader(Thread):
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
-            categories = srv.categories()
             retention = float(srv.retention() * 24 * 3600)  # days ==> seconds
             send_group = srv.send_group()
             create = True
@@ -251,8 +246,13 @@ class Downloader(Thread):
                     break
 
         if create and enabled and host and port and threads:
-            self.servers.append(Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
-                                            send_group, username, password, optional, retention, categories=categories))
+            server = Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
+                                            send_group, username, password, optional, retention)
+            self.servers.append(server)
+            self.server_dict[newserver] = server
+
+        # Update server-count
+        self.server_nr = len(self.servers)
 
         return
 
@@ -645,7 +645,8 @@ class Downloader(Thread):
                                         server.errormsg = errormsg
                                         name = ' (%s)' % server.id
                                         logging.warning(T('Probable account sharing') + name)
-                                    penalty = _PENALTY_SHARE
+                                penalty = _PENALTY_SHARE
+                                block = True
                             elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
@@ -680,7 +681,8 @@ class Downloader(Thread):
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
                                         logging.warning(T('Cannot connect to server %s [%s]'), server.id, msg)
-                                    penalty = _PENALTY_UNKNOWN
+                                penalty = _PENALTY_UNKNOWN
+                                block = True
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
@@ -795,8 +797,8 @@ class Downloader(Thread):
                 # Remove this server from try_list
                 article.fetcher = None
 
-            # Allow all servers to iterate over each nzo/nzf again
-            sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
+                # Allow all servers to iterate over each nzo/nzf again
+                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
 
         if destroy:
             nw.terminate(quit=quit)

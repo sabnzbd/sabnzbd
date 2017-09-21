@@ -398,7 +398,6 @@ class ConfigServer(object):
         self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
         # 'fillserver' field only here in order to set a proper priority when converting
         self.fillserver = OptionBool(name, 'fillserver', False, add=False)
-        self.categories = OptionList(name, 'categories', default_val=['Default'], add=False)
         self.notes = OptionStr(name, 'notes', '', add=False)
 
         self.set_dict(values)
@@ -407,7 +406,7 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
-                   'ssl', 'ssl_verify', 'send_group', 'enable', 'optional', 'retention', 'priority', 'categories', 'notes'):
+                   'ssl', 'ssl_verify', 'send_group', 'enable', 'optional', 'retention', 'priority', 'notes'):
             try:
                 value = values[kw]
             except KeyError:
@@ -438,7 +437,6 @@ class ConfigServer(object):
         dict['retention'] = self.retention()
         dict['send_group'] = self.send_group()
         dict['priority'] = self.priority()
-        dict['categories'] = self.categories()
         dict['notes'] = self.notes()
         return dict
 

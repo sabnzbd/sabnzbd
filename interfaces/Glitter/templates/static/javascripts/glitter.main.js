@@ -536,6 +536,7 @@ function ViewModel() {
         callAPI({
             mode: 'warnings'
         }).then(function(response) {
+
             // Reset it all
             self.allWarnings.removeAll();
             if(response) {
@@ -544,20 +545,16 @@ function ViewModel() {
 
                 // Go over all warnings and add
                 $.each(response.warnings, function(index, warning) {
-                    // Split warning into parts
-                    var warningSplit = convertHTMLtoText(warning).split(/\n/);
-
                     // Reformat CSS label and date
+                    // Replaces spaces by non-breakable spaces and newlines with br's
                     var warningData = {
                         index: index,
-                        type: glitterTranslate.status[warningSplit[1]].slice(0, -1),
-                        text: warningSplit.slice(2).join('<br/>').replace(/ /g, '\u00A0'), // Recombine if multiple lines
-                        date: displayDateTime(warningSplit[0], self.dateFormat(), 'YYYY-MM-DD HH:mm'),
-                        timestamp: moment(warningSplit[0], 'YYYY-MM-DD HH:mm').unix(),
-                        css: (warningSplit[1] == "ERROR" ? "danger" : warningSplit[1] == "WARNING" ? "warning" : "info"),
+                        type: glitterTranslate.status[warning.type].slice(0, -1),
+                        text: convertHTMLtoText(warning.text).replace(/ /g, '\u00A0').replace(/(?:\r\n|\r|\n)/g, '<br />'),
+                        timestamp: warning.time,
+                        css: (warning.type == "ERROR" ? "danger" : warning.type == "WARNING" ? "warning" : "info"),
                         clear: self.clearWarnings
                     };
-
                     self.allWarnings.push(warningData)
                 })
             }

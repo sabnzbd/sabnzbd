@@ -29,6 +29,7 @@ import threading
 import subprocess
 import socket
 import time
+import calendar
 import datetime
 import fnmatch
 import stat
@@ -888,14 +889,16 @@ def get_unique_path(dirpath, n=0, create_dir=True):
 
 @synchronized(DIR_LOCK)
 def get_unique_filename(path):
-    """ Check if path is unique. If not, add number like: "/path/name.NUM.ext". """
+    """ Check if path is unique.
+        If not, add number like: "/path/name.NUM.ext".
+    """
     num = 1
+    new_path, fname = os.path.split(path)
+    name, ext = os.path.splitext(fname)
     while os.path.exists(path):
-        path, fname = os.path.split(path)
-        name, ext = os.path.splitext(fname)
         fname = "%s.%d%s" % (name, num, ext)
         num += 1
-        path = os.path.join(path, fname)
+        path = os.path.join(new_path, fname)
     return path
 
 
@@ -1378,12 +1381,12 @@ def get_all_passwords(nzo):
             logging.debug('Read these passwords from file: %s', pws)
             passwords.extend(pws)
             logging.info('Read %s passwords from file %s', len(pws), pw_file)
+
+            # Check size
+            if len(pws) > 30:
+                logging.warning(T('Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords.'))
         except:
             logging.warning('Failed to read the passwords file %s', pw_file)
-
-    # Check size
-    if len(passwords) > 30:
-        logging.warning(T('Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords.'))
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.

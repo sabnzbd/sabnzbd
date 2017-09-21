@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
 "PO-Revision-Date: 2016-07-29 16:20+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-11 06:25+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -228,15 +228,6 @@ msgstr "Notificări Test"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Reolvare adresă"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "EROARE:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "ATENŢIE:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -471,17 +462,18 @@ msgid ""
 "time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Eroare ştergere %s"
-
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "Nu pot citi %s"
 
-#: sabnzbd/dirscanner.py [Error message]
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error while adding %s, removing"
 msgstr "Eroare adăugare %s, ştergem"
+
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
+msgid "Error removing %s"
+msgstr "Eroare ştergere %s"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -672,7 +664,7 @@ msgstr ""
 "Autentificare lipsă, vă rugăm să introduceţi numele de utilizator/parola de "
 "la Configurare->General în programul dumneavoastră terţ:"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -750,6 +742,10 @@ msgstr "Parametru Incorect"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "Înapoi"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "EROARE:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1014,17 +1010,16 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr "Reparare nereuşită, blocuri reparare insuficiente (%s mai puţin)"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
 msgstr "Descărcare %s blocuri..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
 msgstr "Descărcare"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "Reparare nereuşită, blocuri reparare insuficiente (%s mai puţin)"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1050,6 +1045,10 @@ msgstr "Disc plin"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Verifying"
 msgstr "Se verifică"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
@@ -1217,12 +1216,6 @@ msgstr ""
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "Întrerupem duplicat NZB \"%s\""
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid ""
-"%d files with duplicate filenames were discared for \"%s\". Enable "
-"\"allow_duplicate_files\" to allow duplicate filenames."
-msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -2745,6 +2738,12 @@ msgstr "Parolă SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Optional authentication password."
 msgstr "Parolă autentificare opţională"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Security"
@@ -4380,6 +4379,10 @@ msgstr "Am pierdut conexiunea cu SABnzbd.."
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "În cazul repornirii SABnzbd acest ecran va dispărea în mod automat!"
 
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "ATENŢIE:"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Rată actualizare"
@@ -4544,6 +4547,10 @@ msgstr "Ne pare rău, nu am putut interpreta informațiile. Încearcă din nou."
 msgid "Pause for..."
 msgstr "Pauză timp de..."
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "Reîmprospătează"
+
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "Sortează după Vârstă <small>Cel mai Vechi&rarr;Cel mai Nou</small>"
@@ -4599,10 +4606,6 @@ msgstr "Goliţi Istoricul?"
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "Trebuie să activaţi JavaScript pentru ca Plush să funcţioneze!"
-
-#: sabnzbd/skintext.py
-msgid "Refresh"
-msgstr "Reîmprospătează"
 
 #: sabnzbd/skintext.py
 msgid "Options"
@@ -4911,10 +4914,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
+"Pentru a descărca de pe usenet veţi avea nevoie de un furnizor.  ISP-ul dvs. "
+"vă poate oferi acces, totuşi un furnizor premium e recomandat."
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr "Nu aveţi un furnizor usenet? Vă recomandăm să încercaţi %s."
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
@@ -5387,13 +5395,6 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "Please enter a whole number."
 #~ msgstr "Vă rugăm să introduceţi un număr întreg."
 
-#~ msgid ""
-#~ "In order to download from usenet you will require access to a provider. Your "
-#~ "ISP may provide you with access, however a premium provider is recommended."
-#~ msgstr ""
-#~ "Pentru a descărca de pe usenet veţi avea nevoie de un furnizor.  ISP-ul dvs. "
-#~ "vă poate oferi acces, totuşi un furnizor premium e recomandat."
-
 #~ msgid "This field is required."
 #~ msgstr "Acest câmp este obligatoriu."
 
@@ -5445,9 +5446,6 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "Email Account Settings"
 #~ msgstr "Setări Cont Email"
-
-#~ msgid "Don't have a usenet provider? We recommend trying %s."
-#~ msgstr "Nu aveţi un furnizor usenet? Vă recomandăm să încercaţi %s."
 
 #~ msgid "Skip par2 checking when files are 100% valid."
 #~ msgstr "Ignoră verificarea par2 când fişierele sunt complete 100%%."

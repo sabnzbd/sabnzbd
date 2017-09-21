@@ -105,6 +105,7 @@ from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
+import sabnzbd.par2file as par2file
 import sabnzbd.api
 import sabnzbd.directunpacker as directunpacker
 from sabnzbd.decorators import synchronized, notify_downloader
@@ -319,15 +320,16 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     paused = BPSMeter.do.read()
 
-    PostProcessor()
 
     NzbQueue()
 
+    Downloader(pause_downloader or paused)
+
     Assembler()
 
-    NzbQueue.do.read_queue(repair)
+    PostProcessor()
 
-    Downloader(pause_downloader or paused)
+    NzbQueue.do.read_queue(repair)
 
     DirScanner()
 
@@ -546,7 +548,13 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     if cat and cat.lower() == 'default':
         cat = None
     logging.info('Fetching %s', url)
+
+    # Add feed name if it came from RSS
     msg = T('Trying to fetch NZB from %s') % url
+    if nzbname:
+        msg = '%s - %s' % (nzbname, msg)
+
+    # Generate the placeholder
     future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
     URLGrabber.do.add(url, future_nzo)
     return future_nzo.nzo_id

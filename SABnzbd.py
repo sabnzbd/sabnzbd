@@ -32,11 +32,13 @@ except:
 
 import logging
 import logging.handlers
+import traceback
 import os
 import getopt
 import signal
 import socket
 import platform
+import ssl
 import time
 import re
 
@@ -97,7 +99,6 @@ import sabnzbd.downloader
 from sabnzbd.encoding import unicoder, deunicode
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-import sabnzbd.utils.sslinfo
 
 from threading import Thread
 
@@ -150,7 +151,11 @@ class guiHandler(logging.Handler):
             # Loose the oldest record
             self.store.pop(0)
         try:
-            self.store.append(self.format(record))
+            # Append traceback, if available
+            warning = {'type': record.levelname, 'text': record.msg % record.args, 'time': int(time.time())}
+            if record.exc_info:
+                warning['text'] = '%s\n%s' % (warning['text'], traceback.format_exc())
+            self.store.append(warning)
         except UnicodeDecodeError:
             # Catch elusive Unicode conversion problems
             pass
@@ -160,12 +165,6 @@ class guiHandler(logging.Handler):
 
     def count(self):
         return len(self.store)
-
-    def last(self):
-        if self.store:
-            return self.store[len(self.store) - 1]
-        else:
-            return ""
 
     def content(self):
         """ Return an array with last records """
@@ -202,11 +201,11 @@ def print_help():
     print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
     print "                           with full data reconstruction"
     print "      --https <port>       Port to use for HTTPS server"
+    print "      --ipv6_hosting <0|1> Listen on IPv6 address [::1] [*]"
     print "      --no-login           Start with username and password reset"
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
-    print "      --ipv6_hosting <0|1> Listen on IPv6 address [::1]"
 
 
 def print_version():
@@ -426,10 +425,12 @@ def print_modules():
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
-        logging.error(T('par2 binary... NOT found!'))
+        logging.error('%s %s' % (T('par2 binary... NOT found!'), T('Verification and repair will not be possible.')))
 
     if sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
+    elif sabnzbd.WIN32:
+        logging.error('%s %s' % (T('MultiPar binary... NOT found!'), T('Verification and repair will not be possible.')))
 
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
@@ -440,9 +441,9 @@ def print_modules():
             want_str = '%.2f' % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
             logging.warning(T('Your UNRAR version is %s, we recommend version %s or higher.<br />') % (have_str, want_str))
         elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
-            logging.debug('UNRAR binary version %.2f', (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
+            logging.info('UNRAR binary version %.2f', (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
-        logging.error(T('unrar binary... NOT found'))
+        logging.error('%s %s' % (T('unrar binary... NOT found'), T('Downloads will not unpacked.')))
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
@@ -820,7 +821,7 @@ def main():
     logging_level = None
     web_dir = None
     vista_plus = False
-    vista64 = False
+    win64 = False
     repair = 0
     api_url = None
     no_login = False
@@ -945,8 +946,8 @@ def main():
 
     # Detect Windows variant
     if sabnzbd.WIN32:
-        vista_plus, vista64 = windows_variant()
-        sabnzbd.WIN64 = vista64
+        vista_plus, win64 = windows_variant()
+        sabnzbd.WIN64 = win64
 
     if not SQLITE_DLL:
         panic_sqlite(sabnzbd.MY_FULLNAME)
@@ -1025,7 +1026,7 @@ def main():
                 pass
             else:
                 if not url:
-                    url = 'https://%s:%s/sabnzbd/api?' % (browserhost, port)
+                    url = 'https://%s:%s%s/api?' % (browserhost, port, sabnzbd.cfg.url_base())
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
@@ -1054,7 +1055,7 @@ def main():
                 pass
             else:
                 if not url:
-                    url = 'http://%s:%s/sabnzbd/api?' % (browserhost, cherryport)
+                    url = 'http://%s:%s%s/api?' % (browserhost, cherryport, sabnzbd.cfg.url_base())
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
@@ -1149,14 +1150,12 @@ def main():
     logging.info('Full executable path = %s', sabnzbd.MY_FULLNAME)
     if sabnzbd.WIN32:
         suffix = ''
-        if vista_plus:
-            suffix = ' (=Vista+)'
-        if vista64:
-            suffix = ' (=Vista+ x64)'
+        if win64:
+            suffix = '(win64)'
         try:
-            logging.info('Platform=%s%s Class=%s', platform.platform(), suffix, os.name)
+            logging.info('Platform = %s %s', platform.platform(), suffix)
         except:
-            logging.info('Platform=%s <unknown> Class=%s', suffix, os.name)
+            logging.info('Platform = %s <unknown>', suffix)
     else:
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
@@ -1174,7 +1173,24 @@ def main():
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in preferredencoding.lower() and '8' in preferredencoding.lower()):
         logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % preferredencoding)
 
+    # SSL Information
+    logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
+
+    # Load (extra) certificates in the binary distributions
+    if hasattr(sys, "frozen") and (sabnzbd.WIN32 or sabnzbd.DARWIN):
+        # The certifi package brings the latest certificates on build
+        # This will cause the create_default_context to load it automatically
+        os.environ["SSL_CERT_FILE"] = os.path.join(sabnzbd.DIR_PROG, 'cacert.pem')
+        logging.info('Loaded additional certificates from %s', os.environ["SSL_CERT_FILE"])
+
+    # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
+        # List the number of certificates available (can take up to 1.5 seconds)
+        if sabnzbd.HAVE_SSL_CONTEXT:
+            ctx = ssl.create_default_context()
+            logging.debug('Available certificates: %s', repr(ctx.cert_store_stats()))
+
+        # Show IPv4/IPv6 address
         from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 
         mylocalipv4 = localipv4()
@@ -1199,12 +1215,12 @@ def main():
         from sabnzbd.utils.getperformance import getpystone, getcpu
         pystoneperf = getpystone()
         if pystoneperf:
-            logging.debug('CPU Pystone available performance is %s', pystoneperf)
+            logging.debug('CPU Pystone available performance = %s', pystoneperf)
         else:
             logging.debug('CPU Pystone available performance could not be calculated')
         cpumodel = getcpu()  # Linux only
         if cpumodel:
-            logging.debug('CPU model name is %s', cpumodel)
+            logging.debug('CPU model = %s', cpumodel)
 
     logging.info('Read INI file %s', inifile)
 
@@ -1248,12 +1264,9 @@ def main():
 
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
-
     print_modules()
 
-    logging.info("SSL version %s", sabnzbd.utils.sslinfo.ssl_version())
-    logging.info("SSL supported protocols %s", str(sabnzbd.utils.sslinfo.ssl_protocols_labels()))
-
+    # HTTPS certificate generation
     https_cert = sabnzbd.cfg.https_cert.get_path()
     https_key = sabnzbd.cfg.https_key.get_path()
     https_chain = sabnzbd.cfg.https_chain.get_path()
@@ -1269,6 +1282,7 @@ def main():
             logging.warning(T('Disabled HTTPS because of missing CERT and KEY files'))
             enable_https = False
 
+    # Starting of the webserver
     # Determine if this system has multiple definitions for 'localhost'
     hosts = all_localhosts()
     multilocal = len(hosts) > 1 and cherryhost in ('localhost', '0.0.0.0')
@@ -1321,6 +1335,7 @@ def main():
                             'server.socket_port': cherryport,
                             'server.shutdown_timeout': 0,
                             'log.screen': False,
+                            'engine.timeout_monitor.on': False,
                             'engine.autoreload.on': False,
                             'tools.encode.on': True,
                             'tools.gzip.on': True,
@@ -1357,7 +1372,7 @@ def main():
     # Make available from both URLs
     main_page = sabnzbd.interface.MainPage()
     cherrypy.tree.mount(main_page, '/', config=appconfig)
-    cherrypy.tree.mount(main_page, '/sabnzbd/', config=appconfig)
+    cherrypy.tree.mount(main_page, sabnzbd.cfg.url_base(), config=appconfig)
 
     # Set authentication for CherryPy
     sabnzbd.interface.set_auth(cherrypy.config)
@@ -1375,21 +1390,14 @@ def main():
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
-    # Bonjour needs a ip. Lets try to find it.
-    try:
-        z_host = socket.gethostbyname(socket.gethostname())
-    except socket.gaierror:
-        z_host = cherryhost
-
-    sabnzbd.zconfig.set_bonjour(z_host, cherryport)
-
+    # Window Service support
     mail = None
     if sabnzbd.WIN32:
         if enable_https:
             mode = 's'
         else:
             mode = ''
-        api_url = 'http%s://%s:%s/sabnzbd/api?apikey=%s' % (mode, browserhost, cherryport, sabnzbd.cfg.api_key())
+        api_url = 'http%s://%s:%s%s/api?apikey=%s' % (mode, browserhost, cherryport, sabnzbd.cfg.url_base(), sabnzbd.cfg.api_key())
 
         if sabnzbd.WIN_SERVICE:
             mail = MailSlot()
@@ -1422,9 +1430,9 @@ def main():
 
     # Set URL for browser
     if enable_https:
-        browser_url = "https://%s:%s/sabnzbd" % (browserhost, cherryport)
+        browser_url = "https://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
     else:
-        browser_url = "http://%s:%s/sabnzbd" % (browserhost, cherryport)
+        browser_url = "http://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
     sabnzbd.BROWSER_URL = browser_url
 
     if not autorestarted:
@@ -1437,6 +1445,13 @@ def main():
         # Now's the time to check for a new version
         check_latest_version()
     autorestarted = False
+
+    # ZeroConfig/Bonjour needs a ip. Lets try to find it.
+    try:
+        z_host = socket.gethostbyname(socket.gethostname())
+    except socket.gaierror:
+        z_host = cherryhost
+    sabnzbd.zconfig.set_bonjour(z_host, cherryport)
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0
@@ -1686,9 +1701,8 @@ if __name__ == '__main__':
             main()
 
     elif getattr(sys, 'frozen', None) == 'macosx_app':
-        # OSX binary
-
         try:
+            # OSX binary runner
             from PyObjCTools import AppHelper
             from sabnzbd.osxmenu import SABnzbdDelegate
 
@@ -1713,9 +1727,7 @@ if __name__ == '__main__':
             sabApp = startApp()
             sabApp.start()
             AppHelper.runEventLoop()
-
         except:
             main()
-
     else:
         main()

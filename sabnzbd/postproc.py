@@ -614,18 +614,6 @@ def prepare_extraction_path(nzo):
     return tmp_workdir_complete, workdir_complete, file_sorter, one_folder, marker_file
 
 
-def is_parfile(fn):
-    """ Check quickly whether file has par2 signature """
-    PAR_ID = "PAR2\x00PKT"
-    try:
-        with open(fn, "rb") as f:
-            buf = f.read(8)
-            return buf.startswith(PAR_ID)
-    except:
-        pass
-    return False
-
-
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
     filename = nzo.final_name
@@ -634,7 +622,7 @@ def parring(nzo, workdir):
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
-    repair_sets = nzo.partable.keys()
+    repair_sets = nzo.extrapars.keys()
 
     re_add = False
     par_error = False
@@ -647,7 +635,9 @@ def parring(nzo, workdir):
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
                 parfile_nzf = nzo.partable[setname]
-                if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or parfile_nzf.extrapars:
+
+                # Check if file maybe wasn't deleted and if we maybe have more files in the parset
+                if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or nzo.extrapars[setname]:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
 
                     # Was it aborted?
@@ -661,51 +651,19 @@ def parring(nzo, workdir):
                 else:
                     continue
                 par_error = par_error or not res
+
     else:
-        # Obfuscated par2 check
-        logging.info('No par2 sets found, running obfuscated check on %s', filename)
+        # We must not have found any par2..
+        logging.info("No par2 sets for %s", filename)
+        nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
+        if cfg.sfv_check() and not verified.get('', False):
+            par_error = not try_sfv_check(nzo, workdir, '')
+            verified[''] = not par_error
+        # If still no success, do RAR-check
+        if not par_error and cfg.enable_unrar():
+            par_error = not try_rar_check(nzo, workdir, '')
+            verified[''] = not par_error
 
-        # Get the NZF's and sort them based on size
-        nzfs_sorted = sorted(nzo.finished_files, key=lambda x: x.bytes)
-
-        # We will have to make 'fake' par files that are recognized
-        par2_vol = 0
-        par2_filename = None
-
-        for nzf_try in nzfs_sorted:
-            # run through list of files, looking for par2 signature..
-            logging.debug("Checking par2 signature of %s", nzf_try.filename)
-            try:
-                nzf_path = os.path.join(workdir, nzf_try.filename)
-                if(is_parfile(nzf_path)):
-                    # We need 1 base-name so they are recognized as 1 set
-                    if not par2_filename:
-                        par2_filename = nzf_path
-
-                    # Rename so handle_par2() picks it up
-                    newpath = '%s.vol%d+%d.par2' % (par2_filename, par2_vol, par2_vol + 1)
-                    renamer(nzf_path, newpath)
-                    nzf_try.filename = os.path.split(newpath)[1]
-
-                    # Let the magic happen
-                    nzo.handle_par2(nzf_try, file_done=True)
-                    par2_vol += 1
-            except:
-                pass
-        if par2_vol > 0:
-            # Pars found, we do it again
-            par_error, re_add = parring(nzo, workdir)
-        else:
-            # We must not have found any par2..
-            logging.info("No par2 sets for %s", filename)
-            nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
-            if cfg.sfv_check() and not verified.get('', False):
-                par_error = not try_sfv_check(nzo, workdir, '')
-                verified[''] = not par_error
-            # If still no success, do RAR-check
-            if not par_error and cfg.enable_unrar():
-                par_error = not try_rar_check(nzo, workdir, '')
-                verified[''] = not par_error
     if re_add:
         logging.info('Re-added %s to queue', filename)
         if nzo.priority != TOP_PRIORITY:

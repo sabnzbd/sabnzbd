@@ -360,7 +360,7 @@ li.dropdown {
 
 #feedback-slider:hover {
     left: 0px;
-    height: 340px;
+    height: 200px;
     opacity: 1;
 }
 
@@ -404,7 +404,6 @@ thead {
 
 tr th {
     border-bottom: none !important;
-    visibility: hidden;
     padding: 0px !important;
     height: 0px;
 }
@@ -527,6 +526,7 @@ tbody>tr>td:last-child {
 }
 
 .hover-button.glyphicon-play,
+.hover-button.glyphicon-forward,
 .hover-button.glyphicon-stop {
     opacity: 1;
     color: #474747;

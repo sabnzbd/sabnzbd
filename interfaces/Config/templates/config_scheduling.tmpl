@@ -1,5 +1,5 @@
 <!--#set global $pane="Scheduling"#-->
-<!--#set global $help_uri="configuration/2.2/scheduling"#-->
+<!--#set global $help_uri="configuration/2.3/scheduling"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <%
@@ -57,6 +57,13 @@ else:
                             <!--#for $server in $actions_servers.keys()#-->
                                 <option value="$server" data-action="1" data-noarg="1">$T('sch-enable_server') "$actions_servers[$server]"</option>
                                 <option value="$server" data-action="0" data-noarg="1">$T('sch-disable_server') "$actions_servers[$server]"</option>
+                            <!--#end for#-->
+                        </optgroup>
+                        <optgroup label="$T('cmenu-cat')">
+                            <!--#for $cat in $categories#-->
+                                <!--#set $cat_text = $T('Default') if $cat == '*' else $cat#-->
+                                <option value="pause_cat" data-action="$cat" data-noarg="1">$T('sch-pause_cat') "$cat_text"</option>
+                                <option value="resume_cat" data-action="$cat" data-noarg="1">$T('sch-resume_cat') "$cat_text"</option>
                             <!--#end for#-->
                         </optgroup>
                     </select>

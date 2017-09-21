@@ -73,6 +73,8 @@ SKIN_TEXT = {
     'sch-resume_all_high': TT('Resume high prioirty jobs'), #: Config->Scheduler
     'sch-enable_quota'   : TT('Enable quota management'), #: Config->Scheduler
     'sch-disable_quota'  : TT('Disable quota management'), #: Config->Scheduler
+    'sch-pause_cat'      : TT('Pause jobs with category'), #: Config->Scheduler
+    'sch-resume_cat'     : TT('Resume jobs with category'), #: Config->Scheduler
 
     'prowl-off'          : TT('Off'), #: Prowl priority
     'prowl-very-low'     : TT('Very Low'), #: Prowl priority
@@ -187,7 +189,6 @@ SKIN_TEXT = {
     'ft-newRelease@1' : TT('New release %s available at'), # Used in Footer
 
 # Main page
-    'useGlitter': TT('Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin.'),
     'shutdownOK?' : TT('Are you sure you want to shutdown SABnzbd?'),
     'link-shutdown' : TT('Shutdown'), #: Shutdown SABnzbd
     'link-pause' : TT('Pause'), #: Pause downloading
@@ -341,6 +342,7 @@ SKIN_TEXT = {
     'explain-web_username' : TT('Optional authentication username.'),
     'opt-web_password' : TT('SABnzbd Password'),
     'explain-web_password' : TT('Optional authentication password.'),
+    'checkSafety' : TT('If the SABnzbd Host or Port is exposed to the internet, your current settings allow full external access to the SABnzbd interface.'),
     'security' : TT('Security'),
     'opt-enable_https' : TT('Enable HTTPS'),
     'opt-notInstalled' : TT('not installed'),
@@ -444,6 +446,8 @@ SKIN_TEXT = {
     'explain-no_dupes' : TT('Detect identical NZB files (based on items in your History or files in .nzb Backup Folder)'),
     'opt-no_series_dupes' : TT('Detect duplicate episodes in series'),
     'explain-no_series_dupes' : TT('Detect identical episodes in series (based on "name/season/episode" of items in your History)'),
+    'opt-series_propercheck' : TT('Allow proper releases'),
+    'explain-series_propercheck' : TT('Bypass series duplicate detection if PROPER, REAL or REPACK is detected in the download name'),
     'nodupes-off' : TT('Off'), #: Three way switch for duplicates
     'nodupes-ignore' : TT('Discard'), #: Four way switch for duplicates
     'nodupes-pause' : TT('Pause'), #: Four way switch for duplicates
@@ -800,6 +804,7 @@ SKIN_TEXT = {
     'Glitter-filtered' : TT('FILTERED'),
     'Glitter-waitSec' : TT('WAIT %s sec'),
     'Glitter-error' : TT('ERROR:'),
+    'Glitter-fetch' : TT('Fetch'),
     'Glitter-interfaceOptions' : TT('Web Interface'),
     'Glitter-interfaceRefresh' : TT('Refresh rate'),
     'Glitter-useGlobalOptions' : TT('Use global interface settings'),
@@ -852,6 +857,7 @@ SKIN_TEXT = {
     'Glitter-pausePrompt': TT('How long or untill when do you want to pause? (in English!)'),
     'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. Try again.'),
     'Glitter-pauseFor' : TT('Pause for...'),
+    'Glitter-refresh' : TT('Refresh'),
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
     'Glitter-sortAgeDesc' : TT('Sort by Age <small>Newest&rarr;Oldest</small>'),
     'Glitter-sortNameAsc' : TT('Sort by Name <small>A&rarr;Z</small>'),
@@ -994,5 +1000,6 @@ SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it under certain conditions.
 It is licensed under the GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 '''),
-    'wizard-ad': TT('In order to download from Usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended. Don\'t have a Usenet provider? We recommend trying %s.''')
+    'wizard-ad-1': TT('In order to download from usenet you will require access to a provider. Your ISP may provide you with access, however a premium provider is recommended.'),
+    'wizard-ad-2': TT('Don\'t have a usenet provider? We recommend trying %s.'),
     }

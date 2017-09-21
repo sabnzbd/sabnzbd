@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-08-24 15:30+0000\n"
-"PO-Revision-Date: 2017-08-21 19:38+0000\n"
+"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"PO-Revision-Date: 2017-09-11 21:29+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-08-25 05:49+0000\n"
-"X-Generator: Launchpad (build 18446)\n"
+"X-Launchpad-Export-Date: 2017-09-12 05:29+0000\n"
+"X-Generator: Launchpad (build 18449)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -221,15 +221,6 @@ msgstr "בחן התראה"
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;פותר כתובת"
-
-#: sabnzbd/api.py # sabnzbd/api.py # sabnzbd/interface.py
-#: sabnzbd/skintext.py
-msgid "ERROR:"
-msgstr "שגיאה:"
-
-#: sabnzbd/api.py # sabnzbd/skintext.py
-msgid "WARNING:"
-msgstr "אזהרה:"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py [No value, used in dropdown menus] # sabnzbd/skintext.py [Job details page, select no files]
 msgid "None"
@@ -467,17 +458,18 @@ msgstr ""
 ".עבודות יתחילו להיפרק במהלך ההורדה כדי להפחית זמן לאחר-עיבוד. עובד רק עבור "
 "עבודות שאינן צריכות תיקון"
 
-#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "%s שגיאה בהסרת"
-
-#: sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
+#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
 msgid "Cannot read %s"
 msgstr "לא יכול לקרוא את %s"
 
-#: sabnzbd/dirscanner.py [Error message]
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Error while adding %s, removing"
 msgstr "מסיר ,%s שגיאה בזמן הוספת"
+
+#: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
+msgid "Error removing %s"
+msgstr "%s שגיאה בהסרת"
 
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
@@ -664,7 +656,7 @@ msgstr ""
 ":אימות חסר, אנא הכנס שם משתמש/סיסמה מתוך תצורה->כללי לתוך תכנית הצד השלישי "
 "שלך"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/interface.py [Warning message]
 msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
@@ -740,6 +732,10 @@ msgstr "משתנה לא נכון"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
 msgstr "הקודם"
+
+#: sabnzbd/interface.py # sabnzbd/skintext.py
+msgid "ERROR:"
+msgstr "שגיאה:"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 #: sabnzbd/interface.py # sabnzbd/interface.py
@@ -1005,17 +1001,16 @@ msgstr ""
 "בלתי תקפים, לא יכול לוודא או לתקן PAR2 בלתי תקפים או פרמטרי par2 קבצי"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Repair failed, not enough repair blocks (%s short)"
-msgstr "(קצר %s) תיקון נכשל, אין מספיק גושי תיקון"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
 msgstr "...מושך %s גושים"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Fetching"
 msgstr "מושך"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Repair failed, not enough repair blocks (%s short)"
+msgstr "(קצר %s) תיקון נכשל, אין מספיק גושי תיקון"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1041,6 +1036,10 @@ msgstr "דיסק מלא"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Verifying"
 msgstr "מוודא"
+
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+msgid "Checking extra files"
+msgstr "בודק קבצי תוספת"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
@@ -1207,14 +1206,6 @@ msgstr "NZB שכפל"
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Pausing duplicate NZB \"%s\""
 msgstr "\"%s\" NZB משהה שכפול"
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid ""
-"%d files with duplicate filenames were discared for \"%s\". Enable "
-"\"allow_duplicate_files\" to allow duplicate filenames."
-msgstr ""
-".כדי להתיר שמות כפולים של קבצים \"allow_duplicate_files\" אפשר את .\"%s\" "
-"הושלכו %d קבצים עם שמות כפולים עבור"
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -2736,6 +2727,14 @@ msgid "Optional authentication password."
 msgstr "סיסמת אימות רשותית"
 
 #: sabnzbd/skintext.py
+msgid ""
+"If the SABnzbd Host or Port is exposed to the internet, your current "
+"settings allow full external access to the SABnzbd interface."
+msgstr ""
+".SABnzbd חשופים לאינטרנט, ההגדרות הנוכחיות שלך מאפשרות גישה חיצונית מלאה אל "
+"ממשק SABnzbd אם המארח או הפתחה של"
+
+#: sabnzbd/skintext.py
 msgid "Security"
 msgstr "אבטחה"
 
@@ -3262,7 +3261,7 @@ msgstr "חלופי NZB בכישלון, נסה"
 
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
-msgstr ".חלופי כאשר הורדת נכשלת NZB מספר שרתים מספקים"
+msgstr ".חלופי כאשר הורדה נכשלת NZB מספר שרתים מספקים"
 
 #: sabnzbd/skintext.py
 msgid "Use tags from indexer"
@@ -3273,8 +3272,8 @@ msgid ""
 "When sorting, use tags from indexer for title, season, episode, etc. "
 "Otherwise all naming is derived from the NZB name."
 msgstr ""
-".NZB-בעת מיון, השתמש בתגים ממדדן עבור כותרת, עונה, פרק וכדומה. אחרת כל מתן "
-"השמות נגזר משם ה"
+".בעת מיון, השתמש בתגים ממדדן עבור כותרת, עונה, פרק וכדומה\r\n"
+".NZB-אחרת כל מתן השמות נגזר משם ה"
 
 #: sabnzbd/skintext.py
 msgid "Enable folder rename"
@@ -3510,7 +3509,7 @@ msgstr "אפשר סינון"
 
 #: sabnzbd/skintext.py
 msgid "Action downloads according to filtering rules."
-msgstr ".הורדות פעולה בהתאם לחוקי הסינון"
+msgstr ".הורדה בהתאם לכללי הסינון"
 
 #: sabnzbd/skintext.py
 msgid "Abort If"
@@ -4365,6 +4364,10 @@ msgstr "..SABnzbd אבד חיבור אל"
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
 msgstr "!המסך יעלם באופן אוטומטי SABnzbd במקרה של הפעלה מחדש של"
 
+#: sabnzbd/skintext.py
+msgid "WARNING:"
+msgstr "אזהרה:"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "קצב רענון"
@@ -4529,6 +4532,10 @@ msgstr ".סליחה, לא יכולנו לפרש את זה. נסה שוב"
 msgid "Pause for..."
 msgstr "...השהה למשך"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py
+msgid "Refresh"
+msgstr "רענן"
+
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
 msgstr "מיין לפי גיל <small>החדש ביותר&rarr;הישן ביותר</small>"
@@ -4584,10 +4591,6 @@ msgstr "?לטהר את ההיסטוריה"
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
 msgstr "!יתפקד Plush-כדי ש JavaScript אתה חייב לאפשר"
-
-#: sabnzbd/skintext.py
-msgid "Refresh"
-msgstr "רענן"
 
 #: sabnzbd/skintext.py
 msgid "Options"
@@ -4891,12 +4894,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid ""
-"In order to download from Usenet you will require access to a provider. Your "
-"ISP may provide you with access, however a premium provider is recommended. "
-"Don't have a Usenet provider? We recommend trying %s."
+"In order to download from usenet you will require access to a provider. Your "
+"ISP may provide you with access, however a premium provider is recommended."
 msgstr ""
-".%s אנחנו ממליצים לנסות את ?Usenet נדרשת גישה אל ספק. ספק האינטרנט שלך עשוי "
-"לספק לך גישה, אמנם ספק פרימיום הוא מומלץ. אין לך ספק Usenet-על מנת להוריד מ"
+".תידרש לך גישה אל ספק. ספק שירותי האינטרנט שלך עשוי לספק לך גישה, אולם מומלץ "
+"ספק פרימיום usenet-על מנת להוריד מ"
+
+#: sabnzbd/skintext.py
+msgid "Don't have a usenet provider? We recommend trying %s."
+msgstr ".%s אנו ממליצים לנסות את ?usenet אין לך ספק"
 
 #: sabnzbd/tvsort.py [Error message]
 msgid "Error getting TV info (%s)"
