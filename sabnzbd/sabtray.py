@@ -110,6 +110,12 @@ class SABTrayThread(SysTrayIconThread):
             self.refresh_icon()
             self.counter = 0
 
+    # left-click handler
+    def click(self):
+        # Pause/resume and force update of icon/text
+        self.pauseresume(None)
+        self.counter = 11
+
     # menu handler
     def opencomplete(self, icon):
         try:

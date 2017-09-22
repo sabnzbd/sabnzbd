@@ -4,6 +4,7 @@
 # http://www.brunningonline.net/simon/blog/archives/SysTrayIcon.py.html
 # modified on 2011-10-04 by Jan Schejbal to support threading and preload icons
 #  override doUpdates to perform actions inside the icon thread
+#  override click to perform actions when left-clicking the icon
 
 import os
 import pywintypes
@@ -89,7 +90,7 @@ class SysTrayIconThread(Thread):
             sleep(0.100)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
 
-    # override this
+    # Override this
     def doUpdates(self):
         pass
 
@@ -180,6 +181,7 @@ class SysTrayIconThread(Thread):
         elif lparam == win32con.WM_RBUTTONUP:
             self.show_menu()
         elif lparam == win32con.WM_LBUTTONUP:
+            self.click()
             pass
         return True
 
@@ -203,6 +205,10 @@ class SysTrayIconThread(Thread):
         except pywintypes.error:
             # Weird PyWin/win32gui bug, just ignore it for now
             pass
+
+    # Ooverride this for left-click action
+    def click(self):
+        pass
 
     def create_menu(self, menu, menu_options):
         for option_text, option_icon, option_action, option_id in menu_options[::-1]:
