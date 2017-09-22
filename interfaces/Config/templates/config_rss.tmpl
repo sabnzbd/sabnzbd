@@ -7,7 +7,7 @@
         <div class="padTable">
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
-            <form action="add_rss_feed" method="post" autocomplete="off" novalidate>
+            <form action="add_rss_feed" method="post" autocomplete="off">
                 <input type="hidden" name="session" value="$session" />
                 <table class="catTable">
                     <tr>
@@ -37,7 +37,7 @@
     <!--#if $rss#-->
     <div class="section">
         <div class="padTable">
-            <form action="save_rss_feed" method="post" autocomplete="off" novalidate>
+            <form action="save_rss_feed" method="post" autocomplete="off">
                 <input type="hidden" name="session" value="$session" />
                 <table id="subscriptions">
                     <tbody>
@@ -73,7 +73,7 @@
             </form>
             <!--#if $feeds#-->
             <br/>
-            <form action="rss_now" method="post" autocomplete="off" novalidate>
+            <form action="rss_now" method="post" autocomplete="off">
                 <input type="hidden" name="session" value="$session" />
                 <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
             </form>
