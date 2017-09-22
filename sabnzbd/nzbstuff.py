@@ -618,7 +618,7 @@ class NzbObject(TryList):
         self.bytes_tried = 0        # Which bytes did we try
         self.bytes_missing = 0      # Bytes missing
         self.bad_articles = 0       # How many bad (non-recoverable) articles
-        self.set_priority(priority) # Parse priority
+        self.set_priority(priority) # Parse priority of input
         self.repair = r             # True if we want to repair this set
         self.unpack = u             # True if we want to unpack this set
         self.delete = d             # True if we want to delete this set
@@ -1228,10 +1228,20 @@ class NzbObject(TryList):
 
     def set_priority(self, value):
         """ Check if this is a valid priority """
+        # When unknown (0 is a known one), set to DEFAULT
+        if value == '' or value is None:
+            self.priority = DEFAULT_PRIORITY
+            return
+
+        # Convert input
         value = int_conv(value)
         if value in (REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, \
              LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY):
             self.priority = value
+            return
+
+        # Invalid value, set to normal priority
+        self.priority = NORMAL_PRIORITY
 
     @property
     def final_name_labeled(self):
