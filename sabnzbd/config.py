@@ -395,7 +395,7 @@ class ConfigServer(object):
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
-        self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
+        self.priority = OptionNumber(name, 'priority', 0, 0, 99, add=False)
         # 'fillserver' field only here in order to set a proper priority when converting
         self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.notes = OptionStr(name, 'notes', '', add=False)
