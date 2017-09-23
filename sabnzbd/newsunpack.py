@@ -153,6 +153,12 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
                         'download_time': nzo.nzo_info.get('download_time', ''),
                         'avg_bps': int(nzo.avg_bps_total / nzo.avg_bps_freq) if nzo.avg_bps_freq else 0,
                         'age': calc_age(nzo.avg_date),
+                        'program_dir': sabnzbd.DIR_PROG,
+                        'par2_command': sabnzbd.newsunpack.PAR2_COMMAND,
+                        'multipar_command': sabnzbd.newsunpack.MULTIPAR_COMMAND,
+                        'rar_command': sabnzbd.newsunpack.RAR_COMMAND,
+                        'zip_command': sabnzbd.newsunpack.ZIP_COMMAND,
+                        '7zip_command': sabnzbd.newsunpack.SEVEN_COMMAND,
                         'version': sabnzbd.__version__}
 
     try:
