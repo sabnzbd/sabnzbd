@@ -29,7 +29,6 @@ import threading
 import subprocess
 import socket
 import time
-import calendar
 import datetime
 import fnmatch
 import stat

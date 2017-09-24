@@ -38,7 +38,7 @@ from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.encoding import unicoder, is_utf8
+from sabnzbd.encoding import unicoder
 from sabnzbd.rating import Rating
 
 

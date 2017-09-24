@@ -24,7 +24,6 @@ import Queue
 import logging
 import sabnzbd
 import xml.sax.saxutils
-import xml.etree.ElementTree
 import time
 import re
 
