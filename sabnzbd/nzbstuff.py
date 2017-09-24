@@ -807,7 +807,7 @@ class NzbObject(TryList):
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp_tmp)
 
         # Run user pre-queue script if needed
-        if not reuse:
+        if not reuse and cfg.pre_script():
             accept, name, pp, cat, script, priority, group = \
                 sabnzbd.newsunpack.pre_queue(self.final_name_pw_clean, pp, cat, script,
                                              priority, self.bytes, self.groups)
