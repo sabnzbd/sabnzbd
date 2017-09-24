@@ -167,7 +167,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         if safe_lower(script) in ('', 'default'):
             script = def_cat.script()
 
-    if priority is None or priority == DEFAULT_PRIORITY:
+    if priority is None or priority == '' or priority == DEFAULT_PRIORITY:
         priority = my_cat.priority()
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()

@@ -816,6 +816,10 @@ class NzbObject(TryList):
                 pp = int(pp)
             except:
                 pp = None
+            try:
+                priority = int(priority)
+            except:
+                priority = DEFAULT_PRIORITY
             if accept < 1:
                 self.purge_data()
                 raise TypeError
@@ -827,7 +831,7 @@ class NzbObject(TryList):
                 self.fail_msg = T('Pre-queue script marked job as failed')
 
             # Re-evaluate results from pre-queue script
-            self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, int_conv(priority))
+            self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
             self.set_priority(priority)
             self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
         else:
