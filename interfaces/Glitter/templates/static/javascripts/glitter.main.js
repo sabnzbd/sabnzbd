@@ -178,7 +178,7 @@ function ViewModel() {
 
         // Quota
         self.quotaLimit(response.queue.quota)
-        self.quotaLimitLeft(response.queue.left_quota > 0 ? response.queue.left_quota : 0)
+        self.quotaLimitLeft(response.queue.left_quota)
 
         // System load
         self.systemLoad(response.queue.loadavg)
