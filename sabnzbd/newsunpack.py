@@ -799,7 +799,11 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         else:
             m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
             if m:
-                extracted.append(real_path(extraction_path, TRANS(m.group(2))))
+                # In case of flat-unpack, UnRar still prints the whole path (?!)
+                unpacked_file = TRANS(m.group(2))
+                if cfg.flat_unpack():
+                    unpacked_file = os.path.basename(unpacked_file)
+                extracted.append(real_path(extraction_path, unpacked_file))
 
         if fail:
             if proc:
