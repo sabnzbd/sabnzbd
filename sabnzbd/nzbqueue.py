@@ -23,6 +23,7 @@ import os
 import logging
 import time
 import datetime
+import threading
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
@@ -30,7 +31,7 @@ from sabnzbd.misc import exit_sab, cat_to_opts, \
     get_admin_path, remove_all, globber_full, int_conv
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
-from sabnzbd.decorators import notify_downloader
+from sabnzbd.decorators import notify_downloader, synchronized
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, \
     JOB_ADMIN, LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
     REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
@@ -43,6 +44,10 @@ from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.notifier as notifier
 from sabnzbd.encoding import platform_encode
 from sabnzbd.bpsmeter import BPSMeter
+
+
+# All operations that modify the queue need to happen in a lock
+NZBQUEUE_LOCK = threading.RLock()
 
 
 class NzbQueue(object):
@@ -147,6 +152,7 @@ class NzbQueue(object):
             nzo_ids = []
         return nzo_ids
 
+    @synchronized(NZBQUEUE_LOCK)
     def scan_jobs(self, all=False, action=True):
         """ Scan "incomplete" for missing folders,
             'all' is True: Include active folders
@@ -245,6 +251,7 @@ class NzbQueue(object):
             # Reset reuse flag to make pause/abort on encryption possible
             nzo.reuse = False
 
+    @synchronized(NZBQUEUE_LOCK)
     def replace_in_q(self, nzo, nzo_id):
         """ Replace nzo by new in at the same spot in the queue, destroy nzo """
         # Must be a separate function from "send_back()", due to the required queue-lock
@@ -269,6 +276,7 @@ class NzbQueue(object):
             logging.info("Traceback: ", exc_info=True)
             return nzo
 
+    @synchronized(NZBQUEUE_LOCK)
     def save(self, save_nzo=None):
         """ Save queue, all nzo's or just the specified one """
         logging.info("Saving queue")
@@ -351,6 +359,7 @@ class NzbQueue(object):
             return None
 
     @notify_downloader
+    @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, save=True, quiet=False):
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.workpath, self.__nzo_table)
@@ -406,6 +415,7 @@ class NzbQueue(object):
             self.sort_by_avg_age()
         return nzo.nzo_id
 
+    @synchronized(NZBQUEUE_LOCK)
     def remove(self, nzo_id, add_to_history=True, save=True, cleanup=True, keep_basic=False, del_files=False):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
@@ -449,6 +459,7 @@ class NzbQueue(object):
 
         return removed
 
+    @synchronized(NZBQUEUE_LOCK)
     def remove_all(self, search=None):
         if search:
             search = search.lower()
@@ -522,6 +533,7 @@ class NzbQueue(object):
             handled.append(nzo_id)
         return handled
 
+    @synchronized(NZBQUEUE_LOCK)
     def switch(self, item_id_1, item_id_2):
         try:
             # Allow an index as second parameter, easier for some skins
@@ -570,32 +582,39 @@ class NzbQueue(object):
         # If moving failed/no movement took place
         return (-1, nzo1.priority)
 
+    @synchronized(NZBQUEUE_LOCK)
     def move_up_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
             for unused in range(size):
                 self.__nzo_table[nzo_id].move_up_bulk(nzf_ids)
 
+    @synchronized(NZBQUEUE_LOCK)
     def move_top_bulk(self, nzo_id, nzf_ids):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_top_bulk(nzf_ids)
 
+    @synchronized(NZBQUEUE_LOCK)
     def move_down_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
             for unused in range(size):
                 self.__nzo_table[nzo_id].move_down_bulk(nzf_ids)
 
+    @synchronized(NZBQUEUE_LOCK)
     def move_bottom_bulk(self, nzo_id, nzf_ids):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
+    @synchronized(NZBQUEUE_LOCK)
     def sort_by_avg_age(self, reverse=False):
         logging.info("Sorting by average date... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_date_cmp, reverse)
 
+    @synchronized(NZBQUEUE_LOCK)
     def sort_by_name(self, reverse=False):
         logging.info("Sorting by name... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_name_cmp, reverse)
 
+    @synchronized(NZBQUEUE_LOCK)
     def sort_by_size(self, reverse=False):
         logging.info("Sorting by size... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
@@ -617,6 +636,7 @@ class NzbQueue(object):
         else:
             logging.debug("Sort: %s not recognized", field)
 
+    @synchronized(NZBQUEUE_LOCK)
     def __set_priority(self, nzo_id, priority):
         """ Sets the priority on the nzo and places it in the queue at the appropriate position """
         try:
@@ -719,6 +739,9 @@ class NzbQueue(object):
         return False
 
     def get_article(self, server, servers):
+        """ Get next article for jobs in the queue
+            Not locked for performance, since it only reads the queue
+        """
         for nzo in self.__nzo_list:
             # Not when queue paused and not a forced item
             if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == TOP_PRIORITY:
@@ -733,6 +756,9 @@ class NzbQueue(object):
                         return
 
     def register_article(self, article, found=True):
+        """ Register the articles we tried
+            Not locked for performance, since it only modifies individual NZOs
+        """
         nzf = article.nzf
         nzo = nzf.nzo
 
@@ -793,7 +819,9 @@ class NzbQueue(object):
             Assembler.do.process((nzo, None))
 
     def actives(self, grabs=True):
-        """ Return amount of non-paused jobs, optionally with 'grabbing' items """
+        """ Return amount of non-paused jobs, optionally with 'grabbing' items
+            Not locked for performance, only reads the queue
+        """
         n = 0
         for nzo in self.__nzo_list:
             # Ignore any items that are paused
@@ -806,6 +834,7 @@ class NzbQueue(object):
     def queue_info(self, search=None, start=0, limit=0):
         """ Return list of queued jobs,
             optionally filtered by 'search' and limited by start and limit.
+            Not locked for performance, only reads the queue
         """
         if search:
             search = search.lower()
@@ -836,7 +865,9 @@ class NzbQueue(object):
         return QNFO(bytes_total, bytes_left, bytes_left_previous_page, pnfo_list, q_size, n)
 
     def remaining(self):
-        """ Return bytes left in the queue by non-paused items """
+        """ Return bytes left in the queue by non-paused items
+            Not locked for performance, only reads the queue
+        """
         bytes_left = 0
         for nzo in self.__nzo_list:
             if nzo.status != 'Paused':
