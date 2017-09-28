@@ -23,7 +23,6 @@ import os
 import logging
 import time
 import datetime
-import threading
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
@@ -31,7 +30,7 @@ from sabnzbd.misc import exit_sab, cat_to_opts, \
     get_admin_path, remove_all, globber_full, int_conv
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
-from sabnzbd.decorators import notify_downloader, synchronized
+from sabnzbd.decorators import notify_downloader, synchronized, NZBQUEUE_LOCK
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, \
     JOB_ADMIN, LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
     REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
@@ -44,10 +43,6 @@ from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.notifier as notifier
 from sabnzbd.encoding import platform_encode
 from sabnzbd.bpsmeter import BPSMeter
-
-
-# All operations that modify the queue need to happen in a lock
-NZBQUEUE_LOCK = threading.RLock()
 
 
 class NzbQueue(object):

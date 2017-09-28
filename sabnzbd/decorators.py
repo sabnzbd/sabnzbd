@@ -22,6 +22,11 @@ from threading import RLock, Condition
 
 DOWNLOADER_CV = Condition(RLock())
 
+# All operations that modify the queue need to happen in a lock
+# Also used when importing NZBs to prevent IO-race conditions
+NZBQUEUE_LOCK = RLock()
+
+
 def synchronized(lock):
     def wrap(f):
         def newFunction(*args, **kw):

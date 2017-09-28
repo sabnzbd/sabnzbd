@@ -571,7 +571,6 @@ NZO_LOCK = threading.RLock()
 
 class NzbObject(TryList):
 
-    @synchronized(NZO_LOCK)
     def __init__(self, filename, pp, script, nzb=None,
                  futuretype=False, cat=None, url=None,
                  priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None,
