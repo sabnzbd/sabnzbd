@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"POT-Creation-Date: 2017-09-26 11:51+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-11 06:24+0000\n"
-"X-Generator: Launchpad (build 18449)\n"
+"X-Launchpad-Export-Date: 2017-09-27 05:36+0000\n"
+"X-Generator: Launchpad (build 18463)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -399,10 +399,6 @@ msgid "SQL Command Failed, see log"
 msgstr "SQL Kommando mislykkedes, se logg"
 
 #: sabnzbd/database.py [Error message]
-msgid "SQL Commit Failed, see log"
-msgstr "SQL Commit mislykkedes, se logg"
-
-#: sabnzbd/database.py [Error message]
 msgid "Failed to close database, see log"
 msgstr "Det lykkedes ikke at lukke databasen, se logg"
 
@@ -417,10 +413,6 @@ msgstr "Afkodning af %s mislykkedes"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "Dekoder fejl: Ikke mere hukommelse"
-
-#: sabnzbd/decoder.py
-msgid "CRC Error in %s (%s -> %s)"
-msgstr "CRC Fejl i %s (%s -> %s)"
 
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
@@ -1126,7 +1118,7 @@ msgstr "Kunne ikke sende Prowl besked"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Dårlig respons fra pushover (%s): %s"
 
-#: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "Det lykkedes ikke at sende pushover besked"
 
@@ -1497,7 +1489,7 @@ msgid ""
 "SABnzbd is already running."
 msgstr ""
 
-#: sabnzbd/panic.py # sabnzbd/panic.py
+#: sabnzbd/panic.py # sabnzbd/panic.py # sabnzbd/panic.py
 msgid "Fatal error"
 msgstr "Alvorlig fejl"
 
@@ -3975,6 +3967,22 @@ msgstr "Enhed(er)"
 msgid "Device(s) to which message should be sent"
 msgstr "Enhed(er) som meddelelse skal sendes til"
 
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency retry"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How often (in seconds) the same notification will be sent"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency expire"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How many seconds your notification will continue to be retried"
+msgstr ""
+
 #: sabnzbd/skintext.py [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
@@ -4394,6 +4402,10 @@ msgstr "I tilfælde af SABnzbd genstart vil denne skærm forsvinde automatisk!"
 msgid "WARNING:"
 msgstr "ADVARSEL:"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
+msgid "Fetch"
+msgstr "Hent"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Opdateringsfrekvens"
@@ -4710,10 +4722,6 @@ msgstr ""
 msgid "Block Refreshes on Hover"
 msgstr "Bloker genopfriskninger ved at hænge over"
 
-#: sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
-msgid "Fetch"
-msgstr "Hent"
-
 #: sabnzbd/skintext.py [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "Upload"
@@ -4977,6 +4985,12 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Mappen \"%s\" findes ikke"
+
+#~ msgid "SQL Commit Failed, see log"
+#~ msgstr "SQL Commit mislykkedes, se logg"
+
+#~ msgid "CRC Error in %s (%s -> %s)"
+#~ msgstr "CRC Fejl i %s (%s -> %s)"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Fejl: Ingen sekundær bruger grænseflade defineret."

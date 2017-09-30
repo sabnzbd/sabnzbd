@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-10 20:30+0000\n"
-"PO-Revision-Date: 2017-09-11 07:07+0000\n"
+"POT-Creation-Date: 2017-09-26 11:51+0000\n"
+"PO-Revision-Date: 2017-09-28 11:31+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-12 05:29+0000\n"
-"X-Generator: Launchpad (build 18449)\n"
+"X-Launchpad-Export-Date: 2017-09-29 05:26+0000\n"
+"X-Generator: Launchpad (build 18471)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -413,10 +413,6 @@ msgid "SQL Command Failed, see log"
 msgstr "SQL-commando mislukt, zie logbestand"
 
 #: sabnzbd/database.py [Error message]
-msgid "SQL Commit Failed, see log"
-msgstr "SQL-opslagopdracht mislukt, zie logbestand"
-
-#: sabnzbd/database.py [Error message]
 msgid "Failed to close database, see log"
 msgstr "Het lukt niet om de database te sluiten, zie log"
 
@@ -431,10 +427,6 @@ msgstr "Decoderen van %s mislukt"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "Decoder fout: onvoldoende geheugen"
-
-#: sabnzbd/decoder.py
-msgid "CRC Error in %s (%s -> %s)"
-msgstr "CRC-fout in %s (%s -> %s)"
 
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
@@ -1150,7 +1142,7 @@ msgstr "Verzenden van Prowl-bericht mislukt"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Slecht antwoord van Pushover (%s): %s"
 
-#: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "Pushover-bericht sturen mislukt"
 
@@ -1525,7 +1517,7 @@ msgstr ""
 "Kan niet binden aan poort %s van %s. Andere software gebruikt deze poort of "
 "SABnzbd is al actief."
 
-#: sabnzbd/panic.py # sabnzbd/panic.py
+#: sabnzbd/panic.py # sabnzbd/panic.py # sabnzbd/panic.py
 msgid "Fatal error"
 msgstr "Fatale fout"
 
@@ -4040,6 +4032,22 @@ msgstr "Apparaten"
 msgid "Device(s) to which message should be sent"
 msgstr "Apparaat of apparaten die het bericht moeten ontvangen"
 
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency retry"
+msgstr "Noodgeval herhaling"
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How often (in seconds) the same notification will be sent"
+msgstr "Hoevaak moet de notification herhaald worden (in seconden)"
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency expire"
+msgstr "Einde van noodgeval"
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How many seconds your notification will continue to be retried"
+msgstr "Hoeveel seconden moet de notificatie herhaald worden"
+
 #: sabnzbd/skintext.py [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
@@ -4461,6 +4469,10 @@ msgstr "Wanneer SABnzbd opnieuw is gestart, gaat dit venster vanzelf weg!"
 msgid "WARNING:"
 msgstr "WAARSCHUWING:"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
+msgid "Fetch"
+msgstr "Ophalen"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Ververssnelheid"
@@ -4775,10 +4787,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Block Refreshes on Hover"
 msgstr "Geen verversing bij popups"
-
-#: sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
-msgid "Fetch"
-msgstr "Ophalen"
 
 #: sabnzbd/skintext.py [Upload button in "Add NZB" dialog box]
 msgid "Upload"
@@ -5570,6 +5578,12 @@ msgstr "URL ophalen mislukt; %s"
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr ""
 #~ "WAARSCHUWING: Taak '%s' is afgebroken vanwege een versleuteld RAR-bestand"
+
+#~ msgid "CRC Error in %s (%s -> %s)"
+#~ msgstr "CRC-fout in %s (%s -> %s)"
+
+#~ msgid "SQL Commit Failed, see log"
+#~ msgstr "SQL-opslagopdracht mislukt, zie logbestand"
 
 #~ msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
 #~ msgstr ""

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-10 20:30+0000\n"
-"PO-Revision-Date: 2017-09-11 21:29+0000\n"
+"POT-Creation-Date: 2017-09-26 11:51+0000\n"
+"PO-Revision-Date: 2017-09-26 17:35+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-12 05:29+0000\n"
-"X-Generator: Launchpad (build 18449)\n"
+"X-Launchpad-Export-Date: 2017-09-27 05:36+0000\n"
+"X-Generator: Launchpad (build 18463)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -393,10 +393,6 @@ msgid "SQL Command Failed, see log"
 msgstr "נכשלה, ראה יומן SQL פקודת"
 
 #: sabnzbd/database.py [Error message]
-msgid "SQL Commit Failed, see log"
-msgstr "נכשל, ראה יומן SQL חיוב"
-
-#: sabnzbd/database.py [Error message]
 msgid "Failed to close database, see log"
 msgstr "נכשל בסגירת מסד-נתונים, ראה יומן"
 
@@ -411,10 +407,6 @@ msgstr "נכשל %s פענוח"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "כישלון מפענח: אין זיכרון"
-
-#: sabnzbd/decoder.py
-msgid "CRC Error in %s (%s -> %s)"
-msgstr "%s (%s -> %s)-ב CRC שגיאת"
 
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
@@ -1119,7 +1111,7 @@ msgstr "Prowl נכשל בשליחת הודעת"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Pushover (%s): %s-תגובה רעה מ"
 
-#: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "pushover נכשל בשליחת הודעת"
 
@@ -1491,7 +1483,7 @@ msgstr ""
 ".כבר רץ SABnzbd איזשהי תוכנה אחרת משתמשת בפתחה או %s לא היה ניתן לקשר את "
 "פתחה %s על"
 
-#: sabnzbd/panic.py # sabnzbd/panic.py
+#: sabnzbd/panic.py # sabnzbd/panic.py # sabnzbd/panic.py
 msgid "Fatal error"
 msgstr "שגיאה חמורה"
 
@@ -3951,6 +3943,22 @@ msgstr "התקן(ים)"
 msgid "Device(s) to which message should be sent"
 msgstr "התקנים אליהם הודעה תישלח"
 
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency retry"
+msgstr "ניסיון חוזר חרום"
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How often (in seconds) the same notification will be sent"
+msgstr "באיזו תדירות (בשניות) אותה ההתראה תישלח"
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency expire"
+msgstr "תפוגת חרום"
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How many seconds your notification will continue to be retried"
+msgstr "כמה שניות ההתראה שלך תמשיך להיות מנוסה שוב"
+
 #: sabnzbd/skintext.py [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
@@ -4368,6 +4376,10 @@ msgstr "!המסך יעלם באופן אוטומטי SABnzbd במקרה של ה�
 msgid "WARNING:"
 msgstr "אזהרה:"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
+msgid "Fetch"
+msgstr "משוך"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "קצב רענון"
@@ -4682,10 +4694,6 @@ msgstr "זה ימנע רענון תוכן כשסמן העכבר שלך מרחף 
 msgid "Block Refreshes on Hover"
 msgstr "חסום רענונים בריחוף"
 
-#: sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
-msgid "Fetch"
-msgstr "משוך"
-
 #: sabnzbd/skintext.py [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "העלה"
@@ -4991,5 +4999,11 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "בלתי תקפים, לא יכול לוודא או לתקן par2 קבצי"
 
+#~ msgid "CRC Error in %s (%s -> %s)"
+#~ msgstr "%s (%s -> %s)-ב CRC שגיאת"
+
 #~ msgid "It is likely that you are using ZoneAlarm on Vista.<br>"
 #~ msgstr ".Vista על ZoneAlarm-סביר להניח שאתה משתמש ב<br>"
+
+#~ msgid "SQL Commit Failed, see log"
+#~ msgstr "נכשל, ראה יומן SQL חיוב"

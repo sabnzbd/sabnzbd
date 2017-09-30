@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"POT-Creation-Date: 2017-09-26 11:51+0000\n"
 "PO-Revision-Date: 2017-08-24 15:39+0000\n"
 "Last-Translator: jcfp <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-11 06:24+0000\n"
-"X-Generator: Launchpad (build 18449)\n"
+"X-Launchpad-Export-Date: 2017-09-27 05:36+0000\n"
+"X-Generator: Launchpad (build 18463)\n"
 
 #: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
@@ -417,10 +417,6 @@ msgid "SQL Command Failed, see log"
 msgstr "SQL-Befehl fehlgeschlagen. Beachten Sie das Nachrichtenprotokoll."
 
 #: sabnzbd/database.py [Error message]
-msgid "SQL Commit Failed, see log"
-msgstr "SQL-Commit fehlgeschlagen. Beachten Sie das Nachrichtenprotokoll."
-
-#: sabnzbd/database.py [Error message]
 msgid "Failed to close database, see log"
 msgstr ""
 "Fehler beim Schliessen der Datenbank. Beachten Sie das Nachrichtenprotokoll."
@@ -436,10 +432,6 @@ msgstr "Fehler beim Dekodieren von %s."
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "Decoder Fehler: Nicht genügend Speicher"
-
-#: sabnzbd/decoder.py
-msgid "CRC Error in %s (%s -> %s)"
-msgstr "CRC-Fehler in %s (%s -> %s)"
 
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
@@ -1164,7 +1156,7 @@ msgstr "Konnte Prowl-Nachricht nicht versenden"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Fehlerhafte Antwort von Pushbullet (%s): %s"
 
-#: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "Konnte Pushover-Nachricht nicht versenden"
 
@@ -1549,7 +1541,7 @@ msgstr ""
 "Konnte nicht an Port %s auf %s starten. Eine andere Software nutzt diesen "
 "Port oder SABnzbd läuft bereits."
 
-#: sabnzbd/panic.py # sabnzbd/panic.py
+#: sabnzbd/panic.py # sabnzbd/panic.py # sabnzbd/panic.py
 msgid "Fatal error"
 msgstr "Schwerwiegender Fehler"
 
@@ -4080,6 +4072,22 @@ msgstr "Gerät(e)"
 msgid "Device(s) to which message should be sent"
 msgstr "Geräte, welche die Nachrichten empfangen sollen"
 
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency retry"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How often (in seconds) the same notification will be sent"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency expire"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How many seconds your notification will continue to be retried"
+msgstr ""
+
 #: sabnzbd/skintext.py [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
@@ -4502,6 +4510,10 @@ msgstr ""
 msgid "WARNING:"
 msgstr "WARNUNG:"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
+msgid "Fetch"
+msgstr "Abrufen"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Aktualisierungsrate"
@@ -4818,10 +4830,6 @@ msgstr ""
 msgid "Block Refreshes on Hover"
 msgstr "Aktualisierung durch Mauszeiger verhindern"
 
-#: sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
-msgid "Fetch"
-msgstr "Abrufen"
-
 #: sabnzbd/skintext.py [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "Hochladen"
@@ -5091,6 +5099,12 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Ordner \"%s\" existiert nicht"
+
+#~ msgid "SQL Commit Failed, see log"
+#~ msgstr "SQL-Commit fehlgeschlagen. Beachten Sie das Nachrichtenprotokoll."
+
+#~ msgid "CRC Error in %s (%s -> %s)"
+#~ msgstr "CRC-Fehler in %s (%s -> %s)"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Fehler: Keine sekundäre Oberfläche angegeben."
