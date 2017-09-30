@@ -18,9 +18,10 @@ from ctypes.wintypes import BYTE, WORD, LPWSTR, BOOL, DWORD, LPVOID, \
 
 ##
 ## Special counter because this function cannot
-## be called within 1 second from each other!
+## be called within 2 seconds from each other!
 ##
 _NEXT_PROCESS_START = 0.0
+_NEXT_PROCESS_DELAY = 2.0
 
 
 ##
@@ -99,10 +100,10 @@ def CreateProcess(executable, args, _p_attr, _t_attr,
     diff_start = _NEXT_PROCESS_START - time.time()
     if(diff_start > 0.0):
         # Wait ourselves and make sure others also wait
-        _NEXT_PROCESS_START += 1.0
+        _NEXT_PROCESS_START += _NEXT_PROCESS_DELAY
         time.sleep(diff_start)
     else:
-        _NEXT_PROCESS_START = time.time() + 1.0
+        _NEXT_PROCESS_START = time.time() + _NEXT_PROCESS_DELAY
 
     si = STARTUPINFOW(
         dwFlags=startup_info.dwFlags,
