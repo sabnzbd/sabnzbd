@@ -36,11 +36,14 @@ from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 if sabnzbd.WIN32:
-    # Load the POpen from the fixed unicode-subprocess
-    from sabnzbd.utils.subprocess_fix import Popen
-else:
-    # Load the regular POpen
-    from subprocess import Popen
+    try:
+        # Use patched version of subprocess module for Unicode on Windows
+        import subprocessww
+    except ImportError:
+        pass
+
+# Load the regular POpen (which is now patched on Windows)
+from subprocess import Popen
 
 MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
