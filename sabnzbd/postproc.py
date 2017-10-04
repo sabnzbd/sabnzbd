@@ -167,6 +167,13 @@ class PostProcessor(Thread):
         else:
             logging.info("Completed Download Folder %s is not on FAT", complete_dir)
 
+        # Check on Windows if we have unicode-subprocess
+        if sabnzbd.WIN32:
+            try:
+                import subprocessww
+            except ImportError:
+                logging.warning(T('Module subprocessww missing. Expect problems with Unicoded file and directory names in downloads.'))
+
         # Start looping
         check_eoq = False
         while not self.__stop:
