@@ -134,10 +134,12 @@ if run_renamer:
                     print 'Found:', full_path
                     print_splitter()
                     print 'Found multiple larger files, aborting.'
+                    largest_file = None
                     break
                 largest_file = full_path
-    else:
-        # Let's rename if we didn't break the loop
+
+    # Found something large enough?
+    if largest_file:
         # We don't need to do any cleaning of dir-names
         # since SABnzbd already did that!
         new_name = '%s%s' % (os.path.join(os.environ['SAB_COMPLETE_DIR'], os.environ['SAB_FINAL_NAME']), os.path.splitext(largest_file)[1].lower())
@@ -151,6 +153,8 @@ if run_renamer:
                 break
             except:
                 time.sleep(1)
+    else:
+        print 'No par2 files or large files found'
 
 # Always exit with succes-code
 sys.exit(0)
