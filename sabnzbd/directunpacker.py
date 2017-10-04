@@ -28,9 +28,10 @@ import logging
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_string, has_win_device
+from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_string, \
+    has_win_device, real_path
 from sabnzbd.encoding import TRANS, unicoder
-from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, rar_volumelist
+from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
@@ -153,6 +154,7 @@ class DirectUnpacker(threading.Thread):
         last_volume_linebuf = ''
         unrar_log = []
         rarfiles = []
+        extracted = []
         start_time = time.time()
 
         # Need to read char-by-char because there's no newline after new-disk message
@@ -175,10 +177,21 @@ class DirectUnpacker(threading.Thread):
                 logging.info('Error in DirectUnpack of %s', self.cur_setname)
                 self.abort()
 
-            if linebuf.startswith('Extracting from') and linebuf.endswith('\n'):
-                filename = TRANS((re.search(EXTRACTFROM_RE, linebuf.strip()).group(1)))
-                if filename not in rarfiles:
-                    rarfiles.append(filename)
+            if linebuf.endswith('\n'):
+                # List files we used
+                if linebuf.startswith('Extracting from'):
+                    filename = TRANS((re.search(EXTRACTFROM_RE, linebuf.strip()).group(1)))
+                    if filename not in rarfiles:
+                        rarfiles.append(filename)
+
+                # List files we extracted
+                m = re.search(EXTRACTED_RE, linebuf)
+                if m:
+                    # In case of flat-unpack, UnRar still prints the whole path (?!)
+                    unpacked_file = TRANS(m.group(2))
+                    if cfg.flat_unpack():
+                        unpacked_file = os.path.basename(unpacked_file)
+                    extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
 
             # Did we reach the end?
             if linebuf.endswith('All OK'):
@@ -188,9 +201,14 @@ class DirectUnpacker(threading.Thread):
 
                 # Add to success
                 rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
-                self.success_sets[self.cur_setname] = rar_volumelist(rarfile_path, self.nzo.password, rarfiles)
+                self.success_sets[self.cur_setname] = (rar_volumelist(rarfile_path, self.nzo.password, rarfiles), extracted)
                 logging.info('DirectUnpack completed for %s', self.cur_setname)
                 self.nzo.set_action_line(T('Direct Unpack'), T('Completed'))
+
+                # List success in history-info
+                msg = T('Unpacked %s files/folders in %s') % (len(extracted), format_time_string(self.unpack_time))
+                msg = '%s - %s' % (T('Direct Unpack'), msg)
+                self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
 
                 # Write current log and clear
                 unrar_log.append(linebuf.strip())
@@ -198,6 +216,7 @@ class DirectUnpacker(threading.Thread):
                 logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
                 unrar_log = []
                 rarfiles = []
+                extracted = []
 
                 # Are there more files left?
                 while self.nzo.files and not self.next_sets:
@@ -254,14 +273,6 @@ class DirectUnpacker(threading.Thread):
         # Add last line
         unrar_log.append(linebuf.strip())
         logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
-
-        # Save information if success
-        if self.success_sets:
-            # The number is wrong if one_folder, just leave empty
-            nr_files = '' if self.unpack_dir_info[3] else len(globber(self.unpack_dir_info[0]))
-            msg = T('Unpacked %s files/folders in %s') % (nr_files, format_time_string(self.unpack_time))
-            msg = '%s - %s' % (T('Direct Unpack'), msg)
-            self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
 
         # Make more space
         self.reset_active()

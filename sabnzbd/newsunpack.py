@@ -67,6 +67,7 @@ RAR_RE_V3 = re.compile(r'\.(?P<ext>part\d*)$', re.I)
 LOADING_RE = re.compile(r'^Loading "(.+)"')
 TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
 EXTRACTFROM_RE = re.compile(r'^Extracting\sfrom\s(.+)')
+EXTRACTED_RE = re.compile(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$')
 SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
 SEVENZIP_RE = re.compile(r'\.7z$', re.I)
@@ -500,8 +501,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
             logging.info("Set %s completed by DirectUnpack", rar_set)
             fail = False
             success = True
-            rars = nzo.direct_unpacker.success_sets.pop(rar_set)
-            newfiles = globber(extraction_path)
+            rars, newfiles = nzo.direct_unpacker.success_sets.pop(rar_set)
         else:
             logging.info("Extracting rarfile %s (belonging to %s) to %s",
                          rarpath, rar_set, extraction_path)
@@ -795,7 +795,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             fail = 3
 
         else:
-            m = re.search(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$', line)
+            m = re.search(EXTRACTED_RE, line)
             if m:
                 # In case of flat-unpack, UnRar still prints the whole path (?!)
                 unpacked_file = TRANS(m.group(2))
