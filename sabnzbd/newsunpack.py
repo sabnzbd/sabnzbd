@@ -1889,7 +1889,10 @@ def create_env(nzo=None, extra_env_fields=None):
 
         for field in extra_env_fields:
             try:
-                env['SAB_' + field.upper()] = str(deunicode(extra_env_fields[field]))
+                if extra_env_fields[field]:
+                    env['SAB_' + field.upper()] = str(deunicode(extra_env_fields[field]))
+                else:
+                    env['SAB_' + field.upper()] = ''
             except:
                 # Catch key/unicode errors
                 pass
