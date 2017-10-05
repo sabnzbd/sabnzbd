@@ -1978,16 +1978,20 @@ def rar_volumelist(rarfile_path, password, known_volumes):
         and merge them with existing list, removing duplicates
     """
     # UnRar is required to read some RAR files
-    rarfile.UNRAR_TOOL = RAR_COMMAND
-    zf = rarfile.RarFile(rarfile_path)
+    # RarFile can fail in special cases
+    try:
+        rarfile.UNRAR_TOOL = RAR_COMMAND
+        zf = rarfile.RarFile(rarfile_path)
 
-    # setpassword can fail due to bugs in RarFile
-    if password:
-        try:
-            zf.setpassword(password)
-        except:
-            pass
-    zf_volumes = zf.volumelist()
+        # setpassword can fail due to bugs in RarFile
+        if password:
+            try:
+                zf.setpassword(password)
+            except:
+                pass
+        zf_volumes = zf.volumelist()
+    except:
+        zf_volumes = []
 
     # Remove duplicates
     known_volumes_base = [os.path.basename(vol) for vol in known_volumes]
