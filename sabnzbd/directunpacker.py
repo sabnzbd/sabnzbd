@@ -28,8 +28,8 @@ import logging
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_string, \
-    has_win_device, real_path
+from sabnzbd.misc import int_conv, clip_path, long_path, remove_all, globber, \
+    format_time_string, has_win_device, real_path
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
@@ -324,13 +324,11 @@ class DirectUnpacker(threading.Thread):
         # Generate command
         rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
         if sabnzbd.WIN32:
-            if not has_win_device(rarfile_path):
-                command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
-                           '%s' % clip_path(rarfile_path), clip_path(extraction_path)]
-            else:
-                # Need long-path notation in case of forbidden-names
-                command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
-                           '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+            # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
+            # See: https://github.com/sabnzbd/sabnzbd/issues/1043
+            command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
+                       '%s' % clip_path(rarfile_path), '%s\\' % long_path(extraction_path)]
+
         else:
             # Don't use "-ai" (not needed for non-Windows)
             command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', password_command,
@@ -341,9 +339,9 @@ class DirectUnpacker(threading.Thread):
 
         # Let's start from the first one!
         self.cur_volume = 1
-        stup, need_shell, command, creationflags = build_command(command)
+        stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
         logging.debug('Running unrar for DirectUnpack %s', command)
-        self.active_instance = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        self.active_instance = Popen(command, shell=False, stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                     startupinfo=stup, creationflags=creationflags)
         # Add to runners

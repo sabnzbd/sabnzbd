@@ -632,14 +632,10 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         rename = '-or'    # Auto renaming
 
     if sabnzbd.WIN32:
-        # Use all flags
-        if not has_win_device(rarfile_path):
-            command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
-                       '%s' % clip_path(rarfile_path), clip_path(extraction_path)]
-        else:
-            # Need long-path notation in case of forbidden-names
-            command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
-                       '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+        # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
+        # See: https://github.com/sabnzbd/sabnzbd/issues/1043
+        command = ['%s' % RAR_COMMAND, action, '-idp', overwrite, rename, '-ai', password_command,
+                   '%s' % clip_path(rarfile_path), '%s\\' % long_path(extraction_path)]
 
     elif RAR_PROBLEM:
         # Use only oldest options (specifically no "-or")
@@ -653,7 +649,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     if cfg.ignore_unrar_dates():
         command.insert(3, '-tsm-')
 
-    stup, need_shell, command, creationflags = build_command(command)
+    stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
 
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
@@ -1922,8 +1918,10 @@ def userxbit(filename):
     return xbitset
 
 
-def build_command(command):
-    """ Prepare list from running an external program """
+def build_command(command, flatten_command=False):
+    """ Prepare list from running an external program
+        On Windows we need to run our own list2cmdline for Unrar
+    """
     if not sabnzbd.WIN32:
         if command[0].endswith('.py'):
             with open(command[0], 'r') as script_file:
@@ -1967,7 +1965,7 @@ def build_command(command):
         if need_shell and ' ' in command[0]:
             command[0] = win32api.GetShortPathName(command[0])
 
-        if need_shell:
+        if need_shell or flatten_command:
             command = list2cmdline(command)
 
     return stup, need_shell, command, creationflags
