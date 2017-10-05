@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-26 11:51+0000\n"
+"POT-Creation-Date: 2017-10-04 18:54+0000\n"
 "PO-Revision-Date: 2017-09-26 17:48+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-27 05:36+0000\n"
-"X-Generator: Launchpad (build 18463)\n"
+"X-Launchpad-Export-Date: 2017-10-05 04:49+0000\n"
+"X-Generator: Launchpad (build 18471)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -1570,6 +1570,12 @@ msgid ""
 msgstr ""
 "Le système de fichiers du dossier de téléchargements terminés %s est au "
 "format FAT, limitant la taille maximale d'un fichier à 4 Go"
+
+#: sabnzbd/postproc.py [Warning message]
+msgid ""
+"Module subprocessww missing. Expect problems with Unicoded file and "
+"directory names in downloads."
+msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"

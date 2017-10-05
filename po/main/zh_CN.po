@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-26 11:51+0000\n"
+"POT-Creation-Date: 2017-10-04 18:54+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-27 05:37+0000\n"
-"X-Generator: Launchpad (build 18463)\n"
+"X-Launchpad-Export-Date: 2017-10-05 04:50+0000\n"
+"X-Generator: Launchpad (build 18471)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -1482,6 +1482,12 @@ msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
 msgstr "已完成文件夹 %s 位于 FAT 文件系统上，这样会有最大文件为 4GB 的限制。"
+
+#: sabnzbd/postproc.py [Warning message]
+msgid ""
+"Module subprocessww missing. Expect problems with Unicoded file and "
+"directory names in downloads."
+msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
