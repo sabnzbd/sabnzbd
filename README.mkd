@@ -1,52 +1,29 @@
-Release Notes - SABnzbd 2.3.0
+Release Notes - SABnzbd 2.3.1 Beta 1
 =========================================================
 
-## SABYenc updated
-- Improved download performance 10-15% on CPU limited devices
-  by optimizations and by removing redundant article verification.
-  Linux/NAS: Update of SABYenc to version 3.3.1 is required.
-  Update your package or see https://sabnzbd.org/sabyenc
-  Windows/macOS: Update is included in the installers.
+## Changes since 2.3.0
+- Added post-processing script Deobfuscate.py ("scripts" folder) which
+  can be used to automatically process "rename.par2" after unpacking
+  or rename the largest file in the folder to the download name
+- Paths to par2, unrar, unzip and 7zip are passed to scripts
+- Windows: Single click on tray icon pauses/unpauses queue
 
-## Changes since 2.2.1
-- Option to limit Servers to specific Categories removed
-- Improved par2 handling and obfuscated files detection
-- Duplicate filenames in NZB's no longer rejected by default
-- Set custom URL instead of /sabnzbd/ (in Config > Specials)
-- Article-state (which servers are tried) is preserved after restart
-- Auto disconnect (if enabled) only after verification of last item
-- Slight performance improvement when fetching RSS-feeds
-- Job title from RSS-feed is shown for URLs being grabbed
-- URL grabbing can now be individually paused
-- Scheduler can pause/unpause jobs in specific category
-- Series Duplicate Checker can allow PROPER/REAL/REPACK versions
-- Refresh-icon in Glitter when refresh rate is above 2 seconds
-- Different icon for downloads with Force priority
-- Show progress during verification of extra files
-- All dates and times are now time zone independent
-- API: 'missing' field removed from 'queue', use 'mbmissing'
-- API: 'warnings' method now returns array for better handling
-- macOS: Bundled new OpenSSL version with support for TLSv1.2
-- macOS: No longer linked to system certificate store
-- macOS and Windows: Installers include Mozilla CA certificates
+## Bugfixes since 2.3.0
+- Abort Direct Unpack if no progress for 2 minutes after download
+- Added measures to prevent "Failed to import" errors
+- Remove ".par2" at end of job name, could cause failure of repair
+- When re-adding a job, the time left was not calculated
+- Priority of category was ignored when adding new job
+- Sorting failed when "Ignore folders inside archives" was enabled
+- Added "with" to list of lowercase words in titles for Sorting
+- "From SxxEyy" RSS filter did not always work
+- Server information in Status window was not updated
+- Correctly adapt date and time display to local time zone
+- Windows: Special filenames could cause failures during unpack
+- Windows: Message box is shown in case of fatal startup error
+- Windows: Unpacking to network shares could fail
 
-## Bugfixes since 2.2.1
-- Reduce CPU usage with multiple servers
-- Fix yet another potential stalling issue
-- Remove Timeout tracebacks
-- Handle locked history database better
-- Only warn if number of actual passwords is larger than 30
-- Unexpected behavior when diskspace becomes critically low
-- Retried jobs would show incorrect download progress
-- Password file was loaded from disk excessively
-- API: Correct listing of downloaded and queued files in 'get_files'
-- API: Number of bytes missing and downloaded could be slightly off
-- API: Jobs with Force priority should always have status 'Downloading'
-- MacOS: Direct Unpack could hang in case of special characters in names
-- Windows: Unpack could fail if started instantly after previous one
-- Windows: Download with many par2 sets could get listed as failed
-
-## Upgrading from 2.1.x and older
+## Upgrading from 2.2.x and older
 - Finish queue
 - Stop SABnzbd
 - Install new version
