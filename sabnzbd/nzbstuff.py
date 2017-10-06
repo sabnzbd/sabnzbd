@@ -605,8 +605,9 @@ class NzbObject(TryList):
             # In case only /password was entered for nzbname
             work_name = filename
 
-        self.work_name = work_name
-        self.final_name = work_name
+        # Remove trailing .nzb and .par(2)
+        self.work_name = create_work_name(work_name)
+        self.final_name = create_work_name(work_name)
 
         self.meta = {}
         self.servercount = {}       # Dict to keep bytes per server
@@ -690,9 +691,6 @@ class NzbObject(TryList):
         self.wait = None
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum = None
-
-        # Remove trailing .nzb and .par(2)
-        self.work_name = create_work_name(self.work_name)
 
         if nzb is None:
             # This is a slot for a future NZB, ready now
