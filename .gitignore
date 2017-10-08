@@ -31,3 +31,6 @@ SABnzbd*.dmg
 # Some people use Emacs as an editor
 \#*
 .\#*
+
+.DS_Store
+/venv
