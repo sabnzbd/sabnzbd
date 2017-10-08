@@ -22,7 +22,7 @@ import os
 import logging
 import datetime
 import tempfile
-import cPickle
+import pickle
 import pickle
 import gzip
 import subprocess
@@ -638,7 +638,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if cat and cat.lower() == 'default':
         cat = None
 
-    if isinstance(nzbfile, basestring):
+    if isinstance(nzbfile, str):
         # File coming from queue repair
         filename = nzbfile
         keep = True
@@ -669,7 +669,7 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
 
     logging.info('Adding %s', filename)
 
-    if isinstance(nzbfile, basestring):
+    if isinstance(nzbfile, str):
         path = nzbfile
     else:
         try:
@@ -841,7 +841,7 @@ def keep_awake():
                         # set ES_SYSTEM_REQUIRED
                         KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
                     else:
-                        sleepless.keep_awake(u'SABnzbd is busy downloading and/or post-processing')
+                        sleepless.keep_awake('SABnzbd is busy downloading and/or post-processing')
             if not awake and sleepless:
                 sleepless.allow_sleep()
 
@@ -854,7 +854,7 @@ def get_new_id(prefix, folder, check_list=None):
     """ Return unique prefixed admin identifier within folder
         optionally making sure that id is not in the check_list.
     """
-    for n in xrange(10000):
+    for n in range(10000):
         try:
             if not os.path.exists(folder):
                 os.makedirs(folder)
@@ -878,14 +878,14 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
     path = os.path.join(path, _id)
 
     # We try 3 times, to avoid any dict or access problems
-    for t in xrange(3):
+    for t in range(3):
         try:
             with open(path, 'wb') as data_file:
                 if do_pickle:
                     if cfg.use_pickle():
                         pickle.dump(data, data_file)
                     else:
-                        cPickle.dump(data, data_file)
+                        pickle.dump(data, data_file)
                 else:
                     data_file.write(data)
             break
@@ -918,7 +918,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
                 if cfg.use_pickle():
                     data = pickle.load(data_file)
                 else:
-                    data = cPickle.load(data_file)
+                    data = pickle.load(data_file)
             else:
                 data = data_file.read()
 
@@ -948,13 +948,13 @@ def save_admin(data, _id):
     logging.debug("[%s] Saving data for %s in %s", misc.caller_name(), _id, path)
 
     # We try 3 times, to avoid any dict or access problems
-    for t in xrange(3):
+    for t in range(3):
         try:
             with open(path, 'wb') as data_file:
                 if cfg.use_pickle():
                     data = pickle.dump(data, data_file)
                 else:
-                    data = cPickle.dump(data, data_file)
+                    data = pickle.dump(data, data_file)
             break
         except:
             if t == 2:
@@ -979,7 +979,7 @@ def load_admin(_id, remove=False, silent=False):
             if cfg.use_pickle():
                 data = pickle.load(data_file)
             else:
-                data = cPickle.load(data_file)
+                data = pickle.load(data_file)
         if remove:
             misc.remove_file(path)
     except:
@@ -1183,5 +1183,5 @@ def history_updated():
     """ To make sure we always have a fresh history """
     sabnzbd.LAST_HISTORY_UPDATE += 1
     # Never go over the limit
-    if sabnzbd.LAST_HISTORY_UPDATE+1 >= sys.maxint:
+    if sabnzbd.LAST_HISTORY_UPDATE+1 >= sys.maxsize:
         sabnzbd.LAST_HISTORY_UPDATE = 1

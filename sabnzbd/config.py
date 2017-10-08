@@ -27,7 +27,7 @@ import shutil
 import time
 import random
 from hashlib import md5
-from urlparse import urlparse
+from urllib.parse import urlparse
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
 import configobj
@@ -275,7 +275,7 @@ class OptionList(Option):
     def get_string(self):
         """ Return the list as a comma-separated string """
         lst = self.get()
-        if isinstance(lst, basestring):
+        if isinstance(lst, str):
             return lst
         else:
             return ', '.join(lst)
@@ -283,7 +283,7 @@ class OptionList(Option):
     def default_string(self):
         """ Return the default list as a comma-separated string """
         lst = self.default()
-        if isinstance(lst, basestring):
+        if isinstance(lst, str):
             return lst
         else:
             return ', '.join(lst)
@@ -308,7 +308,7 @@ class OptionStr(Option):
     def set(self, value):
         """ Set stripped value """
         error = None
-        if isinstance(value, basestring) and self.__strip:
+        if isinstance(value, str) and self.__strip:
             value = value.strip()
         if self.__validation:
             error, val = self.__validation(value)
@@ -411,7 +411,7 @@ class ConfigServer(object):
                 value = values[kw]
             except KeyError:
                 continue
-            exec 'self.%s.set(value)' % kw
+            exec('self.%s.set(value)' % kw)
             if not self.displayname():
                 self.displayname.set(self.__name)
         return True
@@ -476,7 +476,7 @@ class ConfigCat(object):
                 value = values[kw]
             except KeyError:
                 continue
-            exec 'self.%s.set(value)' % kw
+            exec('self.%s.set(value)' % kw)
         return True
 
     def get_dict(self, safe=False):
@@ -545,7 +545,7 @@ class OptionFilters(Option):
     def set_dict(self, values):
         """ Create filter list from dictionary with keys 'filter[0-9]+' """
         filters = []
-        for n in xrange(len(values)):
+        for n in range(len(values)):
             kw = 'filter%d' % n
             val = values.get(kw)
             if val is not None:
@@ -589,7 +589,7 @@ class ConfigRSS(object):
                 value = values[kw]
             except KeyError:
                 continue
-            exec 'self.%s.set(value)' % kw
+            exec('self.%s.set(value)' % kw)
 
         self.filters.set_dict(values)
         return True
@@ -623,7 +623,7 @@ def get_dconfig(section, keyword, nested=False):
     """
     data = {}
     if not section:
-        for section in database.keys():
+        for section in list(database.keys()):
             res, conf = get_dconfig(section, None, True)
             data.update(conf)
 
@@ -634,12 +634,12 @@ def get_dconfig(section, keyword, nested=False):
             return False, {}
         if section in ('servers', 'categories', 'rss'):
             data[section] = []
-            for keyword in sect.keys():
+            for keyword in list(sect.keys()):
                 res, conf = get_dconfig(section, keyword, True)
                 data[section].append(conf)
         else:
             data[section] = {}
-            for keyword in sect.keys():
+            for keyword in list(sect.keys()):
                 res, conf = get_dconfig(section, keyword, True)
                 data[section].update(conf)
 
@@ -717,7 +717,7 @@ def _read_config(path, try_backup=False):
         # No file found, create default INI file
         try:
             if not sabnzbd.WIN32:
-                prev = os.umask(077)
+                prev = os.umask(0o77)
             fp = open(path, "w")
             fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
             fp.close()
@@ -746,7 +746,7 @@ def _read_config(path, try_backup=False):
             # INI file is still in 8bit ASCII encoding, so try Latin-1 instead
             CFG = configobj.ConfigObj(lines, default_encoding='cp1252', encoding='cp1252')
 
-    except (IOError, configobj.ConfigObjError, UnicodeEncodeError), strerror:
+    except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
         if try_backup:
             if isinstance(strerror, UnicodeEncodeError):
                 strerror = 'Character encoding of the file is inconsistent'
@@ -764,8 +764,8 @@ def _read_config(path, try_backup=False):
 
     CFG.filename = path
     CFG.encoding = 'utf-8'
-    CFG['__encoding__'] = u'utf-8'
-    CFG['__version__'] = unicode(CONFIG_VERSION)
+    CFG['__encoding__'] = 'utf-8'
+    CFG['__version__'] = str(CONFIG_VERSION)
 
     # Use CFG data to set values for all static options
     for section in database:
@@ -951,7 +951,7 @@ def get_ordered_categories():
 
     # Transform to list and sort
     categories = []
-    for cat in database_cats.keys():
+    for cat in list(database_cats.keys()):
         if cat != '*':
             categories.append(database_cats[cat].get_dict())
 

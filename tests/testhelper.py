@@ -19,7 +19,7 @@
 tests.testhelper - Basic helper functions
 """
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import json
 import requests
 

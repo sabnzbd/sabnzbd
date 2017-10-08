@@ -19,14 +19,14 @@
 sabnzbd.rating - Rating support functions
 """
 
-import httplib
-import urllib
-import urlparse
+import http.client
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 import time
 import logging
 import copy
 import socket
-import Queue
+import queue
 import collections
 from threading import RLock, Thread
 import sabnzbd
@@ -34,7 +34,7 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.cfg as cfg
 
 # A queue which ignores duplicates but maintains ordering
-class OrderedSetQueue(Queue.Queue):
+class OrderedSetQueue(queue.Queue):
     def _init(self, maxsize):
         self.maxsize = maxsize
         self.queue = collections.OrderedDict()
@@ -122,7 +122,7 @@ class Rating(Thread):
                                                                                   silent=not cfg.rating_enable())
             if self.version == 1:
                 ratings = {}
-                for k, v in self.ratings.iteritems():
+                for k, v in list(self.ratings.items()):
                     ratings[k] = NzbRatingV2().to_v2(v)
                 self.ratings = ratings
                 self.version = 2
@@ -276,7 +276,7 @@ class Rating(Thread):
         _headers = {'User-agent': 'SABnzbd+/%s' % sabnzbd.version.__version__, 'Content-type': 'application/x-www-form-urlencoded'}
         rating = self._get_rating_by_indexer(indexer_id)  # Requesting info here ensures always have latest information even on retry
         if hasattr(rating, 'host') and rating.host:
-            host_parsed = urlparse.urlparse(rating.host)
+            host_parsed = urllib.parse.urlparse(rating.host)
             rating_host = host_parsed.netloc
             # Is it an URL or just a HOST?
             if host_parsed.path and host_parsed.path != '/':
@@ -303,19 +303,19 @@ class Rating(Thread):
             requests.append(self._flag_request(rating.auto_flag.get('val'), rating.auto_flag.get('detail'), 1))
 
         try:
-            conn = httplib.HTTPSConnection(rating_host)
-            for request in filter(lambda r: r is not None, requests):
+            conn = http.client.HTTPSConnection(rating_host)
+            for request in [r for r in requests if r is not None]:
                 if api_key:
                     request['apikey'] = api_key
                 request['i'] = indexer_id
-                conn.request('POST', rating_url, urllib.urlencode(request), headers=_headers)
+                conn.request('POST', rating_url, urllib.parse.urlencode(request), headers=_headers)
 
                 response = conn.getresponse()
                 response.read()
-                if response.status == httplib.UNAUTHORIZED:
+                if response.status == http.client.UNAUTHORIZED:
                     _warn('Ratings server unauthorized user')
                     return False
-                elif response.status != httplib.OK:
+                elif response.status != http.client.OK:
                     _warn('Ratings server failed to process request (%s, %s)' % (response.status, response.reason))
                     return False
             self.ratings[indexer_id].changed = self.ratings[indexer_id].changed & ~rating.changed

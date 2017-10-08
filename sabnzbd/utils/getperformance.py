@@ -9,7 +9,7 @@ def getcpu():
 
     try:
         if platform.system() == "Windows":
-            import _winreg as winreg	# needed on Python 2
+            import winreg as winreg	# needed on Python 2
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Hardware\Description\System\CentralProcessor\0")
             cputype = winreg.QueryValueEx(key, "ProcessorNameString")[0]
             winreg.CloseKey(key)
@@ -42,7 +42,7 @@ def getpystone():
     value = None
     for pystonemodule in ['test.pystone', 'pystone']:
         try:
-            exec "from " + pystonemodule + " import pystones"
+            exec("from " + pystonemodule + " import pystones")
             value = int(pystones(1000)[1])
             break  # import and calculation worked, so we're done. Get out of the for loop
         except:
@@ -51,5 +51,5 @@ def getpystone():
 
 
 if __name__ == '__main__':
-    print getpystone()
-    print getcpu()
+    print((getpystone()))
+    print((getcpu()))

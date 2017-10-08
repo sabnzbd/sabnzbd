@@ -16,18 +16,19 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
+import imp
 if sys.version_info[:2] < (2, 7) or sys.version_info[:2] >= (3, 0):
-    print "Sorry, requires Python 2.7."
+    print("Sorry, requires Python 2.7.")
     sys.exit(1)
 
 # Make sure UTF-8 is default 8bit encoding
 if not hasattr(sys, "setdefaultencoding"):
-    reload(sys)
+    imp.reload(sys)
 try:
     sys.setdefaultencoding('utf-8')
 except:
-    print 'Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable'
-    print 'or find another way to force Python to use UTF-8 for text encoding.'
+    print('Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable')
+    print('or find another way to force Python to use UTF-8 for text encoding.')
     sys.exit(1)
 
 import logging
@@ -47,10 +48,10 @@ try:
     if Cheetah.Version[0] != '2':
         raise ValueError
 except ValueError:
-    print "Sorry, requires Python module Cheetah 2.0rc7 or higher."
+    print("Sorry, requires Python module Cheetah 2.0rc7 or higher.")
     sys.exit(1)
 except:
-    print "The Python module Cheetah is required"
+    print("The Python module Cheetah is required")
     sys.exit(1)
 
 import cherrypy
@@ -64,20 +65,20 @@ except:
         from pysqlite2.dbapi2 import version as sqlite3_version
     except:
         if os.name != 'nt':
-            print "Sorry, requires Python module sqlite3"
-            print "Try: apt-get install python-pysqlite2"
+            print("Sorry, requires Python module sqlite3")
+            print("Try: apt-get install python-pysqlite2")
             sys.exit(1)
         else:
             SQLITE_DLL = False
 
 import locale
-import __builtin__
+import builtins
 try:
     locale.setlocale(locale.LC_ALL, "")
-    __builtin__.__dict__['codepage'] = locale.getlocale()[1] or 'cp1252'
+    builtins.__dict__['codepage'] = locale.getlocale()[1] or 'cp1252'
 except:
     # Work-around for Python-ports with bad "locale" support
-    __builtin__.__dict__['codepage'] = 'cp1252'
+    builtins.__dict__['codepage'] = 'cp1252'
 
 import sabnzbd
 import sabnzbd.lang
@@ -117,7 +118,7 @@ except ImportError:
     class MailSlot:
         pass
     if sabnzbd.WIN32:
-        print "Sorry, requires Python module PyWin32."
+        print("Sorry, requires Python module PyWin32.")
         sys.exit(1)
 
 
@@ -170,44 +171,44 @@ class guiHandler(logging.Handler):
 
 
 def print_help():
-    print
-    print "Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME
-    print
-    print "Options marked [*] are stored in the config file"
-    print
-    print "Options:"
-    print "  -f  --config-file <ini>  Location of config file"
-    print "  -s  --server <srv:port>  Listen on server:port [*]"
-    print "  -t  --templates <templ>  Template directory [*]"
-    print
-    print "  -l  --logging <0..2>     Set logging level (-1=off, 0= least, 2= most) [*]"
-    print "  -w  --weblogging         Enable cherrypy access logging"
-    print
-    print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
+    print()
+    print(("Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME))
+    print()
+    print("Options marked [*] are stored in the config file")
+    print()
+    print("Options:")
+    print("  -f  --config-file <ini>  Location of config file")
+    print("  -s  --server <srv:port>  Listen on server:port [*]")
+    print("  -t  --templates <templ>  Template directory [*]")
+    print()
+    print("  -l  --logging <0..2>     Set logging level (-1=off, 0= least, 2= most) [*]")
+    print("  -w  --weblogging         Enable cherrypy access logging")
+    print()
+    print("  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]")
     if sabnzbd.WIN32:
-        print "  -d  --daemon             Use when run as a service"
+        print("  -d  --daemon             Use when run as a service")
     else:
-        print "  -d  --daemon             Fork daemon process"
-        print "      --pid <path>         Create a PID file in the given folder (full path)"
-        print "      --pidfile <path>     Create a PID file with the given name (full path)"
-    print
-    print "  -h  --help               Print this message"
-    print "  -v  --version            Print version information"
-    print "  -c  --clean              Remove queue, cache and logs"
-    print "  -p  --pause              Start in paused mode"
-    print "      --repair             Add orphaned jobs from the incomplete folder to the queue"
-    print "      --repair-all         Try to reconstruct the queue from the incomplete folder"
-    print "                           with full data reconstruction"
-    print "      --https <port>       Port to use for HTTPS server"
-    print "      --ipv6_hosting <0|1> Listen on IPv6 address [::1] [*]"
-    print "      --no-login           Start with username and password reset"
-    print "      --log-all            Log all article handling (for developers)"
-    print "      --console            Force console logging for OSX app"
-    print "      --new                Run a new instance of SABnzbd"
+        print("  -d  --daemon             Fork daemon process")
+        print("      --pid <path>         Create a PID file in the given folder (full path)")
+        print("      --pidfile <path>     Create a PID file with the given name (full path)")
+    print()
+    print("  -h  --help               Print this message")
+    print("  -v  --version            Print version information")
+    print("  -c  --clean              Remove queue, cache and logs")
+    print("  -p  --pause              Start in paused mode")
+    print("      --repair             Add orphaned jobs from the incomplete folder to the queue")
+    print("      --repair-all         Try to reconstruct the queue from the incomplete folder")
+    print("                           with full data reconstruction")
+    print("      --https <port>       Port to use for HTTPS server")
+    print("      --ipv6_hosting <0|1> Listen on IPv6 address [::1] [*]")
+    print("      --no-login           Start with username and password reset")
+    print("      --log-all            Log all article handling (for developers)")
+    print("      --console            Force console logging for OSX app")
+    print("      --new                Run a new instance of SABnzbd")
 
 
 def print_version():
-    print """
+    print(("""
 %s-%s
 
 Copyright (C) 2008-2017, The SABnzbd-Team <team@sabnzbd.org>
@@ -216,7 +217,7 @@ This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
 GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
-""" % (sabnzbd.MY_NAME, sabnzbd.__version__)
+""" % (sabnzbd.MY_NAME, sabnzbd.__version__)))
 
 
 def daemonize():
@@ -225,7 +226,7 @@ def daemonize():
         if pid > 0:
             sys.exit(0)
     except OSError:
-        print "fork() failed"
+        print("fork() failed")
         sys.exit(1)
 
     os.chdir(sabnzbd.DIR_PROG)
@@ -239,7 +240,7 @@ def daemonize():
         if pid > 0:
             sys.exit(0)
     except OSError:
-        print "fork() failed"
+        print("fork() failed")
         sys.exit(1)
 
     dev_null = file('/dev/null', 'r')
@@ -484,7 +485,7 @@ def all_localhosts():
     for item in info:
         item = item[4][0]
         # Avoid problems on strange Linux settings
-        if not isinstance(item, basestring):
+        if not isinstance(item, str):
             continue
         # Only return IPv6 when enabled
         if item not in ips and ('::1' not in item or sabnzbd.cfg.ipv6_hosting()):
@@ -996,13 +997,13 @@ def main():
         if enable_https and https_port:
             try:
                 portend.free(cherryhost, https_port, timeout=0.05)
-            except IOError, error:
+            except IOError as error:
                 Bail_Out(browserhost, cherryport)
             except:
                 Bail_Out(browserhost, cherryport, '49')
         try:
             portend.free(cherryhost, cherryport, timeout=0.05)
-        except IOError, error:
+        except IOError as error:
             Bail_Out(browserhost, cherryport)
         except:
             Bail_Out(browserhost, cherryport, '49')
@@ -1019,7 +1020,7 @@ def main():
         port = https_port or cherryport
         try:
             portend.free(browserhost, port, timeout=0.05)
-        except IOError, error:
+        except IOError as error:
             if str(error) == 'Port not bound.':
                 pass
             else:
@@ -1048,7 +1049,7 @@ def main():
     if not (enable_https and not https_port):
         try:
             portend.free(browserhost, cherryport, timeout=0.05)
-        except IOError, error:
+        except IOError as error:
             if str(error) == 'Port not bound.':
                 pass
             else:
@@ -1077,8 +1078,8 @@ def main():
 
     logdir = sabnzbd.cfg.log_dir.get_path()
     if fork and not logdir:
-        print "Error:"
-        print "I refuse to fork without a log directory!"
+        print("Error:")
+        print("I refuse to fork without a log directory!")
         sys.exit(1)
 
     if clean_up:
@@ -1108,8 +1109,8 @@ def main():
         logger.setLevel(LOGLEVELS[logging_level + 1])
 
     except IOError:
-        print "Error:"
-        print "Can't write to logfile"
+        print("Error:")
+        print("Can't write to logfile")
         exit_sab(2)
 
     if fork:
@@ -1651,15 +1652,15 @@ def HandleCommandLine(allow_service=True):
     service, sab_opts, serv_opts, _upload_nzbs = commandline_handler()
     if service and not allow_service:
         # The other frozen apps don't support Services
-        print "For service support, use SABnzbd-service.exe"
+        print("For service support, use SABnzbd-service.exe")
         return True
     elif service:
         if service in ('install', 'update'):
             # In this case check for required parameters
             path = get_f_option(sab_opts)
             if not path:
-                print 'The -f <path> parameter is required.\n' \
-                      'Use: -f <path> %s' % service
+                print(('The -f <path> parameter is required.\n' \
+                      'Use: -f <path> %s' % service))
                 return True
 
             # First run the service installed, because this will
@@ -1669,9 +1670,9 @@ def HandleCommandLine(allow_service=True):
             # Add our own parameter to the Registry
             sab_opts = prep_service_parms(sab_opts)
             if set_serv_parms(SABnzbd._svc_name_, sab_opts):
-                print SERVICE_MSG
+                print(SERVICE_MSG)
             else:
-                print 'Cannot set required Registry info.'
+                print('Cannot set required Registry info.')
         else:
             # Other service commands need no manipulation
             win32serviceutil.HandleCommandLine(SABnzbd)

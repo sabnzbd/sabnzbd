@@ -158,13 +158,13 @@ def process_po_folder(domain, folder, extra=''):
 
         # Create the MO file
         mo_file = os.path.join(mo_path, mo_name)
-        print 'Compile %s' % mo_file
+        print(('Compile %s' % mo_file))
         ret, output = run('%s %s -o "%s" "%s"' % (TOOL, extra, mo_file, fname))
         if ret != 0:
-            print '\nMissing %s. Please install this package first.' % TOOL
+            print(('\nMissing %s. Please install this package first.' % TOOL))
             exit(1)
         if 'WARNING:' in output:
-            print output
+            print(output)
             result = False
     return result
 
@@ -197,10 +197,10 @@ def make_templates():
     for path in glob.glob(os.path.join(MO_DIR, '*')):
         lng = os.path.split(path)[1]
         if lng != 'en' and os.path.exists(os.path.join(POE_DIR,lng+'.po')):
-            print 'Create email template for %s' % lng
+            print(('Create email template for %s' % lng))
             trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False, codeset='latin-1')
             # The unicode flag will make _() return Unicode
-            trans.install(unicode=True, names=['lgettext'])
+            trans.install(str=True, names=['lgettext'])
 
             translate_tmpl('email', lng)
             translate_tmpl('rss', lng)
@@ -241,14 +241,14 @@ def patch_nsis():
                         else:
                             trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset='latin-1')
                             # The unicode flag will make _() return Unicode
-                            trans.install(unicode=True, names=['lgettext'])
+                            trans.install(str=True, names=['lgettext'])
                             trans = _(text).encode('utf-8')
                             trans = trans.replace('\r', '').replace('\n', '\\r\\n')
                             trans = trans.replace('\\', '$\\').replace('"', '$\\"')
                         line = '%s%s%s%s} "%s"\n' % (leader, item, rest, lng, trans)
                         new.append(line)
                     elif lng is None:
-                        print 'Warning: unsupported language %s (%s), add to table in this script' % (langname, lcode)
+                        print(('Warning: unsupported language %s (%s), add to table in this script' % (langname, lcode)))
         else:
             new.append(line)
     src.close()
@@ -271,29 +271,29 @@ if os.path.exists(tl):
 
 result = True
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
-    print 'NSIS MO file'
+    print('NSIS MO file')
     result = result and process_po_folder(DOMAIN_N, PON_DIR)
 
-    print "Patch NSIS script"
+    print("Patch NSIS script")
     patch_nsis()
 
-print 'Email MO files'
+print('Email MO files')
 result = result and process_po_folder(DOMAIN_E, POE_DIR)
 
-print "Create email templates from MO files"
+print("Create email templates from MO files")
 make_templates()
 
 
-print 'Main program MO files'
+print('Main program MO files')
 # -n option added to remove all newlines from the translations
 result = result and process_po_folder(DOMAIN, PO_DIR, '-n')
 
-print "Remove temporary templates"
+print("Remove temporary templates")
 remove_mo_files()
 
-print
+print()
 if result:
     exit(0)
 else:
-    print 'WARNINGS present!'
+    print('WARNINGS present!')
     exit(1)

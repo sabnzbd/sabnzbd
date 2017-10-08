@@ -17,7 +17,7 @@
 
 import sys
 if sys.version_info[:2] < (2, 6) or sys.version_info[:2] >= (3, 0):
-    print "Sorry, requires Python 2.6 or 2.7."
+    print("Sorry, requires Python 2.6 or 2.7.")
     sys.exit(1)
 
 import os
@@ -34,7 +34,7 @@ try:
     import win32service
     import pywintypes
 except ImportError:
-    print "Sorry, requires Python module PyWin32."
+    print("Sorry, requires Python module PyWin32.")
     sys.exit(1)
 
 from util.mailslot import MailSlot
@@ -137,14 +137,14 @@ class SABHelper(win32serviceutil.ServiceFramework):
         win32evtlogutil.ReportEvent(self._svc_display_name_,
                                     state, 0,
                                     servicemanager.EVENTLOG_INFORMATION_TYPE,
-                                    (self._svc_name_, unicode(msg)))
+                                    (self._svc_name_, str(msg)))
 
     def ErrLogger(self, msg, text):
         win32evtlogutil.ReportEvent(self._svc_display_name_,
                                     servicemanager.PYS_SERVICE_STOPPED, 0,
                                     servicemanager.EVENTLOG_ERROR_TYPE,
-                                    (self._svc_name_, unicode(msg)),
-                                    unicode(text))
+                                    (self._svc_name_, str(msg)),
+                                    str(text))
 
 
 ##############################################################################

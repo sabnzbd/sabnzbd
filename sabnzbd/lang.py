@@ -35,7 +35,7 @@ sabnzbd.lang - Language support
 
 
 import gettext
-import __builtin__
+import builtins
 import glob
 import os
 import operator
@@ -67,11 +67,11 @@ def set_language(language=None):
     lng = gettext.translation(_DOMAIN, _LOCALEDIR, [language], fallback=True, codeset='latin-1')
 
     # The unicode flag will make _() return Unicode
-    lng.install(unicode=True, names=['lgettext'])
-    __builtin__.__dict__['T'] = __builtin__.__dict__['_']           # Unicode
-    __builtin__.__dict__['Ta'] = __builtin__.__dict__['_']          # Unicode (Used to Latin-1, compatibility support)
-    __builtin__.__dict__['Tx'] = __builtin__.__dict__['_']          # Dynamic translation (unicode)
-    __builtin__.__dict__['TT'] = lambda x: unicode(x)               # Use in text tables
+    lng.install(str=True, names=['lgettext'])
+    builtins.__dict__['T'] = builtins.__dict__['_']           # Unicode
+    builtins.__dict__['Ta'] = builtins.__dict__['_']          # Unicode (Used to Latin-1, compatibility support)
+    builtins.__dict__['Tx'] = builtins.__dict__['_']          # Dynamic translation (unicode)
+    builtins.__dict__['TT'] = lambda x: str(x)               # Use in text tables
 
 
 def list_languages():

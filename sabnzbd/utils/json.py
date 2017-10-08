@@ -45,10 +45,10 @@ class JsonWriter(object):
     def _write(self, obj):
         global LATIN_COUNTER
         ty = type(obj)
-        if ty is types.DictType:
+        if ty is dict:
             n = len(obj)
             self._append("{")
-            for k, v in obj.items():
+            for k, v in list(obj.items()):
                 self._write(k)
                 self._append(":")
                 self._write(v)
@@ -56,7 +56,7 @@ class JsonWriter(object):
                 if n > 0:
                     self._append(",")
             self._append("}")
-        elif ty is types.ListType or ty is types.TupleType:
+        elif ty is list or ty is tuple:
             n = len(obj)
             self._append("[")
             for item in obj:
@@ -65,9 +65,9 @@ class JsonWriter(object):
                 if n > 0:
                     self._append(",")
             self._append("]")
-        elif ty is types.StringType or ty is types.UnicodeType:
+        elif ty is bytes or ty is str:
             self._append('"')
-            if ty is types.UnicodeType:
+            if ty is str:
                 obj = obj.encode('utf-8', 'replace')
             else:
                 try:
@@ -88,9 +88,9 @@ class JsonWriter(object):
             obj = obj.replace('\t', r'\t')
             self._append(obj)
             self._append('"')
-        elif ty is types.IntType or ty is types.LongType:
+        elif ty is int or ty is int:
             self._append(str(obj))
-        elif ty is types.FloatType:
+        elif ty is float:
             self._append("%f" % obj)
         elif obj is True:
             self._append("true")
@@ -99,4 +99,4 @@ class JsonWriter(object):
         elif obj is None:
             self._append("null")
         else:
-            raise WriteException, "Cannot write in JSON: %s" % repr(obj)
+            raise WriteException("Cannot write in JSON: %s" % repr(obj))

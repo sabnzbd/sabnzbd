@@ -208,7 +208,7 @@ class RSS:
                 c+= "length=\"" + str(i.enclosure.length )+ "\" "
                 c+= "type=\"" + i.enclosure.type + "\"/>\n"
 
-            for k in i.nsItems.keys():
+            for k in list(i.nsItems.keys()):
                 c += self.optionalWrite( k , i.nsItems[ k ] )
 
             c += "</item>\n\n"

@@ -20,7 +20,7 @@ sabnzbd.postproc - threaded post-processing of jobs
 """
 
 import os
-import Queue
+import queue
 import logging
 import sabnzbd
 import xml.sax.saxutils
@@ -67,7 +67,7 @@ class PostProcessor(Thread):
 
         if self.history_queue is None:
             self.history_queue = []
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
         for nzo in self.history_queue:
             self.process(nzo)
         self.__stop = False
@@ -185,7 +185,7 @@ class PostProcessor(Thread):
 
             try:
                 nzo = self.queue.get(timeout=1)
-            except Queue.Empty:
+            except queue.Empty:
                 if check_eoq:
                     check_eoq = False
                     handle_empty_queue()
@@ -479,11 +479,11 @@ def process_job(nzo):
                 script_ret = ''
             if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line,
+                                    '%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line,
                                     xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
                 # No '(more)' button needed
-                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line), unique=True)
+                nzo.set_unpack_info('Script', '%s%s ' % (script_ret, script_line), unique=True)
 
         # Cleanup again, including NZB files
         if all_ok:
@@ -497,7 +497,7 @@ def process_job(nzo):
             if nzo.encrypted > 0:
                 Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)
             if empty:
-                hosts = map(lambda s: s.host, sabnzbd.downloader.Downloader.do.nzo_servers(nzo))
+                hosts = [s.host for s in sabnzbd.downloader.Downloader.do.nzo_servers(nzo)]
                 if not hosts:
                     hosts = [None]
                 for host in hosts:
@@ -631,7 +631,7 @@ def parring(nzo, workdir):
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
-    repair_sets = nzo.extrapars.keys()
+    repair_sets = list(nzo.extrapars.keys())
 
     re_add = False
     par_error = False
@@ -947,7 +947,7 @@ def del_marker(path):
 
 def remove_from_list(name, lst):
     if name:
-        for n in xrange(len(lst)):
+        for n in range(len(lst)):
             if lst[n].endswith(name):
                 logging.debug('Popping %s', lst[n])
                 lst.pop(n)

@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 
 """
 "PYSTONE" Benchmark Program
@@ -59,9 +59,9 @@ FALSE = 0
 
 def main(loops=LOOPS):
     benchtime, stones = pystones(loops)
-    print "Pystone(%s) time for %d passes = %g" % \
-          (__version__, loops, benchtime)
-    print "This machine benchmarks at %g pystones/second" % stones
+    print("Pystone(%s) time for %d passes = %g" % \
+          (__version__, loops, benchtime))
+    print("This machine benchmarks at %g pystones/second" % stones)
 
 
 def pystones(loops=LOOPS):
@@ -72,7 +72,7 @@ BoolGlob = FALSE
 Char1Glob = '\0'
 Char2Glob = '\0'
 Array1Glob = [0]*51
-Array2Glob = map(lambda x: x[:], [Array1Glob]*51)
+Array2Glob = [x[:] for x in [Array1Glob]*51]
 PtrGlb = None
 PtrGlbNext = None
 
@@ -255,8 +255,8 @@ def Func3(EnumParIn):
 if __name__ == '__main__':
     import sys
     def error(msg):
-        print >>sys.stderr, msg,
-        print >>sys.stderr, "usage: %s [number_of_loops]" % sys.argv[0]
+        print(msg, end=' ', file=sys.stderr)
+        print("usage: %s [number_of_loops]" % sys.argv[0], file=sys.stderr)
         sys.exit(100)
     nargs = len(sys.argv) - 1
     if nargs > 1:

@@ -53,12 +53,12 @@ MIN_FILE_SIZE = 40*1024*1024
 
 # Are we being called from SABnzbd?
 if not os.environ.get('SAB_VERSION'):
-    print "This script needs to be called from SABnzbd as post-processing script."
+    print("This script needs to be called from SABnzbd as post-processing script.")
     sys.exit(1)
 
 def print_splitter():
     """ Simple helper function """
-    print '\n------------------------\n'
+    print('\n------------------------\n')
 
 # Windows or others?
 par2_command = os.environ['SAB_PAR2_COMMAND']
@@ -67,9 +67,9 @@ if os.environ['SAB_MULTIPAR_COMMAND']:
 
 # Diagnostic info
 print_splitter()
-print 'SABnzbd version: ', os.environ['SAB_VERSION']
-print 'Job location: ', os.environ['SAB_COMPLETE_DIR']
-print 'Par2-command: ', par2_command
+print(('SABnzbd version: ', os.environ['SAB_VERSION']))
+print(('Job location: ', os.environ['SAB_COMPLETE_DIR']))
+print(('Par2-command: ', par2_command))
 print_splitter()
 
 # Search for par2 files
@@ -77,12 +77,12 @@ matches = []
 for root, dirnames, filenames in os.walk(os.environ['SAB_COMPLETE_DIR']):
     for filename in fnmatch.filter(filenames, '*.par2'):
         matches.append(os.path.join(root, filename))
-        print 'Found file:', os.path.join(root, filename)
+        print(('Found file:', os.path.join(root, filename)))
 
 # Found any par2 files we can use?
 run_renamer = True
 if not matches:
-    print "No par2 files found to process."
+    print("No par2 files found to process.")
 
 # Run par2 from SABnzbd on them
 for par2_file in matches:
@@ -92,7 +92,7 @@ for par2_file in matches:
 
     # Start command
     print_splitter()
-    print 'Starting command: ', repr(command)
+    print(('Starting command: ', repr(command)))
     try:
         result = subprocess.check_output(command)
     except subprocess.CalledProcessError as e:
@@ -101,23 +101,23 @@ for par2_file in matches:
 
     # Show output
     print_splitter()
-    print result
+    print(result)
     print_splitter()
 
     # Last status-line for the History
     # Check if the magic words are there
     if 'Repaired successfully' in result or 'All files are correct' in result or \
        'Repair complete' in result or 'All Files Complete' in result or 'PAR File(s) Incomplete' in result:
-        print 'Recursive repair/verify finished.'
+        print('Recursive repair/verify finished.')
         run_renamer = False
     else:
-        print 'Recursive repair/verify did not complete!'
+        print('Recursive repair/verify did not complete!')
 
 
 # No matches? Then we try to rename the largest file to the job-name
 if run_renamer:
     print_splitter()
-    print 'Trying to see if there are large files to rename'
+    print('Trying to see if there are large files to rename')
     print_splitter()
 
     # If there are more larger files, we don't rename
@@ -130,10 +130,10 @@ if run_renamer:
             if file_size > MIN_FILE_SIZE and os.path.splitext(filename)[1].lower() not in EXCLUDED_FILE_EXTS:
                 # Did we already found one?
                 if largest_file:
-                    print 'Found:', largest_file
-                    print 'Found:', full_path
+                    print(('Found:', largest_file))
+                    print(('Found:', full_path))
                     print_splitter()
-                    print 'Found multiple larger files, aborting.'
+                    print('Found multiple larger files, aborting.')
                     largest_file = None
                     break
                 largest_file = full_path
@@ -143,18 +143,18 @@ if run_renamer:
         # We don't need to do any cleaning of dir-names
         # since SABnzbd already did that!
         new_name = '%s%s' % (os.path.join(os.environ['SAB_COMPLETE_DIR'], os.environ['SAB_FINAL_NAME']), os.path.splitext(largest_file)[1].lower())
-        print 'Renaming %s to %s' % (largest_file, new_name)
+        print(('Renaming %s to %s' % (largest_file, new_name)))
 
         # With retries for Windows
         for r in range(3):
             try:
                 os.rename(largest_file, new_name)
-                print 'Renaming done!'
+                print('Renaming done!')
                 break
             except:
                 time.sleep(1)
     else:
-        print 'No par2 files or large files found'
+        print('No par2 files or large files found')
 
 # Always exit with succes-code
 sys.exit(0)

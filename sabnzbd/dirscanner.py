@@ -380,7 +380,7 @@ class DirScanner(threading.Thread):
                     # Wait until the attributes are stable for 1 second
                     # but give up after 3 sec
                     stable = False
-                    for n in xrange(3):
+                    for n in range(3):
                         time.sleep(1.0)
                         try:
                             stat_tuple_tmp = os.stat(path)

@@ -21,7 +21,7 @@ print happyeyeballs('newszilla.xs4all.nl', port=119)
 
 import socket
 import ssl
-import Queue
+import queue
 import threading
 import time
 import logging
@@ -115,7 +115,7 @@ def happyeyeballs(HOST, **kwargs):
     except:
         if DEBUG: logging.debug("No IPv6 address found for %s", HOST)
 
-    myqueue = Queue.Queue()    # queue used for threads giving back the results
+    myqueue = queue.Queue()    # queue used for threads giving back the results
 
     try:
 	# Get all IP (IPv4 and IPv6) addresses:
@@ -157,22 +157,22 @@ if __name__ == '__main__':
     if DEBUG: logger.setLevel(logging.DEBUG)
 
     # plain HTTP/HTTPS sites:
-    print happyeyeballs('www.google.com')
-    print happyeyeballs('www.google.com', port=443, ssl=True)
-    print happyeyeballs('www.nu.nl')
+    print((happyeyeballs('www.google.com')))
+    print((happyeyeballs('www.google.com', port=443, ssl=True)))
+    print((happyeyeballs('www.nu.nl')))
 
     # newsservers:
-    print happyeyeballs('newszilla6.xs4all.nl', port=119)
-    print happyeyeballs('newszilla.xs4all.nl', port=119)
-    print happyeyeballs('block.cheapnews.eu', port=119)
-    print happyeyeballs('block.cheapnews.eu', port=443, ssl=True)
-    print happyeyeballs('sslreader.eweka.nl', port=563, ssl=True)
-    print happyeyeballs('news.thundernews.com', port=119)
-    print happyeyeballs('news.thundernews.com', port=119, preferipv6=False)
-    print happyeyeballs('secure.eu.thundernews.com', port=563, ssl=True)
+    print((happyeyeballs('newszilla6.xs4all.nl', port=119)))
+    print((happyeyeballs('newszilla.xs4all.nl', port=119)))
+    print((happyeyeballs('block.cheapnews.eu', port=119)))
+    print((happyeyeballs('block.cheapnews.eu', port=443, ssl=True)))
+    print((happyeyeballs('sslreader.eweka.nl', port=563, ssl=True)))
+    print((happyeyeballs('news.thundernews.com', port=119)))
+    print((happyeyeballs('news.thundernews.com', port=119, preferipv6=False)))
+    print((happyeyeballs('secure.eu.thundernews.com', port=563, ssl=True)))
 
     # Strange cases
-    print happyeyeballs('does.not.resolve', port=443, ssl=True)
-    print happyeyeballs('www.google.com', port=119)
-    print happyeyeballs('216.58.211.164')
+    print((happyeyeballs('does.not.resolve', port=443, ssl=True)))
+    print((happyeyeballs('www.google.com', port=119)))
+    print((happyeyeballs('216.58.211.164')))
 

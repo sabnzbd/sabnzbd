@@ -92,7 +92,7 @@ if __name__ == '__main__':
     from time import sleep
 
     if not __debug__:
-        print 'Run this test in non-optimized mode'
+        print('Run this test in non-optimized mode')
         exit(1)
 
     if len(sys.argv) > 1 and 'server' in sys.argv[1]:
@@ -103,7 +103,7 @@ if __name__ == '__main__':
         while True:
             data = recv.receive()
             if data is not None:
-                print data
+                print(data)
                 if data.startswith('stop'):
                     break
             sleep(2.0)
@@ -114,7 +114,7 @@ if __name__ == '__main__':
         send = MailSlot()
         ret = send.connect()
         assert ret, 'Failed to connect'
-        for n in xrange(5):
+        for n in range(5):
             ret = send.send('restart')
             assert ret, 'Failed to send'
             sleep(2.0)
@@ -123,4 +123,4 @@ if __name__ == '__main__':
         send.disconnect()
 
     else:
-        print 'Usage: mailslot.py server|client'
+        print('Usage: mailslot.py server|client')

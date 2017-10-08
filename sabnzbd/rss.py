@@ -150,7 +150,7 @@ def remove_obsolete(jobs, new_jobs):
     """
     now = time.time()
     limit = now - 259200  # 3days (3x24x3600)
-    olds = jobs.keys()
+    olds = list(jobs.keys())
     for old in olds:
         tm = jobs[old]['time']
         if old not in new_jobs:
@@ -175,7 +175,7 @@ class RSSQueue(object):
             self.jobs = sabnzbd.load_admin(RSS_FILE_NAME)
             if self.jobs:
                 for feed in self.jobs:
-                    remove_obsolete(self.jobs[feed], self.jobs[feed].keys())
+                    remove_obsolete(self.jobs[feed], list(self.jobs[feed].keys()))
         except:
             logging.warning(T('Cannot read %s'), RSS_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
@@ -321,7 +321,7 @@ class RSSQueue(object):
             if not entries:
                 return unicoder(msg)
         else:
-            entries = jobs.keys()
+            entries = list(jobs.keys())
 
         # Filter out valid new links
         for entry in entries:
@@ -333,8 +333,8 @@ class RSSQueue(object):
                     link, category, size, age, season, episode = _get_link(uri, entry)
                 except (AttributeError, IndexError):
                     link = None
-                    category = u''
-                    size = 0L
+                    category = ''
+                    size = 0
                     age = None
                     logging.info(T('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info=True)
@@ -344,7 +344,7 @@ class RSSQueue(object):
                 # If there's multiple feeds, remove the duplicates based on title and size
                 if len(uris) > 1:
                     skip_job = False
-                    for job_link, job in jobs.items():
+                    for job_link, job in list(jobs.items()):
                         # Allow 5% size deviation because indexers might have small differences for same release
                         if job.get('title') == title and link != job_link and (job.get('size')*0.95) < size < (job.get('size')*1.05):
                             logging.info("Ignoring job %s from other feed", title)
@@ -358,7 +358,7 @@ class RSSQueue(object):
                 if category in ('', '*'):
                     category = None
                 title = jobs[link].get('title', '')
-                size = jobs[link].get('size', 0L)
+                size = jobs[link].get('size', 0)
                 age = jobs[link].get('age')
                 season = jobs[link].get('season', 0)
                 episode = jobs[link].get('episode', 0)
@@ -387,7 +387,7 @@ class RSSQueue(object):
 
                     # Match against all filters until an positive or negative match
                     logging.debug('Size %s', size)
-                    for n in xrange(regcount):
+                    for n in range(regcount):
                         if reEnabled[n]:
                             if category and reTypes[n] == 'C':
                                 found = re.search(regexes[n], category)
@@ -504,14 +504,14 @@ class RSSQueue(object):
             if self.next_run < time.time():
                 self.next_run = time.time() + cfg.rss_rate.get() * 60
             feeds = config.get_rss()
-            for feed in feeds.keys():
+            for feed in list(feeds.keys()):
                 try:
                     if feeds[feed].enable.get():
                         logging.info('Starting scheduled RSS read-out for "%s"', feed)
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
                         # Wait 15 seconds, else sites may get irritated
-                        for unused in xrange(15):
+                        for unused in range(15):
                             if self.shutdown:
                                 return
                             else:
@@ -633,7 +633,7 @@ def _get_link(uri, entry):
     """
     link = None
     category = ''
-    size = 0L
+    size = 0
     uri = uri.lower()
     age = datetime.datetime.now()
 
@@ -648,7 +648,7 @@ def _get_link(uri, entry):
         except:
             pass
 
-    if size == 0L:
+    if size == 0:
         _RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
         _RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
         # Try to find size in Description
@@ -700,7 +700,7 @@ def _get_link(uri, entry):
         return link, category, size, age, season, episode
     else:
         logging.warning(T('Empty RSS entry found (%s)'), link)
-        return None, '', 0L, None, 0, 0
+        return None, '', 0, None, 0, 0
 
 
 def special_rss_site(url):

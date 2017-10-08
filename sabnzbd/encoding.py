@@ -78,7 +78,7 @@ def special_fixer(p):
     if p:
         # Remove \" constructions from incoming headers
         p = p.replace(r'\"', r'"')
-    if not p or isinstance(p, unicode):
+    if not p or isinstance(p, str):
         return p
     try:
         # First see if it isn't just UTF-8
@@ -95,7 +95,7 @@ def unicoder(p, force=False):
     """ Make sure a Unicode string is returned
         When `force` is True, ignore filesystem encoding
     """
-    if isinstance(p, unicode):
+    if isinstance(p, str):
         return p
     if isinstance(p, str):
         if gUTF or force:
@@ -105,13 +105,13 @@ def unicoder(p, force=False):
                 return p.decode(codepage, 'replace')
         return p.decode(codepage, 'replace')
     else:
-        return unicode(str(p))
+        return str(str(p))
 
 
 def xml_name(p, keep_escape=False, encoding=None):
     """ Prepare name for use in HTML/XML contect """
 
-    if isinstance(p, unicode):
+    if isinstance(p, str):
         pass
     elif isinstance(p, str):
         if sabnzbd.DARWIN or encoding == 'utf-8':
@@ -133,9 +133,9 @@ class LatinFilter(Filter):
     """ Make sure Cheetah gets only Unicode strings """
 
     def filter(self, val, str=str, **kw):
-        if isinstance(val, unicode):
+        if isinstance(val, str):
             return val
-        elif isinstance(val, basestring):
+        elif isinstance(val, str):
             try:
                 if sabnzbd.WIN32:
                     return val.decode(codepage)
@@ -144,9 +144,9 @@ class LatinFilter(Filter):
             except:
                 return val.decode(codepage, 'replace')
         elif val is None:
-            return u''
+            return ''
         else:
-            return unicode(str(val))
+            return str(str(val))
 
 
 class EmailFilter(Filter):
@@ -155,17 +155,17 @@ class EmailFilter(Filter):
     """
 
     def filter(self, val, str=str, **kw):
-        if isinstance(val, unicode):
+        if isinstance(val, str):
             return val
-        elif isinstance(val, basestring):
+        elif isinstance(val, str):
             try:
                 return val.decode('utf-8')
             except:
                 return val.decode(codepage, 'replace')
         elif val is None:
-            return u''
+            return ''
         else:
-            return unicode(str(val))
+            return str(str(val))
 
 
 ################################################################################
@@ -241,7 +241,7 @@ def fixup_ff4(p):
             if ch.isdigit():
                 num += ch
             elif ch == ';':
-                name.append(unichr(int(num)).encode('utf8'))
+                name.append(chr(int(num)).encode('utf8'))
                 start = False
             else:
                 name.append('&#%s%s' % (num, ch))
@@ -282,12 +282,12 @@ def deunicode(p):
     """ Return the correct 8bit ASCII encoding for the platform:
         Latin-1 for Windows/Posix-non-UTF and UTF-8 for OSX/Posix-UTF
     """
-    if isinstance(p, unicode):
+    if isinstance(p, str):
         if gUTF:
             return p.encode('utf-8')
         else:
             return p.encode(codepage, 'replace')
-    elif isinstance(p, basestring):
+    elif isinstance(p, str):
         if gUTF:
             try:
                 p.decode('utf-8')

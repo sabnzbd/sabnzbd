@@ -23,7 +23,7 @@ import os
 import time
 import cherrypy
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 import re
 import hashlib
@@ -124,7 +124,7 @@ def Raiser(root='', **kwargs):
             args[key] = val
     # Add extras
     if args:
-        root = '%s?%s' % (root, urllib.urlencode(args))
+        root = '%s?%s' % (root, urllib.parse.urlencode(args))
     # Optionally add the leading /sabnzbd/ (or what the user set)
     if not root.startswith(cfg.url_base()):
         root = cherrypy.request.script_name + root
@@ -233,7 +233,7 @@ def set_auth(conf):
 def check_session(kwargs):
     """ Check session key """
     if not check_access():
-        return u'Access denied'
+        return 'Access denied'
     key = kwargs.get('session')
     if not key:
         key = kwargs.get('apikey')
@@ -1606,7 +1606,7 @@ class ConfigServer(object):
 
         new = []
         servers = config.get_servers()
-        server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
+        server_names = sorted(list(servers.keys()), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
         for svr in server_names:
             new.append(servers[svr].get_dict(safe=True))
             t, m, w, d, timeline = BPSMeter.do.amounts(svr)
@@ -1725,7 +1725,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         server = unique_svr_name(server)
 
     for kw in ('ssl', 'send_group', 'enable', 'optional'):
-        if kw not in kwargs.keys():
+        if kw not in list(kwargs.keys()):
             kwargs[kw] = None
     if svr and not new_svr:
         svr.set_dict(kwargs)
@@ -1788,7 +1788,7 @@ class ConfigRss(object):
 
             rss[feed]['pick_cat'] = pick_cat
             rss[feed]['pick_script'] = pick_script
-            rss[feed]['link'] = urllib.quote_plus(feed.encode('utf-8'))
+            rss[feed]['link'] = urllib.parse.quote_plus(feed.encode('utf-8'))
             rss[feed]['baselink'] = [get_base_url(uri) for uri in rss[feed]['uri']]
             rss[feed]['uris'] = feeds[feed].uri.get_string()
 
@@ -2688,7 +2688,7 @@ def GetRssLog(feed):
 
         return job
 
-    jobs = sabnzbd.rss.show_result(feed).values()
+    jobs = list(sabnzbd.rss.show_result(feed).values())
     good, bad, done = ([], [], [])
     for job in jobs:
         if job['status'][0] == 'G':

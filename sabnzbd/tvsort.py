@@ -360,7 +360,7 @@ class SeriesSorter(object):
         # Replace elements
         path = path_subst(sorter, mapping)
 
-        for key, name in REPLACE_AFTER.iteritems():
+        for key, name in list(REPLACE_AFTER.items()):
             path = path.replace(key, name)
 
         # Lowercase all characters wrapped in {}
@@ -458,7 +458,7 @@ def check_for_sequence(regex, files):
                 prefix = name[:match1.start()]
 
     # Don't do anything if only one or no files matched
-    if len(matches.keys()) < 2:
+    if len(list(matches.keys())) < 2:
         return {}
 
     key_prev = 0
@@ -609,7 +609,7 @@ class GenericSorter(object):
 
         path = path_subst(sorter, mapping)
 
-        for key, name in REPLACE_AFTER.iteritems():
+        for key, name in list(REPLACE_AFTER.items()):
             path = path.replace(key, name)
 
         # Lowercase all characters wrapped in {}
@@ -675,8 +675,8 @@ class GenericSorter(object):
             # rename files marked as in a set
             if matched_files:
                 logging.debug("Renaming a series of generic files (%s)", matched_files)
-                renamed = matched_files.values()
-                for index, file in matched_files.iteritems():
+                renamed = list(matched_files.values())
+                for index, file in list(matched_files.items()):
                     filepath = os.path.join(current_path, file)
                     renamed.append(filepath)
                     self.fname, ext = os.path.splitext(os.path.split(file)[1])
@@ -828,7 +828,7 @@ class DateSorter(object):
 
         path = path_subst(sorter, mapping)
 
-        for key, name in REPLACE_AFTER.iteritems():
+        for key, name in list(REPLACE_AFTER.items()):
             path = path.replace(key, name)
 
         # Lowercase all characters wrapped in {}
@@ -896,7 +896,7 @@ def path_subst(path, mapping):
                     break
         newpath.append(result)
         n += 1
-    return u''.join([unicoder(x) for x in newpath])
+    return ''.join([unicoder(x) for x in newpath])
 
 
 def get_titles(nzo, match, name, titleing=False):

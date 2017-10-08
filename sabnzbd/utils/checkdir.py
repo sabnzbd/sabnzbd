@@ -37,19 +37,19 @@ def isFAT(dir):
                 if thisline.find('/') == 0:
                     # Starts with /, so a real, local device
                     fstype = thisline.split()[1]
-                    if debug: print "File system type:", fstype
+                    if debug: print(("File system type:", fstype))
                     if fstype.lower().find('fat') >= 0:
                         FAT = True
-                        if debug: print "FAT found"
+                        if debug: print("FAT found")
                         break
         elif 'win32' in sys.platform:
             import win32api
             if '?' in dir:
                 #  Remove \\?\ or \\?\UNC\ prefix from Windows path
-                dir = dir.replace(u'\\\\?\\UNC\\', u'\\\\', 1).replace(u'\\\\?\\', u'', 1)
+                dir = dir.replace('\\\\?\\UNC\\', '\\\\', 1).replace('\\\\?\\', '', 1)
             try:
                 result = win32api.GetVolumeInformation(os.path.splitdrive(dir)[0])
-                if debug: print result
+                if debug: print(result)
                 if(result[4].startswith("FAT")):
                     FAT = True
             except:
@@ -74,12 +74,12 @@ def isFAT(dir):
             device = ''
             for thisline in os.popen(dfcmd).readlines():
                 if thisline.find('/')==0:
-                    if debug: print thisline
+                    if debug: print(thisline)
                     # Starts with /, so a real, local device
                     device = thisline.split()[0]
                     mountcmd = "mount | grep " + device
                     mountoutput = os.popen(mountcmd).readline().strip()
-                    if debug: print mountoutput
+                    if debug: print(mountoutput)
                     if 'msdos' in mountoutput.split('(')[1]:
                         FAT = True
                     break
@@ -91,15 +91,15 @@ def isFAT(dir):
 
 
 if __name__ == "__main__":
-    if debug: print sys.platform
+    if debug: print((sys.platform))
     try:
         dir = sys.argv[1]
     except:
-        print "Specify dir on the command line"
+        print("Specify dir on the command line")
         sys.exit(0)
     if isFAT(dir):
-        print dir, "is on FAT"
+        print((dir, "is on FAT"))
     else:
-        print dir, "is not on FAT"
+        print((dir, "is not on FAT"))
 
 

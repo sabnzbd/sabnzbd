@@ -90,20 +90,20 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
                 nw.recv_chunk(block=True)
             nw.finish_connect(nw.status_code)
 
-    except socket.timeout, e:
+    except socket.timeout as e:
         if port != 119 and not ssl:
             return False, T('Timed out: Try enabling SSL or connecting on a different port.')
         else:
             return False, T('Timed out')
 
-    except socket.error, e:
+    except socket.error as e:
         # Trying SSL on non-SSL port?
         if 'unknown protocol' in str(e).lower():
             return False, T('Unknown SSL protocol: Try disabling SSL or connecting on a different port.')
 
-        return False, unicode(e)
+        return False, str(e)
 
-    except TypeError, e:
+    except TypeError as e:
         return False, T('Invalid server address.')
 
     except IndexError:
@@ -111,7 +111,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         return False, T('Server quit during login sequence.')
 
     except:
-        return False, unicode(sys.exc_info()[1])
+        return False, str(sys.exc_info()[1])
 
     if not username or not password:
         nw.nntp.sock.sendall('ARTICLE <test@home>\r\n')
@@ -119,7 +119,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             nw.clear_data()
             nw.recv_chunk(block=True)
         except:
-            return False, unicode(sys.exc_info()[1])
+            return False, str(sys.exc_info()[1])
 
     if nw.status_code == '480':
         return False, T('Server requires username and password.')

@@ -1,8 +1,7 @@
-#! /usr/bin/env python
-# -*- coding: iso-8859-1 -*-
-# Written by Martin v. L�wis <loewis@informatik.hu-berlin.de>
+#! /usr/bin/env python3
+# Written by Martin v. Löwis <loewis@informatik.hu-berlin.de>
 
-r"""Generate binary message catalog from textual translation description.
+"""Generate binary message catalog from textual translation description.
 
 This program converts a textual Uniforum-style message catalog (.po file) into
 a binary GNU catalog (.mo file).  This is essentially the same function as the
@@ -16,8 +15,6 @@ Options:
         Specify the output file to write to.  If omitted, output will go to a
         file named filename.mo (based off the input file name).
 
-    -n Remove all newlines (\r\n) from translations
-
     -h
     --help
         Print this message and exit.
@@ -27,63 +24,51 @@ Options:
         Display version information and exit.
 """
 
-import sys
 import os
+import sys
+import ast
 import getopt
 import struct
 import array
-import re
+from email.parser import HeaderParser
 
 __version__ = "1.1"
 
 MESSAGES = {}
-nonewlines = False
-
-# Detector for HTML elements
-RE_HTML = re.compile('<[^>]+>')
 
 
 def usage(code, msg=''):
-    print >> sys.stderr, __doc__
+    print(__doc__, file=sys.stderr)
     if msg:
-        print >> sys.stderr, msg
+        print(msg, file=sys.stderr)
     sys.exit(code)
 
 
 def add(id, str, fuzzy):
-    """ Add a non-fuzzy translation to the dictionary. """
-    global MESSAGES, nonewlines, RE_HTML
+    "Add a non-fuzzy translation to the dictionary."
+    global MESSAGES
     if not fuzzy and str:
-        if id.count('%s') == str.count('%s'):
-            if nonewlines and id and ('\r' in str or '\n' in str) and RE_HTML.search(str):
-                MESSAGES[id] = str.replace('\n', '').replace('\r', '')
-            else:
-                MESSAGES[id] = str
-        else:
-            print 'WARNING: %s mismatch, skipping!'
-            print '    %s' % id
-            print '    %s' % str
+        MESSAGES[id] = str
 
 
 def generate():
-    """ Return the generated output. """
+    "Return the generated output."
     global MESSAGES
-    keys = MESSAGES.keys()
     # the keys are sorted in the .mo file
-    keys.sort()
+    keys = sorted(MESSAGES.keys())
     offsets = []
-    ids = strs = ''
+    ids = strs = b''
     for id in keys:
         # For each string, we need size and file offset.  Each string is NUL
         # terminated; the NUL does not count into the size.
         offsets.append((len(ids), len(id), len(strs), len(MESSAGES[id])))
-        ids += id + '\0'
-        strs += MESSAGES[id] + '\0'
+        ids += id + b'\0'
+        strs += MESSAGES[id] + b'\0'
     output = ''
     # The header is 7 32-bit unsigned integers.  We don't use hash tables, so
     # the keys start right after the index tables.
     # translated string.
-    keystart = 7 * 4 + 16 * len(keys)
+    keystart = 7*4+16*len(keys)
     # and the values start after the keys
     valuestart = keystart + len(ids)
     koffsets = []
@@ -91,15 +76,15 @@ def generate():
     # The string table first has the list of keys, then the list of values.
     # Each entry has first the size of the string, then the file offset.
     for o1, l1, o2, l2 in offsets:
-        koffsets += [l1, o1 + keystart]
-        voffsets += [l2, o2 + valuestart]
+        koffsets += [l1, o1+keystart]
+        voffsets += [l2, o2+valuestart]
     offsets = koffsets + voffsets
     output = struct.pack("Iiiiiii",
-                         0x950412deL,       # Magic
+                         0x950412de,       # Magic
                          0,                 # Version
                          len(keys),         # # of entries
-                         7 * 4,               # start of key index
-                         7 * 4 + len(keys) * 8,   # start of value index
+                         7*4,               # start of key index
+                         7*4+len(keys)*8,   # start of value index
                          0, 0)              # size and offset of hash table
     output += array.array("i", offsets).tostring()
     output += ids
@@ -120,17 +105,22 @@ def make(filename, outfile):
         outfile = os.path.splitext(infile)[0] + '.mo'
 
     try:
-        lines = open(infile).readlines()
-    except IOError, msg:
-        print >> sys.stderr, msg
+        lines = open(infile, 'rb').readlines()
+    except IOError as msg:
+        print(msg, file=sys.stderr)
         sys.exit(1)
 
     section = None
     fuzzy = 0
 
+    # Start off assuming Latin-1, so everything decodes without failure,
+    # until we know the exact encoding
+    encoding = 'latin-1'
+
     # Parse the catalog
     lno = 0
     for l in lines:
+        l = l.decode(encoding)
         lno += 1
         # If we get a comment line after a msgstr, this is a new entry
         if l[0] == '#' and section == STR:
@@ -144,30 +134,58 @@ def make(filename, outfile):
         if l[0] == '#':
             continue
         # Now we are in a msgid section, output previous section
-        if l.startswith('msgid'):
+        if l.startswith('msgid') and not l.startswith('msgid_plural'):
             if section == STR:
                 add(msgid, msgstr, fuzzy)
+                if not msgid:
+                    # See whether there is an encoding declaration
+                    p = HeaderParser()
+                    charset = p.parsestr(msgstr.decode(encoding)).get_content_charset()
+                    if charset:
+                        encoding = charset
             section = ID
             l = l[5:]
-            msgid = msgstr = ''
+            msgid = msgstr = b''
+            is_plural = False
+        # This is a message with plural forms
+        elif l.startswith('msgid_plural'):
+            if section != ID:
+                print('msgid_plural not preceded by msgid on %s:%d' % (infile, lno),
+                      file=sys.stderr)
+                sys.exit(1)
+            l = l[12:]
+            msgid += b'\0' # separator of singular and plural
+            is_plural = True
         # Now we are in a msgstr section
         elif l.startswith('msgstr'):
             section = STR
-            l = l[6:]
+            if l.startswith('msgstr['):
+                if not is_plural:
+                    print('plural without msgid_plural on %s:%d' % (infile, lno),
+                          file=sys.stderr)
+                    sys.exit(1)
+                l = l.split(']', 1)[1]
+                if msgstr:
+                    msgstr += b'\0' # Separator of the various plural forms
+            else:
+                if is_plural:
+                    print('indexed msgstr required for plural on  %s:%d' % (infile, lno),
+                          file=sys.stderr)
+                    sys.exit(1)
+                l = l[6:]
         # Skip empty lines
         l = l.strip()
         if not l:
             continue
-        # XXX: Does this always follow Python escape semantics?
-        l = eval(l)
+        l = ast.literal_eval(l)
         if section == ID:
-            msgid += l
+            msgid += l.encode(encoding)
         elif section == STR:
-            msgstr += l
+            msgstr += l.encode(encoding)
         else:
-            print >> sys.stderr, 'Syntax error on %s:%d' % (infile, lno), \
-                'before:'
-            print >> sys.stderr, l
+            print('Syntax error on %s:%d' % (infile, lno), \
+                  'before:', file=sys.stderr)
+            print(l, file=sys.stderr)
             sys.exit(1)
     # Add last entry
     if section == STR:
@@ -177,17 +195,16 @@ def make(filename, outfile):
     output = generate()
 
     try:
-        open(outfile, "wb").write(output)
-    except IOError, msg:
-        print >> sys.stderr, msg
+        open(outfile,"wb").write(output)
+    except IOError as msg:
+        print(msg, file=sys.stderr)
 
 
 def main():
-    global nonewlines
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'nhVo:',
+        opts, args = getopt.getopt(sys.argv[1:], 'hVo:',
                                    ['help', 'version', 'output-file='])
-    except getopt.error, msg:
+    except getopt.error as msg:
         usage(1, msg)
 
     outfile = None
@@ -196,16 +213,14 @@ def main():
         if opt in ('-h', '--help'):
             usage(0)
         elif opt in ('-V', '--version'):
-            print >> sys.stderr, "msgfmt.py", __version__
+            print("msgfmt.py", __version__)
             sys.exit(0)
         elif opt in ('-o', '--output-file'):
             outfile = arg
-        elif opt in ('-n', ):
-            nonewlines = True
     # do it
     if not args:
-        print >> sys.stderr, 'No input file given'
-        print >> sys.stderr, "Try `msgfmt --help' for more information."
+        print('No input file given', file=sys.stderr)
+        print("Try `msgfmt --help' for more information.", file=sys.stderr)
         return
 
     for filename in args:

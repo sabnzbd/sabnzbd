@@ -51,7 +51,7 @@ def generate_key(key_size=2048, output_file='key.pem'):
 
 
 # Ported from cryptography docs/x509/tutorial.rst
-def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost'):
+def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', LN='SABnzbd', ON='SABnzbd', CN='localhost'):
     # Various details about who we are. For a self-signed certificate the
     # subject and issuer are always the same.
     subject = issuer = x509.Name([
@@ -62,13 +62,13 @@ def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', L
 
     # build SubjectAltName list since we are not using a common name
     san_list = [
-        x509.DNSName(u"localhost"),
-        x509.DNSName(u"127.0.0.1"),
+        x509.DNSName("localhost"),
+        x509.DNSName("127.0.0.1"),
         ]
     # append local v4 ip (functions already has try/catch logic)
     mylocalipv4 = localipv4()
     if mylocalipv4:
-        san_list.append(x509.DNSName(u"" + mylocalipv4))
+        san_list.append(x509.DNSName("" + mylocalipv4))
 
     cert = x509.CertificateBuilder().subject_name(
         subject
@@ -94,7 +94,7 @@ def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', L
     return cert
 
 if __name__ == '__main__':
-    print 'Making key'
+    print('Making key')
     private_key = generate_key()
-    print 'Making cert'
+    print('Making cert')
     cert = generate_local_cert(private_key)

@@ -89,7 +89,7 @@ def fix_keys(data):
     """ Convert keys of each dictionary in tuple 'data' to unicode """
     new_data = []
     if isinstance(data, list):
-        for n in xrange(len(data)):
+        for n in range(len(data)):
             if isinstance(data[n], dict):
                 new = {}
                 for key in data[n]:
@@ -128,7 +128,7 @@ class BPSMeter(object):
         self.q_period = 'm'                # Daily/Weekly/Monthly quota = d/w/m
         self.quota = self.left = 0.0       # Quota and remaining quota
         self.have_quota = False            # Flag for quota active
-        self.q_time = 0L                   # Next reset time for quota
+        self.q_time = 0                   # Next reset time for quota
         self.q_hour = 0                    # Quota reset hour
         self.q_minute = 0                  # Quota reset minute
         self.quota_enabled = True          # Scheduled quota enable/disable
@@ -190,7 +190,7 @@ class BPSMeter(object):
             self.defaults()
         # Force update of counters and validate data
         try:
-            for server in self.grand_total.keys():
+            for server in list(self.grand_total.keys()):
                 self.update(server)
         except TypeError:
             self.defaults()
@@ -219,25 +219,25 @@ class BPSMeter(object):
 
         if server:
             if server not in self.day_total:
-                self.day_total[server] = 0L
+                self.day_total[server] = 0
             self.day_total[server] += amount
 
             if server not in self.week_total:
-                self.week_total[server] = 0L
+                self.week_total[server] = 0
             self.week_total[server] += amount
 
             if server not in self.month_total:
-                self.month_total[server] = 0L
+                self.month_total[server] = 0
             self.month_total[server] += amount
 
             if server not in self.grand_total:
-                self.grand_total[server] = 0L
+                self.grand_total[server] = 0
             self.grand_total[server] += amount
 
             if server not in self.timeline_total:
                 self.timeline_total[server] = {}
             if self.day_label not in self.timeline_total[server]:
-                self.timeline_total[server][self.day_label]= 0L
+                self.timeline_total[server][self.day_label]= 0
             self.timeline_total[server][self.day_label] += amount
 
             # Quota check
@@ -292,18 +292,18 @@ class BPSMeter(object):
 
     def get_sums(self):
         """ return tuple of grand, month, week, day totals """
-        return (sum([v for v in self.grand_total.values()]),
-                sum([v for v in self.month_total.values()]),
-                sum([v for v in self.week_total.values()]),
-                sum([v for v in self.day_total.values()])
+        return (sum([v for v in list(self.grand_total.values())]),
+                sum([v for v in list(self.month_total.values())]),
+                sum([v for v in list(self.week_total.values())]),
+                sum([v for v in list(self.day_total.values())])
                )
 
     def amounts(self, server):
         """ Return grand, month, week, day totals for specified server """
-        return self.grand_total.get(server, 0L), \
-               self.month_total.get(server, 0L), \
-               self.week_total.get(server, 0L),  \
-               self.day_total.get(server, 0L), \
+        return self.grand_total.get(server, 0), \
+               self.month_total.get(server, 0), \
+               self.week_total.get(server, 0),  \
+               self.day_total.get(server, 0), \
                self.timeline_total.get(server, {})
 
     def clear_server(self, server):
@@ -422,7 +422,7 @@ class BPSMeter(object):
                 self.left = quota - self.left
             self.quota = quota
         else:
-            self.quota = self.left = 0L
+            self.quota = self.left = 0
         self.update(0)
         self.next_reset()
         if self.left > 0.5 and allow_resume:
@@ -472,7 +472,7 @@ class BPSMeter(object):
 
     def midnight(self):
         """ Midnight action: dummy update for all servers """
-        for server in self.day_total.keys():
+        for server in list(self.day_total.keys()):
             self.update(server)
 
 

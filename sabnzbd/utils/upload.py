@@ -19,7 +19,7 @@
 sabnzbd.utils.upload - File association functions for adding nzb files to sabnzbd
 """
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import logging
 import os
 from sabnzbd.encoding import unicoder
@@ -35,7 +35,7 @@ def upload_file(url, fp):
     """ Function for uploading nzbs to a running sabnzbd instance """
     try:
         fp = unicoder(fp).encode('utf-8')
-        fp = urllib.quote_plus(fp)
+        fp = urllib.parse.quote_plus(fp)
         url = '%s&mode=addlocalfile&name=%s' % (url, fp)
         # Add local apikey if it wasn't already in the registered URL
         apikey = cfg.api_key()

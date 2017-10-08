@@ -61,7 +61,7 @@ For more details, refer to source.
 
 """
 
-from __future__ import division, print_function
+
 
 ##
 ## Imports and compat - support both Python 2.x and 3.x
@@ -163,7 +163,7 @@ else:  # pragma: no cover
         """Return hex string."""
         return hexlify(data).decode('ascii')
     rar_crc32 = crc32
-    unicode = str
+    str = str
     _byte_code = int   # noqa
 
 
@@ -778,7 +778,7 @@ class RarFile(object):
     def printdir(self):
         """Print archive file list to stdout."""
         for f in self.infolist():
-            print(f.filename)
+            print((f.filename))
 
     def extract(self, member, path=None, pwd=None):
         """Extract single file into current directory.
@@ -986,7 +986,7 @@ class CommonParser(object):
         self._fd = fd
         sig = fd.read(len(self._expect_sig))
         if sig != self._expect_sig:
-            if isinstance(self._rarfile, (str, unicode)):
+            if isinstance(self._rarfile, str):
                 raise NotRarFile("Not a Rar archive: {}".format(self._rarfile))
             raise NotRarFile("Not a Rar archive")
 
@@ -1596,7 +1596,7 @@ class RAR5Parser(CommonParser):
         if kdf_count > 24:
             raise BadRarFile('Too large kdf_count')
         psw = self._password
-        if isinstance(psw, unicode):
+        if isinstance(psw, str):
             psw = psw.encode('utf8')
         key = pbkdf2_sha256(psw, salt, 1 << kdf_count)
         self._last_aes256_key = (kdf_count, salt, key)
@@ -2684,7 +2684,7 @@ def _parse_xtime(flag, data, pos, basetime=None):
 def is_filelike(obj):
     """Filename or file object?
     """
-    if isinstance(obj, str) or isinstance(obj, unicode):
+    if isinstance(obj, str) or isinstance(obj, str):
         return False
     res = True
     for a in ('read', 'tell', 'seek'):
@@ -2696,7 +2696,7 @@ def is_filelike(obj):
 def rar3_s2k(psw, salt):
     """String-to-key hash for RAR3.
     """
-    if not isinstance(psw, unicode):
+    if not isinstance(psw, str):
         psw = psw.decode('utf8')
     seed = psw.encode('utf-16le') + salt
     iv = EMPTY

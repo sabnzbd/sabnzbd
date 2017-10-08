@@ -24,9 +24,9 @@ import sys
 import time
 import re
 import logging
-import Queue
-import urllib2
-from httplib import IncompleteRead
+import queue
+import urllib.request, urllib.error, urllib.parse
+from http.client import IncompleteRead
 from threading import Thread
 
 import sabnzbd
@@ -50,7 +50,7 @@ class URLGrabber(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        self.queue = Queue.Queue()
+        self.queue = queue.Queue()
         for tup in NzbQueue.do.get_urls():
             url, nzo = tup
             self.queue.put((url, nzo))
@@ -115,7 +115,7 @@ class URLGrabber(Thread):
                 logging.info('Grabbing URL %s', url)
                 try:
                     fn = _build_request(url)
-                except Exception, e:
+                except Exception as e:
                     # Cannot list exceptions here, because of unpredictability over platforms
                     error0 = str(sys.exc_info()[0]).lower()
                     error1 = str(sys.exc_info()[1]).lower()
@@ -281,15 +281,15 @@ class URLGrabber(Thread):
 def _build_request(url):
     # Detect basic auth
     # Adapted from python-feedparser
-    urltype, rest = urllib2.splittype(url)
-    realhost, rest = urllib2.splithost(rest)
+    urltype, rest = urllib.parse.splittype(url)
+    realhost, rest = urllib.parse.splithost(rest)
     if realhost:
-        user_passwd, realhost = urllib2.splituser(realhost)
+        user_passwd, realhost = urllib.parse.splituser(realhost)
         if user_passwd:
             url = '%s://%s%s' % (urltype, realhost, rest)
 
     # Start request
-    req = urllib2.Request(url)
+    req = urllib.request.Request(url)
 
     # Add headers
     req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
@@ -297,7 +297,7 @@ def _build_request(url):
         req.add_header('Accept-encoding', 'gzip')
     if user_passwd:
         req.add_header('Authorization', 'Basic ' + user_passwd.encode('base64').strip())
-    return urllib2.urlopen(req)
+    return urllib.request.urlopen(req)
 
 
 def _analyse(fn, url):

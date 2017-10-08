@@ -141,11 +141,11 @@ else:
 
 
 cmd = '%s %s %s' % (TOOL, PARMS, FILES)
-print 'Create POT file'
+print('Create POT file')
 #print cmd
 os.system(cmd)
 
-print 'Post-process the POT file'
+print('Post-process the POT file')
 src = open('%s/%s.pot.tmp' % (PO_DIR, DOMAIN), 'r')
 dst = open('%s/%s.pot' % (PO_DIR, DOMAIN), 'wb')
 dst.write(HEADER.replace('__TYPE__', 'MAIN'))
@@ -169,7 +169,7 @@ dst.close()
 os.remove('%s/%s.pot.tmp' % (PO_DIR, DOMAIN))
 
 
-print 'Create the email POT file'
+print('Create the email POT file')
 if not os.path.exists(POE_DIR):
     os.makedirs(POE_DIR)
 dst = open(os.path.join(POE_DIR, DOMAIN_EMAIL + '.pot'), 'wb')
@@ -185,7 +185,7 @@ NSIS = 'NSIS_Installer.nsi'
 RE_NSIS = re.compile(r'LangString\s+\w+\s+\$\{LANG_ENGLISH\}\s+(".*)', re.I)
 
 if os.path.exists(NSIS):
-    print 'Creating the NSIS POT file'
+    print('Creating the NSIS POT file')
     if not os.path.exists(PON_DIR):
         os.makedirs(PON_DIR)
     src = open(NSIS, 'r')

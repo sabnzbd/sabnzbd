@@ -119,7 +119,7 @@ class HistoryDB(object):
 
     def execute(self, command, args=(), save=False):
         ''' Wrapper for executing SQL commands '''
-        for tries in xrange(5, 0, -1):
+        for tries in range(5, 0, -1):
             try:
                 if args and isinstance(args, tuple):
                     self.c.execute(command, args)
@@ -129,7 +129,7 @@ class HistoryDB(object):
                     self.con.commit()
                 return True
             except:
-                error = str(sys.exc_value)
+                error = str(sys.exc_info()[1])
                 if tries >= 0 and 'is locked' in error:
                     logging.debug('Database locked, wait and retry')
                     time.sleep(0.5)
@@ -479,7 +479,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     # Pack the dictionary up into a single string
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lines = []
-    for key, results in stages.iteritems():
+    for key, results in list(stages.items()):
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 
@@ -487,11 +487,11 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     report = 'future' if nzo.futuretype else ''
 
     # Analyze series info only when job is finished
-    series = u''
+    series = ''
     if postproc_time:
         seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
         if seriesname and season and episode:
-            series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
+            series = '%s/%s/%s' % (seriesname.lower(), season, episode)
 
     return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path,
             script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness,

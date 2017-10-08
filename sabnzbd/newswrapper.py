@@ -131,7 +131,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
     except (ssl.SSLError, CertificateError) as e:
         nntp.error(e)
 
-    except socket.error, e:
+    except socket.error as e:
         try:
             # socket.error can either return a string or a tuple
             if isinstance(e, tuple):
@@ -231,7 +231,7 @@ class NNTP(object):
         except (ssl.SSLError, CertificateError) as e:
             self.error(e)
 
-        except socket.error, e:
+        except socket.error as e:
             try:
                 # socket.error can either return a string or a tuple
                 if isinstance(e, tuple):
@@ -460,7 +460,7 @@ class NewsWrapper(object):
             self.last_line = new_lines.pop()
 
             # Already remove the starting dots
-            for i in xrange(len(new_lines)):
+            for i in range(len(new_lines)):
                 if new_lines[i][:2] == '..':
                     new_lines[i] = new_lines[i][1:]
             self.lines.extend(new_lines)

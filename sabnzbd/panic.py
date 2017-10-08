@@ -225,7 +225,7 @@ def show_error_dialog(msg):
     """
     if sabnzbd.WIN32:
         ctypes.windll.user32.MessageBoxW(0, unicoder(msg), T('Fatal error'), 0)
-    print msg
+    print(msg)
 
 
 def error_page_401(status, message, traceback, version):

@@ -317,10 +317,10 @@ def _api_translate(name, output, kwargs):
 def _api_addfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
     # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, basestring):
+    if name is None or isinstance(name, str):
         name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, basestring):
+    if name is None or isinstance(name, str):
         name = kwargs.get('nzbfile')
     if hasattr(name, 'getvalue'):
         # Side effect of next line is that attribute .value is created
@@ -354,10 +354,10 @@ def _api_retry(name, output, kwargs):
     """ API: accepts name, output, value(=nzo_id), nzbfile(=optional NZB), password (optional) """
     value = kwargs.get('value')
     # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, basestring):
+    if name is None or isinstance(name, str):
         name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, basestring):
+    if name is None or isinstance(name, str):
         name = kwargs.get('nzbfile')
     password = kwargs.get('password')
     password = password[0] if isinstance(password, list) else password
@@ -557,7 +557,7 @@ def _api_addurl(names, output, kwargs):
         nzbnames = [nzbnames]
 
     nzo_ids = []
-    for n in xrange(len(names)):
+    for n in range(len(names)):
         name = names[n]
         if n < len(nzbnames):
             nzbname = nzbnames[n]
@@ -734,9 +734,9 @@ def _api_test_email(name, output, kwargs):
     pack = {}
     pack['download'] = ['action 1', 'action 2']
     pack['unpack'] = ['action 1', 'action 2']
-    res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
-                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
-                                 123 * MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
+    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 'unknown', True,
+                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                 123 * MEBI, None, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
                                  test=kwargs)
     if res == 'Email succeeded':
         res = None
@@ -1060,8 +1060,8 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
                 # Special handling for list/tuple (backward compatibility)
                 data = [str(val) for val in data]
                 data = ' '.join(data)
-            if isinstance(data, unicode):
-                response = u'%s\n' % data
+            if isinstance(data, str):
+                response = '%s\n' % data
             else:
                 response = '%s\n' % str(data)
 
@@ -1088,7 +1088,7 @@ class xml_factory(object):
 
     def _dict(self, keyw, lst):
         text = []
-        for key in lst.keys():
+        for key in list(lst.keys()):
             text.append(self.run(key, lst[key]))
         if keyw:
             return '<%s>%s</%s>\n' % (keyw, ''.join(text), keyw)
@@ -1105,7 +1105,7 @@ class xml_factory(object):
             elif isinstance(cat, tuple):
                 text.append(self._tuple(plural_to_single(keyw, 'tuple'), cat))
             else:
-                if not isinstance(cat, basestring):
+                if not isinstance(cat, str):
                     cat = str(cat)
                 name = plural_to_single(keyw, 'item')
                 text.append('<%s>%s</%s>\n' % (name, xml_name(cat, encoding='utf-8'), name))
@@ -1482,7 +1482,7 @@ def rss_qstatus():
             percentage = "%s%%" % (int(((mb - mbleft) / mb) * 100))
 
         filename = xml_name(filename)
-        name = u'%s (%s)' % (filename, percentage)
+        name = '%s (%s)' % (filename, percentage)
 
         item = Item()
         item.title = name
@@ -1813,7 +1813,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     for item in items:
         for key in item:
             value = item[key]
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 item[key] = converter(value)
 
         if details_show_all:
@@ -1973,7 +1973,7 @@ def list_cats(default=True):
 
 def remove_callable(dic):
     """ Remove all callable items from dictionary """
-    for key, value in dic.items():
+    for key, value in list(dic.items()):
         if callable(value):
             del dic[key]
     return dic

@@ -33,9 +33,9 @@ import hashlib
 import difflib
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from io import StringIO
 
 # SABnzbd modules
 import sabnzbd
@@ -494,7 +494,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
 
             # Check if file was added with same name
             if cfg.reject_duplicate_files():
-                nzo_matches = filter(lambda x: (x.filename == nzf.filename), self.nzo.files)
+                nzo_matches = [x for x in self.nzo.files if (x.filename == nzf.filename)]
                 if nzo_matches:
                     logging.info('File %s occured twice in NZB, discarding smaller file', nzf.filename)
 
@@ -743,14 +743,14 @@ class NzbObject(TryList):
             inpsrc.setByteStream(StringIO(nzb))
             try:
                 parser.parse(inpsrc)
-            except xml.sax.SAXParseException, err:
+            except xml.sax.SAXParseException as err:
                 self.incomplete = True
                 if '</nzb>' not in nzb:
                     logging.warning(T('Incomplete NZB file %s'), filename)
                 else:
                     logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
                                     filename, err.getMessage(), err.getLineNumber())
-            except Exception, err:
+            except Exception as err:
                 self.incomplete = True
                 logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, 0)
 
@@ -1002,7 +1002,7 @@ class NzbObject(TryList):
 
         # If we couldn't parse it, we ignore it
         if pack:
-            if pack not in self.md5packs.values():
+            if pack not in list(self.md5packs.values()):
                 logging.debug('Got md5pack for set %s', nzf.setname)
                 self.md5packs[setname] = pack
                 # See if we need to postpone some pars
@@ -1277,7 +1277,7 @@ class NzbObject(TryList):
             return self.final_name
 
     def set_final_name_pw(self, name, password=None):
-        if isinstance(name, basestring):
+        if isinstance(name, str):
             if password is not None:
                 name = platform_encode(name)
                 self.password = platform_encode(password)
@@ -1348,7 +1348,7 @@ class NzbObject(TryList):
         if not nzf.is_par2:
             # We have to find the right par-set
             blocks_new = 0
-            for parset in self.extrapars.keys():
+            for parset in list(self.extrapars.keys()):
                 if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
                     for new_nzf in self.extrapars[parset]:
                         self.add_parfile(new_nzf)
@@ -1381,9 +1381,9 @@ class NzbObject(TryList):
             return True, 200
 
         # Do the full check
-        need = 0L
-        pars = 0L
-        short = 0L
+        need = 0
+        pars = 0
+        short = 0
         anypars = False
         for nzf_id in self.files_table:
             nzf = self.files_table[nzf_id]
@@ -1419,7 +1419,7 @@ class NzbObject(TryList):
             complete_time = format_time_string(seconds, timecompleted.days)
 
             msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024, dec_limit=1))
-            msg1 += u'<br/>' + T('Age') + ': ' + calc_age(self.avg_date, True)
+            msg1 += '<br/>' + T('Age') + ': ' + calc_age(self.avg_date, True)
 
             bad = self.nzo_info.get('bad_articles', 0)
             miss = self.nzo_info.get('missing_articles', 0)
@@ -1427,14 +1427,14 @@ class NzbObject(TryList):
             dups = self.nzo_info.get('duplicate_articles', 0)
             msg2 = msg3 = msg4 = msg5 = ''
             if bad:
-                msg2 = (u'<br/>' + T('%s articles were malformed')) % bad
+                msg2 = ('<br/>' + T('%s articles were malformed')) % bad
             if miss:
-                msg3 = (u'<br/>' + T('%s articles were missing')) % miss
+                msg3 = ('<br/>' + T('%s articles were missing')) % miss
             if dups:
-                msg4 = (u'<br/>' + T('%s articles had non-matching duplicates')) % dups
+                msg4 = ('<br/>' + T('%s articles had non-matching duplicates')) % dups
             if killed:
-                msg5 = (u'<br/>' + T('%s articles were removed')) % killed
-            msg = u''.join((msg1, msg2, msg3, msg4, msg5, ))
+                msg5 = ('<br/>' + T('%s articles were removed')) % killed
+            msg = ''.join((msg1, msg2, msg3, msg4, msg5, ))
             self.set_unpack_info('Download', msg, unique=True)
             if self.url:
                 self.set_unpack_info('Source', self.url, unique=True)
@@ -1442,7 +1442,7 @@ class NzbObject(TryList):
             if len(self.servercount) > 0:
                 # Sort the servers first
                 servers = config.get_servers()
-                server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
+                server_names = sorted(list(servers.keys()), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
                 msgs = ['%s=%sB' % (servers[server_name].displayname(), to_units(self.servercount[server_name])) for server_name in server_names if server_name in self.servercount]
                 self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
@@ -1500,14 +1500,14 @@ class NzbObject(TryList):
     def move_top_bulk(self, nzf_ids):
         self.cleanup_nzf_ids(nzf_ids)
         if nzf_ids:
-            target = range(len(nzf_ids))
+            target = list(range(len(nzf_ids)))
 
             while 1:
                 self.move_up_bulk(nzf_ids, cleanup=False)
 
                 pos_nzf_table = self.build_pos_nzf_table(nzf_ids)
 
-                keys = pos_nzf_table.keys()
+                keys = list(pos_nzf_table.keys())
                 keys.sort()
 
                 if target == keys:
@@ -1517,14 +1517,14 @@ class NzbObject(TryList):
     def move_bottom_bulk(self, nzf_ids):
         self.cleanup_nzf_ids(nzf_ids)
         if nzf_ids:
-            target = range(len(self.files) - len(nzf_ids), len(self.files))
+            target = list(range(len(self.files) - len(nzf_ids), len(self.files)))
 
             while 1:
                 self.move_down_bulk(nzf_ids, cleanup=False)
 
                 pos_nzf_table = self.build_pos_nzf_table(nzf_ids)
 
-                keys = pos_nzf_table.keys()
+                keys = list(pos_nzf_table.keys())
                 keys.sort()
 
                 if target == keys:
@@ -1961,9 +1961,9 @@ def get_attrib_file(path, size):
     try:
         f = open(path, 'r')
     except:
-        return [None for unused in xrange(size)]
+        return [None for unused in range(size)]
 
-    for unused in xrange(size):
+    for unused in range(size):
         line = f.readline().strip('\r\n ')
         if line:
             if line.lower() == 'none':
