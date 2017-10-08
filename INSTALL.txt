@@ -60,7 +60,6 @@ All platforms
 
 Windows
     PyWin32                 use "pip install pypiwin32"
-    subprocessww            use "pip install subprocessww"
 
 Essential modules
     cheetah-2.0.1+          use "pip install cheetah"

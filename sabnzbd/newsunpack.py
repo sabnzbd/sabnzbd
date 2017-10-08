@@ -27,6 +27,7 @@ import logging
 import time
 import binascii
 import shutil
+from subprocess import Popen
 
 import sabnzbd
 from sabnzbd.encoding import TRANS, UNTRANS, unicoder, platform_encode, deunicode
@@ -43,9 +44,6 @@ if sabnzbd.WIN32:
         import win32api
         from win32con import SW_HIDE
         from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
-
-        # Use patched version of subprocess module for Unicode on Windows
-        import subprocessww
     except ImportError:
         pass
 else:
@@ -56,9 +54,6 @@ else:
 
         def __str__(self):
             return repr(self.parameter)
-
-# Load the regular POpen (which is now patched on Windows)
-from subprocess import Popen
 
 # Regex globals
 RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d)$', re.I)

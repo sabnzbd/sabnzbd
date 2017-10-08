@@ -25,6 +25,7 @@ import time
 import threading
 import subprocess
 import logging
+from subprocess import Popen
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -35,16 +36,6 @@ from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
-
-if sabnzbd.WIN32:
-    try:
-        # Use patched version of subprocess module for Unicode on Windows
-        import subprocessww
-    except ImportError:
-        pass
-
-# Load the regular POpen (which is now patched on Windows)
-from subprocess import Popen
 
 MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
