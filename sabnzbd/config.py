@@ -30,7 +30,7 @@ from hashlib import md5
 from urlparse import urlparse
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
-from sabnzbd.utils import configobj
+import configobj
 from sabnzbd.decorators import synchronized
 
 CONFIG_LOCK = threading.Lock()

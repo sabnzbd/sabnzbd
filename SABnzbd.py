@@ -54,9 +54,7 @@ except:
     sys.exit(1)
 
 import cherrypy
-if [int(n) for n in cherrypy.__version__.split('.')] < [8, 1, 2]:
-    print 'Sorry, requires Python module Cherrypy 8.1.2+ (use the included version)'
-    sys.exit(1)
+import portend
 
 SQLITE_DLL = True
 try:
@@ -669,7 +667,7 @@ def find_free_port(host, currentport):
     n = 0
     while n < 10 and currentport <= 49151:
         try:
-            cherrypy.process.servers.check_port(host, currentport, timeout=0.025)
+            portend.free(host, currentport, timeout=0.025)
             return currentport
         except:
             currentport += 5
@@ -997,13 +995,13 @@ def main():
     if sabnzbd.DAEMON:
         if enable_https and https_port:
             try:
-                cherrypy.process.servers.check_port(cherryhost, https_port, timeout=0.05)
+                portend.free(cherryhost, https_port, timeout=0.05)
             except IOError, error:
                 Bail_Out(browserhost, cherryport)
             except:
                 Bail_Out(browserhost, cherryport, '49')
         try:
-            cherrypy.process.servers.check_port(cherryhost, cherryport, timeout=0.05)
+            portend.free(cherryhost, cherryport, timeout=0.05)
         except IOError, error:
             Bail_Out(browserhost, cherryport)
         except:
@@ -1020,7 +1018,7 @@ def main():
     if enable_https:
         port = https_port or cherryport
         try:
-            cherrypy.process.servers.check_port(browserhost, port, timeout=0.05)
+            portend.free(browserhost, port, timeout=0.05)
         except IOError, error:
             if str(error) == 'Port not bound.':
                 pass
@@ -1049,7 +1047,7 @@ def main():
     # NonSSL check if there's no HTTPS or we only use 1 port
     if not (enable_https and not https_port):
         try:
-            cherrypy.process.servers.check_port(browserhost, cherryport, timeout=0.05)
+            portend.free(browserhost, cherryport, timeout=0.05)
         except IOError, error:
             if str(error) == 'Port not bound.':
                 pass

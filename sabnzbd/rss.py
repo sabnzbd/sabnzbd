@@ -35,7 +35,7 @@ from sabnzbd.misc import cat_convert, wildcard_to_re, cat_to_opts, \
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import unicoder, xml_name
 
-import sabnzbd.utils.feedparser as feedparser
+import feedparser
 
 __RSS = None  # Global pointer to RSS-scanner instance
 

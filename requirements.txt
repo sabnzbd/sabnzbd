@@ -1,0 +1,6 @@
+six
+cryptography
+feedparser
+configobj
+cherrypy
+gntp

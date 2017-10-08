@@ -1,6 +1,0 @@
-install:
-  - pip install --upgrade -r tests/requirements.txt
-  - pip install pypiwin32 subprocessww
-
-build_script:
-  - pytest
