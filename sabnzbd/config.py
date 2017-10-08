@@ -26,7 +26,7 @@ import threading
 import shutil
 import time
 import random
-from hashlib import md5
+import uuid
 from urllib.parse import urlparse
 import sabnzbd.misc
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
@@ -727,7 +727,7 @@ def _read_config(path, try_backup=False):
             return False, 'Cannot create INI file %s' % path
 
     try:
-        fp = open(path, 'rb')
+        fp = open(path, 'r')
         lines = fp.read().split('\n')
         if len(lines) == 1:
             fp.seek(0)
@@ -1093,13 +1093,4 @@ def validate_notempty(root, value, default):
 
 def create_api_key():
     """ Return a new randomized API_KEY """
-    # Create some values to seed md5
-    t = str(time.time())
-    r = str(random.random())
-    # Create the md5 instance and give it the current time
-    m = md5(t)
-    # Update the md5 instance with the random variable
-    m.update(r)
-
-    # Return a hex digest of the md5, eg 49f68a5c8493ec2c0bf489821c21fc3b
-    return m.hexdigest()
+    return uuid.uuid4().hex

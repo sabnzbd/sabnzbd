@@ -17,18 +17,8 @@
 
 import sys
 import imp
-if sys.version_info[:2] < (2, 7) or sys.version_info[:2] >= (3, 0):
-    print("Sorry, requires Python 2.7.")
-    sys.exit(1)
-
-# Make sure UTF-8 is default 8bit encoding
-if not hasattr(sys, "setdefaultencoding"):
-    imp.reload(sys)
-try:
-    sys.setdefaultencoding('utf-8')
-except:
-    print('Sorry, you MUST add the SABnzbd folder to the PYTHONPATH environment variable')
-    print('or find another way to force Python to use UTF-8 for text encoding.')
+if sys.version_info[:2] <= (3, 0):
+    print("Sorry, requires Python 3")
     sys.exit(1)
 
 import logging
@@ -45,10 +35,10 @@ import re
 
 try:
     import Cheetah
-    if Cheetah.Version[0] != '2':
+    if Cheetah.Version[0] != '3':
         raise ValueError
 except ValueError:
-    print("Sorry, requires Python module Cheetah 2.0rc7 or higher.")
+    print("Sorry, requires Python module Cheetah 3 or higher.")
     sys.exit(1)
 except:
     print("The Python module Cheetah is required")
@@ -72,13 +62,7 @@ except:
             SQLITE_DLL = False
 
 import locale
-import builtins
-try:
-    locale.setlocale(locale.LC_ALL, "")
-    builtins.__dict__['codepage'] = locale.getlocale()[1] or 'cp1252'
-except:
-    # Work-around for Python-ports with bad "locale" support
-    builtins.__dict__['codepage'] = 'cp1252'
+
 
 import sabnzbd
 import sabnzbd.lang
@@ -1078,8 +1062,7 @@ def main():
 
     logdir = sabnzbd.cfg.log_dir.get_path()
     if fork and not logdir:
-        print("Error:")
-        print("I refuse to fork without a log directory!")
+        print("Error: I refuse to fork without a log directory!")
         sys.exit(1)
 
     if clean_up:
@@ -1161,16 +1144,11 @@ def main():
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
 
     # Find encoding; relevant for unrar activities
-    try:
-        preferredencoding = locale.getpreferredencoding()
-        logging.info('Preferred encoding = %s', preferredencoding)
-    except:
-        logging.info('Preferred encoding = ERROR')
-        preferredencoding = ''
+    logging.info('Preferred encoding = %s', sys.stdin.encoding)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in preferredencoding.lower() and '8' in preferredencoding.lower()):
-        logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % preferredencoding)
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in sys.stdin.encoding.lower() and '8' in sys.stdin.encoding.lower()):
+        logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % sys.stdin.encoding)
 
     # SSL Information
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)

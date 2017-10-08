@@ -52,6 +52,7 @@ def change_fsys(value):
 
 
 def platform_encode(p):
+    return p
     """ Return Unicode name, if not already Unicode, decode with UTF-8 or latin1 """
     if isinstance(p, str):
         try:
@@ -92,6 +93,7 @@ def special_fixer(p):
 
 
 def unicoder(p, force=False):
+    return p
     """ Make sure a Unicode string is returned
         When `force` is True, ignore filesystem encoding
     """
@@ -109,6 +111,7 @@ def unicoder(p, force=False):
 
 
 def xml_name(p, keep_escape=False, encoding=None):
+    return p
     """ Prepare name for use in HTML/XML contect """
 
     if isinstance(p, str):
@@ -135,18 +138,8 @@ class LatinFilter(Filter):
     def filter(self, val, str=str, **kw):
         if isinstance(val, str):
             return val
-        elif isinstance(val, str):
-            try:
-                if sabnzbd.WIN32:
-                    return val.decode(codepage)
-                else:
-                    return val.decode('utf-8')
-            except:
-                return val.decode(codepage, 'replace')
-        elif val is None:
-            return ''
         else:
-            return str(str(val))
+            return str(val)
 
 
 class EmailFilter(Filter):
@@ -155,6 +148,9 @@ class EmailFilter(Filter):
     """
 
     def filter(self, val, str=str, **kw):
+        return val
+
+
         if isinstance(val, str):
             return val
         elif isinstance(val, str):
@@ -174,32 +170,11 @@ class EmailFilter(Filter):
 #
 # Use to transform 8-bit console output to plain Python strings
 #
-import string
-TAB_850 = \
-    "\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F" \
-    "\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F" \
-    "\xA0\xA1\xA2\xA3\xA4\xA5\xA6\xA7\xA8\xA9\xAA\xAB\xAC\xAD\xAE\xAF" \
-    "\xB0\xB1\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xBB\xBC\xBD\xBE\xBF" \
-    "\xC0\xC1\xC2\xC3\xC4\xC5\xC6\xC7\xC8\xC9\xCA\xCB\xCC\xCD\xCE\xCF" \
-    "\xD0\xD1\xD2\xD3\xD4\xD5\xD6\xD7\xD8\xD9\xDA\xDB\xDC\xDD\xDE\xDF" \
-    "\xE0\xE1\xE2\xE3\xE4\xE5\xE6\xE7\xE8\xE9\xEA\xEB\xEC\xED\xEE\xEF" \
-    "\xF0\xF1\xF2\xF3\xF4\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF"
 
-TAB_LATIN = \
-    "\xC7\xFC\xE9\xE2\xE4\xE0\xE5\xE7\xEA\xEB\xE8\xEF\xEE\xEC\xC4\xC5" \
-    "\xC9\xE6\xC6\xF4\xF6\xF2\xFB\xF9\xFF\xD6\xDC\xF8\xA3\xD8\xD7\x66" \
-    "\xE1\xED\xF3\xFA\xF1\xD1\xAA\xBA\xBF\xAE\xAC\xDB\xBC\xA1\xAB\xBB" \
-    "\x7E\x7E\x7E\x7E\x7E\xC1\xC2\xC0\xA9\x7E\x7E\x7E\x7E\xA2\xA5\x7E" \
-    "\x7E\x7E\x7E\x7E\x7E\x7E\xE3\xc3\x7E\x7E\x7E\x7E\x7E\x7E\x7E\xA4" \
-    "\xF0\xD0\xCA\xCB\xC8\x7E\xCD\xCE\xCF\x7E\x7E\x7E\x7E\xA6\xCC\x7E" \
-    "\xD3\xDF\xD4\xD2\xF5\xD5\xB5\xFE\xDE\xDA\xDB\xD9\xFD\xDD\xAF\xB4" \
-    "\xAD\xB1\x5F\xBE\xB6\xA7\xF7\xB8\xB0\xA8\xB7\xB9\xB3\xB2\x7E\xA0"
-
-gTABLE_850_LATIN = string.maketrans(TAB_850, TAB_LATIN)
-gTABLE_LATIN_850 = string.maketrans(TAB_LATIN, TAB_850)
 
 
 def TRANS(p):
+    return p
     """ For Windows: Translate CP850 to Python's Latin-1 and return in Unicode
         Others: return original string
     """
@@ -215,6 +190,7 @@ def TRANS(p):
 
 
 def UNTRANS(p):
+    return p
     """ For Windows: Translate Python's Latin-1 to CP850
         Others: return original string
     """
@@ -230,6 +206,7 @@ def UNTRANS(p):
 
 
 def fixup_ff4(p):
+    return p
     """ Fix incompatibility between CherryPy and Firefox-4 on OSX,
         where a filename contains &#xx; encodings
     """
@@ -279,6 +256,7 @@ def html_escape(txt):
 
 
 def deunicode(p):
+    return p
     """ Return the correct 8bit ASCII encoding for the platform:
         Latin-1 for Windows/Posix-non-UTF and UTF-8 for OSX/Posix-UTF
     """
@@ -303,4 +281,3 @@ def deunicode(p):
         return p
 
 
-auto_fsys()

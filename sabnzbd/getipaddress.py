@@ -77,9 +77,10 @@ def publicipv4():
         # we only want IPv4 resolving, so socket.AF_INET:
         result = addresslookup4(sabnzbd.cfg.selftest_host())
     except:
-    # something very bad: no urllib2, no resolving of selftest_host, no network at all
+        # something very bad: no urllib2, no resolving of selftest_host, no network at all
         public_ipv4 = None
         return public_ipv4
+
     # we got one or more IPv4 address(es), so let's connect to them
     for item in result:
         selftest_ipv4 = item[4][0]     # get next IPv4 address of sabnzbd.cfg.selftest_host()
@@ -90,8 +91,8 @@ def publicipv4():
             req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__ )
             # specify the Host, because we only provide the IPv4 address in the URL:
             req.add_header('Host', sabnzbd.cfg.selftest_host())
-            # get the response
-            public_ipv4 = urllib.request.urlopen(req, timeout=2).read()  # timeout 2 seconds, in case the website is not accessible
+            # get the response, timeout 2 seconds, in case the website is not accessible
+            public_ipv4 = urllib.request.urlopen(req, timeout=2).read().decode('utf-8')
             # ... check the response is indeed an IPv4 address:
             socket.inet_aton(public_ipv4)  # if we got anything else than a plain IPv4 address, this will raise an exception
             # if we get here without exception, we're done:
@@ -101,6 +102,7 @@ def publicipv4():
             # the connect OR the inet_aton raised an exception, so:
             # continue the for loop to try next server IPv4 address
             pass
+
     if not ipv4_found:
         public_ipv4 = None
     return public_ipv4

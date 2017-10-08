@@ -269,13 +269,13 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.quota_size.callback(guard_quota_size)
     cfg.quota_day.callback(guard_quota_dp)
     cfg.quota_period.callback(guard_quota_dp)
-    cfg.fsys_type.callback(guard_fsys_type)
+######    cfg.fsys_type.callback(guard_fsys_type)
     cfg.language.callback(sabnzbd.notifier.reset_growl)
     cfg.enable_https_verification.callback(guard_https_ver)
     guard_https_ver()
 
     # Set Posix filesystem encoding
-    sabnzbd.encoding.change_fsys(cfg.fsys_type())
+######    sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
     # Set cache limit
     if not cfg.cache_limit() or (cfg.cache_limit() == '200M' and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
@@ -512,9 +512,9 @@ def guard_quota_dp():
     scheduler.restart(force=True)
 
 
-def guard_fsys_type():
-    """ Callback for change of file system naming type """
-    sabnzbd.encoding.change_fsys(cfg.fsys_type())
+# def guard_fsys_type():
+#     """ Callback for change of file system naming type """
+#     sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
 
 def set_https_verification(value):
@@ -882,9 +882,6 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
         try:
             with open(path, 'wb') as data_file:
                 if do_pickle:
-                    if cfg.use_pickle():
-                        pickle.dump(data, data_file)
-                    else:
                         pickle.dump(data, data_file)
                 else:
                     data_file.write(data)
@@ -915,9 +912,6 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     try:
         with open(path, 'rb') as data_file:
             if do_pickle:
-                if cfg.use_pickle():
-                    data = pickle.load(data_file)
-                else:
                     data = pickle.load(data_file)
             else:
                 data = data_file.read()
@@ -951,9 +945,6 @@ def save_admin(data, _id):
     for t in range(3):
         try:
             with open(path, 'wb') as data_file:
-                if cfg.use_pickle():
-                    data = pickle.dump(data, data_file)
-                else:
                     data = pickle.dump(data, data_file)
             break
         except:
@@ -976,9 +967,6 @@ def load_admin(_id, remove=False, silent=False):
 
     try:
         with open(path, 'rb') as data_file:
-            if cfg.use_pickle():
-                data = pickle.load(data_file)
-            else:
                 data = pickle.load(data_file)
         if remove:
             misc.remove_file(path)

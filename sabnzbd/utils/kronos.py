@@ -361,7 +361,7 @@ class DayTaskRescheduler:
         now[3], now[4] = self.timeonday
         # seconds
         now[5] = 0
-        return time.mktime(now)
+        return time.mktime(tuple(now))
 
     def reschedule(self, scheduler):
         """Reschedule this task according to the daytime for the task.

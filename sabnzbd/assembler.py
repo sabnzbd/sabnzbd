@@ -45,13 +45,9 @@ from sabnzbd.rating import Rating
 class Assembler(Thread):
     do = None  # Link to the instance of this method
 
-    def __init__(self, queue=None):
+    def __init__(self):
         Thread.__init__(self)
-
-        if queue:
-            self.queue = queue
-        else:
-            self.queue = queue.Queue()
+        self.queue = queue.Queue()
         Assembler.do = self
 
     def stop(self):

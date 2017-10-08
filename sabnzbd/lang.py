@@ -67,7 +67,7 @@ def set_language(language=None):
     lng = gettext.translation(_DOMAIN, _LOCALEDIR, [language], fallback=True, codeset='latin-1')
 
     # The unicode flag will make _() return Unicode
-    lng.install(str=True, names=['lgettext'])
+    lng.install(names=['lgettext'])
     builtins.__dict__['T'] = builtins.__dict__['_']           # Unicode
     builtins.__dict__['Ta'] = builtins.__dict__['_']          # Unicode (Used to Latin-1, compatibility support)
     builtins.__dict__['Tx'] = builtins.__dict__['_']          # Dynamic translation (unicode)
