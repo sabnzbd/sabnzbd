@@ -30,11 +30,6 @@ import locale
 
 from threading import Thread
 try:
-    locale.setlocale(locale.LC_ALL, "")
-except:
-    # Work-around for Python-ports with bad "locale" support
-    pass
-try:
     import win32api
     import win32file
 except ImportError:
@@ -50,8 +45,6 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
-from sabnzbd.utils.json import JsonWriter
-
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
@@ -94,24 +87,17 @@ if os.name == 'nt':
 else:
     PATHEXT = []
 
-# Flag for using the fast json encoder, unless it fails
-FAST_JSON = True
-
-
 def api_handler(kwargs):
     """ API Dispatcher """
     mode = kwargs.get('mode', '')
     output = kwargs.get('output')
     name = kwargs.get('name', '')
-    callback = kwargs.get('callback', '')
 
     if isinstance(mode, list):
         mode = mode[0]
     if isinstance(output, list):
         output = output[0]
     response = _api_table.get(mode, (_api_undefined, 2))[0](name, output, kwargs)
-    if output == 'json' and callback:
-        response = '%s(%s)' % (callback, response)
     return response
 
 
@@ -1003,14 +989,13 @@ def api_level(cmd, name):
     return 4
 
 
-def report(output, error=None, keyword='value', data=None, callback=None, compat=False):
+def report(output, error=None, keyword='value', data=None, compat=False):
     """ Report message in json, xml or plain text
         If error is set, only an status/error report is made.
         If no error and no data, only a status report is made.
         Else, a data report is made (optional 'keyword' for outer XML section).
         'compat' is a special case for compatibility for ascii ouput
     """
-    global FAST_JSON
     if output == 'json':
         content = "application/json;charset=UTF-8"
         if error:
@@ -1022,18 +1007,7 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
                 info = data
             else:
                 info = {keyword: data}
-        if FAST_JSON:
-            # First try the faster standard json encoder
-            try:
-                response = json.dumps(info)
-            except UnicodeDecodeError:
-                FAST_JSON = False
-                logging.info('Switching to slow and safe JSON encoder')
-        if not FAST_JSON:
-            # Use the slower, but safer encoder
-            response = JsonWriter().write(info)
-        if callback:
-            response = '%s(%s)' % (callback, response)
+        response = json.dumps(info).encode('utf-8')
 
     elif output == 'xml':
         if not keyword:
