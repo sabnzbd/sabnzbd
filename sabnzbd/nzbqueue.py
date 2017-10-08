@@ -65,11 +65,21 @@ class NzbQueue(object):
         """
         nzo_ids = []
         if repair < 2:
-            # Read the queue from the saved files
-            data = sabnzbd.load_admin(QUEUE_FILE_NAME)
-
-            # Process the data and check compatibility
-            nzo_ids = self.check_compatibility(data)
+            # Try to process the queue file
+            try:
+                data = sabnzbd.load_admin(QUEUE_FILE_NAME)
+                if data:
+                    queue_vers, nzo_ids, dummy = data
+                    if not queue_vers == QUEUE_VERSION:
+                        nzo_ids = []
+                        logging.error(T('Incompatible queuefile found, cannot proceed'))
+                        if not repair:
+                            panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
+                            exit_sab(2)
+            except:
+                nzo_ids = []
+                logging.error(T('Error loading %s, corrupt file detected'),
+                              os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
 
         # First handle jobs in the queue file
         folders = []
@@ -103,50 +113,6 @@ class NzbQueue(object):
                             remove_file(item)
                         except:
                             pass
-
-    def check_compatibility(self, data):
-        """ Do compatibility checks on the loaded data """
-        nzo_ids = []
-        if not data:
-            # Warn about old queue
-            if sabnzbd.OLD_QUEUE and cfg.warned_old_queue() < QUEUE_VERSION:
-                logging.warning(T('Old queue detected, use Status->Repair to convert the queue'))
-                cfg.warned_old_queue.set(QUEUE_VERSION)
-                sabnzbd.config.save_config()
-        else:
-            # Try to process
-            try:
-                queue_vers, nzo_ids, dummy = data
-                if not queue_vers == QUEUE_VERSION:
-                    nzo_ids = []
-                    logging.error(T('Incompatible queuefile found, cannot proceed'))
-                    if not repair:
-                        panic_queue(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
-                        exit_sab(2)
-            except ValueError:
-                nzo_ids = []
-                logging.error(T('Error loading %s, corrupt file detected'),
-                              os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME))
-
-        # We need to do a repair in case of old-style pickles
-        if not cfg.converted_nzo_pickles():
-            for nzo_id in nzo_ids:
-                folder, _id = os.path.split(nzo_id)
-                path = get_admin_path(folder, future=False)
-                # This will update them but preserve queue-order
-                if os.path.exists(os.path.join(path, _id)):
-                    self.repair_job(os.path.dirname(path))
-                continue
-
-            # Remove any future-jobs, we can't save those
-            for item in globber_full(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
-                remove_file(item)
-
-            # Done converting
-            cfg.converted_nzo_pickles.set(True)
-            sabnzbd.config.save_config()
-            nzo_ids = []
-        return nzo_ids
 
     @NzbQueueLocker
     def scan_jobs(self, all=False, action=True):

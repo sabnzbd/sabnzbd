@@ -152,7 +152,6 @@ WEB_COLOR = None
 SABSTOP = False
 RESTART_REQ = False
 PAUSED_ALL = False
-OLD_QUEUE = False
 TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
 WEBUI_READY = False
@@ -215,7 +214,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
         LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, \
         DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
         DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG, DIR_INTERFACES, \
-        DARWIN, RESTART_REQ, OLD_QUEUE
+        DARWIN, RESTART_REQ
 
     if __INITIALIZED__:
         return False
@@ -288,8 +287,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     lang.set_locale_info('SABnzbd', DIR_LANGUAGE)
     lang.set_language(cfg.language())
     sabnzbd.api.clear_trans_cache()
-
-    OLD_QUEUE = check_old_queue()
 
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
@@ -882,7 +879,7 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
         try:
             with open(path, 'wb') as data_file:
                 if do_pickle:
-                        pickle.dump(data, data_file)
+                    pickle.dump(data, data_file)
                 else:
                     data_file.write(data)
             break
@@ -912,7 +909,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     try:
         with open(path, 'rb') as data_file:
             if do_pickle:
-                    data = pickle.load(data_file)
+                data = pickle.load(data_file)
             else:
                 data = data_file.read()
 
@@ -945,7 +942,7 @@ def save_admin(data, _id):
     for t in range(3):
         try:
             with open(path, 'wb') as data_file:
-                    data = pickle.dump(data, data_file)
+                data = pickle.dump(data, data_file)
             break
         except:
             if t == 2:
@@ -967,7 +964,7 @@ def load_admin(_id, remove=False, silent=False):
 
     try:
         with open(path, 'rb') as data_file:
-                data = pickle.load(data_file)
+            data = pickle.load(data_file)
         if remove:
             misc.remove_file(path)
     except:
@@ -1115,24 +1112,6 @@ def wait_for_download_folder():
     while not cfg.download_dir.test_path():
         logging.debug('Waiting for "incomplete" folder')
         time.sleep(2.0)
-
-
-def check_old_queue():
-    """ Check for old queue (when a new queue is not present) """
-    old = False
-    if not os.path.exists(os.path.join(cfg.admin_dir.get_path(), QUEUE_FILE_NAME)):
-        for ver in (QUEUE_VERSION - 1, QUEUE_VERSION - 2, QUEUE_VERSION - 3):
-            data = load_admin(QUEUE_FILE_TMPL % str(ver))
-            if data:
-                break
-        try:
-            old = bool(data and isinstance(data, tuple) and len(data[1]))
-        except (TypeError, IndexError):
-            pass
-        if old and sabnzbd.WIN32 and ver < 10 and sabnzbd.DIR_LCLDATA != sabnzbd.DIR_HOME and misc.is_relative_path(cfg.download_dir()):
-            # For Windows and when version < 10: adjust old default location
-            cfg.download_dir.set('Documents/' + cfg.download_dir())
-    return old
 
 
 # Required wrapper because nzbstuff.py cannot import downloader.py
