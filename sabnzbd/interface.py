@@ -64,7 +64,7 @@ from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, DEF_STDINT
 from sabnzbd.lang import list_languages, set_language
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-    api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
+    api_handler, build_queue, rss_qstatus, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
     format_bytes, std_time, report, del_hist_job, Ttemplate, \
     build_queue_header, _api_test_email, _api_test_notif
@@ -361,7 +361,7 @@ class MainPage(object):
 
                 # Make sure the JSON works, otherwise leave empty
                 try:
-                    info['preload_queue'] = json.dumps({'queue': remove_callable(queue)})
+                    info['preload_queue'] = json.dumps({'queue': queue})
                     info['preload_history'] = json.dumps({'history': history})
                 except UnicodeDecodeError:
                     # We use the javascript recognized 'false'

@@ -148,7 +148,7 @@ def _api_del_config(name, output, kwargs):
 def _api_qstatus(name, output, kwargs):
     """ API: accepts output """
     info, pnfo_list, bytespersec = build_queue()
-    return report(output, data=remove_callable(info))
+    return report(output, data=info)
 
 
 def _api_queue(name, output, kwargs):
@@ -257,7 +257,7 @@ def _api_queue_default(output, value, kwargs):
 
     if output in ('xml', 'json'):
         info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
-        return report(output, keyword='queue', data=remove_callable(info))
+        return report(output, keyword='queue', data=info)
     elif output == 'rss':
         return rss_qstatus()
     else:
@@ -459,7 +459,7 @@ def _api_change_opts(name, output, kwargs):
 def _api_fullstatus(name, output, kwargs):
     """ API: full history status"""
     status = build_status(skip_dashboard=kwargs.get('skip_dashboard', 1), output=output)
-    return report(output, keyword='status', data=remove_callable(status))
+    return report(output, keyword='status', data=status)
 
 
 def _api_history(name, output, kwargs):
@@ -516,7 +516,7 @@ def _api_history(name, output, kwargs):
                                                                               output=output)
         history['last_history_update'] = sabnzbd.LAST_HISTORY_UPDATE
         history['version'] = sabnzbd.__version__
-        return report(output, keyword='history', data=remove_callable(history))
+        return report(output, keyword='history', data=history)
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
 
@@ -1154,7 +1154,7 @@ def handle_cat_api(output, kwargs):
 
 def build_status(skip_dashboard=False, output=None):
     # build up header full of basic information
-    info = build_header()
+    info = build_header(trans_functions=not output)
 
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
@@ -1574,7 +1574,7 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(webdir='', output=None):
+def build_header(webdir='', output=None, trans_functions=True):
     """ Build the basic header """
     try:
         uptime = calc_age(sabnzbd.START)
@@ -1594,9 +1594,12 @@ def build_header(webdir='', output=None):
 
     # We don't output everything for API
     if not output:
-        header['T'] = Ttemplate
-        header['Tspec'] = Tspec
-        header['Tx'] = Ttemplate
+        # These are functions, and cause problems for JSON
+        if trans_functions:
+            header['T'] = Ttemplate
+            header['Tspec'] = Tspec
+            header['Tx'] = Ttemplate
+
         header['uptime'] = uptime
         header['color_scheme'] = sabnzbd.WEB_COLOR or ''
         header['helpuri'] = 'https://sabnzbd.org/wiki/'
@@ -1943,14 +1946,6 @@ def list_cats(default=True):
         lst.remove('*')
         lst.insert(0, 'Default')
     return lst
-
-
-def remove_callable(dic):
-    """ Remove all callable items from dictionary """
-    for key, value in list(dic.items()):
-        if callable(value):
-            del dic[key]
-    return dic
 
 
 _PLURAL_TO_SINGLE = {
