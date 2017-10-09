@@ -1902,9 +1902,8 @@ def create_env(nzo=None, extra_env_fields=None):
         # No modification
         return None
 
-    # Have to make sure no Unicode slipped in somehow on Windows
-    if sabnzbd.WIN32:
-        env = { str(deunicode(k)): str(deunicode(v)) for k, v in env.iteritems() }
+    # Have to make sure no Unicode slipped in somehow
+    env = { str(deunicode(k)): str(deunicode(v)) for k, v in env.iteritems() }
     return env
 
 
