@@ -5,3 +5,4 @@ feedparser
 configobj
 cherrypy
 gntp
+git+git://github.com/sabnzbd/sabyenc@sabyenc3#egg=sabyenc

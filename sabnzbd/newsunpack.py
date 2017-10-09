@@ -30,7 +30,7 @@ import shutil
 from subprocess import Popen
 
 import sabnzbd
-from sabnzbd.encoding import TRANS, UNTRANS, unicoder, platform_encode, deunicode
+from sabnzbd.encoding import ubtou, TRANS, UNTRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
@@ -2158,7 +2158,7 @@ def unrar_check(rar):
             version = run_simple(rar)
         except:
             return version, original
-        original = b"Alexander Roshal" in version
+        original = "Alexander Roshal" in version
         m = re.search(r"RAR\s(\d+)\.(\d+)", version)
         if m:
             version = int(m.group(1)) * 100 + int(m.group(2))
@@ -2377,6 +2377,6 @@ class SevenZip(object):
 def run_simple(cmd):
     """ Run simple external command and return output """
     p = Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    txt = p.stdout.read()
+    txt = ubtou(p.stdout.read())
     p.wait()
     return txt

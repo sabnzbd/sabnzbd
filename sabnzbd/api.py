@@ -1947,7 +1947,7 @@ def list_cats(default=True):
 
 def remove_callable(dic):
     """ Remove all callable items from dictionary """
-    for key, value in dic.items():
+    for key, value in list(dic.items()):
         if callable(value):
             del dic[key]
     return dic
