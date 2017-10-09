@@ -39,7 +39,7 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, from_units, \
-    time_format, long_path, calc_age, \
+    time_format, long_path, calc_age, same_file, \
     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
@@ -2349,12 +2349,17 @@ class ConfigCats(object):
         else:
             newname = re.sub('"', '', kwargs.get('newname', ''))
         if newname:
-            if name:
-                config.delete('categories', name)
-            name = newname.lower()
             if kwargs.get('dir'):
                 kwargs['dir'] = platform_encode(kwargs['dir'])
-            config.ConfigCat(name, kwargs)
+
+            # Check if this cat-dir is not sub-folder of incomplete
+            if same_file(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs['dir'])):
+                return T('Category folder cannot be a subfolder of the Temporary Download Folder.')
+
+            # Delete current one and replace with new one
+            if name:
+                config.delete('categories', name)
+            config.ConfigCat(newname.lower(), kwargs)
 
         config.save_config()
         raise Raiser(self.__root)
