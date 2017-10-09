@@ -1482,7 +1482,7 @@ def rss_qstatus():
 
 def options_list(output):
     return report(output, keyword='options', data={
-        'yenc': sabnzbd.decoder.HAVE_YENC,
+        'sabyenc': sabnzbd.decoder.SABYENC_ENABLED,
         'par2': sabnzbd.newsunpack.PAR2_COMMAND,
         'multipar': sabnzbd.newsunpack.MULTIPAR_COMMAND,
         'rar': sabnzbd.newsunpack.RAR_COMMAND,

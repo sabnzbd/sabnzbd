@@ -389,16 +389,12 @@ def print_modules():
         # Something wrong with SABYenc, so let's determine and print what:
         if sabnzbd.decoder.SABYENC_VERSION:
             # We have a VERSION, thus a SABYenc module, but it's not the correct version
-            logging.warning(T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)") % (sabnzbd.decoder.SABYENC_VERSION, sabnzbd.constants.SABYENC_VERSION_REQUIRED))
+            logging.error(T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)") % (sabnzbd.decoder.SABYENC_VERSION, sabnzbd.constants.SABYENC_VERSION_REQUIRED))
         else:
             # No SABYenc module at all
-            logging.warning(T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc") % sabnzbd.constants.SABYENC_VERSION_REQUIRED)
-
-        # No correct SABYenc version or no SABYenc at all, so now we care about old-yEnc
-        if sabnzbd.decoder.HAVE_YENC:
-            logging.info("_yenc module... found!")
-        else:
-            logging.error(T('_yenc module... NOT found!'))
+            logging.error(T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc") % sabnzbd.constants.SABYENC_VERSION_REQUIRED)
+        # Do not allow downloading
+        sabnzbd.NO_DOWNLOADING = True
 
     if sabnzbd.HAVE_CRYPTOGRAPHY:
         logging.info('Cryptography module (v%s)... found!', sabnzbd.HAVE_CRYPTOGRAPHY)
@@ -408,7 +404,9 @@ def print_modules():
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
-        logging.error('%s %s' % (T('par2 binary... NOT found!'), T('Verification and repair will not be possible.')))
+        logging.error(T('par2 binary... NOT found!'))
+        # Do not allow downloading
+        sabnzbd.NO_DOWNLOADING = True
 
     if sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
@@ -426,7 +424,9 @@ def print_modules():
         elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
             logging.info('UNRAR binary version %.2f', (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
-        logging.error('%s %s' % (T('unrar binary... NOT found'), T('Downloads will not unpacked.')))
+        logging.error(T('unrar binary... NOT found'))
+        # Do not allow downloading
+        sabnzbd.NO_DOWNLOADING = True
 
     if sabnzbd.newsunpack.ZIP_COMMAND:
         logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
@@ -447,6 +447,10 @@ def print_modules():
             logging.info("ionice binary... found (%s)", sabnzbd.newsunpack.IONICE_COMMAND)
         else:
             logging.info("ionice binary... NOT found!")
+
+    # Show fatal warning
+    if sabnzbd.NO_DOWNLOADING:
+        logging.error(T('Essential modules are missing, downloading cannot start.'))
 
 
 def all_localhosts():
@@ -1390,6 +1394,10 @@ def main():
 
     if pid_path or pid_file:
         sabnzbd.pid_file(pid_path, pid_file, cherryport)
+
+    # Stop here in case of fatal errors
+    if sabnzbd.NO_DOWNLOADING:
+        return
 
     # Start all SABnzbd tasks
     logging.info('Starting %s-%s', sabnzbd.MY_NAME, sabnzbd.__version__)
