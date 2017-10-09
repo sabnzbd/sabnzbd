@@ -96,6 +96,8 @@ import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.par2file as par2file
 import sabnzbd.api
+import sabnzbd.interface
+import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.directunpacker as directunpacker
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, \
@@ -604,7 +606,7 @@ def save_compressed(folder, filename, data):
         # Have to get around the path being put inside the tgz
         with open(os.path.join(folder, filename), 'wb') as tgz_file:
             f = gzip.GzipFile(filename, fileobj=tgz_file)
-            f.write(data)
+            f.write(encoding.utob(data))
             f.flush()
             f.close()
     except:

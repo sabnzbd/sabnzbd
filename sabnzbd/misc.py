@@ -483,6 +483,9 @@ def real_path(loc, path):
                 path = os.path.join(loc, path)
         elif path[0] != '/':
             path = os.path.join(loc, path)
+
+        # Always use long-path notation
+        path = long_path(path)
     else:
         path = loc
 

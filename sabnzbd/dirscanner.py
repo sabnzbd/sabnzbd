@@ -30,8 +30,8 @@ import threading
 import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.encoding import platform_encode
 from sabnzbd.decorators import NzbQueueLocker
+from sabnzbd.encoding import ubtou, platform_encode
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
@@ -144,9 +144,9 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                                                  priority=priority, nzbname=nzbname)
                         if not nzo.password:
                             nzo.password = password
-                    except (TypeError, ValueError) as e:
-                        # Duplicate or empty, ignore
-                        pass
+                    # except (TypeError, ValueError) as e:
+                    #     # Duplicate or empty, ignore
+                    #     pass
                     except:
                         # Something else is wrong, show error
                         logging.error(T('Error while adding %s, removing'), name, exc_info=True)
@@ -189,22 +189,23 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
 
     try:
         f = open(path, 'rb')
-        b1 = f.read(1)
-        b2 = f.read(1)
+        check_bytes = f.read(2)
         f.close()
 
-        if b1 == '\x1f' and b2 == '\x8b':
+        if check_bytes == b'\x1f\x8b':
             # gzip file or gzip in disguise
             name = filename.replace('.nzb.gz', '.nzb')
             f = gzip.GzipFile(path, 'rb')
-        elif b1 == 'B' and b2 == 'Z':
+            data = ubtou(f.read())
+        elif check_bytes == b'BZ':
             # bz2 file or bz2 in disguise
             name = filename.replace('.nzb.bz2', '.nzb')
             f = bz2.BZ2File(path, 'rb')
+            data = ubtou(f.read())
         else:
             name = filename
-            f = open(path, 'rb')
-        data = f.read()
+            f = open(path, 'r')
+            data = f.read()
         f.close()
     except:
         logging.warning(T('Cannot read %s'), misc.clip_path(path))
@@ -223,14 +224,14 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
                                  nzo_info=nzo_info, url=url, reuse=reuse, dup_check=dup_check)
         if not nzo.password:
             nzo.password = password
-    except TypeError:
-        # Duplicate, ignore
-        if nzo_id:
-            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
-        nzo = None
-    except ValueError:
-        # Empty, but correct file
-        return -1, nzo_ids
+    # except TypeError:
+    #     # Duplicate, ignore
+    #     if nzo_id:
+    #         sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
+    #     nzo = None
+    # except ValueError:
+    #     # Empty, but correct file
+    #     return -1, nzo_ids
     except:
         if data.find("<nzb") >= 0 and data.find("</nzb") < 0:
             # Looks like an incomplete file, retry

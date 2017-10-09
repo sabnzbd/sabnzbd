@@ -32,11 +32,6 @@ import xml.sax.xmlreader
 import hashlib
 import difflib
 
-try:
-    from io import StringIO
-except ImportError:
-    from io import StringIO
-
 # SABnzbd modules
 import sabnzbd
 from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
@@ -51,11 +46,10 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder, platform_encode
+from sabnzbd.encoding import utob, unicoder, platform_encode
+import sabnzbd.nzbparser
 from sabnzbd.database import HistoryDB
 from sabnzbd.rating import Rating
-
-__all__ = ['Article', 'NzbFile', 'NzbObject']
 
 # Name patterns
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
@@ -273,7 +267,7 @@ class NzbFile(TryList):
 
     def finish_import(self):
         """ Load the article objects from disk """
-        logging.debug("Finishing import on %s", self.subject)
+        logging.debug("Finishing import on %s", self.filename)
         article_db = sabnzbd.load_data(self.nzf_id, self.nzo.workpath, remove=False)
         if article_db:
             for partnum in article_db:
@@ -365,194 +359,6 @@ class NzbFile(TryList):
 
 
 ##############################################################################
-# NzbParser
-##############################################################################
-class NzbParser(xml.sax.handler.ContentHandler):
-    """ Forgiving parser for NZB's """
-
-    def __init__(self, nzo):
-        self.nzo = nzo
-        self.in_nzb = False
-        self.in_file = False
-        self.in_groups = False
-        self.in_group = False
-        self.in_segments = False
-        self.in_segment = False
-        self.in_head = False
-        self.in_meta = False
-        self.meta_type = ''
-        self.meta_types = {}
-        self.meta_content = []
-        self.filename = ''
-        self.avg_age = 0
-        self.valids = 0
-        self.skipped_files = 0
-        self.nzf_list = []
-        self.groups = []
-        self.md5 = hashlib.md5()
-        self.now = time.time()
-
-    def startDocument(self):
-        pass
-
-    def startElement(self, name, attrs):
-        if name == 'segment' and self.in_nzb and self.in_file and self.in_segments:
-            try:
-                self.seg_bytes = int(attrs.get('bytes'))
-                self.article_nr = int(attrs.get('number'))
-            except ValueError:
-                return
-            self.article_id = []
-            self.in_segment = True
-
-        elif name == 'segments' and self.in_nzb and self.in_file:
-            self.in_segments = True
-
-        elif name == 'file' and self.in_nzb:
-            subject = attrs.get('subject', '').strip()
-            self.filename = subject
-            self.in_file = True
-            self.fileSubject = subject
-            try:
-                self.file_date = int(attrs.get('date'))
-            except:
-                # NZB has non-standard timestamp, assume now
-                self.file_date = self.now
-            self.article_db = {}
-            self.file_bytes = 0
-
-        elif name == 'group' and self.in_nzb and self.in_file and self.in_groups:
-            self.in_group = True
-            self.group_name = []
-
-        elif name == 'groups' and self.in_nzb and self.in_file:
-            self.in_groups = True
-
-        elif name == 'head' and self.in_nzb:
-            self.in_head = True
-
-        elif name == 'meta' and self.in_nzb and self.in_head:
-            self.in_meta = True
-            meta_type = attrs.get('type')
-            if meta_type:
-                self.meta_type = meta_type.lower()
-            self.meta_content = []
-
-        elif name == 'nzb':
-            self.in_nzb = True
-
-    def characters(self, content):
-        if self.in_group:
-            self.group_name.append(content)
-        elif self.in_segment:
-            self.article_id.append(content)
-        elif self.in_meta:
-            self.meta_content.append(content)
-
-    def endElement(self, name):
-        if name == 'group' and self.in_group:
-            group = str(''.join(self.group_name))
-            if group not in self.groups:
-                self.groups.append(group)
-            self.in_group = False
-
-        elif name == 'segment' and self.in_segment:
-            partnum = self.article_nr
-            segm = str(''.join(self.article_id))
-            self.md5.update(segm)
-            if partnum in self.article_db:
-                if segm != self.article_db[partnum][0]:
-                    msg = 'Duplicate part %s, but different ID-s (%s // %s)' % (partnum, self.article_db[partnum][0], segm)
-                    logging.info(msg)
-                    self.nzo.increase_bad_articles_counter('duplicate_articles')
-                else:
-                    logging.info("Skipping duplicate article (%s)", segm)
-            else:
-                self.article_db[partnum] = (segm, self.seg_bytes)
-                self.file_bytes += self.seg_bytes
-            self.in_segment = False
-
-        elif name == 'groups' and self.in_groups:
-            self.in_groups = False
-
-        elif name == 'segments' and self.in_segments:
-            self.in_segments = False
-
-        elif name == 'file' and self.in_file:
-            # Create an NZF
-            self.in_file = False
-            if not self.article_db:
-                logging.warning(T('File %s is empty, skipping'), self.filename)
-                return
-            try:
-                tm = datetime.datetime.fromtimestamp(self.file_date)
-            except:
-                tm = datetime.datetime.fromtimestamp(self.now)
-                self.file_date = self.now
-
-            nzf = NzbFile(tm, self.filename, self.article_db, self.file_bytes, self.nzo)
-
-            # Check if file was added with same name
-            if cfg.reject_duplicate_files():
-                nzo_matches = [x for x in self.nzo.files if (x.filename == nzf.filename)]
-                if nzo_matches:
-                    logging.info('File %s occured twice in NZB, discarding smaller file', nzf.filename)
-
-                    # Which is smaller? Current or old one
-                    if nzo_matches[0].bytes >= nzf.bytes:
-                        # Skip this new one
-                        return
-                    else:
-                        # Have to remove the old one but still add the new one
-                        self.nzo.files.remove(nzo_matches[0])
-                        del self.nzo.files_table[nzo_matches[0].nzf_id]
-                        self.nzo.bytes -= nzo_matches[0].bytes
-                        self.avg_age -= time.mktime(nzo_matches[0].date.timetuple())
-                        self.valids -= 1
-                        self.nzf_list.remove(nzo_matches[0])
-
-            if nzf.valid and nzf.nzf_id:
-                logging.info('File %s - %s added to queue', nzf.filename, nzf.nzf_id)
-                self.nzo.files.append(nzf)
-                self.nzo.files_table[nzf.nzf_id] = nzf
-                self.nzo.bytes += nzf.bytes
-                self.avg_age += self.file_date
-                self.valids += 1
-                self.nzf_list.append(nzf)
-            else:
-                logging.info('Error importing %s, skipping', self.filename)
-                if nzf.nzf_id:
-                    sabnzbd.remove_data(nzf.nzf_id, self.nzo.workpath)
-                self.skipped_files += 1
-
-        elif name == 'head':
-            self.in_head = False
-
-        elif name == 'meta':
-            self.in_meta = False
-            if self.meta_type:
-                if self.meta_type not in self.meta_types:
-                    self.meta_types[self.meta_type] = []
-                self.meta_types[self.meta_type].append(''.join(self.meta_content))
-
-        elif name == 'nzb':
-            self.in_nzb = False
-
-    def endDocument(self):
-        """ End of the file """
-        self.nzo.groups = self.groups
-        self.nzo.meta = self.meta_types
-        logging.debug('META-DATA = %s', self.nzo.meta)
-        files = max(1, self.valids)
-        self.nzo.avg_stamp = self.avg_age / files
-        self.nzo.avg_date = datetime.datetime.fromtimestamp(self.avg_age / files)
-        self.nzo.md5sum = self.md5.hexdigest()
-        if self.skipped_files:
-            logging.warning(T('Failed to import %s files from %s'),
-                            self.skipped_files, self.nzo.filename)
-
-
-##############################################################################
 # NzbObject
 ##############################################################################
 NzbObjectSaver = (
@@ -630,7 +436,7 @@ class NzbObject(TryList):
         else:
             self.url = filename
         self.groups = []
-        self.avg_date = datetime.datetime.fromtimestamp(0.0)
+        self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
 
         self.partable = {}          # Holds one parfile-name for each set
@@ -732,28 +538,17 @@ class NzbObject(TryList):
         # Must create a lower level XML parser because we must
         # disable the reading of the DTD file from an external website
         # by setting "feature_external_ges" to 0.
-
         if nzb and '<nzb' in nzb:
-            handler = NzbParser(self)
-            parser = xml.sax.make_parser()
-            parser.setFeature(xml.sax.handler.feature_external_ges, 0)
-            parser.setContentHandler(handler)
-            parser.setErrorHandler(xml.sax.handler.ErrorHandler())
-            inpsrc = xml.sax.xmlreader.InputSource()
-            inpsrc.setByteStream(StringIO(nzb))
             try:
-                parser.parse(inpsrc)
-            except xml.sax.SAXParseException as err:
+                sabnzbd.nzbparser.nzbfile_parser(nzb, self)
+            except Exception as err:
                 self.incomplete = True
                 if '</nzb>' not in nzb:
                     logging.warning(T('Incomplete NZB file %s'), filename)
                 else:
+                    raise
                     logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
                                     filename, err.getMessage(), err.getLineNumber())
-            except Exception as err:
-                self.incomplete = True
-                logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, 0)
-
             if self.incomplete:
                 if cfg.allow_incomplete_nzb():
                     self.pause()
@@ -877,10 +672,10 @@ class NzbObject(TryList):
         if reuse:
             self.check_existing_files(wdir)
 
-        if cfg.auto_sort():
-            self.files.sort(cmp=nzf_cmp_date)
-        else:
-            self.files.sort(cmp=nzf_cmp_name)
+        # if cfg.auto_sort():
+        #     self.files.sort(cmp=nzf_cmp_date)
+        # else:
+        #     self.files.sort(cmp=nzf_cmp_name)
 
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
