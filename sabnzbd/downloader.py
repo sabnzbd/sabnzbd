@@ -878,7 +878,7 @@ class Downloader(Thread):
                 break
 
     def unblock_all(self):
-        for server_id in list(self._timers.keys()):
+        for server_id in self._timers.keys():
             self.unblock(server_id)
 
     @NzbQueueLocker
@@ -888,7 +888,7 @@ class Downloader(Thread):
         # Clean expired timers
         now = time.time()
         kicked = []
-        for server_id in list(self._timers.keys()):
+        for server_id in self._timers.keys():
             if not [stamp for stamp in self._timers[server_id] if stamp >= now]:
                 logging.debug('Forcing re-evaluation of server %s', server_id)
                 del self._timers[server_id]

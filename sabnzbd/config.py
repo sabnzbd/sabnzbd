@@ -623,7 +623,7 @@ def get_dconfig(section, keyword, nested=False):
     """
     data = {}
     if not section:
-        for section in list(database.keys()):
+        for section in database.keys():
             res, conf = get_dconfig(section, None, True)
             data.update(conf)
 
@@ -634,12 +634,12 @@ def get_dconfig(section, keyword, nested=False):
             return False, {}
         if section in ('servers', 'categories', 'rss'):
             data[section] = []
-            for keyword in list(sect.keys()):
+            for keyword in sect.keys():
                 res, conf = get_dconfig(section, keyword, True)
                 data[section].append(conf)
         else:
             data[section] = {}
-            for keyword in list(sect.keys()):
+            for keyword in sect.keys():
                 res, conf = get_dconfig(section, keyword, True)
                 data[section].update(conf)
 
@@ -951,7 +951,7 @@ def get_ordered_categories():
 
     # Transform to list and sort
     categories = []
-    for cat in list(database_cats.keys()):
+    for cat in database_cats.keys():
         if cat != '*':
             categories.append(database_cats[cat].get_dict())
 

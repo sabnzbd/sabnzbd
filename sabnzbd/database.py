@@ -479,7 +479,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     # Pack the dictionary up into a single string
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lines = []
-    for key, results in list(stages.items()):
+    for key, results in stages.items():
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 

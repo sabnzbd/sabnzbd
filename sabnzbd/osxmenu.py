@@ -80,7 +80,7 @@ class SABnzbdDelegate(NSObject):
         # logging.info("building menu")
         status_bar = NSStatusBar.systemStatusBar()
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
-        for i in list(status_icons.keys()):
+        for i in status_icons.keys():
             self.icons[i] = NSImage.alloc().initByReferencingFile_(status_icons[i])
             if sabnzbd.DARWIN_VERSION > 9:
                 # Support for Yosemite Dark Mode

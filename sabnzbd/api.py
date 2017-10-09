@@ -1062,7 +1062,7 @@ class xml_factory(object):
 
     def _dict(self, keyw, lst):
         text = []
-        for key in list(lst.keys()):
+        for key in lst.keys():
             text.append(self.run(key, lst[key]))
         if keyw:
             return '<%s>%s</%s>\n' % (keyw, ''.join(text), keyw)
@@ -1947,7 +1947,7 @@ def list_cats(default=True):
 
 def remove_callable(dic):
     """ Remove all callable items from dictionary """
-    for key, value in list(dic.items()):
+    for key, value in dic.items():
         if callable(value):
             del dic[key]
     return dic

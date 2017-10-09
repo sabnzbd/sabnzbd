@@ -122,7 +122,7 @@ class Rating(Thread):
                                                                                   silent=not cfg.rating_enable())
             if self.version == 1:
                 ratings = {}
-                for k, v in list(self.ratings.items()):
+                for k, v in self.ratings.items():
                     ratings[k] = NzbRatingV2().to_v2(v)
                 self.ratings = ratings
                 self.version = 2

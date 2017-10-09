@@ -360,7 +360,7 @@ class SeriesSorter(object):
         # Replace elements
         path = path_subst(sorter, mapping)
 
-        for key, name in list(REPLACE_AFTER.items()):
+        for key, name in REPLACE_AFTER.items():
             path = path.replace(key, name)
 
         # Lowercase all characters wrapped in {}
@@ -609,7 +609,7 @@ class GenericSorter(object):
 
         path = path_subst(sorter, mapping)
 
-        for key, name in list(REPLACE_AFTER.items()):
+        for key, name in REPLACE_AFTER.items():
             path = path.replace(key, name)
 
         # Lowercase all characters wrapped in {}
@@ -676,7 +676,7 @@ class GenericSorter(object):
             if matched_files:
                 logging.debug("Renaming a series of generic files (%s)", matched_files)
                 renamed = list(matched_files.values())
-                for index, file in list(matched_files.items()):
+                for index, file in matched_files.items():
                     filepath = os.path.join(current_path, file)
                     renamed.append(filepath)
                     self.fname, ext = os.path.splitext(os.path.split(file)[1])
@@ -828,7 +828,7 @@ class DateSorter(object):
 
         path = path_subst(sorter, mapping)
 
-        for key, name in list(REPLACE_AFTER.items()):
+        for key, name in REPLACE_AFTER.items():
             path = path.replace(key, name)
 
         # Lowercase all characters wrapped in {}

@@ -1726,7 +1726,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         server = unique_svr_name(server)
 
     for kw in ('ssl', 'send_group', 'enable', 'optional'):
-        if kw not in list(kwargs.keys()):
+        if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:
         svr.set_dict(kwargs)

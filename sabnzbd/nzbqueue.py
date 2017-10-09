@@ -424,7 +424,7 @@ class NzbQueue(object):
         if search:
             search = search.lower()
         removed = []
-        for nzo_id in list(self.__nzo_table.keys()):
+        for nzo_id in self.__nzo_table.keys():
             if (not search) or search in self.__nzo_table[nzo_id].final_name_pw_clean.lower():
                 nzo = self.__nzo_table.pop(nzo_id)
                 nzo.deleted = True

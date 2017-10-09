@@ -1002,7 +1002,7 @@ class NzbObject(TryList):
 
         # If we couldn't parse it, we ignore it
         if pack:
-            if pack not in list(self.md5packs.values()):
+            if pack not in self.md5packs.values():
                 logging.debug('Got md5pack for set %s', nzf.setname)
                 self.md5packs[setname] = pack
                 # See if we need to postpone some pars
@@ -1348,7 +1348,7 @@ class NzbObject(TryList):
         if not nzf.is_par2:
             # We have to find the right par-set
             blocks_new = 0
-            for parset in list(self.extrapars.keys()):
+            for parset in self.extrapars.keys():
                 if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
                     for new_nzf in self.extrapars[parset]:
                         self.add_parfile(new_nzf)

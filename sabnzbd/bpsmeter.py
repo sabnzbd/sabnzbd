@@ -190,7 +190,7 @@ class BPSMeter(object):
             self.defaults()
         # Force update of counters and validate data
         try:
-            for server in list(self.grand_total.keys()):
+            for server in self.grand_total.keys():
                 self.update(server)
         except TypeError:
             self.defaults()
@@ -292,10 +292,10 @@ class BPSMeter(object):
 
     def get_sums(self):
         """ return tuple of grand, month, week, day totals """
-        return (sum([v for v in list(self.grand_total.values())]),
-                sum([v for v in list(self.month_total.values())]),
-                sum([v for v in list(self.week_total.values())]),
-                sum([v for v in list(self.day_total.values())])
+        return (sum([v for v in self.grand_total.values()]),
+                sum([v for v in self.month_total.values()]),
+                sum([v for v in self.week_total.values()]),
+                sum([v for v in self.day_total.values()])
                )
 
     def amounts(self, server):
@@ -472,7 +472,7 @@ class BPSMeter(object):
 
     def midnight(self):
         """ Midnight action: dummy update for all servers """
-        for server in list(self.day_total.keys()):
+        for server in self.day_total.keys():
             self.update(server)
 
 

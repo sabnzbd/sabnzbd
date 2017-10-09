@@ -344,7 +344,7 @@ class RSSQueue(object):
                 # If there's multiple feeds, remove the duplicates based on title and size
                 if len(uris) > 1:
                     skip_job = False
-                    for job_link, job in list(jobs.items()):
+                    for job_link, job in jobs.items():
                         # Allow 5% size deviation because indexers might have small differences for same release
                         if job.get('title') == title and link != job_link and (job.get('size')*0.95) < size < (job.get('size')*1.05):
                             logging.info("Ignoring job %s from other feed", title)
@@ -504,7 +504,7 @@ class RSSQueue(object):
             if self.next_run < time.time():
                 self.next_run = time.time() + cfg.rss_rate.get() * 60
             feeds = config.get_rss()
-            for feed in list(feeds.keys()):
+            for feed in feeds.keys():
                 try:
                     if feeds[feed].enable.get():
                         logging.info('Starting scheduled RSS read-out for "%s"', feed)
