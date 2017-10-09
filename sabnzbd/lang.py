@@ -102,7 +102,7 @@ def list_languages():
                 lng = lng_short
             else:
                 lng = lng_full
-            language = language[1].decode('utf-8')
+            language = language[1]
             lst.append((lng, language))
     if lst:
         lst.append(('en', 'English'))

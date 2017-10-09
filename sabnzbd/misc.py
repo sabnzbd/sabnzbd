@@ -85,11 +85,11 @@ def calc_age(date, trans=False):
         # only one value should be returned
         # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
         if dage.days:
-            age = '%s%s' % (dage.days, d)
-        elif seconds / 3600:
-            age = '%s%s' % (seconds / 3600, h)
+            age = '%d%s' % (dage.days, d)
+        elif int(seconds / 3600):
+            age = '%d%s' % (seconds / 3600, h)
         else:
-            age = '%s%s' % (seconds / 60, m)
+            age = '%d%s' % (seconds / 60, m)
     except:
         age = "-"
 
