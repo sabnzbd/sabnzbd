@@ -1,4 +1,5 @@
 six
+cheetah3
 cryptography
 feedparser
 configobj
