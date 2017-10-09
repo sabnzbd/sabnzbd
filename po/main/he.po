@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-10-04 18:54+0000\n"
-"PO-Revision-Date: 2017-10-01 22:35+0000\n"
+"PO-Revision-Date: 2017-10-07 08:28+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-05 04:49+0000\n"
-"X-Generator: Launchpad (build 18471)\n"
+"X-Launchpad-Export-Date: 2017-10-08 05:54+0000\n"
+"X-Generator: Launchpad (build 18474)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -436,7 +436,7 @@ msgstr "הושלם"
 
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
-msgstr "%s-פורקו %s קבצים/תיקיות ב"
+msgstr "פורקו %s קבצים/תיקיות תוך %s"
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -1512,6 +1512,7 @@ msgid ""
 "Module subprocessww missing. Expect problems with Unicoded file and "
 "directory names in downloads."
 msgstr ""
+".של קבצים וספריות בהורדות Unicode חסר. צפה לבעיות עם שמות subprocessww פירקן"
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
