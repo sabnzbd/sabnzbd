@@ -114,20 +114,20 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         return False, str(sys.exc_info()[1])
 
     if not username or not password:
-        nw.nntp.sock.sendall('ARTICLE <test@home>\r\n')
+        nw.nntp.sock.sendall(b'ARTICLE <test@home>\r\n')
         try:
             nw.clear_data()
             nw.recv_chunk(block=True)
         except:
             return False, str(sys.exc_info()[1])
 
-    if nw.status_code == '480':
+    if nw.status_code == 480:
         return False, T('Server requires username and password.')
 
-    elif nw.status_code == '100' or nw.status_code.startswith(('2', '4')):
+    elif nw.status_code == 100 or str(nw.status_code).startswith(('2', '4')):
         return True, T('Connection Successful!')
 
-    elif nw.status_code == '502' or clues_login(nntp_to_msg(nw.data)):
+    elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
         return False, T('Authentication failed, check username/password.')
 
     elif clues_too_many(nw.lines[0]):

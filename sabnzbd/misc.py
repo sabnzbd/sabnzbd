@@ -42,7 +42,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
      GIGI, MEBI, DEF_CACHE_LIMIT
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder, special_fixer, gUTF
+from sabnzbd.encoding import ubtou, unicoder, special_fixer, gUTF
 
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -330,17 +330,8 @@ def sanitize_foldername(name, limit=True):
     if not name:
         return name
 
-    FL_ILLEGAL = CH_ILLEGAL + ':\x92"'
-    FL_LEGAL = CH_LEGAL + "-''"
-    uFL_ILLEGAL = FL_ILLEGAL.decode('cp1252')
-    uFL_LEGAL = FL_LEGAL.decode('cp1252')
-
-    if isinstance(name, str):
-        illegal = uFL_ILLEGAL
-        legal = uFL_LEGAL
-    else:
-        illegal = FL_ILLEGAL
-        legal = FL_LEGAL
+    illegal = CH_ILLEGAL + ':\x92"'
+    legal = CH_LEGAL + "-''"
 
     if cfg.sanitize_safe():
         # Remove all bad Windows chars too
@@ -1618,8 +1609,8 @@ def get_urlbase(url):
 
 
 def nntp_to_msg(text):
-    """ Format raw NNTP data for display """
+    """ Format raw NNTP bytes data for display """
     if isinstance(text, list):
         text = text[0]
-    lines = text.split('\r\n')
-    return lines[0]
+    lines = text.split(b'\r\n')
+    return ubtou(lines[0])

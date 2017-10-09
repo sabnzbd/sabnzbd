@@ -109,7 +109,7 @@ class Wizard(object):
         info['language'] = cfg.language()
         info['active_lang'] = info['language']
         info['T'] = Ttemplate
-        info['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        info['have_ssl_context'] = sabnzbd.CERTIFICATE_VALIDATION
 
         servers = config.get_servers()
         if not servers:

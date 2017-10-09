@@ -281,3 +281,12 @@ def deunicode(p):
         return p
 
 
+def utob(str_in):
+    """ Shorthand for converting UTF-8 to bytes """
+    return str_in.encode('utf-8')
+
+
+def ubtou(str_in):
+    """ Shorthand for converting unicode bytes to UTF-8 """
+    return str_in.decode('utf-8')
+

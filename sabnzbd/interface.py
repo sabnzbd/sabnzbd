@@ -1151,7 +1151,7 @@ class ConfigPage(object):
         conf['have_sabyenc'] = SABYENC_ENABLED
         conf['have_mt_par2'] = sabnzbd.newsunpack.PAR2_MT
 
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['have_ssl_context'] = sabnzbd.CERTIFICATE_VALIDATION
         conf['ssl_version'] = ssl.OPENSSL_VERSION
 
         new = {}
@@ -1328,7 +1328,7 @@ class ConfigSwitches(object):
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['have_ssl_context'] = sabnzbd.CERTIFICATE_VALIDATION
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
@@ -1479,7 +1479,7 @@ class ConfigGeneral(object):
         # Temporary fix, problem with build_header
         conf['restart_req'] = sabnzbd.RESTART_REQ
 
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['have_ssl_context'] = sabnzbd.CERTIFICATE_VALIDATION
         conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
 
         wlist = []
@@ -1615,7 +1615,7 @@ class ConfigServer(object):
                 new[-1]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d), timeline
         conf['servers'] = new
         conf['cats'] = list_cats(default=True)
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['have_ssl_context'] = sabnzbd.CERTIFICATE_VALIDATION
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_server.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)

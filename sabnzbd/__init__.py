@@ -30,6 +30,7 @@ import time
 import socket
 import cherrypy
 import sys
+import ssl
 import re
 from threading import Lock, Thread
 try:
@@ -65,19 +66,7 @@ elif os.name == 'posix':
         except:
             pass
 
-
-##############################################################################
-# SSL CHECKS
-##############################################################################
-import ssl
-HAVE_SSL_CONTEXT = None
-try:
-    # Test availability of SSLContext (python 2.7.9+)
-    ssl.SSLContext
-    HAVE_SSL_CONTEXT = True
-except:
-    HAVE_SSL_CONTEXT = False
-
+# Check for cryptography
 try:
     import cryptography
     HAVE_CRYPTOGRAPHY = cryptography.__version__
@@ -145,6 +134,7 @@ WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
 CMDLINE = ''  # Rendering of original command line arguments
 
+CERTIFICATE_VALIDATION = True
 NO_DOWNLOADING = False # When essentials are missing (SABYenc/par2/unrar)
 
 WEB_DIR = None

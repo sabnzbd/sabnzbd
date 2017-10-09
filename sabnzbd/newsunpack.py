@@ -2158,7 +2158,7 @@ def unrar_check(rar):
             version = run_simple(rar)
         except:
             return version, original
-        original = "Alexander Roshal" in version
+        original = b"Alexander Roshal" in version
         m = re.search(r"RAR\s(\d+)\.(\d+)", version)
         if m:
             version = int(m.group(1)) * 100 + int(m.group(2))
@@ -2172,7 +2172,7 @@ def par2_mt_check(par2_path):
     try:
         par2_version = run_simple([par2_path, '-h'])
         # Look for a threads option
-        if '-t<' in par2_version:
+        if b'-t<' in par2_version:
             return True
     except:
         pass

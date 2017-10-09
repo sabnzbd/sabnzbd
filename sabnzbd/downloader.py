@@ -397,7 +397,7 @@ class Downloader(Thread):
         logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
 
         # Then have to check the quality of SSL verification
-        if sabnzbd.HAVE_SSL_CONTEXT:
+        if sabnzbd.CERTIFICATE_VALIDATION:
             try:
                 import ssl
                 ctx = ssl.create_default_context()
@@ -409,8 +409,8 @@ class Downloader(Thread):
             except:
                 # Seems something is still wrong
                 sabnzbd.set_https_verification(0)
-                sabnzbd.HAVE_SSL_CONTEXT = False
-        logging.debug('SSL verification test: %s', sabnzbd.HAVE_SSL_CONTEXT)
+                sabnzbd.CERTIFICATE_VALIDATION = False
+        logging.debug('SSL verification test: %s', sabnzbd.CERTIFICATE_VALIDATION)
 
         # Start decoders
         for decoder in self.decoder_workers:
@@ -609,10 +609,9 @@ class Downloader(Thread):
                     if nzo:
                         nzo.update_download_stats(BPSMeter.do.get_bps(), server.id, bytes)
 
-                if not done and nw.status_code != '222':
-                    if not nw.connected or nw.status_code == '480':
+                if not done and nw.status_code != 222:
+                    if not nw.connected or nw.status_code == 480:
                         done = False
-
                         try:
                             nw.finish_connect(nw.status_code)
                             if sabnzbd.LOG_ALL:
@@ -623,10 +622,10 @@ class Downloader(Thread):
                             block = False
                             penalty = 0
                             msg = error.response
-                            ecode = msg[:3]
+                            ecode = int(msg[:3])
                             display_msg = ' [%s]' % msg
                             logging.debug('Server login problem: %s, %s', ecode, msg)
-                            if ecode in ('502', '400', '481', '482') and clues_too_many(msg):
+                            if ecode in (502, 400, 481, 482) and clues_too_many(msg):
                                 # Too many connections: remove this thread and reduce thread-setting for server
                                 # Plan to go back to the full number after a penalty timeout
                                 if server.active:
@@ -637,7 +636,7 @@ class Downloader(Thread):
                                     self.__reset_nw(nw, None, warn=False, destroy=True, quit=True)
                                     self.plan_server(server.id, _PENALTY_TOOMANY)
                                     server.threads -= 1
-                            elif ecode in ('502', '481', '482') and clues_too_many_ip(msg):
+                            elif ecode in (502, 481, 482) and clues_too_many_ip(msg):
                                 # Account sharing?
                                 if server.active:
                                     errormsg = T('Probable account sharing') + display_msg
@@ -647,7 +646,7 @@ class Downloader(Thread):
                                         logging.warning(T('Probable account sharing') + name)
                                 penalty = _PENALTY_SHARE
                                 block = True
-                            elif ecode in ('481', '482', '381') or (ecode == '502' and clues_login(msg)):
+                            elif ecode in (481, 482, 381) or (ecode == 502 and clues_login(msg)):
                                 # Cannot login, block this server
                                 if server.active:
                                     errormsg = T('Failed login for server %s') % display_msg
@@ -656,7 +655,7 @@ class Downloader(Thread):
                                         logging.error(T('Failed login for server %s'), server.id)
                                 penalty = _PENALTY_PERM
                                 block = True
-                            elif ecode in ('502', '482'):
+                            elif ecode in (502, 482):
                                 # Cannot connect (other reasons), block this server
                                 if server.active:
                                     errormsg = T('Cannot connect to server %s [%s]') % ('', display_msg)
@@ -668,7 +667,7 @@ class Downloader(Thread):
                                 else:
                                     penalty = _PENALTY_502
                                 block = True
-                            elif ecode == '400':
+                            elif ecode == 400:
                                 # Temp connection problem?
                                 if server.active:
                                     logging.debug('Unspecified error 400 from server %s', server.id)
@@ -701,24 +700,24 @@ class Downloader(Thread):
                             logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.id)
                             self.__request_article(nw)
 
-                    elif nw.status_code == '223':
+                    elif nw.status_code == 223:
                         done = True
                         logging.debug('Article <%s> is present', article.article)
 
-                    elif nw.status_code == '211':
+                    elif nw.status_code == 211:
                         done = False
                         logging.debug("group command ok -> %s", nntp_to_msg(nw.data))
                         nw.group = nw.article.nzf.nzo.group
                         nw.clear_data()
                         self.__request_article(nw)
 
-                    elif nw.status_code in ('411', '423', '430'):
+                    elif nw.status_code in (411, 423, 430):
                         done = True
                         logging.debug('Thread %s@%s: Article %s missing (error=%s)',
                                         nw.thrdnum, nw.server.id, article.article, nw.status_code)
                         nw.clear_data()
 
-                    elif nw.status_code == '480':
+                    elif nw.status_code == 480:
                         if server.active:
                             server.active = False
                             server.errormsg = T('Server %s requires user/password') % ''
@@ -727,7 +726,7 @@ class Downloader(Thread):
                         msg = T('Server %s requires user/password') % nw.server.id
                         self.__reset_nw(nw, msg, quit=True)
 
-                    elif nw.status_code == '500':
+                    elif nw.status_code == 500:
                         if nzo.precheck:
                             # Assume "STAT" command is not supported
                             server.have_stat = False
