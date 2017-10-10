@@ -1666,7 +1666,7 @@ class NzbObject(TryList):
                 remove_all(wpath, 'SABnzbd_nz?_*', keep_folder=True)
                 remove_all(wpath, 'SABnzbd_article_*', keep_folder=True)
                 # We save the renames file
-                sabnzbd.save_data(self.renames, RENAMES_FILE, self.workpath)
+                sabnzbd.save_data(self.renames, RENAMES_FILE, self.workpath, silent=True)
             else:
                 remove_all(wpath, recursive=True)
             if del_files:
