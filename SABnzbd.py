@@ -68,10 +68,10 @@ import sabnzbd.lang
 import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
-from sabnzbd.misc import real_path, \
-    check_latest_version, exit_sab, get_from_url, \
-    split_host, get_ext, create_https_certificates, \
-    windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full
+from sabnzbd.misc import check_latest_version, exit_sab, \
+    split_host, create_https_certificates, windows_variant, ip_extract, \
+    set_serv_parms, get_serv_parms
+from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, \
     panic_sqlite, panic, launch_a_browser
 import sabnzbd.scheduler as scheduler
@@ -939,6 +939,9 @@ def main():
         GetProfileInfo(vista_plus)
         # Find out where INI file is
         inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
+
+    # Long-path notation on Windows to be sure
+    inifile = long_path(inifile)
 
     # If INI file at non-std location, then use INI location as $HOME
     if sabnzbd.DIR_LCLDATA != os.path.dirname(inifile):

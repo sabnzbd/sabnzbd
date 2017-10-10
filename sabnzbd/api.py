@@ -48,9 +48,11 @@ from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
-from sabnzbd.misc import loadavg, to_units, diskspace, get_ext, \
-    get_filename, int_conv, globber, globber_full, time_format, remove_all, \
-    starts_with_path, cat_convert, clip_path, create_https_certificates, calc_age
+from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
+     cat_convert, create_https_certificates, calc_age
+from sabnzbd.filesystem import diskspace, get_ext, get_filename, globber, \
+     globber_full, clip_path, remove_all
+from sabnzbd.filesystem import same_file
 from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -1232,7 +1234,6 @@ def build_status(skip_dashboard=False, output=None):
 
         if server.request and not server.info:
             connected = T('&nbsp;Resolving address').replace('&nbsp;', '')
-        serverconnections.sort()
 
         # For the templates or for JSON
         if output:
@@ -1684,7 +1685,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     try:
         datestart = datetime.datetime.now() + datetime.timedelta(seconds=bytesleft / bytespersec)
         # new eta format: 16:00 Fri 07 Feb
-        header['eta'] = datestart.strftime(time_format('%H:%M %a %d %b')).decode(codepage)
+        header['eta'] = datestart.strftime(time_format('%H:%M %a %d %b'))
     except:
         datestart = datetime.datetime.now()
         header['eta'] = T('unknown')
@@ -1812,7 +1813,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
         item['retry'] = int(bool(item.get('status') == 'Failed' and
                                  path and
                                  path not in retry_folders and
-                                 starts_with_path(path, cfg.download_dir.get_path()) and
+                                 same_file(path, cfg.download_dir.get_path()) and
                                  os.path.exists(path)) and
                                  not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*'))
                             )
@@ -1869,12 +1870,6 @@ def get_active_history(queue=None, items=None):
             item['size'] = format_bytes(item['bytes'])
         else:
             item['size'] = ''
-
-        # Queue display needs Unicode instead of UTF-8
-        for kw in item:
-            if isinstance(item[kw], str):
-                item[kw] = item[kw].decode('utf-8')
-
         items.append(item)
 
     return items
@@ -1913,7 +1908,7 @@ def calc_timeleft(bytesleft, bps):
 
 def std_time(when):
     # Fri, 16 Nov 2007 16:42:01 GMT +0100
-    item = time.strftime(time_format('%a, %d %b %Y %H:%M:%S'), time.localtime(when)).decode(codepage)
+    item = time.strftime(time_format('%a, %d %b %Y %H:%M:%S'), time.localtime(when))
     item += " GMT %+05d" % (-time.timezone / 36)
     return item
 

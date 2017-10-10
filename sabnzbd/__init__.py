@@ -80,6 +80,7 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.assembler import Assembler
 from sabnzbd.rating import Rating
 import sabnzbd.misc as misc
+import sabnzbd.filesystem as filesystem
 import sabnzbd.powersup as powersup
 from sabnzbd.dirscanner import DirScanner, ProcessArchiveFile, ProcessSingleFile
 from sabnzbd.urlgrabber import URLGrabber
@@ -224,7 +225,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     # Clean-up, if requested
     if clean_up:
         # New admin folder
-        misc.remove_all(cfg.admin_dir.get_path(), '*.sab')
+        filesystem.remove_all(cfg.admin_dir.get_path(), '*.sab')
 
     # Optionally wait for "incomplete" to become online
     if cfg.wait_for_dfolder():
@@ -234,13 +235,13 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.download_dir.set_create(True)
 
     # Set access rights for "incomplete" base folder
-    misc.set_permissions(cfg.download_dir.get_path(), recursive=False)
+    filesystem.set_permissions(cfg.download_dir.get_path(), recursive=False)
 
     # If dirscan_dir cannot be created, set a proper value anyway.
     # Maybe it's a network path that's temporarily missing.
     path = cfg.dirscan_dir.get_path()
     if not os.path.exists(path):
-        sabnzbd.misc.create_real_path(cfg.dirscan_dir.ident(), '', path, False)
+        filesystem.create_real_path(cfg.dirscan_dir.ident(), '', path, False)
 
     # Set call backs for Config items
     cfg.cache_limit.callback(new_limit)
@@ -1093,8 +1094,8 @@ def pid_file(pid_path=None, pid_file=None, port=0):
 def check_incomplete_vs_complete():
     """ Make sure "incomplete" and "complete" are not identical """
     complete = cfg.complete_dir.get_path()
-    if misc.same_file(cfg.download_dir.get_path(), complete):
-        if misc.real_path('X', cfg.download_dir()) == cfg.download_dir():
+    if filesystem.same_file(cfg.download_dir.get_path(), complete):
+        if filesystem.real_path('X', cfg.download_dir()) == cfg.download_dir():
             # Abs path, so set an abs path too
             cfg.download_dir.set(os.path.join(complete, 'incomplete'))
         else:

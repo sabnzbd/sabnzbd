@@ -71,7 +71,7 @@ def folders_at_path(path, include_parent = False, show_hidden = False):
             path = '/'
 
     # walk up the tree until we find a valid path
-    path = sabnzbd.misc.real_path(sabnzbd.DIR_HOME, path)
+    path = sabnzbd.filesystem.real_path(sabnzbd.DIR_HOME, path)
     while path and not os.path.isdir(path):
         if path == os.path.dirname(path):
             return folders_at_path('', include_parent)
@@ -101,16 +101,16 @@ def folders_at_path(path, include_parent = False, show_hidden = False):
         except:
             list_folder = False
         if list_folder:
-            file_list.append({ 'name': sabnzbd.misc.clip_path(filename), 'path': sabnzbd.misc.clip_path(fpath) })
+            file_list.append({ 'name': sabnzbd.filesystem.clip_path(filename), 'path': sabnzbd.filesystem.clip_path(fpath) })
 
     # Remove junk and sort results
     file_list = [entry for entry in file_list if os.path.isdir(entry['path']) and entry['name'].lower() not in _JUNKFOLDERS]
     file_list = sorted(file_list, key=lambda x: os.path.basename(x['name']).lower())
 
     # Add current path
-    file_list.insert(0, {'current_path': sabnzbd.misc.clip_path(path)})
+    file_list.insert(0, {'current_path': sabnzbd.filesystem.clip_path(path)})
     if include_parent and parent_path != path:
-        file_list.insert(1,{ 'name': "..", 'path': sabnzbd.misc.clip_path(parent_path) })
+        file_list.insert(1,{ 'name': "..", 'path': sabnzbd.filesystem.clip_path(parent_path) })
 
     return file_list
 

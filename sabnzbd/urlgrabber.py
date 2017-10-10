@@ -33,6 +33,7 @@ import sabnzbd
 from sabnzbd.constants import FUTURE_Q_FOLDER, Status
 from sabnzbd.encoding import unicoder
 import sabnzbd.misc as misc
+import sabnzbd.filesystem
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
@@ -223,11 +224,11 @@ class URLGrabber(Thread):
                         continue
                 fn.close()
 
-                if '<nzb' in data and misc.get_ext(filename) != '.nzb':
+                if '<nzb' in data and sabnzbd.filesystem.get_ext(filename) != '.nzb':
                     filename += '.nzb'
 
                 # Sanitize filename first (also removing forbidden Windows-names)
-                filename = misc.sanitize_filename(filename)
+                filename = sabnzbd.filesystem.sanitize_filename(filename)
 
                 # Write data to temp file
                 path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
@@ -238,7 +239,7 @@ class URLGrabber(Thread):
                 del data
 
                 # Check if nzb file
-                if misc.get_ext(filename) in ('.nzb', '.gz', 'bz2'):
+                if sabnzbd.filesystem.get_ext(filename) in ('.nzb', '.gz', 'bz2'):
                     res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority,
                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
                                                        nzo_id=future_nzo.nzo_id)[0]
@@ -258,7 +259,7 @@ class URLGrabber(Thread):
                 else:
                     status, zf, exp_ext = dirscanner.is_archive(path)
                     if status == 0:
-                        if misc.get_ext(filename) not in ('.rar', '.zip', '.7z'):
+                        if sabnzbd.filesystem.get_ext(filename) not in ('.rar', '.zip', '.7z'):
                             filename = filename + exp_ext
                             os.rename(path, path + exp_ext)
                             path = path + exp_ext

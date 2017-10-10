@@ -37,7 +37,7 @@ import sabnzbd
 import sabnzbd.cfg
 
 from sabnzbd.constants import VALID_ARCHIVES, MEBI, Status
-from sabnzbd.misc import get_filename, get_ext, diskspace, to_units
+from sabnzbd.filesystem import get_filename, get_ext, diskspace, to_units
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.notifier as notifier
 

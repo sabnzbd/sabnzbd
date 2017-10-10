@@ -20,11 +20,12 @@ sabnzbd.getipaddress
 """
 
 import socket
-import sabnzbd
-import sabnzbd.cfg
 import multiprocessing.pool
 import functools
 
+import sabnzbd
+import sabnzbd.cfg
+from sabnzbd.encoding import ubtou
 
 # decorator stuff:
 def timeout(max_timeout):
@@ -92,7 +93,7 @@ def publicipv4():
             # specify the Host, because we only provide the IPv4 address in the URL:
             req.add_header('Host', sabnzbd.cfg.selftest_host())
             # get the response, timeout 2 seconds, in case the website is not accessible
-            public_ipv4 = urllib.request.urlopen(req, timeout=2).read().decode('utf-8')
+            public_ipv4 = ubtou(urllib.request.urlopen(req, timeout=2).read())
             # ... check the response is indeed an IPv4 address:
             socket.inet_aton(public_ipv4)  # if we got anything else than a plain IPv4 address, this will raise an exception
             # if we get here without exception, we're done:

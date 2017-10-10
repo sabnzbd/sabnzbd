@@ -38,11 +38,12 @@ from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
     REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, \
     LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY, \
     RENAMES_FILE, MAX_BAD_ARTICLES, Status, PNFO
-from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername, \
-    get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
-    int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
-    fix_unix_encoding, calc_age, is_obfuscated_filename, get_ext, get_filename, \
-    get_unique_filename, renamer, remove_file, remove_dir
+from sabnzbd.misc import to_units, cat_to_opts, cat_convert, int_conv, \
+    format_time_string, calc_age
+from sabnzbd.filesystem import sanitize_foldername, get_unique_path, get_admin_path, \
+    remove_all, sanitize_filename, globber_full, set_permissions, long_path, \
+    trim_win_path, fix_unix_encoding, is_obfuscated_filename, get_ext, get_filename, \
+    get_unique_filename, renamer
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg

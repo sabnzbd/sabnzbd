@@ -30,11 +30,11 @@ import re
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, \
     sfv_check, build_filelists, rar_sort
 from threading import Thread
-from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-    make_script_path, long_path, clip_path, \
-    on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
-    set_permissions, cleanup_empty_directories, fix_unix_encoding, \
-    sanitize_and_trim_path, sanitize_files_in_folder, remove_file
+from sabnzbd.misc import on_cleanup_list
+from sabnzbd.filesystem import real_path, get_unique_path, create_dirs, move_to_path, \
+    make_script_path, long_path, clip_path, renamer, remove_dir, remove_all, globber, \
+    globber_full, set_permissions, cleanup_empty_directories, fix_unix_encoding, \
+    sanitize_and_trim_path, sanitize_files_in_folder
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE

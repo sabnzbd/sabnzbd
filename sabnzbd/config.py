@@ -29,6 +29,7 @@ import random
 import uuid
 from urllib.parse import urlparse
 import sabnzbd.misc
+import sabnzbd.filesystem
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
 import configobj
 from sabnzbd.decorators import synchronized
@@ -206,16 +207,16 @@ class OptionDir(Option):
         value = self.get()
         path = ''
         if value:
-            path = sabnzbd.misc.real_path(self.__root, value)
+            path = sabnzbd.filesystem.real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
+                res, path = sabnzbd.filesystem.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
         return path
 
     def test_path(self):
         """ Return True if path exists """
         value = self.get()
         if value:
-            return os.path.exists(sabnzbd.misc.real_path(self.__root, value))
+            return os.path.exists(sabnzbd.filesystem.real_path(self.__root, value))
         else:
             return False
 
@@ -236,7 +237,7 @@ class OptionDir(Option):
                 error, value = self.__validation(self.__root, value, self._Option__default_val)
             if not error:
                 if value and (self.__create or create):
-                    res, path = sabnzbd.misc.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
+                    res, path = sabnzbd.filesystem.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
                     if not res:
                         error = T('Cannot create %s folder %s') % (self.ident()[1], path)
             if not error:
@@ -834,7 +835,7 @@ def save_config(force=False):
     bakname = filename + '.bak'
 
     # Check if file is writable
-    if not sabnzbd.misc.is_writable(filename):
+    if not sabnzbd.filesystem.is_writable(filename):
         logging.error(T('Cannot write to INI file %s'), filename)
         return res
 
@@ -863,7 +864,7 @@ def save_config(force=False):
         except:
             pass
         # Restore INI file from backup
-        sabnzbd.misc.renamer(bakname, filename)
+        sabnzbd.filesystem.renamer(bakname, filename)
 
     return res
 
@@ -1075,7 +1076,7 @@ def validate_safedir(root, value, default):
     """ Allow only when queues are empty and no UNC
         On Windows path should be small
     """
-    if sabnzbd.WIN32 and value and len(sabnzbd.misc.real_path(root, value)) >= MAX_WIN_DFOLDER:
+    if sabnzbd.WIN32 and value and len(sabnzbd.filesystem.real_path(root, value)) >= MAX_WIN_DFOLDER:
         return T('Error: Path length should be below %s.') % MAX_WIN_DFOLDER, None
     if sabnzbd.empty_queues():
         return validate_no_unc(root, value, default)

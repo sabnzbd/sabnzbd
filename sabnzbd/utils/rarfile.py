@@ -824,7 +824,7 @@ class RarFile(object):
         """
         # Modified for SABnzbd by clipping paths
         # and de-unicoding only here
-        from sabnzbd.misc import clip_path
+        from sabnzbd.filesystem import clip_path
         from sabnzbd.encoding import deunicode
         rarpath = deunicode(clip_path(self._rarfile))
 

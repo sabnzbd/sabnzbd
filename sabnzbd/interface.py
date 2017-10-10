@@ -38,9 +38,9 @@ import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
-from sabnzbd.misc import real_path, to_units, from_units, \
-    time_format, long_path, calc_age, same_file, \
-    cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
+from sabnzbd.misc import to_units, from_units, time_format, calc_age, \
+    cat_to_opts, int_conv, get_base_url
+from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter

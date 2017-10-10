@@ -29,8 +29,9 @@ from subprocess import Popen
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path, long_path, remove_all, globber, \
-    format_time_string, has_win_device, real_path, remove_file
+from sabnzbd.misc import int_conv, format_time_string
+from sabnzbd.filesystem import clip_path, long_path, remove_all, globber, \
+    has_win_device, real_path
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path

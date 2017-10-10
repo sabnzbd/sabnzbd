@@ -32,9 +32,10 @@ from subprocess import Popen
 import sabnzbd
 from sabnzbd.encoding import ubtou, TRANS, UNTRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
-    has_win_device, calc_age, long_path, remove_file
+from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
+    get_all_passwords, calc_age
+from sabnzbd.filesystem import  make_script_path, real_path, globber, globber_full, \
+    renamer, clip_path,has_win_device, long_path
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status

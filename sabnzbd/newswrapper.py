@@ -423,6 +423,9 @@ class NewsWrapper(object):
             if combine_chunk[-5:] == b'\r\n.\r\n':
                 return (chunk_len, True, False)
 
+        # Still in middle of data, so continue!
+        return (chunk_len, False, False)
+
     def soft_reset(self):
         self.timeout = None
         self.article = None

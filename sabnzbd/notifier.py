@@ -36,7 +36,8 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import unicoder
 from sabnzbd.constants import NOTIFY_KEYS
-from sabnzbd.misc import split_host, make_script_path
+from sabnzbd.misc import split_host
+from sabnzbd.filesystem import make_script_path
 from sabnzbd.newsunpack import external_script
 
 from gntp.core import GNTPRegister
@@ -269,9 +270,7 @@ def send_growl(title, msg, gtype, test=None):
             _GROWL, error = register_growl(growl_server, growl_password)
         if _GROWL:
             _GROWL_REG = True
-            if isinstance(msg, str):
-                msg = msg.decode('utf-8')
-            elif not isinstance(msg, str):
+            if not isinstance(msg, str):
                 msg = str(msg)
             logging.debug('Send to Growl: %s %s %s', gtype, title, msg)
             try:

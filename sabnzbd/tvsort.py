@@ -27,7 +27,7 @@ import logging
 import re
 
 import sabnzbd
-from sabnzbd.misc import move_to_path, cleanup_empty_directories, get_unique_path, \
+from sabnzbd.filesystem import move_to_path, cleanup_empty_directories, get_unique_path, \
     get_unique_filename, get_ext, renamer, sanitize_foldername, clip_path
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 from sabnzbd.encoding import unicoder
