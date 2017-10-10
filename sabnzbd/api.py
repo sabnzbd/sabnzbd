@@ -1167,11 +1167,11 @@ def build_status(skip_dashboard=False, output=None):
     info['pystone'] = sabnzbd.PYSTONE_SCORE
 
     # Dashboard: Speed of Download directory:
-    info['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
+    info['downloaddir'] = clip_path(cfg.download_dir.get_path())
     info['downloaddirspeed'] = sabnzbd.DOWNLOAD_DIR_SPEED
 
     # Dashboard: Speed of Complete directory:
-    info['completedir'] = sabnzbd.cfg.complete_dir.get_path()
+    info['completedir'] = clip_path(cfg.complete_dir.get_path())
     info['completedirspeed'] = sabnzbd.COMPLETE_DIR_SPEED
 
     # Dashboard: Connection information
@@ -1608,8 +1608,8 @@ def build_header(webdir='', output=None, trans_functions=True):
         header['pid'] = os.getpid()
         header['active_lang'] = cfg.language()
 
-        header['my_lcldata'] = sabnzbd.DIR_LCLDATA
-        header['my_home'] = sabnzbd.DIR_HOME
+        header['my_lcldata'] = clip_path(sabnzbd.DIR_LCLDATA)
+        header['my_home'] = clip_path(sabnzbd.DIR_HOME)
         header['webdir'] = webdir or sabnzbd.WEB_DIR
         header['url_base'] = cfg.url_base()
 

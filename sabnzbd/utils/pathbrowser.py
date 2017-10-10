@@ -19,6 +19,8 @@
 # along with Sick Beard. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import functools
+
 if os.name == 'nt':
     import win32api, win32con, win32file
     MASK = win32con.FILE_ATTRIBUTE_DIRECTORY | win32con.FILE_ATTRIBUTE_HIDDEN
@@ -32,13 +34,15 @@ import sabnzbd
 
 _JUNKFOLDERS = (
         'boot', 'bootmgr', 'cache', 'msocache', 'recovery', '$recycle.bin', 'recycler',
-        'system volume information', 'temporary internet files', # windows specific
+        'system volume information', 'temporary internet files', 'perflogs', # windows specific
         '.fseventd', '.spotlight', '.trashes', '.vol', 'cachedmessages', 'caches', 'trash' # osx specific
         )
+
 
 # this is for the drive letter code, it only works on windows
 if os.name == 'nt':
     from ctypes import windll
+
 
 # adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
 def get_win_drives():
@@ -52,13 +56,12 @@ def get_win_drives():
         bitmask >>= 1
     return drives
 
+
 def folders_at_path(path, include_parent = False, show_hidden = False):
     """ Returns a list of dictionaries with the folders contained at the given path
         Give the empty string as the path to list the contents of the root path
         under Unix this means "/", on Windows this will be a list of drive letters)
     """
-    from sabnzbd.encoding import unicoder
-
     if path == "":
         if NT:
             entries = [{'name': letter + ':\\', 'path': letter + ':\\'} for letter in get_win_drives()]
@@ -83,30 +86,31 @@ def folders_at_path(path, include_parent = False, show_hidden = False):
     if path == parent_path and os.name == 'nt':
         parent_path = ""
 
+    # List all files and folders
     file_list = []
-    try:
-        for filename in os.listdir(path):
-            fpath = os.path.join(path, filename)
-            try:
-                if NT:
-                    doit = (win32api.GetFileAttributes(fpath) & MASK) == TMASK and filename != 'PerfLogs'
-                elif not show_hidden:
-                    doit = not filename.startswith('.')
-                else:
-                    doit = True
-            except:
-                doit = False
-            if doit:
-                file_list.append({ 'name': unicoder(filename), 'path': unicoder(fpath) })
-        file_list = [entry for entry in file_list if os.path.isdir(entry['path'])]
-        file_list = [entry for entry in file_list if entry['name'].lower() not in _JUNKFOLDERS]
-        file_list = sorted(file_list, lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
-    except:
-        # No access, ignore
-        pass
-    file_list.insert(0, {'current_path': path})
+    for filename in os.listdir(path):
+        fpath = os.path.join(path, filename)
+        try:
+            if NT:
+                # Remove hidden folders
+                list_folder = (win32api.GetFileAttributes(fpath) & MASK) == TMASK
+            elif not show_hidden:
+                list_folder = not filename.startswith('.')
+            else:
+                list_folder = True
+        except:
+            list_folder = False
+        if list_folder:
+            file_list.append({ 'name': sabnzbd.misc.clip_path(filename), 'path': sabnzbd.misc.clip_path(fpath) })
+
+    # Remove junk and sort results
+    file_list = [entry for entry in file_list if os.path.isdir(entry['path']) and entry['name'].lower() not in _JUNKFOLDERS]
+    file_list = sorted(file_list, key=lambda x: os.path.basename(x['name']).lower())
+
+    # Add current path
+    file_list.insert(0, {'current_path': sabnzbd.misc.clip_path(path)})
     if include_parent and parent_path != path:
-        file_list.insert(1,{ 'name': "..", 'path': parent_path })
+        file_list.insert(1,{ 'name': "..", 'path': sabnzbd.misc.clip_path(parent_path) })
 
     return file_list
 

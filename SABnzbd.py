@@ -28,6 +28,7 @@ import os
 import getopt
 import signal
 import socket
+import locale
 import platform
 import ssl
 import time
@@ -60,8 +61,6 @@ except:
             sys.exit(1)
         else:
             SQLITE_DLL = False
-
-import locale
 
 
 import sabnzbd
@@ -318,7 +317,7 @@ def GetProfileInfo(vista_plus):
             # Instead the signal_handler will ignore the "logoff" signal
             # signal.signal(5, signal.SIG_IGN)
             pass
-        ok = True
+        return
     elif sabnzbd.WIN32:
         try:
             from win32com.shell import shell, shellcon
@@ -327,7 +326,6 @@ def GetProfileInfo(vista_plus):
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
             sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
             sabnzbd.DIR_HOME = os.environ['USERPROFILE']
-            ok = True
         except:
             try:
                 if vista_plus:
@@ -339,23 +337,16 @@ def GetProfileInfo(vista_plus):
                     root = os.environ['USERPROFILE']
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root, DEF_WORKDIR)
                     sabnzbd.DIR_HOME = root
-
-                try:
-                    # Conversion to 8bit ASCII required for CherryPy
-                    sabnzbd.DIR_APPDATA = sabnzbd.DIR_APPDATA.encode(codepage)
-                    sabnzbd.DIR_HOME = sabnzbd.DIR_HOME.encode(codepage)
-                    ok = True
-                except:
-                    # If unconvertible characters exist, use MSDOS name
-                    try:
-                        sabnzbd.DIR_APPDATA = win32api.GetShortPathName(sabnzbd.DIR_APPDATA)
-                        sabnzbd.DIR_HOME = win32api.GetShortPathName(sabnzbd.DIR_HOME)
-                        ok = True
-                    except:
-                        pass
                 sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+
             except:
                 pass
+
+        # Long-path everything
+        sabnzbd.DIR_APPDATA = long_path(sabnzbd.DIR_APPDATA)
+        sabnzbd.DIR_LCLDATA = long_path(sabnzbd.DIR_LCLDATA)
+        sabnzbd.DIR_HOME = long_path(sabnzbd.DIR_HOME)
+        return
 
     elif sabnzbd.DARWIN:
         home = os.environ.get('HOME')
@@ -363,7 +354,7 @@ def GetProfileInfo(vista_plus):
             sabnzbd.DIR_APPDATA = '%s/Library/Application Support/SABnzbd' % home
             sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
             sabnzbd.DIR_HOME = home
-            ok = True
+            return
 
     else:
         # Unix/Linux
@@ -372,12 +363,12 @@ def GetProfileInfo(vista_plus):
             sabnzbd.DIR_APPDATA = '%s/.%s' % (home, DEF_WORKDIR)
             sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
             sabnzbd.DIR_HOME = home
-            ok = True
+            return
 
-    if not ok:
-        panic("Cannot access the user profile.",
-              "Please start with sabnzbd.ini file in another location")
-        exit_sab(2)
+    # Nothing worked
+    panic("Cannot access the user profile.",
+          "Please start with sabnzbd.ini file in another location")
+    exit_sab(2)
 
 
 def print_modules():
@@ -1148,10 +1139,11 @@ def main():
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
 
     # Find encoding; relevant for unrar activities
-    logging.info('Preferred encoding = %s', sys.stdin.encoding)
+    preferredencoding = locale.getpreferredencoding().lower()
+    logging.info('Preferred encoding = %s', preferredencoding)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in sys.stdin.encoding.lower() and '8' in sys.stdin.encoding.lower()):
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in preferredencoding and '8' in preferredencoding):
         logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % sys.stdin.encoding)
 
     # SSL Information
@@ -1356,7 +1348,6 @@ def main():
 
     # Set authentication for CherryPy
     sabnzbd.interface.set_auth(cherrypy.config)
-
     logging.info('Starting web-interface on %s:%s', cherryhost, cherryport)
 
     sabnzbd.cfg.log_level.callback(guard_loglevel)
