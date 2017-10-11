@@ -540,7 +540,7 @@ class Downloader(Thread):
                     # Check 10 seconds after enabling slowdown
                     if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
                         # Now let's check if it was stable in the last 10 seconds
-                        self.can_be_slowed = (BPSMeter.do.get_stable_speed(timespan=10) > 0)
+                        self.can_be_slowed = BPSMeter.do.get_stable_speed(timespan=10)
                         self.can_be_slowed_timer = 0
                         logging.debug('Downloader-slowdown: %r', self.can_be_slowed)
 
