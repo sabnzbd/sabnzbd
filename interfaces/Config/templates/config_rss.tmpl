@@ -287,7 +287,7 @@
                     <input type="hidden" name="feed" value="$feed" />
                     <table class="catTable">
                         <tbody>
-                            <tr class="<!--#if $odd then " alt " else " "#--> <!--#if $filter[3]!="A" then 'disabled_options_rule' else ""#-->">
+                            <tr class="<!--#if $odd then " alt " else " "#--> <!--#if $filter[3]!="A" and $filter[3]!="S" then 'disabled_options_rule' else ""#-->">
                                 <td>
                                     <input type="checkbox" name="enabled" value="1" <!--#if $filter[6]=='1' then 'checked="checked"' else ""#--> />
                                 </td>
@@ -568,7 +568,7 @@ function urlencode(str) {
 
     // Only the Accept filter needs all the options
     \$('form[action="upd_rss_filter"]').find('select[name="filter_type"]').change(function() {
-        \$(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', \$(this).val() != "A")
+        \$(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', \$(this).val() != "A" && \$(this).val() != "S")
     })
     // Trigger on-load for all
     \$('.disabled_options_rule').find('td select:not([name="filter_type"])').attr('disabled', true)
