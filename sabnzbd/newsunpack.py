@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, UNTRANS, unicoder, platform_encode, deunicod
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
-    has_win_device, calc_age, long_path
+    has_win_device, calc_age, long_path, remove_file
 from sabnzbd.tvsort import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -339,16 +339,14 @@ def clean_up_joinables(names):
     """ Remove joinable files and their .1 backups """
     for name in names:
         if os.path.exists(name):
-            logging.debug("Deleting %s", name)
             try:
-                os.remove(name)
+                remove_file(name)
             except:
                 pass
         name1 = name + ".1"
         if os.path.exists(name1):
-            logging.debug("Deleting %s", name1)
             try:
-                os.remove(name1)
+                remove_file(name1)
             except:
                 pass
 
@@ -424,8 +422,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
                 shutil.copyfileobj(f, joined_file, bufsize)
                 f.close()
                 if delete:
-                    logging.debug("Deleting %s", joinable)
-                    os.remove(joinable)
+                    remove_file(joinable)
                 n += 1
 
             # Remove any remaining .1 files
@@ -560,9 +557,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         # Delete the old files if we have to
         if success and delete and newfiles:
             for rar in rars:
-                logging.info("Deleting %s", rar)
                 try:
-                    os.remove(rar)
+                    remove_file(rar)
                 except OSError:
                     if os.path.exists(rar):
                         logging.warning(T('Deleting %s failed!'), rar)
@@ -572,7 +568,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                 if os.path.exists(brokenrar):
                     logging.info("Deleting %s", brokenrar)
                     try:
-                        os.remove(brokenrar)
+                        remove_file(brokenrar)
                     except OSError:
                         if os.path.exists(brokenrar):
                             logging.warning(T('Deleting %s failed!'), brokenrar)
@@ -868,9 +864,8 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
             i = 0
 
             for _zip in zips:
-                logging.info("Deleting %s", _zip)
                 try:
-                    os.remove(_zip)
+                    remove_file(_zip)
                     i += 1
                 except OSError:
                     logging.warning(T('Deleting %s failed!'), _zip)
@@ -878,9 +873,8 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
                 brokenzip = '%s.1' % _zip
 
                 if os.path.exists(brokenzip):
-                    logging.info("Deleting %s", brokenzip)
                     try:
-                        os.remove(brokenzip)
+                        remove_file(brokenzip)
                         i += 1
                     except OSError:
                         logging.warning(T('Deleting %s failed!'), brokenzip)
@@ -1039,12 +1033,12 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
             for ext in extensions:
                 path = '%s.%s' % (sevenset, ext)
                 try:
-                    os.remove(path)
+                    remove_file(path)
                 except:
                     logging.warning(T('Deleting %s failed!'), path)
         else:
             try:
-                os.remove(sevenset)
+                remove_file(sevenset)
             except:
                 logging.warning(T('Deleting %s failed!'), sevenset)
 
@@ -1161,9 +1155,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                 if filepath in joinables:
                     joinables.remove(filepath)
                 if os.path.exists(filepath):
-                    logging.info("Deleting %s", filepath)
                     try:
-                        os.remove(filepath)
+                        remove_file(filepath)
                     except OSError:
                         logging.warning(T('Deleting %s failed!'), filepath)
     except:

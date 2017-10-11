@@ -859,7 +859,7 @@ def save_config(force=False):
         logging.error(T('Cannot write to INI file %s'), filename)
         logging.info("Traceback: ", exc_info=True)
         try:
-            os.remove(filename)
+            sabnzbd.misc.remove_file(filename)
         except:
             pass
         # Restore INI file from backup

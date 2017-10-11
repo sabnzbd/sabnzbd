@@ -922,7 +922,7 @@ def move_to_path(path, new_path):
     new_path = os.path.abspath(new_path)
     if overwrite and os.path.exists(new_path):
         try:
-            os.remove(new_path)
+            remove_file(new_path)
         except:
             overwrite = False
     if not overwrite:
@@ -940,7 +940,7 @@ def move_to_path(path, new_path):
                 if not os.path.exists(os.path.dirname(new_path)):
                     create_dirs(os.path.dirname(new_path))
                 shutil.copyfile(path, new_path)
-                os.remove(path)
+                remove_file(path)
             except:
                 # Check if the old-file actually exists (possible delete-delays)
                 if not os.path.exists(path):
@@ -1055,12 +1055,11 @@ def renamer(old, new):
 @synchronized(DIR_LOCK)
 def remove_dir(path):
     """ Remove directory with retries for Win32 """
-    logging.debug('Removing dir %s', path)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
             try:
-                os.rmdir(path)
+                remove_dir(path)
                 return
             except WindowsError, err:
                 if err[0] == 32:
@@ -1071,7 +1070,7 @@ def remove_dir(path):
             time.sleep(3)
         raise WindowsError(err)
     else:
-        os.rmdir(path)
+        remove_dir(path)
 
 
 @synchronized(DIR_LOCK)
@@ -1085,18 +1084,28 @@ def remove_all(path, pattern='*', keep_folder=False, recursive=False):
         for f in files:
             if os.path.isfile(f):
                 try:
-                    logging.debug('Removing file %s', f)
-                    os.remove(f)
+                    remove_file(f)
                 except:
                     logging.info('Cannot remove file %s', f)
             elif recursive:
                 remove_all(f, pattern, False, True)
         if not keep_folder:
             try:
-                logging.debug('Removing dir %s', path)
-                os.rmdir(path)
+                remove_dir(path)
             except:
                 logging.info('Cannot remove folder %s', path)
+
+
+def remove_file(path):
+    """ Wrapper function so any file removal is logged """
+    logging.debug('Deleting file %s', path)
+    os.remove(path)
+
+
+def remove_dir(dir):
+    """ Wrapper function so any dir removal is logged """
+    logging.debug('Deleting dir %s', dir)
+    os.rmdir(dir)
 
 
 def trim_win_path(path):

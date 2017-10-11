@@ -29,7 +29,7 @@ import logging
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, clip_path, long_path, remove_all, globber, \
-    format_time_string, has_win_device, real_path
+    format_time_string, has_win_device, real_path, remove_file
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
@@ -384,8 +384,7 @@ class DirectUnpacker(threading.Thread):
                         for rm_file in rar_contents:
                             # Flat-unpack, so remove foldername from RarFile output
                             f = os.path.join(extraction_path, os.path.basename(rm_file))
-                            logging.debug('Removing file %s', f)
-                            os.remove(f)
+                            remove_file(f)
                     except:
                         # The user will have to remove it themselves
                         logging.info('Failed to clean Direct Unpack after aborting %s', rarfile_nzf.filename, exc_info=True)

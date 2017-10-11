@@ -47,7 +47,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
     fix_unix_encoding, calc_age, is_obfuscated_filename, get_ext, get_filename, \
-    get_unique_filename, renamer
+    get_unique_filename, renamer, remove_file, remove_dir
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -337,7 +337,8 @@ class NzbFile(TryList):
     def remove_admin(self):
         """ Remove article database from disk (sabnzbd_nzf_<id>)"""
         try:
-            os.remove(os.path.join(self.nzo.workpath, self.nzf_id))
+            logging.debug('Removing article database for %s', self.nzf_id)
+            remove_file(os.path.join(self.nzo.workpath, self.nzf_id))
         except:
             pass
 
@@ -1673,7 +1674,7 @@ class NzbObject(TryList):
                 remove_all(self.downpath, recursive=True)
             else:
                 try:
-                    os.rmdir(self.downpath)
+                    remove_dir(self.downpath)
                 except:
                     pass
 

@@ -162,7 +162,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         zf.close()
         try:
             if not keep:
-                os.remove(path)
+                misc.remove_file(path)
         except:
             logging.error(T('Error removing %s'), misc.clip_path(path))
             logging.info("Traceback: ", exc_info=True)
@@ -249,7 +249,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         nzo.update_rating()
     try:
         if not keep:
-            os.remove(path)
+            misc.remove_file(path)
     except:
         logging.error(T('Error removing %s'), misc.clip_path(path))
         logging.info("Traceback: ", exc_info=True)

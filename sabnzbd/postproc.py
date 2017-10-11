@@ -34,7 +34,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
     make_script_path, long_path, clip_path, \
     on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
     set_permissions, cleanup_empty_directories, fix_unix_encoding, \
-    sanitize_and_trim_path, sanitize_files_in_folder
+    sanitize_and_trim_path, sanitize_files_in_folder, remove_file
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -803,7 +803,7 @@ def cleanup_list(wdir, skip_nzb):
                 if on_cleanup_list(filename, skip_nzb):
                     try:
                         logging.info("Removing unwanted file %s", path)
-                        os.remove(path)
+                        remove_file(path)
                     except:
                         logging.error(T('Removing %s failed'), clip_path(path))
                         logging.info("Traceback: ", exc_info=True)
@@ -883,7 +883,7 @@ def remove_samples(path):
                 path = os.path.join(root, file_)
                 try:
                     logging.info("Removing unwanted sample file %s", path)
-                    os.remove(path)
+                    remove_file(path)
                 except:
                     logging.error(T('Removing %s failed'), clip_path(path))
                     logging.info("Traceback: ", exc_info=True)
@@ -936,7 +936,7 @@ def del_marker(path):
     if path and os.path.exists(path):
         logging.debug('Removing marker file %s', path)
         try:
-            os.remove(path)
+            remove_file(path)
         except:
             logging.info('Cannot remove marker file %s', path)
             logging.info("Traceback: ", exc_info=True)

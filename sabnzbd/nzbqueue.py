@@ -26,7 +26,7 @@ import datetime
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import exit_sab, cat_to_opts, \
+from sabnzbd.misc import exit_sab, cat_to_opts, remove_file, \
     get_admin_path, remove_all, globber_full, int_conv
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
@@ -99,7 +99,7 @@ class NzbQueue(object):
                             self.add(nzo, save=True)
                     else:
                         try:
-                            os.remove(item)
+                            remove_file(item)
                         except:
                             pass
 
@@ -139,7 +139,7 @@ class NzbQueue(object):
 
             # Remove any future-jobs, we can't save those
             for item in globber_full(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):
-                os.remove(item)
+                remove_file(item)
 
             # Done converting
             cfg.converted_nzo_pickles.set(True)
