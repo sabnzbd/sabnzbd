@@ -27,13 +27,14 @@ import logging
 import time
 import binascii
 import shutil
+import functools
 from subprocess import Popen
 
 import sabnzbd
 from sabnzbd.encoding import ubtou, TRANS, UNTRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
-    get_all_passwords, calc_age
+    get_all_passwords, calc_age, cmp
 from sabnzbd.filesystem import  make_script_path, real_path, globber, globber_full, \
     renamer, clip_path,has_win_device, long_path
 from sabnzbd.tvsort import SeriesSorter
@@ -475,7 +476,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
 
     for rar_set in rar_sets:
         # Run the RAR extractor
-        rar_sets[rar_set].sort(rar_sort)
+        rar_sets[rar_set].sort(key=functools.cmp_to_key(rar_sort))
 
         rarpath = rar_sets[rar_set][0]
 

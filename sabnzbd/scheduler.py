@@ -299,7 +299,7 @@ def sort_schedules(all_events, now=None):
             if not all_events:
                 break
 
-    events.sort(key=lambda x, y: x[0] - y[0])
+    events.sort(key=lambda x: x[0])
     return events
 
 

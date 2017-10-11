@@ -30,6 +30,7 @@ import xml.sax
 import xml.sax.handler
 import xml.sax.xmlreader
 import hashlib
+import functools
 import difflib
 
 # SABnzbd modules
@@ -39,7 +40,7 @@ from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
     LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY, \
     RENAMES_FILE, MAX_BAD_ARTICLES, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, int_conv, \
-    format_time_string, calc_age
+    format_time_string, calc_age, cmp
 from sabnzbd.filesystem import sanitize_foldername, get_unique_path, get_admin_path, \
     remove_all, sanitize_filename, globber_full, set_permissions, long_path, \
     trim_win_path, fix_unix_encoding, is_obfuscated_filename, get_ext, get_filename, \
@@ -673,10 +674,10 @@ class NzbObject(TryList):
         if reuse:
             self.check_existing_files(wdir)
 
-        # if cfg.auto_sort():
-        #     self.files.sort(cmp=nzf_cmp_date)
-        # else:
-        #     self.files.sort(cmp=nzf_cmp_name)
+        if cfg.auto_sort():
+            self.files.sort(key=functools.cmp_to_key(nzf_cmp_date))
+        else:
+            self.files.sort(key=functools.cmp_to_key(nzf_cmp_name))
 
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
@@ -956,11 +957,11 @@ class NzbObject(TryList):
             self.renames = renames
 
         # Looking for the longest name first, minimizes the chance on a mismatch
-        files.sort(lambda x, y: len(y) - len(x))
+        files.sort(key=lambda x: len(x))
 
         # The NZFs should be tried shortest first, to improve the chance on a proper match
         nzfs = self.files[:]
-        nzfs.sort(lambda x, y: len(x.subject) - len(y.subject))
+        nzfs.sort(key=lambda x: len(x.subject))
 
         # Flag files from NZB that already exist as finished
         for filename in files[:]:

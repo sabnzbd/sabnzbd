@@ -113,6 +113,17 @@ def safe_lower(txt):
         return ''
 
 
+def cmp(x, y):
+    """
+    Replacement for built-in funciton cmp that was removed in Python 3
+
+    Compare the two objects x and y and return an integer according to
+    the outcome. The return value is negative if x < y, zero if x == y
+    and strictly positive if x > y.
+    """
+
+    return (x > y) - (x < y)
+
 
 def cat_to_opts(cat, pp=None, script=None, priority=None):
     """ Derive options from category, if options not already defined.

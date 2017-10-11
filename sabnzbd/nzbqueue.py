@@ -23,6 +23,7 @@ import os
 import logging
 import time
 import datetime
+import functools
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
@@ -942,11 +943,11 @@ def sort_queue_function(nzo_list, method, reverse):
     normal_priority = [nzo for nzo in nzo_list if nzo.priority == NORMAL_PRIORITY]
     low_priority = [nzo for nzo in nzo_list if nzo.priority == LOW_PRIORITY]
 
-    ultra_high_priority.sort(cmp=method, reverse=reverse)
-    super_high_priority.sort(cmp=method, reverse=reverse)
-    high_priority.sort(cmp=method, reverse=reverse)
-    normal_priority.sort(cmp=method, reverse=reverse)
-    low_priority.sort(cmp=method, reverse=reverse)
+    ultra_high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
+    super_high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
+    high_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
+    normal_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
+    low_priority.sort(key=functools.cmp_to_key(method), reverse=reverse)
 
     new_list = ultra_high_priority
     new_list.extend(super_high_priority)

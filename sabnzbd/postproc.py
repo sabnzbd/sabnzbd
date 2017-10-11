@@ -24,6 +24,7 @@ import queue
 import logging
 import sabnzbd
 import xml.sax.saxutils
+import functools
 import time
 import re
 
@@ -688,7 +689,7 @@ def try_sfv_check(nzo, workdir, setname):
     """
     # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
     sfvs = globber_full(workdir, '*.sfv')
-    sfvs.sort(lambda x, y: len(x) - len(y))
+    sfvs.sort(lambda x: len(x))
     par_error = False
     found = False
     for sfv in sfvs:
@@ -729,7 +730,7 @@ def try_rar_check(nzo, workdir, setname):
         rars = [rar for rar in rars if os.path.basename(rar).startswith(setname)]
 
     # Sort
-    rars.sort(rar_sort)
+    rars.sort(key=functools.cmp_to_key(rar_sort))
 
     # Test
     if rars:
