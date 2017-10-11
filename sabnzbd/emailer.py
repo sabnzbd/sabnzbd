@@ -149,6 +149,8 @@ def send(message, email_to, test=None):
         else:
             logging.info("Notification e-mail successfully sent")
             return T('Email succeeded')
+    else:
+        return T('Cannot send, missing required data')
 
 
 def get_email_date():
@@ -218,7 +220,7 @@ def send_with_template(prefix, parm, test=None):
 def endjob(filename, cat, status, path, bytes, fail_msg, stages, script, script_output, script_ret, test=None):
     """ Send end-of-job email """
     # Is it allowed?
-    if not check_cat('email', cat):
+    if not check_cat('misc', cat, keyword='email') and not test:
         return None
 
     # Translate the stage names
