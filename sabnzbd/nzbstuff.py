@@ -289,10 +289,10 @@ class NzbFile(TryList):
         elif not self.nzo.is_gone():
             # TEMPORARY ERRORS
             if not os.path.exists(os.path.join(self.nzf_id, self.nzo.workpath)):
-                logging.warning('Article DB file not found %s', self)
+                logging.warning('Article DB file not found %s: %s', self.nzf_id, self)
             else:
                 # It was there, but empty
-                logging.warning('Article DB empty %s', self)
+                logging.warning('Article DB empty %s: %s', self.nzf_id, self)
 
     def remove_article(self, article, found):
         """ Handle completed article, possibly end of file """
