@@ -142,12 +142,9 @@ ENV_NZO_FIELDS = ['bytes', 'bytes_downloaded', 'bytes_tried', 'cat', 'duplicate'
 
 def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     """ Run a user postproc script, return console output and exit value """
-    command = [str(extern_proc), str(complete_dir), str(nzo.filename),
-               str(nicename), '', str(nzo.cat), str(nzo.group), str(status)]
-
     failure_url = nzo.nzo_info.get('failure', '')
-    if failure_url:
-        command.append(str(failure_url))
+    command = [str(extern_proc), str(complete_dir), str(nzo.filename), str(nicename), '',
+               str(nzo.cat), str(nzo.group), str(status), str(failure_url)]
 
     # Fields not in the NZO directly
     extra_env_fields = {'failure_url': failure_url,
