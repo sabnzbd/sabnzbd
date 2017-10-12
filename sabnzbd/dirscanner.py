@@ -31,7 +31,6 @@ import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.encoding import platform_encode
-from sabnzbd.decorators import synchronized, NZBQUEUE_LOCK
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
@@ -97,7 +96,6 @@ def is_archive(path):
         return 1, None, ''
 
 
-@synchronized(NZBQUEUE_LOCK)
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                        priority=None, url='', nzbname=None, password=None, nzo_id=None):
     """ Analyse ZIP file and create job(s).
@@ -174,7 +172,6 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     return status, nzo_ids
 
 
-@synchronized(NZBQUEUE_LOCK)
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                       priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url='',
                       password=None, nzo_id=None):
