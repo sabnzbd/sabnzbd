@@ -48,7 +48,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
     fix_unix_encoding, calc_age, is_obfuscated_filename, get_ext, get_filename, \
     get_unique_filename, renamer, remove_file, remove_dir
-from sabnzbd.decorators import synchronized, NZBQUEUE_LOCK
+from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, platform_encode
@@ -572,7 +572,6 @@ NZO_LOCK = threading.RLock()
 
 class NzbObject(TryList):
 
-    @synchronized(NZBQUEUE_LOCK)
     def __init__(self, filename, pp, script, nzb=None,
                  futuretype=False, cat=None, url=None,
                  priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None,

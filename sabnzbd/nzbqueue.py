@@ -43,6 +43,7 @@ from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.notifier as notifier
 from sabnzbd.encoding import platform_encode
 from sabnzbd.bpsmeter import BPSMeter
+from sabnzbd.dirscanner import ProcessSingleFile
 
 
 class NzbQueue(object):
@@ -231,7 +232,6 @@ class NzbQueue(object):
 
         return nzo_id
 
-    @notify_downloader
     def send_back(self, nzo):
         """ Send back job to queue after successful pre-check """
         try:
@@ -239,7 +239,7 @@ class NzbQueue(object):
         except:
             logging.debug('Failed to find NZB file after pre-check (%s)', nzo.nzo_id)
             return
-        from sabnzbd.dirscanner import ProcessSingleFile
+
         res, nzo_ids = ProcessSingleFile(nzo.work_name + '.nzb', nzb_path, keep=True, reuse=True)
         if res == 0 and nzo_ids:
             nzo = self.replace_in_q(nzo, nzo_ids[0])
@@ -353,6 +353,8 @@ class NzbQueue(object):
         else:
             return None
 
+    # Beware that this double-lock causes full deadlock if any
+    # function inside or external function (API) wants same lock!
     @notify_downloader
     @synchronized(NZBQUEUE_LOCK)
     def add(self, nzo, save=True, quiet=False):
@@ -704,7 +706,6 @@ class NzbQueue(object):
         except:
             return -1
 
-    @notify_downloader
     def set_priority(self, nzo_ids, priority):
         try:
             n = -1
