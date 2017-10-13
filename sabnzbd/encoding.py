@@ -218,7 +218,11 @@ def TRANS(p):
     """
     global gTABLE_850_LATIN
     if sabnzbd.WIN32:
-        return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
+        if p:
+            return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
+        else:
+            # translate() fails on empty or None strings
+            return ''
     else:
         return unicoder(p)
 
@@ -229,7 +233,11 @@ def UNTRANS(p):
     """
     global gTABLE_LATIN_850
     if sabnzbd.WIN32:
-        return p.encode('cp1252', 'replace').translate(gTABLE_LATIN_850)
+        if p:
+            return p.encode('cp1252', 'replace').translate(gTABLE_LATIN_850)
+        else:
+            # translate() fails on empty or None strings
+            return ''
     else:
         return p
 
