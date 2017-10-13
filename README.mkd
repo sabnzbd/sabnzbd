@@ -1,5 +1,21 @@
-Release Notes - SABnzbd 2.3.1 Beta 1
+Release Notes - SABnzbd 2.3.1 RC 1
 =========================================================
+
+## Bugfixes since 2.3.1 Beta 1
+- Changing priorities when jobs were being added could cause freeze
+- Post-processing scripts could fail to run
+- Always send failure_url to post-processing scripts
+- Saving errors of renames-file prevented
+- Downloader could crash during first few seconds
+- Testing email notifications did not function
+- Email notifications could not be limited to categories
+- Show that RSS 'From Show SxxEyy' is an Accept-type filter
+- Category folders cannot be sub-folders of Temporary Download Folder
+- macOS: Added Safari pinned tab icon
+
+In case of 'Article DB missing/empty' errors, enable +Debug logging
+and report here: https://github.com/sabnzbd/sabnzbd/issues/952
+
 
 ## Changes since 2.3.0
 - Added post-processing script Deobfuscate.py ("scripts" folder) which
