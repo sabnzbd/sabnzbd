@@ -3730,7 +3730,7 @@ msgstr ""
 "findes i RSS-feed, medmindre du trykker på \"Force Download\"."
 
 #: sabnzbd/skintext.py [Config->RSS, placeholder (cannot be too long)]
-msgid "Seperate multiple URLs by a comma"
+msgid "Separate multiple URLS with a comma"
 msgstr "Adskil flere URL-adresser med komma"
 
 #: sabnzbd/skintext.py [Config->RSS button]

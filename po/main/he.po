@@ -3707,7 +3707,7 @@ msgstr ""
 "הזנה מתווספת, היא תאסוף רק פריטים חדשים ולא שום דבר שנמצא כבר בהזנת ה"
 
 #: sabnzbd/skintext.py [Config->RSS, placeholder (cannot be too long)]
-msgid "Seperate multiple URLs by a comma"
+msgid "Separate multiple URLS with a comma"
 msgstr "הפרד כתובות רבות ע\"י פסיק"
 
 #: sabnzbd/skintext.py [Config->RSS button]

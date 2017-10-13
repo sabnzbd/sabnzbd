@@ -3847,7 +3847,7 @@ msgstr ""
 "téléchargements\"."
 
 #: sabnzbd/skintext.py [Config->RSS, placeholder (cannot be too long)]
-msgid "Seperate multiple URLs by a comma"
+msgid "Separate multiple URLS with a comma"
 msgstr "Séparez les URL multiples par une virgule"
 
 #: sabnzbd/skintext.py [Config->RSS button]

@@ -3754,7 +3754,7 @@ msgstr ""
 "ya exista, salvo que presiones \"Forzar Descarga\"."
 
 #: sabnzbd/skintext.py [Config->RSS, placeholder (cannot be too long)]
-msgid "Seperate multiple URLs by a comma"
+msgid "Separate multiple URLS with a comma"
 msgstr ""
 
 #: sabnzbd/skintext.py [Config->RSS button]

@@ -3629,7 +3629,7 @@ msgstr ""
 "当中的项，除非您按“强制下载”。"
 
 #: sabnzbd/skintext.py [Config->RSS, placeholder (cannot be too long)]
-msgid "Seperate multiple URLs by a comma"
+msgid "Separate multiple URLS with a comma"
 msgstr "以逗号来分开多个链接"
 
 #: sabnzbd/skintext.py [Config->RSS button]
