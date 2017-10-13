@@ -3837,7 +3837,7 @@ msgstr ""
 "enthalten waren, ausser Sie klicken \"Download erzwingen\"."
 
 #: sabnzbd/skintext.py [Config->RSS, placeholder (cannot be too long)]
-msgid "Seperate multiple URLs by a comma"
+msgid "Separate multiple URLS with a comma"
 msgstr "Trenne verschiedene URLs mit Komma"
 
 #: sabnzbd/skintext.py [Config->RSS button]

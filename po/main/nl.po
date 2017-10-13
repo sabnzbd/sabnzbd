@@ -3791,7 +3791,7 @@ msgstr ""
 "op \"Forceer download\" klikt."
 
 #: sabnzbd/skintext.py [Config->RSS, placeholder (cannot be too long)]
-msgid "Seperate multiple URLs by a comma"
+msgid "Separate multiple URLS with a comma"
 msgstr "Zet komma's tussen de URLs"
 
 #: sabnzbd/skintext.py [Config->RSS button]

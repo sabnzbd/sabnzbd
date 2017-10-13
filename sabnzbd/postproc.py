@@ -569,7 +569,7 @@ def process_job(nzo):
 def prepare_extraction_path(nzo):
     """ Based on the information that we have, generate
         the extraction path and create the directory.
-        Seperated so it can be called from DirectUnpacker
+        Separated so it can be called from DirectUnpacker
     """
     one_folder = False
     marker_file = None
