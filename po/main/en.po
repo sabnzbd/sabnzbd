@@ -117,3 +117,5 @@ msgstr "unrar binary... NOT found!"
 msgid "Downloads will not unpacked."
 msgstr "Downloads will not be unpacked."
 
+msgid "Seperate multiple URLs by a comma"
+msgstr "Separate multiple URLS with a comma"
