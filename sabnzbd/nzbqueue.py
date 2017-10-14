@@ -30,7 +30,7 @@ from sabnzbd.misc import exit_sab, cat_to_opts, remove_file, \
     get_admin_path, remove_all, globber_full, int_conv
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
-from sabnzbd.decorators import notify_downloader, synchronized, NZBQUEUE_LOCK
+from sabnzbd.decorators import NzbQueueLocker
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, \
     JOB_ADMIN, LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
     REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
@@ -148,7 +148,7 @@ class NzbQueue(object):
             nzo_ids = []
         return nzo_ids
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def scan_jobs(self, all=False, action=True):
         """ Scan "incomplete" for missing folders,
             'all' is True: Include active folders
@@ -246,7 +246,7 @@ class NzbQueue(object):
             # Reset reuse flag to make pause/abort on encryption possible
             nzo.reuse = False
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def replace_in_q(self, nzo, nzo_id):
         """ Replace nzo by new in at the same spot in the queue, destroy nzo """
         # Must be a separate function from "send_back()", due to the required queue-lock
@@ -271,7 +271,7 @@ class NzbQueue(object):
             logging.info("Traceback: ", exc_info=True)
             return nzo
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def save(self, save_nzo=None):
         """ Save queue, all nzo's or just the specified one """
         logging.info("Saving queue")
@@ -353,10 +353,7 @@ class NzbQueue(object):
         else:
             return None
 
-    # Beware that this double-lock causes full deadlock if any
-    # function inside or external function (API) wants same lock!
-    @notify_downloader
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def add(self, nzo, save=True, quiet=False):
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.get_new_id('nzo', nzo.workpath, self.__nzo_table)
@@ -412,7 +409,7 @@ class NzbQueue(object):
             self.sort_by_avg_age()
         return nzo.nzo_id
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def remove(self, nzo_id, add_to_history=True, save=True, cleanup=True, keep_basic=False, del_files=False):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
@@ -456,7 +453,7 @@ class NzbQueue(object):
 
         return removed
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def remove_all(self, search=None):
         if search:
             search = search.lower()
@@ -519,7 +516,7 @@ class NzbQueue(object):
             handled.append(nzo_id)
         return handled
 
-    @notify_downloader
+    @NzbQueueLocker
     def resume_nzo(self, nzo_id):
         handled = []
         if nzo_id in self.__nzo_table:
@@ -530,7 +527,7 @@ class NzbQueue(object):
             handled.append(nzo_id)
         return handled
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def switch(self, item_id_1, item_id_2):
         try:
             # Allow an index as second parameter, easier for some skins
@@ -579,39 +576,39 @@ class NzbQueue(object):
         # If moving failed/no movement took place
         return (-1, nzo1.priority)
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def move_up_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
             for unused in range(size):
                 self.__nzo_table[nzo_id].move_up_bulk(nzf_ids)
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def move_top_bulk(self, nzo_id, nzf_ids):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_top_bulk(nzf_ids)
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def move_down_bulk(self, nzo_id, nzf_ids, size):
         if nzo_id in self.__nzo_table:
             for unused in range(size):
                 self.__nzo_table[nzo_id].move_down_bulk(nzf_ids)
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def move_bottom_bulk(self, nzo_id, nzf_ids):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def sort_by_avg_age(self, reverse=False):
         logging.info("Sorting by average date... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_date_cmp, reverse)
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def sort_by_name(self, reverse=False):
         logging.info("Sorting by name... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_name_cmp, reverse)
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def sort_by_size(self, reverse=False):
         logging.info("Sorting by size... (reversed:%s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
@@ -633,7 +630,7 @@ class NzbQueue(object):
         else:
             logging.debug("Sort: %s not recognized", field)
 
-    @synchronized(NZBQUEUE_LOCK)
+    @NzbQueueLocker
     def __set_priority(self, nzo_id, priority):
         """ Sets the priority on the nzo and places it in the queue at the appropriate position """
         try:
@@ -706,6 +703,7 @@ class NzbQueue(object):
         except:
             return -1
 
+    @NzbQueueLocker
     def set_priority(self, nzo_ids, priority):
         try:
             n = -1
@@ -910,7 +908,7 @@ class NzbQueue(object):
             if nzo.priority == priority:
                 nzo.pause()
 
-    @notify_downloader
+    @NzbQueueLocker
     def resume_on_prio(self, priority):
         for nzo in self.__nzo_list:
             if nzo.priority == priority:
@@ -922,7 +920,7 @@ class NzbQueue(object):
             if nzo.cat == cat:
                 nzo.pause()
 
-    @notify_downloader
+    @NzbQueueLocker
     def resume_on_cat(self, cat):
         for nzo in self.__nzo_list:
             if nzo.cat == cat:

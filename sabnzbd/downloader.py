@@ -30,7 +30,7 @@ import sys
 import Queue
 
 import sabnzbd
-from sabnzbd.decorators import synchronized, notify_downloader, DOWNLOADER_CV
+from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.constants import MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
 from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
@@ -256,12 +256,12 @@ class Downloader(Thread):
 
         return
 
-    @notify_downloader
+    @NzbQueueLocker
     def set_paused_state(self, state):
         """ Set downloader to specified paused state """
         self.paused = state
 
-    @notify_downloader
+    @NzbQueueLocker
     def resume(self):
         # Do not notify when SABnzbd is still starting
         if self.paused and sabnzbd.WEB_DIR:
@@ -269,7 +269,7 @@ class Downloader(Thread):
             notifier.send_notification("SABnzbd", T('Resuming'), 'download')
         self.paused = False
 
-    @notify_downloader
+    @NzbQueueLocker
     def pause(self, save=True):
         """ Pause the downloader, optionally saving admin """
         if not self.paused:
@@ -287,7 +287,7 @@ class Downloader(Thread):
         logging.debug("Delaying")
         self.delayed = True
 
-    @notify_downloader
+    @NzbQueueLocker
     def undelay(self):
         logging.debug("Undelaying")
         self.delayed = False
@@ -296,7 +296,7 @@ class Downloader(Thread):
         logging.info("Waiting for post-processing to finish")
         self.postproc = True
 
-    @notify_downloader
+    @NzbQueueLocker
     def resume_from_postproc(self):
         logging.info("Post-processing finished, resuming download")
         self.postproc = False
@@ -863,7 +863,7 @@ class Downloader(Thread):
                 del self._timers[server_id]
                 self.init_server(server_id, server_id)
 
-    @notify_downloader
+    @NzbQueueLocker
     @synchronized(TIMER_LOCK)
     def unblock(self, server_id):
         # Remove timer
@@ -882,7 +882,7 @@ class Downloader(Thread):
         for server_id in self._timers.keys():
             self.unblock(server_id)
 
-    @notify_downloader
+    @NzbQueueLocker
     @synchronized(TIMER_LOCK)
     def check_timers(self):
         """ Make sure every server without a non-expired timer is active """
@@ -905,7 +905,7 @@ class Downloader(Thread):
     def update_server(self, oldserver, newserver):
         self.init_server(oldserver, newserver)
 
-    @notify_downloader
+    @NzbQueueLocker
     def wakeup(self):
         """ Just rattle the semaphore """
         pass

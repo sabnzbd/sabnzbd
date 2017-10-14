@@ -108,7 +108,7 @@ import sabnzbd.lang as lang
 import sabnzbd.par2file as par2file
 import sabnzbd.api
 import sabnzbd.directunpacker as directunpacker
-from sabnzbd.decorators import synchronized, notify_downloader
+from sabnzbd.decorators import synchronized
 from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, \
     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
 import sabnzbd.getipaddress as getipaddress
