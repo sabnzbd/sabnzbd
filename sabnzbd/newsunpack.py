@@ -146,6 +146,9 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     command = [str(extern_proc), str(complete_dir), str(nzo.filename), str(nicename), '',
                str(nzo.cat), str(nzo.group), str(status), str(failure_url)]
 
+    # Add path to original NZB
+    nzb_paths = globber_full(nzo.workpath, '*.gz')
+
     # Fields not in the NZO directly
     extra_env_fields = {'failure_url': failure_url,
                         'complete_dir': complete_dir,
@@ -153,6 +156,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
                         'download_time': nzo.nzo_info.get('download_time', ''),
                         'avg_bps': int(nzo.avg_bps_total / nzo.avg_bps_freq) if nzo.avg_bps_freq else 0,
                         'age': calc_age(nzo.avg_date),
+                        'orig_nzb_gz': clip_path(nzb_paths[0]) if nzb_paths else '',
                         'program_dir': sabnzbd.DIR_PROG,
                         'par2_command': sabnzbd.newsunpack.PAR2_COMMAND,
                         'multipar_command': sabnzbd.newsunpack.MULTIPAR_COMMAND,
@@ -1859,6 +1863,7 @@ def create_env(nzo=None, extra_env_fields=None):
 
     # Are we adding things?
     if nzo:
+        # Add basic info
         for field in ENV_NZO_FIELDS:
             try:
                 field_value = getattr(nzo, field)
@@ -1873,6 +1878,7 @@ def create_env(nzo=None, extra_env_fields=None):
                 # Catch key/unicode errors
                 pass
 
+        # Add extra fields
         for field in extra_env_fields:
             try:
                 if extra_env_fields[field]:
