@@ -596,7 +596,7 @@ class MemcachedSession(Session):
     # Wrap all .get and .set operations in a single lock.
     mc_lock = threading.RLock()
 
-    # This is a seperate set of locks per session id.
+    # This is a separate set of locks per session id.
     locks = {}
 
     servers = ['127.0.0.1:11211']
