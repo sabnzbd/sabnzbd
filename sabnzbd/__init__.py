@@ -874,7 +874,7 @@ def get_new_id(prefix, folder, check_list=None):
 def save_data(data, _id, path, do_pickle=True, silent=False):
     """ Save data to a diskfile """
     if not silent:
-        logging.debug("Saving data for %s in %s", _id, path)
+        logging.debug('[%s] Saving data for %s in %s', misc.caller_name(), _id, path)
     path = os.path.join(path, _id)
 
     # We try 3 times, to avoid any dict or access problems
@@ -910,7 +910,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
         return None
 
     if not silent:
-        logging.debug("Loading data for %s from %s", _id, path)
+        logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), _id, path)
 
     try:
         with open(path, 'rb') as data_file:
@@ -945,7 +945,7 @@ def remove_data(_id, path):
 def save_admin(data, _id):
     """ Save data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
-    logging.info("Saving data for %s in %s", _id, path)
+    logging.info("[%s] Saving data for %s in %s", misc.caller_name(), _id, path)
 
     # We try 3 times, to avoid any dict or access problems
     for t in xrange(3):
@@ -968,7 +968,7 @@ def save_admin(data, _id):
 def load_admin(_id, remove=False, silent=False):
     """ Read data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
-    logging.info("Loading data for %s from %s", _id, path)
+    logging.info("[%s] Loading data for %s from %s", misc.caller_name(), _id, path)
 
     if not os.path.exists(path):
         logging.info("%s missing", path)
