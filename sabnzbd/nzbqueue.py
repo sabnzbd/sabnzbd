@@ -431,7 +431,7 @@ class NzbQueue(object):
                 self.cleanup_nzo(nzo, keep_basic, del_files)
 
             sabnzbd.remove_data(nzo_id, nzo.workpath)
-            logging.info('Removed job %s', nzo.final_name)
+            logging.info('[%s] Removed job %s', caller_name(), nzo.final_name)
             if save:
                 self.save(nzo)
         else:

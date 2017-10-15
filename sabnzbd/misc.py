@@ -780,6 +780,10 @@ def caller_name(skip=2):
 
        Source: https://gist.github.com/techtonik/2151727
     """
+    # Only do the tracing on Debug (function is always called)
+    if cfg.log_level() != 2:
+        return 'N/A'
+
     stack = inspect.stack()
     start = 0 + skip
     if len(stack) < start + 1:
