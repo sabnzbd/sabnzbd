@@ -906,7 +906,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     path = os.path.join(path, _id)
 
     if not os.path.exists(path):
-        logging.info("%s missing", path)
+        logging.info("[%s] %s missing", misc.caller_name(), path)
         return None
 
     if not silent:
@@ -945,7 +945,7 @@ def remove_data(_id, path):
 def save_admin(data, _id):
     """ Save data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
-    logging.info("[%s] Saving data for %s in %s", misc.caller_name(), _id, path)
+    logging.debug("[%s] Saving data for %s in %s", misc.caller_name(), _id, path)
 
     # We try 3 times, to avoid any dict or access problems
     for t in xrange(3):
@@ -968,10 +968,10 @@ def save_admin(data, _id):
 def load_admin(_id, remove=False, silent=False):
     """ Read data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
-    logging.info("[%s] Loading data for %s from %s", misc.caller_name(), _id, path)
+    logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), _id, path)
 
     if not os.path.exists(path):
-        logging.info("%s missing", path)
+        logging.info("[%s] %s missing", misc.caller_name(), path)
         return None
 
     try:

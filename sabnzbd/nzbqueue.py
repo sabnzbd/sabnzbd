@@ -27,7 +27,7 @@ import datetime
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, remove_file, \
-    get_admin_path, remove_all, globber_full, int_conv
+    get_admin_path, remove_all, globber_full, int_conv, caller_name
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NzbQueueLocker
@@ -793,7 +793,7 @@ class NzbQueue(object):
 
     def end_job(self, nzo):
         """ Send NZO to the post-processing queue """
-        logging.info('Ending job %s', nzo.final_name)
+        logging.info('[%s] Ending job %s', caller_name(), nzo.final_name)
 
         # Notify assembler to call postprocessor
         if not nzo.deleted:

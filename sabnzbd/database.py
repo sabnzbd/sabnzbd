@@ -33,7 +33,6 @@ import zlib
 import logging
 import sys
 import threading
-import inspect
 
 import sabnzbd
 import sabnzbd.cfg
