@@ -213,6 +213,7 @@ class DirectUnpacker(threading.Thread):
                 # Write current log and clear
                 unrar_log.append(linebuf.strip())
                 linebuf = ''
+                last_volume_linebuf = ''
                 logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
                 unrar_log = []
                 rarfiles = []
@@ -259,9 +260,12 @@ class DirectUnpacker(threading.Thread):
                         logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
-                    if last_volume_linebuf == linebuf and not self.have_next_volume():
-                        logging.info('DirectUnpack failed due to missing files %s', self.cur_setname)
-                        self.abort()
+                    if last_volume_linebuf == linebuf:
+                        if not self.have_next_volume():
+                            logging.info('DirectUnpack failed due to missing files %s', self.cur_setname)
+                            self.abort()
+                        else:
+                            logging.debug('Duplicate output line detected: "%s"', last_volume_linebuf)
 
                     last_volume_linebuf = linebuf
 
