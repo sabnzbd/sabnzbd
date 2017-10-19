@@ -247,7 +247,7 @@ class DirectUnpacker(threading.Thread):
                 # Possible that the instance was deleted while locked
                 if not self.killed:
                     # Give unrar some time to do it's thing
-                    self.active_instance.stdin.write('\n')
+                    self.active_instance.stdin.write('C\n')
                     start_time = time.time()
                     time.sleep(0.1)
 
