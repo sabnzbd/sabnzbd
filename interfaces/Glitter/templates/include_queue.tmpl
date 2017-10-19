@@ -92,21 +92,21 @@
                     </a>
                 </td>
                 <td class="name">
-                    <div class="row-wrap-text" data-bind="visible: !editingName()">
-                        <span data-bind="text: name, attr: { 'title': name() }"></span>
+                    <div class="row-wrap-text" data-bind="visible: !editingName(), css: { 'direct-unpack-text': direct_unpack }">
+                        <span data-bind="text: name, attr: { 'title': name_title }"></span>
                         <!-- ko if: password()  -->
                         <small class="queue-item-password">
                             <span class="glyphicon glyphicon-lock"></span>
                             <span data-bind="text: password"></span>
                         </small>
                         <!-- /ko -->
-                        <div class="name-icons direct-unpack hover-button" data-bind="visible: direct_unpack" title="$T('opt-direct_unpack')">
-                            <span class="glyphicon glyphicon-compressed"></span> <span data-bind="text: direct_unpack"></span>
-                        </div>
                     </div>
                     <form data-bind="submit: editingNameSubmit">
                         <input type="text" data-bind="value: nameForEdit, visible: editingName(), hasfocus: editingName" />
                     </form>
+                    <div class="name-icons direct-unpack hover-button" data-bind="visible: direct_unpack">
+                        <span class="glyphicon glyphicon-compressed"></span> <span data-bind="text: direct_unpack"></span>
+                    </div>
                     <div class="name-options" data-bind="visible: !editingName(), css: { disabled: isGrabbing() }">
                         <a href="#" data-bind="click: \$parent.queue.moveButton" class="hover-button buttonMoveToTop" title="$T('Glitter-top')"><span class="glyphicon glyphicon-chevron-up"></span></a>
                         <a href="#" data-bind="click: \$parent.queue.moveButton" class="hover-button buttonMoveToBottom" title="$T('Glitter-bottom')"><span class="glyphicon glyphicon-chevron-down"></span></a>

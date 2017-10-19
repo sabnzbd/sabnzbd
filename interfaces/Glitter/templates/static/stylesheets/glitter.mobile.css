@@ -141,8 +141,12 @@ tr.queue-item>td:first-child>a {
     margin-top: 3px;
 }
 
+.queue-table td.name .direct-unpack {
+    display: none;
+}
+
 .queue-table td.name .name-options {
-    display: block;
+    display: inline-block;
 }
 
 .queue-table td.name .name-options small {

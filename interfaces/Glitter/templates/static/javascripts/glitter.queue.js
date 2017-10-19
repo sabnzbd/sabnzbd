@@ -521,7 +521,14 @@ function QueueModel(parent, data) {
     })
 
     // Texts
-    self.missingText= ko.pureComputed(function() {
+    self.name_title = ko.pureComputed(function() {
+        // When hovering over the job
+        if(self.direct_unpack()) {
+            return self.name() + ' - ' + glitterTranslate.status['DirectUnpack'] + ': ' + self.direct_unpack()
+        }
+        return self.name()
+    })
+    self.missingText = ko.pureComputed(function() {
         // Check for missing data, the value is arbitrary! (1%)
         if(self.missingMB()/self.totalMB() > 0.01) {
             return self.missingMB().toFixed(0) + ' MB ' + glitterTranslate.misingArt
