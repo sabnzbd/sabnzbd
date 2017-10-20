@@ -1873,7 +1873,7 @@ def create_env(nzo=None, extra_env_fields=None):
                 elif isinstance(field_value, bool):
                     env['SAB_' + field.upper()] = str(field_value*1)
                 else:
-                    env['SAB_' + field.upper()] = field_value
+                    env['SAB_' + field.upper()] = str(field_value)
             except:
                 # Catch key/unicode errors
                 pass
@@ -1881,8 +1881,8 @@ def create_env(nzo=None, extra_env_fields=None):
         # Add extra fields
         for field in extra_env_fields:
             try:
-                if extra_env_fields[field]:
-                    env['SAB_' + field.upper()] = extra_env_fields[field]
+                if extra_env_fields[field] is not None:
+                    env['SAB_' + field.upper()] = str(extra_env_fields[field])
                 else:
                     env['SAB_' + field.upper()] = ''
             except:
@@ -1899,7 +1899,7 @@ def create_env(nzo=None, extra_env_fields=None):
         return None
 
     # Have to make sure no Unicode slipped in somehow
-    env = { str(deunicode(k)): str(deunicode(v)) for k, v in env.iteritems() }
+    env = { deunicode(k): deunicode(v) for k, v in env.iteritems() }
     return env
 
 
