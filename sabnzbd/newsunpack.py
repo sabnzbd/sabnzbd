@@ -1340,7 +1340,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 if added_blocks:
                     msg = T('Fetching %s blocks...') % str(added_blocks)
                     nzo.set_action_line(T('Fetching'), msg)
-                    nzo.status = Status.FETCHING
                     readd = True
                 else:
                     # Failed
@@ -1762,7 +1761,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             if added_blocks:
                 msg = T('Fetching %s blocks...') % str(added_blocks)
                 nzo.set_action_line(T('Fetching'), msg)
-                nzo.status = Status.FETCHING
                 readd = True
             else:
                 # Failed

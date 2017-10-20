@@ -672,9 +672,9 @@ def parring(nzo, workdir):
 
     if re_add:
         logging.info('Re-added %s to queue', filename)
-        nzo.status = Status.DOWNLOADING
         if nzo.priority != TOP_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
+        nzo.status = Status.FETCHING
         sabnzbd.nzbqueue.NzbQueue.do.add(nzo)
         sabnzbd.downloader.Downloader.do.resume_from_postproc()
 

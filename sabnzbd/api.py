@@ -1358,7 +1358,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
             slot['status'] = "%s" % (status)
 
         if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \
-           status not in (Status.DOWNLOADING, Status.QUEUED)) and priority != TOP_PRIORITY:
+           status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)) and priority != TOP_PRIORITY:
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
