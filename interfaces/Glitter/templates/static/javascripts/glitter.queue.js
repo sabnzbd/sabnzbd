@@ -479,6 +479,7 @@ function QueueModel(parent, data) {
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
     self.isGrabbing = ko.observable(data.status == 'Grabbing' || data.avg_age == '-')
+    self.isFetchingBlocks = data.status == 'Fetching' || data.priority == 'Repair' // No need to update
     self.totalMB = ko.observable(parseFloat(data.mb));
     self.remainingMB = ko.observable(parseFloat(data.mbleft))
     self.missingMB = ko.observable(parseFloat(data.mbmissing))
@@ -699,7 +700,7 @@ function QueueModel(parent, data) {
     }
     self.changePriority = function(item, event) {
         // Not if we are fetching extra blocks for repair!
-        if(item.status() == 'Fetching') return
+        if(item.isFetchingBlocks) return
         callAPI({
             mode: 'queue',
             name: 'priority',

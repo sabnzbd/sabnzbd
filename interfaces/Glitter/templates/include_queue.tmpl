@@ -144,7 +144,7 @@
                                 <span class="glyphicon glyphicon-tag"></span>
                                 <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, event: { change: changeCat }"></select>
                             </li>
-                            <!-- ko if: (status() != 'Fetching')  -->
+                            <!-- ko if: !isFetchingBlocks -->
                             <li title="$T('priority')" data-tooltip="true" data-placement="left">
                                 <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
                                 <select name="Priority" class="form-control" data-bind="options: parent.priorityOptions, optionsValue: 'value', optionsText: 'name', value: priority, event: { change: changePriority }"></select>

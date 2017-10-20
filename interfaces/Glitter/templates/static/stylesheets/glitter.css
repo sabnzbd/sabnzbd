@@ -634,7 +634,7 @@ td.name .row-wrap-text {
 }
 
 .queue-table td.name .direct-unpack-text {
-    max-width: calc(100% - 85px);
+    max-width: calc(100% - 75px);
 }
 
 .queue-table td.name:hover .row-wrap-text {
@@ -1867,7 +1867,6 @@ input[name="nzbURL"] {
     td.name .name-icons {
         margin-left: 0px;
         margin-right: -5px;
-        display: block;
     }
 
     td.name .row-wrap-text {
