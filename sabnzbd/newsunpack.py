@@ -188,6 +188,9 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
             line = line.strip()
             lines.append(line)
 
+            # Show current line in history
+            nzo.set_action_line(T('Running script'), unicoder(line))
+
             # Check if we should still continue
             if not nzo.pp_active:
                 p.kill()
