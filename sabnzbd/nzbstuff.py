@@ -512,7 +512,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
                         self.nzf_list.remove(nzo_matches[0])
 
             if nzf.valid and nzf.nzf_id:
-                logging.info('File %s added to queue', self.filename)
+                logging.info('File %s - %s added to queue', nzf.filename, nzf.nzf_id)
                 self.nzo.files.append(nzf)
                 self.nzo.files_table[nzf.nzf_id] = nzf
                 self.nzo.bytes += nzf.bytes
