@@ -1514,6 +1514,11 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
     # But not really required due to prospective-par2
     command = [str(MULTIPAR_COMMAND), 'r', '-vs2', '-vd%s' % parfolder, parfile]
 
+    # Check if there are maybe par2cmdline/par2tbb commands supplied
+    if '-t' in cfg.par_option() or '-p' in cfg.par_option():
+        logging.info('Removing old par2cmdline/par2tbb options for MultiPar')
+        cfg.par_option.set('')
+
     # Only add user-options if supplied
     options = cfg.par_option().strip()
     if options:
