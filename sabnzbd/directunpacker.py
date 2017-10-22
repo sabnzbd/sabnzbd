@@ -308,7 +308,14 @@ class DirectUnpacker(threading.Thread):
         """ Start the unrar instance using the user's options """
         # Generate extraction path and save for post-proc
         if not self.unpack_dir_info:
-            self.unpack_dir_info = prepare_extraction_path(self.nzo)
+            try:
+                self.unpack_dir_info = prepare_extraction_path(self.nzo)
+            except:
+                # Prevent fatal crash if directory creation fails
+                self.abort()
+                return
+
+        # Get the information
         extraction_path, _, _, one_folder, _ = self.unpack_dir_info
 
         # Set options
