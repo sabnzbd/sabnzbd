@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-10-04 15:20+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-10-21 16:01+W. Europe Daylight Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -666,6 +666,10 @@ msgstr ""
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
+msgstr ""
+
+#: sabnzbd/interface.py
+msgid "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr ""
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
