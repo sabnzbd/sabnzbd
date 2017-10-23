@@ -31,6 +31,7 @@ from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABY
 import sabnzbd.articlecache
 import sabnzbd.downloader
 import sabnzbd.nzbqueue
+import sabnzbd.cfg as cfg
 from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
 
@@ -79,6 +80,7 @@ class Decoder(Thread):
 
         self.queue = queue
         self.servers = servers
+        self.__log_decoding = cfg.debug_log_decoding()
 
     def stop(self):
         # Put multiple to stop all decoders
@@ -115,7 +117,9 @@ class Decoder(Thread):
                     if nzo.precheck:
                         raise BadYenc
                     register = True
-                    logging.debug("Decoding %s", art_id)
+
+                    if self.__log_decoding:
+                        logging.debug("Decoding %s", art_id)
 
                     data = self.decode(article, lines, raw_data)
                     nzf.article_count += 1

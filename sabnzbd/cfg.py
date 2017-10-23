@@ -261,6 +261,7 @@ fixed_ports = OptionBool('misc', 'fixed_ports', False)
 api_warnings = OptionBool('misc', 'api_warnings', True, protect=True)
 disable_key = OptionBool('misc', 'disable_api_key', False, protect=True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
+debug_log_decoding = OptionBool('misc', 'debug_log_decoding', False)
 
 # Text values
 rss_odd_titles = OptionList('misc', 'rss_odd_titles', ['nzbindex.nl/', 'nzbindex.com/', 'nzbclub.com/'])
