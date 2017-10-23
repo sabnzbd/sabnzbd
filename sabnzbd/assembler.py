@@ -104,6 +104,8 @@ class Assembler(Thread):
                                 logging.error(T('Disk full! Forcing Pause'))
                             else:
                                 logging.error(T('Disk error on creating file %s'), clip_path(filepath))
+                            # Log traceback
+                            logging.info('Traceback: ', exc_info=True)
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
                         continue
@@ -318,7 +320,8 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                 zf.close()
                 del zf
         except:
-            logging.info('Error during inspection of RAR-file %s', filepath, exc_info=True)
+            logging.info('Error during inspection of RAR-file %s', filepath)
+            logging.debug('Traceback: ', exc_info=True)
 
     return encrypted, unwanted
 
