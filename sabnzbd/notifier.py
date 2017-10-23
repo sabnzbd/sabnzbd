@@ -27,7 +27,6 @@ import socket
 import urllib2
 import httplib
 import urllib
-import time
 import subprocess
 import json
 from threading import Thread
@@ -166,31 +165,26 @@ def send_notification(title, msg, gtype, job_cat=None):
             return send_local_growl(title, msg, gtype)
         else:
             Thread(target=send_growl, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # Prowl
     if sabnzbd.cfg.prowl_enable() and check_cat('prowl', job_cat):
         if sabnzbd.cfg.prowl_apikey():
             Thread(target=send_prowl, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # Pushover
     if sabnzbd.cfg.pushover_enable() and check_cat('pushover', job_cat):
         if sabnzbd.cfg.pushover_token():
             Thread(target=send_pushover, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # Pushbullet
     if sabnzbd.cfg.pushbullet_enable() and check_cat('pushbullet', job_cat):
         if sabnzbd.cfg.pushbullet_apikey() and check_classes(gtype, 'pushbullet'):
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # Notification script.
     if sabnzbd.cfg.nscript_enable() and check_cat('nscript', job_cat):
         if sabnzbd.cfg.nscript_script():
             Thread(target=send_nscript, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable():
