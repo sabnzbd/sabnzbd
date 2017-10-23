@@ -111,7 +111,9 @@ class SABTrayThread(SysTrayIconThread):
             self.counter = 0
 
     # left-click handler
-    def click(self):
+    def click(self, *args):
+        # Make sure to stop the timer
+        self.stop_click_timer()
         # Pause/resume and force update of icon/text
         self.pauseresume(None)
         self.counter = 11

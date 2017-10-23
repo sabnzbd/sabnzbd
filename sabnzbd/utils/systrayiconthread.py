@@ -11,6 +11,7 @@ import pywintypes
 import win32api
 import win32con
 import win32gui_struct
+import timer
 try:
     import winxpgui as win32gui
 except ImportError:
@@ -46,6 +47,7 @@ class SysTrayIconThread(Thread):
         self.menu_actions_by_id = dict(self.menu_actions_by_id)
         del self._next_action_id
 
+        self.click_timer = None
         self.default_menu_index = (default_menu_index or 0)
         self.window_class_name = window_class_name or "SysTrayIconPy"
 
@@ -176,13 +178,17 @@ class SysTrayIconThread(Thread):
         win32gui.PostQuitMessage(0)  # Terminate the app.
 
     def notify(self, hwnd, msg, wparam, lparam):
+        # Double click is actually 1 single click followed
+        # by a double-click event, no way to differentiate
+        # So we need a timed callback to cancel
         if lparam == win32con.WM_LBUTTONDBLCLK:
             self.execute_menu_option(self.default_menu_index + self.FIRST_ID)
+            self.stop_click_timer()
         elif lparam == win32con.WM_RBUTTONUP:
             self.show_menu()
-        elif lparam == win32con.WM_LBUTTONUP:
-            self.click()
-            pass
+        elif lparam == win32con.WM_LBUTTONDOWN:
+            # Wrapper of win32api, timeout is in ms
+            self.click_timer = timer.set_timer(150, self.click)
         return True
 
     def show_menu(self):
@@ -206,9 +212,16 @@ class SysTrayIconThread(Thread):
             # Weird PyWin/win32gui bug, just ignore it for now
             pass
 
-    # Ooverride this for left-click action
-    def click(self):
+    # Override this for left-click action
+    # Need to call the stop-timer in that function!
+    def click(self, *args):
         pass
+
+    def stop_click_timer(self):
+        # Stop the timer
+        if self.click_timer:
+            timer.kill_timer(self.click_timer)
+            self.click_timer = None
 
     def create_menu(self, menu, menu_options):
         for option_text, option_icon, option_action, option_id in menu_options[::-1]:
