@@ -1485,8 +1485,8 @@ class NzbObject(TryList):
         # Remove all files for which admin could not be read
         for nzf in nzf_remove_list:
             nzf.deleted = True
-            nzf.completed = True
             self.files.remove(nzf)
+
         # If cleanup emptied the active files list, end this job
         if nzf_remove_list and not self.files:
             sabnzbd.NzbQueue.do.end_job(self)
