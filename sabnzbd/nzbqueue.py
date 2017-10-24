@@ -887,6 +887,7 @@ class NzbQueue(object):
         empty = []
         for nzo in self.__nzo_list:
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
+                logging.info('Found idle job %s', nzo.final_name)
                 empty.append(nzo)
 
             # Stall prevention by checking if all servers are in the trylist
@@ -896,8 +897,11 @@ class NzbQueue(object):
                 for nzf in nzo.files:
                     if len(nzf.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
                         # We do not want to reset all article trylists, they are good
+                        logging.info('Resetting bad trylist for file %s in job %s', nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
+
                 # Reset main trylist, minimal performance impact
+                logging.info('Resetting bad trylist for job %s', nzo.final_name)
                 nzo.reset_try_list()
 
         for nzo in empty:
