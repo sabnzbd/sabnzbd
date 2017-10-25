@@ -57,7 +57,7 @@
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="timeout">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout" min="30" /> <i>$T('seconds')</i>
+                    <input type="number" name="timeout" id="timeout" min="20" max="240" /> <i>$T('seconds')</i>
                 </div>
                 <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
                     <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
@@ -219,7 +219,7 @@
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="timeout$cur">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="30" required /> <i>$T('seconds')</i>
+                    <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="20" max="240" required /> <i>$T('seconds')</i>
                 </div>
 
                 <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
