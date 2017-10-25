@@ -2309,17 +2309,6 @@ def list2cmdline(lst):
     return ' '.join(nlst)
 
 
-def get_from_url(url):
-    """ Retrieve URL and return content
-        `timeout` sets non-standard timeout
-    """
-    import urllib2
-    try:
-        return urllib2.urlopen(url).read()
-    except:
-        return None
-
-
 def is_sevenfile(path):
     """ Return True if path has proper extension and 7Zip is installed """
     return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == '.7z'

@@ -87,7 +87,7 @@ import sabnzbd.interface
 from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import real_path, \
-    check_latest_version, exit_sab, \
+    check_latest_version, exit_sab, get_from_url, \
     split_host, get_ext, create_https_certificates, \
     windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, \
@@ -657,7 +657,7 @@ def is_sabnzbd_running(url):
         url = '%s&mode=version' % (url)
         # Do this without certificate verification, few installations will have that
         prev = sabnzbd.set_https_verification(False)
-        ver = sabnzbd.newsunpack.get_from_url(url)
+        ver = get_from_url(url)
         sabnzbd.set_https_verification(prev)
         return (ver and (re.search(r'\d+\.\d+\.', ver) or ver.strip() == sabnzbd.__version__))
     except:

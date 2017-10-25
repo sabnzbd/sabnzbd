@@ -33,6 +33,7 @@ import datetime
 import fnmatch
 import stat
 import inspect
+import urllib2
 from urlparse import urlparse
 
 import sabnzbd
@@ -838,6 +839,14 @@ def split_host(srv):
     except:
         port = None
     return (host, port)
+
+
+def get_from_url(url):
+    """ Retrieve URL and return content """
+    try:
+        return urllib2.urlopen(url).read()
+    except:
+        return None
 
 
 def check_mount(path):
