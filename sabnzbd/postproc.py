@@ -219,6 +219,9 @@ class PostProcessor(Thread):
                 history_db.close()
                 nzo.purge_data(keep_basic=False, del_files=True)
 
+            # Processing done
+            nzo.pp_active = False
+
             self.remove(nzo)
             check_eoq = True
 
