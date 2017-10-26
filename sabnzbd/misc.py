@@ -782,7 +782,12 @@ def caller_name(skip=2):
 
     parentframe = sys._getframe(skip)
     function_name = parentframe.f_code.co_name
-    module_name = inspect.getmodule(parentframe).__name__
+
+    # Modulename not available in the binaries, we can use the filename instead
+    if getattr(sys, 'frozen', None):
+        module_name = inspect.getfile(parentframe)
+    else:
+        module_name = inspect.getmodule(parentframe).__name__
 
     # For decorated functions we have to go deeper
     if function_name in ('call_func', 'wrap') and skip == 2:
