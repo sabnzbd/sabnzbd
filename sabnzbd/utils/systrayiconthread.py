@@ -188,7 +188,8 @@ class SysTrayIconThread(Thread):
             self.show_menu()
         elif lparam == win32con.WM_LBUTTONDOWN:
             # Wrapper of win32api, timeout is in ms
-            self.click_timer = timer.set_timer(150, self.click)
+            # We need to wait at least untill what user has defined as double click
+            self.click_timer = timer.set_timer(win32gui.GetDoubleClickTime(), self.click)
         return True
 
     def show_menu(self):
