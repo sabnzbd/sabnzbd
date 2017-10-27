@@ -28,19 +28,23 @@ import logging
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path, remove_all, globber, format_time_string, has_win_device
+from sabnzbd.misc import int_conv, clip_path, long_path, remove_all, globber, \
+    format_time_string, has_win_device, real_path, remove_file
 from sabnzbd.encoding import TRANS, unicoder
-from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, rar_volumelist
+from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
 if sabnzbd.WIN32:
-    # Load the POpen from the fixed unicode-subprocess
-    from sabnzbd.utils.subprocess_fix import Popen
-else:
-    # Load the regular POpen
-    from subprocess import Popen
+    try:
+        # Use patched version of subprocess module for Unicode on Windows
+        import subprocessww
+    except ImportError:
+        pass
+
+# Load the regular POpen (which is now patched on Windows)
+from subprocess import Popen
 
 MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
@@ -150,6 +154,7 @@ class DirectUnpacker(threading.Thread):
         last_volume_linebuf = ''
         unrar_log = []
         rarfiles = []
+        extracted = []
         start_time = time.time()
 
         # Need to read char-by-char because there's no newline after new-disk message
@@ -172,10 +177,21 @@ class DirectUnpacker(threading.Thread):
                 logging.info('Error in DirectUnpack of %s', self.cur_setname)
                 self.abort()
 
-            if linebuf.startswith('Extracting from') and linebuf.endswith('\n'):
-                filename = TRANS((re.search(EXTRACTFROM_RE, linebuf.strip()).group(1)))
-                if filename not in rarfiles:
-                    rarfiles.append(filename)
+            if linebuf.endswith('\n'):
+                # List files we used
+                if linebuf.startswith('Extracting from'):
+                    filename = TRANS((re.search(EXTRACTFROM_RE, linebuf.strip()).group(1)))
+                    if filename not in rarfiles:
+                        rarfiles.append(filename)
+
+                # List files we extracted
+                m = re.search(EXTRACTED_RE, linebuf)
+                if m:
+                    # In case of flat-unpack, UnRar still prints the whole path (?!)
+                    unpacked_file = TRANS(m.group(2))
+                    if cfg.flat_unpack():
+                        unpacked_file = os.path.basename(unpacked_file)
+                    extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
 
             # Did we reach the end?
             if linebuf.endswith('All OK'):
@@ -185,16 +201,23 @@ class DirectUnpacker(threading.Thread):
 
                 # Add to success
                 rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
-                self.success_sets[self.cur_setname] = rar_volumelist(rarfile_path, self.nzo.password, rarfiles)
+                self.success_sets[self.cur_setname] = (rar_volumelist(rarfile_path, self.nzo.password, rarfiles), extracted)
                 logging.info('DirectUnpack completed for %s', self.cur_setname)
                 self.nzo.set_action_line(T('Direct Unpack'), T('Completed'))
+
+                # List success in history-info
+                msg = T('Unpacked %s files/folders in %s') % (len(extracted), format_time_string(self.unpack_time))
+                msg = '%s - %s' % (T('Direct Unpack'), msg)
+                self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
 
                 # Write current log and clear
                 unrar_log.append(linebuf.strip())
                 linebuf = ''
+                last_volume_linebuf = ''
                 logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
                 unrar_log = []
                 rarfiles = []
+                extracted = []
 
                 # Are there more files left?
                 while self.nzo.files and not self.next_sets:
@@ -224,10 +247,15 @@ class DirectUnpacker(threading.Thread):
 
                 # Possible that the instance was deleted while locked
                 if not self.killed:
-                    # Give unrar some time to do it's thing
-                    self.active_instance.stdin.write('\n')
-                    start_time = time.time()
-                    time.sleep(0.1)
+                    # If unrar stopped or is killed somehow, writing will cause a crash
+                    try:
+                        # Give unrar some time to do it's thing
+                        self.active_instance.stdin.write('C\n')
+                        start_time = time.time()
+                        time.sleep(0.1)
+                    except IOError:
+                        self.abort()
+                        break
 
                     # Did we unpack a new volume? Sometimes UnRar hangs on 1 volume
                     if not last_volume_linebuf or last_volume_linebuf != linebuf:
@@ -237,9 +265,12 @@ class DirectUnpacker(threading.Thread):
                         logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
-                    if last_volume_linebuf == linebuf and not self.have_next_volume():
-                        logging.info('DirectUnpack failed due to missing files %s', self.cur_setname)
-                        self.abort()
+                    if last_volume_linebuf == linebuf:
+                        if not self.have_next_volume():
+                            logging.info('DirectUnpack failed due to missing files %s', self.cur_setname)
+                            self.abort()
+                        else:
+                            logging.debug('Duplicate output line detected: "%s"', last_volume_linebuf)
 
                     last_volume_linebuf = linebuf
 
@@ -251,14 +282,6 @@ class DirectUnpacker(threading.Thread):
         # Add last line
         unrar_log.append(linebuf.strip())
         logging.debug('DirectUnpack Unrar output %s', '\n'.join(unrar_log))
-
-        # Save information if success
-        if self.success_sets:
-            # The number is wrong if one_folder, just leave empty
-            nr_files = '' if self.unpack_dir_info[3] else len(globber(self.unpack_dir_info[0]))
-            msg = T('Unpacked %s files/folders in %s') % (nr_files, format_time_string(self.unpack_time))
-            msg = '%s - %s' % (T('Direct Unpack'), msg)
-            self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
 
         # Make more space
         self.reset_active()
@@ -290,7 +313,14 @@ class DirectUnpacker(threading.Thread):
         """ Start the unrar instance using the user's options """
         # Generate extraction path and save for post-proc
         if not self.unpack_dir_info:
-            self.unpack_dir_info = prepare_extraction_path(self.nzo)
+            try:
+                self.unpack_dir_info = prepare_extraction_path(self.nzo)
+            except:
+                # Prevent fatal crash if directory creation fails
+                self.abort()
+                return
+
+        # Get the information
         extraction_path, _, _, one_folder, _ = self.unpack_dir_info
 
         # Set options
@@ -310,13 +340,11 @@ class DirectUnpacker(threading.Thread):
         # Generate command
         rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
         if sabnzbd.WIN32:
-            if not has_win_device(rarfile_path):
-                command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
-                           '%s' % clip_path(rarfile_path), clip_path(extraction_path)]
-            else:
-                # Need long-path notation in case of forbidden-names
-                command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
-                           '%s' % clip_path(rarfile_path), '%s\\' % extraction_path]
+            # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
+            # See: https://github.com/sabnzbd/sabnzbd/issues/1043
+            command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', '-ai', password_command,
+                       '%s' % clip_path(rarfile_path), '%s\\' % long_path(extraction_path)]
+
         else:
             # Don't use "-ai" (not needed for non-Windows)
             command = ['%s' % sabnzbd.newsunpack.RAR_COMMAND, action, '-vp', '-idp', '-o+', password_command,
@@ -327,9 +355,9 @@ class DirectUnpacker(threading.Thread):
 
         # Let's start from the first one!
         self.cur_volume = 1
-        stup, need_shell, command, creationflags = build_command(command)
+        stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
         logging.debug('Running unrar for DirectUnpack %s', command)
-        self.active_instance = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
+        self.active_instance = Popen(command, shell=False, stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                     startupinfo=stup, creationflags=creationflags)
         # Add to runners
@@ -372,8 +400,7 @@ class DirectUnpacker(threading.Thread):
                         for rm_file in rar_contents:
                             # Flat-unpack, so remove foldername from RarFile output
                             f = os.path.join(extraction_path, os.path.basename(rm_file))
-                            logging.debug('Removing file %s', f)
-                            os.remove(f)
+                            remove_file(f)
                     except:
                         # The user will have to remove it themselves
                         logging.info('Failed to clean Direct Unpack after aborting %s', rarfile_nzf.filename, exc_info=True)

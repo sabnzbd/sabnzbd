@@ -184,6 +184,7 @@ td.name .name-icons span,
 .navbar-nav .open .dropdown-menu>li>a,
 .dropdown-header,
 #modal-help small,
+.hover-button.glyphicon-forward,
 pre {
     color: #EBEBEB !important;
     opacity: 1 !important;

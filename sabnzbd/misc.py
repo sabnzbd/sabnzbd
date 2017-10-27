@@ -29,10 +29,11 @@ import threading
 import subprocess
 import socket
 import time
-import calendar
 import datetime
 import fnmatch
 import stat
+import inspect
+import urllib2
 from urlparse import urlparse
 
 import sabnzbd
@@ -167,7 +168,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         if safe_lower(script) in ('', 'default'):
             script = def_cat.script()
 
-    if priority is None or priority == DEFAULT_PRIORITY:
+    if priority is None or priority == '' or priority == DEFAULT_PRIORITY:
         priority = my_cat.priority()
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
@@ -770,6 +771,31 @@ def to_units(val, spaces=0, dec_limit=2, postfix=''):
     return fmt % (sign, val, unit, postfix)
 
 
+def caller_name(skip=2):
+    """Get a name of a caller in the format module.method
+       Originally used: https://gist.github.com/techtonik/2151727
+       Adapted for speed by using sys calls directly
+    """
+    # Only do the tracing on Debug (function is always called)
+    if cfg.log_level() != 2:
+        return 'N/A'
+
+    parentframe = sys._getframe(skip)
+    function_name = parentframe.f_code.co_name
+
+    # Modulename not available in the binaries, we can use the filename instead
+    if getattr(sys, 'frozen', None):
+        module_name = inspect.getfile(parentframe)
+    else:
+        module_name = inspect.getmodule(parentframe).__name__
+
+    # For decorated functions we have to go deeper
+    if function_name in ('call_func', 'wrap') and skip == 2:
+        return caller_name(4)
+
+    return ".".join([module_name, function_name])
+
+
 def same_file(a, b):
     """ Return 0 if A and B have nothing in common
         return 1 if A and B are actually the same path
@@ -818,6 +844,14 @@ def split_host(srv):
     except:
         port = None
     return (host, port)
+
+
+def get_from_url(url):
+    """ Retrieve URL and return content """
+    try:
+        return urllib2.urlopen(url).read()
+    except:
+        return None
 
 
 def check_mount(path):
@@ -923,7 +957,7 @@ def move_to_path(path, new_path):
     new_path = os.path.abspath(new_path)
     if overwrite and os.path.exists(new_path):
         try:
-            os.remove(new_path)
+            remove_file(new_path)
         except:
             overwrite = False
     if not overwrite:
@@ -941,7 +975,7 @@ def move_to_path(path, new_path):
                 if not os.path.exists(os.path.dirname(new_path)):
                     create_dirs(os.path.dirname(new_path))
                 shutil.copyfile(path, new_path)
-                os.remove(path)
+                remove_file(path)
             except:
                 # Check if the old-file actually exists (possible delete-delays)
                 if not os.path.exists(path):
@@ -1056,12 +1090,11 @@ def renamer(old, new):
 @synchronized(DIR_LOCK)
 def remove_dir(path):
     """ Remove directory with retries for Win32 """
-    logging.debug('Removing dir %s', path)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
             try:
-                os.rmdir(path)
+                remove_dir(path)
                 return
             except WindowsError, err:
                 if err[0] == 32:
@@ -1072,7 +1105,7 @@ def remove_dir(path):
             time.sleep(3)
         raise WindowsError(err)
     else:
-        os.rmdir(path)
+        remove_dir(path)
 
 
 @synchronized(DIR_LOCK)
@@ -1086,18 +1119,28 @@ def remove_all(path, pattern='*', keep_folder=False, recursive=False):
         for f in files:
             if os.path.isfile(f):
                 try:
-                    logging.debug('Removing file %s', f)
-                    os.remove(f)
+                    remove_file(f)
                 except:
                     logging.info('Cannot remove file %s', f)
             elif recursive:
                 remove_all(f, pattern, False, True)
         if not keep_folder:
             try:
-                logging.debug('Removing dir %s', path)
-                os.rmdir(path)
+                remove_dir(path)
             except:
                 logging.info('Cannot remove folder %s', path)
+
+
+def remove_file(path):
+    """ Wrapper function so any file removal is logged """
+    logging.debug('[%s] Deleting file %s', caller_name(), path)
+    os.remove(path)
+
+
+def remove_dir(dir):
+    """ Wrapper function so any dir removal is logged """
+    logging.debug('[%s] Deleting dir %s', caller_name(), dir)
+    os.rmdir(dir)
 
 
 def trim_win_path(path):

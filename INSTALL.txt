@@ -1,4 +1,4 @@
-                                SABnzbd 2.3.0
+                                SABnzbd 2.3.1
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -60,6 +60,7 @@ All platforms
 
 Windows
     PyWin32                 use "pip install pypiwin32"
+    subprocessww            use "pip install subprocessww"
 
 Essential modules
     cheetah-2.0.1+          use "pip install cheetah"
@@ -71,7 +72,7 @@ Essential modules
 Optional modules
     unzip >= 6.00           http://www.info-zip.org/
     7zip >= 9.20            http://www.7zip.org/
-    sabyenc == 3.0.2        use "pip install sabyenc"
+    sabyenc == 3.3.1        use "pip install sabyenc"
                             More information: https://sabnzbd.org/sabyenc
     cryptography >= 1.0     use "pip install cryptography"
                             Enables certificate generation and detection of encrypted RAR-files
@@ -92,11 +93,10 @@ Start this from a shell terminal (or command prompt):
     python tools/make_mo.py
 
 Start this from a shell terminal (or command prompt):
-    python SABnzbd.py
+    python -OO SABnzbd.py
 
 Within a few seconds your web browser will start and show the user interface.
 Use the "Help" button in the web-interface to be directed to the Help Wiki.
-
 
 -------------------------------------------------------------------------------
 5) TROUBLESHOOTING
@@ -122,7 +122,6 @@ may help you solve problems easier.
 
 Visit our wiki:
     https://sabnzbd.org/wiki/
-
 
 -------------------------------------------------------------------------------
 7) CREDITS

@@ -70,19 +70,6 @@ def yenc_name_fixer(p):
         return p.decode('cp1252', errors='replace').replace('?', '!')
 
 
-def is_utf8(p):
-    """ Return True when p is UTF-8 or plain ASCII """
-    utf8 = True
-    try:
-        p.decode('ascii')
-    except:
-        try:
-            p.decode('utf-8')
-        except:
-            utf8 = False
-    return utf8
-
-
 def special_fixer(p):
     """ Return string appropriate for the platform.
         Also takes care of the situation where a non-Windows/UTF-8 system
@@ -218,7 +205,11 @@ def TRANS(p):
     """
     global gTABLE_850_LATIN
     if sabnzbd.WIN32:
-        return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
+        if p:
+            return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
+        else:
+            # translate() fails on empty or None strings
+            return ''
     else:
         return unicoder(p)
 
@@ -229,7 +220,11 @@ def UNTRANS(p):
     """
     global gTABLE_LATIN_850
     if sabnzbd.WIN32:
-        return p.encode('cp1252', 'replace').translate(gTABLE_LATIN_850)
+        if p:
+            return p.encode('cp1252', 'replace').translate(gTABLE_LATIN_850)
+        else:
+            # translate() fails on empty or None strings
+            return ''
     else:
         return p
 

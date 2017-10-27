@@ -3,7 +3,7 @@
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
-    <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();" novalidate>
+    <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
     <input type="hidden" name="session" value="$session" />
     <div id="addServer">
         <div class="padding alt">
@@ -23,11 +23,11 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="host">$T('srv-host')</label>
-                    <input type="text" name="host" id="host" />
+                    <input type="text" name="host" id="host" required />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="port">$T('srv-port')</label>
-                    <input type="number" name="port" id="port" size="8" value="119" />
+                    <input type="number" name="port" id="port" size="8" value="119" min="0" />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="ssl">$T('srv-ssl')</label>
@@ -45,11 +45,11 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections">$T('srv-connections')</label>
-                    <input type="number" name="connections" id="connections" min="0" max="100" value="8" />
+                    <input type="number" name="connections" id="connections" min="1" max="100" value="8" required />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="priority">$T('srv-priority')</label>
-                    <input type="number" name="priority" id="priority" min="0" max="100" /> <i>$T('explain-svrprio')</i>
+                    <input type="number" name="priority" id="priority" min="0" max="99" /> <i>$T('explain-svrprio')</i>
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="retention">$T('srv-retention')</label>
@@ -57,7 +57,7 @@
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="timeout">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout" min="30" /> <i>$T('seconds')</i>
+                    <input type="number" name="timeout" id="timeout" min="20" max="240" /> <i>$T('seconds')</i>
                 </div>
                 <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
                     <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
@@ -156,7 +156,7 @@
 <!--#set $cur_prio_color = -1 #-->
 <!--#set $last_prio = -1 #-->
 <!--#for $cur, $server in enumerate($servers) #-->
-    <form action="saveServer" method="post" class="fullform" autocomplete="off" novalidate>
+    <form action="saveServer" method="post" class="fullform" autocomplete="off">
     <input type="hidden" name="session" value="$session" />
     <input type="hidden" name="server" value="$server['name']" />
 
@@ -185,11 +185,11 @@
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="host$cur">$T('srv-host')</label>
-                    <input type="text" name="host" id="host$cur" value="$server['host']" />
+                    <input type="text" name="host" id="host$cur" value="$server['host']" required />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="port$cur">$T('srv-port')</label>
-                    <input type="number" name="port" id="port$cur" value="$server['port']" size="8" />
+                    <input type="number" name="port" id="port$cur" value="$server['port']" size="8" min="0" required />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="ssl$cur">$T('srv-ssl')</label>
@@ -207,19 +207,19 @@
                 </div>
                 <div class="field-pair">
                     <label class="config" for="connections$cur">$T('srv-connections')</label>
-                    <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="0" max="100" />
+                    <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="100" required />
                 </div>
                 <div class="field-pair">
                     <label class="config" for="priority$cur">$T('srv-priority')</label>
-                    <input type="number" name="priority" id="priority$cur" value="$server['priority']" min="0" max="100" /> <i>$T('explain-svrprio')</i>
+                    <input type="number" name="priority" id="priority$cur" value="$server['priority']" min="0" max="99" required /> <i>$T('explain-svrprio')</i>
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="retention$cur">$T('srv-retention')</label>
-                    <input type="number" name="retention" id="retention$cur" value="$server['retention']" min="0" /> <i>$T('days')</i>
+                    <input type="number" name="retention" id="retention$cur" value="$server['retention']" min="0" required /> <i>$T('days')</i>
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="timeout$cur">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="30" /> <i>$T('seconds')</i>
+                    <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="20" max="240" required /> <i>$T('seconds')</i>
                 </div>
 
                 <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">

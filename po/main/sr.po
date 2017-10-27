@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"POT-Creation-Date: 2017-10-25 23:30+0000\n"
 "PO-Revision-Date: 2015-12-28 10:25+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-11 06:25+0000\n"
-"X-Generator: Launchpad (build 18449)\n"
+"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
+"X-Generator: Launchpad (build 18484)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -392,10 +392,6 @@ msgid "SQL Command Failed, see log"
 msgstr "Neuspešna SQL komanda, videti izveštaj"
 
 #: sabnzbd/database.py [Error message]
-msgid "SQL Commit Failed, see log"
-msgstr "Погрешно SQL извршавање, видети извештај"
-
-#: sabnzbd/database.py [Error message]
 msgid "Failed to close database, see log"
 msgstr "Неуспешно затварање базе, видети извештај"
 
@@ -410,10 +406,6 @@ msgstr "Dešifrovanje %s neuspešno"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "CRC Error in %s (%s -> %s)"
-msgstr "CRC грешка у %s (%s -> %s)"
 
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
@@ -727,6 +719,11 @@ msgstr "Server nije definisan!"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Погрешан параметар"
+
+#: sabnzbd/interface.py
+msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
@@ -1115,7 +1112,7 @@ msgstr "Неуспешно слање Prowl поруке"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Neodgovarajući odgovor od strane Pushover (%s): %s"
 
-#: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "Neuspešno slanje Pushover poruke"
 
@@ -1485,7 +1482,7 @@ msgid ""
 "SABnzbd is already running."
 msgstr ""
 
-#: sabnzbd/panic.py # sabnzbd/panic.py
+#: sabnzbd/panic.py # sabnzbd/panic.py # sabnzbd/panic.py
 msgid "Fatal error"
 msgstr "Фатална грешка"
 
@@ -1505,6 +1502,12 @@ msgstr "Грешка %s: Требате да унесете важеће име/
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
+msgstr ""
+
+#: sabnzbd/postproc.py [Warning message]
+msgid ""
+"Module subprocessww missing. Expect problems with Unicoded file and "
+"directory names in downloads."
 msgstr ""
 
 #: sabnzbd/postproc.py
@@ -3932,6 +3935,22 @@ msgstr "Uređaj(i)"
 msgid "Device(s) to which message should be sent"
 msgstr "Uređaj(i) na koje bi poruke trebale biti poslate"
 
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency retry"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How often (in seconds) the same notification will be sent"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency expire"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How many seconds your notification will continue to be retried"
+msgstr ""
+
 #: sabnzbd/skintext.py [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
@@ -4348,6 +4367,10 @@ msgstr ""
 msgid "WARNING:"
 msgstr "ПАЖЊА:"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
+msgid "Fetch"
+msgstr "Преузми"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Брзина освежавања"
@@ -4659,10 +4682,6 @@ msgstr "При прелазу миша преко рада, зауставља �
 #: sabnzbd/skintext.py
 msgid "Block Refreshes on Hover"
 msgstr "Блокирати обнове на прелаз миша"
-
-#: sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
-msgid "Fetch"
-msgstr "Преузми"
 
 #: sabnzbd/skintext.py [Upload button in "Add NZB" dialog box]
 msgid "Upload"
@@ -5197,6 +5216,12 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "фасцикла \"%s\" не постоји"
+
+#~ msgid "SQL Commit Failed, see log"
+#~ msgstr "Погрешно SQL извршавање, видети извештај"
+
+#~ msgid "CRC Error in %s (%s -> %s)"
+#~ msgstr "CRC грешка у %s (%s -> %s)"
 
 #~ msgid "Not matched"
 #~ msgstr "Не одговара"

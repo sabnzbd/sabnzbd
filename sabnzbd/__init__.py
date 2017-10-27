@@ -108,7 +108,7 @@ import sabnzbd.lang as lang
 import sabnzbd.par2file as par2file
 import sabnzbd.api
 import sabnzbd.directunpacker as directunpacker
-from sabnzbd.decorators import synchronized, notify_downloader
+from sabnzbd.decorators import synchronized
 from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, \
     REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
 import sabnzbd.getipaddress as getipaddress
@@ -874,7 +874,7 @@ def get_new_id(prefix, folder, check_list=None):
 def save_data(data, _id, path, do_pickle=True, silent=False):
     """ Save data to a diskfile """
     if not silent:
-        logging.debug("Saving data for %s in %s", _id, path)
+        logging.debug('[%s] Saving data for %s in %s', misc.caller_name(), _id, path)
     path = os.path.join(path, _id)
 
     # We try 3 times, to avoid any dict or access problems
@@ -906,11 +906,11 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
     path = os.path.join(path, _id)
 
     if not os.path.exists(path):
-        logging.info("%s missing", path)
+        logging.info("[%s] %s missing", misc.caller_name(), path)
         return None
 
     if not silent:
-        logging.debug("Loading data for %s from %s", _id, path)
+        logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), _id, path)
 
     try:
         with open(path, 'rb') as data_file:
@@ -923,7 +923,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
                 data = data_file.read()
 
         if remove:
-            os.remove(path)
+            misc.remove_file(path)
     except:
         logging.error(T('Loading %s failed'), path)
         logging.info("Traceback: ", exc_info=True)
@@ -937,8 +937,7 @@ def remove_data(_id, path):
     path = os.path.join(path, _id)
     try:
         if os.path.exists(path):
-            os.remove(path)
-            logging.info("%s removed", path)
+            misc.remove_file(path)
     except:
         logging.debug("Failed to remove %s", path)
 
@@ -946,7 +945,7 @@ def remove_data(_id, path):
 def save_admin(data, _id):
     """ Save data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
-    logging.info("Saving data for %s in %s", _id, path)
+    logging.debug("[%s] Saving data for %s in %s", misc.caller_name(), _id, path)
 
     # We try 3 times, to avoid any dict or access problems
     for t in xrange(3):
@@ -969,10 +968,10 @@ def save_admin(data, _id):
 def load_admin(_id, remove=False, silent=False):
     """ Read data in admin folder in specified format """
     path = os.path.join(cfg.admin_dir.get_path(), _id)
-    logging.info("Loading data for %s from %s", _id, path)
+    logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), _id, path)
 
     if not os.path.exists(path):
-        logging.info("%s missing", path)
+        logging.info("[%s] %s missing", misc.caller_name(), path)
         return None
 
     try:
@@ -982,7 +981,7 @@ def load_admin(_id, remove=False, silent=False):
             else:
                 data = cPickle.load(data_file)
         if remove:
-            os.remove(path)
+            misc.remove_file(path)
     except:
         if not silent:
             excepterror = str(sys.exc_info()[0])
@@ -1036,7 +1035,7 @@ def check_repair_request():
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     if os.path.exists(path):
         try:
-            os.remove(path)
+            misc.remove_file(path)
         except:
             pass
         return True
@@ -1107,7 +1106,7 @@ def pid_file(pid_path=None, pid_file=None, port=0):
                 f.write('%d\n' % os.getpid())
                 f.close()
             else:
-                os.remove(DIR_PID)
+                misc.remove_file(DIR_PID)
         except:
             logging.warning('Cannot access PID file %s', DIR_PID)
 

@@ -785,15 +785,28 @@ function ViewModel() {
             }
 
             // Update the servers
-            if(self.statusInfo.servers().length == 0) {
+            if(self.statusInfo.servers().length != data.status.servers.length) {
+                // Only now we can subscribe to the log-level-changes! (only at start)
+                if(self.statusInfo.servers().length == 0) {
+                    self.statusInfo.loglevel.subscribe(function(newValue) {
+                        // Update log-level
+                        callSpecialAPI('./status/change_loglevel/', {
+                            loglevel: newValue
+                        });
+                    })
+                }
+
+                // Empty them, in case of update
+                self.statusInfo.servers([])
+
                 // Initial add
                 $.each(data.status.servers, function() {
                     self.statusInfo.servers.push({
-                        'servername': this.servername,
-                        'serveroptional': this.serveroptional,
-                        'serverpriority': this.serverpriority,
-                        'servertotalconn': this.servertotalconn,
-                        'serverssl': this.serverssl,
+                        'servername': ko.observable(this.servername),
+                        'serveroptional': ko.observable(this.serveroptional),
+                        'serverpriority': ko.observable(this.serverpriority),
+                        'servertotalconn': ko.observable(this.servertotalconn),
+                        'serverssl': ko.observable(this.serverssl),
                         'serversslinfo': ko.observable(this.serversslinfo),
                         'serveractiveconn': ko.observable(this.serveractiveconn),
                         'servererror': ko.observable(this.servererror),
@@ -801,23 +814,20 @@ function ViewModel() {
                         'serverconnections': ko.observableArray(this.serverconnections)
                     })
                 })
-
-                // Only now we can subscribe to the log-level-changes!
-                self.statusInfo.loglevel.subscribe(function(newValue) {
-                    // Update log-level
-                    callSpecialAPI('./status/change_loglevel/', {
-                        loglevel: newValue
-                    });
-                })
             } else {
                 // Update
                 $.each(data.status.servers, function(index) {
                     var activeServer = self.statusInfo.servers()[index];
-                    activeServer.serveractiveconn(this.serveractiveconn)
-                    activeServer.servererror(this.servererror)
-                    activeServer.serveractive(this.serveractive)
+                    activeServer.servername(this.servername),
+                    activeServer.serveroptional(this.serveroptional),
+                    activeServer.serverpriority(this.serverpriority),
+                    activeServer.servertotalconn(this.servertotalconn),
+                    activeServer.serverssl(this.serverssl),
+                    activeServer.serversslinfo(this.serversslinfo),
+                    activeServer.serveractiveconn(this.serveractiveconn),
+                    activeServer.servererror(this.servererror),
+                    activeServer.serveractive(this.serveractive),
                     activeServer.serverconnections(this.serverconnections)
-                    activeServer.serversslinfo(this.serversslinfo)
                 })
             }
 

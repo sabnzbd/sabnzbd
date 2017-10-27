@@ -38,7 +38,7 @@ from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.encoding import unicoder, is_utf8
+from sabnzbd.encoding import unicoder
 from sabnzbd.rating import Rating
 
 
@@ -97,13 +97,15 @@ class Assembler(Thread):
                     try:
                         filepath = self.assemble(nzf, filepath)
                     except IOError, (errno, strerror):
-                        # If job was deleted, ignore error
-                        if not nzo.is_gone():
+                        # If job was deleted or in active post-processing, ignore error
+                        if not nzo.is_gone() and not nzo.pp_active:
                             # 28 == disk full => pause downloader
                             if errno == 28:
                                 logging.error(T('Disk full! Forcing Pause'))
                             else:
                                 logging.error(T('Disk error on creating file %s'), clip_path(filepath))
+                            # Log traceback
+                            logging.info('Traceback: ', exc_info=True)
                             # Pause without saving
                             sabnzbd.downloader.Downloader.do.pause(save=False)
                         continue
@@ -318,7 +320,8 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                 zf.close()
                 del zf
         except:
-            logging.info('Error during inspection of RAR-file %s', filepath, exc_info=True)
+            logging.info('Error during inspection of RAR-file %s', filepath)
+            logging.debug('Traceback: ', exc_info=True)
 
     return encrypted, unwanted
 
