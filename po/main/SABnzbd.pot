@@ -439,10 +439,6 @@ msgstr ""
 msgid "Error removing %s"
 msgstr ""
 
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr ""
-
 #: sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr ""

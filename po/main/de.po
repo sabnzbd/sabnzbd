@@ -22,10 +22,6 @@ msgid "MultiPar binary... NOT found!"
 msgstr "MultiPar Programmdatei nicht gefunden!"
 
 #: SABnzbd.py [Error message]
-msgid "MultiPar binary... NOT found!"
-msgstr "MultiPar Programmdatei nicht gefunden!"
-
-#: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
 msgstr "Fehler beim Starten der Weboberfläche."
 
