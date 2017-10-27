@@ -22,6 +22,7 @@ sabnzbd.articlecache - Article cache handling
 import sys
 import logging
 import threading
+import struct
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -40,6 +41,13 @@ class ArticleCache(object):
         self.__cache_size = 0
         self.__article_list = []    # List of buffered articles
         self.__article_table = {}   # Dict of buffered articles
+
+        # On 32 bit we only allow the user to set 1GB
+        # For 64 bit we allow up to 4GB, in case somebody wants that
+        self.__cache_upper_limit = GIGI
+        if sabnzbd.DARWIN or sabnzbd.WIN64 or (struct.calcsize("P") * 8) == 64:
+            self.__cache_upper_limit = 4*GIGI
+
         ArticleCache.do = self
 
     @synchronized(ARTICLE_LOCK)
@@ -51,9 +59,9 @@ class ArticleCache(object):
         """ Called when cache limit changes """
         self.__cache_limit_org = limit
         if limit < 0:
-            self.__cache_limit = GIGI
+            self.__cache_limit = self.__cache_upper_limit
         else:
-            self.__cache_limit = min(limit, GIGI)
+            self.__cache_limit = min(limit, self.__cache_upper_limit)
 
     @synchronized(ARTICLE_LOCK)
     def reserve_space(self, data):

@@ -40,7 +40,7 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import get_all_passwords, int_conv
+from sabnzbd.misc import get_all_passwords, int_conv, remove_file, caller_name
 
 DB_LOCK = threading.RLock()
 
@@ -143,7 +143,7 @@ class HistoryDB(object):
                     logging.info("Traceback: ", exc_info=True)
                     self.close()
                     try:
-                        os.remove(HistoryDB.db_path)
+                        remove_file(HistoryDB.db_path)
                     except:
                         pass
                     self.connect()
@@ -236,7 +236,7 @@ class HistoryDB(object):
 
             for job in jobs:
                 self.execute("""DELETE FROM history WHERE nzo_id=?""", (job,), save=True)
-                logging.info('Removing job %s from history', job)
+                logging.info('[%s] Removing job %s from history', caller_name(), job)
 
     def auto_history_purge(self):
         """ Remove history items based on the configured history-retention """

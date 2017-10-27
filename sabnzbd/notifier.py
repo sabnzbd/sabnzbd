@@ -27,7 +27,6 @@ import socket
 import urllib2
 import httplib
 import urllib
-import time
 import subprocess
 import json
 from threading import Thread
@@ -134,12 +133,14 @@ def get_prio(gtype, section):
         return -1000
 
 
-def check_cat(section, job_cat):
+def check_cat(section, job_cat, keyword=None):
     """ Check if `job_cat` is enabled in `section`. * = All """
     if not job_cat:
         return True
     try:
-        section_cats = sabnzbd.config.get_config(section, '%s_cats' % section)()
+        if not keyword:
+            keyword = section
+        section_cats = sabnzbd.config.get_config(section, '%s_cats' % keyword)()
         return ('*' in section_cats or job_cat in section_cats)
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_cats', section, section)
@@ -164,31 +165,26 @@ def send_notification(title, msg, gtype, job_cat=None):
             return send_local_growl(title, msg, gtype)
         else:
             Thread(target=send_growl, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # Prowl
     if sabnzbd.cfg.prowl_enable() and check_cat('prowl', job_cat):
         if sabnzbd.cfg.prowl_apikey():
             Thread(target=send_prowl, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # Pushover
     if sabnzbd.cfg.pushover_enable() and check_cat('pushover', job_cat):
         if sabnzbd.cfg.pushover_token():
             Thread(target=send_pushover, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # Pushbullet
     if sabnzbd.cfg.pushbullet_enable() and check_cat('pushbullet', job_cat):
         if sabnzbd.cfg.pushbullet_apikey() and check_classes(gtype, 'pushbullet'):
             Thread(target=send_pushbullet, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # Notification script.
     if sabnzbd.cfg.nscript_enable() and check_cat('nscript', job_cat):
         if sabnzbd.cfg.nscript_script():
             Thread(target=send_nscript, args=(title, msg, gtype)).start()
-            time.sleep(0.5)
 
     # NTFOSD
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable():
@@ -443,6 +439,8 @@ def send_pushover(title, msg, gtype, force=False, test=None):
         apikey = sabnzbd.cfg.pushover_token()
         userkey = sabnzbd.cfg.pushover_userkey()
         device = sabnzbd.cfg.pushover_device()
+        emergency_retry = sabnzbd.cfg.pushover_emergency_retry()
+        emergency_expire = sabnzbd.cfg.pushover_emergency_expire()
     if not apikey or not userkey:
         return T('Cannot send, missing required data')
 
@@ -452,27 +450,42 @@ def send_pushover(title, msg, gtype, force=False, test=None):
     if force:
         prio = 1
 
-    if prio > -3:
-        try:
-            conn = httplib.HTTPSConnection("api.pushover.net:443")
-            conn.request("POST", "/1/messages.json", urllib.urlencode({
-                "token": apikey,
-                "user": userkey,
-                "device": device,
-                "title": title,
-                "message": msg,
-                "priority": prio
-            }), {"Content-type": "application/x-www-form-urlencoded"})
-            res = conn.getresponse()
-            if res.status != 200:
-                logging.error(T('Bad response from Pushover (%s): %s'), res.status, res.read())
+    if prio == 2:
+        body = { "token": apikey,
+                 "user": userkey,
+                 "device": device,
+                 "title": title,
+                 "message": msg,
+                 "priority": prio,
+                 "retry": emergency_retry,
+                 "expire": emergency_expire
+        }
+        return do_send_pushover(body)
+    if prio > -3 and prio < 2:
+        body = { "token": apikey,
+                 "user": userkey,
+                 "device": device,
+                 "title": title,
+                 "message": msg,
+                 "priority": prio,
+        }
+        return do_send_pushover(body)
 
-        except:
-            logging.warning(T('Failed to send pushover message'))
-            logging.info("Traceback: ", exc_info=True)
+def do_send_pushover(body):
+    try:
+        conn = httplib.HTTPSConnection("api.pushover.net:443")
+        conn.request("POST", "/1/messages.json", urllib.urlencode(body),
+                     {"Content-type": "application/x-www-form-urlencoded"})
+        res = conn.getresponse()
+        if res.status != 200:
+            logging.error(T('Bad response from Pushover (%s): %s'), res.status, res.read())
             return T('Failed to send pushover message')
-    return ''
-
+        else:
+            return ''
+    except:
+        logging.warning(T('Failed to send pushover message'))
+        logging.info("Traceback: ", exc_info=True)
+        return T('Failed to send pushover message')
 
 def send_pushbullet(title, msg, gtype, force=False, test=None):
     """ Send message to Pushbullet """

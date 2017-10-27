@@ -39,7 +39,7 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, from_units, \
-    time_format, long_path, calc_age, \
+    time_format, long_path, calc_age, same_file, \
     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
@@ -1373,7 +1373,7 @@ class ConfigSwitches(object):
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files', 'enable_par_cleanup',
               'queue_complete_pers', 'api_warnings', 'ampm', 'enable_unrar', 'enable_unzip', 'enable_7zip',
-              'enable_filejoin', 'enable_tsjoin', 'ignore_unrar_dates',
+              'enable_filejoin', 'enable_tsjoin', 'ignore_unrar_dates', 'debug_log_decoding',
               'multipar', 'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
               'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'reject_duplicate_files', 'warn_dupl_jobs',
@@ -2349,12 +2349,17 @@ class ConfigCats(object):
         else:
             newname = re.sub('"', '', kwargs.get('newname', ''))
         if newname:
-            if name:
-                config.delete('categories', name)
-            name = newname.lower()
             if kwargs.get('dir'):
                 kwargs['dir'] = platform_encode(kwargs['dir'])
-            config.ConfigCat(name, kwargs)
+
+            # Check if this cat-dir is not sub-folder of incomplete
+            if same_file(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs['dir'])):
+                return T('Category folder cannot be a subfolder of the Temporary Download Folder.')
+
+            # Delete current one and replace with new one
+            if name:
+                config.delete('categories', name)
+            config.ConfigCat(newname.lower(), kwargs)
 
         config.save_config()
         raise Raiser(self.__root)
@@ -2734,7 +2739,7 @@ LIST_PROWL = ('prowl_enable', 'prowl_cats', 'prowl_apikey',
 LIST_PUSHOVER = ('pushover_enable', 'pushover_cats', 'pushover_token', 'pushover_userkey', 'pushover_device',
                  'pushover_prio_startup', 'pushover_prio_download', 'pushover_prio_pp', 'pushover_prio_complete', 'pushover_prio_failed',
                  'pushover_prio_disk_full', 'pushover_prio_warning', 'pushover_prio_error', 'pushover_prio_queue_done', 'pushover_prio_other',
-                 'pushover_prio_new_login')
+                 'pushover_prio_new_login', 'pushover_emergency_retry', 'pushover_emergency_expire')
 LIST_PUSHBULLET = ('pushbullet_enable', 'pushbullet_cats', 'pushbullet_apikey', 'pushbullet_device',
                    'pushbullet_prio_startup', 'pushbullet_prio_download', 'pushbullet_prio_pp', 'pushbullet_prio_complete', 'pushbullet_prio_failed',
                    'pushbullet_prio_disk_full', 'pushbullet_prio_warning', 'pushbullet_prio_error', 'pushbullet_prio_queue_done', 'pushbullet_prio_other',

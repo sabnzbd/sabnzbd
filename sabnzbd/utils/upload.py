@@ -24,7 +24,7 @@ import logging
 import os
 from sabnzbd.encoding import unicoder
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import get_ext, get_filename
+from sabnzbd.misc import get_ext, get_filename, get_from_url
 import sabnzbd.newsunpack
 from sabnzbd.constants import VALID_ARCHIVES
 
@@ -47,7 +47,7 @@ def upload_file(url, fp):
             password = cfg.password()
             if username and password:
                 url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
-        sabnzbd.newsunpack.get_from_url(url)
+        get_from_url(url)
     except:
         logging.error("Failed to upload file: %s", fp)
         logging.info("Traceback: ", exc_info=True)

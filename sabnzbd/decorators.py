@@ -20,21 +20,27 @@
 ##############################################################################
 from threading import RLock, Condition
 
-DOWNLOADER_CV = Condition(RLock())
+
+# All operations that modify the queue need to happen in a lock
+# Also used when importing NZBs to prevent IO-race conditions
+# Names of wrapper-functions should be the same in misc.caller_name
+# The NzbQueueLocker both locks and notifies the Downloader
+NZBQUEUE_LOCK = RLock()
+DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 
 def synchronized(lock):
     def wrap(f):
-        def newFunction(*args, **kw):
+        def call_func(*args, **kw):
             lock.acquire()
             try:
                 return f(*args, **kw)
             finally:
                 lock.release()
-        return newFunction
+        return call_func
     return wrap
 
 
-def notify_downloader(func):
+def NzbQueueLocker(func):
     global DOWNLOADER_CV
     def call_func(*params, **kparams):
         DOWNLOADER_CV.acquire()

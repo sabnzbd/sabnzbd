@@ -384,8 +384,6 @@ class RSSQueue(object):
                     n = 0
                     if ('F' in reTypes or 'S' in reTypes) and (not season or not episode):
                         season, episode = sabnzbd.newsunpack.analyse_show(title)[1:3]
-                        season = int_conv(season)
-                        episode = int_conv(episode)
 
                     # Match against all filters until an positive or negative match
                     logging.debug('Size %s', size)
@@ -717,8 +715,11 @@ def ep_match(season, episode, expr, title=None):
     """
     m = _RE_SP.search(expr)
     if m:
+        # Make sure they are all integers for comparison
         req_season = int(m.group(1))
         req_episode = int(m.group(2))
+        season = int_conv(season)
+        episode = int_conv(episode)
         if season > req_season or (season == req_season and episode >= req_episode):
             if title:
                 show = expr[:m.start()].replace('.', ' ').replace('_', ' ').strip()

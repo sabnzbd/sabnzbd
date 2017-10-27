@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"POT-Creation-Date: 2017-10-25 23:30+0000\n"
 "PO-Revision-Date: 2016-07-29 16:20+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-11 06:25+0000\n"
-"X-Generator: Launchpad (build 18449)\n"
+"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
+"X-Generator: Launchpad (build 18484)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -399,10 +399,6 @@ msgid "SQL Command Failed, see log"
 msgstr "Comandă SQL Nereuşită, vedeţi jurnal"
 
 #: sabnzbd/database.py [Error message]
-msgid "SQL Commit Failed, see log"
-msgstr "Modificare SQL Nereuşită, vedeţi jurnal"
-
-#: sabnzbd/database.py [Error message]
 msgid "Failed to close database, see log"
 msgstr "Închidere bază de date nereuşită, vedeţi jurnal"
 
@@ -417,10 +413,6 @@ msgstr "Decodarea %s nereuşită"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "CRC Error in %s (%s -> %s)"
-msgstr "Eroare CRC în %s (%s -> %s)"
 
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
@@ -738,6 +730,11 @@ msgstr "Server nedefinit!"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "Parametru Incorect"
+
+#: sabnzbd/interface.py
+msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
@@ -1126,7 +1123,7 @@ msgstr "Nu am putu trimite mesajul Prowl"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Răspuns greșit de la Pushover (%s): %s"
 
-#: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "Nu am putut trimite mesajul de pushover"
 
@@ -1505,7 +1502,7 @@ msgid ""
 "SABnzbd is already running."
 msgstr ""
 
-#: sabnzbd/panic.py # sabnzbd/panic.py
+#: sabnzbd/panic.py # sabnzbd/panic.py # sabnzbd/panic.py
 msgid "Fatal error"
 msgstr "Eroare fatală"
 
@@ -1525,6 +1522,12 @@ msgstr "Eroare %s: Trebuie să furnizaţi un nume utilizator şi parolă valid"
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
+msgstr ""
+
+#: sabnzbd/postproc.py [Warning message]
+msgid ""
+"Module subprocessww missing. Expect problems with Unicoded file and "
+"directory names in downloads."
 msgstr ""
 
 #: sabnzbd/postproc.py
@@ -3968,6 +3971,22 @@ msgstr "Dispozitiv(e)"
 msgid "Device(s) to which message should be sent"
 msgstr "Dispozitiv(e) la care să se trimită mesajul"
 
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency retry"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How often (in seconds) the same notification will be sent"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency expire"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How many seconds your notification will continue to be retried"
+msgstr ""
+
 #: sabnzbd/skintext.py [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
@@ -4383,6 +4402,10 @@ msgstr "În cazul repornirii SABnzbd acest ecran va dispărea în mod automat!"
 msgid "WARNING:"
 msgstr "ATENŢIE:"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
+msgid "Fetch"
+msgstr "Descarcă"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "Rată actualizare"
@@ -4699,10 +4722,6 @@ msgstr ""
 msgid "Block Refreshes on Hover"
 msgstr "Blochează Reîmprospătarea Hover"
 
-#: sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
-msgid "Fetch"
-msgstr "Descarcă"
-
 #: sabnzbd/skintext.py [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "Încarcă"
@@ -4969,8 +4988,14 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgstr ""
 #~ "ATENŢIE: Sarcina \"%s\" întreruptă din cauza fişierelor RAR encriptate"
 
+#~ msgid "CRC Error in %s (%s -> %s)"
+#~ msgstr "Eroare CRC în %s (%s -> %s)"
+
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Dosarul \"%s\" nu există"
+
+#~ msgid "SQL Commit Failed, see log"
+#~ msgstr "Modificare SQL Nereuşită, vedeţi jurnal"
 
 #~ msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
 #~ msgstr ""

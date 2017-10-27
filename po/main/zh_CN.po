@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-09-10 20:30+0000\n"
+"POT-Creation-Date: 2017-10-25 23:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-09-11 06:25+0000\n"
-"X-Generator: Launchpad (build 18449)\n"
+"X-Launchpad-Export-Date: 2017-10-26 05:47+0000\n"
+"X-Generator: Launchpad (build 18484)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -387,10 +387,6 @@ msgid "SQL Command Failed, see log"
 msgstr "SQL 命令执行失败，参见日志"
 
 #: sabnzbd/database.py [Error message]
-msgid "SQL Commit Failed, see log"
-msgstr "SQL 保存失败，参见日志"
-
-#: sabnzbd/database.py [Error message]
 msgid "Failed to close database, see log"
 msgstr "无法关闭数据库，参见日志"
 
@@ -405,10 +401,6 @@ msgstr "%s 解码失败"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "解码器失败：内存不足"
-
-#: sabnzbd/decoder.py
-msgid "CRC Error in %s (%s -> %s)"
-msgstr "CRC 错误：%s (%s -> %s)"
 
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
@@ -714,6 +706,11 @@ msgstr "未定义服务器!"
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Incorrect parameter"
 msgstr "参数不正确"
+
+#: sabnzbd/interface.py
+msgid ""
+"Category folder cannot be a subfolder of the Temporary Download Folder."
+msgstr ""
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
@@ -1100,7 +1097,7 @@ msgstr "无法发送 Prowl 消息"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Pushover 响应异常 (%s): %s"
 
-#: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "无法发送 pushover 信息"
 
@@ -1469,7 +1466,7 @@ msgid ""
 "SABnzbd is already running."
 msgstr "绑定端口 %s 在 %s 上失败。其它的程序正在使用此端口或者说 SABnzbd 正在运行。"
 
-#: sabnzbd/panic.py # sabnzbd/panic.py
+#: sabnzbd/panic.py # sabnzbd/panic.py # sabnzbd/panic.py
 msgid "Fatal error"
 msgstr "致命错误"
 
@@ -1490,6 +1487,12 @@ msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
 msgstr "已完成文件夹 %s 位于 FAT 文件系统上，这样会有最大文件为 4GB 的限制。"
+
+#: sabnzbd/postproc.py [Warning message]
+msgid ""
+"Module subprocessww missing. Expect problems with Unicoded file and "
+"directory names in downloads."
+msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
@@ -3874,6 +3877,22 @@ msgstr "设备"
 msgid "Device(s) to which message should be sent"
 msgstr "信息发送的目标设备"
 
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency retry"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How often (in seconds) the same notification will be sent"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "Emergency expire"
+msgstr ""
+
+#: sabnzbd/skintext.py [Pushover settings]
+msgid "How many seconds your notification will continue to be retried"
+msgstr ""
+
 #: sabnzbd/skintext.py [Header for Pushbullet notification section]
 msgid "Pushbullet"
 msgstr "Pushbullet"
@@ -4288,6 +4307,10 @@ msgstr "SABnzbd 重启后本画面将自动消失!"
 msgid "WARNING:"
 msgstr "警告:"
 
+#: sabnzbd/skintext.py # sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
+msgid "Fetch"
+msgstr "装取"
+
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh rate"
 msgstr "刷新频率"
@@ -4600,10 +4623,6 @@ msgstr "这将在您的鼠标指针处于队列上方时阻止内容刷新。"
 msgid "Block Refreshes on Hover"
 msgstr "指向时停止刷新"
 
-#: sabnzbd/skintext.py [Fetch from URL button in "Add NZB" dialog box]
-msgid "Fetch"
-msgstr "装取"
-
 #: sabnzbd/skintext.py [Upload button in "Add NZB" dialog box]
 msgid "Upload"
 msgstr "上传"
@@ -4864,6 +4883,12 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "文件夹 \"%s\" 不存在"
+
+#~ msgid "SQL Commit Failed, see log"
+#~ msgstr "SQL 保存失败，参见日志"
+
+#~ msgid "CRC Error in %s (%s -> %s)"
+#~ msgstr "CRC 错误：%s (%s -> %s)"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "错误: 未定义第二界面。"

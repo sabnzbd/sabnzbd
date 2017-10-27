@@ -22,6 +22,7 @@ sabnzbd.panic - Send panic message to the browser
 import os
 import logging
 import tempfile
+import ctypes
 try:
     import webbrowser
 except ImportError:
@@ -29,6 +30,7 @@ except ImportError:
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+from sabnzbd.encoding import unicoder
 
 PANIC_PORT = 1
 PANIC_TEMPL = 2
@@ -164,7 +166,7 @@ def panic_message(panic, a=None, b=None):
 
 
 def panic_port(host, port):
-    print "\n%s:\n  %s" % (T('Fatal error'), T('Unable to bind to port %s on %s. Some other software uses the port or SABnzbd is already running.') % (port, host))
+    show_error_dialog("\n%s:\n  %s" % (T('Fatal error'), T('Unable to bind to port %s on %s. Some other software uses the port or SABnzbd is already running.') % (port, host)))
     launch_a_browser(panic_message(PANIC_PORT, host, port))
 
 
@@ -185,7 +187,7 @@ def panic_sqlite(name):
 
 
 def panic(reason, remedy=""):
-    print "\n%s:\n  %s\n%s" % (T('Fatal error'), reason, remedy)
+    show_error_dialog("\n%s:\n  %s\n%s" % (T('Fatal error'), reason, remedy))
     launch_a_browser(panic_message(PANIC_OTHER, reason, remedy))
 
 
@@ -215,6 +217,15 @@ def launch_a_browser(url, force=False):
     except:
         logging.warning(T('Cannot launch the browser, probably not found'))
         logging.info("Traceback: ", exc_info=True)
+
+
+def show_error_dialog(msg):
+    """ Show a pop-up when program cannot start
+        Windows-only, otherwise only print to console
+    """
+    if sabnzbd.WIN32:
+        ctypes.windll.user32.MessageBoxW(0, unicoder(msg), T('Fatal error'), 0)
+    print msg
 
 
 def error_page_401(status, message, traceback, version):

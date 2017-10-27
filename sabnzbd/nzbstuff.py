@@ -47,7 +47,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
     fix_unix_encoding, calc_age, is_obfuscated_filename, get_ext, get_filename, \
-    get_unique_filename, renamer
+    get_unique_filename, renamer, remove_file, remove_dir
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -289,10 +289,10 @@ class NzbFile(TryList):
         elif not self.nzo.is_gone():
             # TEMPORARY ERRORS
             if not os.path.exists(os.path.join(self.nzf_id, self.nzo.workpath)):
-                logging.warning('Article DB file not found %s', self)
+                logging.warning('Article DB file not found %s: %s', self.nzf_id, self)
             else:
                 # It was there, but empty
-                logging.warning('Article DB empty %s', self)
+                logging.warning('Article DB empty %s: %s', self.nzf_id, self)
 
     def remove_article(self, article, found):
         """ Handle completed article, possibly end of file """
@@ -337,7 +337,8 @@ class NzbFile(TryList):
     def remove_admin(self):
         """ Remove article database from disk (sabnzbd_nzf_<id>)"""
         try:
-            os.remove(os.path.join(self.nzo.workpath, self.nzf_id))
+            logging.debug('Removing article database for %s', self.nzf_id)
+            remove_file(os.path.join(self.nzo.workpath, self.nzf_id))
         except:
             pass
 
@@ -511,7 +512,7 @@ class NzbParser(xml.sax.handler.ContentHandler):
                         self.nzf_list.remove(nzo_matches[0])
 
             if nzf.valid and nzf.nzf_id:
-                logging.info('File %s added to queue', self.filename)
+                logging.info('File %s - %s added to queue', nzf.filename, nzf.nzf_id)
                 self.nzo.files.append(nzf)
                 self.nzo.files_table[nzf.nzf_id] = nzf
                 self.nzo.bytes += nzf.bytes
@@ -571,7 +572,6 @@ NZO_LOCK = threading.RLock()
 
 class NzbObject(TryList):
 
-    @synchronized(NZO_LOCK)
     def __init__(self, filename, pp, script, nzb=None,
                  futuretype=False, cat=None, url=None,
                  priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None,
@@ -606,8 +606,9 @@ class NzbObject(TryList):
             # In case only /password was entered for nzbname
             work_name = filename
 
-        self.work_name = work_name
-        self.final_name = work_name
+        # Remove trailing .nzb and .par(2)
+        self.work_name = create_work_name(work_name)
+        self.final_name = create_work_name(work_name)
 
         self.meta = {}
         self.servercount = {}       # Dict to keep bytes per server
@@ -618,7 +619,7 @@ class NzbObject(TryList):
         self.bytes_tried = 0        # Which bytes did we try
         self.bytes_missing = 0      # Bytes missing
         self.bad_articles = 0       # How many bad (non-recoverable) articles
-        self.set_priority(priority) # Parse priority
+        self.set_priority(priority) # Parse priority of input
         self.repair = r             # True if we want to repair this set
         self.unpack = u             # True if we want to unpack this set
         self.delete = d             # True if we want to delete this set
@@ -691,9 +692,6 @@ class NzbObject(TryList):
         self.wait = None
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum = None
-
-        # Remove trailing .nzb and .par(2)
-        self.work_name = create_work_name(self.work_name)
 
         if nzb is None:
             # This is a slot for a future NZB, ready now
@@ -807,7 +805,7 @@ class NzbObject(TryList):
         self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp_tmp)
 
         # Run user pre-queue script if needed
-        if not reuse:
+        if not reuse and cfg.pre_script():
             accept, name, pp, cat, script, priority, group = \
                 sabnzbd.newsunpack.pre_queue(self.final_name_pw_clean, pp, cat, script,
                                              priority, self.bytes, self.groups)
@@ -816,6 +814,10 @@ class NzbObject(TryList):
                 pp = int(pp)
             except:
                 pp = None
+            try:
+                priority = int(priority)
+            except:
+                priority = DEFAULT_PRIORITY
             if accept < 1:
                 self.purge_data()
                 raise TypeError
@@ -827,7 +829,7 @@ class NzbObject(TryList):
                 self.fail_msg = T('Pre-queue script marked job as failed')
 
             # Re-evaluate results from pre-queue script
-            self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, int_conv(priority))
+            self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
             self.set_priority(priority)
             self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp)
         else:
@@ -1228,10 +1230,20 @@ class NzbObject(TryList):
 
     def set_priority(self, value):
         """ Check if this is a valid priority """
+        # When unknown (0 is a known one), set to DEFAULT
+        if value == '' or value is None:
+            self.priority = DEFAULT_PRIORITY
+            return
+
+        # Convert input
         value = int_conv(value)
         if value in (REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, \
              LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY):
             self.priority = value
+            return
+
+        # Invalid value, set to normal priority
+        self.priority = NORMAL_PRIORITY
 
     @property
     def final_name_labeled(self):
@@ -1461,7 +1473,7 @@ class NzbObject(TryList):
                             if not nzf.import_finished and not self.is_gone():
                                 logging.error(T('Error importing %s'), nzf)
                                 nzf_remove_list.append(nzf)
-                                nzf.nzo.pause()
+                                nzf.nzo.status = Status.PAUSED
                                 continue
                         else:
                             continue
@@ -1473,8 +1485,8 @@ class NzbObject(TryList):
         # Remove all files for which admin could not be read
         for nzf in nzf_remove_list:
             nzf.deleted = True
-            nzf.completed = True
             self.files.remove(nzf)
+
         # If cleanup emptied the active files list, end this job
         if nzf_remove_list and not self.files:
             sabnzbd.NzbQueue.do.end_job(self)
@@ -1655,14 +1667,14 @@ class NzbObject(TryList):
                 remove_all(wpath, 'SABnzbd_nz?_*', keep_folder=True)
                 remove_all(wpath, 'SABnzbd_article_*', keep_folder=True)
                 # We save the renames file
-                sabnzbd.save_data(self.renames, RENAMES_FILE, self.workpath)
+                sabnzbd.save_data(self.renames, RENAMES_FILE, self.workpath, silent=True)
             else:
                 remove_all(wpath, recursive=True)
             if del_files:
                 remove_all(self.downpath, recursive=True)
             else:
                 try:
-                    os.rmdir(self.downpath)
+                    remove_dir(self.downpath)
                 except:
                     pass
 

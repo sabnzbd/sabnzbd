@@ -31,6 +31,7 @@ import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.encoding import platform_encode
+from sabnzbd.decorators import NzbQueueLocker
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.misc as misc
@@ -96,6 +97,7 @@ def is_archive(path):
         return 1, None, ''
 
 
+@NzbQueueLocker
 def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                        priority=None, url='', nzbname=None, password=None, nzo_id=None):
     """ Analyse ZIP file and create job(s).
@@ -160,7 +162,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         zf.close()
         try:
             if not keep:
-                os.remove(path)
+                misc.remove_file(path)
         except:
             logging.error(T('Error removing %s'), misc.clip_path(path))
             logging.info("Traceback: ", exc_info=True)
@@ -172,6 +174,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
     return status, nzo_ids
 
 
+@NzbQueueLocker
 def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=None, keep=False,
                       priority=None, nzbname=None, reuse=False, nzo_info=None, dup_check=True, url='',
                       password=None, nzo_id=None):
@@ -246,7 +249,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         nzo.update_rating()
     try:
         if not keep:
-            os.remove(path)
+            misc.remove_file(path)
     except:
         logging.error(T('Error removing %s'), misc.clip_path(path))
         logging.info("Traceback: ", exc_info=True)

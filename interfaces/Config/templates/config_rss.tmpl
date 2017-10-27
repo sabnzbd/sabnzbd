@@ -7,7 +7,7 @@
         <div class="padTable">
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
-            <form action="add_rss_feed" method="post" autocomplete="off" novalidate>
+            <form action="add_rss_feed" method="post" autocomplete="off">
                 <input type="hidden" name="session" value="$session" />
                 <table class="catTable">
                     <tr>
@@ -37,7 +37,7 @@
     <!--#if $rss#-->
     <div class="section">
         <div class="padTable">
-            <form action="save_rss_feed" method="post" autocomplete="off" novalidate>
+            <form action="save_rss_feed" method="post" autocomplete="off">
                 <input type="hidden" name="session" value="$session" />
                 <table id="subscriptions">
                     <tbody>
@@ -73,7 +73,7 @@
             </form>
             <!--#if $feeds#-->
             <br/>
-            <form action="rss_now" method="post" autocomplete="off" novalidate>
+            <form action="rss_now" method="post" autocomplete="off">
                 <input type="hidden" name="session" value="$session" />
                 <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
             </form>
@@ -154,7 +154,7 @@
                                     <option value=">"> $T('rss-atleast')</option>
                                     <option value="<"> $T('rss-atmost')</option>
                                     <option value="F"> $T('rss-from')</option>
-                                    <option value="F"> $T('rss-from-show')</option>
+                                    <option value="F"> $T('rss-from-show') ($T('rss-accept'))</option>
                                 </select>
                             </td>
                             <td>
@@ -226,8 +226,8 @@
                                     <option value="C"> $T('rss-mustcat')</option>
                                     <option value=">"> $T('rss-atleast')</option>
                                     <option value="<"> $T('rss-atmost')</option>
-                                    <option value="S"> $T('rss-from-show')</option>
                                     <option value="F"> $T('rss-from')</option>
+                                    <option value="S"> $T('rss-from-show') ($T('rss-accept'))</option>
                                 </select>
                             </td>
                             <td>
@@ -287,7 +287,7 @@
                     <input type="hidden" name="feed" value="$feed" />
                     <table class="catTable">
                         <tbody>
-                            <tr class="<!--#if $odd then " alt " else " "#--> <!--#if $filter[3]!="A" then 'disabled_options_rule' else ""#-->">
+                            <tr class="<!--#if $odd then " alt " else " "#--> <!--#if $filter[3]!="A" and $filter[3]!="S" then 'disabled_options_rule' else ""#-->">
                                 <td>
                                     <input type="checkbox" name="enabled" value="1" <!--#if $filter[6]=='1' then 'checked="checked"' else ""#--> />
                                 </td>
@@ -302,8 +302,8 @@
                                         <option value="C" <!--#if $filter[3]=="C" then 'selected="selected"' else ""#-->> $T('rss-mustcat')</option>
                                         <option value=">" <!--#if $filter[3]==">" then 'selected="selected"' else ""#-->> $T('rss-atleast')</option>
                                         <option value="<" <!--#if $filter[3]=="<" then 'selected="selected"' else ""#-->> $T('rss-atmost')</option>
-                                        <option value="S" <!--#if $filter[3]=="S" then 'selected="selected"' else ""#-->> $T('rss-from-show')</option>
                                         <option value="F" <!--#if $filter[3]=="F" then 'selected="selected"' else ""#-->> $T('rss-from')</option>
+                                        <option value="S" <!--#if $filter[3]=="S" then 'selected="selected"' else ""#-->> $T('rss-from-show') ($T('rss-accept'))</option>
                                     </select>
                                 </td>
                                 <td>
@@ -568,7 +568,7 @@ function urlencode(str) {
 
     // Only the Accept filter needs all the options
     \$('form[action="upd_rss_filter"]').find('select[name="filter_type"]').change(function() {
-        \$(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', \$(this).val() != "A")
+        \$(this).parent().parent().find('select:not([name="filter_type"])').attr('disabled', \$(this).val() != "A" && \$(this).val() != "S")
     })
     // Trigger on-load for all
     \$('.disabled_options_rule').find('td select:not([name="filter_type"])').attr('disabled', true)

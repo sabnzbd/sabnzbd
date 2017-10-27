@@ -24,7 +24,6 @@ import Queue
 import logging
 import sabnzbd
 import xml.sax.saxutils
-import xml.etree.ElementTree
 import time
 import re
 
@@ -35,7 +34,7 @@ from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, 
     make_script_path, long_path, clip_path, \
     on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
     set_permissions, cleanup_empty_directories, fix_unix_encoding, \
-    sanitize_and_trim_path, sanitize_files_in_folder
+    sanitize_and_trim_path, sanitize_files_in_folder, remove_file
 from sabnzbd.tvsort import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -168,6 +167,13 @@ class PostProcessor(Thread):
         else:
             logging.info("Completed Download Folder %s is not on FAT", complete_dir)
 
+        # Check on Windows if we have unicode-subprocess
+        if sabnzbd.WIN32:
+            try:
+                import subprocessww
+            except ImportError:
+                logging.warning(T('Module subprocessww missing. Expect problems with Unicoded file and directory names in downloads.'))
+
         # Start looping
         check_eoq = False
         while not self.__stop:
@@ -212,6 +218,9 @@ class PostProcessor(Thread):
                 history_db.remove_history(nzo.nzo_id)
                 history_db.close()
                 nzo.purge_data(keep_basic=False, del_files=True)
+
+            # Processing done
+            nzo.pp_active = False
 
             self.remove(nzo)
             check_eoq = True
@@ -563,7 +572,7 @@ def process_job(nzo):
 def prepare_extraction_path(nzo):
     """ Based on the information that we have, generate
         the extraction path and create the directory.
-        Seperated so it can be called from DirectUnpacker
+        Separated so it can be called from DirectUnpacker
     """
     one_folder = False
     marker_file = None
@@ -668,6 +677,7 @@ def parring(nzo, workdir):
         logging.info('Re-added %s to queue', filename)
         if nzo.priority != TOP_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
+        nzo.status = Status.FETCHING
         sabnzbd.nzbqueue.NzbQueue.do.add(nzo)
         sabnzbd.downloader.Downloader.do.resume_from_postproc()
 
@@ -796,7 +806,7 @@ def cleanup_list(wdir, skip_nzb):
                 if on_cleanup_list(filename, skip_nzb):
                     try:
                         logging.info("Removing unwanted file %s", path)
-                        os.remove(path)
+                        remove_file(path)
                     except:
                         logging.error(T('Removing %s failed'), clip_path(path))
                         logging.info("Traceback: ", exc_info=True)
@@ -876,7 +886,7 @@ def remove_samples(path):
                 path = os.path.join(root, file_)
                 try:
                     logging.info("Removing unwanted sample file %s", path)
-                    os.remove(path)
+                    remove_file(path)
                 except:
                     logging.error(T('Removing %s failed'), clip_path(path))
                     logging.info("Traceback: ", exc_info=True)
@@ -929,7 +939,7 @@ def del_marker(path):
     if path and os.path.exists(path):
         logging.debug('Removing marker file %s', path)
         try:
-            os.remove(path)
+            remove_file(path)
         except:
             logging.info('Cannot remove marker file %s', path)
             logging.info("Traceback: ", exc_info=True)

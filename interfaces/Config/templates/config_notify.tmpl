@@ -26,7 +26,7 @@
 <!--#end def#-->
 
 <div class="colmask">
-    <form action="saveEmail" method="post" name="fullform" class="fullform" autocomplete="off" novalidate>
+    <form action="saveEmail" method="post" name="fullform" class="fullform" autocomplete="off">
     <input type="hidden" id="session" name="session" value="$session" />
     <input type="hidden" id="ajax" name="ajax" value="1" />
     <div class="section" id="email">
@@ -325,6 +325,16 @@
                     <label class="config" for="pushover_device">$T('opt-pushover_device')</label>
                     <input type="text" name="pushover_device" id="pushover_device" value="$pushover_device" />
                     <span class="desc">$T('explain-pushover_device')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_emergency_retry">$T('opt-pushover_emergency_retry')</label>
+                    <input type="text" name="pushover_emergency_retry" id="pushover_emergency_retry" value="$pushover_emergency_retry" />
+                    <span class="desc">$T('explain-pushover_emergency_retry')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="pushover_emergency_expire">$T('opt-pushover_emergency_expire')</label>
+                    <input type="text" name="pushover_emergency_expire" id="pushover_emergency_expire" value="$pushover_emergency_expire" />
+                    <span class="desc">$T('explain-pushover_emergency_expire')</span>
                 </div>
                 <!--#set $section_label = 'pushover'#-->
                 <!--#for $type in $notify_keys#-->

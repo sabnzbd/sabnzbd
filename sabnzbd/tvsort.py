@@ -38,7 +38,7 @@ RE_SAMPLE = re.compile(sample_match, re.I)
 EXCLUDED_FILE_EXTS = ('.vob', '.bin')
 
 LOWERCASE = ('the', 'of', 'and', 'at', 'vs', 'a', 'an', 'but', 'nor', 'for', 'on',
-                         'so', 'yet')
+                         'so', 'yet', 'with')
 UPPERCASE = ('III', 'II', 'IV')
 
 REPLACE_AFTER = {

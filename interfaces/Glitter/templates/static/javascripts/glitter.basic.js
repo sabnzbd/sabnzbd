@@ -134,7 +134,7 @@ function displayDateTime(inDate, outFormat, inFormat) {
     if(outFormat == 'fromNow') {
         return theMoment.fromNow()
     } else {
-        return theMoment.format(outFormat)
+        return theMoment.local().format(outFormat)
     }
 }
 

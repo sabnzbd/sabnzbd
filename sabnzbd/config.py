@@ -385,7 +385,7 @@ class ConfigServer(object):
         self.displayname = OptionStr(name, 'displayname', '', add=False)
         self.host = OptionStr(name, 'host', '', add=False)
         self.port = OptionNumber(name, 'port', 119, 0, 2 ** 16 - 1, add=False)
-        self.timeout = OptionNumber(name, 'timeout', 120, 30, 240, add=False)
+        self.timeout = OptionNumber(name, 'timeout', 60, 20, 240, add=False)
         self.username = OptionStr(name, 'username', '', add=False)
         self.password = OptionPassword(name, 'password', '', add=False)
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
@@ -395,7 +395,7 @@ class ConfigServer(object):
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
-        self.priority = OptionNumber(name, 'priority', 0, 0, 100, add=False)
+        self.priority = OptionNumber(name, 'priority', 0, 0, 99, add=False)
         # 'fillserver' field only here in order to set a proper priority when converting
         self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.notes = OptionStr(name, 'notes', '', add=False)
@@ -859,7 +859,7 @@ def save_config(force=False):
         logging.error(T('Cannot write to INI file %s'), filename)
         logging.info("Traceback: ", exc_info=True)
         try:
-            os.remove(filename)
+            sabnzbd.misc.remove_file(filename)
         except:
             pass
         # Restore INI file from backup
