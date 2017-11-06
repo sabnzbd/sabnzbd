@@ -1451,6 +1451,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 nzo.set_unpack_info('Repair', msg)
                 nzo.status = Status.FAILED
 
+            elif line.startswith('Repair Failed.'):
+                # Unknown repair problem
+                msg = T('Repairing failed, %s') % line
+                nzo.fail_msg = msg
+                msg = u'[%s] %s' % (unicoder(setname), msg)
+                nzo.set_unpack_info('Repair', msg)
+                nzo.status = Status.FAILED
+                finished = 0
+
             elif not verified:
                 if line.startswith('Verifying source files'):
                     nzo.set_action_line(T('Verifying'), '01/%02d' % verifytotal)
@@ -1837,6 +1846,14 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             verifynum += 1
             nzo.set_action_line(T('Verifying repair'), '%02d/%02d' % (verifynum, verifytotal))
 
+        elif line.startswith('Failed to repair'):
+            # Unknown repair problem
+            msg = T('Repairing failed, %s') % line
+            nzo.fail_msg = msg
+            msg = u'[%s] %s' % (unicoder(setname), msg)
+            nzo.set_unpack_info('Repair', msg)
+            nzo.status = Status.FAILED
+            finished = 0
 
     p.wait()
 
