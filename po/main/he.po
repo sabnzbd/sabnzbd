@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-10-25 23:30+0000\n"
-"PO-Revision-Date: 2017-10-07 08:28+0000\n"
+"PO-Revision-Date: 2017-10-26 20:38+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:45+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-10-27 06:15+0000\n"
+"X-Generator: Launchpad (build 18493)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -447,7 +447,7 @@ msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
 msgstr ""
-".עבודות יתחילו להיפרק במהלך ההורדה כדי להפחית זמן לאחר-עיבוד. עובד רק עבור "
+".עבודות יתחילו להיפרק במהלך ההורדה כדי להפחית זמן בתר-עיבוד. עובד רק עבור "
 "עבודות שאינן צריכות תיקון"
 
 #: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py # sabnzbd/dirscanner.py
@@ -724,7 +724,7 @@ msgstr "משתנה לא נכון"
 #: sabnzbd/interface.py
 msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
-msgstr ""
+msgstr ".תיקיית מדור אינה יכולה להיות תת-תיקייה של תיקיית ההורדות הזמניות"
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
@@ -790,7 +790,7 @@ msgstr "%s לא יכול לשנות הרשאות של"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/postproc.py
 msgid "PostProcessing was aborted (%s)"
-msgstr "(%s) לאחר-עיבוד בוטל"
+msgstr "(%s) בתר-עיבוד בוטל"
 
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP phase "script"] # sabnzbd/skintext.py
 #: sabnzbd/skintext.py [Notification Script settings]
@@ -1081,7 +1081,7 @@ msgstr "התווסף NZB"
 
 #: sabnzbd/notifier.py
 msgid "Post-processing started"
-msgstr "לאחר-עיבוד התחיל"
+msgstr "בתר-עיבוד התחיל"
 
 #: sabnzbd/notifier.py [Notification]
 msgid "Job finished"
@@ -1529,7 +1529,7 @@ msgstr "הורדה נכשלה - לא בשרת(ים) שלך"
 
 #: sabnzbd/postproc.py
 msgid "No post-processing because of failed verification"
-msgstr "אין לאחר-עיבוד בגלל וידוא כושל"
+msgstr "אין בתר-עיבוד בגלל וידוא כושל"
 
 #: sabnzbd/postproc.py
 msgid "Moving"
@@ -1569,7 +1569,7 @@ msgstr "עוד"
 
 #: sabnzbd/postproc.py [Error message]
 msgid "Post Processing Failed for %s (%s)"
-msgstr "%s (%s) לאחר-עיבוד נכשל עבור"
+msgstr "%s (%s) בתר-עיבוד נכשל עבור"
 
 #: sabnzbd/postproc.py
 msgid "see logfile"
@@ -1597,7 +1597,7 @@ msgstr "%s לא יכול ליצור תיקייה סופית"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing"
-msgstr "לאחר-עיבוד"
+msgstr "בתר-עיבוד"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
@@ -1833,11 +1833,11 @@ msgstr "השהה הכל"
 
 #: sabnzbd/skintext.py [#: Config->Scheduler]
 msgid "Pause post-processing"
-msgstr "השהה לאחר-עיבוד"
+msgstr "השהה בתר-עיבוד"
 
 #: sabnzbd/skintext.py [#: Config->Scheduler]
 msgid "Resume post-processing"
-msgstr "המשך לאחר-עיבוד"
+msgstr "המשך בתר-עיבוד"
 
 #: sabnzbd/skintext.py [#: Config->Scheduler]
 msgid "Read RSS feeds"
@@ -3157,11 +3157,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Post-Process Only Verified Jobs"
-msgstr "בצע לאחר-עיבוד רק על עבודות שוודאו"
+msgstr "בצע בתר-עיבוד רק על עבודות שוודאו"
 
 #: sabnzbd/skintext.py
 msgid "Only perform post-processing on jobs that passed all PAR2 checks."
-msgstr ".PAR2-בצע לאחר-עיבוד רק בעבודות שעברו את כל בדיקות ה"
+msgstr ".PAR2-בצע בתר-עיבוד רק בעבודות שעברו את כל בדיקות ה"
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3288,8 +3288,8 @@ msgid ""
 "Use temporary names during post processing. Disable when your system doesn't "
 "handle that properly."
 msgstr ""
-".השתמש בשמות זמניים במהלך לאחר-עיבוד. השבת כאשר המערכת שלך אינה מתמודדת עם "
-"זה כראוי"
+".השתמש בשמות זמניים במהלך בתר-עיבוד. השבת כאשר המערכת שלך אינה מתמודדת עם זה "
+"כראוי"
 
 #: sabnzbd/skintext.py
 msgid "Pre-queue user script"
@@ -3381,12 +3381,12 @@ msgstr ".SABnzbd הפעל את דפדפן ברירת המחדל בעת התחל�
 
 #: sabnzbd/skintext.py
 msgid "Pause Downloading During Post-Processing"
-msgstr "השהה הורדה במהלך לאחר-עיבוד"
+msgstr "השהה הורדה במהלך בתר-עיבוד"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Pauses downloading at the start of post processing and resumes when finished."
-msgstr ".משהה הורדה בתחילת לאחר-עיבוד וממשיך בסיום"
+msgstr ".משהה הורדה בתחילת בתר-עיבוד וממשיך בסיום"
 
 #: sabnzbd/skintext.py
 msgid "Ignore Samples"
@@ -3415,7 +3415,7 @@ msgstr "שרת"
 
 #: sabnzbd/skintext.py
 msgid "Post processing"
-msgstr "לאחר-עיבוד"
+msgstr "בתר-עיבוד"
 
 #: sabnzbd/skintext.py
 msgid "Naming"
