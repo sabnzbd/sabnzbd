@@ -1494,6 +1494,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
     except WindowsError, err:
         raise WindowsError(err)
 
+    # Also log what is shown to user in history
+    if nzo.fail_msg:
+        logging.info(nzo.fail_msg)
+
     logging.debug('PAR2 output was\n%s', '\n'.join(lines))
 
     # If successful, add renamed files to the collection
@@ -1856,6 +1860,10 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             finished = 0
 
     p.wait()
+
+    # Also log what is shown to user in history
+    if nzo.fail_msg:
+        logging.info(nzo.fail_msg)
 
     logging.debug('MultiPar output was\n%s', '\n'.join(lines))
 
