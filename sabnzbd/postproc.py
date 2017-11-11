@@ -174,6 +174,11 @@ class PostProcessor(Thread):
             except ImportError:
                 logging.warning(T('Module subprocessww missing. Expect problems with Unicoded file and directory names in downloads.'))
 
+        # Do a pruge of the history-items if it was set, just to be sure
+        history_db = database.HistoryDB()
+        history_db.auto_history_purge()
+        history_db.close()
+
         # Start looping
         check_eoq = False
         while not self.__stop:
