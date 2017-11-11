@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-10-21 16:01+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-11-11 17:02+FLE Standard Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -534,6 +534,12 @@ msgstr ""
 msgid "Email succeeded"
 msgstr ""
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr ""
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr ""
@@ -728,6 +734,10 @@ msgstr ""
 msgid "Cannot change permissions of %s"
 msgstr ""
 
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr ""
+
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/postproc.py
@@ -905,6 +915,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr ""
 
@@ -1036,11 +1047,6 @@ msgstr ""
 
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
-msgstr ""
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
 msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
@@ -1438,10 +1444,6 @@ msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Failed to move files"
-msgstr ""
-
-#: sabnzbd/postproc.py
-msgid "Running script"
 msgstr ""
 
 #: sabnzbd/postproc.py
@@ -4286,6 +4288,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings."
 msgstr ""
 
 #: sabnzbd/skintext.py
