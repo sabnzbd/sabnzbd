@@ -2307,7 +2307,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
             n = 0
             for line in output.split('\n'):
                 line = line.strip('\r\n \'"')
-                if n < len(values) and line:
+                if n < len(values):
                     values[n] = TRANS(line)
                 n += 1
         accept = int_conv(values[0])
