@@ -806,27 +806,36 @@ class NzbObject(TryList):
 
         # Run user pre-queue script if needed
         if not reuse and cfg.pre_script():
-            accept, name, pp, cat, script, priority, group = \
+            accept, name, pp, cat_pp, script_pp, priority, group = \
                 sabnzbd.newsunpack.pre_queue(self.final_name_pw_clean, pp, cat, script,
                                              priority, self.bytes, self.groups)
+            # Accept or reject
             accept = int_conv(accept)
+            if accept < 1:
+                self.purge_data()
+                raise TypeError
+            if accept == 2:
+                self.fail_msg = T('Pre-queue script marked job as failed')
+
+            # Process all options, only over-write if set by script
+            # Beware that cannot do "if priority/pp", because those can
+            # also have a valid value of 0, which shouldn't be ignored
+            if name:
+                self.set_final_name_pw(name)
             try:
                 pp = int(pp)
             except:
                 pp = None
+            if cat_pp:
+                cat = cat_pp
             try:
                 priority = int(priority)
             except:
                 priority = DEFAULT_PRIORITY
-            if accept < 1:
-                self.purge_data()
-                raise TypeError
-            if name:
-                self.set_final_name_pw(name)
+            if script_pp:
+                script = script_pp
             if group:
                 self.groups = [str(group)]
-            if accept == 2:
-                self.fail_msg = T('Pre-queue script marked job as failed')
 
             # Re-evaluate results from pre-queue script
             self.cat, pp, self.script, priority = cat_to_opts(cat, pp, script, priority)
