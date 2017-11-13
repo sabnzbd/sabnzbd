@@ -689,7 +689,8 @@ class NzbObject(TryList):
         self.next_save = None
         self.save_timeout = None
         self.encrypted = 0
-        self.wait = None
+        self.url_wait = None
+        self.url_tries = 0
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum = None
 
@@ -1269,8 +1270,8 @@ class NzbObject(TryList):
             prefix += T('UNWANTED') + ' / '  # : Queue indicator for unwanted extensions
         if self.rating_filtered and self.status == 'Paused':
             prefix += T('FILTERED') + ' / '  # : Queue indicator for filtered
-        if isinstance(self.wait, float):
-            dif = int(self.wait - time.time() + 0.5)
+        if isinstance(self.url_wait, float):
+            dif = int(self.url_wait - time.time() + 0.5)
             if dif > 0:
                 prefix += T('WAIT %s sec') % dif + ' / '  # : Queue indicator for waiting URL fetch
         if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
@@ -1825,7 +1826,8 @@ class NzbObject(TryList):
         # Set non-transferable values
         self.pp_active = False
         self.avg_stamp = time.mktime(self.avg_date.timetuple())
-        self.wait = None
+        self.url_wait = None
+        self.url_tries = 0
         self.to_be_removed = False
         self.direct_unpacker = None
         if self.meta is None:

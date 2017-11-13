@@ -342,7 +342,8 @@ class NzbQueue(object):
                 nzo.set_final_name_pw(name, password)
             else:
                 # Reset url fetch wait time
-                nzo.wait = None
+                nzo.url_wait = None
+                nzo.url_tries = 0
             return True
         else:
             return False
