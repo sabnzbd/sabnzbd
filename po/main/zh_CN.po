@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-11-15 14:12+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:47+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-11-16 05:32+0000\n"
+"X-Generator: Launchpad (build 18505)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -550,6 +550,12 @@ msgstr "无法关闭邮件连接"
 msgid "Email succeeded"
 msgstr "成功发送电子邮件"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "无法发送，缺少必要的数据"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "无法找到 email 模板：%s"
@@ -770,6 +776,10 @@ msgstr ""
 msgid "Cannot change permissions of %s"
 msgstr "无法更改 %s 的权限"
 
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "正在执行脚本"
+
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/postproc.py
@@ -947,6 +957,7 @@ msgstr "Par 验证失败：%s，但快速检查成功!"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "修复失败，%s"
 
@@ -1083,11 +1094,6 @@ msgstr "其他信息"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "不可用"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "无法发送，缺少必要的数据"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1521,10 +1527,6 @@ msgstr "将 \"%s\" 重命名为 \"%s\" 出错"
 #: sabnzbd/postproc.py
 msgid "Failed to move files"
 msgstr "移动文件失败"
-
-#: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "正在执行脚本"
 
 #: sabnzbd/postproc.py
 msgid "Running user script %s"
@@ -4476,6 +4478,12 @@ msgstr "暂停..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "刷新"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

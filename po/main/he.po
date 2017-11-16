@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
-"PO-Revision-Date: 2017-10-26 20:38+0000\n"
+"POT-Creation-Date: 2017-11-15 14:12+0000\n"
+"PO-Revision-Date: 2017-11-15 20:06+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-27 06:15+0000\n"
-"X-Generator: Launchpad (build 18493)\n"
+"X-Launchpad-Export-Date: 2017-11-16 05:31+0000\n"
+"X-Generator: Launchpad (build 18505)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -558,6 +558,12 @@ msgstr "נכשל בסגירת חיבור דוא\"ל"
 msgid "Email succeeded"
 msgstr "דוא\"ל הצליח"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "לא ניתן לשלוח, נתונים דרושים חסרים"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "%s-לא ניתן למצוא תבניות דוא\"ל"
@@ -786,6 +792,10 @@ msgstr ""
 msgid "Cannot change permissions of %s"
 msgstr "%s לא יכול לשנות הרשאות של"
 
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "מריץ תסריט"
+
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/postproc.py
@@ -963,6 +973,7 @@ msgstr "!בעוד שבדיקה זריזה הצליחה ,%s-נכשל ב Par וי�
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "%s ,תיקון נכשל"
 
@@ -1102,11 +1113,6 @@ msgstr "הודעות אחרות"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "לא זמין"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "לא ניתן לשלוח, נתונים דרושים חסרים"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1546,10 +1552,6 @@ msgstr "\"%s\" אל \"%s\" שגיאה בשינוי שם"
 #: sabnzbd/postproc.py
 msgid "Failed to move files"
 msgstr "נכשל בהעברת קבצים"
-
-#: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "מריץ תסריט"
 
 #: sabnzbd/postproc.py
 msgid "Running user script %s"
@@ -4559,6 +4561,14 @@ msgstr "...השהה למשך"
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "רענן"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
+".מוסרים באופן אוטומטי מהיומן ומהעותק הכלול של ההגדרות שלך API-כל שמות "
+"המשתמש, הסיסמאות ומפתחות ה"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-11-15 14:12+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-11-16 05:32+0000\n"
+"X-Generator: Launchpad (build 18505)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 #: SABnzbd.py [Error message]
@@ -551,6 +551,12 @@ msgstr "Не удалось разорвать соединение с почт�
 msgid "Email succeeded"
 msgstr "Электронное письмо успешно отправлено"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr ""
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Не удаётся найти шаблонны электронных писем в %s"
@@ -781,6 +787,10 @@ msgstr ""
 msgid "Cannot change permissions of %s"
 msgstr "Не удаётся изменить права доступа %s"
 
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Запуск сценария"
+
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/postproc.py
@@ -958,6 +968,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Не удалось исправить: %s"
 
@@ -1096,11 +1107,6 @@ msgstr "Другие сообщения"
 
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
-msgstr ""
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
 msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
@@ -1543,10 +1549,6 @@ msgstr "Ошибка переименования «%s» и «%s»"
 #: sabnzbd/postproc.py
 msgid "Failed to move files"
 msgstr "Не удалось переместить файлы"
-
-#: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Запуск сценария"
 
 #: sabnzbd/postproc.py
 msgid "Running user script %s"
@@ -4549,6 +4551,12 @@ msgstr "Приостановить на..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Обновить"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-11-15 14:12+0000\n"
 "PO-Revision-Date: 2017-10-10 19:03+0000\n"
 "Last-Translator: Robin Munkittrick <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:45+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-11-16 05:31+0000\n"
+"X-Generator: Launchpad (build 18505)\n"
 
 #: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
@@ -586,6 +586,12 @@ msgstr "Schliessen der Mail-Verbindung fehlgeschlagen"
 msgid "Email succeeded"
 msgstr "E-Mail erfolgreich versendet"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Absenden nicht möglich, benötigte Daten fehlen"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "In %s konnten keine E-Mail-Vorlagen gefunden werden"
@@ -821,6 +827,10 @@ msgstr ""
 msgid "Cannot change permissions of %s"
 msgstr "Rechte von %s konnten nicht geändert werden"
 
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Ausführen des Skripts"
+
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/postproc.py
@@ -1002,6 +1012,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparatur fehlgeschlagen. %s"
 
@@ -1147,11 +1158,6 @@ msgstr "Andere Nachrichten"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Nicht verfügbar"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Absenden nicht möglich, benötigte Daten fehlen"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1609,10 +1615,6 @@ msgstr "Fehler beim Umbenennen von \"%s\" nach \"%s\""
 #: sabnzbd/postproc.py
 msgid "Failed to move files"
 msgstr "Dateien verschieben fehlgeschlagen"
-
-#: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Ausführen des Skripts"
 
 #: sabnzbd/postproc.py
 msgid "Running user script %s"
@@ -4696,6 +4698,12 @@ msgstr "Anhalten für …"
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Neu laden"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"

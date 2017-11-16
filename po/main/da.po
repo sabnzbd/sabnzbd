@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-11-15 14:12+0000\n"
 "PO-Revision-Date: 2017-10-27 21:53+0000\n"
 "Last-Translator: Søren <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-28 06:42+0000\n"
-"X-Generator: Launchpad (build 18493)\n"
+"X-Launchpad-Export-Date: 2017-11-16 05:31+0000\n"
+"X-Generator: Launchpad (build 18505)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -567,6 +567,12 @@ msgstr "Det lykkedes ikke at lukke e-mail tilslutning"
 msgid "Email succeeded"
 msgstr "E-mail afsendelse mislykkedes"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Kan ikke sende, mangler nødvendige data"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Kan ikke finde e-mail skabeloner i %s"
@@ -797,6 +803,10 @@ msgstr ""
 msgid "Cannot change permissions of %s"
 msgstr "Det lykkedes ikke at ændre rettigheder på %s"
 
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Køre script"
+
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/postproc.py
@@ -974,6 +984,7 @@ msgstr "Par verificering mislykkedes på %s, mens QuickCheck lykkedes"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparation mislykkedes, %s"
 
@@ -1112,11 +1123,6 @@ msgstr "Andre beskeder"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ikke tilgængelig"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Kan ikke sende, mangler nødvendige data"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1552,10 +1558,6 @@ msgstr "Det lykkedes ikke at omdøbe \"%s\" til \"%s\""
 #: sabnzbd/postproc.py
 msgid "Failed to move files"
 msgstr "Kunne ikke flytte filer"
-
-#: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Køre script"
 
 #: sabnzbd/postproc.py
 msgid "Running user script %s"
@@ -4587,6 +4589,12 @@ msgstr "Pause i..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Opdatere"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
