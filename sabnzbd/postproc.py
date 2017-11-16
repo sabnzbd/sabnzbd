@@ -252,7 +252,6 @@ def process_job(nzo):
     postproc_time = 0
     script_log = ''
     script_line = ''
-    crash_msg = ''
 
     # Get the job flags
     nzo.save_attribs()
@@ -509,15 +508,15 @@ def process_job(nzo):
                     Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)
 
     except:
-        logging.error(T('Post Processing Failed for %s (%s)'), filename, crash_msg)
-        if not crash_msg:
-            logging.info("Traceback: ", exc_info=True)
-            crash_msg = T('see logfile')
-        nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
+        logging.error(T('Post Processing Failed for %s (%s)'), filename, T('see logfile'))
+        logging.info("Traceback: ", exc_info=True)
+
+        nzo.fail_msg = T('PostProcessing was aborted (%s)') % T('see logfile')
         notifier.send_notification(T('Download Failed'), filename, 'failed', nzo.cat)
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False
+
         if cfg.email_endjob():
             emailer.endjob(nzo.final_name, nzo.cat, all_ok, clip_path(workdir_complete), nzo.bytes_downloaded,
                            nzo.fail_msg, nzo.unpack_info, '', '', 0)
