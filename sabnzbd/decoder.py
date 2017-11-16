@@ -48,8 +48,8 @@ try:
     import sabyenc
     SABYENC_ENABLED = True
     SABYENC_VERSION = sabyenc.__version__
-    # Verify version
-    if SABYENC_VERSION != SABYENC_VERSION_REQUIRED:
+    # Verify version to at least match minor version
+    if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
         raise ImportError
 except ImportError:
     SABYENC_ENABLED = False

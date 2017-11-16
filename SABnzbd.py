@@ -401,7 +401,7 @@ def print_modules():
     """ Log all detected optional or external modules """
     if sabnzbd.decoder.SABYENC_ENABLED:
         # Yes, we have SABYenc, and it's the correct version, so it's enabled
-        logging.info("SABYenc module (v%s)... found!", sabnzbd.constants.SABYENC_VERSION_REQUIRED)
+        logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
     else:
         # Something wrong with SABYenc, so let's determine and print what:
         if sabnzbd.decoder.SABYENC_VERSION:
