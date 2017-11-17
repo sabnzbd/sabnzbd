@@ -337,7 +337,7 @@ class Decoder(Thread):
             return
 
         # Set the md5-of-16k if this is the first article
-        if article.partnum == nzf.lowest_partnum:
+        if article.lowest_partnum:
             nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
 
         # Try the rename
