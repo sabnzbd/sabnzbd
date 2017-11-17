@@ -1090,9 +1090,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
         # Download all par2 files that haven't been downloaded yet
         readd = False
         for extrapar in nzo.extrapars[setname][:]:
-            if extrapar not in nzo.finished_files and extrapar not in nzo.files:
-                nzo.add_parfile(extrapar)
-                readd = True
+            nzo.add_parfile(extrapar)
+            readd = True
         if readd:
             return readd, result
 
@@ -1308,8 +1307,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 verifynum = 0
 
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
-                # Initialparfile probably didn't decode properly,
-                logging.info(T('Main packet not found...'))
+                # Initialparfile probably didn't decode properly or bad user parameters
+                # We will try to get another par2 file, but 99% of time it's user parameters
+                msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
+                logging.info(msg)
                 logging.info("Extra pars = %s", nzo.extrapars[setname])
 
                 # Look for the smallest par2file
@@ -1327,7 +1328,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                     nzo.add_parfile(nzf)
                     readd = True
                 else:
-                    msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
                     nzo.fail_msg = msg
                     msg = u'[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg)
@@ -1618,8 +1618,10 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             logging.error(msg)
 
         elif line.startswith('valid file is not found'):
-            # Initialparfile probably didn't decode properly,
-            logging.info(T('Main packet not found...'))
+            # Initialparfile probably didn't decode properly, or bad user parameters
+            # We will try to get another par2 file, but 99% of time it's user parameters
+            msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
+            logging.info(msg)
             logging.info("Extra pars = %s", nzo.extrapars[setname])
 
             # Look for the smallest par2file
@@ -1637,7 +1639,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 nzo.add_parfile(nzf)
                 readd = True
             else:
-                msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
                 nzo.fail_msg = msg
                 msg = u'[%s] %s' % (unicoder(setname), msg)
                 nzo.set_unpack_info('Repair', msg)
