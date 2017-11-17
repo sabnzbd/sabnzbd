@@ -1023,6 +1023,9 @@ class NzbObject(TryList):
         for setname in self.extrapars:
             self.extrapars[parset].sort(key=lambda x: x.blocks)
 
+        # Also re-parse all filenames in case par2 came after first articles
+        self.verify_all_filenames_and_resort()
+
     @synchronized(NZO_LOCK)
     def handle_par2(self, nzf, filepath):
         """ Check if file is a par2 and build up par2 collection """
@@ -1142,11 +1145,7 @@ class NzbObject(TryList):
 
             # All first articles done?
             if not self.first_articles and self.md5of16k:
-                # Re-parse the filenames from this first info
-                for nzf_verify in self.files:
-                    self.verify_nzf_filename(nzf_verify)
-                logging.info('Resorting %s after getting all filenames', self.final_name)
-                self.sort_nzfs()
+                self.verify_all_filenames_and_resort()
 
         # Remove from file-tracking
         file_done = nzf.remove_article(article, found)
@@ -1654,6 +1653,14 @@ class NzbObject(TryList):
             logging.info('Detected filename from yenc: %s -> %s', nzf.filename, yenc_filename)
             self.renamed_file(yenc_filename, nzf.filename)
             nzf.filename = yenc_filename
+
+    def verify_all_filenames_and_resort(self):
+        """ Verify all filenames based on par2 info and then re-sort files """
+        logging.info('Checking all filenames for %s', self.final_name)
+        for nzf_verify in self.files:
+            self.verify_nzf_filename(nzf_verify)
+        logging.info('Re-sorting %s after getting filename information', self.final_name)
+        self.sort_nzfs()
 
     @synchronized(NZO_LOCK)
     def renamed_file(self, name_set, old_name=None):
