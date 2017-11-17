@@ -1535,6 +1535,8 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
     # Only add user-options if supplied
     options = cfg.par_option().strip()
     if options:
+        # We wrongly instructed users to use /x parameter style instead of -x
+        options = options.replace('/', '-', 1)
         command.insert(2, options)
 
     # Append the wildcard for this set
