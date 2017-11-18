@@ -1140,7 +1140,7 @@ class NzbObject(TryList):
         nzf = article.nzf
 
         # First or regular article?
-        if self.first_articles and article in self.first_articles:
+        if article.lowest_partnum and self.first_articles and article in self.first_articles:
             self.first_articles.remove(article)
 
             # All first articles done?
