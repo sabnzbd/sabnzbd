@@ -110,7 +110,6 @@ def find_programs(curdir):
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/par2/multipar/par2j.exe')
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/UnRAR.exe')
         sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
-        sabnzbd.newsunpack.ZIP_COMMAND = check(curdir, 'win/unzip/unzip.exe')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'win/7zip/7za.exe')
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
