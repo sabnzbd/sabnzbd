@@ -51,6 +51,8 @@ import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.utils.checkdir
 
+MAX_FAST_JOB_COUNT = 3
+
 # Match samples
 RE_SAMPLE = re.compile(sample_match, re.I)
 
@@ -67,14 +69,25 @@ class PostProcessor(Thread):
 
         if self.history_queue is None:
             self.history_queue = []
-        self.queue = Queue.Queue()
+
+        # Fast-queue for jobs already finished by DirectUnpack
+        self.fast_queue = Queue.Queue()
+
+        # Regular queue for jobs that might need more attention
+        self.slow_queue = Queue.Queue()
+
+        # Load all old jobs
         for nzo in self.history_queue:
             self.process(nzo)
+
+        # Counter to not only process fast-jobs
+        self.__fast_job_count = 0
+
+        # State variables
         self.__stop = False
+        self.__busy = False
         self.paused = False
         PostProcessor.do = self
-
-        self.__busy = False  # True while a job is being processed
 
     def save(self):
         """ Save postproc queue """
@@ -115,7 +128,12 @@ class PostProcessor(Thread):
         """ Push on finished job in the queue """
         if nzo not in self.history_queue:
             self.history_queue.append(nzo)
-        self.queue.put(nzo)
+
+        # Fast-track if it has DirectUnpacked jobs or if it's still going
+        if nzo.direct_unpacker and (nzo.direct_unpacker.success_sets or not nzo.direct_unpacker.killed):
+            self.fast_queue.put(nzo)
+        else:
+            self.slow_queue.put(nzo)
         self.save()
         sabnzbd.history_updated()
 
@@ -131,7 +149,8 @@ class PostProcessor(Thread):
     def stop(self):
         """ Stop thread after finishing running job """
         self.__stop = True
-        self.queue.put(None)
+        self.slow_queue.put(None)
+        self.fast_queue.put(None)
 
     def cancel_pp(self, nzo_id):
         """ Change the status, so that the PP is canceled """
@@ -145,7 +164,7 @@ class PostProcessor(Thread):
 
     def empty(self):
         """ Return True if pp queue is empty """
-        return self.queue.empty() and not self.__busy
+        return self.slow_queue.empty() and self.fast_queue.empty() and not self.__busy
 
     def get_queue(self):
         """ Return list of NZOs that still need to be processed """
@@ -188,15 +207,28 @@ class PostProcessor(Thread):
                 time.sleep(5)
                 continue
 
+            # Something in the fast queue?
             try:
-                nzo = self.queue.get(timeout=1)
+                # Every few fast-jobs we should check allow a
+                # slow job so that they don't wait forever
+                if self.__fast_job_count >= MAX_FAST_JOB_COUNT and self.slow_queue.qsize():
+                    raise Queue.Empty
+
+                nzo = self.fast_queue.get(timeout=2)
+                self.__fast_job_count += 1
             except Queue.Empty:
-                if check_eoq:
-                    check_eoq = False
-                    handle_empty_queue()
+                # Try the slow queue
+                try:
+                    nzo = self.slow_queue.get(timeout=2)
+                    # Reset fast-counter
+                    self.__fast_job_count = 0
+                except Queue.Empty:
+                    # Check for empty queue
+                    if check_eoq:
+                        check_eoq = False
+                        handle_empty_queue()
+                    # No fast or slow jobs, better luck next loop!
                     continue
-                else:
-                    nzo = self.queue.get()
 
             # Stop job
             if not nzo:
