@@ -857,10 +857,14 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
 def one_file_or_folder(folder):
     """ If the dir only contains one file or folder, join that file/folder onto the path """
     if os.path.exists(folder) and os.path.isdir(folder):
-        cont = os.listdir(folder)
-        if len(cont) == 1:
-            folder = os.path.join(folder, cont[0])
-            folder = one_file_or_folder(folder)
+        try:
+            cont = os.listdir(folder)
+            if len(cont) == 1:
+                folder = os.path.join(folder, cont[0])
+                folder = one_file_or_folder(folder)
+        except WindowsError:
+            # Can occur on paths it doesn't like, for example "C:"
+            pass
     return folder
 
 
