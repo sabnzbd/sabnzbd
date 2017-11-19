@@ -1023,19 +1023,14 @@ input[type="checkbox"] {
     color: black;
 }
 
-.Servers .chart-selector {
-    position: absolute;
-    display: block;
-    top: -7px;
-    left: 50%;
-    width: 150px;
-    margin-left: -50px;
-    min-width: initial;
-    opacity: 0.8;
+.Servers .chart-selector-container {
+    float: right;
 }
 
-.Servers .chart-selector:hover {
-    opacity: 1;
+.Servers .chart-selector-container .glyphicon {
+    font-size: 1.3em;
+    padding-right: 4px;
+    top: 5px;
 }
 
 .Servers .ct-grid.ct-vertical:first-of-type {
@@ -1225,7 +1220,8 @@ input[type="checkbox"] {
         margin-bottom: 0;
     }
 
-    .Servers .server-chart {
+    .Servers .server-chart,
+    .Servers .chart-selector-container {
         display: none;
     }
 
