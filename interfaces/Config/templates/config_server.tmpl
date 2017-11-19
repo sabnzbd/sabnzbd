@@ -54,7 +54,7 @@
                 <button type="button" class="btn btn-default" id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
 
                 <!--#if $months_recorded#-->
-                <div class="chart-selector-container">
+                <div class="chart-selector-container" title="$T('srv-bandwidth')">
                     <span class="glyphicon glyphicon-signal"></span>
                     <select name="chart-selector" id="chart-selector">
                         <!--#for $cur_date in months_recorded#-->
@@ -367,7 +367,6 @@
             // Update the text value
             \$('#server-data-label-' + server_id).text(\$('#chart-selector :selected').text())
             \$('#server-data-value-' + server_id).text(filesize(totalThisMonth, {round: 1}))
-            console.log(totalThisMonth/1024)
 
             // Show the chart
             chart = new Chartist.Line('#server-chart-'+server_id, data, chartOptions);
