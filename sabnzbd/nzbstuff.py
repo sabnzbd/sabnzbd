@@ -1472,7 +1472,7 @@ class NzbObject(TryList):
             # format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
 
-            msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024, dec_limit=1))
+            msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024))
             msg1 += u'<br/>' + T('Age') + ': ' + calc_age(self.avg_date, True)
 
             bad = self.nzo_info.get('bad_articles', 0)

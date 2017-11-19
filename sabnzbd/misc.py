@@ -738,12 +738,12 @@ def from_units(val):
         return 0.0
 
 
-def to_units(val, spaces=0, dec_limit=2, postfix=''):
+def to_units(val, spaces=0, postfix=''):
     """ Convert number to K/M/G/T/P notation
         Add "spaces" if not ending in letter
-        dig_limit==1 show single decimal for M and higher
-        dig_limit==2 show single decimal for G and higher
+        Show single decimal for M and higher
     """
+    dec_limit = 1
     decimals = 0
     if val < 0:
         sign = '-'

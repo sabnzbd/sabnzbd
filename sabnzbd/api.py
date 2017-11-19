@@ -1687,7 +1687,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     bytes = qnfo.bytes
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
-    header['speed'] = to_units(bytespersec, spaces=1, dec_limit=1)
+    header['speed'] = to_units(bytespersec, spaces=1)
     header['mbleft'] = "%.2f" % (bytesleft / MEBI)
     header['mb'] = "%.2f" % (bytes / MEBI)
     header['sizeleft'] = format_bytes(bytesleft)
