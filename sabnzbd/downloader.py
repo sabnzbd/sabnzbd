@@ -792,11 +792,8 @@ class Downloader(Thread):
                 # Too many tries on this server, consider article missing
                 self.decode(article, None, None)
             else:
-                # Remove this server from try_list
-                article.fetcher = None
-
                 # Allow all servers to iterate over each nzo/nzf again
-                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
+                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
 
         if destroy:
             nw.terminate(quit=quit)

@@ -131,8 +131,7 @@ class Decoder(Thread):
                     logging.info("Traceback: ", exc_info=True)
 
                     sabnzbd.downloader.Downloader.do.pause()
-                    article.fetcher = None
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
                     register = False
 
                 except MemoryError, e:
@@ -143,8 +142,7 @@ class Decoder(Thread):
                     logging.info("Traceback: ", exc_info=True)
 
                     sabnzbd.downloader.Downloader.do.pause()
-                    article.fetcher = None
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
                     register = False
 
                 except CrcError, e:
@@ -316,10 +314,10 @@ class Decoder(Thread):
         for server in self.servers:
             if server.active and not article.server_in_try_list(server):
                 if server.priority >= article.fetcher.priority:
-                    article.fetcher = None
+
                     article.tries = 0
                     # Allow all servers for this nzo and nzf again (but not for this article)
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article, article_reset=False)
                     return True
 
         msg = T('%s => missing from all servers, discarding') % article
