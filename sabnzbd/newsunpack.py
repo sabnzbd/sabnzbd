@@ -2333,10 +2333,8 @@ def list2cmdline(lst):
     for arg in lst:
         if not arg:
             nlst.append('""')
-        elif (' ' in arg) or ('\t' in arg) or ('&' in arg) or ('|' in arg) or (';' in arg) or (',' in arg):
-            nlst.append('"%s"' % arg)
         else:
-            nlst.append(arg)
+            nlst.append('"%s"' % arg)
     return ' '.join(nlst)
 
 
