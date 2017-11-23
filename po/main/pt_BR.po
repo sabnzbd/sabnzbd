@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-11-15 14:12+0000\n"
+"POT-Creation-Date: 2017-11-20 21:21+0000\n"
 "PO-Revision-Date: 2016-01-01 22:58+0000\n"
 "Last-Translator: lrrosa <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-11-16 05:32+0000\n"
+"X-Launchpad-Export-Date: 2017-11-21 05:49+0000\n"
 "X-Generator: Launchpad (build 18505)\n"
 
 #: SABnzbd.py [Error message]
@@ -1005,10 +1005,6 @@ msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Verificado em %s. É necessário reparar"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Pacote principal não encontrado..."
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
 "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
@@ -1578,7 +1574,7 @@ msgstr "Mais"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "O pós-processamento falhou para %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "veja o arquivo de log"
 
@@ -3492,7 +3488,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Máximo de tentativas"
 
@@ -5051,6 +5047,9 @@ msgstr "A busca da URL falhou; %s"
 
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Faltando arquivo esperado: %s => erro no unrar?"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Pacote principal não encontrado..."
 
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "Arquivos PAR2 inválidos. Não é possível verificar ou reparar"

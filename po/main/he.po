@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-11-15 14:12+0000\n"
+"POT-Creation-Date: 2017-11-20 21:21+0000\n"
 "PO-Revision-Date: 2017-11-15 20:06+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-11-16 05:31+0000\n"
+"X-Launchpad-Export-Date: 2017-11-21 05:48+0000\n"
 "X-Generator: Launchpad (build 18505)\n"
 
 #: SABnzbd.py [Error message]
@@ -999,10 +999,6 @@ msgid "[%s] Verified in %s, repair is required"
 msgstr "תיקון דרוש ,%s-[%s] וודאו ב"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "...חפיסה ראשית לא נמצאה"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
 "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
@@ -1573,7 +1569,7 @@ msgstr "עוד"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "%s (%s) בתר-עיבוד נכשל עבור"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "ראה קובץ יומן"
 
@@ -3479,7 +3475,7 @@ msgstr "SSL צפני"
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ".חלש יותר SSL הגבר ביצועים ע\"י אילוץ חוזק הצפנת"
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "ניסיונות חוזרים מרביים"
 
@@ -5023,6 +5019,9 @@ msgstr "%s ;משיכת כתובת נכשלה"
 
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "%s (%s -> %s)-ב CRC שגיאת"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "...חפיסה ראשית לא נמצאה"
 
 #~ msgid "It is likely that you are using ZoneAlarm on Vista.<br>"
 #~ msgstr ".Vista על ZoneAlarm-סביר להניח שאתה משתמש ב<br>"

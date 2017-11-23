@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-11-15 14:12+0000\n"
+"POT-Creation-Date: 2017-11-20 21:21+0000\n"
 "PO-Revision-Date: 2015-12-28 10:22+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-11-16 05:32+0000\n"
+"X-Launchpad-Export-Date: 2017-11-21 05:48+0000\n"
 "X-Generator: Launchpad (build 18505)\n"
 
 #: SABnzbd.py [Error message]
@@ -1006,10 +1006,6 @@ msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Zweryfikowano w %s, wymagana naprawa"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Główny pakiet nieznaleziony..."
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
 "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
@@ -1580,7 +1576,7 @@ msgstr "Więcej"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Przetwarzanie końcowe nie powiodło się dla %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "sprawdź logi"
 
@@ -3495,7 +3491,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Maksymalna ilość prób"
 
@@ -5286,6 +5282,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Brak oczekiwanego pliku: %s => błąd rozpakowywania archiwum RAR?"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Główny pakiet nieznaleziony..."
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Błąd importu modułu OpenSSL. Łączenie bez SSL"

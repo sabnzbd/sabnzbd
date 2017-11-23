@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-11-15 14:12+0000\n"
+"POT-Creation-Date: 2017-11-20 21:21+0000\n"
 "PO-Revision-Date: 2017-10-27 21:53+0000\n"
 "Last-Translator: Søren <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-11-16 05:31+0000\n"
+"X-Launchpad-Export-Date: 2017-11-21 05:47+0000\n"
 "X-Generator: Launchpad (build 18505)\n"
 
 #: SABnzbd.py [Error message]
@@ -1012,10 +1012,6 @@ msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Bekræftelse i %s, kræver reparation"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Hovedarkiv mangler..."
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
 "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
@@ -1579,7 +1575,7 @@ msgstr "Mere"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Efterbehandling mislykkedes for %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "se logfil"
 
@@ -3506,7 +3502,7 @@ msgstr "SSL-chifre"
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr "Øge ydeevnen ved at tvinge en lavere SSL-kryptering styrke."
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Maksimalt antal forsøg"
 
@@ -5068,6 +5064,9 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Unpacking failed, an expected file was not unpacked"
 #~ msgstr "Udpakning mislykkedes, en ventet fil er ikke udpakket"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Hovedarkiv mangler..."
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Mislykkedes med importering af OpenSSL modul. Tilslutter uden SSL"
