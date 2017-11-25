@@ -16,6 +16,10 @@
                             <input type="radio" name="lang" id="$l" value="$l" <!--#if $lang == $l then 'checked="checked"' else ''#--> />
                         </label>
                         <!--#end for#-->
+                        <!--#if not $languages#-->
+                        <hr>
+                        No language files detected. Please run <code>python tools/make_mo.py</code> once and restart SABnzbd, or contact your package provider.
+                        <!--#end if#-->
                         <div class="spacer"></div>
                     </div>
                 </div>
