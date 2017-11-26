@@ -17,6 +17,7 @@ Release Notes - SABnzbd 2.3.2 RC 1
 - Pre-queue script output was not always parsed correctly
 - Notifications were always send for 'Default' category
 - 'History Retention' also checked on start of program
+- macOS: Restore compatibility with macOS 10.11.6 on some systems
 - Windows: Unpacking could fail due to paths not being quoted
 - Windows: Complete folder in root of drive could crash post-processing
 - Windows: Automatically correct 'Extra Par2 Parameters' for MultiPar
