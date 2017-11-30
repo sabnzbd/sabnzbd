@@ -900,7 +900,7 @@ def get_cache_limit():
             return DEF_ARTICLE_CACHE_MAX
 
         # We make sure it's at least a valid value
-        if mem_bytes > from_units('128M'):
+        if mem_bytes > from_units('32M'):
             return to_units(mem_bytes)
     except:
         pass
