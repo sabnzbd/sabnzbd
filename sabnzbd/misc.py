@@ -876,16 +876,18 @@ def check_mount(path):
 
 
 def get_cache_limit():
-    """ Depending on OS, calculate cache limit """
-    # OSX use Default value
-    if sabnzbd.DARWIN:
-        return DEF_CACHE_LIMIT
-
+    """ Depending on OS, calculate cache limits.
+        In ArticleCache it will make sure we stay
+        within system limits for 32/64 bit
+    """
     # Calculate, if possible
     try:
         if sabnzbd.WIN32:
             # Windows
             mem_bytes = get_windows_memory()
+        elif sabnzbd.DARWIN:
+            # macOS
+            mem_bytes = get_darwin_memory()
         else:
             # Linux
             mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))
@@ -894,15 +896,16 @@ def get_cache_limit():
         mem_bytes = mem_bytes/4
 
         # We make sure it's at least a valid value
-        if mem_bytes > from_units('32M'):
-            # We make sure it's at least a valid value
+        if mem_bytes > from_units('128M'):
             return to_units(mem_bytes)
-        elif sabnzbd.WIN32:
-            # Always at least minimum on Windows
-            return DEF_CACHE_LIMIT
     except:
         pass
-    # If failed, leave empty so user needs to decide
+
+    # Always at least minimum on Windows/macOS
+    if sabnzbd.WIN32 and sabnzbd.DARWIN:
+        return DEF_CACHE_LIMIT
+
+    # If failed, leave empty for Linux so user needs to decide
     return ''
 
 
@@ -929,6 +932,12 @@ def get_windows_memory():
     stat = MEMORYSTATUSEX()
     ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
     return stat.ullTotalPhys
+
+
+def get_darwin_memory():
+    """ Use system-call to extract total memory on macOS """
+    system_output = sabnzbd.newsunpack.run_simple(['sysctl', 'hw.memsize'])
+    return float(system_output.split()[1])
 
 
 ##############################################################################
