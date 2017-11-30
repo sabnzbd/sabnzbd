@@ -24,6 +24,7 @@ import sys
 import logging
 import urllib
 import re
+import ctypes
 import shutil
 import threading
 import subprocess
@@ -876,24 +877,58 @@ def check_mount(path):
 
 def get_cache_limit():
     """ Depending on OS, calculate cache limit """
-    # OSX/Windows use Default value
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+    # OSX use Default value
+    if sabnzbd.DARWIN:
         return DEF_CACHE_LIMIT
 
     # Calculate, if possible
     try:
+        if sabnzbd.WIN32:
+            # Windows
+            mem_bytes = get_windows_memory()
+        else:
+            # Linux
+            mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))
+
         # Use 1/4th of available memory
-        mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))/4
-        # Not more than the maximum we think is reasonable
-        if mem_bytes > from_units(DEF_CACHE_LIMIT):
-            return DEF_CACHE_LIMIT
-        elif mem_bytes > from_units('32M'):
+        mem_bytes = mem_bytes/4
+
+        # We make sure it's at least a valid value
+        if mem_bytes > from_units('32M'):
             # We make sure it's at least a valid value
             return to_units(mem_bytes)
+        elif sabnzbd.WIN32:
+            # Always at least minimum on Windows
+            return DEF_CACHE_LIMIT
     except:
         pass
     # If failed, leave empty so user needs to decide
     return ''
+
+
+def get_windows_memory():
+    """ Use ctypes to extract available memory """
+    class MEMORYSTATUSEX(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", ctypes.c_ulong),
+            ("dwMemoryLoad", ctypes.c_ulong),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("sullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+
+        def __init__(self):
+            # have to initialize this to the size of MEMORYSTATUSEX
+            self.dwLength = ctypes.sizeof(self)
+            super(MEMORYSTATUSEX, self).__init__()
+
+    stat = MEMORYSTATUSEX()
+    ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
+    return stat.ullTotalPhys
 
 
 ##############################################################################
