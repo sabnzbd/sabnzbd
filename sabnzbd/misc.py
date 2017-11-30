@@ -40,7 +40,7 @@ from urlparse import urlparse
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
-     GIGI, MEBI, DEF_CACHE_LIMIT
+     GIGI, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, special_fixer, gUTF
@@ -895,6 +895,10 @@ def get_cache_limit():
         # Use 1/4th of available memory
         mem_bytes = mem_bytes/4
 
+        # We don't want to set a value that's too high
+        if mem_bytes > from_units(DEF_ARTICLE_CACHE_MAX):
+            return DEF_ARTICLE_CACHE_MAX
+
         # We make sure it's at least a valid value
         if mem_bytes > from_units('128M'):
             return to_units(mem_bytes)
@@ -903,7 +907,7 @@ def get_cache_limit():
 
     # Always at least minimum on Windows/macOS
     if sabnzbd.WIN32 and sabnzbd.DARWIN:
-        return DEF_CACHE_LIMIT
+        return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
     return ''
