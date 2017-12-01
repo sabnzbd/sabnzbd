@@ -903,8 +903,8 @@ def _api_server_stats(name, output, kwargs):
 
     stats['servers'] = {}
     for svr in config.get_servers():
-        t, m, w, d, _ = BPSMeter.do.amounts(svr)
-        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0}
+        t, m, w, d, daily = BPSMeter.do.amounts(svr)
+        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0, 'daily': daily or {} }
 
     return report(output, keyword='', data=stats)
 
