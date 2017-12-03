@@ -814,6 +814,9 @@ class DateSorter(object):
             mapping.append(('%.desc', ''))
             mapping.append(('%_desc', ''))
 
+        # Replace dir-name before replacing %d for month
+        mapping.append(('%dn', self.original_dirname))
+
         # Replace decades
         mapping.append(('%decade', self.date_info['decade']))
         mapping.append(('%0decade', self.date_info['decade_two']))
