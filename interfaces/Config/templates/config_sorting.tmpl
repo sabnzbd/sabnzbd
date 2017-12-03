@@ -487,7 +487,7 @@
                 \$.ajax({
                   type: "GET",
                   url: "../../tapi",
-                  data: {mode:'eval_sort', value: 'generic', name: \$('#moviesamplename').val(), title: \$moviesortstring, movieextra:  \$('#movieextra').val(), apikey: '$session', output: 'json' },
+                  data: {mode:'eval_sort', value: 'movie', name: \$('#moviesamplename').val(), title: \$moviesortstring, movieextra:  \$('#movieextra').val(), apikey: '$session', output: 'json' },
                   success: function(data){
                     \$('#previewmovie-result').removeClass("loading failure").html(data.result);
                   },

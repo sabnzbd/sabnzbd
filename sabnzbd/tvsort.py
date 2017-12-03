@@ -117,7 +117,7 @@ class Sorter(object):
             self.sort_file = True
             return complete_dir
 
-        self.sorter = GenericSorter(self.nzo, dirname, complete_dir, self.cat)
+        self.sorter = MovieSorter(self.nzo, dirname, complete_dir, self.cat)
         if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'movie'
@@ -493,7 +493,7 @@ def check_for_sequence(regex, files):
         return {}
 
 
-class GenericSorter(object):
+class MovieSorter(object):
     """ Methods for Generic Sorting """
 
     def __init__(self, nzo, dirname, path, cat):
@@ -1172,9 +1172,9 @@ def eval_sort(sorttype, expression, name=None, multipart=''):
     if sorttype == 'series':
         name = name or ('%s S01E05 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
         sorter = sabnzbd.tvsort.SeriesSorter(None, name, path, 'tv')
-    elif sorttype == 'generic':
+    elif sorttype == 'movie':
         name = name or (Ttemplate('movie-sp-name') + ' (2009)')
-        sorter = sabnzbd.tvsort.GenericSorter(None, name, path, 'tv')
+        sorter = sabnzbd.tvsort.MovieSorter(None, name, path, 'tv')
     elif sorttype == 'date':
         name = name or (Ttemplate('show-name') + ' 2009-01-02')
         sorter = sabnzbd.tvsort.DateSorter(None, name, path, 'tv')
@@ -1186,7 +1186,7 @@ def eval_sort(sorttype, expression, name=None, multipart=''):
     path = os.path.normpath(os.path.join(path, sorter.filename_set))
     fname = Ttemplate('orgFilename')
     fpath = path
-    if sorttype == 'generic' and '%1' in multipart:
+    if sorttype == 'movie' and '%1' in multipart:
         fname = fname + multipart.replace('%1', '1')
         fpath = fpath + multipart.replace('%1', '1')
     if '%fn' in path:
