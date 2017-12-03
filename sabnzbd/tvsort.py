@@ -428,9 +428,9 @@ class SeriesSorter(object):
 
 
 _RE_MULTIPLE = (
-    re.compile(r'cd\W?(\d+)\W?', re.I),        # .cd1.avi
-    re.compile(r'\w\W?([\w\d])[{}]*$', re.I),  # blah1.avi blaha.avi
-    re.compile(r'\w\W([\w\d])\W', re.I)        # blah-1-ok.avi blah-a-ok.avi
+    re.compile(r'cd\W?(\d+)\W?', re.I),        # .cd1.mkv
+    re.compile(r'\w\W?([\w\d])[{}]*$', re.I),  # blah1.mkv blaha.mkv
+    re.compile(r'\w\W([\w\d])\W', re.I)        # blah-1-ok.mkv blah-a-ok.mkv
 )
 
 
@@ -448,7 +448,7 @@ def check_for_sequence(regex, files):
     matches = {}
     prefix = None
     # Build up a dictionary of matches
-    # The key is based off the match, ie {1:'blah-part1.avi'}
+    # The key is based off the match, ie {1:'blah-part1.mkv'}
     for _file in files:
         name, ext = os.path.splitext(_file)
         match1 = regex.search(name)
@@ -483,7 +483,7 @@ def check_for_sequence(regex, files):
                 else:
                     passed = False
         if passed:
-            # convert {'b':'filename-b.avi'} to {'2', 'filename-b.avi'}
+            # convert {'b':'filename-b.mkv'} to {'2', 'filename-b.mkv'}
             item = matches.pop(akey)
             matches[str(key)] = item
 
@@ -1190,10 +1190,10 @@ def eval_sort(sorttype, expression, name=None, multipart=''):
         fname = fname + multipart.replace('%1', '1')
         fpath = fpath + multipart.replace('%1', '1')
     if '%fn' in path:
-        path = path.replace('%fn', fname + '.avi')
+        path = path.replace('%fn', fname + '.mkv')
     else:
         if sorter.rename_or_not:
-            path = fpath + '.avi'
+            path = fpath + '.mkv'
         else:
             if sabnzbd.WIN32:
                 path += '\\'
