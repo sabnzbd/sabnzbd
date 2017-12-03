@@ -34,7 +34,7 @@ import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
     has_win_device, calc_age, long_path, remove_file
-from sabnzbd.tvsort import SeriesSorter
+from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
 

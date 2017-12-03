@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.tvsort - Sorting Functions
+sabnzbd.sorting - Sorting Functions
 Series Sorting - Sorting downloads into seasons & episodes
 Date Sorting - Sorting downloads by a custom date matching
 Generic Sorting - Sorting large files by a custom matching
@@ -1171,13 +1171,13 @@ def eval_sort(sorttype, expression, name=None, multipart=''):
     name = sanitize_foldername(name)
     if sorttype == 'series':
         name = name or ('%s S01E05 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
-        sorter = sabnzbd.tvsort.SeriesSorter(None, name, path, 'tv')
+        sorter = SeriesSorter(None, name, path, 'tv')
     elif sorttype == 'movie':
         name = name or (Ttemplate('movie-sp-name') + ' (2009)')
-        sorter = sabnzbd.tvsort.MovieSorter(None, name, path, 'tv')
+        sorter = MovieSorter(None, name, path, 'tv')
     elif sorttype == 'date':
         name = name or (Ttemplate('show-name') + ' 2009-01-02')
-        sorter = sabnzbd.tvsort.DateSorter(None, name, path, 'tv')
+        sorter = DateSorter(None, name, path, 'tv')
     else:
         return None
     sorter.sort_string = expression
