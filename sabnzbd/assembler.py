@@ -371,5 +371,5 @@ def remove_warning_label(msg):
     """ Standardize errors by removing obsolete
         "WARNING:" part in all languages """
     if ':' in msg:
-        return msg.split(':')[1]
+        return msg.split(':')[1].strip()
     return msg
