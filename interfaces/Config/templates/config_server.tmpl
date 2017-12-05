@@ -47,33 +47,35 @@
 </script>
 
 <div class="colmask">
-    <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
-        <input type="hidden" name="session" value="$session" />
-        <div id="addServer">
-            <div class="padding alt">
-                <button type="button" class="btn btn-default" id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+    <div class="padding alt section">
+        <button type="button" class="btn btn-default" id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+        <label for="advanced-settings-button" class="form-control advanced-button ">
+            <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
+        </label>
 
-                <!--#if $months_recorded#-->
-                <div class="chart-selector-container" title="$T('srv-bandwidth')">
-                    <span class="glyphicon glyphicon-signal"></span>
-                    <select name="chart-selector" id="chart-selector">
-                        <!--#for $cur_date in months_recorded#-->
-                            <!--#set month_date = '%d-%02d' % ($cur_date.year, $cur_date.month)#-->
-                            <!--#if $month_date not in $max_data_all#-->
-                                <!--#set max_data_all[$month_date] = 0#-->
-                             <!--#end if#-->
-                            <option value="$month_date" data-max="$max_data_all[$month_date]">$month_names[$cur_date.month-1] $cur_date.year</option>
-                        <!--#end for#-->
-                    </select>
-                </div>
-                <!--#end if#-->
-            </div>
+        <!--#if $months_recorded#-->
+        <div class="advanced-buttonSeperator"></div>
+        <div class="chart-selector-container" title="$T('srv-bandwidth')">
+            <span class="glyphicon glyphicon-signal"></span>
+            <select name="chart-selector" id="chart-selector">
+                <!--#for $cur_date in months_recorded#-->
+                    <!--#set month_date = '%d-%02d' % ($cur_date.year, $cur_date.month)#-->
+                    <!--#if $month_date not in $max_data_all#-->
+                        <!--#set max_data_all[$month_date] = 0#-->
+                     <!--#end if#-->
+                    <option value="$month_date" data-max="$max_data_all[$month_date]">$month_names[$cur_date.month-1] $cur_date.year</option>
+                <!--#end for#-->
+            </select>
         </div>
-        <div class="section" id="addServerContent" style="display: none;">
-            <div class="col2">
-                <h3>$T('addServer') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            </div>
-            <div class="col1">
+        <!--#end if#-->
+    </div>
+    <div class="section" id="addServerContent" style="display: none;">
+        <div class="col2">
+            <h3>$T('addServer') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+        </div>
+        <div class="col1">
+            <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
+                <input type="hidden" name="session" value="$session" />
                 <fieldset>
                     <div class="field-pair">
                         <label class="config" for="enable">$T('srv-enable')</label>
@@ -147,16 +149,16 @@
                     </div>
                     <div class="field-pair">
                         <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
-                        <button class="btn btn-default advancedButton"><span class="glyphicon glyphicon-cog"></span> $T('button-advanced')</button>
                         <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                     </div>
                     <div class="field-pair result-box">
                         <div class="alert"></div>
                     </div>
                 </fieldset>
-            </div>
+            </form>
         </div>
-    </form>
+    </div>
+
 
     <!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
     <!--#set $cur_prio_color = -1 #-->
@@ -257,7 +259,6 @@
                         </div>
                         <div class="field-pair">
                             <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                            <button class="btn btn-default advancedButton"><span class="glyphicon glyphicon-cog"></span> $T('button-advanced')</button>
                             <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                             <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
                         </div>
@@ -439,7 +440,6 @@
         });
 
         \$('#addServerButton').click(function(){
-            \$('#addServer').hide();
             \$('#addServerContent').show();
         });
 

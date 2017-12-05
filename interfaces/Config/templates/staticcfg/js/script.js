@@ -408,18 +408,20 @@ $(document).ready(function () {
         $(checkDisabled).parent().nextAll().addClass('disabled')
     }
 
-    // Hide or show HTTPS
-    $('#enable_https').on('change', function() {
-        $('.enable_https_options').toggle()
+    // Advanced or not?
+    $('.advanced-button').on('change', function(event){
+        localStorage.setItem('advanced-settings', !$('.advanced-settings').is(':visible'))
+        $('.advanced-settings').toggle()
+        $('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
     })
-    if(!$('#enable_https').is(':checked')) {
-        $('.enable_https_options').hide()
+    if(localStorage.getItem('advanced-settings') == 'true') {
+        $('.advanced-settings').show()
+        $('#advanced-settings-button').prop('checked', true)
+        $('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
     }
 
-    $('.advancedButton').click(function(event){
-        $('.advanced-settings').toggle()
-        return false;
-    })
+    // Add coloring
+    $('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
 });
 
 /*
@@ -456,6 +458,11 @@ $(document).ready(function() {
     if(window.location.hash) {
         // Sometimes the ID is non-existing
         try {
+            // Could be an Advanced setting
+            if(!$(window.location.hash).is(':visible')) {
+                // Show advanced settings, but don't save in localStorage
+                $('.advanced-settings').toggle()
+            }
             // smooth scroll to the anchor id
             $('html, body').animate({
                 scrollTop: $(window.location.hash).offset().top -100 + 'px'

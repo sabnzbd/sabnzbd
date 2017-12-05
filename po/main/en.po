@@ -116,3 +116,7 @@ msgstr "Downloads will not be unpacked."
 
 msgid "Seperate multiple URLs by a comma"
 msgstr "Separate multiple URLs with a comma"
+
+msgid "Advanced"
+msgstr "Advanced Settings"
+

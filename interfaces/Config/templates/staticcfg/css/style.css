@@ -23,15 +23,31 @@ body {
     overflow: visible;
     border: 1px solid #dfdede;
     background-color: #FFF;
-    border: 1px solid rgba(0, 0, 0, 0.2);
     width: 100%
 }
-.section, .Servers form, #addFeed, #addFeedContent {
+.advanced-button {
+    float: right;
+    width: auto;
+    margin: 0 4px 0px 0px;
+    font-size: 13px;
+    color: inherit;
+    height: auto;
+    padding-bottom: 5px;
+}
+#advanced-settings-button {
+    float: left;
+    margin: 2px 7px 0px 0px;
+}
+.advanced-buttonSeperator {
+    width: 1px;
+    height: 34px;
+    background-color: #dfdede;
+    float: right;
+    margin: 0px 10px;
+}
+.section, #addFeed, #addFeedContent {
     border-bottom: 1px solid #dfdede;
     overflow: auto;
-}
-.section:last-child, .Servers form:last-child {
-    border: 0;
 }
 .col2 {
     z-index: 10;
@@ -150,7 +166,6 @@ input[type="checkbox"]+.desc {
     overflow: hidden;
     min-width: 555px;
 }
-.field-pair:nth-child(odd),
 .Key tr:nth-child(odd),
 .tab-pane tr:nth-child(odd),
 .even {
@@ -1222,7 +1237,8 @@ input[type="checkbox"] {
     }
 
     .Servers .server-chart,
-    .Servers .chart-selector-container {
+    .Servers .chart-selector-container,
+    .Servers .advanced-buttonSeperator {
         display: none;
     }
 

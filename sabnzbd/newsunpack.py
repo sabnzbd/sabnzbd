@@ -2292,8 +2292,9 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
     values = [1, name, pp, cat, script, priority, None]
     script_path = make_script_path(cfg.pre_script())
     if script_path:
-        command = [script_path, name, pp, fix(cat), fix(script), priority, str(size), ' '.join(groups)]
+        command = [script_path, name, pp, cat, script, priority, str(size), ' '.join(groups)]
         command.extend(analyse_show(name))
+        command = [fix(arg) for arg in command]
 
         try:
             stup, need_shell, command, creationflags = build_command(command)
