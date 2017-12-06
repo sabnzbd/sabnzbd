@@ -40,6 +40,8 @@
                             <br/>
                             <input type="button" class="btn btn-default" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="$T('button-Ep1x05')" />
                             <input type="button" class="btn btn-default" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="$T('button-EpS01E05')" />
+                            <br>
+                            <input type="button" class="btn btn-default" onclick="tvSet('%dn.%ext')" value="$T('button-FileLikeFolder')" />
                         </div>
                     </div>
                     <div id="previewtv" class="example">
@@ -139,9 +141,9 @@
                                     <td>$T("sort-File")</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('orgDirname'):</b></td>
+                                    <td class="align-right"><b>$T('orgJobname'):</b></td>
                                     <td>%dn</td>
-                                    <td>$T("sort-Folder")</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('lowercase'):</b></td>
@@ -199,6 +201,7 @@
                             <input type="button" class="btn btn-default" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="$T('button-inFolders')" />
                             <input type="button" class="btn btn-default" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('button-noFolders')" />
                             <input type="button" class="btn btn-default" onclick="movieSet('%0decade/%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('decade')" />
+                            <input type="button" class="btn btn-default" onclick="movieSet('%dn.%ext')" value="$T('button-FileLikeFolder')" />
                         </div>
                     </div>
                     <div id="previewmovie" class="example">
@@ -263,9 +266,9 @@
                                     <td>$T('sort-File')</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('orgDirname'):</b></td>
+                                    <td class="align-right"><b>$T('orgJobname'):</b></td>
                                     <td>%dn</td>
-                                    <td>$T("sort-Folder")</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('lowercase'):</b></td>
@@ -328,7 +331,9 @@
                         <div class="presets float-left">
                             <input type="button" class="btn btn-default" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-ShowNameF')" />
                             <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-YMF')" />
+                            <br>
                             <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-DailyF')" />
+                            <input type="button" class="btn btn-default" onclick="dateSet('%dn.%ext')" value="$T('button-FileLikeFolder')" />
                         </div>
                     </div>
                     <div id="previewdate" class="example">
@@ -408,9 +413,9 @@
                                     <td>$T('sort-File')</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('orgDirname'):</b></td>
+                                    <td class="align-right"><b>$T('orgJobname'):</b></td>
                                     <td>%dn</td>
-                                    <td>$T("sort-Folder")</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('lowercase'):</b></td>

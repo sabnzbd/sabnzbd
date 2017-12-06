@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-11-17 22:23+W. Europe Standard Time\n"
+"POT-Creation-Date: 2017-12-06 10:56+W. Europe Standard Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -706,7 +706,7 @@ msgstr ""
 msgid "m"
 msgstr ""
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr ""
 
@@ -3859,6 +3859,10 @@ msgid "S01E05 Episode Folder"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr ""
 
@@ -3927,7 +3931,7 @@ msgid "Original Filename"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
+msgid "Original Job Name"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3944,10 +3948,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "file"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "folder"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4638,16 +4638,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr ""
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr ""
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr ""
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr ""
 
