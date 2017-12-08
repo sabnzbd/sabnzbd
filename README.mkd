@@ -1,5 +1,14 @@
-Release Notes - SABnzbd 2.3.2 RC 1
+Release Notes - SABnzbd 2.3.2 RC 2
 =========================================================
+
+## Changes since 2.3.2 RC 1
+- Simplify Config pages by hiding Advanced Settings
+- Automatically set Article Cache to 25% of system memory (max. 2GB)
+- Added Hebrew date-time texts
+- Added option '%dn' to Date Sorting to rename files as job name
+- Added 'Job Name as Folder Name' as Sorting Preset for de-obfuscation
+- Add per-day download-statistics to 'server_stats' API-call
+- Pre-queue scripts could fail to run
 
 ## Changes since 2.3.1
 - SABYenc updated to 3.3.2 to fix rare crash during downloading
