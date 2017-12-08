@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-11-20 21:21+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
 "PO-Revision-Date: 2017-10-27 21:53+0000\n"
 "Last-Translator: Søren <Unknown>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-11-21 05:47+0000\n"
-"X-Generator: Launchpad (build 18505)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -773,7 +773,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Kan ikke oprette mappe %s"
 
@@ -4147,6 +4147,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Episodemappe"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Titel"
 
@@ -4215,8 +4219,8 @@ msgid "Original Filename"
 msgstr "Originalfilnavn"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Orginal Mappenavn"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4233,10 +4237,6 @@ msgstr "tekst"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "fil"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "mappe"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4960,16 +4960,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Har du ingen usenet leverandør? Vi anbefaler at prøve %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Det lykkedes ikke at hente TV info (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Det lykkedes ikke at omdøbe: %s til %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Kunne ikke omdøbe lignende fil: %s til %s"
 
@@ -5413,6 +5413,12 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Show times in AM/PM notation (does not affect scheduler)."
 #~ msgstr "Vis tider i AM / PM notation (påvirker ikke skemalægger)."
+
+#~ msgid "folder"
+#~ msgstr "mappe"
+
+#~ msgid "Original Foldername"
+#~ msgstr "Orginal Mappenavn"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "Gruppe / Index tags"

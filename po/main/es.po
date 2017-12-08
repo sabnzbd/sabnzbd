@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-11-20 21:21+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-11-21 05:48+0000\n"
-"X-Generator: Launchpad (build 18505)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:31+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -772,7 +772,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "No se pudo crear el directorio %s"
 
@@ -4167,6 +4167,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Episodio Directorio"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Título"
 
@@ -4235,8 +4239,8 @@ msgid "Original Filename"
 msgstr "Nombre fichero original"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Nombre directorio original"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4253,10 +4257,6 @@ msgstr "texto"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "archivo"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "carpeta"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4983,16 +4983,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "¿No tienes proveedor de Usenet? Nosotros recomendamos probar %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Error al recuperar info de la serie (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Error al renombrar: %s a %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Error al renombrar ficheros similares: %s a %s"
 
@@ -5291,6 +5291,9 @@ msgstr "Error al recuperar la URL; %s"
 #~ msgid "Email Options"
 #~ msgstr "Opciones de e-mail"
 
+#~ msgid "folder"
+#~ msgstr "carpeta"
+
 #~ msgid "Are you sure you want to delete"
 #~ msgstr "¿Está seguro de querer borrar?"
 
@@ -5465,6 +5468,9 @@ msgstr "Error al recuperar la URL; %s"
 
 #~ msgid "Enable if downloads are not put in their own folders."
 #~ msgstr "Habilitar si las descargas no quedan en sus propios directorios."
+
+#~ msgid "Original Foldername"
+#~ msgstr "Nombre directorio original"
 
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "Habilitar ordenación y renombrado de nombres de ficheros con fechas."

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-11-20 21:21+0000\n"
-"PO-Revision-Date: 2017-11-15 20:06+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
+"PO-Revision-Date: 2017-12-06 19:50+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-11-21 05:48+0000\n"
-"X-Generator: Launchpad (build 18505)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -760,7 +760,7 @@ msgstr "ש"
 msgid "m"
 msgstr "ד"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "%s לא יכול ליצור את הספרייה"
 
@@ -4120,6 +4120,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 תיקיית פרק"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr "שם עבודה בתור שם קובץ"
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "כותר"
 
@@ -4188,8 +4192,8 @@ msgid "Original Filename"
 msgstr "שם מקורי של קובץ"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "שם קובץ מקורי"
+msgid "Original Job Name"
+msgstr "שם עבודה מקורי"
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4206,10 +4210,6 @@ msgstr "text"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "קובץ"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "תיקייה"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4930,16 +4930,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr ".%s אנו ממליצים לנסות את ?usenet אין לך ספק"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "(%s) שגיאה בהשגת מידע טלוויזיה"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "%s אל %s:נכשל בשינוי שם"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "%s אל %s :נכשל בשינוי שם של קובץ דומה"
 
@@ -4983,6 +4983,9 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid "Skip"
 #~ msgstr "דלג"
 
+#~ msgid "folder"
+#~ msgstr "תיקייה"
+
 #~ msgid "OK"
 #~ msgstr "אישור"
 
@@ -5010,6 +5013,9 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid ""
 #~ "Replace illegal characters in folder names by equivalents (otherwise remove)."
 #~ msgstr ".(החלף תווים בלתי חוקיים בשמות תיקיות בשווי ערך (אחרת יימחקו"
+
+#~ msgid "Original Foldername"
+#~ msgstr "שם קובץ מקורי"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "אינה קיימת \"%s\" התיקייה"

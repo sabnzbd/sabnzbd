@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-11-20 21:21+0000\n"
-"PO-Revision-Date: 2017-11-15 19:29+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
+"PO-Revision-Date: 2017-12-06 19:46+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-11-21 05:48+0000\n"
-"X-Generator: Launchpad (build 18505)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -800,7 +800,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Impossible de créer le dossier %s"
 
@@ -4271,6 +4271,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Dossier Épisode"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr "Nom de la tâche en tant que nom de fichier"
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Titre"
 
@@ -4339,8 +4343,8 @@ msgid "Original Filename"
 msgstr "Nom de fichier originel"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Nom du dossier originel"
+msgid "Original Job Name"
+msgstr "Nom d'origine de la tâche"
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4357,10 +4361,6 @@ msgstr "texte"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "fichier"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "dossier"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -5093,16 +5093,16 @@ msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr ""
 "Vous n'avez pas de fournisseur usenet? Nous vous recommendons d'essayer %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Erreur lors de l'obtention des information TV (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Échec du renommage : %s en %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Impossible de renommer le fichier similaire : %s en %s"
 
@@ -5437,6 +5437,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "Active le tri et le renommage des fichiers par date."
 
+#~ msgid "folder"
+#~ msgstr "dossier"
+
 #~ msgid "Set Pause Interval"
 #~ msgstr "Intervalle de pause"
 
@@ -5701,6 +5704,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "balises Groupes / Indexeur"
+
+#~ msgid "Original Foldername"
+#~ msgstr "Nom du dossier originel"
 
 #~ msgid ""
 #~ "After SABnzbd has finished restarting you will be able to access it at the "
