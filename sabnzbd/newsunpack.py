@@ -1093,8 +1093,10 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
         # Download all par2 files that haven't been downloaded yet
         readd = False
         for extrapar in nzo.extrapars[setname][:]:
-            nzo.add_parfile(extrapar)
-            readd = True
+            # Make sure we only get new par2 files
+            if extrapar not in nzo.finished_files and extrapar not in nzo.files:
+                nzo.add_parfile(extrapar)
+                readd = True
         if readd:
             return readd, result
 
