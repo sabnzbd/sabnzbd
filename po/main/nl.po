@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-12-06 10:30+0000\n"
-"PO-Revision-Date: 2017-11-27 15:34+0000\n"
+"PO-Revision-Date: 2017-12-08 10:47+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
+"X-Launchpad-Export-Date: 2017-12-09 05:32+0000\n"
 "X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
@@ -4216,7 +4216,7 @@ msgstr "S01E05 Aflevering-map"
 
 #: sabnzbd/skintext.py
 msgid "Job Name as Filename"
-msgstr ""
+msgstr "Downloadnaam als Bestandsnaam"
 
 #: sabnzbd/skintext.py
 msgid "Title"
@@ -4288,7 +4288,7 @@ msgstr "Originele bestandsnaam"
 
 #: sabnzbd/skintext.py
 msgid "Original Job Name"
-msgstr ""
+msgstr "Originele Downloadnaam"
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
