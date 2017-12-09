@@ -311,6 +311,11 @@ function removeObfuscation() {
     return true
 }
 
+// Add coloring to rows (shorthand function)
+function addRowColor() {
+    $('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
+}
+
 $(document).ready(function () {
     /**
         Restart function
@@ -412,16 +417,14 @@ $(document).ready(function () {
     $('.advanced-button').on('change', function(event){
         localStorage.setItem('advanced-settings', !$('.advanced-settings').is(':visible'))
         $('.advanced-settings').toggle()
-        $('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
+
     })
     if(localStorage.getItem('advanced-settings') == 'true') {
         $('.advanced-settings').show()
         $('#advanced-settings-button').prop('checked', true)
-        $('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
+        addRowColor()
     }
-
-    // Add coloring
-    $('.field-pair:visible').removeClass('even').filter(':even').addClass('even')
+    addRowColor()
 });
 
 /*

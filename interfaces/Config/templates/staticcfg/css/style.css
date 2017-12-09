@@ -171,7 +171,8 @@ input[type="checkbox"]+.desc {
 .even {
     background-color: #F8F8F8;
 }
-.field-pair:last-child {
+.field-pair:last-child,
+.no-field-pair-bg {
     background-color: transparent;
 }
 .alt,

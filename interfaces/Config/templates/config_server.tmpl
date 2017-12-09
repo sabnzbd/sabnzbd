@@ -147,7 +147,7 @@
                         <label class="config" for="notes">$T('srv-notes')</label>
                         <textarea name="notes" id="notes" rows="3" cols="50"></textarea>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair no-field-pair-bg">
                         <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
                         <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
                     </div>
@@ -158,7 +158,6 @@
             </form>
         </div>
     </div>
-
 
     <!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
     <!--#set $cur_prio_color = -1 #-->
@@ -188,7 +187,7 @@
                     <button type="button" class="btn btn-default showserver"><span class="glyphicon glyphicon-pencil"></span> $T('showDetails')</button>
                     <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
                 </div>
-                <div class="col1"  style="display:none;">
+                <div class="col1" style="display:none;">
                     <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
                     <fieldset>
                         <div class="field-pair">
@@ -437,10 +436,14 @@
             } else {
                 \$(this).html(\$(this).html().replace("$T('hideDetails')", "$T('showDetails')"));
             }
+            // Add coloring
+            addRowColor()
         });
 
         \$('#addServerButton').click(function(){
             \$('#addServerContent').show();
+            // Add coloring
+            addRowColor()
         });
 
         \$('[name="ssl"]').click(function() {
