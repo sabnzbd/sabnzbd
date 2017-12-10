@@ -417,7 +417,7 @@ $(document).ready(function () {
     $('.advanced-button').on('change', function(event){
         localStorage.setItem('advanced-settings', !$('.advanced-settings').is(':visible'))
         $('.advanced-settings').toggle()
-
+        addRowColor()
     })
     if(localStorage.getItem('advanced-settings') == 'true') {
         $('.advanced-settings').show()
