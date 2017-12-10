@@ -3,7 +3,7 @@ Release Notes - SABnzbd 2.3.2 RC 2
 
 ## Changes since 2.3.2 RC 1
 - Simplify Config pages by hiding Advanced Settings
-- Automatically set Article Cache to 25% of system memory (max. 2GB)
+- Automatically set Article Cache to 25% of system memory (max. 1GB)
 - Added Hebrew date-time texts
 - Added option '%dn' to Date Sorting to rename files as job name
 - Added 'Job Name as Folder Name' as Sorting Preset for de-obfuscation
