@@ -47,7 +47,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, sanitize_foldername
     get_unique_path, get_admin_path, remove_all, sanitize_filename, globber_full, \
     int_conv, set_permissions, format_time_string, long_path, trim_win_path, \
     fix_unix_encoding, calc_age, is_obfuscated_filename, get_ext, get_filename, \
-    get_unique_filename, renamer, remove_file, remove_dir
+    get_unique_filename, renamer, remove_file, remove_dir, caller_name
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -1722,6 +1722,8 @@ class NzbObject(TryList):
     @synchronized(NZO_LOCK)
     def purge_data(self, keep_basic=False, del_files=False):
         """ Remove all admin info, 'keep_basic' preserves attribs and nzb """
+        logging.info('[%s] Purging data for job %s (keep_basic=%s, del_files=%s)', caller_name(), self.final_name, keep_basic, del_files)
+
         wpath = self.workpath
         for nzf in self.files:
             sabnzbd.remove_data(nzf.nzf_id, wpath)
