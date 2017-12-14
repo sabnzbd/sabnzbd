@@ -302,13 +302,6 @@ class NzbFile(TryList):
 
             # Mark safe to continue
             self.import_finished = True
-        elif not self.nzo.is_gone():
-            # TEMPORARY ERRORS
-            if not os.path.exists(os.path.join(self.nzf_id, self.nzo.workpath)):
-                logging.warning('Article DB file not found %s: %s', self.nzf_id, self)
-            else:
-                # It was there, but empty
-                logging.warning('Article DB empty %s: %s', self.nzf_id, self)
 
     def add_article(self, article_info, partnum):
         """ Add article to object database and return article object """
