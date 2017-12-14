@@ -314,7 +314,7 @@ tr.separator {
     visibility: hidden;
 }
 
-.Categories form.sorting-row:nth-child(even) tr {
+.Categories form.sorting-row:nth-child(2n-1) tr {
     background-color: #F8F8F8;
 }
 
