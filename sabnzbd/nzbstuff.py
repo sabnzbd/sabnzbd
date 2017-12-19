@@ -617,6 +617,10 @@ class NzbObject(TryList):
             # In case only /password was entered for nzbname
             work_name = filename
 
+        # Check for password also in filename
+        if not password:
+            dummy, password = scan_password(os.path.splitext(filename)[0])
+
         # Remove trailing .nzb and .par(2)
         self.work_name = create_work_name(work_name)
         self.final_name = create_work_name(work_name)
