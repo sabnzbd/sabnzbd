@@ -300,7 +300,7 @@ def deunicode(p):
             except:
                 return p
     else:
-        return p
+        return str(p)
 
 
 auto_fsys()
