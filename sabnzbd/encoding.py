@@ -110,7 +110,6 @@ def unicoder(p, force=False):
 
 def xml_name(p, keep_escape=False, encoding=None):
     """ Prepare name for use in HTML/XML contect """
-
     if isinstance(p, unicode):
         pass
     elif isinstance(p, str):
@@ -212,21 +211,6 @@ def TRANS(p):
             return ''
     else:
         return unicoder(p)
-
-
-def UNTRANS(p):
-    """ For Windows: Translate Python's Latin-1 to CP850
-        Others: return original string
-    """
-    global gTABLE_LATIN_850
-    if sabnzbd.WIN32:
-        if p:
-            return p.encode('cp1252', 'replace').translate(gTABLE_LATIN_850)
-        else:
-            # translate() fails on empty or None strings
-            return ''
-    else:
-        return p
 
 
 def fixup_ff4(p):
