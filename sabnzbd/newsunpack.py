@@ -2288,8 +2288,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
     def fix(p):
         if not p or str(p).lower() == 'none':
             return ''
-        else:
-            return UNTRANS(str(p))
+        return unicoder(p)
 
     values = [1, name, pp, cat, script, priority, None]
     script_path = make_script_path(cfg.pre_script())
@@ -2316,8 +2315,8 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
             n = 0
             for line in output.split('\n'):
                 line = line.strip('\r\n \'"')
-                if n < len(values):
-                    values[n] = TRANS(line)
+                if n < len(values) and line:
+                    values[n] = deunicode(line)
                 n += 1
         accept = int_conv(values[0])
         if  accept < 1:
