@@ -20,6 +20,7 @@ sabnzbd.encoding - Unicoded filename support
 """
 
 import locale
+import string
 from xml.sax.saxutils import escape
 from Cheetah.Filters import Filter
 
@@ -170,10 +171,10 @@ class EmailFilter(Filter):
 ################################################################################
 #
 # Map CodePage-850 characters to Python's pseudo-Unicode 8bit ASCII
-#
 # Use to transform 8-bit console output to plain Python strings
+# For example for unrar and par2 output
 #
-import string
+
 TAB_850 = \
     "\x80\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8A\x8B\x8C\x8D\x8E\x8F" \
     "\x90\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F" \
@@ -194,18 +195,14 @@ TAB_LATIN = \
     "\xD3\xDF\xD4\xD2\xF5\xD5\xB5\xFE\xDE\xDA\xDB\xD9\xFD\xDD\xAF\xB4" \
     "\xAD\xB1\x5F\xBE\xB6\xA7\xF7\xB8\xB0\xA8\xB7\xB9\xB3\xB2\x7E\xA0"
 
-gTABLE_850_LATIN = string.maketrans(TAB_850, TAB_LATIN)
-gTABLE_LATIN_850 = string.maketrans(TAB_LATIN, TAB_850)
-
 
 def TRANS(p):
     """ For Windows: Translate CP850 to Python's Latin-1 and return in Unicode
         Others: return original string
     """
-    global gTABLE_850_LATIN
     if sabnzbd.WIN32:
         if p:
-            return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
+            return p.translate(string.maketrans(TAB_850, TAB_LATIN)).decode('cp1252', 'replace')
         else:
             # translate() fails on empty or None strings
             return ''
