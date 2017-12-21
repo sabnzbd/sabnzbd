@@ -270,7 +270,7 @@ class Downloader(Thread):
         self.paused = False
 
     @NzbQueueLocker
-    def pause(self, save=True):
+    def pause(self):
         """ Pause the downloader, optionally saving admin """
         if not self.paused:
             self.paused = True
@@ -280,8 +280,6 @@ class Downloader(Thread):
                 BPSMeter.do.reset()
             if cfg.autodisconnect():
                 self.disconnect()
-            if save:
-                ArticleCache.do.flush_articles()
 
     def delay(self):
         logging.debug("Delaying")
@@ -794,11 +792,8 @@ class Downloader(Thread):
                 # Too many tries on this server, consider article missing
                 self.decode(article, None, None)
             else:
-                # Remove this server from try_list
-                article.fetcher = None
-
                 # Allow all servers to iterate over each nzo/nzf again
-                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
+                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
 
         if destroy:
             nw.terminate(quit=quit)

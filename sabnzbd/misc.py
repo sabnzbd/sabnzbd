@@ -24,6 +24,7 @@ import sys
 import logging
 import urllib
 import re
+import ctypes
 import shutil
 import threading
 import subprocess
@@ -39,7 +40,7 @@ from urlparse import urlparse
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
-     GIGI, MEBI, DEF_CACHE_LIMIT
+     GIGI, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, special_fixer, gUTF
@@ -738,12 +739,12 @@ def from_units(val):
         return 0.0
 
 
-def to_units(val, spaces=0, dec_limit=2, postfix=''):
+def to_units(val, spaces=0, postfix=''):
     """ Convert number to K/M/G/T/P notation
         Add "spaces" if not ending in letter
-        dig_limit==1 show single decimal for M and higher
-        dig_limit==2 show single decimal for G and higher
+        Show single decimal for M and higher
     """
+    dec_limit = 1
     decimals = 0
     if val < 0:
         sign = '-'
@@ -875,25 +876,72 @@ def check_mount(path):
 
 
 def get_cache_limit():
-    """ Depending on OS, calculate cache limit """
-    # OSX/Windows use Default value
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        return DEF_CACHE_LIMIT
-
+    """ Depending on OS, calculate cache limits.
+        In ArticleCache it will make sure we stay
+        within system limits for 32/64 bit
+    """
     # Calculate, if possible
     try:
+        if sabnzbd.WIN32:
+            # Windows
+            mem_bytes = get_windows_memory()
+        elif sabnzbd.DARWIN:
+            # macOS
+            mem_bytes = get_darwin_memory()
+        else:
+            # Linux
+            mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))
+
         # Use 1/4th of available memory
-        mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))/4
-        # Not more than the maximum we think is reasonable
-        if mem_bytes > from_units(DEF_CACHE_LIMIT):
-            return DEF_CACHE_LIMIT
-        elif mem_bytes > from_units('32M'):
-            # We make sure it's at least a valid value
+        mem_bytes = mem_bytes/4
+
+        # We don't want to set a value that's too high
+        if mem_bytes > from_units(DEF_ARTICLE_CACHE_MAX):
+            return DEF_ARTICLE_CACHE_MAX
+
+        # We make sure it's at least a valid value
+        if mem_bytes > from_units('32M'):
             return to_units(mem_bytes)
     except:
         pass
-    # If failed, leave empty so user needs to decide
+
+    # Always at least minimum on Windows/macOS
+    if sabnzbd.WIN32 and sabnzbd.DARWIN:
+        return DEF_ARTICLE_CACHE_DEFAULT
+
+    # If failed, leave empty for Linux so user needs to decide
     return ''
+
+
+def get_windows_memory():
+    """ Use ctypes to extract available memory """
+    class MEMORYSTATUSEX(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", ctypes.c_ulong),
+            ("dwMemoryLoad", ctypes.c_ulong),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("sullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+
+        def __init__(self):
+            # have to initialize this to the size of MEMORYSTATUSEX
+            self.dwLength = ctypes.sizeof(self)
+            super(MEMORYSTATUSEX, self).__init__()
+
+    stat = MEMORYSTATUSEX()
+    ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
+    return stat.ullTotalPhys
+
+
+def get_darwin_memory():
+    """ Use system-call to extract total memory on macOS """
+    system_output = sabnzbd.newsunpack.run_simple(['sysctl', 'hw.memsize'])
+    return float(system_output.split()[1])
 
 
 ##############################################################################

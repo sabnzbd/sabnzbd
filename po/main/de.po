@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
 "PO-Revision-Date: 2017-10-10 19:03+0000\n"
 "Last-Translator: Robin Munkittrick <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:45+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
@@ -586,6 +586,12 @@ msgstr "Schliessen der Mail-Verbindung fehlgeschlagen"
 msgid "Email succeeded"
 msgstr "E-Mail erfolgreich versendet"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Absenden nicht möglich, benötigte Daten fehlen"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "In %s konnten keine E-Mail-Vorlagen gefunden werden"
@@ -788,7 +794,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Verzeichnis %s konnte nicht angelegt werden"
 
@@ -820,6 +826,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Rechte von %s konnten nicht geändert werden"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Ausführen des Skripts"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1002,6 +1012,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparatur fehlgeschlagen. %s"
 
@@ -1027,10 +1038,6 @@ msgstr "[%s] Überprüft in %s. Alle Dateien fehlerfrei."
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Überprüft in %s. Reparatur wird benötigt."
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Hauptpaket nicht gefunden …"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1147,11 +1154,6 @@ msgstr "Andere Nachrichten"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Nicht verfügbar"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Absenden nicht möglich, benötigte Daten fehlen"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1611,10 +1613,6 @@ msgid "Failed to move files"
 msgstr "Dateien verschieben fehlgeschlagen"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Ausführen des Skripts"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Ausführen des Benutzer-Skripts %s"
 
@@ -1634,7 +1632,7 @@ msgstr "Mehr"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Nachbearbeitung von %s fehlgeschlagen (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "Beachten Sie die Protokolldatei"
 
@@ -3602,7 +3600,7 @@ msgstr ""
 "Die Performanz verbessern, indem eine schwächere SSL-Verschlüsselung "
 "erzwungen wird."
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Maximale Wiederholungen"
 
@@ -4257,6 +4255,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Episoden-Ordner"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Titel"
 
@@ -4325,8 +4327,8 @@ msgid "Original Filename"
 msgstr "Ursprünglicher Dateiname"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Ursprünglicher Ordnername"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4343,10 +4345,6 @@ msgstr "text"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "Datei"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "Ordner"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4696,6 +4694,12 @@ msgstr "Anhalten für …"
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Neu laden"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -5068,16 +5072,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Wenn Sie noch keinen Usenet-Provider haben, empfehlen wir Ihnen %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Fehler beim Abrufen der TV-Informationen: %s"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Umbenennen von %s nach %s fehlgeschlagen."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Umbenennen der gleichen Datei von %s nach %s fehlgeschlagen."
 
@@ -5561,6 +5565,12 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Show times in AM/PM notation (does not affect scheduler)."
 #~ msgstr "Zeiten in der AM/PM-Notation anzeigen (betrifft die Regeln nicht)."
 
+#~ msgid "folder"
+#~ msgstr "Ordner"
+
+#~ msgid "Original Foldername"
+#~ msgstr "Ursprünglicher Ordnername"
+
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "Gruppen/Indexer-Tags"
 
@@ -5645,6 +5655,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgstr ""
 #~ "Benachrichtigung für Nachrichtengruppen  aktivieren (keine, eine oder "
 #~ "mehrere)"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Hauptpaket nicht gefunden …"
 
 #~ msgid "Initiating restart...<br />"
 #~ msgstr "Neustart wird durchgeführt …<br />"

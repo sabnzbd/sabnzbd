@@ -121,7 +121,9 @@ class Wizard(object):
             info['ssl'] = 0
             info['ssl_verify'] = 2
         else:
-            for server in servers:
+            # Sort servers to get the first enabled one
+            server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
+            for server in server_names:
                 # If there are multiple servers, just use the first enabled one
                 s = servers[server]
                 info['host'] = s.host()

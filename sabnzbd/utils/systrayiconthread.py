@@ -189,6 +189,7 @@ class SysTrayIconThread(Thread):
         elif lparam == win32con.WM_LBUTTONDOWN:
             # Wrapper of win32api, timeout is in ms
             # We need to wait at least untill what user has defined as double click
+            self.stop_click_timer()
             self.click_timer = timer.set_timer(win32gui.GetDoubleClickTime(), self.click)
         return True
 

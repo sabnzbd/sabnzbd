@@ -1,48 +1,37 @@
-Release Notes - SABnzbd 2.3.1
+Release Notes - SABnzbd 2.3.2
 =========================================================
 
-## Changes since 2.3.0
-- Added post-processing script Deobfuscate.py (in "scripts" folder)
-  which can automatically process "rename.par2" after unpacking
-  or rename the largest file in the folder to the job's name
-- Maximum Article Cache size increased to 4GB on 64 bit systems
-- New servers will have timeout of 60 seconds instead of 120
-- Last output of a running script is shown in history
-- Paths to par2, unrar, unzip and 7zip are passed to scripts
-- Path to gzipped NZB file of job is passed to scripts
-- Windows: Single click on tray icon pauses/unpauses queue
+## Changes since 2.3.1
+- SABYenc updated to 3.3.2 to fix rare crash during downloading
+- Minor updates of SABYenc (such as 3.3.2) are no longer mandatory
+- Article Cache is automatically set to 25% of system memory, if no
+  custom value was set. Maximum set by auto-detect is 1GB
+- Simplify Config pages by hiding Advanced Settings
+- Added option '%dn' to Date Sorting to rename files as job name
+- Added 'Job Name as Folder Name' as Sorting Preset for de-obfuscation
+- Server usage graphs are now linked to make comparing servers easier
+- URLs that fail to fetch due to server errors will only be retried 10x
+- Delay between URL retries increases when not specified by server
+- First article of each file is downloaded first to identify filenames
+- Jobs finished by Direct Unpack will be post-processed first
+- If available, 7zip will be used instead of unzip
+- Job password entered by user is always shown in History
+- Password is also extracted from filename in case of custom job name
+- Add per-day download-statistics to 'server_stats' API-call
+- Added Hebrew date-time texts
 
-## Bugfixes since 2.3.0
-- Abort Direct Unpack if not progressing 2 minutes after download
-- Direct Unpacker could crash on some downloads
-- Added measures to prevent "Failed to import" errors
-- Downloader could crash during first few seconds after start
-- Saving errors of renames-file prevented
-- More verbose logging of creating and deleting files
-- Remove ".par2" at end of job name, could cause failure of repair
-- Fix racing-condition for files coming in after a job finishes
-- When re-adding a job, the time left was not calculated
-- Priority of category was ignored when adding new job
-- Server information in Status window was not always updated
-- Always show Direct Unpack status on smaller screens
-- Correctly adapt date and time display to local time zone
-- Category folders cannot be sub-folders of Temporary Download Folder
-- Email notifications could not be limited to categories
-- Testing email notifications did not work
-- Added "with" to list of lowercase words in titles for Sorting
-- "From SxxEyy" RSS filter did not always work
-- Show clearly that RSS "From Show SxxEyy" is an "Accept"-type filter
-- Sorting failed when "Ignore folders inside archives" was enabled
-- Always send "failure_url" to post-processing scripts
-- Decoding of articles no longer logged by default to reduce logging
-- Windows: Remove incompatible "Extra Par2 Parameters" for MultiPar
-- Windows: Special filenames could cause failures during unpack
-- Windows: Message box is shown in case of fatal startup error
-- Windows: Unpacking to network shares could fail
-- macOS: Added Safari pinned tab icon
-
-In case of "Article DB missing/empty" errors, enable +Debug logging
-and report here: https://github.com/sabnzbd/sabnzbd/issues/952
+## Bugfixes since 2.3.1
+- Dropped connections could result in stalled downloads
+- Pre-queue scripts would fail to run
+- Pre-queue script output was not always parsed correctly
+- Notifications were always sent for 'Default' category
+- 'History Retention' also checked on start of program
+- macOS: Restore full compatibility with macOS 10.11
+- Windows: Unpacking could fail due to paths not being quoted
+- Windows: All input parameters to scripts are now quoted
+- Windows: Complete folder in root of drive could crash post-processing
+- Windows: Automatically correct 'Extra Par2 Parameters' for MultiPar
+- Windows: Prevent potential pause/unpause loop after tray icon click
 
 ## Upgrading from 2.2.x and older
 - Finish queue

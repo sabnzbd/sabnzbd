@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
 "PO-Revision-Date: 2016-07-29 16:20+0000\n"
 "Last-Translator: nicusor <Unknown>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:31+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -564,6 +564,12 @@ msgstr "Închidere conexiune mail nereuşită"
 msgid "Email succeeded"
 msgstr "Email reuşit"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Nu pot trimite, informații necesare lipsă"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Nu pot gasi şabloane email în %s"
@@ -764,7 +770,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Nu pot crea dosarul %s"
 
@@ -793,6 +799,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Nu pot schimba permisiunile lui %s"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Rulare script"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -971,6 +981,7 @@ msgstr "Verificarea Par eșuată pentru %s, dar VerificareaRapidă reușită!"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparare nereuşită, %s"
 
@@ -996,10 +1007,6 @@ msgstr "[%s] Verificat în %s, toate fişierele sunt corecte"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Verificat în %s, reparare necesară"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Pachet principal negăsit..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1109,11 +1116,6 @@ msgstr "Alte Mesaje"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Indisponibil"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Nu pot trimite, informații necesare lipsă"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1559,10 +1561,6 @@ msgid "Failed to move files"
 msgstr "Nu am putu muta fişier"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Rulare script"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Rulare script utilizator %s"
 
@@ -1582,7 +1580,7 @@ msgstr "Mai mult"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Post Procesare Nereuşită pentru %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "vezi fişier jurnal"
 
@@ -3492,7 +3490,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Număr Maxim reîncercări"
 
@@ -4135,6 +4133,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Dosar Episod"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Titlu"
 
@@ -4203,8 +4205,8 @@ msgid "Original Filename"
 msgstr "Nume de Fişier Original"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Nume de Dosar Original"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4221,10 +4223,6 @@ msgstr "text"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "fișier"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "dosar"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4573,6 +4571,12 @@ msgstr "Pauză timp de..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Reîmprospătează"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4943,16 +4947,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Nu aveţi un furnizor usenet? Vă recomandăm să încercaţi %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Eroare obţinere info TV (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Redenumire:%s în %s nereuşită"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Redenumire fişiere similare : %s în %s nereuşită"
 
@@ -5077,6 +5081,9 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Fişiere aşteptate lipsă: %s => eroare unrar?"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Pachet principal negăsit..."
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Eroare importare modul OpenSSL . Se conectează folosind NON-SSL"
@@ -5343,6 +5350,12 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "Enable if downloads are not put in their own folders."
 #~ msgstr "Activează dacă descărcările nu sunt puse în dosarele lor."
+
+#~ msgid "Original Foldername"
+#~ msgstr "Nume de Dosar Original"
+
+#~ msgid "folder"
+#~ msgstr "dosar"
 
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "Activează sortarea şi redenumirea fişierelor denumite după dată."

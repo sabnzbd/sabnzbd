@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:31+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 #: SABnzbd.py [Error message]
@@ -551,6 +551,12 @@ msgstr "Не удалось разорвать соединение с почт�
 msgid "Email succeeded"
 msgstr "Электронное письмо успешно отправлено"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr ""
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Не удаётся найти шаблонны электронных писем в %s"
@@ -751,7 +757,7 @@ msgstr "ч"
 msgid "m"
 msgstr "м"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Не удаётся создать каталог %s"
 
@@ -780,6 +786,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Не удаётся изменить права доступа %s"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Запуск сценария"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -958,6 +968,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Не удалось исправить: %s"
 
@@ -983,10 +994,6 @@ msgstr "[%s] Проверено за %s. Ошибок нет"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Проверено за %s. Требуется исправление"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Главный пакет не найден..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1096,11 +1103,6 @@ msgstr "Другие сообщения"
 
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
-msgstr ""
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
 msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
@@ -1545,10 +1547,6 @@ msgid "Failed to move files"
 msgstr "Не удалось переместить файлы"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Запуск сценария"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Запуск пользовательского сценария %s"
 
@@ -1568,7 +1566,7 @@ msgstr "Подробнее"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Ошибка пост-обработки для %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "см. журнал"
 
@@ -3469,7 +3467,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Число попыток"
 
@@ -4113,6 +4111,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Эпизод Папка"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Название"
 
@@ -4181,8 +4183,8 @@ msgid "Original Filename"
 msgstr "Исходное название файла"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Исходное название папки"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4199,10 +4201,6 @@ msgstr "текст"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "файл"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "папка"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4549,6 +4547,12 @@ msgstr "Приостановить на..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Обновить"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4922,16 +4926,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "У вас ещё нет поставщика услуг Usenet? Рекомендуем попробовать %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Не удалось получить сведения о ТВ (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Не удалось переименовать: %s в %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Не удалось переименовать похожий файл: %s в %s"
 
@@ -5031,6 +5035,9 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "Ошибка распаковки: отсутствуют следующие файлы:"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Главный пакет не найден..."
 
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "Недопустимые PAR2-файлы. Нельзя выполнить проверку или исправление"
@@ -5376,6 +5383,12 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "Enable if downloads are not put in their own folders."
 #~ msgstr "Включите, если загрузки не размещаются в собственных папках."
+
+#~ msgid "Original Foldername"
+#~ msgstr "Исходное название папки"
+
+#~ msgid "folder"
+#~ msgstr "папка"
 
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "Позволяет сортировать и переименовывать файлы с датой в названии."
