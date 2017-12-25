@@ -1842,10 +1842,23 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             verifynum = 0
 
         elif in_repair:
-            # Line with percentage of repair (nothing else)
-            per = float(line[:-1])
-            nzo.set_action_line(T('Repairing'), '%2d%%' % per)
-            nzo.status = Status.REPAIRING
+            try:
+                # Line with percentage of repair (nothing else)
+                per = float(line[:-1])
+                nzo.set_action_line(T('Repairing'), '%2d%%' % per)
+                nzo.status = Status.REPAIRING
+            except:
+                # Checksum error
+                if 'checksum' in line:
+                    # Failed due to checksum error of multipar
+                    msg = T('Repairing failed, %s') % line
+                    nzo.fail_msg = msg
+                    msg = u'[%s] %s' % (unicoder(setname), msg)
+                    nzo.set_unpack_info('Repair', msg)
+                    nzo.status = Status.FAILED
+                else:
+                    # Not sure, log error
+                    logging.info("Traceback: ", exc_info=True)
 
         elif line.startswith('Repaired successfully'):
             msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time.time() - start))
