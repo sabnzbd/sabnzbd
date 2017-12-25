@@ -770,6 +770,7 @@ class NzbObject(TryList):
             except Exception, err:
                 self.incomplete = True
                 logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, 0)
+                logging.info("Traceback: ", exc_info=True)
 
             if self.incomplete:
                 if cfg.allow_incomplete_nzb():
