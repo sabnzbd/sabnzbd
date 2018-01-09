@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-12-06 10:56+W. Europe Standard Time\n"
+"POT-Creation-Date: 2018-01-09 08:05+W. Europe Standard Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -916,6 +916,7 @@ msgstr ""
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr ""
 
@@ -2347,6 +2348,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py [Status page button]
 msgid "Force Disconnect"
+msgstr ""
+
+#: sabnzbd/skintext.py [Status page button text]
+msgid "Disconnect all active connections to usenet servers. Connections will be reopened after a few seconds if there are items in the queue."
 msgstr ""
 
 #: sabnzbd/skintext.py

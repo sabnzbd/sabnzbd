@@ -270,6 +270,7 @@ SKIN_TEXT = {
 
 # Connections page
     'link-forceDisc' : TT('Force Disconnect'), #: Status page button
+    'explain-forceDisc' : TT('Disconnect all active connections to usenet servers. Connections will be reopened after a few seconds if there are items in the queue.'), #: Status page button text
     'askTestEmail' : TT('This will send a test email to your account.'),
     'link-showLog' : TT('Show Logging'), #: Status page button
     'link-testEmail' : TT('Test Email'), #: Status page button
