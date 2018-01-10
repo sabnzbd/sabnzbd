@@ -173,10 +173,7 @@ class NNTP(object):
         self.error_msg = None
 
         if not info:
-            if block:
-                info = GetServerParms(host, port)
-            else:
-                raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
+            raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
         af, socktype, proto, canonname, sa = info[0]
 
@@ -323,11 +320,16 @@ class NewsWrapper(object):
             return ''
 
     def init_connect(self, write_fds):
+        # Server-info is normally requested by initialization of
+        # servers in Downloader, but not when testing servers
+        if self.blocking and not self.server.info:
+            self.server.info = GetServerParms(self.server.host, self.server.port)
+
+        # Construct NNTP object and shorthands
         self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
                          self.server.send_group, self, self.server.username, self.server.password,
                          self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
-
         self.timeout = time.time() + self.server.timeout
 
     def finish_connect(self, code):
