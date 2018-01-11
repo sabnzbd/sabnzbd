@@ -937,7 +937,7 @@ def clues_too_many(text):
     text = text.lower()
     for clue in ('exceed', 'connections', 'too many', 'threads', 'limit'):
         # Not 'download limit exceeded' error
-        if (clue in text) and ('download' not in text):
+        if (clue in text) and ('download' not in text) and ('byte' not in text):
             return True
     return False
 
