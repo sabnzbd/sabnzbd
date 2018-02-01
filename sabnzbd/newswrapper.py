@@ -51,6 +51,7 @@ socket.setdefaulttimeout(DEF_TIMEOUT)
 
 def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
+    logging.debug('Retrieving server address information for %s', server.host)
     info = GetServerParms(server.host, server.port)
 
     if info is None:

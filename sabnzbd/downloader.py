@@ -364,12 +364,19 @@ class Downloader(Thread):
         return filter(nzo.server_in_try_list, self.servers)
 
     def maybe_block_server(self, server):
-        if server.optional and server.active and (server.bad_cons / server.threads) > 3:
-            # Optional and active server had too many problems,
-            # disable it now and send a re-enable plan to the scheduler
+        # Was it resolving problem?
+        if server.info is None and server.bad_cons == server.threads:
+            # Warn about resolving issues
+            errormsg = T('Cannot connect to server %s [%s]') % (server.id, T('Server name does not resolve'))
+            if server.errormsg != errormsg:
+                server.errormsg = errormsg
+                logging.warning(errormsg)
+
+        # Optional and active server had too many problems or all threads failed to resolve.
+        # Disable it now and send a re-enable plan to the scheduler
+        if server.active and (server.bad_cons == server.threads) or (server.optional and (server.bad_cons / server.threads) > 3):
             server.bad_cons = 0
             server.active = False
-            server.errormsg = T('Server %s will be ignored for %s minutes') % ('', _PENALTY_TIMEOUT)
             logging.warning(T('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
             self.plan_server(server.id, _PENALTY_TIMEOUT)
 
