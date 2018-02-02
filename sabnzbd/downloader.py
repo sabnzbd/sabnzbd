@@ -365,16 +365,21 @@ class Downloader(Thread):
 
     def maybe_block_server(self, server):
         # Was it resolving problem?
-        if server.info is None and server.bad_cons == server.threads:
+        if server.info is False:
             # Warn about resolving issues
             errormsg = T('Cannot connect to server %s [%s]') % (server.id, T('Server name does not resolve'))
             if server.errormsg != errormsg:
                 server.errormsg = errormsg
                 logging.warning(errormsg)
 
-        # Optional and active server had too many problems or all threads failed to resolve.
+            # Not fully the same as the code below for optional servers
+            server.bad_cons = 0
+            server.active = False
+            self.plan_server(server.id, _PENALTY_TIMEOUT)
+
+        # Optional and active server had too many problems.
         # Disable it now and send a re-enable plan to the scheduler
-        if server.active and (server.bad_cons == server.threads) or (server.optional and (server.bad_cons / server.threads) > 3):
+        if server.optional and server.active and (server.bad_cons / server.threads) > 3:
             server.bad_cons = 0
             server.active = False
             logging.warning(T('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
@@ -462,7 +467,7 @@ class Downloader(Thread):
                         else:
                             nw.timeout = None
 
-                    if server.info is None:
+                    if not server.info:
                         self.maybe_block_server(server)
                         request_server_info(server)
                         break

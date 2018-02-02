@@ -53,8 +53,7 @@ def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
     logging.debug('Retrieving server address information for %s', server.host)
     info = GetServerParms(server.host, server.port)
-
-    if info is None:
+    if not info:
         server.bad_cons += server.threads
     else:
         server.bad_cons = 0
@@ -101,7 +100,7 @@ def GetServerParms(host, port):
             except:
                 # Nothing found!
                 pass
-        return None
+        return False
 
 
 def get_ssl_version(sock):
