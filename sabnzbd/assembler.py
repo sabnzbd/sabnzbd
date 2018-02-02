@@ -210,6 +210,7 @@ def file_has_articles(nzf):
 
 
 RE_SUBS = re.compile(r'\W+sub|subs|subpack|subtitle|subtitles(?![a-z])', re.I)
+SAFE_EXTS = ('.mkv', '.mp4', '.avi', '.wmv', '.mpg', '.webm')
 def is_cloaked(nzo, path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = unicoder(get_filename(path)).lower()
@@ -223,7 +224,7 @@ def is_cloaked(nzo, path, names):
                 logging.warning(T('Job "%s" is probably encrypted due to RAR with same name inside this RAR'), nzo.final_name)
                 nzo.encrypted = 1
             return True
-        elif 'password' in name:
+        elif 'password' in name and ext not in SAFE_EXTS:
             # Only warn once
             if nzo.encrypted == 0:
                 logging.warning(T('Job "%s" is probably encrypted: "password" in filename "%s"'), nzo.final_name, name)
