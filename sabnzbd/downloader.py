@@ -406,20 +406,8 @@ class Downloader(Thread):
         sabnzbd.EXTERNAL_IPV6 = sabnzbd.test_ipv6()
         logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
 
-        # Then have to check the quality of SSL verification
-        if sabnzbd.HAVE_SSL_CONTEXT:
-            try:
-                import ssl
-                ctx = ssl.create_default_context()
-                base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
-                ssl_sock.settimeout(2.0)
-                ssl_sock.connect((cfg.selftest_host(), 443))
-                ssl_sock.close()
-            except:
-                # Seems something is still wrong
-                sabnzbd.set_https_verification(0)
-                sabnzbd.HAVE_SSL_CONTEXT = False
+        # Then we check SSL certifcate checking
+        sabnzbd.HAVE_SSL_CONTEXT = sabnzbd.test_cert_checking()
         logging.debug('SSL verification test: %s', sabnzbd.HAVE_SSL_CONTEXT)
 
         # Start decoders
