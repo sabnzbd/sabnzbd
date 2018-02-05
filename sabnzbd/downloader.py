@@ -371,6 +371,7 @@ class Downloader(Thread):
             if server.errormsg != errormsg:
                 server.errormsg = errormsg
                 logging.warning(errormsg)
+                logging.warning(T('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
 
             # Not fully the same as the code below for optional servers
             server.bad_cons = 0
@@ -456,8 +457,10 @@ class Downloader(Thread):
                             nw.timeout = None
 
                     if not server.info:
-                        self.maybe_block_server(server)
-                        request_server_info(server)
+                        # Only request info if there's stuff in the queue
+                        if not sabnzbd.nzbqueue.NzbQueue.do.is_empty():
+                            self.maybe_block_server(server)
+                            request_server_info(server)
                         break
 
                     article = sabnzbd.nzbqueue.NzbQueue.do.get_article(server, self.servers)
