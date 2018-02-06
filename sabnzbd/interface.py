@@ -180,8 +180,10 @@ def set_login_cookie(remove=False, remember_me=False):
     salt = randint(1,1000)
     cherrypy.response.cookie['login_cookie'] = hashlib.sha1(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
     cherrypy.response.cookie['login_cookie']['path'] = '/'
+    cherrypy.response.cookie['login_cookie']['httponly'] = 1
     cherrypy.response.cookie['login_salt'] = salt
     cherrypy.response.cookie['login_salt']['path'] = '/'
+    cherrypy.response.cookie['login_salt']['httponly'] = 1
 
     # If we want to be remembered
     if remember_me:
