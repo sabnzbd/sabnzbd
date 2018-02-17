@@ -493,7 +493,11 @@ class NzbParser(xml.sax.handler.ContentHandler):
             # Create an NZF
             self.in_file = False
             if not self.article_db:
-                logging.warning(T('File %s is empty, skipping'), self.filename)
+                msg = T('File %s is empty, skipping')
+                if cfg.ignore_empty_files():
+                    logging.info(msg, self.filename)
+                else:
+                    logging.warning(msg, self.filename)
                 return
             try:
                 tm = datetime.datetime.fromtimestamp(self.file_date)
