@@ -61,7 +61,7 @@ from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, DEF_STDINTF, \
     DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY
 
-from sabnzbd.lang import list_languages, set_language
+from sabnzbd.lang import list_languages
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
@@ -1433,7 +1433,7 @@ class ConfigSpecial(object):
 
 ##############################################################################
 GENERAL_LIST = (
-    'host', 'port', 'username', 'refresh_rate', 'cache_limit',
+    'host', 'port', 'username', 'refresh_rate', 'language', 'cache_limit',
     'local_ranges', 'inet_exposure', 'enable_https', 'https_port',
     'https_cert', 'https_key', 'https_chain', 'enable_https_verification',
     'auto_browser', 'check_new_rel'
@@ -1543,12 +1543,6 @@ class ConfigGeneral(object):
                 return badParameterResponse(msg)
 
         # Handle special options
-        language = kwargs.get('language')
-        if language and language != cfg.language():
-            cfg.language.set(language)
-            set_language(language)
-            sabnzbd.api.clear_trans_cache()
-
         cfg.password.set(kwargs.get('password'))
 
         web_dir = kwargs.get('web_dir')

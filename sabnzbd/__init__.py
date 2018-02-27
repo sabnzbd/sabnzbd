@@ -270,7 +270,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.quota_day.callback(guard_quota_dp)
     cfg.quota_period.callback(guard_quota_dp)
     cfg.fsys_type.callback(guard_fsys_type)
-    cfg.language.callback(sabnzbd.notifier.reset_growl)
+    cfg.language.callback(guard_language)
     cfg.enable_https_verification.callback(guard_https_ver)
     guard_https_ver()
 
@@ -515,6 +515,13 @@ def guard_quota_dp():
 def guard_fsys_type():
     """ Callback for change of file system naming type """
     sabnzbd.encoding.change_fsys(cfg.fsys_type())
+
+
+def guard_language():
+    """ Callback for change of the interface language """
+    sabnzbd.notifier.reset_growl()
+    sabnzbd.lang.set_language(cfg.language())
+    sabnzbd.api.clear_trans_cache()
 
 
 def set_https_verification(value):
