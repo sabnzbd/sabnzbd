@@ -137,7 +137,7 @@ top_only = OptionBool('misc', 'top_only', False)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 quick_check_ext_ignore = OptionList('misc', 'quick_check_ext_ignore', ['nfo', 'sfv', 'srr'])
 script_can_fail = OptionBool('misc', 'script_can_fail', False)
-ssl_ciphers = OptionStr('misc', 'ssl_ciphers', '')
+ssl_ciphers = OptionStr('misc', 'ssl_ciphers', '') # Now per-server setting
 enable_recursive = OptionBool('misc', 'enable_recursive', True)
 flat_unpack = OptionBool('misc', 'flat_unpack', False)
 par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)

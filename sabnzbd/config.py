@@ -391,6 +391,7 @@ class ConfigServer(object):
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
         self.ssl_verify = OptionNumber(name, 'ssl_verify', 2, add=False)  # 0=No, 1=Normal, 2=Strict (hostname verification)
+        self.ssl_ciphers = OptionStr(name, 'ssl_ciphers', '', add=False)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
@@ -404,7 +405,7 @@ class ConfigServer(object):
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
         for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'ssl',
-                   'ssl_verify', 'send_group', 'enable', 'optional', 'retention', 'priority', 'notes'):
+                   'ssl_verify', 'ssl_ciphers', 'send_group', 'enable', 'optional', 'retention', 'priority', 'notes'):
             try:
                 value = values[kw]
             except KeyError:
@@ -430,6 +431,7 @@ class ConfigServer(object):
         dict['connections'] = self.connections()
         dict['ssl'] = self.ssl()
         dict['ssl_verify'] = self.ssl_verify()
+        dict['ssl_ciphers'] = self.ssl_ciphers()
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
         dict['retention'] = self.retention()
@@ -875,8 +877,15 @@ def define_servers():
         for server in CFG['servers']:
             svr = CFG['servers'][server]
             s = ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
+
+            # Conversion of global SSL-Ciphers to server ones
+            if sabnzbd.cfg.ssl_ciphers():
+                s.ssl_ciphers.set(sabnzbd.cfg.ssl_ciphers())
     except KeyError:
         pass
+
+    # No longer needed
+    sabnzbd.cfg.ssl_ciphers.set('')
 
 
 def get_servers():

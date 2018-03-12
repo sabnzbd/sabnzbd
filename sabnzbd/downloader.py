@@ -60,8 +60,8 @@ TIMER_LOCK = RLock()
 
 class Server(object):
 
-    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, send_group, username=None,
-                 password=None, optional=False, retention=0):
+    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, ssl_ciphers,
+                 send_group, username=None, password=None, optional=False, retention=0):
 
         self.id = id
         self.newid = None
@@ -74,6 +74,7 @@ class Server(object):
         self.priority = priority
         self.ssl = ssl
         self.ssl_verify = ssl_verify
+        self.ssl_ciphers = ssl_ciphers
         self.optional = optional
         self.retention = retention
         self.send_group = send_group
@@ -228,6 +229,7 @@ class Downloader(Thread):
             priority = srv.priority()
             ssl = srv.ssl()
             ssl_verify = srv.ssl_verify()
+            ssl_ciphers = srv.ssl_ciphers()
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
@@ -247,7 +249,7 @@ class Downloader(Thread):
 
         if create and enabled and host and port and threads:
             server = Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
-                                            send_group, username, password, optional, retention)
+                                    ssl_ciphers, send_group, username, password, optional, retention)
             self.servers.append(server)
             self.server_dict[newserver] = server
 

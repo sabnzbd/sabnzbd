@@ -197,14 +197,14 @@ class NNTP(object):
                     ctx.verify_mode = ssl.CERT_NONE
 
                 # Did the user set a custom cipher-string?
-                if(sabnzbd.cfg.ssl_ciphers()):
+                if(nw.server.ssl_ciphers):
                     # At their own risk, socket will error out in case it was invalid
-                    ctx.set_ciphers(sabnzbd.cfg.ssl_ciphers())
+                    ctx.set_ciphers(nw.server.ssl_ciphers)
 
                 self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=str(nw.server.host))
             else:
                 # Ciphers have to be None, if set to empty-string it will fail on <2.7.9
-                ciphers = sabnzbd.cfg.ssl_ciphers() if sabnzbd.cfg.ssl_ciphers() else None
+                ciphers = nw.server.ssl_ciphers if nw.server.ssl_ciphers else None
                 # Use a regular wrapper, no certificate validation
                 self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=ciphers)
         else:
