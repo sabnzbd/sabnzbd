@@ -173,7 +173,7 @@ class guiHandler(logging.Handler):
 
 def print_help():
     print
-    print "Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME
+    print "Usage: %s [-f <configfile>] <other options> [NZB (or related) file]" % sabnzbd.MY_NAME
     print
     print "Options marked [*] are stored in the config file"
     print
@@ -206,6 +206,10 @@ def print_help():
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
+    print ""
+    print "NZB (or related) file:"
+    print "  NZB or zipped NZB file, with extension .nzb, .zip, .rar, .gz, or .bz2"
+    print ""
 
 
 def print_version():
