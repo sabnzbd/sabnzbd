@@ -1299,7 +1299,7 @@ class ConfigFolders(object):
 
 ##############################################################################
 SWITCH_LIST = \
-    ('par_option', 'top_only', 'direct_unpack', 'enable_meta',
+    ('par_option', 'top_only', 'direct_unpack', 'enable_meta', 'win_process_prio',
              'auto_sort', 'propagation_delay', 'auto_disconnect', 'flat_unpack',
              'safe_postproc', 'no_dupes', 'replace_spaces', 'replace_dots',
              'ignore_samples', 'pause_on_post_processing', 'nice', 'ionice',

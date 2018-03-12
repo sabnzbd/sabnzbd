@@ -41,8 +41,12 @@ from sabnzbd.constants import Status
 if sabnzbd.WIN32:
     try:
         import win32api
-        from win32con import SW_HIDE
-        from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
+        import win32con
+        import win32process
+
+        # Define scheduling priorities
+        WIN_SCHED_PRIOS = {1: win32process.IDLE_PRIORITY_CLASS, 2: win32process.BELOW_NORMAL_PRIORITY_CLASS,
+                           3: win32process.NORMAL_PRIORITY_CLASS, 4: win32process.ABOVE_NORMAL_PRIORITY_CLASS,}
 
         # Use patched version of subprocess module for Unicode on Windows
         import subprocessww
@@ -2007,9 +2011,9 @@ def build_command(command, flatten_command=False):
 
         need_shell = os.path.splitext(command[0])[1].lower() not in ('.exe', '.com')
         stup = subprocess.STARTUPINFO()
-        stup.dwFlags = STARTF_USESHOWWINDOW
-        stup.wShowWindow = SW_HIDE
-        creationflags = IDLE_PRIORITY_CLASS
+        stup.dwFlags = win32process.STARTF_USESHOWWINDOW
+        stup.wShowWindow = win32con.SW_HIDE
+        creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
 
         # Work-around for bug in Python's Popen function,
         # scripts with spaces in the path don't work.

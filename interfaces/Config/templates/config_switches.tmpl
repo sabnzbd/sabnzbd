@@ -164,6 +164,30 @@
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
+                    <!--#if not $nt#-->
+                    <div class="field-pair advanced-settings <!--#if not $have_nice then "disabled" else "" #-->">
+                        <label class="config" for="nice">$T('opt-nice')</label>
+                        <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                        <span class="desc">$T('explain-nice')</span>
+                    </div>
+                    <div class="field-pair advanced-settings <!--#if not $have_ionice then "disabled" else "" #-->">
+                        <label class="config" for="ionice">$T('opt-ionice')</label>
+                        <input type="text" name="ionice" id="ionice" value="$ionice" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
+                        <span class="desc">$T('explain-ionice')</span>
+                    </div>
+                    <!--#else#-->
+                    <div class="field-pair advanced-settings">
+
+                        <label class="config" for="win_process_prio">$T('opt-win_process_prio')</label>
+                        <select name="win_process_prio" id="win_process_prio">
+                            <option value="4" <!--#if int($win_process_prio) == 4 then 'selected="selected"' else ""#-->>$T('win_process_prio-high')</option>
+                            <option value="3" <!--#if int($win_process_prio) == 3 then 'selected="selected"' else ""#-->>$T('win_process_prio-normal')</option>
+                            <option value="2" <!--#if int($win_process_prio) == 2 then 'selected="selected"' else ""#-->>$T('win_process_prio-low')</option>
+                            <option value="1" <!--#if int($win_process_prio) == 1 then 'selected="selected"' else ""#-->>$T('win_process_prio-idle')</option>
+                        </select>
+                        <span class="desc">$T('explain-win_process_prio')</span>
+                    </div>
+                    <!--#end if#-->
                     <div class="field-pair advanced-settings">
                         <label class="config" for="par_option">$T('opt-par_option')</label>
                         <input type="text" name="par_option" id="par_option" value="$par_option" />
@@ -199,18 +223,6 @@
                         <input type="checkbox" name="new_nzb_on_failure" id="new_nzb_on_failure" value="1" <!--#if int($new_nzb_on_failure) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-new_nzb_on_failure')</span>
                     </div>
-                    <!--#if not $nt#-->
-                    <div class="field-pair advanced-settings <!--#if not $have_nice then "disabled" else "" #-->">
-                        <label class="config" for="nice">$T('opt-nice')</label>
-                        <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                        <span class="desc">$T('explain-nice')</span>
-                    </div>
-                    <div class="field-pair advanced-settings <!--#if not $have_ionice then "disabled" else "" #-->">
-                        <label class="config" for="ionice">$T('opt-ionice')</label>
-                        <input type="text" name="ionice" id="ionice" value="$ionice" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
-                        <span class="desc">$T('explain-ionice')</span>
-                    </div>
-                    <!--#end if#-->
                     <div class="field-pair">
                         <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
                         <input type="checkbox" name="ignore_samples" id="ignore_samples" value="1" <!--#if int($ignore_samples) > 0 then 'checked="checked"' else ""#--> />
