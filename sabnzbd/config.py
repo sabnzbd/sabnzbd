@@ -396,8 +396,6 @@ class ConfigServer(object):
         self.retention = OptionNumber(name, 'retention', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
         self.priority = OptionNumber(name, 'priority', 0, 0, 99, add=False)
-        # 'fillserver' field only here in order to set a proper priority when converting
-        self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.notes = OptionStr(name, 'notes', '', add=False)
 
         self.set_dict(values)
@@ -405,8 +403,8 @@ class ConfigServer(object):
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
-                   'ssl', 'ssl_verify', 'send_group', 'enable', 'optional', 'retention', 'priority', 'notes'):
+        for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'ssl',
+                   'ssl_verify', 'send_group', 'enable', 'optional', 'retention', 'priority', 'notes'):
             try:
                 value = values[kw]
             except KeyError:
@@ -877,10 +875,6 @@ def define_servers():
         for server in CFG['servers']:
             svr = CFG['servers'][server]
             s = ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
-            if s.fillserver():
-                # One time conversion of backup to priority 1
-                s.priority.set(1)
-                s.fillserver.set(False)
     except KeyError:
         pass
 
