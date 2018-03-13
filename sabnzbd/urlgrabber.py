@@ -30,7 +30,7 @@ from httplib import IncompleteRead
 from threading import Thread
 
 import sabnzbd
-from sabnzbd.constants import FUTURE_Q_FOLDER, Status
+from sabnzbd.constants import DEF_TIMEOUT, MAX_URL_RETRIES, FUTURE_Q_FOLDER, Status
 from sabnzbd.encoding import unicoder
 import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
@@ -59,8 +59,17 @@ class URLGrabber(Thread):
 
     def add(self, url, future_nzo, when=None):
         """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
-        if when and future_nzo:
-            future_nzo.wait = time.time() + when
+        if future_nzo and when:
+            # Always increase counter
+            future_nzo.url_tries += 1
+
+            # Too many tries? Cancel
+            if future_nzo.url_tries > MAX_URL_RETRIES:
+                bad_fetch(future_nzo, url, T('Maximum retries'))
+                return
+
+            future_nzo.url_wait = time.time() + when
+
         self.queue.put((url, future_nzo))
 
     def stop(self):
@@ -81,7 +90,7 @@ class URLGrabber(Thread):
 
             if future_nzo:
                 # Re-queue when too early and still active
-                if future_nzo.wait and future_nzo.wait > time.time():
+                if future_nzo.url_wait and future_nzo.url_wait > time.time():
                     self.add(url, future_nzo)
                     time.sleep(1.0)
                     continue
@@ -187,7 +196,7 @@ class URLGrabber(Thread):
                     retry = True
                     fn = None
                 elif retry:
-                    fn, msg, retry, wait, data = _analyse(fn, url)
+                    fn, msg, retry, wait, data = _analyse(fn, url, future_nzo)
 
                 if not fn:
                     if retry:
@@ -300,23 +309,28 @@ def _build_request(url):
     return urllib2.urlopen(req)
 
 
-def _analyse(fn, url):
+def _analyse(fn, url, future_nzo):
     """ Analyze response of indexer
         returns fn|None, error-message|None, retry, wait-seconds, data
     """
     data = None
     if not fn or fn.code != 200:
-        logging.debug('No usable response from indexer, retry after 60 sec')
         if fn:
             msg = fn.msg
         else:
             msg = ''
-        return None, msg, True, 60, data
+
+        # Increasing wait-time in steps for standard errors
+        when = DEF_TIMEOUT * (future_nzo.url_tries + 1)
+        logging.debug('No usable response from indexer, retry after %s sec', when)
+        return None, msg, True, when, data
 
     # Check for an error response
     if not fn or fn.msg != 'OK':
-        logging.debug('Received nothing from indexer, retry after 60 sec')
-        return None, fn.msg, True, 60, data
+        # Increasing wait-time in steps for standard errors
+        when = DEF_TIMEOUT * (future_nzo.url_tries + 1)
+        logging.debug('Received nothing from indexer, retry after %s sec', when)
+        return None, fn.msg, True, when, data
 
     return fn, fn.msg, False, 0, data
 

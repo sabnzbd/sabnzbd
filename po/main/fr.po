@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
-"PO-Revision-Date: 2017-10-05 18:52+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
+"PO-Revision-Date: 2017-12-06 19:46+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:45+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -590,6 +590,12 @@ msgstr "Échec de la fermeture de la connexion à la messagerie"
 msgid "Email succeeded"
 msgstr "L'envoi de l'e-mail a réussi"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Impossible d'envoyer, données requises manquantes"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Impossible de trouver les modèles d'email dans %s"
@@ -763,6 +769,8 @@ msgstr "Paramètre incorrect"
 msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr ""
+"Le dossier de catégorie ne peut pas être un sous-dossier du dossier de "
+"téléchargement temporaire."
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
@@ -792,7 +800,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Impossible de créer le dossier %s"
 
@@ -824,6 +832,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Impossible de changer les permissions pour %s"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Exécution du script"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1009,6 +1021,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Échec de la réparation, %s"
 
@@ -1035,10 +1048,6 @@ msgstr "[%s] Vérifié dans %s, tous les fichiers sont corrects"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Vérifié dans %s, réparation nécessaire"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Paquet principal introuvable..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1154,11 +1163,6 @@ msgstr "Autres messages"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Non disponible"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Impossible d'envoyer, données requises manquantes"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1615,10 +1619,6 @@ msgid "Failed to move files"
 msgstr "Impossible de déplacer les fichiers"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Exécution du script"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Exécution du script utilisateur %s"
 
@@ -1638,7 +1638,7 @@ msgstr "Plus"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Échec du post-traitement pour %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "voir le journal"
 
@@ -3609,7 +3609,7 @@ msgstr "Chiffrements SSL"
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr "Augmenter les performances en forçant un cryptage SSL plus faible."
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Nombre de tentatives maximum"
 
@@ -4271,6 +4271,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Dossier Épisode"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr "Nom de la tâche en tant que nom de fichier"
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Titre"
 
@@ -4339,8 +4343,8 @@ msgid "Original Filename"
 msgstr "Nom de fichier originel"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Nom du dossier originel"
+msgid "Original Job Name"
+msgstr "Nom d'origine de la tâche"
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4357,10 +4361,6 @@ msgstr "texte"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "fichier"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "dossier"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4712,6 +4712,14 @@ msgstr "Mettre en pause pour…"
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Rafraîchir"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
+"Tous les noms d'utilisateur, mots de passe et clés API sont automatiquement "
+"supprimés du journal et de la copie de vos réglages."
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -5085,16 +5093,16 @@ msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr ""
 "Vous n'avez pas de fournisseur usenet? Nous vous recommendons d'essayer %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Erreur lors de l'obtention des information TV (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Échec du renommage : %s en %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Impossible de renommer le fichier similaire : %s en %s"
 
@@ -5429,6 +5437,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "Active le tri et le renommage des fichiers par date."
 
+#~ msgid "folder"
+#~ msgstr "dossier"
+
 #~ msgid "Set Pause Interval"
 #~ msgstr "Intervalle de pause"
 
@@ -5605,6 +5616,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "pyopenssl module missing, please install for https access"
 #~ msgstr "module pyopenssl manquant, veuillez l'installer pour l'accès HTTPS"
 
+#~ msgid "Main packet not found..."
+#~ msgstr "Paquet principal introuvable..."
+
 #~ msgid ""
 #~ "\n"
 #~ "    SABnzbd needs a free tcp/ip port for its internal web server.<br>\n"
@@ -5690,6 +5704,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "balises Groupes / Indexeur"
+
+#~ msgid "Original Foldername"
+#~ msgstr "Nom du dossier originel"
 
 #~ msgid ""
 #~ "After SABnzbd has finished restarting you will be able to access it at the "

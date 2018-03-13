@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
 "PO-Revision-Date: 2017-09-03 14:07+0000\n"
 "Last-Translator: Steffen Bærø <steffen.baro@gmail.com>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:31+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -559,6 +559,12 @@ msgstr "Kunne ikke stenge e-post-tilkobling"
 msgid "Email succeeded"
 msgstr "E-post sendning lykkes"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Kan ikke sendes, mangler nødvendig data"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Kan ikke finne e-post-maler i %s"
@@ -758,7 +764,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Kan ikke opprette mappe %s"
 
@@ -787,6 +793,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Kunne ikke endre rettigheter på %s"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Kjører skript"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -965,6 +975,7 @@ msgstr "Par verifisering feilet på %s, mens hurtigsjekk var vellykket!"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparasjon mislyktes, %s"
 
@@ -989,10 +1000,6 @@ msgstr "[%s] Verifiseing tok %s, alle filer er ok"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Verifisering tok %s, krever reparasjon"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Hovedarkiv mangler..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1103,11 +1110,6 @@ msgstr "Andre meldinger"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ikke tilgjengelig"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Kan ikke sendes, mangler nødvendig data"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1547,10 +1549,6 @@ msgid "Failed to move files"
 msgstr "Klarte ikke å flytte filer"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Kjører skript"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Kjør brukerskript %s"
 
@@ -1570,7 +1568,7 @@ msgstr "Mer"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Etterbehandling mislyktes for %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "se loggfil"
 
@@ -3476,7 +3474,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Maksimum antall forsøk"
 
@@ -4115,6 +4113,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Episodemappe"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Tittel"
 
@@ -4183,8 +4185,8 @@ msgid "Original Filename"
 msgstr "Originalfilnavn"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Originalt mappenavn"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4201,10 +4203,6 @@ msgstr "tekst"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "fil"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "mappe"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4552,6 +4550,12 @@ msgstr "Pause i..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Oppdatere"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4921,16 +4925,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Har du ikke noen usenet leverandør? Vi anbefaler å prøve %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Kunne ikke hente TV info (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Kunne ikke endre navn fra: %s til %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Kunne ikke endre navn på lik fil: %s til %s"
 
@@ -5012,6 +5016,9 @@ msgstr "URL henting mislyktes; %s"
 
 #~ msgid "Unpacking failed, an expected file was not unpacked"
 #~ msgstr "Utpakking mislyktes, en forventet fil er ikke utpakket"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Hovedarkiv mangler..."
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Mislyktes med importering av OpenSSL modul. Kobler til uten SSL"
@@ -5442,6 +5449,9 @@ msgstr "URL henting mislyktes; %s"
 #~ msgid "Open Source URL"
 #~ msgstr "Åpen kildekode URL"
 
+#~ msgid "Original Foldername"
+#~ msgstr "Originalt mappenavn"
+
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "Grupper / Indeks etiketter"
 
@@ -5507,3 +5517,6 @@ msgstr "URL henting mislyktes; %s"
 #~ msgstr ""
 #~ "Send automatisk beregnet valideringsresultater for nedlastinger til "
 #~ "indekserer."
+
+#~ msgid "folder"
+#~ msgstr "mappe"

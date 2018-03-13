@@ -62,7 +62,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             servers = get_servers()
             got_pass = False
             for server in servers:
-                if host in server:
+                if host in servers[server].host():
                     srv = servers[server]
                     password = srv.password()
                     got_pass = True

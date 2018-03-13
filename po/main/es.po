@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:31+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -566,6 +566,12 @@ msgstr "No se pudo cerrar la conexión de correo"
 msgid "Email succeeded"
 msgstr "Email exitoso"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "No se ha podido enviar, faltan datos"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "No se pudo encontrar plantillas de email en %s"
@@ -766,7 +772,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "No se pudo crear el directorio %s"
 
@@ -795,6 +801,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "No se puede cambiar los permisos de %s"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Ejecutando script"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -977,6 +987,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "La reparación ha fallado, %s"
 
@@ -1002,10 +1013,6 @@ msgstr "[%s] Verificado en %s, todos los archivos correctos"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Verificado en %s, se necesita reparar"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Paquete principal no encontrado..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1117,11 +1124,6 @@ msgstr "Otros mensajes"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "No disponible"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "No se ha podido enviar, faltan datos"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1568,10 +1570,6 @@ msgid "Failed to move files"
 msgstr "Error al mover ficheros"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Ejecutando script"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Ejecutando script de usuario %s"
 
@@ -1591,7 +1589,7 @@ msgstr "Más"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Error al post-procesar %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "ver fichero de log"
 
@@ -3523,7 +3521,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Reintentos máximos"
 
@@ -4169,6 +4167,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Episodio Directorio"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Título"
 
@@ -4237,8 +4239,8 @@ msgid "Original Filename"
 msgstr "Nombre fichero original"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Nombre directorio original"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4255,10 +4257,6 @@ msgstr "texto"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "archivo"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "carpeta"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4609,6 +4607,12 @@ msgstr "Pausar durante..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Actualizar"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4979,16 +4983,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "¿No tienes proveedor de Usenet? Nosotros recomendamos probar %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Error al recuperar info de la serie (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Error al renombrar: %s a %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Error al renombrar ficheros similares: %s a %s"
 
@@ -5090,6 +5094,9 @@ msgstr "Error al recuperar la URL; %s"
 
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Falta el siguiente archivo: %s => ¿Error al descomprimir?"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Paquete principal no encontrado..."
 
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "Ficheros par2 inválidos, no se puede verificar o reparar"
@@ -5284,6 +5291,9 @@ msgstr "Error al recuperar la URL; %s"
 #~ msgid "Email Options"
 #~ msgstr "Opciones de e-mail"
 
+#~ msgid "folder"
+#~ msgstr "carpeta"
+
 #~ msgid "Are you sure you want to delete"
 #~ msgstr "¿Está seguro de querer borrar?"
 
@@ -5458,6 +5468,9 @@ msgstr "Error al recuperar la URL; %s"
 
 #~ msgid "Enable if downloads are not put in their own folders."
 #~ msgstr "Habilitar si las descargas no quedan en sus propios directorios."
+
+#~ msgid "Original Foldername"
+#~ msgstr "Nombre directorio original"
 
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "Habilitar ordenación y renombrado de nombres de ficheros con fechas."

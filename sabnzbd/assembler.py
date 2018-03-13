@@ -76,7 +76,7 @@ class Assembler(Thread):
                     if not sabnzbd.downloader.Downloader.do.paused:
                         logging.warning(T('Too little diskspace forcing PAUSE'))
                         # Pause downloader, but don't save, since the disk is almost full!
-                        sabnzbd.downloader.Downloader.do.pause(save=False)
+                        sabnzbd.downloader.Downloader.do.pause()
                         sabnzbd.emailer.diskfull()
                         # Abort all direct unpackers, just to be sure
                         sabnzbd.directunpacker.abort_all()
@@ -98,7 +98,7 @@ class Assembler(Thread):
                         filepath = self.assemble(nzf, filepath)
                     except IOError, (errno, strerror):
                         # If job was deleted or in active post-processing, ignore error
-                        if not nzo.is_gone() and not nzo.pp_active:
+                        if not nzo.deleted and not nzo.is_gone() and not nzo.pp_active:
                             # 28 == disk full => pause downloader
                             if errno == 28:
                                 logging.error(T('Disk full! Forcing Pause'))
@@ -107,7 +107,7 @@ class Assembler(Thread):
                             # Log traceback
                             logging.info('Traceback: ', exc_info=True)
                             # Pause without saving
-                            sabnzbd.downloader.Downloader.do.pause(save=False)
+                            sabnzbd.downloader.Downloader.do.pause()
                         continue
                     except:
                         logging.error(T('Fatal error in Assembler'), exc_info=True)
@@ -371,5 +371,5 @@ def remove_warning_label(msg):
     """ Standardize errors by removing obsolete
         "WARNING:" part in all languages """
     if ':' in msg:
-        return msg.split(':')[1]
+        return msg.split(':')[1].strip()
     return msg

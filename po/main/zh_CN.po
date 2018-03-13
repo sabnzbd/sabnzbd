@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:47+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-12-07 05:31+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -550,6 +550,12 @@ msgstr "无法关闭邮件连接"
 msgid "Email succeeded"
 msgstr "成功发送电子邮件"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "无法发送，缺少必要的数据"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "无法找到 email 模板：%s"
@@ -740,7 +746,7 @@ msgstr "小时"
 msgid "m"
 msgstr "分钟"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "无法创建目录 %s"
 
@@ -769,6 +775,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "无法更改 %s 的权限"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "正在执行脚本"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -947,6 +957,7 @@ msgstr "Par 验证失败：%s，但快速检查成功!"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "修复失败，%s"
 
@@ -970,10 +981,6 @@ msgstr "[%s] 验证耗时 %s，所有文件均完好无损"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] 验证耗时 %s，需要修复"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "主数据包未找到..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1083,11 +1090,6 @@ msgstr "其他信息"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "不可用"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "无法发送，缺少必要的数据"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1523,10 +1525,6 @@ msgid "Failed to move files"
 msgstr "移动文件失败"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "正在执行脚本"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "正在执行用户脚本 %s"
 
@@ -1546,7 +1544,7 @@ msgstr "更多"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "后期处理失败：%s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "查看日志文件"
 
@@ -3406,7 +3404,7 @@ msgstr "SSL 加密算法"
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr "降低 SSL 的加密难度以便获得更高的性能。"
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "最多重试次数"
 
@@ -4042,6 +4040,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 剧集文件夹"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "标题"
 
@@ -4110,8 +4112,8 @@ msgid "Original Filename"
 msgstr "原始文件名"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "原始文件夹名"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4128,10 +4130,6 @@ msgstr "text"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "文件"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "文件夹"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4476,6 +4474,12 @@ msgstr "暂停..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "刷新"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4837,16 +4841,16 @@ msgstr "要从 usenet 下载您需要有一家提供商的访问权限。您的 
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "还没有 usenet 提供商r? 我们推荐试试 %s。"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "获取 TV 信息出错 (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "重命名失败: %s 为 %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "重命名相似文件失败: %s 为 %s"
 
@@ -4942,6 +4946,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "解压失败，缺这些文件:"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "主数据包未找到..."
 
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "par2 文件无效，无法验证或修复"
@@ -5271,6 +5278,12 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Enable if downloads are not put in their own folders."
 #~ msgstr "启用可将下载内容存放在各自的文件夹。"
+
+#~ msgid "Original Foldername"
+#~ msgstr "原始文件夹名"
+
+#~ msgid "folder"
+#~ msgstr "文件夹"
 
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "启用按日期命名的文件的排序与重命名。"

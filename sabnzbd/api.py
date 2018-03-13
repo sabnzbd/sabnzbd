@@ -681,12 +681,11 @@ def _api_rescan(name, output, kwargs):
 
 def _api_eval_sort(name, output, kwargs):
     """ API: evaluate sorting expression """
-    import sabnzbd.tvsort
     name = kwargs.get('name', '')
     value = kwargs.get('value', '')
     title = kwargs.get('title')
     multipart = kwargs.get('movieextra', '')
-    path = sabnzbd.tvsort.eval_sort(value, title, name, multipart)
+    path = sabnzbd.sorting.eval_sort(value, title, name, multipart)
     if path is None:
         return report(output, _MSG_NOT_IMPLEMENTED)
     else:
@@ -903,8 +902,8 @@ def _api_server_stats(name, output, kwargs):
 
     stats['servers'] = {}
     for svr in config.get_servers():
-        t, m, w, d, _ = BPSMeter.do.amounts(svr)
-        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0}
+        t, m, w, d, daily = BPSMeter.do.amounts(svr)
+        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0, 'daily': daily or {} }
 
     return report(output, keyword='', data=stats)
 
@@ -1687,7 +1686,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     bytes = qnfo.bytes
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
-    header['speed'] = to_units(bytespersec, spaces=1, dec_limit=1)
+    header['speed'] = to_units(bytespersec, spaces=1)
     header['mbleft'] = "%.2f" % (bytesleft / MEBI)
     header['mb'] = "%.2f" % (bytes / MEBI)
     header['sizeleft'] = format_bytes(bytesleft)

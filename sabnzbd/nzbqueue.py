@@ -342,7 +342,8 @@ class NzbQueue(object):
                 nzo.set_final_name_pw(name, password)
             else:
                 # Reset url fetch wait time
-                nzo.wait = None
+                nzo.url_wait = None
+                nzo.url_tries = 0
             return True
         else:
             return False
@@ -713,11 +714,13 @@ class NzbQueue(object):
         except:
             return -1
 
-    def reset_try_lists(self, nzf=None, nzo=None):
-        if nzf:
-            nzf.reset_try_list()
-        if nzo:
-            nzo.reset_try_list()
+    def reset_try_lists(self, article, article_reset=True):
+        """ Let article get new fetcher and reset trylists """
+        article.fetcher = None
+        if article_reset:
+            article.reset_try_list()
+        article.nzf.reset_try_list()
+        article.nzf.nzo.reset_try_list()
 
     def reset_all_try_lists(self):
         for nzo in self.__nzo_list:

@@ -78,8 +78,8 @@ class StatusIcon(Thread):
     # run this every updatefreq ms
     def run(self):
         self.sabpaused, bytes_left, bpsnow, time_left = api.fast_queue()
-        mb_left = to_units(bytes_left, dec_limit=1)
-        speed = to_units(bpsnow, dec_limit=1)
+        mb_left = to_units(bytes_left)
+        speed = to_units(bpsnow)
 
         if self.sabpaused:
             self.tooltip = T('Paused')

@@ -134,14 +134,16 @@ def get_prio(gtype, section):
 
 
 def check_cat(section, job_cat, keyword=None):
-    """ Check if `job_cat` is enabled in `section`. * = All """
+    """ Check if `job_cat` is enabled in `section`.
+        * = All, if no other categories selected.
+    """
     if not job_cat:
         return True
     try:
         if not keyword:
             keyword = section
         section_cats = sabnzbd.config.get_config(section, '%s_cats' % keyword)()
-        return ('*' in section_cats or job_cat in section_cats)
+        return (['*'] == section_cats or job_cat in section_cats)
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_cats', section, section)
         return True

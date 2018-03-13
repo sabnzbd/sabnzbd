@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
-"PO-Revision-Date: 2017-10-20 09:43+0000\n"
+"POT-Creation-Date: 2017-12-06 10:30+0000\n"
+"PO-Revision-Date: 2017-12-08 10:47+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:45+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2017-12-09 05:32+0000\n"
+"X-Generator: Launchpad (build 18511)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -581,6 +581,12 @@ msgstr "Beëindigen e-mailverbinding mislukt"
 msgid "Email succeeded"
 msgstr "E-mail verzonden"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Versturen kan niet, vereiste gegevens ontbreken"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Geen e-mailsjablonen te vinden in %s"
@@ -752,6 +758,8 @@ msgstr "Incorrecte parameter"
 msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr ""
+"Een Categorie specifieke map mag niet een map in de Tijdelijke download map "
+"zijn."
 
 #: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Back"
@@ -781,7 +789,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Niet mogelijk directory %s aan te maken"
 
@@ -813,6 +821,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Toegangsrechten van %s niet aan te passen"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Script uitvoeren"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -991,6 +1003,7 @@ msgstr "Par-verificatie van %s misgelukt, maar QuickCheck wel gelukt."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparatie mislukt, %s"
 
@@ -1015,10 +1028,6 @@ msgstr "[%s] %s geverifieerd, alle bestanden zijn goed"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Geverifieerd in %s, reparatie is nodig"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Hoofdpakket niet gevonden..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1133,11 +1142,6 @@ msgstr "Andere berichten"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Niet beschikbaar"
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Versturen kan niet, vereiste gegevens ontbreken"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1584,10 +1588,6 @@ msgid "Failed to move files"
 msgstr "Verplaatsen van bestanden mislukt"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Script uitvoeren"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Gebruiker script %s loopt"
 
@@ -1607,7 +1607,7 @@ msgstr "Meer"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Nabewerking van %s mislukt (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "zie logbestand"
 
@@ -3555,7 +3555,7 @@ msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 "Verhoog de prestaties door een eenvoudigere SSL versleuteling toe te passen."
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Maximum aantal pogingen"
 
@@ -4215,6 +4215,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Aflevering-map"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr "Downloadnaam als Bestandsnaam"
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Titel"
 
@@ -4283,8 +4287,8 @@ msgid "Original Filename"
 msgstr "Originele bestandsnaam"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Oorspronkelijke mapnaam"
+msgid "Original Job Name"
+msgstr "Originele Downloadnaam"
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4301,10 +4305,6 @@ msgstr "tekst"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "bestand"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "map"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4653,6 +4653,14 @@ msgstr "Pauzeer..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Ververs"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
+"Alle gebruikersnamen, wachtwoorden en API-sleutels worden automatisch "
+"verwijderd uit het logbestand en de bijgevoegde kopie van je instellingen."
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -5021,16 +5029,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Heb je nog geen Usenet provider? Wij bevelen %s aan."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Fout bij ophalen TV info (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Hernoemen van %s tot %s mislukt"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Hernoemen van gelijkaardig bestand %s naar %s mislukt"
 
@@ -5107,6 +5115,9 @@ msgstr "URL ophalen mislukt; %s"
 
 #~ msgid "pyopenssl module missing, please install for https access"
 #~ msgstr "Module \"pyopenssl\" ontbreekt, geen HTTPS mogelijk"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Hoofdpakket niet gevonden..."
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr "Verwijderen van nzo van nabewerkingswachtrij mislukt"
@@ -5429,6 +5440,12 @@ msgstr "URL ophalen mislukt; %s"
 
 #~ msgid "OK"
 #~ msgstr "OK"
+
+#~ msgid "folder"
+#~ msgstr "map"
+
+#~ msgid "Original Foldername"
+#~ msgstr "Oorspronkelijke mapnaam"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "Groepen / Indexer markeringen"

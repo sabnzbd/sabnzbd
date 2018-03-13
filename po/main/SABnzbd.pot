@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2017-10-21 16:01+W. Europe Daylight Time\n"
+"POT-Creation-Date: 2017-12-06 10:56+W. Europe Standard Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -534,6 +534,12 @@ msgstr ""
 msgid "Email succeeded"
 msgstr ""
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr ""
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr ""
@@ -700,7 +706,7 @@ msgstr ""
 msgid "m"
 msgstr ""
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr ""
 
@@ -726,6 +732,10 @@ msgstr ""
 
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
+msgstr ""
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -905,6 +915,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr ""
 
@@ -926,10 +937,6 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
-msgstr ""
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
 msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -1036,11 +1043,6 @@ msgstr ""
 
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
-msgstr ""
-
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
 msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
@@ -1441,10 +1443,6 @@ msgid "Failed to move files"
 msgstr ""
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr ""
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr ""
 
@@ -1464,7 +1462,7 @@ msgstr ""
 msgid "Post Processing Failed for %s (%s)"
 msgstr ""
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr ""
 
@@ -3248,7 +3246,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr ""
 
@@ -3861,6 +3859,10 @@ msgid "S01E05 Episode Folder"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr ""
 
@@ -3929,7 +3931,7 @@ msgid "Original Filename"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
+msgid "Original Job Name"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3946,10 +3948,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "file"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "folder"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4286,6 +4284,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4636,16 +4638,16 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr ""
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr ""
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr ""
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr ""
 

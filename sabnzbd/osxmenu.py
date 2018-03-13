@@ -461,7 +461,7 @@ class SABnzbdDelegate(NSObject):
                     self.setMenuTitle_("")
             elif bytes_left > 0:
                 self.state = ""
-                speed = to_units(bpsnow, dec_limit=1)
+                speed = to_units(bpsnow)
                 # "10.1 MB/s" doesn't fit, remove space char
                 if 'M' in speed and len(speed) > 5:
                     speed = speed.replace(' ', '')
