@@ -103,15 +103,12 @@ def api_handler(kwargs):
     mode = kwargs.get('mode', '')
     output = kwargs.get('output')
     name = kwargs.get('name', '')
-    callback = kwargs.get('callback', '')
 
     if isinstance(mode, list):
         mode = mode[0]
     if isinstance(output, list):
         output = output[0]
     response = _api_table.get(mode, (_api_undefined, 2))[0](name, output, kwargs)
-    if output == 'json' and callback:
-        response = '%s(%s)' % (callback, response)
     return response
 
 
@@ -1002,7 +999,7 @@ def api_level(cmd, name):
     return 4
 
 
-def report(output, error=None, keyword='value', data=None, callback=None, compat=False):
+def report(output, error=None, keyword='value', data=None, compat=False):
     """ Report message in json, xml or plain text
         If error is set, only an status/error report is made.
         If no error and no data, only a status report is made.
@@ -1031,8 +1028,6 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
         if not FAST_JSON:
             # Use the slower, but safer encoder
             response = JsonWriter().write(info)
-        if callback:
-            response = '%s(%s)' % (callback, response)
 
     elif output == 'xml':
         if not keyword:
