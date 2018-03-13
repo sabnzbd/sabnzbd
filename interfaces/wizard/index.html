@@ -11,9 +11,9 @@
                     $T('explain-language')<br /><br />
                     <div class="main-container">
                         <!--#for $l, $language in $languages#-->
-                        <label class="language <!--#if $lang == $l then 'language-active' else ''#-->">
+                        <label class="language">
                             $language<br />
-                            <input type="radio" name="lang" id="$l" value="$l" <!--#if $lang == $l then 'checked="checked"' else ''#--> />
+                            <input type="radio" name="lang" id="$l" value="$l" <!--#if $active_lang == $l then 'checked="checked"' else ''#--> />
                         </label>
                         <!--#end for#-->
                         <!--#if not $languages#-->
