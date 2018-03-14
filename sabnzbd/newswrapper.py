@@ -31,7 +31,7 @@ import ssl
 import sabnzbd
 from sabnzbd.constants import *
 import sabnzbd.cfg
-from sabnzbd.misc import nntp_to_msg
+from sabnzbd.misc import nntp_to_msg, probablyipv4, probablyipv6
 
 # Have to make errors available under Python <2.7.9
 if sabnzbd.HAVE_SSL_CONTEXT:
@@ -145,20 +145,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
                 pass
         finally:
             nntp.error(e)
-
-
-def probablyipv4(ip):
-    if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
-        return True
-    else:
-        return False
-
-
-def probablyipv6(ip):
-    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:]', '', ip) == '':
-        return True
-    else:
-        return False
 
 
 class NNTP(object):

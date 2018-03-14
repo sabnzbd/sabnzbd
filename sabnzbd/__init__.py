@@ -311,6 +311,11 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
         cfg.sched_converted.set(2)
         config.save_config()
 
+    # Add hostname to the whitelist
+    if not cfg.host_whitelist():
+        cfg.host_whitelist.set(socket.gethostname())
+
+    # Do repair if requested
     if check_repair_request():
         repair = 2
         pause_downloader = True
@@ -319,7 +324,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     rss.init()
 
     paused = BPSMeter.do.read()
-
 
     NzbQueue()
 

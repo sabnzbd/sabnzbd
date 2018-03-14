@@ -1507,6 +1507,20 @@ def find_on_path(targets):
     return None
 
 
+def probablyipv4(ip):
+    if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
+        return True
+    else:
+        return False
+
+
+def probablyipv6(ip):
+    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:]', '', ip) == '':
+        return True
+    else:
+        return False
+
+
 def ip_extract():
     """ Return list of IP addresses of this system """
     ips = []

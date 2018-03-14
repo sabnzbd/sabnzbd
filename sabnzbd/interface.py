@@ -40,8 +40,8 @@ import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
-from sabnzbd.misc import real_path, to_units, from_units, \
-    time_format, long_path, calc_age, same_file, \
+from sabnzbd.misc import real_path, to_units, from_units, time_format, \
+    long_path, calc_age, same_file, probablyipv4, probablyipv6, \
     cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
@@ -67,8 +67,8 @@ from sabnzbd.lang import list_languages
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
-    format_bytes, std_time, report, del_hist_job, Ttemplate, \
-    build_queue_header, _api_test_email, _api_test_notif
+    format_bytes, std_time, report, del_hist_job, Ttemplate, build_queue_header, \
+    _api_test_email, _api_test_notif
 
 ##############################################################################
 # Global constants
@@ -96,18 +96,30 @@ def secured_expose(wrap_func=None, check_configlock=False, check_session_key=Fal
     """ Wrapper for both cherrypy.expose and login/access check """
     if not wrap_func:
         return functools.partial(secured_expose, check_configlock=check_configlock, check_session_key=check_session_key)
+
+    # Expose to cherrypy
     wrap_func.exposed = True
 
     @functools.wraps(wrap_func)
     def internal_wrap(*args, **kwargs):
-        # Check if config is locked and basic access allowed
-        if (check_configlock and cfg.configlock()) or not check_access():
+        # Check if config is locked
+        if check_configlock and cfg.configlock():
+            cherrypy.response.status = 403
+            return 'Access denied - Configuration locked'
+
+        # Check if external access
+        if not check_access():
             cherrypy.response.status = 403
             return 'Access denied'
 
         # Verify login status, only for non-key pages
         if not check_login() and not check_session_key:
             raise Raiser('/login/')
+
+        # Verify host used for the visit
+        if not check_hostname():
+            cherrypy.response.status = 403
+            return 'Access denied - Hostname verification failed: https://sabnzbd.org/hostname-check'
 
         # Some pages need correct session key
         if check_session_key:
@@ -135,8 +147,38 @@ def check_access(access_type=4):
     range_ok = not cfg.local_ranges() or bool([1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace('::ffff:', '').startswith(r))])
     allowed = referrer in ('127.0.0.1', '::ffff:127.0.0.1', '::1') or range_ok or access_type <= cfg.inet_exposure()
     if not allowed:
-        logging.debug('Refused connection to %s', referrer)
+        logging.debug('Refused connection from %s', referrer)
     return allowed
+
+
+def check_hostname():
+    """ Check if hostname is allowed, to mitigate DNS-rebinding attack.
+        Similar to CVE-2018-5702, we need to add protection even
+        if only allowed to be accessed via localhost.
+    """
+    # If login is enabled, no API-key can be deducted
+    if cfg.username() and cfg.password():
+        return True
+
+    # Don't allow requests without Host
+    host = cherrypy.request.headers.get('Host')
+    if not host:
+        return False
+
+    # Remove the port-part
+    host = host.split(':')[0].lower()
+
+    # Fine if localhost or IP
+    if host == 'localhost' or probablyipv4(host) or probablyipv6(host):
+        return True
+
+    # Check on the whitelist
+    if host in cfg.host_whitelist():
+        return True
+
+    # Ohoh, bad
+    logging.debug('Refused connection from %s with hostname %s', cherrypy.request.remote.ip, host)
+    return False
 
 
 def ConvertSpecials(p):
@@ -1366,7 +1408,7 @@ SPECIAL_VALUE_LIST = \
               'req_completion_rate', 'wait_ext_drive', 'show_sysload', 'url_base',
               'direct_unpack_threads', 'ipv6_servers', 'selftest_host', 'rating_host'
      )
-SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore')
+SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore', 'host_whitelist')
 
 
 class ConfigSpecial(object):
