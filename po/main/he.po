@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-12-06 10:30+0000\n"
-"PO-Revision-Date: 2017-12-06 19:50+0000\n"
-"Last-Translator: ION IL <Unknown>\n"
+"PO-Revision-Date: 2018-02-14 14:19+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
-"X-Generator: Launchpad (build 18511)\n"
+"X-Launchpad-Export-Date: 2018-02-15 05:50+0000\n"
+"X-Generator: Launchpad (build 18553)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -314,7 +314,7 @@ msgstr "\"%s\" כנראה מוצפנת: \"סיסמה\" בשם הקובץ \"%s\" 
 
 #: sabnzbd/assembler.py
 msgid "video"
-msgstr "וידאו"
+msgstr "וידיאו"
 
 #: sabnzbd/assembler.py
 msgid "audio"
@@ -2083,7 +2083,7 @@ msgstr "דווח"
 
 #: sabnzbd/skintext.py
 msgid "Video"
-msgstr "וידאו"
+msgstr "וידיאו"
 
 #: sabnzbd/skintext.py
 msgid "Audio"
@@ -3392,7 +3392,7 @@ msgstr "התעלם מדוגמאות"
 
 #: sabnzbd/skintext.py
 msgid "Filter out sample files (e.g. video samples)."
-msgstr ".(סנן החוצה קבצי דוגמית (לדוגמה דוגמיות וידאו"
+msgstr "(סנן החוצה קבצי דוגמית (לדוגמה, דוגמיות וידיאו"
 
 #: sabnzbd/skintext.py
 msgid "Delete after download"
@@ -3523,7 +3523,7 @@ msgstr "ולא השהה אם"
 
 #: sabnzbd/skintext.py
 msgid "Video rating"
-msgstr "מידרג וידאו"
+msgstr "מידרג וידיאו"
 
 #: sabnzbd/skintext.py
 msgid "Audio rating"
@@ -3631,7 +3631,7 @@ msgstr "קפדני"
 
 #: sabnzbd/skintext.py [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
-msgstr "0 הוא העדיפות הגבוהה ביותר, 100 הוא העדיפות הנמוכה ביותר"
+msgstr "0 הוא העדיפות הגבוהה ביותר, 99 הוא העדיפות הנמוכה ביותר"
 
 #: sabnzbd/skintext.py [Server optional tickbox]
 msgid "Optional"
@@ -4217,7 +4217,7 @@ msgstr "מיין מחרוזת"
 
 #: sabnzbd/skintext.py
 msgid "Multi-part label"
-msgstr "תווית מרובה חלקים"
+msgstr "תווית מרובת-חלקים"
 
 #: sabnzbd/skintext.py
 msgid "In folders"

@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2017-12-06 10:30+0000\n"
-"PO-Revision-Date: 2017-10-10 19:03+0000\n"
-"Last-Translator: Robin Munkittrick <Unknown>\n"
+"PO-Revision-Date: 2018-02-14 14:17+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
-"X-Generator: Launchpad (build 18511)\n"
+"X-Launchpad-Export-Date: 2018-02-15 05:50+0000\n"
+"X-Generator: Launchpad (build 18553)\n"
 
 #: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
@@ -3759,7 +3759,7 @@ msgstr "Strikt"
 
 #: sabnzbd/skintext.py [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
-msgstr "0 ist die höchste, 100 die niedrigste Priorität"
+msgstr "0 ist die höchste, 99 die niedrigste Priorität"
 
 #: sabnzbd/skintext.py [Server optional tickbox]
 msgid "Optional"
