@@ -177,7 +177,7 @@ def check_hostname():
         return True
 
     # Ohoh, bad
-    logging.debug('Refused connection from %s with hostname %s', cherrypy.request.remote.ip, host)
+    log_warning_and_ip(T('Refused connection with hostname "%s" from:') % host)
     return False
 
 
@@ -315,10 +315,10 @@ def check_session(kwargs):
         key = kwargs.get('apikey')
     msg = None
     if not key:
-        logging.warning(T('Missing Session key'))
+        log_warning_and_ip(T('Missing Session key'))
         msg = T('Error: Session Key Required')
     elif key != cfg.api_key():
-        logging.warning(T('Error: Session Key Incorrect'))
+        log_warning_and_ip(T('Error: Session Key Incorrect'))
         msg = T('Error: Session Key Incorrect')
     return msg
 
@@ -327,15 +327,6 @@ def check_apikey(kwargs, nokey=False):
     """ Check api key or nzbkey
         Return None when OK, otherwise an error message
     """
-    def log_warning(txt):
-        # Was it proxy forwarded?
-        xff = cherrypy.request.headers.get('X-Forwarded-For')
-        if xff:
-            txt = '%s %s (X-Forwarded-For: %s)>%s' % (txt, cherrypy.request.remote.ip, xff, cherrypy.request.headers.get('User-Agent', '??'))
-        else:
-            txt = '%s %s>%s' % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get('User-Agent', '??'))
-        logging.warning('%s', txt)
-
     output = kwargs.get('output')
     mode = kwargs.get('mode', '')
     name = kwargs.get('name', '')
@@ -356,14 +347,14 @@ def check_apikey(kwargs, nokey=False):
             key = kwargs.get('session')
         if not key:
             if cfg.api_warnings():
-                log_warning(T('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
+                log_warning_and_ip(T('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required')
         elif req_access == 1 and key == cfg.nzb_key():
             return None
         elif key == cfg.api_key():
             return None
         else:
-            log_warning(T('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
+            log_warning_and_ip(T('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
             return report(output, 'API Key Incorrect')
 
     # No active APIKEY, check web credentials instead
@@ -372,9 +363,20 @@ def check_apikey(kwargs, nokey=False):
             pass
         else:
             if cfg.api_warnings():
-                log_warning(T('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
+                log_warning_and_ip(T('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
             return report(output, 'Missing authentication')
     return None
+
+
+def log_warning_and_ip(txt):
+    """ Include the IP and the Proxy-IP for warnings """
+    # Was it proxy forwarded?
+    xff = cherrypy.request.headers.get('X-Forwarded-For')
+    if xff:
+        txt = '%s %s (X-Forwarded-For: %s)>%s' % (txt, cherrypy.request.remote.ip, xff, cherrypy.request.headers.get('User-Agent', '??'))
+    else:
+        txt = '%s %s>%s' % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get('User-Agent', '??'))
+    logging.warning('%s', txt)
 
 
 ##############################################################################
