@@ -5,6 +5,7 @@ Release Notes - SABnzbd 2.3.3 Beta 1
 - Introduce and enforce "host_whitelist" to reject DNS Rebinding attacks.
   If you access SABnzbd from a non-standard URL, you will need to add
   the hostname. More info: https://sabnzbd.org/hostname-check
+- SABYenc updated to 3.3.3 to fix false-positive CRC errors
 - SSL-Ciphers can now be set per-server
 - Added "X-Frame-Options" HTTP-header to prevent click-jacking
 - Added "httpOnly" HTTP-header to prevent script cookie access
