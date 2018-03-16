@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-12-06 10:30+0000\n"
+"POT-Creation-Date: 2018-03-15 13:08+0000\n"
 "PO-Revision-Date: 2018-02-14 14:17+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-02-15 05:49+0000\n"
-"X-Generator: Launchpad (build 18553)\n"
+"X-Launchpad-Export-Date: 2018-03-16 05:37+0000\n"
+"X-Generator: Launchpad (build 18571)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -121,7 +121,7 @@ msgid "Error"
 msgstr "Fout"
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/interface.py
-#: sabnzbd/osxmenu.py # sabnzbd/wizard.py
+#: sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd is afgesloten"
 
@@ -504,7 +504,17 @@ msgstr ""
 "Je moet eerst een maximumbandbreedte instellen voordat je een limiet kunt "
 "instellen"
 
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
+#: sabnzbd/downloader.py # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message]
+msgid "Cannot connect to server %s [%s]"
+msgstr "Verbinding maken met server %s [%s] niet mogelijk"
+
+#: sabnzbd/downloader.py # sabnzbd/urlgrabber.py
+msgid "Server name does not resolve"
+msgstr "Servernaam niet te vinden"
+
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s wordt gedurende %s minuten genegeerd"
 
@@ -523,11 +533,6 @@ msgstr "Mogelijk delen van account"
 #: sabnzbd/downloader.py # sabnzbd/downloader.py [Error message]
 msgid "Failed login for server %s"
 msgstr "Aanmelden bij server %s mislukt"
-
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-msgid "Cannot connect to server %s [%s]"
-msgstr "Verbinding maken met server %s [%s] niet mogelijk"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
@@ -636,6 +641,10 @@ msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradres \"%s:%s\" is niet geldig."
 
 #: sabnzbd/interface.py
+msgid "Refused connection with hostname \"%s\" from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "User logged in to the web interface"
 msgstr "Gebruiker heeft ingelogd"
 
@@ -643,7 +652,7 @@ msgstr "Gebruiker heeft ingelogd"
 msgid "User logged in"
 msgstr "Gebruiker ingelogd"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py
 msgid "Missing Session key"
 msgstr "Sessiesleutel ontbreekt"
 
@@ -651,7 +660,7 @@ msgstr "Sessiesleutel ontbreekt"
 msgid "Error: Session Key Required"
 msgstr "Fout: Sessie sleutel nodig"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Error: Session Key Incorrect"
 msgstr "Fout: Sessiesleutel niet geldig"
 
@@ -1004,6 +1013,7 @@ msgstr "Par-verificatie van %s misgelukt, maar QuickCheck wel gelukt."
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparatie mislukt, %s"
 
@@ -1199,7 +1209,7 @@ msgstr "Download aan wachtrij toegevoegd"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Onbekende codering"
 
-#: sabnzbd/nzbstuff.py [Warning message]
+#: sabnzbd/nzbstuff.py
 msgid "File %s is empty, skipping"
 msgstr "Bestand %s is leeg, overslaan"
 
@@ -1309,7 +1319,7 @@ msgid "Warnings"
 msgstr "Meldingen"
 
 #: sabnzbd/osxmenu.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py
-#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py
+#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Rust"
 
@@ -1941,11 +1951,12 @@ msgstr "Zeer Laag"
 msgid "Moderate"
 msgstr "Gematigd"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Normaal"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py
 msgid "High"
 msgstr "Hoog"
 
@@ -1953,7 +1964,7 @@ msgstr "Hoog"
 msgid "Emergency"
 msgstr "Noodgeval"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Low"
 msgstr "Laag"
 
@@ -2498,6 +2509,12 @@ msgstr "Ander probleem"
 msgid "Force Disconnect"
 msgstr "Verbreek verbindingen"
 
+#: sabnzbd/skintext.py [Status page button text]
+msgid ""
+"Disconnect all active connections to usenet servers. Connections will be "
+"reopened after a few seconds if there are items in the queue."
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "This will send a test email to your account."
 msgstr "Hiermee stuur je een test e-mail."
@@ -2720,7 +2737,7 @@ msgid "Backup"
 msgstr "Reserve"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Lees de Wiki pagina over dit onderwerp"
 
@@ -3380,6 +3397,10 @@ msgstr "\"Nice\" parameters"
 #: sabnzbd/skintext.py
 msgid "IONice Parameters"
 msgstr "\"IONice\" parameters"
+
+#: sabnzbd/skintext.py
+msgid "External process priority"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
@@ -5041,10 +5062,6 @@ msgstr "Hernoemen van %s tot %s mislukt"
 #: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Hernoemen van gelijkaardig bestand %s naar %s mislukt"
-
-#: sabnzbd/urlgrabber.py
-msgid "Server name does not resolve"
-msgstr "Servernaam niet te vinden"
 
 #: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"

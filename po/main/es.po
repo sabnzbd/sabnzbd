@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-12-06 10:30+0000\n"
+"POT-Creation-Date: 2018-03-15 13:08+0000\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-02-15 05:50+0000\n"
-"X-Generator: Launchpad (build 18553)\n"
+"X-Launchpad-Export-Date: 2018-03-16 05:38+0000\n"
+"X-Generator: Launchpad (build 18571)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -117,7 +117,7 @@ msgid "Error"
 msgstr "Se ha producido un error"
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/interface.py
-#: sabnzbd/osxmenu.py # sabnzbd/wizard.py
+#: sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "Cierre de SABnzbd terminado"
 
@@ -488,7 +488,17 @@ msgstr ""
 "Debe establecer un ancho de banda máximo antes de poder establecer un límite "
 "de ancho de banda"
 
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
+#: sabnzbd/downloader.py # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message]
+msgid "Cannot connect to server %s [%s]"
+msgstr "Error en inicio de conexion a servidor %s [%s]"
+
+#: sabnzbd/downloader.py # sabnzbd/urlgrabber.py
+msgid "Server name does not resolve"
+msgstr "No se puede resolver el nombre de servidor"
+
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "El servidor %s se ignorará por %s minutos"
 
@@ -507,11 +517,6 @@ msgstr "Compartiendo de cuenta probable"
 #: sabnzbd/downloader.py # sabnzbd/downloader.py [Error message]
 msgid "Failed login for server %s"
 msgstr "Registraccion fallo para servidor %s"
-
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-msgid "Cannot connect to server %s [%s]"
-msgstr "Error en inicio de conexion a servidor %s [%s]"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
@@ -621,6 +626,10 @@ msgid "Server address \"%s:%s\" is not valid."
 msgstr "La dirección del servidor «%s:%s» no es válida."
 
 #: sabnzbd/interface.py
+msgid "Refused connection with hostname \"%s\" from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "User logged in to the web interface"
 msgstr "Usuario conectado a la interfaz web"
 
@@ -628,7 +637,7 @@ msgstr "Usuario conectado a la interfaz web"
 msgid "User logged in"
 msgstr "Usuario conectado"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py
 msgid "Missing Session key"
 msgstr "Falta clave de sesión"
 
@@ -636,7 +645,7 @@ msgstr "Falta clave de sesión"
 msgid "Error: Session Key Required"
 msgstr "Error: Clave de sesión requerido"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Error: Session Key Incorrect"
 msgstr "Error: Clave de sesión erróneo"
 
@@ -988,6 +997,7 @@ msgstr ""
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "La reparación ha fallado, %s"
 
@@ -1184,7 +1194,7 @@ msgstr "NZB añadido a la cola"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Codificación desconocida"
 
-#: sabnzbd/nzbstuff.py [Warning message]
+#: sabnzbd/nzbstuff.py
 msgid "File %s is empty, skipping"
 msgstr "El fichero%s está vacío, omitiendo"
 
@@ -1294,7 +1304,7 @@ msgid "Warnings"
 msgstr "Advertencias"
 
 #: sabnzbd/osxmenu.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py
-#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py
+#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Inactivo"
 
@@ -1925,11 +1935,12 @@ msgstr "Muy baja"
 msgid "Moderate"
 msgstr "Moderada"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Normal"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py
 msgid "High"
 msgstr "Alta"
 
@@ -1937,7 +1948,7 @@ msgstr "Alta"
 msgid "Emergency"
 msgstr "Emergencia"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Low"
 msgstr "Baja"
 
@@ -2482,6 +2493,12 @@ msgstr "Otro problema"
 msgid "Force Disconnect"
 msgstr "Forzar desconexión"
 
+#: sabnzbd/skintext.py [Status page button text]
+msgid ""
+"Disconnect all active connections to usenet servers. Connections will be "
+"reopened after a few seconds if there are items in the queue."
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "This will send a test email to your account."
 msgstr "Se enviará un email de prueba a tu cuenta"
@@ -2697,7 +2714,7 @@ msgid "Backup"
 msgstr "Copia de seguridad"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Lee la ayuda en la Wiki (inglés) acerca de esto!"
 
@@ -3344,6 +3361,10 @@ msgstr "Parámetros Nice"
 #: sabnzbd/skintext.py
 msgid "IONice Parameters"
 msgstr "Parámetros IONice"
+
+#: sabnzbd/skintext.py
+msgid "External process priority"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
@@ -4995,10 +5016,6 @@ msgstr "Error al renombrar: %s a %s"
 #: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Error al renombrar ficheros similares: %s a %s"
-
-#: sabnzbd/urlgrabber.py
-msgid "Server name does not resolve"
-msgstr "No se puede resolver el nombre de servidor"
 
 #: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
