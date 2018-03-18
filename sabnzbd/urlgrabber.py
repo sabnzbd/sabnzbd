@@ -275,6 +275,7 @@ class URLGrabber(Thread):
                         dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority,
                                                      nzbname=nzbname, url=future_nzo.url, keep=False,
                                                      nzo_id=future_nzo.nzo_id)
+                    else:
                         # Not a supported filetype, not an nzb (text/html ect)
                         try:
                             os.remove(fn)
