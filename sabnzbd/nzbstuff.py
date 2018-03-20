@@ -596,11 +596,6 @@ class NzbObject(TryList):
         filename = platform_encode(filename)
         nzbname = platform_encode(nzbname)
 
-        if pp is None:
-            r = u = d = None
-        else:
-            r, u, d = sabnzbd.pp_to_opts(pp)
-
         self.filename = filename    # Original filename
         if nzbname and nzb:
             work_name = nzbname     # Use nzbname if set and only for non-future slot
@@ -629,6 +624,19 @@ class NzbObject(TryList):
         self.work_name = create_work_name(work_name)
         self.final_name = create_work_name(work_name)
 
+        # Determine category and find pp/script values based on input
+        # Later will be re-evaluated based on import steps
+        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, priority)
+        self.set_priority(priority)
+        self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp_tmp)
+
+        # Information fields
+        self.url = url or filename
+        self.groups = []
+        self.avg_date = datetime.datetime.fromtimestamp(0.0)
+        self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
+
+        # Bookkeeping values
         self.meta = {}
         self.servercount = {}       # Dict to keep bytes per server
         self.created = False        # dirprefixes + work_name created
@@ -638,19 +646,6 @@ class NzbObject(TryList):
         self.bytes_tried = 0        # Which bytes did we try
         self.bytes_missing = 0      # Bytes missing
         self.bad_articles = 0       # How many bad (non-recoverable) articles
-        self.set_priority(priority) # Parse priority of input
-        self.repair = r             # True if we want to repair this set
-        self.unpack = u             # True if we want to unpack this set
-        self.delete = d             # True if we want to delete this set
-        self.script = script        # External script for this set
-        self.cat = cat              # Indexer category
-        if url:
-            self.url = str(url)     # Source URL
-        else:
-            self.url = filename
-        self.groups = []
-        self.avg_date = datetime.datetime.fromtimestamp(0.0)
-        self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
 
         self.partable = {}          # Holds one parfile-name for each set
         self.extrapars = {}         # Holds the extra parfile names for all sets
@@ -663,7 +658,7 @@ class NzbObject(TryList):
 
         self.finished_files = []    # List of all finished NZFs
 
-        # the current status of the nzo eg:
+        # The current status of the nzo eg:
         # Queued, Downloading, Repairing, Unpacking, Failed, Complete
         self.status = status
         self.avg_bps_freq = 0
@@ -697,10 +692,7 @@ class NzbObject(TryList):
         # Stores one line containing the last failure
         self.fail_msg = ''
         # Stores various info about the nzo to be
-        if nzo_info:
-            self.nzo_info = nzo_info
-        else:
-            self.nzo_info = {}
+        self.nzo_info = nzo_info or {}
 
         # Temporary store for custom foldername - needs to be stored because of url fetching
         self.custom_name = nzbname
