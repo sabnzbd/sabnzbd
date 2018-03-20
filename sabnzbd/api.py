@@ -41,7 +41,7 @@ except ImportError:
     pass
 
 import sabnzbd
-from sabnzbd.constants import VALID_ARCHIVES, Status, \
+from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, Status, \
      TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
      KIBI, MEBI, GIGI, JOB_ADMIN
 import sabnzbd.config as config
@@ -398,7 +398,7 @@ def _api_addlocalfile(name, output, kwargs):
                 if get_ext(name) in VALID_ARCHIVES:
                     res = sabnzbd.dirscanner.ProcessArchiveFile(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
-                elif get_ext(name) in ('.nzb', '.gz', '.bz2'):
+                elif get_ext(name) in VALID_NZB_FILES:
                     res = sabnzbd.dirscanner.ProcessSingleFile(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:

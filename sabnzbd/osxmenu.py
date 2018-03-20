@@ -36,7 +36,7 @@ import logging
 import sabnzbd
 import sabnzbd.cfg
 
-from sabnzbd.constants import VALID_ARCHIVES, MEBI, Status
+from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
 from sabnzbd.misc import get_filename, get_ext, diskspace, to_units
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.notifier as notifier
@@ -754,7 +754,7 @@ class SABnzbdDelegate(NSObject):
                     if get_ext(name) in VALID_ARCHIVES:
                         # logging.info('[osx] archive')
                         dirscanner.ProcessArchiveFile(fn, name, keep=True)
-                    elif get_ext(name) in ('.nzb', '.gz', '.bz2'):
+                    elif get_ext(name) in VALID_NZB_FILES:
                         # logging.info('[osx] nzb')
                         dirscanner.ProcessSingleFile(fn, name, keep=True)
         # logging.info('opening done')

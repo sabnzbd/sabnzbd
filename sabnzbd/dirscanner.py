@@ -28,7 +28,7 @@ import bz2
 import threading
 
 import sabnzbd
-from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES
+from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.encoding import platform_encode
 from sabnzbd.decorators import NzbQueueLocker
@@ -358,7 +358,7 @@ class DirScanner(threading.Thread):
                     continue
 
                 ext = os.path.splitext(path)[1].lower()
-                candidate = ext in ('.nzb', '.gz', '.bz2') or ext in VALID_ARCHIVES
+                candidate = ext in VALID_NZB_FILES + VALID_ARCHIVES
                 if candidate:
                     try:
                         stat_tuple = os.stat(path)

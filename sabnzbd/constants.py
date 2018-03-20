@@ -98,6 +98,7 @@ STOP_PRIORITY = -4
 STAGES = {'Source': 0, 'Download': 1, 'Servers': 2, 'Repair': 3, 'Filejoin': 4, 'Unpack': 5, 'Script': 6}
 
 VALID_ARCHIVES = ('.zip', '.rar', '.7z')
+VALID_NZB_FILES = ('.nzb', '.gz', '.bz2')
 
 IGNORED_FOLDERS = ('@eaDir', '.appleDouble')
 

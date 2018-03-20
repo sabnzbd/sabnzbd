@@ -26,7 +26,7 @@ from sabnzbd.encoding import unicoder
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import get_ext, get_filename, get_from_url
 import sabnzbd.newsunpack
-from sabnzbd.constants import VALID_ARCHIVES
+from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES
 
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
 
@@ -60,7 +60,7 @@ def add_local(f):
         if fn:
             if get_ext(fn) in VALID_ARCHIVES:
                 ProcessArchiveFile(fn, f, keep=True)
-            elif get_ext(fn) in ('.nzb', '.gz', '.bz2'):
+            elif get_ext(fn) in VALID_NZB_FILES:
                 ProcessSingleFile(fn, f, keep=True)
         else:
             logging.error("Filename not found: %s", f)

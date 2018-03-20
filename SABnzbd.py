@@ -779,7 +779,7 @@ def commandline_handler(frozen=True):
     if not service:
         # Get and remove any NZB file names
         for entry in args:
-            if get_ext(entry) in ('.nzb', '.zip', '.rar', '.gz', '.bz2'):
+            if get_ext(entry) in VALID_NZB_FILES + VALID_ARCHIVES:
                 upload_nzbs.append(os.path.abspath(entry))
 
     for opt, arg in opts:
