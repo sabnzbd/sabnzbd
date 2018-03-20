@@ -42,7 +42,7 @@ import sabnzbd.scheduler as scheduler
 from Cheetah.Template import Template
 from sabnzbd.misc import real_path, to_units, from_units, time_format, \
     long_path, calc_age, same_file, probablyipv4, probablyipv6, \
-    cat_to_opts, int_conv, globber, globber_full, remove_all, get_base_url
+    int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
@@ -1025,10 +1025,6 @@ class QueuePage(object):
             if cat == 'None':
                 cat = None
             NzbQueue.do.change_cat(nzo_id, cat)
-            cat, pp, script, priority = cat_to_opts(cat)
-            NzbQueue.do.change_script(nzo_id, script)
-            NzbQueue.do.change_opts(nzo_id, pp)
-            NzbQueue.do.set_priority(nzo_id, priority)
 
         raise queueRaiser(self.__root, kwargs)
 
