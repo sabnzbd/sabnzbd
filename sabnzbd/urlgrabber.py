@@ -30,7 +30,7 @@ from httplib import IncompleteRead
 from threading import Thread
 
 import sabnzbd
-from sabnzbd.constants import DEF_TIMEOUT, MAX_URL_RETRIES, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status
+from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status
 from sabnzbd.encoding import unicoder
 import sabnzbd.misc as misc
 import sabnzbd.dirscanner as dirscanner
@@ -65,7 +65,7 @@ class URLGrabber(Thread):
             future_nzo.url_tries += 1
 
             # Too many tries? Cancel
-            if future_nzo.url_tries > MAX_URL_RETRIES:
+            if future_nzo.url_tries > cfg.max_url_retries():
                 self.fail_to_history(future_nzo, url, T('Maximum retries'))
                 return
 

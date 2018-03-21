@@ -1403,7 +1403,7 @@ SPECIAL_BOOL_LIST = \
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'req_completion_rate', 'wait_ext_drive', 'show_sysload', 'url_base',
+              'max_url_retries', 'req_completion_rate', 'wait_ext_drive', 'show_sysload', 'url_base',
               'direct_unpack_threads', 'ipv6_servers', 'selftest_host', 'rating_host'
      )
 SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore', 'host_whitelist')

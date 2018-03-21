@@ -280,6 +280,7 @@ marker_file = OptionStr('misc', 'nomedia_marker', '')
 ipv6_servers = OptionNumber('misc', 'ipv6_servers', 1, 0, 2)
 url_base = OptionStr('misc', 'url_base', '/sabnzbd')
 host_whitelist = OptionList('misc', 'host_whitelist')
+max_url_retries = OptionNumber('misc', 'max_url_retries', 10, 1)
 
 ##############################################################################
 # Config - Notifications
