@@ -70,6 +70,7 @@ from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     format_bytes, std_time, report, del_hist_job, Ttemplate, build_queue_header, \
     _api_test_email, _api_test_notif
 
+
 ##############################################################################
 # Global constants
 ##############################################################################
@@ -81,17 +82,9 @@ DIRECTIVES = {
 FILTER = LatinFilter
 
 
-def check_server(host, port, ajax):
-    """ Check if server address resolves properly """
-    if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
-        return badParameterResponse(T('Warning: LOCALHOST is ambiguous, use numerical IP-address.'), ajax)
-
-    if GetServerParms(host, int_conv(port)):
-        return ""
-    else:
-        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
-
-
+##############################################################################
+# Security functions
+##############################################################################
 def secured_expose(wrap_func=None, check_configlock=False, check_session_key=False):
     """ Wrapper for both cherrypy.expose and login/access check """
     if not wrap_func:
@@ -181,67 +174,6 @@ def check_hostname():
     return False
 
 
-def ConvertSpecials(p):
-    """ Convert None to 'None' and 'Default' to '' """
-    if p is None:
-        p = 'None'
-    elif p.lower() == T('Default').lower():
-        p = ''
-    return p
-
-
-def Raiser(root='', **kwargs):
-    args = {}
-    for key in kwargs:
-        val = kwargs.get(key)
-        if val:
-            args[key] = val
-    # Add extras
-    if args:
-        root = '%s?%s' % (root, urllib.urlencode(args))
-    # Optionally add the leading /sabnzbd/ (or what the user set)
-    if not root.startswith(cfg.url_base()):
-        root = cherrypy.request.script_name + root
-    # Send the redirect
-    return cherrypy.HTTPRedirect(root)
-
-
-def queueRaiser(root, kwargs):
-    return Raiser(root, start=kwargs.get('start'),
-                  limit=kwargs.get('limit'),
-                  search=kwargs.get('search'))
-
-
-def rssRaiser(root, kwargs):
-    return Raiser(root, feed=kwargs.get('feed'))
-
-
-def IsNone(value):
-    """ Return True if either None, 'None' or '' """
-    return value is None or value == "" or value.lower() == 'none'
-
-
-def Strip(txt):
-    """ Return stripped string, can handle None """
-    try:
-        return txt.strip()
-    except:
-        return None
-
-
-##############################################################################
-# Web login support
-##############################################################################
-def get_users():
-    users = {}
-    users[cfg.username()] = cfg.password()
-    return users
-
-
-def encrypt_pwd(pwd):
-    return pwd
-
-
 # Create a more unique ID for each instance
 COOKIE_SECRET = str(randint(1000,100000)*os.getpid())
 
@@ -292,6 +224,16 @@ def check_login():
 
     # Check the cookie
     return check_login_cookie()
+
+
+def get_users():
+    users = {}
+    users[cfg.username()] = cfg.password()
+    return users
+
+
+def encrypt_pwd(pwd):
+    return pwd
 
 
 def set_auth(conf):
@@ -379,6 +321,37 @@ def log_warning_and_ip(txt):
     logging.warning('%s', txt)
 
 
+##############################################################################
+# Helper raiser functions
+##############################################################################
+def Raiser(root='', **kwargs):
+    args = {}
+    for key in kwargs:
+        val = kwargs.get(key)
+        if val:
+            args[key] = val
+    # Add extras
+    if args:
+        root = '%s?%s' % (root, urllib.urlencode(args))
+    # Optionally add the leading /sabnzbd/ (or what the user set)
+    if not root.startswith(cfg.url_base()):
+        root = cherrypy.request.script_name + root
+    # Send the redirect
+    return cherrypy.HTTPRedirect(root)
+
+
+def queueRaiser(root, kwargs):
+    return Raiser(root, start=kwargs.get('start'),
+                  limit=kwargs.get('limit'),
+                  search=kwargs.get('search'))
+
+
+def rssRaiser(root, kwargs):
+    return Raiser(root, feed=kwargs.get('feed'))
+
+
+##############################################################################
+# Page definitions
 ##############################################################################
 class MainPage(object):
 
@@ -1649,6 +1622,17 @@ def unique_svr_name(server):
     return new_name
 
 
+def check_server(host, port, ajax):
+    """ Check if server address resolves properly """
+    if host.lower() == 'localhost' and sabnzbd.AMBI_LOCALHOST:
+        return badParameterResponse(T('Warning: LOCALHOST is ambiguous, use numerical IP-address.'), ajax)
+
+    if GetServerParms(host, int_conv(port)):
+        return ""
+    else:
+        return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
+
+
 def handle_server(kwargs, root=None, new_svr=False):
     """ Internal server handler """
     ajax = kwargs.get('ajax')
@@ -2005,6 +1989,28 @@ class ConfigRss(object):
         """ Run an automatic RSS run now """
         scheduler.force_rss()
         raise rssRaiser(self.__root, kwargs)
+
+
+def ConvertSpecials(p):
+    """ Convert None to 'None' and 'Default' to '' """
+    if p is None:
+        p = 'None'
+    elif p.lower() == T('Default').lower():
+        p = ''
+    return p
+
+
+def IsNone(value):
+    """ Return True if either None, 'None' or '' """
+    return value is None or value == "" or value.lower() == 'none'
+
+
+def Strip(txt):
+    """ Return stripped string, can handle None """
+    try:
+        return txt.strip()
+    except:
+        return None
 
 
 ##############################################################################
