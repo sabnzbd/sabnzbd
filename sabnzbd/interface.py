@@ -1449,14 +1449,15 @@ class ConfigGeneral(object):
         wlist = []
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)
         for k in interfaces:
-            if k.endswith(DEF_STDINTF):
-                interfaces.remove(k)
-                interfaces.insert(0, k)
-                break
-        for k in interfaces:
             if k.endswith(DEF_STDCONFIG):
                 interfaces.remove(k)
-                break
+                continue
+
+            # TEMPORARY: Remove when smpl is really depricated
+            # Do not show smpl unless it's selected one
+            if k.endswith('smpl') and 'smpl' not in cfg.web_dir():
+                interfaces.remove(k)
+
         for web in interfaces:
             rweb = os.path.basename(web)
             if os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
