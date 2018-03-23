@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2018-03-15 13:08+0000\n"
-"PO-Revision-Date: 2018-02-14 14:17+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>\n"
+"PO-Revision-Date: 2018-03-16 21:07+0000\n"
+"Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-03-16 05:37+0000\n"
+"X-Launchpad-Export-Date: 2018-03-17 05:36+0000\n"
 "X-Generator: Launchpad (build 18571)\n"
 
 #: SABnzbd.py [Error message]
@@ -653,7 +653,7 @@ msgstr "L' adresse du serveur \"%s:%s\" n'est pas valide."
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
-msgstr ""
+msgstr "Connexion refusée avec le nom d'hôte \"%s\" à partir de :"
 
 #: sabnzbd/interface.py
 msgid "User logged in to the web interface"
@@ -2547,6 +2547,9 @@ msgid ""
 "Disconnect all active connections to usenet servers. Connections will be "
 "reopened after a few seconds if there are items in the queue."
 msgstr ""
+"Déconnecte toutes les connexions actives aux serveurs Usenet. Les connexions "
+"seront rouvertes après quelques secondes si des éléments sont présents dans "
+"la file d'attente."
 
 #: sabnzbd/skintext.py
 msgid "This will send a test email to your account."
@@ -3449,7 +3452,7 @@ msgstr "Paramètres 'IONice'"
 
 #: sabnzbd/skintext.py
 msgid "External process priority"
-msgstr ""
+msgstr "Priorité de processus externe"
 
 #: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
