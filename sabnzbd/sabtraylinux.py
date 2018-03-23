@@ -169,9 +169,7 @@ class StatusIcon(Thread):
 
     def shutdown(self, icon):
         self.hover_text = T('Shutdown')
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+        sabnzbd.shutdown_program()
 
     def pause(self):
         scheduler.plan_resume(0)

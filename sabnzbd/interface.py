@@ -463,10 +463,7 @@ class MainPage(object):
         if pid_in and int(pid_in) != os.getpid():
             return "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
 
-        logging.info('Shutdown requested by interface')
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+        sabnzbd.shutdown_program()
         return T('SABnzbd shutdown finished')
 
     @secured_expose(check_session_key=True)
@@ -636,10 +633,7 @@ class Wizard(object):
     @secured_expose
     def exit(self, **kwargs):
         """ Stop SABnzbd """
-        logging.info('Shutdown requested by wizard')
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+        sabnzbd.shutdown_program()
         return T('SABnzbd shutdown finished')
 
 def get_access_info():
@@ -1030,10 +1024,7 @@ class QueuePage(object):
 
     @secured_expose(check_session_key=True)
     def shutdown(self, **kwargs):
-        logging.info('Shutdown requested by interface')
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+        sabnzbd.shutdown_program()
         return T('SABnzbd shutdown finished')
 
     @secured_expose(check_session_key=True)

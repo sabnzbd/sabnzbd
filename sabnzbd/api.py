@@ -589,10 +589,7 @@ def _api_resume(name, output, kwargs):
 
 def _api_shutdown(name, output, kwargs):
     """ API: accepts output """
-    logging.info('Shutdown requested by API')
-    sabnzbd.halt()
-    cherrypy.engine.exit()
-    sabnzbd.SABSTOP = True
+    sabnzbd.shutdown_program()
     return report(output)
 
 

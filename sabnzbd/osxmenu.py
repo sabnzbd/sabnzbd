@@ -764,10 +764,7 @@ class SABnzbdDelegate(NSObject):
         self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
         self.status_item.setHighlightMode_(NO)
         self.osx_icon = False
-        logging.info('[osx] application stopping daemon')
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+        sabnzbd.shutdown_program()
         try:
             notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), notifier.NOTIFICATION['other'])
         except AttributeError:

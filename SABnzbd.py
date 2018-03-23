@@ -1516,9 +1516,7 @@ def main():
         # Or special restart cases like Mac and WindowsService
         if sabnzbd.TRIGGER_RESTART:
             # Shutdown
-            cherrypy.engine.exit()
-            sabnzbd.halt()
-            sabnzbd.SABSTOP = True
+            sabnzbd.shutdown_program()
 
             if sabnzbd.downloader.Downloader.do.paused:
                 sabnzbd.RESTART_ARGS.append('-p')
@@ -1725,9 +1723,7 @@ if __name__ == '__main__':
 
                 def stop(self):
                     logging.info('[osx] sabApp Quit - stopping main thread ')
-                    sabnzbd.halt()
-                    cherrypy.engine.exit()
-                    sabnzbd.SABSTOP = True
+                    sabnzbd.shutdown_program()
                     logging.info('[osx] sabApp Quit - main thread stopped')
 
             sabApp = startApp()
