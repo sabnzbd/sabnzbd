@@ -1,5 +1,11 @@
-Release Notes - SABnzbd 2.3.3 Beta 1
+Release Notes - SABnzbd 2.3.3 RC 1
 =========================================================
+
+## Changes since 2.3.3 Beta 1
+- SABYenc updated to 3.3.4 to fix (more) false-positive CRC errors
+- Failed URL fetches also trigger post-processing script (if configured)
+- Added option to disable "X-Frame-Options" HTTP-header
+- Added option to set maximum URL fetch retries
 
 ## Changes since 2.3.2
 - Introduce and enforce "host_whitelist" to reject DNS Rebinding attacks.
