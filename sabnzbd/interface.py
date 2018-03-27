@@ -95,6 +95,10 @@ def secured_expose(wrap_func=None, check_configlock=False, check_session_key=Fal
 
     @functools.wraps(wrap_func)
     def internal_wrap(*args, **kwargs):
+        # Add X-Frame-Headers headers to page-requests
+        if cfg.x_frame_options():
+            cherrypy.response.headers['X-Frame-Options'] = 'SameOrigin'
+
         # Check if config is locked
         if check_configlock and cfg.configlock():
             cherrypy.response.status = 403
@@ -1363,7 +1367,7 @@ SPECIAL_BOOL_LIST = \
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
               'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'reject_duplicate_files', 'warn_dupl_jobs',
               'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging',
-              'ignore_empty_files'
+              'ignore_empty_files', 'x_frame_options'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
