@@ -162,8 +162,9 @@ def check_hostname():
     if not host:
         return False
 
-    # Remove the port-part
-    host = host.split(':')[0].lower()
+    # Remove the port-part (like ':8080'), if it is there, always on the right hand side. 
+    # Not to be confused with IPv6 colons (within square brackets)
+    host = re.sub(':[0123456789]+$', '', host).lower()
 
     # Fine if localhost or IP
     if host == 'localhost' or probablyipv4(host) or probablyipv6(host):
