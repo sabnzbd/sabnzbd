@@ -257,8 +257,6 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             if newf:
                 newfiles.extend(newf)
             logging.info('Filejoin finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
 
     if cfg.enable_unrar():
         new_rars = [rar for rar in xrars if rar not in rars]
@@ -268,8 +266,6 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             if newf:
                 newfiles.extend(newf)
             logging.info('Unrar finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
 
     if cfg.enable_7zip():
         new_sevens = [seven for seven in xsevens if seven not in sevens]
@@ -278,8 +274,6 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             if unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens):
                 error = True
             logging.info('7za finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
 
     if cfg.enable_unzip():
         new_zips = [zip for zip in xzips if zip not in zips]
@@ -292,8 +286,6 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
                 if unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips):
                     error = True
             logging.info('Unzip finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
 
     if cfg.enable_tsjoin():
         new_ts = [_ts for _ts in xts if _ts not in ts]
@@ -303,8 +295,10 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             if newf:
                 newfiles.extend(newf)
             logging.info('TS Joining finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
+
+    # Refresh history and set output
+    nzo.set_action_line()
+    rerun = not error
 
     # During a Retry we might miss files that failed during recursive unpack
     if nzo.reuse and depth == 1 and any(build_filelists(workdir, workdir_complete)):

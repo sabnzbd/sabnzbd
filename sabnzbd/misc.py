@@ -174,7 +174,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
 
-    # logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
+    logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
     return cat, pp, script, priority
 
 
@@ -412,6 +412,7 @@ def sanitize_files_in_folder(folder):
             new_path = os.path.join(root, sanitize_filename(file_))
             if path != new_path:
                 try:
+                    logging.debug('Filename-sanitizer will rename %s to %s', path, new_path)
                     os.rename(path, new_path)
                     path = new_path
                 except:
