@@ -315,6 +315,9 @@ class URLGrabber(Thread):
         if cfg.email_endjob() > 0:
             emailer.badfetch_mail(msg, url)
 
+        # Parse category to make sure script is set correctly after a grab
+        nzo.cat, _, nzo.script, _ = misc.cat_to_opts(nzo.cat, script=nzo.script)
+
         # Add to history and run script if desired
         NzbQueue.do.remove(nzo.nzo_id, add_to_history=False)
         PostProcessor.do.process(nzo)

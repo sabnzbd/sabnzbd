@@ -626,9 +626,16 @@ class NzbObject(TryList):
 
         # Determine category and find pp/script values based on input
         # Later will be re-evaluated based on import steps
-        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, priority)
-        self.set_priority(priority)
-        self.repair, self.unpack, self.delete = sabnzbd.pp_to_opts(pp_tmp)
+        if pp is None:
+            r = u = d = None
+        else:
+            r, u, d = sabnzbd.pp_to_opts(pp)
+        self.set_priority(priority) # Parse priority of input
+        self.repair = r             # True if we want to repair this set
+        self.unpack = u             # True if we want to unpack this set
+        self.delete = d             # True if we want to delete this set
+        self.script = script        # External script for this set
+        self.cat = cat              # User-set category
 
         # Information fields
         self.url = url or filename
