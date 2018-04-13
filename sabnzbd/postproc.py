@@ -31,7 +31,7 @@ from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, \
     sfv_check, build_filelists, rar_sort
 from threading import Thread
 from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-    make_script_path, long_path, clip_path, \
+    make_script_path, long_path, clip_path, recursive_listdir, \
     on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
     set_permissions, cleanup_empty_directories, fix_unix_encoding, \
     sanitize_and_trim_path, sanitize_files_in_folder, remove_file
@@ -385,10 +385,12 @@ def process_job(nzo):
                     nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
                     unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
+                    logging.info("Unpacked files %s", newfiles)
+
                     if sabnzbd.WIN32:
                         # Sanitize the resulting files
                         newfiles = sanitize_files_in_folder(tmp_workdir_complete)
-                    logging.info("unpack_magic finished on %s", filename)
+                    logging.info("Finished unpack_magic on %s", filename)
                 else:
                     nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
 
@@ -866,10 +868,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
         if so send to queue and remove if on CleanList
         Returns list of processed NZB's
     """
-    files = []
-    for root, _dirs, names in os.walk(wdir):
-        for name in names:
-            files.append(os.path.join(root, name))
+    files = recursive_listdir(wdir)
 
     for file_ in files:
         if os.path.splitext(file_)[1].lower() != '.nzb':

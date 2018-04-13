@@ -997,6 +997,22 @@ def create_dirs(dirpath):
 
 
 @synchronized(DIR_LOCK)
+def recursive_listdir(dir):
+    """ List all files in dirs and sub-dirs """
+    filelist = []
+    for root, dirs, files in os.walk(dir):
+        for file in files:
+            if '.AppleDouble' not in root and '.DS_Store' not in root:
+                try:
+                    p = os.path.join(root, file)
+                    filelist.append(p)
+                except UnicodeDecodeError:
+                    # Just skip failing names
+                    pass
+    return filelist
+
+
+@synchronized(DIR_LOCK)
 def move_to_path(path, new_path):
     """ Move a file to a new path, optionally give unique filename
         Return (ok, new_path)

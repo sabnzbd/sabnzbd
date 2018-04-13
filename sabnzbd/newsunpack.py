@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
-    has_win_device, calc_age, long_path, remove_file
+    has_win_device, calc_age, long_path, remove_file, recursive_listdir
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -246,7 +246,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     rerun = False
     force_rerun = False
     newfiles = []
-    error = 0
+    error = None
     new_joins = new_rars = new_zips = new_ts = None
 
     if cfg.enable_filejoin():
@@ -271,8 +271,9 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
         new_sevens = [seven for seven in xsevens if seven not in sevens]
         if new_sevens:
             logging.info('7za starting on %s', workdir)
-            if unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens):
-                error = True
+            error, newf = unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens)
+            if newf:
+                newfiles.extend(newf)
             logging.info('7za finished on %s', workdir)
 
     if cfg.enable_unzip():
@@ -280,11 +281,11 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
         if new_zips:
             logging.info('Unzip starting on %s', workdir)
             if SEVEN_COMMAND:
-                if unseven(nzo, workdir, workdir_complete, dele, one_folder, new_zips):
-                    error = True
+                error, newf = unseven(nzo, workdir, workdir_complete, dele, one_folder, new_zips)
             else:
-                if unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips):
-                    error = True
+                error, newf = unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips)
+            if newf:
+                newfiles.extend(newf)
             logging.info('Unzip finished on %s', workdir)
 
     if cfg.enable_tsjoin():
@@ -298,7 +299,9 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
 
     # Refresh history and set output
     nzo.set_action_line()
-    rerun = not error
+
+    # Only re-run if something was unpacked and it was success
+    rerun = error in (False, 0)
 
     # During a Retry we might miss files that failed during recursive unpack
     if nzo.reuse and depth == 1 and any(build_filelists(workdir, workdir_complete)):
@@ -847,6 +850,9 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
         unzip_failed = False
         tms = time.time()
 
+        # For file-bookkeeping
+        orig_dir_content = recursive_listdir(workdir_complete)
+
         for _zip in zips:
             logging.info("Starting extract on zipfile: %s ", _zip)
             nzo.set_action_line(T('Unpacking'), '%s' % unicoder(os.path.basename(_zip)))
@@ -863,6 +869,9 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
 
         msg = T('%s files in %s') % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info('Unpack', msg)
+
+        # What's new?
+        new_files = list(set(orig_dir_content + recursive_listdir(workdir_complete)))
 
         # Delete the old files if we have to
         if delete and not unzip_failed:
@@ -884,12 +893,12 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
                     except OSError:
                         logging.warning(T('Deleting %s failed!'), brokenzip)
 
-        return unzip_failed
+        return unzip_failed, new_files
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Unpacking failed, %s') % msg
         logging.error(T('Error "%s" while running unzip() on %s'), msg, nzo.final_name)
-        return True
+        return True, []
 
 
 def ZIP_Extract(zipfile, extraction_path, one_folder):
@@ -923,6 +932,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
     """
     i = 0
     unseven_failed = False
+    new_files = []
     tms = time.time()
 
     # Find multi-volume sets, because 7zip will not provide actual set members
@@ -949,18 +959,19 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
         else:
             extraction_path = os.path.split(seven)[0]
 
-        res, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder, delete)
+        res, new_files_set, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder, delete)
         if res:
             unseven_failed = True
             nzo.set_unpack_info('Unpack', msg)
         else:
             i += 1
+        new_files.extend(new_files_set)
 
     if not unseven_failed:
         msg = T('%s files in %s') % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info('Unpack', msg)
 
-    return unseven_failed
+    return unseven_failed, new_files
 
 
 def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete):
@@ -976,7 +987,7 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
             msg = T('Trying 7zip with password "%s"') % unicoder(password)
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg)
-        fail, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
+        fail, new_files, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
         if fail != 2:
             break
 
@@ -985,7 +996,7 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
         msg = '%s (%s)' % (T('Unpacking failed, archive requires a password'), os.path.basename(sevenset))
         nzo.fail_msg = msg
         logging.error(msg)
-    return fail, msg
+    return fail, new_files, msg
 
 
 def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password):
@@ -1019,6 +1030,9 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     if not os.path.exists(name):
         return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % unicoder(sevenset)
 
+    # For file-bookkeeping
+    orig_dir_content = recursive_listdir(extraction_path)
+
     command = [SEVEN_COMMAND, method, '-y', overwrite, parm, case, password,
                '-o%s' % extraction_path, name]
 
@@ -1032,6 +1046,9 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     logging.debug('7za output: %s', output)
 
     ret = p.wait()
+
+    # What's new?
+    new_files = list(set(orig_dir_content + recursive_listdir(extraction_path)))
 
     if ret == 0 and delete:
         if extensions:
@@ -1048,7 +1065,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
                 logging.warning(T('Deleting %s failed!'), sevenset)
 
     # Always return an error message, even when return code is 0
-    return ret, T('Could not unpack %s') % unicoder(sevenset)
+    return ret, new_files, T('Could not unpack %s') % unicoder(sevenset)
 
 
 ##############################################################################
@@ -2073,26 +2090,10 @@ def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=
     sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
 
     if workdir_complete:
-        for root, dirs, files in os.walk(workdir_complete):
-            for _file in files:
-                if '.AppleDouble' not in root and '.DS_Store' not in root:
-                    try:
-                        p = os.path.join(root, _file)
-                        filelist.append(p)
-                    except UnicodeDecodeError:
-                        # Just skip failing names
-                        pass
+        filelist.extend(recursive_listdir(workdir_complete))
 
     if workdir and (not filelist or check_both):
-        for root, dirs, files in os.walk(workdir):
-            for _file in files:
-                if '.AppleDouble' not in root and '.DS_Store' not in root:
-                    try:
-                        p = os.path.join(root, _file)
-                        filelist.append(p)
-                    except UnicodeDecodeError:
-                        # Just skip failing names
-                        pass
+        filelist.extend(recursive_listdir(workdir))
 
     for file in filelist:
         # Extra check for rar (takes CPU/disk)
