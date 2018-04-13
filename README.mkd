@@ -1,5 +1,11 @@
-Release Notes - SABnzbd 2.3.3 RC 1
+Release Notes - SABnzbd 2.3.3 RC 2
 =========================================================
+
+## Changes since 2.3.3 RC 1
+- Hostname check improved for IPv6 addresses
+- Category not correctly parsed when grabbing NZB from URL
+- Unpacked zip/7zip files were not sorted
+- Extended SAN list of newly generated self-signed certificates
 
 ## Changes since 2.3.3 Beta 1
 - SABYenc updated to 3.3.4 to fix (more) false-positive CRC errors
