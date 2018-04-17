@@ -415,6 +415,8 @@
         // Exception when change of priority, reload
         \$('input[name="priority"], input[name="displayname"]').on('change', function() {
             \$('.fullform').submit(function() {
+                // No ajax this time
+                \$('input[name="ajax"]').val('')
                 // Skip the fancy stuff, just submit
                 this.submit()
             })
