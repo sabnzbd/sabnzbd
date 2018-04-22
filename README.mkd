@@ -1,27 +1,18 @@
-Release Notes - SABnzbd 2.3.3 RC 2
+Release Notes - SABnzbd 2.3.3
 =========================================================
-
-## Changes since 2.3.3 RC 1
-- Hostname check improved for IPv6 addresses
-- Category not correctly parsed when grabbing NZB from URL
-- Unpacked zip/7zip files were not sorted
-- Extended SAN list of newly generated self-signed certificates
-
-## Changes since 2.3.3 Beta 1
-- SABYenc updated to 3.3.4 to fix (more) false-positive CRC errors
-- Failed URL fetches also trigger post-processing script (if configured)
-- Added option to disable "X-Frame-Options" HTTP-header
-- Added option to set maximum URL fetch retries
 
 ## Changes since 2.3.2
 - Introduce and enforce "host_whitelist" to reject DNS Rebinding attacks.
   If you access SABnzbd from a non-standard URL, you will need to add
   the hostname. More info: https://sabnzbd.org/hostname-check
-- SABYenc updated to 3.3.3 to fix false-positive CRC errors
+- SABYenc updated to 3.3.5 to fix false-positive CRC errors
 - SSL-Ciphers can now be set per-server
+- Failed URL fetches also trigger post-processing script (if configured)
+- Added "max_url_retries" to set maximum retries of URL fetching
+- Added "ignore_empty_files" option to not warn on empty files in NZB
 - Added "X-Frame-Options" HTTP-header to prevent click-jacking
 - Added "httpOnly" HTTP-header to prevent script cookie access
-- Added "ignore_empty_files" option to not warn on empty files in NZB
+- Extended SAN list of newly generated self-signed certificates
 - Indicate that SMPL-skin is no longer supported
 - Removed undocumented "callback" option from API calls
 - macOS: 64bit version of unrar instead of 32bit
@@ -30,9 +21,12 @@ Release Notes - SABnzbd 2.3.3 RC 2
 
 ## Bugfixes since 2.3.2
 - NZB's can be added via command-line but this was not shown in "--help"
-- Language-change via API would not only change language after restart
-- Correctly indicate that 99 is maximum server priority
-- Only show SSL-warning if it was actually tested
+- Only show bad-SSL-warning if it was actually tested
+- Language-change via API did not directly change display language
+- Cheetah 3 is also accepted as template engine
+- Correctly indicate that 99 is the maximum server priority
+- Results of unpacked zip/7zip files were not sorted
+- Joining of split files was limited to 999 files
 - Media files with "password" in filename were detected as encrypted
 - Servers that could not be DNS-resolved could block the queue
 - Detect '502 Byte limit exceeded' as payment problem
