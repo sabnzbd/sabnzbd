@@ -120,3 +120,5 @@ msgstr "Separate multiple URLs with a comma"
 msgid "Advanced"
 msgstr "Advanced Settings"
 
+msgid "0 is highest priority, 100 is the lowest priority"
+msgstr "0 is highest priority, 99 is the lowest priority"

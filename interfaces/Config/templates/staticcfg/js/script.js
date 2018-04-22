@@ -354,6 +354,7 @@ $(document).ready(function () {
         success: function (json) {
             if (json.error) {
                $('#config_err_msg').text(json.error);
+               alert(json.error)
                config_failure()
             } else if(json.value && json.value.restart_req) {
                 // Trigger restart question

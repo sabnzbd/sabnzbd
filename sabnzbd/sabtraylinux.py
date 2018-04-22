@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -169,9 +169,7 @@ class StatusIcon(Thread):
 
     def shutdown(self, icon):
         self.hover_text = T('Shutdown')
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+        sabnzbd.shutdown_program()
 
     def pause(self):
         scheduler.plan_resume(0)

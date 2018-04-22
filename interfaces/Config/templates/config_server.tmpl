@@ -130,6 +130,12 @@
                         <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
                     </div>
                     <div class="field-pair advanced-settings">
+                        <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
+                        <input type="text" name="ssl_ciphers" id="ssl_ciphers" />
+                        <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
+                        <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
+                    </div>
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="send_group">$T('srv-send_group')</label>
                         <input type="checkbox" name="send_group" id="send_group" value="1" />
                         <span class="desc">$T('srv-explain-send_group')</span>
@@ -166,6 +172,7 @@
         <form action="saveServer" method="post" class="fullform" autocomplete="off">
             <input type="hidden" name="session" value="$session" />
             <input type="hidden" name="server" value="$server['name']" />
+            <input type="hidden" id="ajax" name="ajax" value=1 />
 
             <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
                 <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
@@ -237,6 +244,12 @@
                                 <option value="0" <!--#if $server['ssl_verify'] == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>
                             </select>
                             <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
+                            <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$server['ssl_ciphers']" />
+                            <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
+                            <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="optional$cur">$T('srv-optional')</label>
@@ -402,6 +415,8 @@
         // Exception when change of priority, reload
         \$('input[name="priority"], input[name="displayname"]').on('change', function() {
             \$('.fullform').submit(function() {
+                // No ajax this time
+                \$('input[name="ajax"]').val('')
                 // Skip the fancy stuff, just submit
                 this.submit()
             })
@@ -465,6 +480,7 @@
             setTimeout(function() { portBox.removeClass('port-highlight') }, 2000)
         })
 
+        // Testing servers
         \$('.testServer').click(function(event){
             removeObfuscation()
             var theButton = \$(this)

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -51,7 +51,7 @@ RENAMES_FILE = '__renames__'
 ATTRIB_FILE = 'SABnzbd_attrib'
 REPAIR_REQUEST = 'repair-all.sab'
 
-SABYENC_VERSION_REQUIRED = '3.3.2'
+SABYENC_VERSION_REQUIRED = '3.3.5'
 
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = 'history%s.db' % DB_HISTORY_VERSION
@@ -78,7 +78,6 @@ DEF_ARTICLE_CACHE_DEFAULT = '500M'
 DEF_ARTICLE_CACHE_MAX = '1G'
 DEF_TIMEOUT = 60
 DEF_SCANRATE = 5
-MAX_URL_RETRIES = 10
 MAX_DECODE_QUEUE = 10
 LIMIT_DECODE_QUEUE = 100
 MAX_WARNINGS = 20
@@ -98,6 +97,7 @@ STOP_PRIORITY = -4
 STAGES = {'Source': 0, 'Download': 1, 'Servers': 2, 'Repair': 3, 'Filejoin': 4, 'Unpack': 5, 'Script': 6}
 
 VALID_ARCHIVES = ('.zip', '.rar', '.7z')
+VALID_NZB_FILES = ('.nzb', '.gz', '.bz2')
 
 IGNORED_FOLDERS = ('@eaDir', '.appleDouble')
 

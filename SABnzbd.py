@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -44,7 +44,7 @@ import re
 
 try:
     import Cheetah
-    if Cheetah.Version[0] != '2':
+    if Cheetah.Version[0] < '2':
         raise ValueError
 except ValueError:
     print "Sorry, requires Python module Cheetah 2.0rc7 or higher."
@@ -173,7 +173,7 @@ class guiHandler(logging.Handler):
 
 def print_help():
     print
-    print "Usage: %s [-f <configfile>] <other options>" % sabnzbd.MY_NAME
+    print "Usage: %s [-f <configfile>] <other options> [NZB (or related) file]" % sabnzbd.MY_NAME
     print
     print "Options marked [*] are stored in the config file"
     print
@@ -206,13 +206,17 @@ def print_help():
     print "      --log-all            Log all article handling (for developers)"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
+    print ""
+    print "NZB (or related) file:"
+    print "  NZB or zipped NZB file, with extension .nzb, .zip, .rar, .gz, or .bz2"
+    print ""
 
 
 def print_version():
     print """
 %s-%s
 
-Copyright (C) 2008-2017, The SABnzbd-Team <team@sabnzbd.org>
+Copyright (C) 2007-2018, The SABnzbd-Team <team@sabnzbd.org>
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
@@ -775,7 +779,7 @@ def commandline_handler(frozen=True):
     if not service:
         # Get and remove any NZB file names
         for entry in args:
-            if get_ext(entry) in ('.nzb', '.zip', '.rar', '.gz', '.bz2'):
+            if get_ext(entry) in VALID_NZB_FILES + VALID_ARCHIVES:
                 upload_nzbs.append(os.path.abspath(entry))
 
     for opt, arg in opts:
@@ -1510,9 +1514,7 @@ def main():
         # Or special restart cases like Mac and WindowsService
         if sabnzbd.TRIGGER_RESTART:
             # Shutdown
-            cherrypy.engine.exit()
-            sabnzbd.halt()
-            sabnzbd.SABSTOP = True
+            sabnzbd.shutdown_program()
 
             if sabnzbd.downloader.Downloader.do.paused:
                 sabnzbd.RESTART_ARGS.append('-p')
@@ -1719,9 +1721,7 @@ if __name__ == '__main__':
 
                 def stop(self):
                     logging.info('[osx] sabApp Quit - stopping main thread ')
-                    sabnzbd.halt()
-                    cherrypy.engine.exit()
-                    sabnzbd.SABSTOP = True
+                    sabnzbd.shutdown_program()
                     logging.info('[osx] sabApp Quit - main thread stopped')
 
             sabApp = startApp()

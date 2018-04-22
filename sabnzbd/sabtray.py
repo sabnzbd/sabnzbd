@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -166,10 +166,7 @@ class SABTrayThread(SysTrayIconThread):
     # menu handler - adapted from interface.py
     def shutdown(self, icon):
         self.hover_text = self.txt_shutdown
-        logging.info('Shutdown requested by tray')
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+        sabnzbd.shutdown_program()
 
     # adapted from interface.py
     def pause(self):

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-12-06 10:30+0000\n"
-"PO-Revision-Date: 2017-12-06 19:50+0000\n"
+"POT-Creation-Date: 2018-03-15 13:08+0000\n"
+"PO-Revision-Date: 2018-03-15 21:38+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-12-07 05:30+0000\n"
-"X-Generator: Launchpad (build 18511)\n"
+"X-Launchpad-Export-Date: 2018-03-16 05:37+0000\n"
+"X-Generator: Launchpad (build 18571)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -114,7 +114,7 @@ msgid "Error"
 msgstr "שגיאה"
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/interface.py
-#: sabnzbd/osxmenu.py # sabnzbd/wizard.py
+#: sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "הסתיים SABnzbd כיבוי"
 
@@ -314,7 +314,7 @@ msgstr "\"%s\" כנראה מוצפנת: \"סיסמה\" בשם הקובץ \"%s\" 
 
 #: sabnzbd/assembler.py
 msgid "video"
-msgstr "וידאו"
+msgstr "וידיאו"
 
 #: sabnzbd/assembler.py
 msgid "audio"
@@ -481,7 +481,17 @@ msgstr "מושהה"
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "אתה חייב לקבוע רוחב פס מרבי לפני שאתה קובע מגבלת רוחב פס"
 
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
+#: sabnzbd/downloader.py # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message]
+msgid "Cannot connect to server %s [%s]"
+msgstr "%s [%s] לא ניתן להתחבר לשרת"
+
+#: sabnzbd/downloader.py # sabnzbd/urlgrabber.py
+msgid "Server name does not resolve"
+msgstr "שם השרת אינו פותר"
+
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "ייתקל בהתעלמות למשך %s דקות %s השרת"
 
@@ -500,11 +510,6 @@ msgstr "שיתוף סביר של חשבון"
 #: sabnzbd/downloader.py # sabnzbd/downloader.py [Error message]
 msgid "Failed login for server %s"
 msgstr "%s נכשל בכניסה לשרת"
-
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-msgid "Cannot connect to server %s [%s]"
-msgstr "%s [%s] לא ניתן להתחבר לשרת"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
@@ -613,6 +618,10 @@ msgid "Server address \"%s:%s\" is not valid."
 msgstr ".אינה תקפה \"%s:%s\" כתובת השרת"
 
 #: sabnzbd/interface.py
+msgid "Refused connection with hostname \"%s\" from:"
+msgstr ":מן \"%s\" חיבור מסורב עם מארח"
+
+#: sabnzbd/interface.py
 msgid "User logged in to the web interface"
 msgstr "משתמש התחבר לממשק הרשת"
 
@@ -620,7 +629,7 @@ msgstr "משתמש התחבר לממשק הרשת"
 msgid "User logged in"
 msgstr "משתמש התחבר"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py
 msgid "Missing Session key"
 msgstr "מפתח חסר של שיח"
 
@@ -628,7 +637,7 @@ msgstr "מפתח חסר של שיח"
 msgid "Error: Session Key Required"
 msgstr "שגיאה: מפתח דרוש של שיח"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Error: Session Key Incorrect"
 msgstr "שגיאה: מפתח לא נכון של שיח"
 
@@ -974,6 +983,7 @@ msgstr "!בעוד שבדיקה זריזה הצליחה ,%s-נכשל ב Par וי�
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "%s ,תיקון נכשל"
 
@@ -1166,7 +1176,7 @@ msgstr "התווסף לתור NZB"
 msgid "%s -> Unknown encoding"
 msgstr "הצפנה בלתי ידועה <- %s"
 
-#: sabnzbd/nzbstuff.py [Warning message]
+#: sabnzbd/nzbstuff.py
 msgid "File %s is empty, skipping"
 msgstr "ריק, מדלג %s הקובץ"
 
@@ -1276,7 +1286,7 @@ msgid "Warnings"
 msgstr "אזהרות"
 
 #: sabnzbd/osxmenu.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py
-#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py
+#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Idle"
 msgstr "סרק"
 
@@ -1901,11 +1911,12 @@ msgstr "נמוכה מאוד"
 msgid "Moderate"
 msgstr "בינונית"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Normal"
 msgstr "רגילה"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py
 msgid "High"
 msgstr "גבוהה"
 
@@ -1913,7 +1924,7 @@ msgstr "גבוהה"
 msgid "Emergency"
 msgstr "חירום"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Low"
 msgstr "נמוכה"
 
@@ -2083,7 +2094,7 @@ msgstr "דווח"
 
 #: sabnzbd/skintext.py
 msgid "Video"
-msgstr "וידאו"
+msgstr "וידיאו"
 
 #: sabnzbd/skintext.py
 msgid "Audio"
@@ -2458,6 +2469,14 @@ msgstr "בעיה אחרת"
 msgid "Force Disconnect"
 msgstr "אלץ ניתוק"
 
+#: sabnzbd/skintext.py [Status page button text]
+msgid ""
+"Disconnect all active connections to usenet servers. Connections will be "
+"reopened after a few seconds if there are items in the queue."
+msgstr ""
+"חיבורים ייפתחו מחדש לאחר מספר שניות אם יש פריטים בתור .usenet נתק את כל "
+"החיבורים הפעילים אל שרתי"
+
 #: sabnzbd/skintext.py
 msgid "This will send a test email to your account."
 msgstr ".זה ישלח דוא\"ל בדיקה לחשבונך"
@@ -2672,7 +2691,7 @@ msgid "Backup"
 msgstr "גיבוי"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "!קרא את עזרת וויקי על זה"
 
@@ -3310,6 +3329,10 @@ msgid "IONice Parameters"
 msgstr "IONice משתני"
 
 #: sabnzbd/skintext.py
+msgid "External process priority"
+msgstr "עדיפות תהליך חיצוני"
+
+#: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
 msgstr "התנתק בתור ריק"
 
@@ -3392,7 +3415,7 @@ msgstr "התעלם מדוגמאות"
 
 #: sabnzbd/skintext.py
 msgid "Filter out sample files (e.g. video samples)."
-msgstr ".(סנן החוצה קבצי דוגמית (לדוגמה דוגמיות וידאו"
+msgstr "(סנן החוצה קבצי דוגמית (לדוגמה, דוגמיות וידיאו"
 
 #: sabnzbd/skintext.py
 msgid "Delete after download"
@@ -3523,7 +3546,7 @@ msgstr "ולא השהה אם"
 
 #: sabnzbd/skintext.py
 msgid "Video rating"
-msgstr "מידרג וידאו"
+msgstr "מידרג וידיאו"
 
 #: sabnzbd/skintext.py
 msgid "Audio rating"
@@ -3631,7 +3654,7 @@ msgstr "קפדני"
 
 #: sabnzbd/skintext.py [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
-msgstr "0 הוא העדיפות הגבוהה ביותר, 100 הוא העדיפות הנמוכה ביותר"
+msgstr "0 הוא העדיפות הגבוהה ביותר, 99 הוא העדיפות הנמוכה ביותר"
 
 #: sabnzbd/skintext.py [Server optional tickbox]
 msgid "Optional"
@@ -4217,7 +4240,7 @@ msgstr "מיין מחרוזת"
 
 #: sabnzbd/skintext.py
 msgid "Multi-part label"
-msgstr "תווית מרובה חלקים"
+msgstr "תווית מרובת-חלקים"
 
 #: sabnzbd/skintext.py
 msgid "In folders"
@@ -4942,10 +4965,6 @@ msgstr "%s אל %s:נכשל בשינוי שם"
 #: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "%s אל %s :נכשל בשינוי שם של קובץ דומה"
-
-#: sabnzbd/urlgrabber.py
-msgid "Server name does not resolve"
-msgstr "שם השרת אינו פותר"
 
 #: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"

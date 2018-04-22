@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-12-06 10:30+0000\n"
-"PO-Revision-Date: 2017-09-03 14:07+0000\n"
-"Last-Translator: Steffen Bærø <steffen.baro@gmail.com>\n"
+"POT-Creation-Date: 2018-03-15 13:08+0000\n"
+"PO-Revision-Date: 2018-02-14 14:18+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-12-07 05:31+0000\n"
-"X-Generator: Launchpad (build 18511)\n"
+"X-Launchpad-Export-Date: 2018-03-16 05:37+0000\n"
+"X-Generator: Launchpad (build 18571)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -118,7 +118,7 @@ msgid "Error"
 msgstr "Feil"
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/interface.py
-#: sabnzbd/osxmenu.py # sabnzbd/wizard.py
+#: sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd er nå avsluttet"
 
@@ -482,7 +482,17 @@ msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Du må sette maks båndbredde før du kan sette en båndbreddebegrensning"
 
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
+#: sabnzbd/downloader.py # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message]
+msgid "Cannot connect to server %s [%s]"
+msgstr "Kan ikke koble til server %s [%s]"
+
+#: sabnzbd/downloader.py # sabnzbd/urlgrabber.py
+msgid "Server name does not resolve"
+msgstr "Kunne ikke finne servernavn"
+
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s vil bli ignorert i løpet av %s minutter"
 
@@ -501,11 +511,6 @@ msgstr "Mistenkt kontodeling"
 #: sabnzbd/downloader.py # sabnzbd/downloader.py [Error message]
 msgid "Failed login for server %s"
 msgstr "Kunne ikke logge inn på server %s"
-
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-msgid "Cannot connect to server %s [%s]"
-msgstr "Kan ikke koble til server %s [%s]"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
@@ -614,6 +619,10 @@ msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradressen \"%s:%s\" er ikke gyldig."
 
 #: sabnzbd/interface.py
+msgid "Refused connection with hostname \"%s\" from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "User logged in to the web interface"
 msgstr "Bruker logget inn i webgrensesnitt"
 
@@ -621,7 +630,7 @@ msgstr "Bruker logget inn i webgrensesnitt"
 msgid "User logged in"
 msgstr "Bruker pålogget"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py
 msgid "Missing Session key"
 msgstr "Mangler sesjonsnøkkel"
 
@@ -629,7 +638,7 @@ msgstr "Mangler sesjonsnøkkel"
 msgid "Error: Session Key Required"
 msgstr "Feil: Krever sesjonsnøkkel"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Error: Session Key Incorrect"
 msgstr "Feil: Feil sesjonsnøkkel"
 
@@ -976,6 +985,7 @@ msgstr "Par verifisering feilet på %s, mens hurtigsjekk var vellykket!"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparasjon mislyktes, %s"
 
@@ -1167,7 +1177,7 @@ msgstr "NZB er lagt til i køen"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Ukjent koding"
 
-#: sabnzbd/nzbstuff.py [Warning message]
+#: sabnzbd/nzbstuff.py
 msgid "File %s is empty, skipping"
 msgstr "Fil %s er tom, hopper over"
 
@@ -1277,7 +1287,7 @@ msgid "Warnings"
 msgstr "Advarsler"
 
 #: sabnzbd/osxmenu.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py
-#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py
+#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Ledig"
 
@@ -1900,11 +1910,12 @@ msgstr "Veldig lav"
 msgid "Moderate"
 msgstr "Moderer"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Normal"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py
 msgid "High"
 msgstr "Høy"
 
@@ -1912,7 +1923,7 @@ msgstr "Høy"
 msgid "Emergency"
 msgstr "Nødssituasjon"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Low"
 msgstr "Lav"
 
@@ -2458,6 +2469,12 @@ msgstr "Andre problemer"
 msgid "Force Disconnect"
 msgstr "Tving frakobling"
 
+#: sabnzbd/skintext.py [Status page button text]
+msgid ""
+"Disconnect all active connections to usenet servers. Connections will be "
+"reopened after a few seconds if there are items in the queue."
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "This will send a test email to your account."
 msgstr "Dette vil sende en test e-post til din konto."
@@ -2671,7 +2688,7 @@ msgid "Backup"
 msgstr "Sikkerhetskopi"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Les Wiki Help fer dette!"
 
@@ -3308,6 +3325,10 @@ msgid "IONice Parameters"
 msgstr "IONice parametere"
 
 #: sabnzbd/skintext.py
+msgid "External process priority"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
 msgstr "Koble fra når køen er tom"
 
@@ -3627,7 +3648,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
-msgstr "0 er høyeste prioritet, 100 er laveste prioritet"
+msgstr "0 er høyeste prioritet, 99 er laveste prioritet"
 
 #: sabnzbd/skintext.py [Server optional tickbox]
 msgid "Optional"
@@ -4937,10 +4958,6 @@ msgstr "Kunne ikke endre navn fra: %s til %s"
 #: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Kunne ikke endre navn på lik fil: %s til %s"
-
-#: sabnzbd/urlgrabber.py
-msgid "Server name does not resolve"
-msgstr "Kunne ikke finne servernavn"
 
 #: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
