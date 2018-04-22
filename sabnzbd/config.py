@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -391,13 +391,12 @@ class ConfigServer(object):
         self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
         self.ssl = OptionBool(name, 'ssl', False, add=False)
         self.ssl_verify = OptionNumber(name, 'ssl_verify', 2, add=False)  # 0=No, 1=Normal, 2=Strict (hostname verification)
+        self.ssl_ciphers = OptionStr(name, 'ssl_ciphers', '', add=False)
         self.enable = OptionBool(name, 'enable', True, add=False)
         self.optional = OptionBool(name, 'optional', False, add=False)
         self.retention = OptionNumber(name, 'retention', add=False)
         self.send_group = OptionBool(name, 'send_group', False, add=False)
         self.priority = OptionNumber(name, 'priority', 0, 0, 99, add=False)
-        # 'fillserver' field only here in order to set a proper priority when converting
-        self.fillserver = OptionBool(name, 'fillserver', False, add=False)
         self.notes = OptionStr(name, 'notes', '', add=False)
 
         self.set_dict(values)
@@ -405,8 +404,8 @@ class ConfigServer(object):
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'fillserver',
-                   'ssl', 'ssl_verify', 'send_group', 'enable', 'optional', 'retention', 'priority', 'notes'):
+        for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'ssl',
+                   'ssl_verify', 'ssl_ciphers', 'send_group', 'enable', 'optional', 'retention', 'priority', 'notes'):
             try:
                 value = values[kw]
             except KeyError:
@@ -432,6 +431,7 @@ class ConfigServer(object):
         dict['connections'] = self.connections()
         dict['ssl'] = self.ssl()
         dict['ssl_verify'] = self.ssl_verify()
+        dict['ssl_ciphers'] = self.ssl_ciphers()
         dict['enable'] = self.enable()
         dict['optional'] = self.optional()
         dict['retention'] = self.retention()
@@ -877,12 +877,15 @@ def define_servers():
         for server in CFG['servers']:
             svr = CFG['servers'][server]
             s = ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
-            if s.fillserver():
-                # One time conversion of backup to priority 1
-                s.priority.set(1)
-                s.fillserver.set(False)
+
+            # Conversion of global SSL-Ciphers to server ones
+            if sabnzbd.cfg.ssl_ciphers():
+                s.ssl_ciphers.set(sabnzbd.cfg.ssl_ciphers())
     except KeyError:
         pass
+
+    # No longer needed
+    sabnzbd.cfg.ssl_ciphers.set('')
 
 
 def get_servers():

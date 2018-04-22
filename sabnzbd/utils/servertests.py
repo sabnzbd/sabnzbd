@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -74,7 +74,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         if not got_pass:
             return False, T('Password masked in ******, please re-enter')
     try:
-        s = Server(-1, '', host, port, timeout, 0, 0, ssl, ssl_verify, False, username, password)
+        s = Server(-1, '', host, port, timeout, 0, 0, ssl, ssl_verify, None, False, username, password)
     except:
         return False, T('Invalid server details')
 

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ except ImportError:
     pass
 
 import sabnzbd
-from sabnzbd.constants import VALID_ARCHIVES, Status, \
+from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, Status, \
      TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
      KIBI, MEBI, GIGI, JOB_ADMIN
 import sabnzbd.config as config
@@ -103,15 +103,12 @@ def api_handler(kwargs):
     mode = kwargs.get('mode', '')
     output = kwargs.get('output')
     name = kwargs.get('name', '')
-    callback = kwargs.get('callback', '')
 
     if isinstance(mode, list):
         mode = mode[0]
     if isinstance(output, list):
         output = output[0]
     response = _api_table.get(mode, (_api_undefined, 2))[0](name, output, kwargs)
-    if output == 'json' and callback:
-        response = '%s(%s)' % (callback, response)
     return response
 
 
@@ -401,7 +398,7 @@ def _api_addlocalfile(name, output, kwargs):
                 if get_ext(name) in VALID_ARCHIVES:
                     res = sabnzbd.dirscanner.ProcessArchiveFile(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
-                elif get_ext(name) in ('.nzb', '.gz', '.bz2'):
+                elif get_ext(name) in VALID_NZB_FILES:
                     res = sabnzbd.dirscanner.ProcessSingleFile(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:
@@ -592,10 +589,7 @@ def _api_resume(name, output, kwargs):
 
 def _api_shutdown(name, output, kwargs):
     """ API: accepts output """
-    logging.info('Shutdown requested by API')
-    sabnzbd.halt()
-    cherrypy.engine.exit()
-    sabnzbd.SABSTOP = True
+    sabnzbd.shutdown_program()
     return report(output)
 
 
@@ -1002,7 +996,7 @@ def api_level(cmd, name):
     return 4
 
 
-def report(output, error=None, keyword='value', data=None, callback=None, compat=False):
+def report(output, error=None, keyword='value', data=None, compat=False):
     """ Report message in json, xml or plain text
         If error is set, only an status/error report is made.
         If no error and no data, only a status report is made.
@@ -1031,8 +1025,6 @@ def report(output, error=None, keyword='value', data=None, callback=None, compat
         if not FAST_JSON:
             # Use the slower, but safer encoder
             response = JsonWriter().write(info)
-        if callback:
-            response = '%s(%s)' % (callback, response)
 
     elif output == 'xml':
         if not keyword:

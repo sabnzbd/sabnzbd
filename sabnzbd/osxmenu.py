@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ import logging
 import sabnzbd
 import sabnzbd.cfg
 
-from sabnzbd.constants import VALID_ARCHIVES, MEBI, Status
+from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
 from sabnzbd.misc import get_filename, get_ext, diskspace, to_units
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.notifier as notifier
@@ -754,7 +754,7 @@ class SABnzbdDelegate(NSObject):
                     if get_ext(name) in VALID_ARCHIVES:
                         # logging.info('[osx] archive')
                         dirscanner.ProcessArchiveFile(fn, name, keep=True)
-                    elif get_ext(name) in ('.nzb', '.gz', '.bz2'):
+                    elif get_ext(name) in VALID_NZB_FILES:
                         # logging.info('[osx] nzb')
                         dirscanner.ProcessSingleFile(fn, name, keep=True)
         # logging.info('opening done')
@@ -764,10 +764,7 @@ class SABnzbdDelegate(NSObject):
         self.setMenuTitle_("\n\n%s\n" % (T('Stopping...')))
         self.status_item.setHighlightMode_(NO)
         self.osx_icon = False
-        logging.info('[osx] application stopping daemon')
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
+        sabnzbd.shutdown_program()
         try:
             notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), notifier.NOTIFICATION['other'])
         except AttributeError:

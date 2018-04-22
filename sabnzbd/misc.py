@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -174,7 +174,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
 
-    # logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
+    logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
     return cat, pp, script, priority
 
 
@@ -412,6 +412,7 @@ def sanitize_files_in_folder(folder):
             new_path = os.path.join(root, sanitize_filename(file_))
             if path != new_path:
                 try:
+                    logging.debug('Filename-sanitizer will rename %s to %s', path, new_path)
                     os.rename(path, new_path)
                     path = new_path
                 except:
@@ -996,6 +997,22 @@ def create_dirs(dirpath):
 
 
 @synchronized(DIR_LOCK)
+def recursive_listdir(dir):
+    """ List all files in dirs and sub-dirs """
+    filelist = []
+    for root, dirs, files in os.walk(dir):
+        for file in files:
+            if '.AppleDouble' not in root and '.DS_Store' not in root:
+                try:
+                    p = os.path.join(root, file)
+                    filelist.append(p)
+                except UnicodeDecodeError:
+                    # Just skip failing names
+                    pass
+    return filelist
+
+
+@synchronized(DIR_LOCK)
 def move_to_path(path, new_path):
     """ Move a file to a new path, optionally give unique filename
         Return (ok, new_path)
@@ -1505,6 +1522,22 @@ def find_on_path(targets):
             if os.path.isfile(target_path) and os.access(target_path, os.X_OK):
                 return target_path
     return None
+
+
+def probablyipv4(ip):
+    if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
+        return True
+    else:
+        return False
+
+
+def probablyipv6(ip):
+    # Returns True if the given input is probably an IPv6 address
+    # Square Brackets like '[2001::1]' are OK
+    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:\[\]]', '', ip) == '':
+        return True
+    else:
+        return False
 
 
 def ip_extract():
