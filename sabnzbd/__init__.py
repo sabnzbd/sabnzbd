@@ -313,7 +313,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     # Add hostname to the whitelist
     if not cfg.host_whitelist():
-        cfg.host_whitelist.set(socket.gethostname())
+        cfg.host_whitelist.set(socket.gethostname().lower())
 
     # Do repair if requested
     if check_repair_request():
