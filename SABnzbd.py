@@ -1365,8 +1365,11 @@ def main():
     staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WIZARD_DIR, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
-    appconfig = {'/api': {'tools.basic_auth.on': False},
-                 '/rss': {'tools.basic_auth.on': False},
+    appconfig = {'/api': {
+                            'tools.basic_auth.on': False,
+                            'tools.response_headers.on': True,
+                            'tools.response_headers.headers': [('Access-Control-Allow-Origin', '*')]
+                         },
                  '/static': static,
                  '/wizard/static': wizard_static,
                  '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg', 'ico', 'favicon.ico')},
