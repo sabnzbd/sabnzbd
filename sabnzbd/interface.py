@@ -174,6 +174,12 @@ def check_hostname():
     if host in cfg.host_whitelist():
         return True
 
+    # Fine if ends with ".local" or ".local.", aka mDNS name
+    # See rfc6762 Multicast DNS 
+    if host.endswith(('.local', '.local.')):
+        return True
+
+
     # Ohoh, bad
     log_warning_and_ip(T('Refused connection with hostname "%s" from:') % host)
     return False
