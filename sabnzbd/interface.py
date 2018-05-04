@@ -179,7 +179,6 @@ def check_hostname():
     if host.endswith(('.local', '.local.')):
         return True
 
-
     # Ohoh, bad
     log_warning_and_ip(T('Refused connection with hostname "%s" from:') % host)
     return False
