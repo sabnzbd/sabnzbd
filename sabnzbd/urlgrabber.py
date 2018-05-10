@@ -189,6 +189,7 @@ class URLGrabber(Thread):
                         if item in _RARTING_FIELDS:
                             nzo_info[item] = value
 
+                        # Get filename from Content-Disposition header
                         if not filename and "filename=" in value:
                             filename = value[value.index("filename=") + 9:].strip(';').strip('"')
 
@@ -209,7 +210,12 @@ class URLGrabber(Thread):
                     continue
 
                 if not filename:
-                    filename = os.path.basename(url)
+                    filename = os.path.basename(urllib2.unquote(url))
+
+                    # URL was redirected, maybe the redirect has better filename?
+                    # Check if the original URL has extension
+                    if url != fetch_request.url and misc.get_ext(filename) not in VALID_NZB_FILES:
+                        filename = os.path.basename(urllib2.unquote(fetch_request.url))
                 elif '&nzbname=' in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find('&nzbname=') + 9:]
