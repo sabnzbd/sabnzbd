@@ -367,13 +367,6 @@ def _analyse(fetch_request, url, future_nzo):
         logging.debug('No usable response from indexer, retry after %s sec', when)
         return None, msg, True, when, data
 
-    # Check for an error response
-    if not fetch_request or fetch_request.msg != 'OK':
-        # Increasing wait-time in steps for standard errors
-        when = DEF_TIMEOUT * (future_nzo.url_tries + 1)
-        logging.debug('Received nothing from indexer, retry after %s sec', when)
-        return None, fetch_request.msg, True, when, data
-
     return fetch_request, fetch_request.msg, False, 0, data
 
 
