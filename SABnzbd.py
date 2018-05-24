@@ -204,6 +204,7 @@ def print_help():
     print "      --ipv6_hosting <0|1> Listen on IPv6 address [::1] [*]"
     print "      --no-login           Start with username and password reset"
     print "      --log-all            Log all article handling (for developers)"
+    print "      --disable-file-log   Logging is only written to console"
     print "      --console            Force console logging for OSX app"
     print "      --new                Run a new instance of SABnzbd"
     print ""
@@ -760,7 +761,7 @@ def commandline_handler(frozen=True):
         opts, args = getopt.getopt(info, "phdvncwl:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging', 'server=', 'templates', 'ipv6_hosting=',
-                                    'template2', 'browser=', 'config-file=', 'force',
+                                    'template2', 'browser=', 'config-file=', 'force', 'disable-file-log',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     'log-all', 'no-login', 'pid=', 'new', 'console', 'pidfile=',
                                     # Below Win32 Service options
@@ -823,6 +824,7 @@ def main():
     cherrypylogging = None
     clean_up = False
     logging_level = None
+    no_file_log = False
     web_dir = None
     vista_plus = False
     win64 = False
@@ -896,6 +898,8 @@ def main():
             pause = True
         elif opt in ('--log-all',):
             sabnzbd.LOG_ALL = True
+        elif opt in ('--disable-file-log'):
+            no_file_log = True
         elif opt in ('--no-login',):
             no_login = True
         elif opt in ('--pid',):
@@ -1076,11 +1080,7 @@ def main():
     # We found a port, now we never check again
     sabnzbd.cfg.fixed_ports.set(True)
 
-    if logging_level is None:
-        logging_level = sabnzbd.cfg.log_level()
-    else:
-        sabnzbd.cfg.log_level.set(logging_level)
-
+    # Logging-checks
     logdir = sabnzbd.cfg.log_dir.get_path()
     if fork and not logdir:
         print "Error:"
@@ -1099,19 +1099,24 @@ def main():
     # Prevent the logger from raising exceptions
     # primarily to reduce the fallout of Python issue 4749
     logging.raiseExceptions = 0
+
+    # Log-related constants we always need
+    if logging_level is None:
+        logging_level = sabnzbd.cfg.log_level()
+    else:
+        sabnzbd.cfg.log_level.set(logging_level)
     sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
+    logformat = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
+    logger.setLevel(LOGLEVELS[logging_level + 1])
 
     try:
-        rollover_log = logging.handlers.RotatingFileHandler(
-            sabnzbd.LOGFILE, 'a+',
-            sabnzbd.cfg.log_size.get_int(),
-            sabnzbd.cfg.log_backups())
-
-        logformat = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
-        rollover_log.setFormatter(logging.Formatter(logformat))
-        sabnzbd.LOGHANDLER = rollover_log
-        logger.addHandler(rollover_log)
-        logger.setLevel(LOGLEVELS[logging_level + 1])
+        if not no_file_log:
+            rollover_log = logging.handlers.RotatingFileHandler(
+                sabnzbd.LOGFILE, 'a+',
+                sabnzbd.cfg.log_size.get_int(),
+                sabnzbd.cfg.log_backups())
+            rollover_log.setFormatter(logging.Formatter(logformat))
+            logger.addHandler(rollover_log)
 
     except IOError:
         print "Error:"
@@ -1141,6 +1146,8 @@ def main():
                 console.setLevel(LOGLEVELS[logging_level + 1])
                 console.setFormatter(logging.Formatter(logformat))
                 logger.addHandler(console)
+            if no_file_log:
+                logging.info('Console logging only')
             if noConsoleLoggingOSX:
                 logging.info('Console logging for OSX App disabled')
                 so = file('/dev/null', 'a+')
@@ -1365,8 +1372,11 @@ def main():
     staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WIZARD_DIR, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
-    appconfig = {'/api': {'tools.basic_auth.on': False},
-                 '/rss': {'tools.basic_auth.on': False},
+    appconfig = {'/api': {
+                            'tools.basic_auth.on': False,
+                            'tools.response_headers.on': True,
+                            'tools.response_headers.headers': [('Access-Control-Allow-Origin', '*')]
+                         },
                  '/static': static,
                  '/wizard/static': wizard_static,
                  '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg', 'ico', 'favicon.ico')},

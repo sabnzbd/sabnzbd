@@ -189,6 +189,7 @@ class URLGrabber(Thread):
                         if item in _RARTING_FIELDS:
                             nzo_info[item] = value
 
+                        # Get filename from Content-Disposition header
                         if not filename and "filename=" in value:
                             filename = value[value.index("filename=") + 9:].strip(';').strip('"')
 
@@ -209,7 +210,12 @@ class URLGrabber(Thread):
                     continue
 
                 if not filename:
-                    filename = os.path.basename(url)
+                    filename = os.path.basename(urllib2.unquote(url))
+
+                    # URL was redirected, maybe the redirect has better filename?
+                    # Check if the original URL has extension
+                    if url != fetch_request.url and misc.get_ext(filename) not in VALID_NZB_FILES:
+                        filename = os.path.basename(urllib2.unquote(fetch_request.url))
                 elif '&nzbname=' in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find('&nzbname=') + 9:]
@@ -360,13 +366,6 @@ def _analyse(fetch_request, url, future_nzo):
         when = DEF_TIMEOUT * (future_nzo.url_tries + 1)
         logging.debug('No usable response from indexer, retry after %s sec', when)
         return None, msg, True, when, data
-
-    # Check for an error response
-    if not fetch_request or fetch_request.msg != 'OK':
-        # Increasing wait-time in steps for standard errors
-        when = DEF_TIMEOUT * (future_nzo.url_tries + 1)
-        logging.debug('Received nothing from indexer, retry after %s sec', when)
-        return None, fetch_request.msg, True, when, data
 
     return fetch_request, fetch_request.msg, False, 0, data
 

@@ -1,38 +1,18 @@
-Release Notes - SABnzbd 2.3.3
+Release Notes - SABnzbd 2.3.4
 =========================================================
 
-## Changes since 2.3.2
-- Introduce and enforce "host_whitelist" to reject DNS Rebinding attacks.
-  If you access SABnzbd from a non-standard URL, you will need to add
-  the hostname. More info: https://sabnzbd.org/hostname-check
-- SABYenc updated to 3.3.5 to fix false-positive CRC errors
-- SSL-Ciphers can now be set per-server
-- Failed URL fetches also trigger post-processing script (if configured)
-- Added "max_url_retries" to set maximum retries of URL fetching
-- Added "ignore_empty_files" option to not warn on empty files in NZB
-- Added "X-Frame-Options" HTTP-header to prevent click-jacking
-- Added "httpOnly" HTTP-header to prevent script cookie access
-- Extended SAN list of newly generated self-signed certificates
-- Indicate that SMPL-skin is no longer supported
-- Removed undocumented "callback" option from API calls
-- macOS: 64bit version of unrar instead of 32bit
-- Windows: Set process priority of external processes (unpack/repair)
-- Windows: Default external process priority increased to "Normal"
-
-## Bugfixes since 2.3.2
-- NZB's can be added via command-line but this was not shown in "--help"
-- Only show bad-SSL-warning if it was actually tested
-- Language-change via API did not directly change display language
-- Cheetah 3 is also accepted as template engine
-- Correctly indicate that 99 is the maximum server priority
-- Results of unpacked zip/7zip files were not sorted
-- Joining of split files was limited to 999 files
-- Media files with "password" in filename were detected as encrypted
-- Servers that could not be DNS-resolved could block the queue
-- Detect '502 Byte limit exceeded' as payment problem
-- Server load-balancing setting was ignored when testing server
-- Windows: MultiPar checksum errors during repair would result in crash
-- Windows: Update 7zip to 18.01
+## Changes since 2.3.3
+- Device hostname in hostname-verification always lowercased
+- Hostnames ending in ".local" are always accepted
+- URLGrabber would not always detect correct filename
+- URLGrabber would ignore some successful downloads
+- Always send NNTP QUIT after server-test
+- Added option "--disable-file-log" to disable file-based logging
+- Added CORS-header to API
+- Windows: Service compatibility with Windows 10 April update
+- Windows: Update Python to 2.7.15
+- Windows: Update 7zip to 18.05
+- macOS: Restore compatibility with El Capitan (10.11)
 
 ## Upgrading from 2.2.x and older
 - Finish queue
