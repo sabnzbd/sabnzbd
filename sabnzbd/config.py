@@ -1054,6 +1054,14 @@ def no_nonsense(value):
     return None, value
 
 
+def all_lowercase(value):
+    """ Lowercase everything! """
+    if isinstance(value, list):
+        # If list, for each item
+        return None, [item.lower() for item in value]
+    return None, value.lower()
+
+
 def validate_octal(value):
     """ Check if string is valid octal number """
     if not value:
