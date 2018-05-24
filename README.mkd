@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 2.3.4 RC 1
+Release Notes - SABnzbd 2.3.4
 =========================================================
 
 ## Changes since 2.3.3
@@ -10,6 +10,8 @@ Release Notes - SABnzbd 2.3.4 RC 1
 - Added option "--disable-file-log" to disable file-based logging
 - Added CORS-header to API
 - Windows: Service compatibility with Windows 10 April update
+- Windows: Update Python to 2.7.15
+- Windows: Update 7zip to 18.05
 - macOS: Restore compatibility with El Capitan (10.11)
 
 ## Upgrading from 2.2.x and older
