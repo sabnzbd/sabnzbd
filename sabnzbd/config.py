@@ -463,7 +463,7 @@ class ConfigCat(object):
         self.pp = OptionStr(name, 'pp', '', add=False)
         self.script = OptionStr(name, 'script', 'Default', add=False)
         self.dir = OptionDir(name, 'dir', add=False, create=False)
-        self.newzbin = OptionList(name, 'newzbin', add=False)
+        self.newzbin = OptionList(name, 'newzbin', add=False, validation=validate_single_tag)
         self.priority = OptionNumber(name, 'priority', DEFAULT_PRIORITY, add=False)
 
         self.set_dict(values)
@@ -1100,6 +1100,16 @@ def validate_notempty(root, value, default):
         return None, value
     else:
         return None, default
+
+
+def validate_single_tag(value):
+    """ Don't split single indexer tags like "TV > HD"
+        into ['TV', '>', 'HD']
+    """
+    if len(value) == 3:
+        if value[1] == '>':
+            return None, ' '.join(value)
+    return None, value
 
 
 def create_api_key():
