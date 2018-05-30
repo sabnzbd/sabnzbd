@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,7 +36,7 @@ except ImportError:
     pass
 
 import sabnzbd
-from sabnzbd.constants import VALID_ARCHIVES, Status, \
+from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, Status, \
      TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
      KIBI, MEBI, GIGI, JOB_ADMIN
 import sabnzbd.config as config
@@ -389,7 +389,7 @@ def _api_addlocalfile(name, output, kwargs):
                 if get_ext(name) in VALID_ARCHIVES:
                     res = sabnzbd.dirscanner.ProcessArchiveFile(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
-                elif get_ext(name) in ('.nzb', '.gz', '.bz2'):
+                elif get_ext(name) in VALID_NZB_FILES:
                     res = sabnzbd.dirscanner.ProcessSingleFile(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:
@@ -580,10 +580,7 @@ def _api_resume(name, output, kwargs):
 
 def _api_shutdown(name, output, kwargs):
     """ API: accepts output """
-    logging.info('Shutdown requested by API')
-    sabnzbd.halt()
-    cherrypy.engine.exit()
-    sabnzbd.SABSTOP = True
+    sabnzbd.shutdown_program()
     return report(output)
 
 
@@ -669,12 +666,11 @@ def _api_rescan(name, output, kwargs):
 
 def _api_eval_sort(name, output, kwargs):
     """ API: evaluate sorting expression """
-    import sabnzbd.tvsort
     name = kwargs.get('name', '')
     value = kwargs.get('value', '')
     title = kwargs.get('title')
     multipart = kwargs.get('movieextra', '')
-    path = sabnzbd.tvsort.eval_sort(value, title, name, multipart)
+    path = sabnzbd.sorting.eval_sort(value, title, name, multipart)
     if path is None:
         return report(output, _MSG_NOT_IMPLEMENTED)
     else:
@@ -891,8 +887,8 @@ def _api_server_stats(name, output, kwargs):
 
     stats['servers'] = {}
     for svr in config.get_servers():
-        t, m, w, d, _ = BPSMeter.do.amounts(svr)
-        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0}
+        t, m, w, d, daily = BPSMeter.do.amounts(svr)
+        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0, 'daily': daily or {} }
 
     return report(output, keyword='', data=stats)
 
@@ -1665,7 +1661,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     bytes = qnfo.bytes
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
-    header['speed'] = to_units(bytespersec, spaces=1, dec_limit=1)
+    header['speed'] = to_units(bytespersec, spaces=1)
     header['mbleft'] = "%.2f" % (bytesleft / MEBI)
     header['mb'] = "%.2f" % (bytes / MEBI)
     header['sizeleft'] = format_bytes(bytesleft)

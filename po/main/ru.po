@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
+"POT-Creation-Date: 2018-03-15 13:08+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2018-03-16 05:37+0000\n"
+"X-Generator: Launchpad (build 18571)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 #: SABnzbd.py [Error message]
@@ -112,7 +112,7 @@ msgid "Error"
 msgstr ""
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/interface.py
-#: sabnzbd/osxmenu.py # sabnzbd/wizard.py
+#: sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "Завершение работы SABnzbd закончено"
 
@@ -474,7 +474,17 @@ msgstr "Приостановлено"
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
+#: sabnzbd/downloader.py # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message]
+msgid "Cannot connect to server %s [%s]"
+msgstr "Не удаётся подключиться к серверу %s [%s]"
+
+#: sabnzbd/downloader.py # sabnzbd/urlgrabber.py
+msgid "Server name does not resolve"
+msgstr ""
+
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Сервер %s будет игнорироваться %s мин."
 
@@ -493,11 +503,6 @@ msgstr "Возможно, учётная запись используется �
 #: sabnzbd/downloader.py # sabnzbd/downloader.py [Error message]
 msgid "Failed login for server %s"
 msgstr "Ошибка входа на сервер %s"
-
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-msgid "Cannot connect to server %s [%s]"
-msgstr "Не удаётся подключиться к серверу %s [%s]"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
@@ -551,6 +556,12 @@ msgstr "Не удалось разорвать соединение с почт�
 msgid "Email succeeded"
 msgstr "Электронное письмо успешно отправлено"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr ""
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Не удаётся найти шаблонны электронных писем в %s"
@@ -603,6 +614,10 @@ msgid "Server address \"%s:%s\" is not valid."
 msgstr "Адрес сервера «%s:%s» является недопустимым."
 
 #: sabnzbd/interface.py
+msgid "Refused connection with hostname \"%s\" from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "User logged in to the web interface"
 msgstr ""
 
@@ -610,7 +625,7 @@ msgstr ""
 msgid "User logged in"
 msgstr ""
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py
 msgid "Missing Session key"
 msgstr "Отсутствует ключ сеанса"
 
@@ -618,7 +633,7 @@ msgstr "Отсутствует ключ сеанса"
 msgid "Error: Session Key Required"
 msgstr "Ошибка: требуется ключ сеанса"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Error: Session Key Incorrect"
 msgstr "Ошибка: неправильный ключ сеанса"
 
@@ -751,7 +766,7 @@ msgstr "ч"
 msgid "m"
 msgstr "м"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Не удаётся создать каталог %s"
 
@@ -780,6 +795,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Не удаётся изменить права доступа %s"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Запуск сценария"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -958,6 +977,8 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Не удалось исправить: %s"
 
@@ -983,10 +1004,6 @@ msgstr "[%s] Проверено за %s. Ошибок нет"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Проверено за %s. Требуется исправление"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Главный пакет не найден..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1098,11 +1115,6 @@ msgstr "Другие сообщения"
 msgid "Not available"
 msgstr ""
 
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr ""
-
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr ""
@@ -1159,7 +1171,7 @@ msgstr "NZB-файл добавлен в очередь"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> неизвестная кодировка"
 
-#: sabnzbd/nzbstuff.py [Warning message]
+#: sabnzbd/nzbstuff.py
 msgid "File %s is empty, skipping"
 msgstr "Файл %s пустой: пропущен"
 
@@ -1269,7 +1281,7 @@ msgid "Warnings"
 msgstr "предупреждений"
 
 #: sabnzbd/osxmenu.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py
-#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py
+#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Бездействие"
 
@@ -1545,10 +1557,6 @@ msgid "Failed to move files"
 msgstr "Не удалось переместить файлы"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Запуск сценария"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Запуск пользовательского сценария %s"
 
@@ -1568,7 +1576,7 @@ msgstr "Подробнее"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Ошибка пост-обработки для %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "см. журнал"
 
@@ -1900,11 +1908,12 @@ msgstr ""
 msgid "Moderate"
 msgstr ""
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Normal"
 msgstr "обычный"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py
 msgid "High"
 msgstr "высокий"
 
@@ -1912,7 +1921,7 @@ msgstr "высокий"
 msgid "Emergency"
 msgstr ""
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Low"
 msgstr "низкий"
 
@@ -2457,6 +2466,12 @@ msgstr ""
 msgid "Force Disconnect"
 msgstr "Принудительно отключить"
 
+#: sabnzbd/skintext.py [Status page button text]
+msgid ""
+"Disconnect all active connections to usenet servers. Connections will be "
+"reopened after a few seconds if there are items in the queue."
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "This will send a test email to your account."
 msgstr "Отправка тестового письма на указанный почтовый ящик"
@@ -2669,7 +2684,7 @@ msgid "Backup"
 msgstr "Резервный"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Описание см. на вики-странице."
 
@@ -3301,6 +3316,10 @@ msgid "IONice Parameters"
 msgstr "Параметры IONice"
 
 #: sabnzbd/skintext.py
+msgid "External process priority"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
 msgstr "Отключаться, если очередь пуста"
 
@@ -3469,7 +3488,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Число попыток"
 
@@ -4113,6 +4132,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Эпизод Папка"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Название"
 
@@ -4181,8 +4204,8 @@ msgid "Original Filename"
 msgstr "Исходное название файла"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Исходное название папки"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4199,10 +4222,6 @@ msgstr "текст"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "файл"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "папка"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4549,6 +4568,12 @@ msgstr "Приостановить на..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Обновить"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4922,22 +4947,18 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "У вас ещё нет поставщика услуг Usenet? Рекомендуем попробовать %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Не удалось получить сведения о ТВ (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Не удалось переименовать: %s в %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Не удалось переименовать похожий файл: %s в %s"
-
-#: sabnzbd/urlgrabber.py
-msgid "Server name does not resolve"
-msgstr ""
 
 #: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
@@ -5031,6 +5052,9 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "Ошибка распаковки: отсутствуют следующие файлы:"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Главный пакет не найден..."
 
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "Недопустимые PAR2-файлы. Нельзя выполнить проверку или исправление"
@@ -5376,6 +5400,12 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "Enable if downloads are not put in their own folders."
 #~ msgstr "Включите, если загрузки не размещаются в собственных папках."
+
+#~ msgid "Original Foldername"
+#~ msgstr "Исходное название папки"
+
+#~ msgid "folder"
+#~ msgstr "папка"
 
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "Позволяет сортировать и переименовывать файлы с датой в названии."

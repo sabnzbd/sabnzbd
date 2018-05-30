@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -264,7 +264,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.quota_day.callback(guard_quota_dp)
     cfg.quota_period.callback(guard_quota_dp)
 ######    cfg.fsys_type.callback(guard_fsys_type)
-    cfg.language.callback(sabnzbd.notifier.reset_growl)
+    cfg.language.callback(guard_language)
     cfg.enable_https_verification.callback(guard_https_ver)
     guard_https_ver()
 
@@ -272,7 +272,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 ######    sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
     # Set cache limit
-    if not cfg.cache_limit() or (cfg.cache_limit() == '200M' and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
+    if not cfg.cache_limit() or (cfg.cache_limit() in ('200M', '450M') and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
         cfg.cache_limit.set(misc.get_cache_limit())
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
@@ -303,6 +303,11 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
         cfg.sched_converted.set(2)
         config.save_config()
 
+    # Add hostname to the whitelist
+    if not cfg.host_whitelist():
+        cfg.host_whitelist.set(socket.gethostname())
+
+    # Do repair if requested
     if check_repair_request():
         repair = 2
         pause_downloader = True
@@ -311,7 +316,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     rss.init()
 
     paused = BPSMeter.do.read()
-
 
     NzbQueue()
 
@@ -507,6 +511,13 @@ def guard_quota_dp():
 # def guard_fsys_type():
 #     """ Callback for change of file system naming type """
 #     sabnzbd.encoding.change_fsys(cfg.fsys_type())
+
+
+def guard_language():
+    """ Callback for change of the interface language """
+    sabnzbd.notifier.reset_growl()
+    sabnzbd.lang.set_language(cfg.language())
+    sabnzbd.api.clear_trans_cache()
 
 
 def set_https_verification(value):
@@ -750,7 +761,7 @@ def system_standby():
 
 def shutdown_program():
     """ Stop program after halting and saving """
-    logging.info("Performing sabnzbd shutdown")
+    logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
     sabnzbd.halt()
     cherrypy.engine.exit()
     sabnzbd.SABSTOP = True
@@ -1139,6 +1150,32 @@ def test_ipv6():
     except:
         logging.debug('Test IPv6: Problem during IPv6 connect. Disabling IPv6. Reason: %s', sys.exc_info()[0])
         return False
+
+
+def test_cert_checking():
+    """ Test quality of certificate validation
+        On systems with at least Python > 2.7.9
+    """
+    if sabnzbd.HAVE_SSL_CONTEXT:
+        try:
+            import ssl
+            ctx = ssl.create_default_context()
+            base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
+            ssl_sock.settimeout(2.0)
+            ssl_sock.connect((cfg.selftest_host(), 443))
+            ssl_sock.close()
+            return True
+        except (socket.gaierror, socket.timeout) as e:
+            # Non-SSL related error.
+            # We now assume that certificates work instead of forcing
+            # lower quality just because some (temporary) internet problem
+            logging.info('Could not determine system certificate validation quality due to connection problems')
+            return True
+        except:
+            # Seems something is still wrong
+            sabnzbd.set_https_verification(0)
+    return False
 
 
 def history_updated():

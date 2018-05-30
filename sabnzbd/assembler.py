@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -73,7 +73,7 @@ class Assembler(Thread):
                     if not sabnzbd.downloader.Downloader.do.paused:
                         logging.warning(T('Too little diskspace forcing PAUSE'))
                         # Pause downloader, but don't save, since the disk is almost full!
-                        sabnzbd.downloader.Downloader.do.pause(save=False)
+                        sabnzbd.downloader.Downloader.do.pause()
                         sabnzbd.emailer.diskfull()
                         # Abort all direct unpackers, just to be sure
                         sabnzbd.directunpacker.abort_all()
@@ -95,7 +95,7 @@ class Assembler(Thread):
                         filepath = self.assemble(nzf, filepath)
                     except IOError as err:
                         # If job was deleted or in active post-processing, ignore error
-                        if not nzo.is_gone() and not nzo.pp_active:
+                        if not nzo.deleted and not nzo.is_gone() and not nzo.pp_active:
                             # 28 == disk full => pause downloader
                             if err.errno == 28:
                                 logging.error(T('Disk full! Forcing Pause'))
@@ -104,7 +104,7 @@ class Assembler(Thread):
                             # Log traceback
                             logging.info('Traceback: ', exc_info=True)
                             # Pause without saving
-                            sabnzbd.downloader.Downloader.do.pause(save=False)
+                            sabnzbd.downloader.Downloader.do.pause()
                         continue
                     except:
                         logging.error(T('Fatal error in Assembler'), exc_info=True)
@@ -207,6 +207,7 @@ def file_has_articles(nzf):
 
 
 RE_SUBS = re.compile(r'\W+sub|subs|subpack|subtitle|subtitles(?![a-z])', re.I)
+SAFE_EXTS = ('.mkv', '.mp4', '.avi', '.wmv', '.mpg', '.webm')
 def is_cloaked(nzo, path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = unicoder(get_filename(path)).lower()
@@ -220,7 +221,7 @@ def is_cloaked(nzo, path, names):
                 logging.warning(T('Job "%s" is probably encrypted due to RAR with same name inside this RAR'), nzo.final_name)
                 nzo.encrypted = 1
             return True
-        elif 'password' in name:
+        elif 'password' in name and ext not in SAFE_EXTS:
             # Only warn once
             if nzo.encrypted == 0:
                 logging.warning(T('Job "%s" is probably encrypted: "password" in filename "%s"'), nzo.final_name, name)
@@ -368,5 +369,5 @@ def remove_warning_label(msg):
     """ Standardize errors by removing obsolete
         "WARNING:" part in all languages """
     if ':' in msg:
-        return msg.split(':')[1]
+        return msg.split(':')[1].strip()
     return msg

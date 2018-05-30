@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2012-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2012-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -270,6 +270,7 @@ SKIN_TEXT = {
 
 # Connections page
     'link-forceDisc' : TT('Force Disconnect'), #: Status page button
+    'explain-forceDisc' : TT('Disconnect all active connections to usenet servers. Connections will be reopened after a few seconds if there are items in the queue.'), #: Status page button text
     'askTestEmail' : TT('This will send a test email to your account.'),
     'link-showLog' : TT('Show Logging'), #: Status page button
     'link-testEmail' : TT('Test Email'), #: Status page button
@@ -476,6 +477,12 @@ SKIN_TEXT = {
     'explain-nice' : TT('Read the Wiki Help on this!'),
     'opt-ionice' : TT('IONice Parameters'),
     'explain-ionice' : TT('Read the Wiki Help on this!'),
+    'opt-win_process_prio' : TT('External process priority'),
+    'explain-win_process_prio' : TT('Read the Wiki Help on this!'),
+    'win_process_prio-high' : TT('High'),
+    'win_process_prio-normal' : TT('Normal'),
+    'win_process_prio-low' : TT('Low'),
+    'win_process_prio-idle' : TT('Idle'),
     'opt-auto_disconnect' : TT('Disconnect on Empty Queue'),
     'explain-auto_disconnect' : TT('Disconnect from Usenet server(s) when queue is empty or paused.'),
     'opt-auto_sort' : TT('Sort by Age'),
@@ -712,6 +719,7 @@ SKIN_TEXT = {
     'button-SeasonS01E05' : TT('S01E05 Season Folder'),
     'button-Ep1x05' : TT('1x05 Episode Folder'),
     'button-EpS01E05' : TT('S01E05 Episode Folder'),
+    'button-FileLikeFolder' : TT('Job Name as Filename'),
     'sort-title' : TT('Title'),
     'movie-sp-name' : TT('Movie Name'),
     'movie-dot-name' : TT('Movie.Name'),
@@ -731,12 +739,11 @@ SKIN_TEXT = {
     'partNumber' : TT('Part Number'),
     'decade' : TT('Decade'),
     'orgFilename' : TT('Original Filename'),
-    'orgDirname' : TT('Original Foldername'),
+    'orgJobname' : TT('Original Job Name'),
     'lowercase' : TT('Lower Case'),
     'TEXT' : TT('TEXT'),
     'text' : TT('text'),
     'sort-File' : TT('file'),
-    'sort-Folder' : TT('folder'),
     'sortString' : TT('Sort String'),
     'multiPartLabel' : TT('Multi-part label'),
     'button-inFolders' : TT('In folders'),
@@ -862,6 +869,7 @@ SKIN_TEXT = {
     'Glitter-pausePromptFail': TT('Sorry, we could not interpret that. Try again.'),
     'Glitter-pauseFor' : TT('Pause for...'),
     'Glitter-refresh' : TT('Refresh'),
+    'Glitter-logText' : TT('All usernames, passwords and API-keys are automatically removed from the log and the included copy of your settings.'),
     'Glitter-sortAgeAsc' : TT('Sort by Age <small>Oldest&rarr;Newest</small>'),
     'Glitter-sortAgeDesc' : TT('Sort by Age <small>Newest&rarr;Oldest</small>'),
     'Glitter-sortNameAsc' : TT('Sort by Name <small>A&rarr;Z</small>'),

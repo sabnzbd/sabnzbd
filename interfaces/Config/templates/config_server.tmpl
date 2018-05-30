@@ -2,107 +2,311 @@
 <!--#set global $help_uri="configuration/2.3/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
+<!--
+    We need to find how many months we have recorded so far, so we
+    loop over all the dates to find the lowest value and then use
+    this to calculate the date-selector and maximum value per month.
+-->
+<!--#import json#-->
+<!--#import datetime#-->
+<!--#import sabnzbd.misc#-->
+
+<!--#set month_names = [$T('January'), $T('February'), $T('March'), $T('April'), $T('May'), $T('June'), $T('July'), $T('August'), $T('September'), $T('October'), $T('November'), $T('December')] #-->
+<!--#set min_date = datetime.date.today()#-->
+<!--#set max_data_all = {}#-->
+
+<!--#for $server in $servers #-->
+    <!--#if 'amounts' in $server#-->
+        <!--#set max_data_server = {}#-->
+        <!--#for date in $server['amounts'][4]#-->
+            <!--#set split_date = $date.split('-')#-->
+            <!--#set min_date = min(min_date, datetime.date(int(split_date[0]), int(split_date[1]), 1))#-->
+
+            <!--#set month_date = $date[:7]#-->
+            <!--#if $month_date not in $max_data_server#-->
+                <!--#set max_data_server[$month_date] = 0#-->
+             <!--#end if#-->
+             <!--#set max_data_server[$month_date] = max(max_data_server[$month_date], $server['amounts'][4][$date])#-->
+        <!--#end for#-->
+
+        <!--#for month_date in max_data_server#-->
+            <!--#if $month_date not in $max_data_all#-->
+                <!--#set max_data_all[$month_date] = 0#-->
+             <!--#end if#-->
+             <!--#set max_data_all[$month_date] = max(max_data_all[$month_date], max_data_server[$month_date])#-->
+        <!--#end for#-->
+    <!--#end if#-->
+<!--#end for#-->
+
+<!--#set months_recorded = list(sabnzbd.misc.monthrange(min_date, datetime.date.today()))#-->
+<!--#$months_recorded.reverse()#-->
+
+<script type="text/javascript">
+    // Define variable needed for the server-plots
+    var serverData = {}
+</script>
+
 <div class="colmask">
-    <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
-    <input type="hidden" name="session" value="$session" />
-    <div id="addServer">
-        <div class="padding alt">
-            <button type="button" class="btn btn-default" id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+    <div class="padding alt section">
+        <button type="button" class="btn btn-default" id="addServerButton"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+        <label for="advanced-settings-button" class="form-control advanced-button ">
+            <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
+        </label>
+
+        <!--#if $months_recorded#-->
+        <div class="advanced-buttonSeperator"></div>
+        <div class="chart-selector-container" title="$T('srv-bandwidth')">
+            <span class="glyphicon glyphicon-signal"></span>
+            <select name="chart-selector" id="chart-selector">
+                <!--#for $cur_date in months_recorded#-->
+                    <!--#set month_date = '%d-%02d' % ($cur_date.year, $cur_date.month)#-->
+                    <!--#if $month_date not in $max_data_all#-->
+                        <!--#set max_data_all[$month_date] = 0#-->
+                     <!--#end if#-->
+                    <option value="$month_date" data-max="$max_data_all[$month_date]">$month_names[$cur_date.month-1] $cur_date.year</option>
+                <!--#end for#-->
+            </select>
         </div>
+        <!--#end if#-->
     </div>
     <div class="section" id="addServerContent" style="display: none;">
         <div class="col2">
             <h3>$T('addServer') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-        </div><!-- /col2 -->
+        </div>
         <div class="col1">
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="enable">$T('srv-enable')</label>
-                    <input type="checkbox" name="enable" id="enable" value="1" checked="checked" />
-                    <span class="desc">$T('srv-enable')</span>
+            <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
+                <input type="hidden" name="session" value="$session" />
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config" for="enable">$T('srv-enable')</label>
+                        <input type="checkbox" name="enable" id="enable" value="1" checked="checked" />
+                        <span class="desc">$T('srv-enable')</span>
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="host">$T('srv-host')</label>
+                        <input type="text" name="host" id="host" required />
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="port">$T('srv-port')</label>
+                        <input type="number" name="port" id="port" size="8" value="119" min="0" />
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="ssl">$T('srv-ssl')</label>
+                        <input type="checkbox" name="ssl" id="ssl" value="1" />
+                        <span class="desc">$T('explain-ssl')</span>
+                    </div>
+                    <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
+                    <div class="field-pair">
+                        <label class="config" for="${pid}_00">$T('srv-username')</label>
+                        <input type="text" name="${pid}_00" id="${pid}_00" data-hide="username" />
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="${pid}_01">$T('srv-password')</label>
+                        <input type="text" name="${pid}_01" id="${pid}_01" data-hide="password" />
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="connections">$T('srv-connections')</label>
+                        <input type="number" name="connections" id="connections" min="1" max="100" value="8" required />
+                    </div>
+                    <div class="field-pair">
+                        <label class="config" for="priority">$T('srv-priority')</label>
+                        <input type="number" name="priority" id="priority" min="0" max="99" /> <i>$T('explain-svrprio')</i>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="retention">$T('srv-retention')</label>
+                        <input type="number" name="retention" id="retention" min="0" /> <i>$T('days')</i>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="timeout">$T('srv-timeout')</label>
+                        <input type="number" name="timeout" id="timeout" min="20" max="240" /> <i>$T('seconds')</i>
+                    </div>
+                    <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
+                        <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
+                        <select name="ssl_verify" id="ssl_verify" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
+                            <option value="2" selected>$T('ssl_verify-strict')</option>
+                            <option value="1">$T('ssl_verify-normal')</option>
+                            <option value="0">$T('ssl_verify-disabled')</option>
+                        </select>
+                        <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
+                        <input type="text" name="ssl_ciphers" id="ssl_ciphers" />
+                        <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
+                        <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="send_group">$T('srv-send_group')</label>
+                        <input type="checkbox" name="send_group" id="send_group" value="1" />
+                        <span class="desc">$T('srv-explain-send_group')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="optional">$T('srv-optional')</label>
+                        <input type="checkbox" name="optional" id="optional" value="1" />
+                        <span class="desc">$T('explain-optional')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="displayname">$T('srv-displayname')</label>
+                        <input type="text" name="displayname" id="displayname" />
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="notes">$T('srv-notes')</label>
+                        <textarea name="notes" id="notes" rows="3" cols="50"></textarea>
+                    </div>
+                    <div class="field-pair no-field-pair-bg">
+                        <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
+                        <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
+                    </div>
+                    <div class="field-pair result-box">
+                        <div class="alert"></div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+
+    <!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
+    <!--#set $cur_prio_color = -1 #-->
+    <!--#set $last_prio = -1 #-->
+    <!--#for $cur, $server in enumerate($servers) #-->
+        <form action="saveServer" method="post" class="fullform" autocomplete="off">
+            <input type="hidden" name="session" value="$session" />
+            <input type="hidden" name="server" value="$server['name']" />
+            <input type="hidden" id="ajax" name="ajax" value=1 />
+
+            <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
+                <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
+                    <h3>$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <!--#if int($server['enable']) != 0 #-->
+                        <!--#if $last_prio != $server['priority'] and $cur_prio_color+1 < len($prio_colors) #-->
+                            <!--#set $cur_prio_color = $cur_prio_color+1 #-->
+                            <!--#set $last_prio = $server['priority'] #-->
+                        <!--#end if#-->
+                        <span class="label label-primary" style="background-color: $prio_colors[$cur_prio_color]">$server['priority']</span>
+                        <span class="label label-primary" style="background-color: $prio_colors[$cur_prio_color]">$T('srv-priority'):</span>
+                    <!--#end if#-->
+                    <table>
+                        <tr>
+                            <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$cur" name="$server['name']" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
+                            <td><label for="enable_$cur">$T('enabled')</label></td>
+                        </tr>
+                    </table>
+                    <button type="button" class="btn btn-default showserver"><span class="glyphicon glyphicon-pencil"></span> $T('showDetails')</button>
+                    <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
                 </div>
-                <div class="field-pair">
-                    <label class="config" for="host">$T('srv-host')</label>
-                    <input type="text" name="host" id="host" required />
+                <div class="col1" style="display:none;">
+                    <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
+                    <fieldset>
+                        <div class="field-pair">
+                            <label class="config" for="host$cur">$T('srv-host')</label>
+                            <input type="text" name="host" id="host$cur" value="$server['host']" required />
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="port$cur">$T('srv-port')</label>
+                            <input type="number" name="port" id="port$cur" value="$server['port']" size="8" min="0" required />
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="ssl$cur">$T('srv-ssl')</label>
+                            <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 then 'checked="checked"' else ""#--> />
+                            <span class="desc">$T('explain-ssl')</span>
+                        </div>
+                        <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
+                        <div class="field-pair">
+                            <label class="config" for="${pid}_${cur}0">$T('srv-username')</label>
+                            <input type="text" name="${pid}_${cur}0" id="${pid}_${cur}0" value="$server['username']" data-hide="username" />
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="${pid}_${cur}1">$T('srv-password')</label>
+                            <input type="text" name="${pid}_${cur}1" id="${pid}_${cur}1" value="$server['password']" data-hide="password" />
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="connections$cur">$T('srv-connections')</label>
+                            <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="100" required />
+                        </div>
+                        <div class="field-pair">
+                            <label class="config" for="priority$cur">$T('srv-priority')</label>
+                            <input type="number" name="priority" id="priority$cur" value="$server['priority']" min="0" max="99" required /> <i>$T('explain-svrprio')</i>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="retention$cur">$T('srv-retention')</label>
+                            <input type="number" name="retention" id="retention$cur" value="$server['retention']" min="0" required /> <i>$T('days')</i>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="timeout$cur">$T('srv-timeout')</label>
+                            <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="20" max="240" required /> <i>$T('seconds')</i>
+                        </div>
+
+                        <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
+                            <label class="config" for="ssl_verify$cur">$T('opt-ssl_verify')</label>
+                            <select name="ssl_verify" id="ssl_verify$cur" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
+                                <option value="2" <!--#if $server['ssl_verify'] == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
+                                <option value="1" <!--#if $server['ssl_verify'] == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-normal')</option>
+                                <option value="0" <!--#if $server['ssl_verify'] == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>
+                            </select>
+                            <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
+                            <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$server['ssl_ciphers']" />
+                            <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
+                            <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="optional$cur">$T('srv-optional')</label>
+                            <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($server['optional']) != 0 then 'checked="checked"' else ""#--> />
+                            <span class="desc">$T('explain-optional')</span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="send_group$cur">$T('srv-send_group')</label>
+                            <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($server['send_group']) != 0 then 'checked="checked"' else ""#--> />
+                            <span class="desc">$T('srv-explain-send_group')</span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="displayname$cur">$T('srv-displayname')</label>
+                            <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="notes$cur">$T('srv-notes')</label>
+                            <textarea name="notes" id="notes$cur" rows="3" cols="50">$server['notes']</textarea>
+                        </div>
+                        <div class="field-pair">
+                            <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                            <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
+                            <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
+                        </div>
+                        <div class="field-pair result-box">
+                            <div class="alert"></div>
+                        </div>
+                    </fieldset>
                 </div>
-                <div class="field-pair">
-                    <label class="config" for="port">$T('srv-port')</label>
-                    <input type="number" name="port" id="port" size="8" value="119" min="0" />
+                <div class="col1" style="display:block;">
+                    <!--#if 'amounts' in $server#-->
+                        <div class="server-amounts-text">
+                            <b>$T('srv-bandwidth'):</b><br/>
+                            $T('total'): $(server['amounts'][0])B<br/>
+                            $T('today'): $(server['amounts'][3])B<br/>
+                            $T('thisWeek'): $(server['amounts'][2])B<br/>
+                            $T('thisMonth'): $(server['amounts'][1])B<br/>
+                            <span id="server-data-label-${cur}"></span>: <span id="server-data-value-${cur}"></span>
+                        </div>
+                        <div class="server-chart" data-serverid="${cur}"s>
+                            <div id="server-chart-${cur}" class="ct-chart"></div>
+                        </div>
+                        <script type="text/javascript">
+                            // Server data
+                            serverData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
+                        </script>
+                    <!--#end if#-->
                 </div>
-                <div class="field-pair">
-                    <label class="config" for="ssl">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl" value="1" />
-                    <span class="desc">$T('explain-ssl')</span>
-                </div>
-                <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
-                <div class="field-pair">
-                    <label class="config" for="${pid}_00">$T('srv-username')</label>
-                    <input type="text" name="${pid}_00" id="${pid}_00" data-hide="username" />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="${pid}_01">$T('srv-password')</label>
-                    <input type="text" name="${pid}_01" id="${pid}_01" data-hide="password" />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="connections">$T('srv-connections')</label>
-                    <input type="number" name="connections" id="connections" min="1" max="100" value="8" required />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="priority">$T('srv-priority')</label>
-                    <input type="number" name="priority" id="priority" min="0" max="99" /> <i>$T('explain-svrprio')</i>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="retention">$T('srv-retention')</label>
-                    <input type="number" name="retention" id="retention" min="0" /> <i>$T('days')</i>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="timeout">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout" min="20" max="240" /> <i>$T('seconds')</i>
-                </div>
-                <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
-                    <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
-                    <select name="ssl_verify" id="ssl_verify" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
-                        <option value="2" selected>$T('ssl_verify-strict')</option>
-                        <option value="1">$T('ssl_verify-normal')</option>
-                        <option value="0">$T('ssl_verify-disabled')</option>
-                    </select>
-                    <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="send_group">$T('srv-send_group')</label>
-                    <input type="checkbox" name="send_group" id="send_group" value="1" />
-                    <span class="desc">$T('srv-explain-send_group')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="optional">$T('srv-optional')</label>
-                    <input type="checkbox" name="optional" id="optional" value="1" />
-                    <span class="desc">$T('explain-optional')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="displayname">$T('srv-displayname')</label>
-                    <input type="text" name="displayname" id="displayname" />
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="notes">$T('srv-notes')</label>
-                    <textarea name="notes" id="notes" rows="3" cols="50"></textarea>
-                </div>
-                <div class="field-pair">
-                    <button class="btn btn-default"><span class="glyphicon glyphicon-plus"></span> $T('button-addServer')</button>
-                    <button class="btn btn-default advancedButton"><span class="glyphicon glyphicon-cog"></span> $T('button-advanced')</button>
-                    <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
-                </div>
-            </fieldset>
-        </div><!-- /col1 -->
-    </div><!-- /section -->
-</form>
+            </div>
+        </form>
+    <!--#end for#-->
+</div>
 
 <script type="text/javascript" src="${root}staticcfg/js/chartist.min.js"></script>
+<script type="text/javascript" src="${root}staticcfg/js/filesize.min.js"></script>
 <script type="text/javascript">
-    // Define variables needed for the server-plots
-    var serverData = {}
+    // Standardize chart options
     var chartOptions = {
         fullWidth: true,
         showArea: true,
@@ -125,246 +329,76 @@
             right: 20
         }
     }
-</script>
-<!--
-    We need to find how many months we have recorded so far, so we
-     loop over all the dates to find the lowest value and then use
-     this to calculate the date-selector
--->
 
-<!--#import json#-->
-<!--#import datetime#-->
-<!--#import sabnzbd.misc#-->
-
-<!--#def show_date_selector($server, $id)#-->
-    <!--#set month_names = [$T('January'), $T('February'), $T('March'), $T('April'), $T('May'), $T('June'), $T('July'), $T('August'), $T('September'), $T('October'), $T('November'), $T('December')] #-->
-    <!--#set min_date = datetime.date.today()#-->
-    <!--#for date in $server['amounts'][4]#-->
-        <!--#set split_date = $date.split('-')#-->
-        <!--#set min_date = min(min_date, datetime.date(int(split_date[0]), int(split_date[1]), 1))#-->
-    <!--#end for#-->
-    <!--#set months_recorded = list(sabnzbd.misc.monthrange(min_date, datetime.date.today()))#-->
-    <!--#$months_recorded.reverse()#-->
-    <select class="chart-selector" name="chart-selector-${id}" id="chart-selector-${id}" data-id="${id}">
-        <!--#for $cur_date in months_recorded#-->
-            <option value="<!--#echo '%d-%02d' % ($cur_date.year, $cur_date.month)#-->">$month_names[$cur_date.month-1] $cur_date.year</option>
-        <!--#end for#-->
-    </select>
-<!--#end def#-->
-
-<!--#set $prio_colors = ["#59cc33", "#3366cc","#7f33cc", "#cc33a6", "#cc3333"] #-->
-<!--#set $cur_prio_color = -1 #-->
-<!--#set $last_prio = -1 #-->
-<!--#for $cur, $server in enumerate($servers) #-->
-    <form action="saveServer" method="post" class="fullform" autocomplete="off">
-    <input type="hidden" name="session" value="$session" />
-    <input type="hidden" name="server" value="$server['name']" />
-
-    <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
-        <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
-            <h3>$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-
-            <!--#if int($server['enable']) != 0 #-->
-                <!--#if $last_prio != $server['priority'] and $cur_prio_color+1 < len($prio_colors) #-->
-                    <!--#set $cur_prio_color = $cur_prio_color+1 #-->
-                    <!--#set $last_prio = $server['priority'] #-->
-                <!--#end if#-->
-                <span class="label label-primary" style="background-color: $prio_colors[$cur_prio_color]">$server['priority']</span>
-                <span class="label label-primary" style="background-color: $prio_colors[$cur_prio_color]">$T('srv-priority'):</span>
-            <!--#end if#-->
-            <table><tr>
-              <td><input type="checkbox" class="toggleServerCheckbox" id="enable_$cur" name="$server['name']" value="1" <!--#if int($server['enable']) != 0 then 'checked="checked"' else ""#--> /></td>
-              <td><label for="enable_$cur">$T('enabled')</label></td>
-            </tr></table>
-
-            <button type="button" class="btn btn-default showserver"><span class="glyphicon glyphicon-pencil"></span> $T('showDetails')</button>
-            <button type="button" class="btn btn-default clrServer"><span class="glyphicon glyphicon-remove"></span> $T('button-clrServer')</button>
-        </div><!-- /col2 -->
-        <div class="col1"  style="display:none;">
-            <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="host$cur">$T('srv-host')</label>
-                    <input type="text" name="host" id="host$cur" value="$server['host']" required />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="port$cur">$T('srv-port')</label>
-                    <input type="number" name="port" id="port$cur" value="$server['port']" size="8" min="0" required />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="ssl$cur">$T('srv-ssl')</label>
-                    <input type="checkbox" name="ssl" id="ssl$cur" value="1" <!--#if int($server['ssl']) != 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-ssl')</span>
-                </div>
-                <!-- Tricks to avoid browser auto-fill, fixed on-submit with javascript -->
-                <div class="field-pair">
-                    <label class="config" for="${pid}_${cur}0">$T('srv-username')</label>
-                    <input type="text" name="${pid}_${cur}0" id="${pid}_${cur}0" value="$server['username']" data-hide="username" />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="${pid}_${cur}1">$T('srv-password')</label>
-                    <input type="text" name="${pid}_${cur}1" id="${pid}_${cur}1" value="$server['password']" data-hide="password" />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="connections$cur">$T('srv-connections')</label>
-                    <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="100" required />
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="priority$cur">$T('srv-priority')</label>
-                    <input type="number" name="priority" id="priority$cur" value="$server['priority']" min="0" max="99" required /> <i>$T('explain-svrprio')</i>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="retention$cur">$T('srv-retention')</label>
-                    <input type="number" name="retention" id="retention$cur" value="$server['retention']" min="0" required /> <i>$T('days')</i>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="timeout$cur">$T('srv-timeout')</label>
-                    <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="20" max="240" required /> <i>$T('seconds')</i>
-                </div>
-
-                <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
-                    <label class="config" for="ssl_verify$cur">$T('opt-ssl_verify')</label>
-                    <select name="ssl_verify" id="ssl_verify$cur" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
-                        <option value="2" <!--#if $server['ssl_verify'] == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
-                        <option value="1" <!--#if $server['ssl_verify'] == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-normal')</option>
-                        <option value="0" <!--#if $server['ssl_verify'] == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>
-                    </select>
-                    <span class="desc">$T('explain-ssl_verify').replace('. ', '.<br/>')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="optional$cur">$T('srv-optional')</label>
-                    <input type="checkbox" name="optional" id="optional$cur" value="1" <!--#if int($server['optional']) != 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('explain-optional')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="send_group$cur">$T('srv-send_group')</label>
-                    <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($server['send_group']) != 0 then 'checked="checked"' else ""#--> />
-                    <span class="desc">$T('srv-explain-send_group')</span>
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="displayname$cur">$T('srv-displayname')</label>
-                    <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
-                </div>
-                <div class="field-pair advanced-settings">
-                    <label class="config" for="notes$cur">$T('srv-notes')</label>
-                    <textarea name="notes" id="notes$cur" rows="3" cols="50">$server['notes']</textarea>
-                </div>
-                <div class="field-pair">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                    <button class="btn btn-default advancedButton"><span class="glyphicon glyphicon-cog"></span> $T('button-advanced')</button>
-                    <button class="btn btn-default testServer" type="button"><span class="glyphicon glyphicon-sort"></span> $T('button-testServer')</button>
-                    <button class="btn btn-default delServer"><span class="glyphicon glyphicon-trash"></span> $T('button-delServer')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
-                </div>
-            </fieldset>
-        </div>
-        <div class="col1" style="display:block;">
-            <!--#if 'amounts' in $server#-->
-                <div class="server-amounts-text">
-                    <b>$T('srv-bandwidth'):</b><br/>
-                    $T('total'): $(server['amounts'][0])B<br/>
-                    $T('today'): $(server['amounts'][3])B<br/>
-                    $T('thisWeek'): $(server['amounts'][2])B<br/>
-                    $T('thisMonth'): $(server['amounts'][1])B
-                </div>
-                <div class="server-chart">
-                    $show_date_selector($server, $cur)
-                    <div id="server-chart-${cur}" class="ct-chart"></div>
-                </div>
-                <script type="text/javascript">
-                    // Server data
-                    serverData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
-                    \$(document).ready(function() {
-                        showChart(${cur}, \$('#chart-selector-${cur}').val())
-                    })
-                </script>
-            <!--#end if#-->
-        </div>
-    </div>
-    </form>
-<!--#end for#-->
-
-</div><!-- /colmask -->
-
-<script type="text/javascript">
-    function showChart(server_id, month) {
+    function showCharts() {
         // This month
+        var theMonth = \$('#chart-selector').val()
         var thisDay = new Date()
 
         // What month are we doing?
-        var inputDate = new Date(month+'-01')
+        var inputDate = new Date(theMonth+'-01')
         var baseDate = new Date(inputDate.getUTCFullYear(), inputDate.getUTCMonth(), 1)
         var maxDaysInMonth = new Date(baseDate.getFullYear(), baseDate.getMonth()+1, 0).getDate()
 
-        // Fill the data array
-        var data = {
-            labels: [],
-            series: [[]]
-        };
-        var largestVal = 0
-        for(var i = 1; i < maxDaysInMonth+1; i++) {
-            // Add X-label
-            if(i % 3 == 1) {
-                data['labels'].push(i)
-            } else {
-                data['labels'].push(NaN)
+        // Set the new maximum
+        chartOptions.axisY.high = \$('#chart-selector :selected').data('max');
+        chartOptions.axisY.low = 0
+
+        // For each chart
+        \$('.server-chart').each(function(i, elemn) {
+            var server_id = \$(elemn).data('serverid')
+
+            // Fill the data array
+            var data = {
+                labels: [],
+                series: [[]]
+            };
+            var totalThisMonth = 0
+            for(var i = 1; i < maxDaysInMonth+1; i++) {
+                // Add X-label
+                if(i % 3 == 1) {
+                    data['labels'].push(i)
+                } else {
+                    data['labels'].push(NaN)
+                }
+
+                // Get formatted date
+                baseDate.setDate(i)
+                var dateCheck = toFormattedDate(baseDate)
+
+                // Add data if we have it
+                if(dateCheck in serverData[server_id]) {
+                    data['series'][0].push(serverData[server_id][dateCheck])
+                    totalThisMonth += serverData[server_id][dateCheck]
+                } else if(thisDay.getYear() == baseDate.getYear() && thisDay.getMonth() == baseDate.getMonth() && thisDay.getDate() < i) {
+                    data['series'][0].push(NaN)
+                } else {
+                    data['series'][0].push(0)
+                }
             }
 
-            // Get formatted date
-            baseDate.setDate(i)
-            var dateCheck = toFormattedDate(baseDate)
+            // Update the text value
+            \$('#server-data-label-' + server_id).text(\$('#chart-selector :selected').text())
+            \$('#server-data-value-' + server_id).text(filesize(totalThisMonth, {round: 1}))
 
-            // Add data if we have it
-            if(dateCheck in serverData[server_id]) {
-                data['series'][0].push(serverData[server_id][dateCheck])
-                largestVal = Math.max(largestVal, serverData[server_id][dateCheck])
-            } else if(thisDay.getYear() == baseDate.getYear() && thisDay.getMonth() == baseDate.getMonth() && thisDay.getDate() < i) {
-                data['series'][0].push(NaN)
-            } else {
-                data['series'][0].push(0)
-            }
-        }
-
-        // Check if we should shrink the Y-axis values
-        var devideBy = 1024
-        var axisLabel = 'KB'
-        if(largestVal > 1024*1024) {
-            devideBy = 1024*1024
-            axisLabel = 'MB'
-        }
-        if(largestVal > 1024*1024*1024) {
-            devideBy = 1024*1024*1024
-            axisLabel = 'GB'
-        }
-        if(largestVal > 1024*1024*1024*1024) {
-            devideBy = 1024*1024*1024*1024
-            axisLabel = 'TB'
-        }
-
-        // Shrink the value
-        data['series'][0] = data['series'][0].map(function(num) {
-            return num / devideBy;
+            // Show the chart
+            chart = new Chartist.Line('#server-chart-'+server_id, data, chartOptions);
+            chart.on('created', function(context) {
+                // Make sure to add this as the first child so it's at the bottom
+                context.svg.elem('rect', {
+                    x: context.chartRect.x1,
+                    y: context.chartRect.y2-1,
+                    width: context.chartRect.width(),
+                    height: context.chartRect.height()+2,
+                    fill: 'none',
+                    stroke: '#B9B9B9',
+                    'stroke-width': '1px'
+                }, '', context.svg, true)
+                \$('#server-chart-'+server_id+' .ct-label.ct-vertical').each(function(index, elmn) {
+                    elmn.innerHTML = filesize(elmn.innerHTML, {round: 1}).replace(' ','')
+                })
+            });
         })
-
-        // Show the chart
-        chart = new Chartist.Line('#server-chart-'+server_id, data, chartOptions);
-        chart.on('created', function(context) {
-            // Make sure to add this as the first child so it's at the bottom
-            context.svg.elem('rect', {
-                x: context.chartRect.x1,
-                y: context.chartRect.y2-1,
-                width: context.chartRect.width(),
-                height: context.chartRect.height()+2,
-                fill: 'none',
-                stroke: '#B9B9B9',
-                'stroke-width': '1px'
-            }, '', context.svg, true)
-            \$('#server-chart-'+server_id+' .ct-label.ct-vertical').each(function(index, elmn) {
-                elmn.innerHTML += axisLabel
-            })
-        });
     }
 
     // Need to mitigate timezone effects!
@@ -381,6 +415,8 @@
         // Exception when change of priority, reload
         \$('input[name="priority"], input[name="displayname"]').on('change', function() {
             \$('.fullform').submit(function() {
+                // No ajax this time
+                \$('input[name="ajax"]').val('')
                 // Skip the fancy stuff, just submit
                 this.submit()
             })
@@ -389,14 +425,17 @@
         /**
             Update charts when changed
         **/
-        \$('.chart-selector').on('change', function(elemn) {
-            showChart(\$(elemn.target).data('id'), \$(elemn.target).val())
+        \$('#chart-selector').on('change', function(elemn) {
+            showCharts()
+
             // Lets us leave (needs to be called after the change event)
             setTimeout(function() {
                 formWasSubmitted = true;
                 formHasChanged = false;
             }, 100)
         })
+        // And on page-load
+        showCharts()
 
         /**
             Click events
@@ -412,11 +451,14 @@
             } else {
                 \$(this).html(\$(this).html().replace("$T('hideDetails')", "$T('showDetails')"));
             }
+            // Add coloring
+            addRowColor()
         });
 
         \$('#addServerButton').click(function(){
-            \$('#addServer').hide();
             \$('#addServerContent').show();
+            // Add coloring
+            addRowColor()
         });
 
         \$('[name="ssl"]').click(function() {
@@ -438,6 +480,7 @@
             setTimeout(function() { portBox.removeClass('port-highlight') }, 2000)
         })
 
+        // Testing servers
         \$('.testServer').click(function(event){
             removeObfuscation()
             var theButton = \$(this)

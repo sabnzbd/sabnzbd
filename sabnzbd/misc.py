@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@ import sys
 import logging
 import urllib.request, urllib.parse, urllib.error
 import re
+import ctypes
 import shutil
 import threading
 import subprocess
@@ -37,7 +38,7 @@ import inspect
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
-     GIGI, MEBI, DEF_CACHE_LIMIT
+     GIGI, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, unicoder, special_fixer, gUTF
@@ -152,7 +153,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
 
-    # logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
+    logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
     return cat, pp, script, priority
 
 
@@ -419,12 +420,12 @@ def from_units(val):
         return 0.0
 
 
-def to_units(val, spaces=0, dec_limit=2, postfix=''):
+def to_units(val, spaces=0, postfix=''):
     """ Convert number to K/M/G/T/P notation
         Add "spaces" if not ending in letter
-        dig_limit==1 show single decimal for M and higher
-        dig_limit==2 show single decimal for G and higher
+        Show single decimal for M and higher
     """
+    dec_limit = 1
     decimals = 0
     if val < 0:
         sign = '-'
@@ -506,24 +507,40 @@ def split_host(srv):
 
 
 def get_cache_limit():
-    """ Depending on OS, calculate cache limit """
-    # OSX/Windows use Default value
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        return DEF_CACHE_LIMIT
-
+    """ Depending on OS, calculate cache limits.
+        In ArticleCache it will make sure we stay
+        within system limits for 32/64 bit
+    """
     # Calculate, if possible
     try:
+        if sabnzbd.WIN32:
+            # Windows
+            mem_bytes = get_windows_memory()
+        elif sabnzbd.DARWIN:
+            # macOS
+            mem_bytes = get_darwin_memory()
+        else:
+            # Linux
+            mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))
+
         # Use 1/4th of available memory
-        mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))/4
-        # Not more than the maximum we think is reasonable
-        if mem_bytes > from_units(DEF_CACHE_LIMIT):
-            return DEF_CACHE_LIMIT
-        elif mem_bytes > from_units('32M'):
-            # We make sure it's at least a valid value
+        mem_bytes = mem_bytes/4
+
+        # We don't want to set a value that's too high
+        if mem_bytes > from_units(DEF_ARTICLE_CACHE_MAX):
+            return DEF_ARTICLE_CACHE_MAX
+
+        # We make sure it's at least a valid value
+        if mem_bytes > from_units('32M'):
             return to_units(mem_bytes)
     except:
         pass
-    # If failed, leave empty so user needs to decide
+
+    # Always at least minimum on Windows/macOS
+    if sabnzbd.WIN32 and sabnzbd.DARWIN:
+        return DEF_ARTICLE_CACHE_DEFAULT
+
+    # If failed, leave empty for Linux so user needs to decide
     return ''
 
 
@@ -700,6 +717,22 @@ def find_on_path(targets):
             if os.path.isfile(target_path) and os.access(target_path, os.X_OK):
                 return target_path
     return None
+
+
+def probablyipv4(ip):
+    if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
+        return True
+    else:
+        return False
+
+
+def probablyipv6(ip):
+    # Returns True if the given input is probably an IPv6 address
+    # Square Brackets like '[2001::1]' are OK
+    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:\[\]]', '', ip) == '':
+        return True
+    else:
+        return False
 
 
 def ip_extract():

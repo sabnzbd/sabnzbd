@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ sabnzbd.encoding - Unicoded filename support
 """
 
 import locale
+import string
 from xml.sax.saxutils import escape
 from Cheetah.Filters import Filter
 
@@ -167,8 +168,8 @@ class EmailFilter(Filter):
 ################################################################################
 #
 # Map CodePage-850 characters to Python's pseudo-Unicode 8bit ASCII
-#
 # Use to transform 8-bit console output to plain Python strings
+# For example for unrar and par2 output
 #
 
 
@@ -178,10 +179,9 @@ def TRANS(p):
     """ For Windows: Translate CP850 to Python's Latin-1 and return in Unicode
         Others: return original string
     """
-    global gTABLE_850_LATIN
     if sabnzbd.WIN32:
         if p:
-            return p.translate(gTABLE_850_LATIN).decode('cp1252', 'replace')
+            return p.translate(string.maketrans(TAB_850, TAB_LATIN)).decode('cp1252', 'replace')
         else:
             # translate() fails on empty or None strings
             return ''
@@ -278,7 +278,7 @@ def deunicode(p):
             except:
                 return p
     else:
-        return p
+        return str(p)
 
 
 def utob(str_in):

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -44,8 +44,15 @@ from sabnzbd.constants import Status
 if sabnzbd.WIN32:
     try:
         import win32api
-        from win32con import SW_HIDE
-        from win32process import STARTF_USESHOWWINDOW, IDLE_PRIORITY_CLASS
+        import win32con
+        import win32process
+
+        # Define scheduling priorities
+        WIN_SCHED_PRIOS = {1: win32process.IDLE_PRIORITY_CLASS, 2: win32process.BELOW_NORMAL_PRIORITY_CLASS,
+                           3: win32process.NORMAL_PRIORITY_CLASS, 4: win32process.ABOVE_NORMAL_PRIORITY_CLASS,}
+
+        # Use patched version of subprocess module for Unicode on Windows
+        import subprocessww
     except ImportError:
         pass
 else:
@@ -58,14 +65,14 @@ else:
             return repr(self.parameter)
 
 # Regex globals
-RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d)$', re.I)
+RAR_RE = re.compile(r'\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$', re.I)
 RAR_RE_V3 = re.compile(r'\.(?P<ext>part\d*)$', re.I)
 
 LOADING_RE = re.compile(r'^Loading "(.+)"')
 TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
 EXTRACTFROM_RE = re.compile(r'^Extracting\sfrom\s(.+)')
 EXTRACTED_RE = re.compile(r'^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$')
-SPLITFILE_RE = re.compile(r'\.(\d\d\d$)', re.I)
+SPLITFILE_RE = re.compile(r'\.(\d\d\d?\d$)', re.I)
 ZIP_RE = re.compile(r'\.(zip$)', re.I)
 SEVENZIP_RE = re.compile(r'\.7z$', re.I)
 SEVENMULTI_RE = re.compile(r'\.7z\.\d+$', re.I)
@@ -107,7 +114,6 @@ def find_programs(curdir):
             sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, 'win/par2/multipar/par2j.exe')
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, 'win/unrar/UnRAR.exe')
         sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, 'win/par2/par2.exe')
-        sabnzbd.newsunpack.ZIP_COMMAND = check(curdir, 'win/unzip/unzip.exe')
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, 'win/7zip/7za.exe')
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -240,7 +246,7 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     rerun = False
     force_rerun = False
     newfiles = []
-    error = 0
+    error = None
     new_joins = new_rars = new_zips = new_ts = None
 
     if cfg.enable_filejoin():
@@ -251,8 +257,6 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             if newf:
                 newfiles.extend(newf)
             logging.info('Filejoin finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
 
     if cfg.enable_unrar():
         new_rars = [rar for rar in xrars if rar not in rars]
@@ -262,28 +266,27 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             if newf:
                 newfiles.extend(newf)
             logging.info('Unrar finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
-
-    if cfg.enable_unzip():
-        new_zips = [zip for zip in xzips if zip not in zips]
-        if new_zips:
-            logging.info('Unzip starting on %s', workdir)
-            if unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips):
-                error = 1
-            logging.info('Unzip finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
 
     if cfg.enable_7zip():
         new_sevens = [seven for seven in xsevens if seven not in sevens]
         if new_sevens:
             logging.info('7za starting on %s', workdir)
-            if unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens):
-                error = True
+            error, newf = unseven(nzo, workdir, workdir_complete, dele, one_folder, new_sevens)
+            if newf:
+                newfiles.extend(newf)
             logging.info('7za finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
+
+    if cfg.enable_unzip():
+        new_zips = [zip for zip in xzips if zip not in zips]
+        if new_zips:
+            logging.info('Unzip starting on %s', workdir)
+            if SEVEN_COMMAND:
+                error, newf = unseven(nzo, workdir, workdir_complete, dele, one_folder, new_zips)
+            else:
+                error, newf = unzip(nzo, workdir, workdir_complete, dele, one_folder, new_zips)
+            if newf:
+                newfiles.extend(newf)
+            logging.info('Unzip finished on %s', workdir)
 
     if cfg.enable_tsjoin():
         new_ts = [_ts for _ts in xts if _ts not in ts]
@@ -293,8 +296,12 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
             if newf:
                 newfiles.extend(newf)
             logging.info('TS Joining finished on %s', workdir)
-            nzo.set_action_line()
-            rerun = not error
+
+    # Refresh history and set output
+    nzo.set_action_line()
+
+    # Only re-run if something was unpacked and it was success
+    rerun = error in (False, 0)
 
     # During a Retry we might miss files that failed during recursive unpack
     if nzo.reuse and depth == 1 and any(build_filelists(workdir, workdir_complete)):
@@ -843,6 +850,9 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
         unzip_failed = False
         tms = time.time()
 
+        # For file-bookkeeping
+        orig_dir_content = recursive_listdir(workdir_complete)
+
         for _zip in zips:
             logging.info("Starting extract on zipfile: %s ", _zip)
             nzo.set_action_line(T('Unpacking'), '%s' % unicoder(os.path.basename(_zip)))
@@ -859,6 +869,9 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
 
         msg = T('%s files in %s') % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info('Unpack', msg)
+
+        # What's new?
+        new_files = list(set(orig_dir_content + recursive_listdir(workdir_complete)))
 
         # Delete the old files if we have to
         if delete and not unzip_failed:
@@ -880,12 +893,12 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
                     except OSError:
                         logging.warning(T('Deleting %s failed!'), brokenzip)
 
-        return unzip_failed
+        return unzip_failed, new_files
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('Unpacking failed, %s') % msg
         logging.error(T('Error "%s" while running unzip() on %s'), msg, nzo.final_name)
-        return True
+        return True, []
 
 
 def ZIP_Extract(zipfile, extraction_path, one_folder):
@@ -919,6 +932,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
     """
     i = 0
     unseven_failed = False
+    new_files = []
     tms = time.time()
 
     # Find multi-volume sets, because 7zip will not provide actual set members
@@ -945,18 +959,19 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
         else:
             extraction_path = os.path.split(seven)[0]
 
-        res, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder, delete)
+        res, new_files_set, msg = seven_extract(nzo, seven, extensions, extraction_path, one_folder, delete)
         if res:
             unseven_failed = True
             nzo.set_unpack_info('Unpack', msg)
         else:
             i += 1
+        new_files.extend(new_files_set)
 
     if not unseven_failed:
         msg = T('%s files in %s') % (str(i), format_time_string(time.time() - tms))
         nzo.set_unpack_info('Unpack', msg)
 
-    return unseven_failed
+    return unseven_failed, new_files
 
 
 def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete):
@@ -972,7 +987,7 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
             msg = T('Trying 7zip with password "%s"') % unicoder(password)
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg)
-        fail, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
+        fail, new_files, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
         if fail != 2:
             break
 
@@ -981,7 +996,7 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
         msg = '%s (%s)' % (T('Unpacking failed, archive requires a password'), os.path.basename(sevenset))
         nzo.fail_msg = msg
         logging.error(msg)
-    return fail, msg
+    return fail, new_files, msg
 
 
 def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password):
@@ -1010,10 +1025,13 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
         parm = '-tsplit'
     else:
         name = sevenset
-        parm = '-t7z'
+        parm = '-tzip' if sevenset.lower().endswith('.zip') else '-t7z'
 
     if not os.path.exists(name):
         return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % unicoder(sevenset)
+
+    # For file-bookkeeping
+    orig_dir_content = recursive_listdir(extraction_path)
 
     command = [SEVEN_COMMAND, method, '-y', overwrite, parm, case, password,
                '-o%s' % extraction_path, name]
@@ -1028,6 +1046,9 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     logging.debug('7za output: %s', output)
 
     ret = p.wait()
+
+    # What's new?
+    new_files = list(set(orig_dir_content + recursive_listdir(extraction_path)))
 
     if ret == 0 and delete:
         if extensions:
@@ -1044,7 +1065,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
                 logging.warning(T('Deleting %s failed!'), sevenset)
 
     # Always return an error message, even when return code is 0
-    return ret, T('Could not unpack %s') % unicoder(sevenset)
+    return ret, new_files, T('Could not unpack %s') % unicoder(sevenset)
 
 
 ##############################################################################
@@ -1087,6 +1108,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
         # Download all par2 files that haven't been downloaded yet
         readd = False
         for extrapar in nzo.extrapars[setname][:]:
+            # Make sure we only get new par2 files
             if extrapar not in nzo.finished_files and extrapar not in nzo.files:
                 nzo.add_parfile(extrapar)
                 readd = True
@@ -1305,8 +1327,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 verifynum = 0
 
             elif line.startswith('Main packet not found') or 'The recovery file does not exist' in line:
-                # Initialparfile probably didn't decode properly,
-                logging.info(T('Main packet not found...'))
+                # Initialparfile probably didn't decode properly or bad user parameters
+                # We will try to get another par2 file, but 99% of time it's user parameters
+                msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
+                logging.info(msg)
                 logging.info("Extra pars = %s", nzo.extrapars[setname])
 
                 # Look for the smallest par2file
@@ -1324,7 +1348,6 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                     nzo.add_parfile(nzf)
                     readd = True
                 else:
-                    msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
                     nzo.fail_msg = msg
                     msg = '[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg)
@@ -1448,6 +1471,15 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 nzo.set_unpack_info('Repair', msg)
                 nzo.status = Status.FAILED
 
+            elif line.startswith('Repair Failed.'):
+                # Unknown repair problem
+                msg = T('Repairing failed, %s') % line
+                nzo.fail_msg = msg
+                msg = u'[%s] %s' % (unicoder(setname), msg)
+                nzo.set_unpack_info('Repair', msg)
+                nzo.status = Status.FAILED
+                finished = 0
+
             elif not verified:
                 if line.startswith('Verifying source files'):
                     nzo.set_action_line(T('Verifying'), '01/%02d' % verifytotal)
@@ -1481,6 +1513,10 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
         p.wait()
     except WindowsError as err:
         raise WindowsError(err)
+
+    # Also log what is shown to user in history
+    if nzo.fail_msg:
+        logging.info(nzo.fail_msg)
 
     logging.debug('PAR2 output was\n%s', '\n'.join(lines))
 
@@ -1519,6 +1555,8 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
     # Only add user-options if supplied
     options = cfg.par_option().strip()
     if options:
+        # We wrongly instructed users to use /x parameter style instead of -x
+        options = options.replace('/', '-', 1)
         command.insert(2, options)
 
     # Append the wildcard for this set
@@ -1602,8 +1640,10 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             logging.error(msg)
 
         elif line.startswith('valid file is not found'):
-            # Initialparfile probably didn't decode properly,
-            logging.info(T('Main packet not found...'))
+            # Initialparfile probably didn't decode properly, or bad user parameters
+            # We will try to get another par2 file, but 99% of time it's user parameters
+            msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
+            logging.info(msg)
             logging.info("Extra pars = %s", nzo.extrapars[setname])
 
             # Look for the smallest par2file
@@ -1621,7 +1661,6 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                 nzo.add_parfile(nzf)
                 readd = True
             else:
-                msg = T('Invalid par2 files or invalid PAR2 parameters, cannot verify or repair')
                 nzo.fail_msg = msg
                 msg = '[%s] %s' % (unicoder(setname), msg)
                 nzo.set_unpack_info('Repair', msg)
@@ -1818,10 +1857,23 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             verifynum = 0
 
         elif in_repair:
-            # Line with percentage of repair (nothing else)
-            per = float(line[:-1])
-            nzo.set_action_line(T('Repairing'), '%2d%%' % per)
-            nzo.status = Status.REPAIRING
+            try:
+                # Line with percentage of repair (nothing else)
+                per = float(line[:-1])
+                nzo.set_action_line(T('Repairing'), '%2d%%' % per)
+                nzo.status = Status.REPAIRING
+            except:
+                # Checksum error
+                if 'checksum' in line:
+                    # Failed due to checksum error of multipar
+                    msg = T('Repairing failed, %s') % line
+                    nzo.fail_msg = msg
+                    msg = u'[%s] %s' % (unicoder(setname), msg)
+                    nzo.set_unpack_info('Repair', msg)
+                    nzo.status = Status.FAILED
+                else:
+                    # Not sure, log error
+                    logging.info("Traceback: ", exc_info=True)
 
         elif line.startswith('Repaired successfully'):
             msg = T('[%s] Repaired in %s') % (unicoder(setname), format_time_string(time.time() - start))
@@ -1834,8 +1886,20 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             verifynum += 1
             nzo.set_action_line(T('Verifying repair'), '%02d/%02d' % (verifynum, verifytotal))
 
+        elif line.startswith('Failed to repair'):
+            # Unknown repair problem
+            msg = T('Repairing failed, %s') % line
+            nzo.fail_msg = msg
+            msg = u'[%s] %s' % (unicoder(setname), msg)
+            nzo.set_unpack_info('Repair', msg)
+            nzo.status = Status.FAILED
+            finished = 0
 
     p.wait()
+
+    # Also log what is shown to user in history
+    if nzo.fail_msg:
+        logging.info(nzo.fail_msg)
 
     logging.debug('MultiPar output was\n%s', '\n'.join(lines))
 
@@ -1876,7 +1940,7 @@ def create_env(nzo=None, extra_env_fields=None):
                 elif isinstance(field_value, bool):
                     env['SAB_' + field.upper()] = str(field_value*1)
                 else:
-                    env['SAB_' + field.upper()] = str(field_value)
+                    env['SAB_' + field.upper()] = field_value
             except:
                 # Catch key/unicode errors
                 pass
@@ -1885,7 +1949,7 @@ def create_env(nzo=None, extra_env_fields=None):
         for field in extra_env_fields:
             try:
                 if extra_env_fields[field] is not None:
-                    env['SAB_' + field.upper()] = str(extra_env_fields[field])
+                    env['SAB_' + field.upper()] = extra_env_fields[field]
                 else:
                     env['SAB_' + field.upper()] = ''
             except:
@@ -1958,9 +2022,9 @@ def build_command(command, flatten_command=False):
 
         need_shell = os.path.splitext(command[0])[1].lower() not in ('.exe', '.com')
         stup = subprocess.STARTUPINFO()
-        stup.dwFlags = STARTF_USESHOWWINDOW
-        stup.wShowWindow = SW_HIDE
-        creationflags = IDLE_PRIORITY_CLASS
+        stup.dwFlags = win32process.STARTF_USESHOWWINDOW
+        stup.wShowWindow = win32con.SW_HIDE
+        creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
 
         # Work-around for bug in Python's Popen function,
         # scripts with spaces in the path don't work.
@@ -2026,26 +2090,10 @@ def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=
     sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
 
     if workdir_complete:
-        for root, dirs, files in os.walk(workdir_complete):
-            for _file in files:
-                if '.AppleDouble' not in root and '.DS_Store' not in root:
-                    try:
-                        p = os.path.join(root, _file)
-                        filelist.append(p)
-                    except UnicodeDecodeError:
-                        # Just skip failing names
-                        pass
+        filelist.extend(recursive_listdir(workdir_complete))
 
     if workdir and (not filelist or check_both):
-        for root, dirs, files in os.walk(workdir):
-            for _file in files:
-                if '.AppleDouble' not in root and '.DS_Store' not in root:
-                    try:
-                        p = os.path.join(root, _file)
-                        filelist.append(p)
-                    except UnicodeDecodeError:
-                        # Just skip failing names
-                        pass
+        filelist.extend(recursive_listdir(workdir))
 
     for file in filelist:
         # Extra check for rar (takes CPU/disk)
@@ -2252,14 +2300,14 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
     def fix(p):
         if not p or str(p).lower() == 'none':
             return ''
-        else:
-            return UNTRANS(str(p))
+        return unicoder(p)
 
     values = [1, name, pp, cat, script, priority, None]
     script_path = make_script_path(cfg.pre_script())
     if script_path:
-        command = [script_path, name, fix(pp), fix(cat), fix(script), fix(priority), str(size), ' '.join(groups)]
+        command = [script_path, name, pp, cat, script, priority, str(size), ' '.join(groups)]
         command.extend(analyse_show(name))
+        command = [fix(arg) for arg in command]
 
         try:
             stup, need_shell, command, creationflags = build_command(command)
@@ -2280,7 +2328,7 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
             for line in output.split('\n'):
                 line = line.strip('\r\n \'"')
                 if n < len(values) and line:
-                    values[n] = TRANS(line)
+                    values[n] = deunicode(line)
                 n += 1
         accept = int_conv(values[0])
         if  accept < 1:
@@ -2299,10 +2347,8 @@ def list2cmdline(lst):
     for arg in lst:
         if not arg:
             nlst.append('""')
-        elif (' ' in arg) or ('\t' in arg) or ('&' in arg) or ('|' in arg) or (';' in arg) or (',' in arg):
-            nlst.append('"%s"' % arg)
         else:
-            nlst.append(arg)
+            nlst.append('"%s"' % arg)
     return ' '.join(nlst)
 
 

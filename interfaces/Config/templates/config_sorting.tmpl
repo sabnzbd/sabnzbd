@@ -40,6 +40,8 @@
                             <br/>
                             <input type="button" class="btn btn-default" onclick="tvSet('%sn/%sx%0e - %en/%sn - %sx%0e - %en.%ext')" value="$T('button-Ep1x05')" />
                             <input type="button" class="btn btn-default" onclick="tvSet('%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext')" value="$T('button-EpS01E05')" />
+                            <br>
+                            <input type="button" class="btn btn-default" onclick="tvSet('%dn.%ext')" value="$T('button-FileLikeFolder')" />
                         </div>
                     </div>
                     <div id="previewtv" class="example">
@@ -51,7 +53,7 @@
                             <label class="config">$T('sortResult')</label> <span class="desc path" id="previewtv-result">&nbsp;</span>
                         </div>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair no-field-pair-bg">
                         <label class="config">$T('sort-legenda')</label>
                         <button type="button" class="btn btn-default patternKey" onclick="jQuery(this).hide(); jQuery('#Key1').show();"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> $T('sort-legenda')</button>
                         <table id="Key1" class="Key">
@@ -139,9 +141,9 @@
                                     <td>$T("sort-File")</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('orgDirname'):</b></td>
+                                    <td class="align-right"><b>$T('orgJobname'):</b></td>
                                     <td>%dn</td>
-                                    <td>$T("sort-Folder")</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('lowercase'):</b></td>
@@ -199,6 +201,7 @@
                             <input type="button" class="btn btn-default" onclick="movieSet('%title (%y)/%title (%y).%ext',' CD%1');movieExtraFolder(false)" value="$T('button-inFolders')" />
                             <input type="button" class="btn btn-default" onclick="movieSet('%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('button-noFolders')" />
                             <input type="button" class="btn btn-default" onclick="movieSet('%0decade/%title (%y).%ext',' CD%1');movieExtraFolder(true)" value="$T('decade')" />
+                            <input type="button" class="btn btn-default" onclick="movieSet('%dn.%ext')" value="$T('button-FileLikeFolder')" />
                         </div>
                     </div>
                     <div id="previewmovie" class="example">
@@ -210,7 +213,7 @@
                             <label class="config">$T('sortResult')</label> <span class="desc path" id="previewmovie-result">&nbsp;</span>
                         </div>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair no-field-pair-bg">
                         <label class="config">$T('sort-legenda')</label>
                         <button type="button" class="btn btn-default patternKey" onclick="jQuery(this).hide(); jQuery('#Key2').show();"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> $T('sort-legenda')</button>
                         <table id="Key2" class="Key">
@@ -263,9 +266,9 @@
                                     <td>$T('sort-File')</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('orgDirname'):</b></td>
+                                    <td class="align-right"><b>$T('orgJobname'):</b></td>
                                     <td>%dn</td>
-                                    <td>$T("sort-Folder")</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('lowercase'):</b></td>
@@ -328,7 +331,9 @@
                         <div class="presets float-left">
                             <input type="button" class="btn btn-default" onclick="dateSet('%t/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-ShowNameF')" />
                             <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-YMF')" />
+                            <br>
                             <input type="button" class="btn btn-default" onclick="dateSet('%y-%0m-%0d/%t - %y-%0m-%0d - %desc.%ext')" value="$T('button-DailyF')" />
+                            <input type="button" class="btn btn-default" onclick="dateSet('%dn.%ext')" value="$T('button-FileLikeFolder')" />
                         </div>
                     </div>
                     <div id="previewdate" class="example">
@@ -340,7 +345,7 @@
                             <label class="config">$T('sortResult')</label> <span class="desc path" id="previewdate-result">&nbsp;</span>
                         </div>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair no-field-pair-bg">
                         <label class="config">$T('sort-legenda')</label>
                         <button type="button" class="btn btn-default patternKey" onclick="jQuery(this).hide(); jQuery('#Key3').show();"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> $T('sort-legenda')</button>
                         <table id="Key3" class="Key">
@@ -406,6 +411,11 @@
                                     <td class="align-right"><b>$T('orgFilename'):</b></td>
                                     <td>%fn</td>
                                     <td>$T('sort-File')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('orgJobname'):</b></td>
+                                    <td>%dn</td>
+                                    <td></td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('lowercase'):</b></td>
@@ -487,7 +497,7 @@
                 \$.ajax({
                   type: "GET",
                   url: "../../tapi",
-                  data: {mode:'eval_sort', value: 'generic', name: \$('#moviesamplename').val(), title: \$moviesortstring, movieextra:  \$('#movieextra').val(), apikey: '$session', output: 'json' },
+                  data: {mode:'eval_sort', value: 'movie', name: \$('#moviesamplename').val(), title: \$moviesortstring, movieextra:  \$('#movieextra').val(), apikey: '$session', output: 'json' },
                   success: function(data){
                     \$('#previewmovie-result').removeClass("loading failure").html(data.result);
                   },

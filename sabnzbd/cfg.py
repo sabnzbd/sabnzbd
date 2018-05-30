@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,7 +26,7 @@ from sabnzbd.constants import DEF_HOST, DEF_PORT, DEF_STDINTF, DEF_ADMIN_DIR, \
 
 from sabnzbd.config import OptionBool, OptionNumber, OptionPassword, \
     OptionDir, OptionStr, OptionList, no_nonsense, \
-    validate_octal, validate_safedir, \
+    validate_octal, validate_safedir, all_lowercase, \
     create_api_key, validate_notempty
 
 ##############################################################################
@@ -136,12 +136,13 @@ top_only = OptionBool('misc', 'top_only', False)
 sfv_check = OptionBool('misc', 'sfv_check', True)
 quick_check_ext_ignore = OptionList('misc', 'quick_check_ext_ignore', ['nfo', 'sfv', 'srr'])
 script_can_fail = OptionBool('misc', 'script_can_fail', False)
-ssl_ciphers = OptionStr('misc', 'ssl_ciphers', '')
+ssl_ciphers = OptionStr('misc', 'ssl_ciphers', '') # Now per-server setting
 enable_recursive = OptionBool('misc', 'enable_recursive', True)
 flat_unpack = OptionBool('misc', 'flat_unpack', False)
 par_option = OptionStr('misc', 'par_option', '', validation=no_nonsense)
 pre_check = OptionBool('misc', 'pre_check', False)
 nice = OptionStr('misc', 'nice', '', validation=no_nonsense)
+win_process_prio = OptionNumber('misc', 'win_process_prio', 3)
 ionice = OptionStr('misc', 'ionice', '', validation=no_nonsense)
 fail_hopeless_jobs = OptionBool('misc', 'fail_hopeless_jobs', True)
 autodisconnect = OptionBool('misc', 'auto_disconnect', True)
@@ -260,6 +261,8 @@ api_warnings = OptionBool('misc', 'api_warnings', True, protect=True)
 disable_key = OptionBool('misc', 'disable_api_key', False, protect=True)
 no_penalties = OptionBool('misc', 'no_penalties', False)
 debug_log_decoding = OptionBool('misc', 'debug_log_decoding', False)
+ignore_empty_files = OptionBool('misc', 'ignore_empty_files', False)
+x_frame_options = OptionBool('misc', 'x_frame_options', True)
 
 # Text values
 rss_odd_titles = OptionList('misc', 'rss_odd_titles', ['nzbindex.nl/', 'nzbindex.com/', 'nzbclub.com/'])
@@ -275,6 +278,8 @@ wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)
 marker_file = OptionStr('misc', 'nomedia_marker', '')
 ipv6_servers = OptionNumber('misc', 'ipv6_servers', 1, 0, 2)
 url_base = OptionStr('misc', 'url_base', '/sabnzbd')
+host_whitelist = OptionList('misc', 'host_whitelist', validation=all_lowercase)
+max_url_retries = OptionNumber('misc', 'max_url_retries', 10, 1)
 
 ##############################################################################
 # Config - Notifications

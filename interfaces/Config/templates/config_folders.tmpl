@@ -3,6 +3,11 @@
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
+    <div class="padding alt section">
+        <label for="advanced-settings-button" class="form-control advanced-button ">
+            <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
+        </label>
+    </div>
     <form action="saveDirectories" method="post" name="fullform" class="fullform" autocomplete="off">
     <input type="hidden" id="session" name="session" value="$session" />
     <input type="hidden" id="ajax" name="ajax" value="1" />
@@ -21,7 +26,7 @@
                     <input type="text" name="download_dir" id="download_dir" value="$download_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-download_dir')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="download_free">$T('opt-download_free')</label>
                     <input type="text" name="download_free" id="download_free" value="$download_free" class="smaller_input"  />
                     <span class="desc">$T('explain-download_free')</span>
@@ -32,7 +37,7 @@
                     <span class="desc">$T('explain-complete_dir')</span>
                 </div>
                 <!--#if not $nt#-->
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="permissions">$T('opt-permissions')</label>
                     <input type="text" name="permissions" id="permissions" value="$permissions" class="smaller_input" />
                     <span class="desc">$T('explain-permissions')</span>
@@ -43,7 +48,7 @@
                     <input type="text" name="dirscan_dir" id="dirscan_dir" value="$dirscan_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-dirscan_dir')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="dirscan_speed">$T('opt-dirscan_speed')</label>
                     <input type="number" name="dirscan_speed" id="dirscan_speed" value="$dirscan_speed"  min="0" max="3600" />
                     <span class="desc">$T('explain-dirscan_speed')</span>
@@ -53,12 +58,12 @@
                     <input type="text" name="script_dir" id="script_dir" value="$script_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-script_dir')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="email_dir">$T('opt-email_dir')</label>
                     <input type="text" name="email_dir" id="email_dir" value="$email_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-email_dir')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair advanced-settings">
                     <label class="config" for="password_file">$T('opt-password_file')</label>
                     <input type="text" name="password_file" id="password_file" value="$password_file" />
                     <span class="desc">$T('explain-password_file')</span>
@@ -72,7 +77,7 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
-    <div class="section">
+    <div class="section advanced-settings">
         <div class="col2">
             <h3>$T('systemFolders') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             <p>$T('explain-folderConfig')</p>

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
-"PO-Revision-Date: 2015-12-28 10:25+0000\n"
+"POT-Creation-Date: 2018-03-15 13:08+0000\n"
+"PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:46+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2018-03-16 05:38+0000\n"
+"X-Generator: Launchpad (build 18571)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -114,7 +114,7 @@ msgid "Error"
 msgstr "Грeшкa"
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/interface.py
-#: sabnzbd/osxmenu.py # sabnzbd/wizard.py
+#: sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "Гашење SABnzbd је завршено"
 
@@ -479,7 +479,17 @@ msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
 "Требате да поставите максимални проток пре него што поставите ограничење"
 
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
+#: sabnzbd/downloader.py # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message]
+msgid "Cannot connect to server %s [%s]"
+msgstr "Neuspešno povezivanje na server %s[%s]"
+
+#: sabnzbd/downloader.py # sabnzbd/urlgrabber.py
+msgid "Server name does not resolve"
+msgstr "Ime servera se ne može odrediti"
+
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s će biti ignorisan %s minuta"
 
@@ -498,11 +508,6 @@ msgstr "Moguće deljenje naloga"
 #: sabnzbd/downloader.py # sabnzbd/downloader.py [Error message]
 msgid "Failed login for server %s"
 msgstr "Неуспешно пријављивање на сервер %s"
-
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-msgid "Cannot connect to server %s [%s]"
-msgstr "Neuspešno povezivanje na server %s[%s]"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
@@ -556,6 +561,12 @@ msgstr "Неуспешно затварање везе е-поште"
 msgid "Email succeeded"
 msgstr "Упешно слање е-поште"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Nemoguće poslati, nedostaju obavezni podaci"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Немогуће наћи модел е-поруке у %s"
@@ -605,6 +616,10 @@ msgid "Server address \"%s:%s\" is not valid."
 msgstr "Adresa servera \"%s:%s\" je neispravna"
 
 #: sabnzbd/interface.py
+msgid "Refused connection with hostname \"%s\" from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "User logged in to the web interface"
 msgstr ""
 
@@ -612,7 +627,7 @@ msgstr ""
 msgid "User logged in"
 msgstr ""
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py
 msgid "Missing Session key"
 msgstr "Недостаје кључ сесије"
 
@@ -620,7 +635,7 @@ msgstr "Недостаје кључ сесије"
 msgid "Error: Session Key Required"
 msgstr "Грешка: потребан је кључ сесије"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Error: Session Key Incorrect"
 msgstr "Грешка: Кључ сесије није добар"
 
@@ -753,7 +768,7 @@ msgstr "с"
 msgid "m"
 msgstr "м"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Немогуће креирати фасциклу %s"
 
@@ -782,6 +797,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Не може да се промене дозволе од %s"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Покретање скрипта"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -960,6 +979,8 @@ msgstr "Par provera neuspešna na %s, dok je QuickCheck uspešan!"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Neuspešna popravka, %s"
 
@@ -985,10 +1006,6 @@ msgstr "[%s] Проверено за %s, све датотеке су добре
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Проверено за %s, потребна је поправка"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Главни пакет није нађен..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1099,11 +1116,6 @@ msgstr "Остале поруке"
 msgid "Not available"
 msgstr "Недоступно"
 
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Nemoguće poslati, nedostaju obavezni podaci"
-
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Неуспешно слање Prowl поруке"
@@ -1160,7 +1172,7 @@ msgstr "NZB додат у ред"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Непознато енкодирање"
 
-#: sabnzbd/nzbstuff.py [Warning message]
+#: sabnzbd/nzbstuff.py
 msgid "File %s is empty, skipping"
 msgstr "Датотека %s је празна, прескакање"
 
@@ -1270,7 +1282,7 @@ msgid "Warnings"
 msgstr "Упозорења"
 
 #: sabnzbd/osxmenu.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py
-#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py
+#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Мирoвање"
 
@@ -1539,10 +1551,6 @@ msgid "Failed to move files"
 msgstr "Неуспешно премештање датотека"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Покретање скрипта"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Покретање скрипта %s"
 
@@ -1562,7 +1570,7 @@ msgstr "Више"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Грешка пост-процесирања за %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "видети извештај"
 
@@ -1894,11 +1902,12 @@ msgstr "Врло ниско"
 msgid "Moderate"
 msgstr "Умерено"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Нормалан"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py
 msgid "High"
 msgstr "Висок"
 
@@ -1906,7 +1915,7 @@ msgstr "Висок"
 msgid "Emergency"
 msgstr "Хитно"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Low"
 msgstr "Низак"
 
@@ -2451,6 +2460,12 @@ msgstr "Neki drugi problem"
 msgid "Force Disconnect"
 msgstr "Натерај искључење"
 
+#: sabnzbd/skintext.py [Status page button text]
+msgid ""
+"Disconnect all active connections to usenet servers. Connections will be "
+"reopened after a few seconds if there are items in the queue."
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "This will send a test email to your account."
 msgstr "То ће послати пробну е-поруку Вашем малогу."
@@ -2661,7 +2676,7 @@ msgid "Backup"
 msgstr "Резервно"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "За више информација, читајте Вики!"
 
@@ -3297,6 +3312,10 @@ msgid "IONice Parameters"
 msgstr "Параметри 'IONice'"
 
 #: sabnzbd/skintext.py
+msgid "External process priority"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
 msgstr "Заустави везу када је ред празан"
 
@@ -3461,7 +3480,7 @@ msgstr ""
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr ""
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Макс покушаја"
 
@@ -3615,7 +3634,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
-msgstr "0 je najveći prioritet, 100 je najniži prioritet"
+msgstr "0 je najveći prioritet, 99 je najniži prioritet"
 
 #: sabnzbd/skintext.py [Server optional tickbox]
 msgid "Optional"
@@ -4099,6 +4118,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Фасцикла епизоде"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Наслов"
 
@@ -4167,8 +4190,8 @@ msgid "Original Filename"
 msgstr "Оригинално име датотеке"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Оригинално име фасцикле"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4185,10 +4208,6 @@ msgstr "текст"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "датотека"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "фасцикла"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4536,6 +4555,12 @@ msgstr "Паузирај за..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Освежи"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4903,22 +4928,18 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Немате 'usenet' провајдер? Препоручујемо Вам %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Грешка преузимању ТВ инфо (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Неуспешно преименовање : %s у %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Неуспешно преименовање сличне датотеке: %s у %s"
-
-#: sabnzbd/urlgrabber.py
-msgid "Server name does not resolve"
-msgstr "Ime servera se ne može odrediti"
 
 #: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
@@ -5015,6 +5036,12 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "Enable sorting and renaming of date named files."
 #~ msgstr "Упали сређивање и преименовање датотеке са датумом"
+
+#~ msgid "folder"
+#~ msgstr "фасцикла"
+
+#~ msgid "Original Foldername"
+#~ msgstr "Оригинално име фасцикле"
 
 #~ msgid "Enable generic sorting and renaming of files."
 #~ msgstr "Упали генерално сортирање/преименовање датотеке."
@@ -5271,6 +5298,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "Неуспешан издвој, ове датотеке недостају:"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Главни пакет није нађен..."
 
 #~ msgid "KB/s"
 #~ msgstr "КБ/с"

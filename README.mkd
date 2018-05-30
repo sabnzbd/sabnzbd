@@ -1,48 +1,18 @@
-Release Notes - SABnzbd 2.3.1
+Release Notes - SABnzbd 2.3.4
 =========================================================
 
-## Changes since 2.3.0
-- Added post-processing script Deobfuscate.py (in "scripts" folder)
-  which can automatically process "rename.par2" after unpacking
-  or rename the largest file in the folder to the job's name
-- Maximum Article Cache size increased to 4GB on 64 bit systems
-- New servers will have timeout of 60 seconds instead of 120
-- Last output of a running script is shown in history
-- Paths to par2, unrar, unzip and 7zip are passed to scripts
-- Path to gzipped NZB file of job is passed to scripts
-- Windows: Single click on tray icon pauses/unpauses queue
-
-## Bugfixes since 2.3.0
-- Abort Direct Unpack if not progressing 2 minutes after download
-- Direct Unpacker could crash on some downloads
-- Added measures to prevent "Failed to import" errors
-- Downloader could crash during first few seconds after start
-- Saving errors of renames-file prevented
-- More verbose logging of creating and deleting files
-- Remove ".par2" at end of job name, could cause failure of repair
-- Fix racing-condition for files coming in after a job finishes
-- When re-adding a job, the time left was not calculated
-- Priority of category was ignored when adding new job
-- Server information in Status window was not always updated
-- Always show Direct Unpack status on smaller screens
-- Correctly adapt date and time display to local time zone
-- Category folders cannot be sub-folders of Temporary Download Folder
-- Email notifications could not be limited to categories
-- Testing email notifications did not work
-- Added "with" to list of lowercase words in titles for Sorting
-- "From SxxEyy" RSS filter did not always work
-- Show clearly that RSS "From Show SxxEyy" is an "Accept"-type filter
-- Sorting failed when "Ignore folders inside archives" was enabled
-- Always send "failure_url" to post-processing scripts
-- Decoding of articles no longer logged by default to reduce logging
-- Windows: Remove incompatible "Extra Par2 Parameters" for MultiPar
-- Windows: Special filenames could cause failures during unpack
-- Windows: Message box is shown in case of fatal startup error
-- Windows: Unpacking to network shares could fail
-- macOS: Added Safari pinned tab icon
-
-In case of "Article DB missing/empty" errors, enable +Debug logging
-and report here: https://github.com/sabnzbd/sabnzbd/issues/952
+## Changes since 2.3.3
+- Device hostname in hostname-verification always lowercased
+- Hostnames ending in ".local" are always accepted
+- URLGrabber would not always detect correct filename
+- URLGrabber would ignore some successful downloads
+- Always send NNTP QUIT after server-test
+- Added option "--disable-file-log" to disable file-based logging
+- Added CORS-header to API
+- Windows: Service compatibility with Windows 10 April update
+- Windows: Update Python to 2.7.15
+- Windows: Update 7zip to 18.05
+- macOS: Restore compatibility with El Capitan (10.11)
 
 ## Upgrading from 2.2.x and older
 - Finish queue
@@ -68,4 +38,4 @@ and report here: https://github.com/sabnzbd/sabnzbd/issues/952
   that automatically verify, repair, extract and clean up posts downloaded
   from Usenet.
 
-  (c) Copyright 2007-2017 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2018 by "The SABnzbd-team" \<team@sabnzbd.org\>

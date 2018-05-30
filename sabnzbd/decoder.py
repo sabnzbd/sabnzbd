@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -41,8 +41,8 @@ try:
     import sabyenc
     SABYENC_ENABLED = True
     SABYENC_VERSION = sabyenc.__version__
-    # Verify version
-    if SABYENC_VERSION != SABYENC_VERSION_REQUIRED:
+    # Verify version to at least match minor version
+    if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
         raise ImportError
 except ImportError:
     SABYENC_ENABLED = False
@@ -124,8 +124,7 @@ class Decoder(Thread):
                     logging.info("Traceback: ", exc_info=True)
 
                     sabnzbd.downloader.Downloader.do.pause()
-                    article.fetcher = None
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
                     register = False
 
                 except MemoryError as e:
@@ -136,8 +135,7 @@ class Decoder(Thread):
                     logging.info("Traceback: ", exc_info=True)
 
                     sabnzbd.downloader.Downloader.do.pause()
-                    article.fetcher = None
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(nzf, nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
                     register = False
 
                 except CrcError as e:
@@ -232,10 +230,10 @@ class Decoder(Thread):
         for server in self.servers:
             if server.active and not article.server_in_try_list(server):
                 if server.priority >= article.fetcher.priority:
-                    article.fetcher = None
+
                     article.tries = 0
                     # Allow all servers for this nzo and nzf again (but not for this article)
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article, article_reset=False)
                     return True
 
         msg = T('%s => missing from all servers, discarding') % article
@@ -253,7 +251,7 @@ class Decoder(Thread):
             return
 
         # Set the md5-of-16k if this is the first article
-        if article.partnum == nzf.lowest_partnum:
+        if article.lowest_partnum:
             nzf.md5of16k = hashlib.md5(decoded_data[:16384]).digest()
 
         # Try the rename

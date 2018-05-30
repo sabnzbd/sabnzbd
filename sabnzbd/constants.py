@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -74,7 +74,8 @@ DEF_WORKDIR = 'sabnzbd'
 DEF_LOG_FILE = 'sabnzbd.log'
 DEF_LOG_ERRFILE = 'sabnzbd.error.log'
 DEF_LOG_CHERRY = 'cherrypy.log'
-DEF_CACHE_LIMIT = '450M'
+DEF_ARTICLE_CACHE_DEFAULT = '500M'
+DEF_ARTICLE_CACHE_MAX = '1G'
 DEF_TIMEOUT = 60
 DEF_SCANRATE = 5
 MAX_DECODE_QUEUE = 10
@@ -96,6 +97,7 @@ STOP_PRIORITY = -4
 STAGES = {'Source': 0, 'Download': 1, 'Servers': 2, 'Repair': 3, 'Filejoin': 4, 'Unpack': 5, 'Script': 6}
 
 VALID_ARCHIVES = ('.zip', '.rar', '.7z')
+VALID_NZB_FILES = ('.nzb', '.gz', '.bz2')
 
 IGNORED_FOLDERS = ('@eaDir', '.appleDouble')
 

@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.tvsort - Sorting Functions
+sabnzbd.sorting - Sorting Functions
 Series Sorting - Sorting downloads into seasons & episodes
 Date Sorting - Sorting downloads by a custom date matching
 Generic Sorting - Sorting large files by a custom matching
@@ -101,23 +101,23 @@ class Sorter(object):
         self.cat = cat
         self.ext = ''
 
-    def detect(self, dirname, complete_dir):
+    def detect(self, job_name, complete_dir):
         """ Detect which kind of sort applies """
-        self.sorter = SeriesSorter(self.nzo, dirname, complete_dir, self.cat)
+        self.sorter = SeriesSorter(self.nzo, job_name, complete_dir, self.cat)
         if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'tv'
             self.sort_file = True
             return complete_dir
 
-        self.sorter = DateSorter(self.nzo, dirname, complete_dir, self.cat)
+        self.sorter = DateSorter(self.nzo, job_name, complete_dir, self.cat)
         if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'date'
             self.sort_file = True
             return complete_dir
 
-        self.sorter = GenericSorter(self.nzo, dirname, complete_dir, self.cat)
+        self.sorter = MovieSorter(self.nzo, job_name, complete_dir, self.cat)
         if self.sorter.matched:
             complete_dir = self.sorter.get_final_path()
             self.type = 'movie'
@@ -177,10 +177,10 @@ class Sorter(object):
 class SeriesSorter(object):
     """ Methods for Series Sorting """
 
-    def __init__(self, nzo, dirname, path, cat):
+    def __init__(self, nzo, job_name, path, cat):
         self.matched = False
 
-        self.original_dirname = dirname
+        self.original_job_name = job_name
         self.original_path = path
         self.nzo = nzo
         self.cat = cat
@@ -205,9 +205,9 @@ class SeriesSorter(object):
         if force or (cfg.enable_tv_sorting() and cfg.tv_sort_string()):
             if force or (not self.cats) or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
                 # First check if the show matches TV episode regular expressions. Returns regex match object
-                self.match_obj, self.extras = check_regexs(self.original_dirname, series_match)
+                self.match_obj, self.extras = check_regexs(self.original_job_name, series_match)
                 if self.match_obj:
-                    logging.debug("Found TV Show (%s)", self.original_dirname)
+                    logging.debug("Found TV Show (%s)", self.original_job_name)
                     self.matched = True
 
     def is_match(self):
@@ -223,7 +223,7 @@ class SeriesSorter(object):
             return self.final_path
         else:
             # Error Sorting
-            return os.path.join(self.original_path, self.original_dirname)
+            return os.path.join(self.original_path, self.original_job_name)
 
     def get_multi_ep_naming(self, one, two, extras):
         """ Returns a list of unique values joined into a string and separated by - (ex:01-02-03-04) """
@@ -242,8 +242,8 @@ class SeriesSorter(object):
     def get_shownames(self):
         """ Get the show name from the match object and format it """
         # Get the formatted title and alternate title formats
-        self.show_info['show_tname'], self.show_info['show_tname_two'], self.show_info['show_tname_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname, True)
-        self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname)
+        self.show_info['show_tname'], self.show_info['show_tname_two'], self.show_info['show_tname_three'] = get_titles(self.nzo, self.match_obj, self.original_job_name, True)
+        self.show_info['show_name'], self.show_info['show_name_two'], self.show_info['show_name_three'] = get_titles(self.nzo, self.match_obj, self.original_job_name)
 
     def get_seasons(self):
         """ Get the season number from the match object and format it """
@@ -289,7 +289,7 @@ class SeriesSorter(object):
 
     def get_showdescriptions(self):
         """ Get the show descriptions from the match object and format them """
-        self.show_info['ep_name'], self.show_info['ep_name_two'], self.show_info['ep_name_three'] = get_descriptions(self.nzo, self.match_obj, self.original_dirname)
+        self.show_info['ep_name'], self.show_info['ep_name_two'], self.show_info['ep_name_three'] = get_descriptions(self.nzo, self.match_obj, self.original_job_name)
 
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
@@ -309,7 +309,7 @@ class SeriesSorter(object):
             return True
 
         except:
-            logging.error(T('Error getting TV info (%s)'), clip_path(self.original_dirname))
+            logging.error(T('Error getting TV info (%s)'), clip_path(self.original_job_name))
             logging.info("Traceback: ", exc_info=True)
             return False
 
@@ -338,7 +338,7 @@ class SeriesSorter(object):
         mapping.append(('%0s', self.show_info['season_num_alt']))
 
         # Original dir name
-        mapping.append(('%dn', self.original_dirname))
+        mapping.append(('%dn', self.original_job_name))
 
         # Replace episode names
         if self.show_info['ep_name']:
@@ -428,9 +428,9 @@ class SeriesSorter(object):
 
 
 _RE_MULTIPLE = (
-    re.compile(r'cd\W?(\d+)\W?', re.I),        # .cd1.avi
-    re.compile(r'\w\W?([\w\d])[{}]*$', re.I),  # blah1.avi blaha.avi
-    re.compile(r'\w\W([\w\d])\W', re.I)        # blah-1-ok.avi blah-a-ok.avi
+    re.compile(r'cd\W?(\d+)\W?', re.I),        # .cd1.mkv
+    re.compile(r'\w\W?([\w\d])[{}]*$', re.I),  # blah1.mkv blaha.mkv
+    re.compile(r'\w\W([\w\d])\W', re.I)        # blah-1-ok.mkv blah-a-ok.mkv
 )
 
 
@@ -448,7 +448,7 @@ def check_for_sequence(regex, files):
     matches = {}
     prefix = None
     # Build up a dictionary of matches
-    # The key is based off the match, ie {1:'blah-part1.avi'}
+    # The key is based off the match, ie {1:'blah-part1.mkv'}
     for _file in files:
         name, ext = os.path.splitext(_file)
         match1 = regex.search(name)
@@ -483,7 +483,7 @@ def check_for_sequence(regex, files):
                 else:
                     passed = False
         if passed:
-            # convert {'b':'filename-b.avi'} to {'2', 'filename-b.avi'}
+            # convert {'b':'filename-b.mkv'} to {'2', 'filename-b.mkv'}
             item = matches.pop(akey)
             matches[str(key)] = item
 
@@ -493,13 +493,13 @@ def check_for_sequence(regex, files):
         return {}
 
 
-class GenericSorter(object):
+class MovieSorter(object):
     """ Methods for Generic Sorting """
 
-    def __init__(self, nzo, dirname, path, cat):
+    def __init__(self, nzo, job_name, path, cat):
         self.matched = False
 
-        self.original_dirname = dirname
+        self.original_job_name = job_name
         self.original_path = path
         self.sort_string = cfg.movie_sort_string()
         self.extra = cfg.movie_sort_extra()
@@ -524,7 +524,7 @@ class GenericSorter(object):
         if force or (cfg.enable_movie_sorting() and self.sort_string):
             # First check if the show matches TV episode regular expressions. Returns regex match object
             if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
-                logging.debug("Found Movie (%s)", self.original_dirname)
+                logging.debug("Found Movie (%s)", self.original_job_name)
                 self.matched = True
 
     def get_final_path(self):
@@ -536,7 +536,7 @@ class GenericSorter(object):
             return self.final_path
         else:
             # Error Sorting
-            return os.path.join(self.original_path, self.original_dirname)
+            return os.path.join(self.original_path, self.original_job_name)
 
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
@@ -548,13 +548,13 @@ class GenericSorter(object):
         if year:
             year_m = None
         else:
-            dirname = self.original_dirname.replace('_', ' ')
+            job_name = self.original_job_name.replace('_', ' ')
             RE_YEAR = re.compile(year_match, re.I)
-            year_m = RE_YEAR.search(dirname)
+            year_m = RE_YEAR.search(job_name)
             if year_m:
                 # Find the last matched date
                 # Keep year_m to use in get_titles
-                year = RE_YEAR.findall(dirname)[-1][0]
+                year = RE_YEAR.findall(job_name)[-1][0]
             else:
                 year = ''
         self.movie_info['year'] = year
@@ -563,8 +563,8 @@ class GenericSorter(object):
         self.movie_info['decade'], self.movie_info['decade_two'] = get_decades(year)
 
         # - Get Title
-        self.movie_info['ttitle'], self.movie_info['ttitle_two'], self.movie_info['ttitle_three'] = get_titles(self.nzo, year_m, self.original_dirname, True)
-        self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = get_titles(self.nzo, year_m, self.original_dirname)
+        self.movie_info['ttitle'], self.movie_info['ttitle_two'], self.movie_info['ttitle_three'] = get_titles(self.nzo, year_m, self.original_job_name, True)
+        self.movie_info['title'], self.movie_info['title_two'], self.movie_info['title_three'] = get_titles(self.nzo, year_m, self.original_job_name)
 
         return True
 
@@ -605,7 +605,7 @@ class GenericSorter(object):
         mapping.append(('%0decade', self.movie_info['decade_two']))
 
         # Original dir name
-        mapping.append(('%dn', self.original_dirname))
+        mapping.append(('%dn', self.original_job_name))
 
         path = path_subst(sorter, mapping)
 
@@ -698,10 +698,10 @@ class GenericSorter(object):
 class DateSorter(object):
     """ Methods for Date Sorting """
 
-    def __init__(self, nzo, dirname, path, cat):
+    def __init__(self, nzo, job_name, path, cat):
         self.matched = False
 
-        self.original_dirname = dirname
+        self.original_job_name = job_name
         self.original_path = path
         self.sort_string = cfg.date_sort_string()
         self.cats = cfg.date_categories()
@@ -726,9 +726,9 @@ class DateSorter(object):
         if force or (cfg.enable_date_sorting() and self.sort_string):
             # First check if the show matches TV episode regular expressions. Returns regex match object
             if force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and 'None' in self.cats):
-                self.match_obj, self.date_type = check_for_date(self.original_dirname, date_match)
+                self.match_obj, self.date_type = check_for_date(self.original_job_name, date_match)
                 if self.match_obj:
-                    logging.debug("Found date for sorting (%s)", self.original_dirname)
+                    logging.debug("Found date for sorting (%s)", self.original_job_name)
                     self.matched = True
 
     def is_match(self):
@@ -744,7 +744,7 @@ class DateSorter(object):
             return self.final_path
         else:
             # Error Sorting
-            return os.path.join(self.original_path, self.original_dirname)
+            return os.path.join(self.original_path, self.original_job_name)
 
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
@@ -767,10 +767,10 @@ class DateSorter(object):
         self.date_info['decade'], self.date_info['decade_two'] = get_decades(self.date_info['year'])
 
         # - Get Title
-        self.date_info['ttitle'], self.date_info['ttitle_two'], self.date_info['ttitle_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname, True)
-        self.date_info['title'], self.date_info['title_two'], self.date_info['title_three'] = get_titles(self.nzo, self.match_obj, self.original_dirname)
+        self.date_info['ttitle'], self.date_info['ttitle_two'], self.date_info['ttitle_three'] = get_titles(self.nzo, self.match_obj, self.original_job_name, True)
+        self.date_info['title'], self.date_info['title_two'], self.date_info['title_three'] = get_titles(self.nzo, self.match_obj, self.original_job_name)
 
-        self.date_info['ep_name'], self.date_info['ep_name_two'], self.date_info['ep_name_three'] = get_descriptions(self.nzo, self.match_obj, self.original_dirname)
+        self.date_info['ep_name'], self.date_info['ep_name_two'], self.date_info['ep_name_three'] = get_descriptions(self.nzo, self.match_obj, self.original_job_name)
 
         return True
 
@@ -813,6 +813,9 @@ class DateSorter(object):
             mapping.append(('%desc', ''))
             mapping.append(('%.desc', ''))
             mapping.append(('%_desc', ''))
+
+        # Replace dir-name before replacing %d for month
+        mapping.append(('%dn', self.original_job_name))
 
         # Replace decades
         mapping.append(('%decade', self.date_info['decade']))
@@ -1168,13 +1171,13 @@ def eval_sort(sorttype, expression, name=None, multipart=''):
     name = sanitize_foldername(name)
     if sorttype == 'series':
         name = name or ('%s S01E05 - %s [DTS]' % (Ttemplate('show-name'), Ttemplate('ep-name')))
-        sorter = sabnzbd.tvsort.SeriesSorter(None, name, path, 'tv')
-    elif sorttype == 'generic':
+        sorter = SeriesSorter(None, name, path, 'tv')
+    elif sorttype == 'movie':
         name = name or (Ttemplate('movie-sp-name') + ' (2009)')
-        sorter = sabnzbd.tvsort.GenericSorter(None, name, path, 'tv')
+        sorter = MovieSorter(None, name, path, 'tv')
     elif sorttype == 'date':
         name = name or (Ttemplate('show-name') + ' 2009-01-02')
-        sorter = sabnzbd.tvsort.DateSorter(None, name, path, 'tv')
+        sorter = DateSorter(None, name, path, 'tv')
     else:
         return None
     sorter.sort_string = expression
@@ -1183,14 +1186,14 @@ def eval_sort(sorttype, expression, name=None, multipart=''):
     path = os.path.normpath(os.path.join(path, sorter.filename_set))
     fname = Ttemplate('orgFilename')
     fpath = path
-    if sorttype == 'generic' and '%1' in multipart:
+    if sorttype == 'movie' and '%1' in multipart:
         fname = fname + multipart.replace('%1', '1')
         fpath = fpath + multipart.replace('%1', '1')
     if '%fn' in path:
-        path = path.replace('%fn', fname + '.avi')
+        path = path.replace('%fn', fname + '.mkv')
     else:
         if sorter.rename_or_not:
-            path = fpath + '.avi'
+            path = fpath + '.mkv'
         else:
             if sabnzbd.WIN32:
                 path += '\\'

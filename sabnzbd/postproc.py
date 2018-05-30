@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -52,6 +52,8 @@ import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.utils.checkdir
 
+MAX_FAST_JOB_COUNT = 3
+
 # Match samples
 RE_SAMPLE = re.compile(sample_match, re.I)
 
@@ -68,14 +70,25 @@ class PostProcessor(Thread):
 
         if self.history_queue is None:
             self.history_queue = []
-        self.queue = queue.Queue()
+
+        # Fast-queue for jobs already finished by DirectUnpack
+        self.fast_queue = Queue.Queue()
+
+        # Regular queue for jobs that might need more attention
+        self.slow_queue = Queue.Queue()
+
+        # Load all old jobs
         for nzo in self.history_queue:
             self.process(nzo)
+
+        # Counter to not only process fast-jobs
+        self.__fast_job_count = 0
+
+        # State variables
         self.__stop = False
+        self.__busy = False
         self.paused = False
         PostProcessor.do = self
-
-        self.__busy = False  # True while a job is being processed
 
     def save(self):
         """ Save postproc queue """
@@ -116,7 +129,12 @@ class PostProcessor(Thread):
         """ Push on finished job in the queue """
         if nzo not in self.history_queue:
             self.history_queue.append(nzo)
-        self.queue.put(nzo)
+
+        # Fast-track if it has DirectUnpacked jobs or if it's still going
+        if nzo.direct_unpacker and (nzo.direct_unpacker.success_sets or not nzo.direct_unpacker.killed):
+            self.fast_queue.put(nzo)
+        else:
+            self.slow_queue.put(nzo)
         self.save()
         sabnzbd.history_updated()
 
@@ -132,7 +150,8 @@ class PostProcessor(Thread):
     def stop(self):
         """ Stop thread after finishing running job """
         self.__stop = True
-        self.queue.put(None)
+        self.slow_queue.put(None)
+        self.fast_queue.put(None)
 
     def cancel_pp(self, nzo_id):
         """ Change the status, so that the PP is canceled """
@@ -146,7 +165,7 @@ class PostProcessor(Thread):
 
     def empty(self):
         """ Return True if pp queue is empty """
-        return self.queue.empty() and not self.__busy
+        return self.slow_queue.empty() and self.fast_queue.empty() and not self.__busy
 
     def get_queue(self):
         """ Return list of NZOs that still need to be processed """
@@ -177,15 +196,28 @@ class PostProcessor(Thread):
                 time.sleep(5)
                 continue
 
+            # Something in the fast queue?
             try:
-                nzo = self.queue.get(timeout=1)
-            except queue.Empty:
-                if check_eoq:
-                    check_eoq = False
-                    handle_empty_queue()
+                # Every few fast-jobs we should check allow a
+                # slow job so that they don't wait forever
+                if self.__fast_job_count >= MAX_FAST_JOB_COUNT and self.slow_queue.qsize():
+                    raise Queue.Empty
+
+                nzo = self.fast_queue.get(timeout=2)
+                self.__fast_job_count += 1
+            except Queue.Empty:
+                # Try the slow queue
+                try:
+                    nzo = self.slow_queue.get(timeout=2)
+                    # Reset fast-counter
+                    self.__fast_job_count = 0
+                except Queue.Empty:
+                    # Check for empty queue
+                    if check_eoq:
+                        check_eoq = False
+                        handle_empty_queue()
+                    # No fast or slow jobs, better luck next loop!
                     continue
-                else:
-                    nzo = self.queue.get()
 
             # Stop job
             if not nzo:
@@ -241,7 +273,6 @@ def process_job(nzo):
     postproc_time = 0
     script_log = ''
     script_line = ''
-    crash_msg = ''
 
     # Get the job flags
     nzo.save_attribs()
@@ -343,10 +374,12 @@ def process_job(nzo):
                     nzo.status = Status.EXTRACTING
                     logging.info("Running unpack_magic on %s", filename)
                     unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
+                    logging.info("Unpacked files %s", newfiles)
+
                     if sabnzbd.WIN32:
                         # Sanitize the resulting files
                         newfiles = sanitize_files_in_folder(tmp_workdir_complete)
-                    logging.info("unpack_magic finished on %s", filename)
+                    logging.info("Finished unpack_magic on %s", filename)
                 else:
                     nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
 
@@ -498,15 +531,15 @@ def process_job(nzo):
                     Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)
 
     except:
-        logging.error(T('Post Processing Failed for %s (%s)'), filename, crash_msg)
-        if not crash_msg:
-            logging.info("Traceback: ", exc_info=True)
-            crash_msg = T('see logfile')
-        nzo.fail_msg = T('PostProcessing was aborted (%s)') % unicoder(crash_msg)
+        logging.error(T('Post Processing Failed for %s (%s)'), filename, T('see logfile'))
+        logging.info("Traceback: ", exc_info=True)
+
+        nzo.fail_msg = T('PostProcessing was aborted (%s)') % T('see logfile')
         notifier.send_notification(T('Download Failed'), filename, 'failed', nzo.cat)
         nzo.status = Status.FAILED
         par_error = True
         all_ok = False
+
         if cfg.email_endjob():
             emailer.endjob(nzo.final_name, nzo.cat, all_ok, clip_path(workdir_complete), nzo.bytes_downloaded,
                            nzo.fail_msg, nzo.unpack_info, '', '', 0)
@@ -824,10 +857,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
         if so send to queue and remove if on CleanList
         Returns list of processed NZB's
     """
-    files = []
-    for root, _dirs, names in os.walk(wdir):
-        for name in names:
-            files.append(os.path.join(root, name))
+    files = recursive_listdir(wdir)
 
     for file_ in files:
         if os.path.splitext(file_)[1].lower() != '.nzb':
@@ -847,10 +877,14 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
 def one_file_or_folder(folder):
     """ If the dir only contains one file or folder, join that file/folder onto the path """
     if os.path.exists(folder) and os.path.isdir(folder):
-        cont = os.listdir(folder)
-        if len(cont) == 1:
-            folder = os.path.join(folder, cont[0])
-            folder = one_file_or_folder(folder)
+        try:
+            cont = os.listdir(folder)
+            if len(cont) == 1:
+                folder = os.path.join(folder, cont[0])
+                folder = one_file_or_folder(folder)
+        except WindowsError:
+            # Can occur on paths it doesn't like, for example "C:"
+            pass
     return folder
 
 

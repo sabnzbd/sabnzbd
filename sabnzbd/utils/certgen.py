@@ -12,8 +12,9 @@ from cryptography import x509
 from cryptography.x509.oid import NameOID
 import datetime
 import os
-from sabnzbd.getipaddress import localipv4
+import socket
 
+from sabnzbd.getipaddress import localipv4
 
 # Ported from cryptography/utils.py
 def int_from_bytes(data, byteorder, signed=False):
@@ -60,15 +61,25 @@ def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', L
         # x509.NameAttribute(NameOID.COMMON_NAME, CN),
     ])
 
-    # build SubjectAltName list since we are not using a common name
-    san_list = [
-        x509.DNSName("localhost"),
-        x509.DNSName("127.0.0.1"),
-        ]
-    # append local v4 ip (functions already has try/catch logic)
-    mylocalipv4 = localipv4()
-    if mylocalipv4:
-        san_list.append(x509.DNSName("" + mylocalipv4))
+
+    # build Subject Alternate Names (aka SAN) list
+    # First the host names, add with x509.DNSName():
+    san_list = [x509.DNSName(u"localhost")]
+    san_list.append(x509.DNSName(unicode(socket.gethostname())))
+
+    # Then the host IP addresses, add with x509.IPAddress()
+    # Inside a try-except, just to be sure
+    try:
+        import ipaddress
+        san_list.append(x509.IPAddress(ipaddress.IPv4Address(u"127.0.0.1")))
+        san_list.append(x509.IPAddress(ipaddress.IPv6Address(u"::1")))
+
+        # append local v4 ip
+        mylocalipv4 = localipv4()
+        if mylocalipv4:
+            san_list.append(x509.IPAddress(ipaddress.IPv4Address(unicode(mylocalipv4))))
+    except:
+        pass
 
     cert = x509.CertificateBuilder().subject_name(
         subject

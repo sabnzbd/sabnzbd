@@ -91,7 +91,7 @@
                     <input type="text" name="email_pwd" id="email_pwd" value="$email_pwd" />
                     <span class="desc">$T('explain-email_pwd')</span>
                 </div>
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_email" rel="$T('askTestEmail')"><span class="glyphicon glyphicon-envelope"></span> $T('link-testEmail')</button>
                 </div>
@@ -115,7 +115,7 @@
         <div class="col1" <!--#if int($ncenter_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('ncenter')
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_notif"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
@@ -141,7 +141,7 @@
         <div class="col1" <!--#if int($acenter_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('acenter')
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_windows"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
@@ -167,7 +167,7 @@
         <div class="col1" <!--#if int($ntfosd_enable) > 0 then '' else 'style="display:none"'#-->>
             <fieldset>
                 $show_notify_checkboxes('ntfosd')
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_osd"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                </div>
@@ -207,7 +207,7 @@
                     <span class="desc">$T('Optional') - $T('explain-nscript_parameters')</span>
                 </div>
                 $show_notify_checkboxes('nscript')
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_nscript"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                 </div>
@@ -241,7 +241,7 @@
                     <span class="desc">$T('explain-growl_password')</span>
                 </div>
                 $show_notify_checkboxes('growl')
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_growl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                 </div>
@@ -286,7 +286,7 @@
                         </select>
                     </div>
                 <!--#end for#-->
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_prowl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                 </div>
@@ -352,7 +352,7 @@
                         </select>
                     </div>
                 <!--#end for#-->
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                     <button class="btn btn-default" type="button" id="test_pushover"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                 </div>
@@ -389,7 +389,7 @@
                 </div>
                 <!--#end if#-->
                 $show_notify_checkboxes('pushbullet')
-                <div class="field-pair">
+                <div class="field-pair no-field-pair-bg">
                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                    <button class="btn btn-default" type="button" id="test_pushbullet"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
                 </div>
@@ -417,6 +417,7 @@
             \$(this).parents('.col2').find('.col2-cats').hide()
         }
         \$('form').submit()
+        addRowColor()
     })
     \$('#email_endjob').change(function() {
         if(\$(this).val() > 0) {

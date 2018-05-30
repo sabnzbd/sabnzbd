@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2017-10-25 23:30+0000\n"
-"PO-Revision-Date: 2017-06-22 07:07+0000\n"
+"POT-Creation-Date: 2018-03-15 13:08+0000\n"
+"PO-Revision-Date: 2018-02-14 14:16+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2017-10-26 05:45+0000\n"
-"X-Generator: Launchpad (build 18484)\n"
+"X-Launchpad-Export-Date: 2018-03-16 05:37+0000\n"
+"X-Generator: Launchpad (build 18571)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -29,11 +29,14 @@ msgstr "Kan ikke finde webskabeloner: %s, forsøger med standardskabelon"
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
+"SABYenc deaktiveret: Der blev ikke fundet nogen korrekt version (Fandt v%s, "
+"forventede v%s)"
 
 #: SABnzbd.py [Warning message]
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
+"SABYenc modul... IKKE fundet! Forventede v%s - https://sabnzbd.org/sabyenc"
 
 #: SABnzbd.py [Error message]
 msgid "_yenc module... NOT found!"
@@ -45,11 +48,11 @@ msgstr "par2 binær... IKKE fundet!"
 
 #: SABnzbd.py [Error message] # SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
-msgstr ""
+msgstr "Verificering og reperation er ikke muligt."
 
 #: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
-msgstr ""
+msgstr "MultiPar binær... IKKE fundet!"
 
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
@@ -57,7 +60,7 @@ msgstr "Din Unrar version er %s, vi anbefaler version %s eller højere.<br />"
 
 #: SABnzbd.py [Error message]
 msgid "Downloads will not unpacked."
-msgstr ""
+msgstr "Downloads vil ikke blive udpakket."
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -116,7 +119,7 @@ msgid "Error"
 msgstr "Fejl"
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/interface.py
-#: sabnzbd/osxmenu.py # sabnzbd/wizard.py
+#: sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd lukning udført."
 
@@ -487,7 +490,17 @@ msgstr ""
 "Du skal angive den maksimale båndbredde, før du kan angive en båndbredde "
 "begrænsning"
 
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
+#: sabnzbd/downloader.py # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py
+#: sabnzbd/downloader.py [Warning message]
+msgid "Cannot connect to server %s [%s]"
+msgstr "Kan ikke tilslutte til server %s [%s]"
+
+#: sabnzbd/downloader.py # sabnzbd/urlgrabber.py
+msgid "Server name does not resolve"
+msgstr "Servernavnet løser ikke"
+
+#: sabnzbd/downloader.py [Warning message] # sabnzbd/downloader.py [Warning message]
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s vil blive ignoreret for i %s minutter"
 
@@ -506,11 +519,6 @@ msgstr "Sandsynligt delt konto"
 #: sabnzbd/downloader.py # sabnzbd/downloader.py [Error message]
 msgid "Failed login for server %s"
 msgstr "Det lykkedes ikke at logge på serveren %s"
-
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-#: sabnzbd/downloader.py # sabnzbd/downloader.py [Warning message]
-msgid "Cannot connect to server %s [%s]"
-msgstr "Kan ikke tilslutte til server %s [%s]"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
@@ -564,6 +572,12 @@ msgstr "Det lykkedes ikke at lukke e-mail tilslutning"
 msgid "Email succeeded"
 msgstr "E-mail afsendelse mislykkedes"
 
+#: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/notifier.py
+#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/rating.py
+#: sabnzbd/rating.py
+msgid "Cannot send, missing required data"
+msgstr "Kan ikke sende, mangler nødvendige data"
+
 #: sabnzbd/emailer.py [Error message]
 msgid "Cannot find email templates in %s"
 msgstr "Kan ikke finde e-mail skabeloner i %s"
@@ -613,6 +627,10 @@ msgid "Server address \"%s:%s\" is not valid."
 msgstr "Serveradressen \"%s:%s\" er ikke gyldigt."
 
 #: sabnzbd/interface.py
+msgid "Refused connection with hostname \"%s\" from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "User logged in to the web interface"
 msgstr "Bruger logget på webgrænsefladen"
 
@@ -620,7 +638,7 @@ msgstr "Bruger logget på webgrænsefladen"
 msgid "User logged in"
 msgstr "Bruger logget ind"
 
-#: sabnzbd/interface.py [Warning message]
+#: sabnzbd/interface.py
 msgid "Missing Session key"
 msgstr "Mangler sessionsnøgle"
 
@@ -628,7 +646,7 @@ msgstr "Mangler sessionsnøgle"
 msgid "Error: Session Key Required"
 msgstr "Fejl: Kræver sessionsnøgle"
 
-#: sabnzbd/interface.py [Warning message] # sabnzbd/interface.py
+#: sabnzbd/interface.py # sabnzbd/interface.py
 msgid "Error: Session Key Incorrect"
 msgstr "Fejl: Forkert sessionsnøgle"
 
@@ -764,7 +782,7 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/tvsort.py [Error message]
+#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Kan ikke oprette mappe %s"
 
@@ -793,6 +811,10 @@ msgstr ""
 #: sabnzbd/misc.py [Error message]
 msgid "Cannot change permissions of %s"
 msgstr "Det lykkedes ikke at ændre rettigheder på %s"
+
+#: sabnzbd/newsunpack.py # sabnzbd/postproc.py
+msgid "Running script"
+msgstr "Køre script"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
@@ -971,6 +993,8 @@ msgstr "Par verificering mislykkedes på %s, mens QuickCheck lykkedes"
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
+#: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparation mislykkedes, %s"
 
@@ -996,10 +1020,6 @@ msgstr "[%s] Bekræftelse i %s, alle filer er ok"
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid "[%s] Verified in %s, repair is required"
 msgstr "[%s] Bekræftelse i %s, kræver reparation"
-
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
-msgid "Main packet not found..."
-msgstr "Hovedarkiv mangler..."
 
 #: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py
 msgid ""
@@ -1110,11 +1130,6 @@ msgstr "Andre beskeder"
 msgid "Not available"
 msgstr "Ikke tilgængelig"
 
-#: sabnzbd/notifier.py # sabnzbd/notifier.py # sabnzbd/notifier.py
-#: sabnzbd/notifier.py # sabnzbd/rating.py # sabnzbd/rating.py
-msgid "Cannot send, missing required data"
-msgstr "Kan ikke sende, mangler nødvendige data"
-
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
 msgstr "Kunne ikke sende Prowl besked"
@@ -1171,7 +1186,7 @@ msgstr "NZB tilføjet i køen"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Ukendt kodning"
 
-#: sabnzbd/nzbstuff.py [Warning message]
+#: sabnzbd/nzbstuff.py
 msgid "File %s is empty, skipping"
 msgstr "Fil %s er tom, springer over"
 
@@ -1281,7 +1296,7 @@ msgid "Warnings"
 msgstr "Advarsler"
 
 #: sabnzbd/osxmenu.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py
-#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py
+#: sabnzbd/sabtraylinux.py # sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Inaktiv"
 
@@ -1551,10 +1566,6 @@ msgid "Failed to move files"
 msgstr "Kunne ikke flytte filer"
 
 #: sabnzbd/postproc.py
-msgid "Running script"
-msgstr "Køre script"
-
-#: sabnzbd/postproc.py
 msgid "Running user script %s"
 msgstr "Kør bruger script %s"
 
@@ -1574,7 +1585,7 @@ msgstr "Mere"
 msgid "Post Processing Failed for %s (%s)"
 msgstr "Efterbehandling mislykkedes for %s (%s)"
 
-#: sabnzbd/postproc.py
+#: sabnzbd/postproc.py [Error message] # sabnzbd/postproc.py
 msgid "see logfile"
 msgstr "se logfil"
 
@@ -1908,11 +1919,12 @@ msgstr "Meget lav"
 msgid "Moderate"
 msgstr "Moderat"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Normal"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py
 msgid "High"
 msgstr "Høj"
 
@@ -1920,7 +1932,7 @@ msgstr "Høj"
 msgid "Emergency"
 msgstr "Nødsituation"
 
-#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list]
+#: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
 msgid "Low"
 msgstr "Lav"
 
@@ -2465,6 +2477,12 @@ msgstr "Et andet problem"
 msgid "Force Disconnect"
 msgstr "Gennemtving afbrydelse"
 
+#: sabnzbd/skintext.py [Status page button text]
+msgid ""
+"Disconnect all active connections to usenet servers. Connections will be "
+"reopened after a few seconds if there are items in the queue."
+msgstr ""
+
 #: sabnzbd/skintext.py
 msgid "This will send a test email to your account."
 msgstr "Dette vil sende en test E-mail til din konto."
@@ -2685,7 +2703,7 @@ msgid "Backup"
 msgstr "Sikkerhedskopi"
 
 #: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
+#: sabnzbd/skintext.py # sabnzbd/skintext.py # sabnzbd/skintext.py [Notification Script settings]
 msgid "Read the Wiki Help on this!"
 msgstr "Læs mere om dette på Wiki Help!"
 
@@ -3332,6 +3350,10 @@ msgid "IONice Parameters"
 msgstr "IONice parametre"
 
 #: sabnzbd/skintext.py
+msgid "External process priority"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
 msgstr "Afbryd når køen er tom"
 
@@ -3501,7 +3523,7 @@ msgstr "SSL-chifre"
 msgid "Increase performance by forcing a lower SSL encryption strength."
 msgstr "Øge ydeevnen ved at tvinge en lavere SSL-kryptering styrke."
 
-#: sabnzbd/skintext.py
+#: sabnzbd/skintext.py # sabnzbd/urlgrabber.py
 msgid "Maximum retries"
 msgstr "Maksimalt antal forsøg"
 
@@ -3654,7 +3676,7 @@ msgstr "Streng"
 
 #: sabnzbd/skintext.py [Explain server priority]
 msgid "0 is highest priority, 100 is the lowest priority"
-msgstr "0 er højeste prioritet, 100 er den laveste prioritet"
+msgstr "0 er højeste prioritet, 99 er den laveste prioritet"
 
 #: sabnzbd/skintext.py [Server optional tickbox]
 msgid "Optional"
@@ -4146,6 +4168,10 @@ msgid "S01E05 Episode Folder"
 msgstr "S01E05 Episodemappe"
 
 #: sabnzbd/skintext.py
+msgid "Job Name as Filename"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Title"
 msgstr "Titel"
 
@@ -4214,8 +4240,8 @@ msgid "Original Filename"
 msgstr "Originalfilnavn"
 
 #: sabnzbd/skintext.py
-msgid "Original Foldername"
-msgstr "Orginal Mappenavn"
+msgid "Original Job Name"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"
@@ -4232,10 +4258,6 @@ msgstr "tekst"
 #: sabnzbd/skintext.py
 msgid "file"
 msgstr "fil"
-
-#: sabnzbd/skintext.py
-msgid "folder"
-msgstr "mappe"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
@@ -4584,6 +4606,12 @@ msgstr "Pause i..."
 #: sabnzbd/skintext.py # sabnzbd/skintext.py
 msgid "Refresh"
 msgstr "Opdatere"
+
+#: sabnzbd/skintext.py
+msgid ""
+"All usernames, passwords and API-keys are automatically removed from the log "
+"and the included copy of your settings."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
@@ -4953,22 +4981,18 @@ msgstr ""
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Har du ingen usenet leverandør? Vi anbefaler at prøve %s."
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Error getting TV info (%s)"
 msgstr "Det lykkedes ikke at hente TV info (%s)"
 
-#: sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message] # sabnzbd/tvsort.py [Error message]
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename: %s to %s"
 msgstr "Det lykkedes ikke at omdøbe: %s til %s"
 
-#: sabnzbd/tvsort.py [Error message]
+#: sabnzbd/sorting.py [Error message]
 msgid "Failed to rename similar file: %s to %s"
 msgstr "Kunne ikke omdøbe lignende fil: %s til %s"
-
-#: sabnzbd/urlgrabber.py
-msgid "Server name does not resolve"
-msgstr "Servernavnet løser ikke"
 
 #: sabnzbd/urlgrabber.py
 msgid "Unauthorized access"
@@ -5057,6 +5081,9 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Unpacking failed, an expected file was not unpacked"
 #~ msgstr "Udpakning mislykkedes, en ventet fil er ikke udpakket"
+
+#~ msgid "Main packet not found..."
+#~ msgstr "Hovedarkiv mangler..."
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "Mislykkedes med importering af OpenSSL modul. Tilslutter uden SSL"
@@ -5403,6 +5430,12 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Show times in AM/PM notation (does not affect scheduler)."
 #~ msgstr "Vis tider i AM / PM notation (påvirker ikke skemalægger)."
+
+#~ msgid "folder"
+#~ msgstr "mappe"
+
+#~ msgid "Original Foldername"
+#~ msgstr "Orginal Mappenavn"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "Gruppe / Index tags"

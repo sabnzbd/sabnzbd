@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -60,8 +60,8 @@ TIMER_LOCK = RLock()
 
 class Server(object):
 
-    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, send_group, username=None,
-                 password=None, optional=False, retention=0):
+    def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, ssl_ciphers,
+                 send_group, username=None, password=None, optional=False, retention=0):
 
         self.id = id
         self.newid = None
@@ -74,6 +74,7 @@ class Server(object):
         self.priority = priority
         self.ssl = ssl
         self.ssl_verify = ssl_verify
+        self.ssl_ciphers = ssl_ciphers
         self.optional = optional
         self.retention = retention
         self.send_group = send_group
@@ -228,6 +229,7 @@ class Downloader(Thread):
             priority = srv.priority()
             ssl = srv.ssl()
             ssl_verify = srv.ssl_verify()
+            ssl_ciphers = srv.ssl_ciphers()
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
@@ -247,7 +249,7 @@ class Downloader(Thread):
 
         if create and enabled and host and port and threads:
             server = Server(newserver, displayname, host, port, timeout, threads, priority, ssl, ssl_verify,
-                                            send_group, username, password, optional, retention)
+                                    ssl_ciphers, send_group, username, password, optional, retention)
             self.servers.append(server)
             self.server_dict[newserver] = server
 
@@ -270,7 +272,7 @@ class Downloader(Thread):
         self.paused = False
 
     @NzbQueueLocker
-    def pause(self, save=True):
+    def pause(self):
         """ Pause the downloader, optionally saving admin """
         if not self.paused:
             self.paused = True
@@ -280,8 +282,6 @@ class Downloader(Thread):
                 BPSMeter.do.reset()
             if cfg.autodisconnect():
                 self.disconnect()
-            if save:
-                ArticleCache.do.flush_articles()
 
     def delay(self):
         logging.debug("Delaying")
@@ -366,12 +366,25 @@ class Downloader(Thread):
         return list(filter(nzo.server_in_try_list, self.servers))
 
     def maybe_block_server(self, server):
-        if server.optional and server.active and (server.bad_cons / server.threads) > 3:
-            # Optional and active server had too many problems,
-            # disable it now and send a re-enable plan to the scheduler
+        # Was it resolving problem?
+        if server.info is False:
+            # Warn about resolving issues
+            errormsg = T('Cannot connect to server %s [%s]') % (server.id, T('Server name does not resolve'))
+            if server.errormsg != errormsg:
+                server.errormsg = errormsg
+                logging.warning(errormsg)
+                logging.warning(T('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
+
+            # Not fully the same as the code below for optional servers
             server.bad_cons = 0
             server.active = False
-            server.errormsg = T('Server %s will be ignored for %s minutes') % ('', _PENALTY_TIMEOUT)
+            self.plan_server(server.id, _PENALTY_TIMEOUT)
+
+        # Optional and active server had too many problems.
+        # Disable it now and send a re-enable plan to the scheduler
+        if server.optional and server.active and (server.bad_cons / server.threads) > 3:
+            server.bad_cons = 0
+            server.active = False
             logging.warning(T('Server %s will be ignored for %s minutes'), server.id, _PENALTY_TIMEOUT)
             self.plan_server(server.id, _PENALTY_TIMEOUT)
 
@@ -396,21 +409,9 @@ class Downloader(Thread):
         sabnzbd.EXTERNAL_IPV6 = sabnzbd.test_ipv6()
         logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
 
-        # Then have to check the quality of SSL verification
-        if sabnzbd.CERTIFICATE_VALIDATION:
-            try:
-                import ssl
-                ctx = ssl.create_default_context()
-                base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
-                ssl_sock.settimeout(2.0)
-                ssl_sock.connect((cfg.selftest_host(), 443))
-                ssl_sock.close()
-            except:
-                # Seems something is still wrong
-                sabnzbd.set_https_verification(0)
-                sabnzbd.CERTIFICATE_VALIDATION = False
-        logging.debug('SSL verification test: %s', sabnzbd.CERTIFICATE_VALIDATION)
+        # Then we check SSL certifcate checking
+        sabnzbd.HAVE_SSL_CONTEXT = sabnzbd.test_cert_checking()
+        logging.debug('SSL verification test: %s', sabnzbd.HAVE_SSL_CONTEXT)
 
         # Start decoders
         for decoder in self.decoder_workers:
@@ -457,9 +458,11 @@ class Downloader(Thread):
                         else:
                             nw.timeout = None
 
-                    if server.info is None:
-                        self.maybe_block_server(server)
-                        request_server_info(server)
+                    if not server.info:
+                        # Only request info if there's stuff in the queue
+                        if not sabnzbd.nzbqueue.NzbQueue.do.is_empty():
+                            self.maybe_block_server(server)
+                            request_server_info(server)
                         break
 
                     article = sabnzbd.nzbqueue.NzbQueue.do.get_article(server, self.servers)
@@ -793,11 +796,8 @@ class Downloader(Thread):
                 # Too many tries on this server, consider article missing
                 self.decode(article, None, None)
             else:
-                # Remove this server from try_list
-                article.fetcher = None
-
                 # Allow all servers to iterate over each nzo/nzf again
-                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article.nzf, article.nzf.nzo)
+                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
 
         if destroy:
             nw.terminate(quit=quit)
@@ -941,7 +941,7 @@ def clues_too_many(text):
     text = text.lower()
     for clue in ('exceed', 'connections', 'too many', 'threads', 'limit'):
         # Not 'download limit exceeded' error
-        if (clue in text) and ('download' not in text):
+        if (clue in text) and ('download' not in text) and ('byte' not in text):
             return True
     return False
 

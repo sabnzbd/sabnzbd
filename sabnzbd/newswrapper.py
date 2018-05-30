@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@ import sabnzbd
 from sabnzbd.constants import *
 from sabnzbd.encoding import utob
 import sabnzbd.cfg
-from sabnzbd.misc import nntp_to_msg
+from sabnzbd.misc import nntp_to_msg, probablyipv4, probablyipv6
 
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
@@ -44,9 +44,9 @@ socket.setdefaulttimeout(DEF_TIMEOUT)
 
 def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
+    logging.debug('Retrieving server address information for %s', server.host)
     info = GetServerParms(server.host, server.port)
-
-    if info is None:
+    if not info:
         server.bad_cons += server.threads
     else:
         server.bad_cons = 0
@@ -93,7 +93,7 @@ def GetServerParms(host, port):
             except:
                 # Nothing found!
                 pass
-        return None
+        return False
 
 
 def con(sock, host, port, sslenabled, write_fds, nntp):
@@ -131,20 +131,6 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
             nntp.error(e)
 
 
-def probablyipv4(ip):
-    if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
-        return True
-    else:
-        return False
-
-
-def probablyipv6(ip):
-    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:]', '', ip) == '':
-        return True
-    else:
-        return False
-
-
 class NNTP(object):
     # Pre-define attributes to save memory
     __slots__ = ('host', 'port', 'nw', 'blocking', 'error_msg', 'sock')
@@ -157,10 +143,7 @@ class NNTP(object):
         self.error_msg = None
 
         if not info:
-            if block:
-                info = GetServerParms(host, port)
-            else:
-                raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
+            raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
         af, socktype, proto, canonname, sa = info[0]
 
@@ -184,9 +167,9 @@ class NNTP(object):
                     ctx.verify_mode = ssl.CERT_NONE
 
                 # Did the user set a custom cipher-string?
-                if(sabnzbd.cfg.ssl_ciphers()):
+                if(nw.server.ssl_ciphers):
                     # At their own risk, socket will error out in case it was invalid
-                    ctx.set_ciphers(sabnzbd.cfg.ssl_ciphers())
+                    ctx.set_ciphers(nw.server.ssl_ciphers)
 
                 self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=str(nw.server.host))
             else:
@@ -305,11 +288,16 @@ class NewsWrapper(object):
             return None
 
     def init_connect(self, write_fds):
+        # Server-info is normally requested by initialization of
+        # servers in Downloader, but not when testing servers
+        if self.blocking and not self.server.info:
+            self.server.info = GetServerParms(self.server.host, self.server.port)
+
+        # Construct NNTP object and shorthands
         self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
                          self.server.send_group, self, self.server.username, self.server.password,
                          self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
-
         self.timeout = time.time() + self.server.timeout
 
     def finish_connect(self, code):

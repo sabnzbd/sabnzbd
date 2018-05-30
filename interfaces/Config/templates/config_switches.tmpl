@@ -3,9 +3,14 @@
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
+    <div class="padding alt section">
+        <label for="advanced-settings-button" class="form-control advanced-button ">
+            <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
+        </label>
+    </div>
     <form action="saveSwitches" method="post" name="fullform" class="fullform" autocomplete="off">
         <input type="hidden" id="session" name="session" value="$session" />
-        <div class="section">
+        <div class="section advanced-settings">
             <div class="col2">
                 <h3>$T('swtag-server') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             </div><!-- /col2 -->
@@ -19,12 +24,6 @@
                             <option value="2" <!--#if $load_balancing == 2 then 'selected="selected"' else ""#--> >$T('load-balancing-happy-eyeballs')</option>
                         </select>
                         <span class="desc">$T('explain-load_balancing')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="ssl_ciphers">$T('opt-ssl_ciphers')</label>
-                        <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$ssl_ciphers" />
-                        <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
-                        <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
                     </div>
                     <div class="field-pair">
                         <label class="config" for="max_art_tries">$T('opt-max_art_tries')</label>
@@ -67,12 +66,12 @@
                         <input type="number" name="propagation_delay" id="propagation_delay" value="$propagation_delay" /> <i>$T('minutes')</i>
                         <span class="desc">$T('explain-propagation_delay')</span>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="top_only">$T('opt-top_only')</label>
                         <input type="checkbox" name="top_only" id="top_only" value="1" <!--#if int($top_only) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-top_only')</span>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="pre_check">$T('opt-pre_check')</label>
                         <input type="checkbox" name="pre_check" id="pre_check" value="1" <!--#if int($pre_check) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-pre_check')</span>
@@ -104,7 +103,7 @@
                         </select>
                         <span class="desc">$T('explain-no_series_dupes')</span>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="series_propercheck">$T('opt-series_propercheck')</label>
                         <input type="checkbox" name="series_propercheck" id="series_propercheck" value="1" <!--#if int($series_propercheck) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-series_propercheck')</span>
@@ -119,6 +118,11 @@
                         <span class="desc">$T('explain-pause_on_pwrar')</span>
                     </div>
                     <div class="field-pair">
+                        <label class="config" for="unwanted_extensions">$T('opt-unwanted_extensions')</label>
+                        <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
+                        <span class="desc">$T('explain-unwanted_extensions')</span>
+                    </div>
+                    <div class="field-pair">
                         <label class="config" for="action_on_unwanted_extensions">$T('opt-action_on_unwanted_extensions')</label>
                         <select name="action_on_unwanted_extensions" id="action_on_unwanted_extensions">
                             <option value="0" <!--#if int($action_on_unwanted_extensions) == 0 then 'selected="selected"' else ""#--> >$T('nodupes-off')</option>
@@ -127,12 +131,7 @@
                         </select>
                         <span class="desc">$T('explain-action_on_unwanted_extensions')</span>
                     </div>
-                    <div class="field-pair">
-                        <label class="config" for="unwanted_extensions">$T('opt-unwanted_extensions')</label>
-                        <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
-                        <span class="desc">$T('explain-unwanted_extensions')</span>
-                    </div>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
                         <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-auto_sort')</span>
@@ -160,64 +159,76 @@
                         <input type="checkbox" name="pause_on_post_processing" id="pause_on_post_processing" value="1" <!--#if int($pause_on_post_processing) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-pause_on_post_processing')</span>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="enable_all_par">$T('opt-enable_all_par')</label>
                         <input type="checkbox" name="enable_all_par" id="enable_all_par" value="1" <!--#if int($enable_all_par) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_all_par').replace('. ', '.<br/>')</span>
                     </div>
-                    <div class="field-pair">
-                        <label class="config" for="par_option">$T('opt-par_option')</label>
-                        <input type="text" name="par_option" id="par_option" value="$par_option" />
-                        <span class="desc">$T('explain-par_option')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="sfv_check">$T('opt-sfv_check')</label>
-                        <input type="checkbox" name="sfv_check" id="sfv_check" value="1" <!--#if int($sfv_check) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-sfv_check')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="safe_postproc">$T('opt-safe_postproc')</label>
-                        <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-safe_postproc')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="enable_recursive">$T('opt-enable_recursive')</label>
-                        <input type="checkbox" name="enable_recursive" id="enable_recursive" value="1" <!--#if int($enable_recursive) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-enable_recursive')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="flat_unpack">$T('opt-flat_unpack')</label>
-                        <input type="checkbox" name="flat_unpack" id="flat_unpack" value="1" <!--#if int($flat_unpack) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-flat_unpack')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="script_can_fail">$T('opt-script_can_fail')</label>
-                        <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if int($script_can_fail) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-script_can_fail')</span>
-                    </div>
-                    <div class="field-pair">
-                        <label class="config" for="new_nzb_on_failure">$T('opt-new_nzb_on_failure')</label>
-                        <input type="checkbox" name="new_nzb_on_failure" id="new_nzb_on_failure" value="1" <!--#if int($new_nzb_on_failure) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-new_nzb_on_failure')</span>
-                    </div>
                     <!--#if not $nt#-->
-                    <div class="field-pair <!--#if not $have_nice then "disabled" else "" #-->">
+                    <div class="field-pair advanced-settings <!--#if not $have_nice then "disabled" else "" #-->">
                         <label class="config" for="nice">$T('opt-nice')</label>
                         <input type="text" name="nice" id="nice" value="$nice" <!--#if not $have_nice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                         <span class="desc">$T('explain-nice')</span>
                     </div>
-                    <div class="field-pair <!--#if not $have_ionice then "disabled" else "" #-->">
+                    <div class="field-pair advanced-settings <!--#if not $have_ionice then "disabled" else "" #-->">
                         <label class="config" for="ionice">$T('opt-ionice')</label>
                         <input type="text" name="ionice" id="ionice" value="$ionice" <!--#if not $have_ionice then 'readonly="readonly" disabled="disabled"' else "" #--> />
                         <span class="desc">$T('explain-ionice')</span>
                     </div>
+                    <!--#else#-->
+                    <div class="field-pair advanced-settings">
+
+                        <label class="config" for="win_process_prio">$T('opt-win_process_prio')</label>
+                        <select name="win_process_prio" id="win_process_prio">
+                            <option value="4" <!--#if int($win_process_prio) == 4 then 'selected="selected"' else ""#-->>$T('win_process_prio-high')</option>
+                            <option value="3" <!--#if int($win_process_prio) == 3 then 'selected="selected"' else ""#-->>$T('win_process_prio-normal')</option>
+                            <option value="2" <!--#if int($win_process_prio) == 2 then 'selected="selected"' else ""#-->>$T('win_process_prio-low')</option>
+                            <option value="1" <!--#if int($win_process_prio) == 1 then 'selected="selected"' else ""#-->>$T('win_process_prio-idle')</option>
+                        </select>
+                        <span class="desc">$T('explain-win_process_prio')</span>
+                    </div>
                     <!--#end if#-->
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="par_option">$T('opt-par_option')</label>
+                        <input type="text" name="par_option" id="par_option" value="$par_option" />
+                        <span class="desc">$T('explain-par_option')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="sfv_check">$T('opt-sfv_check')</label>
+                        <input type="checkbox" name="sfv_check" id="sfv_check" value="1" <!--#if int($sfv_check) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-sfv_check')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="safe_postproc">$T('opt-safe_postproc')</label>
+                        <input type="checkbox" name="safe_postproc" id="safe_postproc" value="1" <!--#if int($safe_postproc) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-safe_postproc')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="enable_recursive">$T('opt-enable_recursive')</label>
+                        <input type="checkbox" name="enable_recursive" id="enable_recursive" value="1" <!--#if int($enable_recursive) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-enable_recursive')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="flat_unpack">$T('opt-flat_unpack')</label>
+                        <input type="checkbox" name="flat_unpack" id="flat_unpack" value="1" <!--#if int($flat_unpack) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-flat_unpack')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="script_can_fail">$T('opt-script_can_fail')</label>
+                        <input type="checkbox" name="script_can_fail" id="script_can_fail" value="1" <!--#if int($script_can_fail) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-script_can_fail')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="new_nzb_on_failure">$T('opt-new_nzb_on_failure')</label>
+                        <input type="checkbox" name="new_nzb_on_failure" id="new_nzb_on_failure" value="1" <!--#if int($new_nzb_on_failure) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-new_nzb_on_failure')</span>
+                    </div>
                     <div class="field-pair">
                         <label class="config" for="ignore_samples">$T('opt-ignore_samples')</label>
                         <input type="checkbox" name="ignore_samples" id="ignore_samples" value="1" <!--#if int($ignore_samples) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-ignore_samples') $T('igsam-del').</span>
                     </div>
-                    <div class="field-pair">
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
                         <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-enable_meta').replace('. ', '.<br/>')</span>
@@ -246,7 +257,7 @@
                 </fieldset>
             </div><!-- /col1 -->
         </div><!-- /section -->
-        <div class="section">
+        <div class="section advanced-settings">
             <div class="col2">
                 <h3>$T('swtag-naming') <a href="$helpuri$help_uri#toc4" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
             </div><!-- /col2 -->

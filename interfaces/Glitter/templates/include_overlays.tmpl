@@ -140,7 +140,7 @@
                         <hr />
                         <div class="row options-function-box">
                             <div class="col-sm-6">
-                                <a href="#" data-bind="click: forceDisconnect" class="btn btn-default "><span class="glyphicon glyphicon-minus-sign"></span> $T('link-forceDisc')</a>
+                                <a href="#" data-bind="click: forceDisconnect" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('explain-forceDisc')"><span class="glyphicon glyphicon-minus-sign"></span> $T('link-forceDisc')</a>
                             </div>
                             <div class="col-sm-6">
                                 <a href="#" data-bind="click: repairQueue" data-tooltip="true" data-placement="top" title="$T('explain-Repair').replace('<br>',' ').replace('<br />',' ')" class="btn btn-default">
@@ -150,7 +150,9 @@
                         </div>
                         <div class="row options-function-box">
                             <div class="col-sm-6">
-                                <a href="./status/showlog?session=$session" target="_blank" class="btn btn-default"><span class="glyphicon glyphicon-file"></span> $T('link-showLog')</a>
+                                <a href="./status/showlog?session=$session" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
+                                    <span class="glyphicon glyphicon-file"></span> $T('link-showLog')
+                                </a>
                             </div>
                             <div class="col-sm-6">
                                 <div class="input-group" data-tooltip="true" data-placement="top" title="$T('logging')">
@@ -631,7 +633,7 @@
                     </tbody>
                 </table>
                 <hr/>
-                <p><small>Copyright (C) 2008-2017, The SABnzbd Team &lt;team@sabnzbd.org&gt;<br/>$T('yourRights') </small></p>
+                <p><small>Copyright (C) 2007-2018, The SABnzbd Team &lt;team@sabnzbd.org&gt;<br/>$T('yourRights') </small></p>
             </div>
         </div>
     </div>

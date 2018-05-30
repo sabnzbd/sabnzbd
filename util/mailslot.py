@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -50,7 +50,7 @@ class MailSlot(object):
 
     def connect(self):
         """ Connect to existing Mailslot so that writing is possible """
-        slot = r'\\%s\%s' % (os.environ['COMPUTERNAME'], MailSlot.slotname)
+        slot = r'\\.\%s' % MailSlot.slotname
         self.handle = CreateFile(slot, GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0)
         return self.handle != -1
 

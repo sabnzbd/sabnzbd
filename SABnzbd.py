@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -186,6 +186,7 @@ def print_help():
     print("      --ipv6_hosting <0|1> Listen on IPv6 address [::1] [*]")
     print("      --no-login           Start with username and password reset")
     print("      --log-all            Log all article handling (for developers)")
+    print("      --disable-file-log   Logging is only written to console")
     print("      --console            Force console logging for OSX app")
     print("      --new                Run a new instance of SABnzbd")
 
@@ -194,7 +195,7 @@ def print_version():
     print(("""
 %s-%s
 
-Copyright (C) 2008-2017, The SABnzbd-Team <team@sabnzbd.org>
+Copyright (C) 2007-2018, The SABnzbd-Team <team@sabnzbd.org>
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the
@@ -375,7 +376,7 @@ def print_modules():
     """ Log all detected optional or external modules """
     if sabnzbd.decoder.SABYENC_ENABLED:
         # Yes, we have SABYenc, and it's the correct version, so it's enabled
-        logging.info("SABYenc module (v%s)... found!", sabnzbd.constants.SABYENC_VERSION_REQUIRED)
+        logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
     else:
         # Something wrong with SABYenc, so let's determine and print what:
         if sabnzbd.decoder.SABYENC_VERSION:
@@ -734,7 +735,7 @@ def commandline_handler(frozen=True):
         opts, args = getopt.getopt(info, "phdvncwl:s:f:t:b:2:",
                                    ['pause', 'help', 'daemon', 'nobrowser', 'clean', 'logging=',
                                     'weblogging', 'server=', 'templates', 'ipv6_hosting=',
-                                    'template2', 'browser=', 'config-file=', 'force',
+                                    'template2', 'browser=', 'config-file=', 'force', 'disable-file-log',
                                     'version', 'https=', 'autorestarted', 'repair', 'repair-all',
                                     'log-all', 'no-login', 'pid=', 'new', 'console', 'pidfile=',
                                     # Below Win32 Service options
@@ -753,7 +754,7 @@ def commandline_handler(frozen=True):
     if not service:
         # Get and remove any NZB file names
         for entry in args:
-            if get_ext(entry) in ('.nzb', '.zip', '.rar', '.gz', '.bz2'):
+            if get_ext(entry) in VALID_NZB_FILES + VALID_ARCHIVES:
                 upload_nzbs.append(os.path.abspath(entry))
 
     for opt, arg in opts:
@@ -797,6 +798,7 @@ def main():
     cherrypylogging = None
     clean_up = False
     logging_level = None
+    no_file_log = False
     web_dir = None
     vista_plus = False
     win64 = False
@@ -870,6 +872,8 @@ def main():
             pause = True
         elif opt in ('--log-all',):
             sabnzbd.LOG_ALL = True
+        elif opt in ('--disable-file-log'):
+            no_file_log = True
         elif opt in ('--no-login',):
             no_login = True
         elif opt in ('--pid',):
@@ -1053,11 +1057,7 @@ def main():
     # We found a port, now we never check again
     sabnzbd.cfg.fixed_ports.set(True)
 
-    if logging_level is None:
-        logging_level = sabnzbd.cfg.log_level()
-    else:
-        sabnzbd.cfg.log_level.set(logging_level)
-
+    # Logging-checks
     logdir = sabnzbd.cfg.log_dir.get_path()
     if fork and not logdir:
         print("Error: I refuse to fork without a log directory!")
@@ -1075,19 +1075,24 @@ def main():
     # Prevent the logger from raising exceptions
     # primarily to reduce the fallout of Python issue 4749
     logging.raiseExceptions = 0
+
+    # Log-related constants we always need
+    if logging_level is None:
+        logging_level = sabnzbd.cfg.log_level()
+    else:
+        sabnzbd.cfg.log_level.set(logging_level)
     sabnzbd.LOGFILE = os.path.join(logdir, DEF_LOG_FILE)
+    logformat = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
+    logger.setLevel(LOGLEVELS[logging_level + 1])
 
     try:
-        rollover_log = logging.handlers.RotatingFileHandler(
-            sabnzbd.LOGFILE, 'a+',
-            sabnzbd.cfg.log_size.get_int(),
-            sabnzbd.cfg.log_backups())
-
-        logformat = '%(asctime)s::%(levelname)s::[%(module)s:%(lineno)d] %(message)s'
-        rollover_log.setFormatter(logging.Formatter(logformat))
-        sabnzbd.LOGHANDLER = rollover_log
-        logger.addHandler(rollover_log)
-        logger.setLevel(LOGLEVELS[logging_level + 1])
+        if not no_file_log:
+            rollover_log = logging.handlers.RotatingFileHandler(
+                sabnzbd.LOGFILE, 'a+',
+                sabnzbd.cfg.log_size.get_int(),
+                sabnzbd.cfg.log_backups())
+            rollover_log.setFormatter(logging.Formatter(logformat))
+            logger.addHandler(rollover_log)
 
     except IOError:
         print("Error:")
@@ -1117,6 +1122,8 @@ def main():
                 console.setLevel(LOGLEVELS[logging_level + 1])
                 console.setFormatter(logging.Formatter(logformat))
                 logger.addHandler(console)
+            if no_file_log:
+                logging.info('Console logging only')
             if noConsoleLoggingOSX:
                 logging.info('Console logging for OSX App disabled')
                 so = file('/dev/null', 'a+')
@@ -1335,8 +1342,11 @@ def main():
     staticcfg = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg'), 'tools.staticdir.content_types': forced_mime_types}
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WIZARD_DIR, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
-    appconfig = {'/api': {'tools.basic_auth.on': False},
-                 '/rss': {'tools.basic_auth.on': False},
+    appconfig = {'/api': {
+                            'tools.basic_auth.on': False,
+                            'tools.response_headers.on': True,
+                            'tools.response_headers.headers': [('Access-Control-Allow-Origin', '*')]
+                         },
                  '/static': static,
                  '/wizard/static': wizard_static,
                  '/favicon.ico': {'tools.staticfile.on': True, 'tools.staticfile.filename': os.path.join(sabnzbd.WEB_DIR_CONFIG, 'staticcfg', 'ico', 'favicon.ico')},
@@ -1487,9 +1497,7 @@ def main():
         # Or special restart cases like Mac and WindowsService
         if sabnzbd.TRIGGER_RESTART:
             # Shutdown
-            cherrypy.engine.exit()
-            sabnzbd.halt()
-            sabnzbd.SABSTOP = True
+            sabnzbd.shutdown_program()
 
             if sabnzbd.downloader.Downloader.do.paused:
                 sabnzbd.RESTART_ARGS.append('-p')
@@ -1696,9 +1704,7 @@ if __name__ == '__main__':
 
                 def stop(self):
                     logging.info('[osx] sabApp Quit - stopping main thread ')
-                    sabnzbd.halt()
-                    cherrypy.engine.exit()
-                    sabnzbd.SABSTOP = True
+                    sabnzbd.shutdown_program()
                     logging.info('[osx] sabApp Quit - main thread stopped')
 
             sabApp = startApp()
