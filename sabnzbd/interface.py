@@ -41,7 +41,7 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import to_units, from_units, time_format, calc_age, \
-    cat_to_opts, int_conv, get_base_url
+    cat_to_opts, int_conv, get_base_url, probablyipv4
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
@@ -162,7 +162,7 @@ def check_hostname():
     if not host:
         return False
 
-    # Remove the port-part (like ':8080'), if it is there, always on the right hand side. 
+    # Remove the port-part (like ':8080'), if it is there, always on the right hand side.
     # Not to be confused with IPv6 colons (within square brackets)
     host = re.sub(':[0123456789]+$', '', host).lower()
 
@@ -175,7 +175,7 @@ def check_hostname():
         return True
 
     # Fine if ends with ".local" or ".local.", aka mDNS name
-    # See rfc6762 Multicast DNS 
+    # See rfc6762 Multicast DNS
     if host.endswith(('.local', '.local.')):
         return True
 
@@ -342,7 +342,7 @@ def Raiser(root='', **kwargs):
             args[key] = val
     # Add extras
     if args:
-        root = '%s?%s' % (root, urllib.urlencode(args))
+        root = '%s?%s' % (root, urllib.parse.urlencode(args))
     # Optionally add the leading /sabnzbd/ (or what the user set)
     if not root.startswith(cfg.url_base()):
         root = cherrypy.request.script_name + root
@@ -561,7 +561,7 @@ class Wizard(object):
         change_web_dir('Glitter - Default')
 
         info = build_header(sabnzbd.WIZARD_DIR)
-        info['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        info['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
 
         # Just in case, add server
         servers = config.get_servers()
@@ -1222,7 +1222,7 @@ class ConfigPage(object):
         conf['have_sabyenc'] = SABYENC_ENABLED
         conf['have_mt_par2'] = sabnzbd.newsunpack.PAR2_MT
 
-        conf['have_ssl_context'] = sabnzbd.CERTIFICATE_VALIDATION
+        conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
         conf['ssl_version'] = ssl.OPENSSL_VERSION
 
         new = {}
@@ -1328,7 +1328,7 @@ class ConfigSwitches(object):
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf['have_ssl_context'] = sabnzbd.CERTIFICATE_VALIDATION
+        conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
@@ -1368,7 +1368,7 @@ SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'ignore_wrong_unrar', 'overwrite_files', 'enable_par_cleanup',
               'queue_complete_pers', 'api_warnings', 'ampm', 'enable_unrar', 'enable_unzip', 'enable_7zip',
               'enable_filejoin', 'enable_tsjoin', 'ignore_unrar_dates', 'debug_log_decoding',
-              'multipar', 'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
+              'multipar', 'osx_menu', 'osx_speed', 'win_menu', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
               'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'reject_duplicate_files', 'warn_dupl_jobs',
               'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging',
@@ -1378,7 +1378,7 @@ SPECIAL_BOOL_LIST = \
     #### 'fsys_type',
 
 SPECIAL_VALUE_LIST = \
-    ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
+    ('size_limit', 'folder_max_length', 'movie_rename_limit', 'nomedia_marker',
               'max_url_retries', 'req_completion_rate', 'wait_ext_drive', 'show_sysload', 'url_base',
               'direct_unpack_threads', 'ipv6_servers', 'selftest_host', 'rating_host'
      )
@@ -1455,7 +1455,7 @@ class ConfigGeneral(object):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf['configfn'] = config.get_filename()
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
         conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
 
         wlist = []
@@ -1576,7 +1576,7 @@ class ConfigServer(object):
                 new[-1]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d), timeline
         conf['servers'] = new
         conf['cats'] = list_cats(default=True)
-        conf['have_ssl_context'] = sabnzbd.CERTIFICATE_VALIDATION
+        conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_server.tmpl'),
                             filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)

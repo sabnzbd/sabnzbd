@@ -1156,25 +1156,24 @@ def test_cert_checking():
     """ Test quality of certificate validation
         On systems with at least Python > 2.7.9
     """
-    if sabnzbd.HAVE_SSL_CONTEXT:
-        try:
-            import ssl
-            ctx = ssl.create_default_context()
-            base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
-            ssl_sock.settimeout(2.0)
-            ssl_sock.connect((cfg.selftest_host(), 443))
-            ssl_sock.close()
-            return True
-        except (socket.gaierror, socket.timeout) as e:
-            # Non-SSL related error.
-            # We now assume that certificates work instead of forcing
-            # lower quality just because some (temporary) internet problem
-            logging.info('Could not determine system certificate validation quality due to connection problems')
-            return True
-        except:
-            # Seems something is still wrong
-            sabnzbd.set_https_verification(0)
+    try:
+        import ssl
+        ctx = ssl.create_default_context()
+        base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
+        ssl_sock.settimeout(2.0)
+        ssl_sock.connect((cfg.selftest_host(), 443))
+        ssl_sock.close()
+        return True
+    except (socket.gaierror, socket.timeout) as e:
+        # Non-SSL related error.
+        # We now assume that certificates work instead of forcing
+        # lower quality just because some (temporary) internet problem
+        logging.info('Could not determine system certificate validation quality due to connection problems')
+        return True
+    except:
+        # Seems something is still wrong
+        sabnzbd.set_https_verification(0)
     return False
 
 

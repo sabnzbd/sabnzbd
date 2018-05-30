@@ -1967,7 +1967,7 @@ class TXTRecord(object):
         'Return the number of name/value pairs'
         return len(self._names)
 
-    def __nonzero__(self):
+    def __bool__(self):
         'Return False if the record is empty, True otherwise'
         return bool(self._items)
 

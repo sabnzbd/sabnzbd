@@ -64,20 +64,20 @@ def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', L
 
     # build Subject Alternate Names (aka SAN) list
     # First the host names, add with x509.DNSName():
-    san_list = [x509.DNSName(u"localhost")]
-    san_list.append(x509.DNSName(unicode(socket.gethostname())))
+    san_list = [x509.DNSName("localhost")]
+    san_list.append(x509.DNSName(str(socket.gethostname())))
 
     # Then the host IP addresses, add with x509.IPAddress()
     # Inside a try-except, just to be sure
     try:
         import ipaddress
-        san_list.append(x509.IPAddress(ipaddress.IPv4Address(u"127.0.0.1")))
-        san_list.append(x509.IPAddress(ipaddress.IPv6Address(u"::1")))
+        san_list.append(x509.IPAddress(ipaddress.IPv4Address("127.0.0.1")))
+        san_list.append(x509.IPAddress(ipaddress.IPv6Address("::1")))
 
         # append local v4 ip
         mylocalipv4 = localipv4()
         if mylocalipv4:
-            san_list.append(x509.IPAddress(ipaddress.IPv4Address(unicode(mylocalipv4))))
+            san_list.append(x509.IPAddress(ipaddress.IPv4Address(str(mylocalipv4))))
     except:
         pass
 

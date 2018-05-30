@@ -120,7 +120,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             nw.recv_chunk(block=True)
         except:
             # Some internal error, not always safe to close connection
-            return False, unicode(sys.exc_info()[1])
+            return False, str(sys.exc_info()[1])
 
     # Close the connection
     nw.terminate(quit=True)

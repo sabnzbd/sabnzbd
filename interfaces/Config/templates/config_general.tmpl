@@ -177,9 +177,9 @@
                     </select>
                     <span class="desc">$T('explain-check_new_rel')</span>
                 </div>
-                <div class="field-pair advanced-settings <!--#if int($have_ssl_context) == 0 then "disabled" else ""#-->">
+                <div class="field-pair advanced-settings <!--#if int($certificate_validation) == 0 then "disabled" else ""#-->">
                     <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
-                    <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($certificate_validation) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('explain-enable_https_verification')</span>
                 </div>
                 <div class="field-pair">

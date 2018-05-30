@@ -27,6 +27,7 @@ import xml.sax.saxutils
 import functools
 import time
 import re
+import queue
 
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, \
     sfv_check, build_filelists, rar_sort
@@ -36,7 +37,7 @@ from sabnzbd.filesystem import real_path, get_unique_path, create_dirs, move_to_
     make_script_path, long_path, clip_path, renamer, remove_dir, remove_all, globber, \
     globber_full, set_permissions, cleanup_empty_directories, fix_unix_encoding, \
     sanitize_and_trim_path, sanitize_files_in_folder
-from sabnzbd.tvsort import Sorter
+from sabnzbd.sorting import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
 from sabnzbd.encoding import TRANS, unicoder
@@ -72,10 +73,10 @@ class PostProcessor(Thread):
             self.history_queue = []
 
         # Fast-queue for jobs already finished by DirectUnpack
-        self.fast_queue = Queue.Queue()
+        self.fast_queue = queue.Queue()
 
         # Regular queue for jobs that might need more attention
-        self.slow_queue = Queue.Queue()
+        self.slow_queue = queue.Queue()
 
         # Load all old jobs
         for nzo in self.history_queue:
@@ -201,17 +202,17 @@ class PostProcessor(Thread):
                 # Every few fast-jobs we should check allow a
                 # slow job so that they don't wait forever
                 if self.__fast_job_count >= MAX_FAST_JOB_COUNT and self.slow_queue.qsize():
-                    raise Queue.Empty
+                    raise queue.Empty
 
                 nzo = self.fast_queue.get(timeout=2)
                 self.__fast_job_count += 1
-            except Queue.Empty:
+            except queue.Empty:
                 # Try the slow queue
                 try:
                     nzo = self.slow_queue.get(timeout=2)
                     # Reset fast-counter
                     self.__fast_job_count = 0
-                except Queue.Empty:
+                except queue.Empty:
                     # Check for empty queue
                     if check_eoq:
                         check_eoq = False

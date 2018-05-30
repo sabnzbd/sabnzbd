@@ -126,7 +126,7 @@ class URLGrabber(Thread):
                 logging.info('Grabbing URL %s', url)
                 try:
                     fetch_request = _build_request(url)
-                except Exception, e:
+                except Exception as e:
                     # Cannot list exceptions here, because of unpredictability over platforms
                     error0 = str(sys.exc_info()[0]).lower()
                     error1 = str(sys.exc_info()[1]).lower()
@@ -211,12 +211,12 @@ class URLGrabber(Thread):
                     continue
 
                 if not filename:
-                    filename = os.path.basename(urllib2.unquote(url))
+                    filename = os.path.basename(urllib.parse.unquote(url))
 
                     # URL was redirected, maybe the redirect has better filename?
                     # Check if the original URL has extension
                     if url != fetch_request.url and misc.get_ext(filename) not in VALID_NZB_FILES:
-                        filename = os.path.basename(urllib2.unquote(fetch_request.url))
+                        filename = os.path.basename(urllib.parse.unquote(fetch_request.url))
                 elif '&nzbname=' in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find('&nzbname=') + 9:]

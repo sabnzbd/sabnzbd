@@ -410,8 +410,8 @@ class Downloader(Thread):
         logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
 
         # Then we check SSL certifcate checking
-        sabnzbd.HAVE_SSL_CONTEXT = sabnzbd.test_cert_checking()
-        logging.debug('SSL verification test: %s', sabnzbd.HAVE_SSL_CONTEXT)
+        sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.test_cert_checking()
+        logging.debug('SSL verification test: %s', sabnzbd.CERTIFICATE_VALIDATION)
 
         # Start decoders
         for decoder in self.decoder_workers:

@@ -67,7 +67,7 @@
                             <div class="form-group">
                                 <label for="ssl_verify" class="col-sm-4 control-label">$T('opt-ssl_verify')</label>
                                 <div class="col-sm-8">
-                                    <select name="ssl_verify" id="ssl_verify" class="form-control" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
+                                    <select name="ssl_verify" id="ssl_verify" class="form-control" <!--#if int($certificate_validation) == 0 then "disabled=\"disabled\"" else ""#-->>
                                         <option value="2" <!--#if $ssl_verify == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
                                         <option value="1" <!--#if $ssl_verify == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-normal')</option>
                                         <option value="0" <!--#if $ssl_verify == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>

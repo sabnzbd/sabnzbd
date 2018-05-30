@@ -120,9 +120,9 @@
                         <label class="config" for="timeout">$T('srv-timeout')</label>
                         <input type="number" name="timeout" id="timeout" min="20" max="240" /> <i>$T('seconds')</i>
                     </div>
-                    <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
+                    <div class="field-pair <!--#if int($certificate_validation) == 0 then "disabled" else ""#--> advanced-settings">
                         <label class="config" for="ssl_verify">$T('opt-ssl_verify')</label>
-                        <select name="ssl_verify" id="ssl_verify" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
+                        <select name="ssl_verify" id="ssl_verify" <!--#if int($certificate_validation) == 0 then "disabled=\"disabled\"" else ""#-->>
                             <option value="2" selected>$T('ssl_verify-strict')</option>
                             <option value="1">$T('ssl_verify-normal')</option>
                             <option value="0">$T('ssl_verify-disabled')</option>
@@ -236,9 +236,9 @@
                             <input type="number" name="timeout" id="timeout$cur" value="$server['timeout']" min="20" max="240" required /> <i>$T('seconds')</i>
                         </div>
 
-                        <div class="field-pair <!--#if int($have_ssl_context) == 0 then "disabled" else ""#--> advanced-settings">
+                        <div class="field-pair <!--#if int($certificate_validation) == 0 then "disabled" else ""#--> advanced-settings">
                             <label class="config" for="ssl_verify$cur">$T('opt-ssl_verify')</label>
-                            <select name="ssl_verify" id="ssl_verify$cur" <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#-->>
+                            <select name="ssl_verify" id="ssl_verify$cur" <!--#if int($certificate_validation) == 0 then "disabled=\"disabled\"" else ""#-->>
                                 <option value="2" <!--#if $server['ssl_verify'] == 2 then 'selected="selected"' else ""#--> >$T('ssl_verify-strict')</option>
                                 <option value="1" <!--#if $server['ssl_verify'] == 1 then 'selected="selected"' else ""#--> >$T('ssl_verify-normal')</option>
                                 <option value="0" <!--#if $server['ssl_verify'] == 0 then 'selected="selected"' else ""#--> >$T('ssl_verify-disabled')</option>

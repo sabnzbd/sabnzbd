@@ -37,7 +37,7 @@ from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
     get_all_passwords, calc_age, cmp
 from sabnzbd.filesystem import  make_script_path, real_path, globber, globber_full, \
     renamer, clip_path,has_win_device, long_path
-from sabnzbd.tvsort import SeriesSorter
+from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
 
@@ -1475,7 +1475,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 # Unknown repair problem
                 msg = T('Repairing failed, %s') % line
                 nzo.fail_msg = msg
-                msg = u'[%s] %s' % (unicoder(setname), msg)
+                msg = '[%s] %s' % (unicoder(setname), msg)
                 nzo.set_unpack_info('Repair', msg)
                 nzo.status = Status.FAILED
                 finished = 0
@@ -1868,7 +1868,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
                     # Failed due to checksum error of multipar
                     msg = T('Repairing failed, %s') % line
                     nzo.fail_msg = msg
-                    msg = u'[%s] %s' % (unicoder(setname), msg)
+                    msg = '[%s] %s' % (unicoder(setname), msg)
                     nzo.set_unpack_info('Repair', msg)
                     nzo.status = Status.FAILED
                 else:
@@ -1890,7 +1890,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             # Unknown repair problem
             msg = T('Repairing failed, %s') % line
             nzo.fail_msg = msg
-            msg = u'[%s] %s' % (unicoder(setname), msg)
+            msg = '[%s] %s' % (unicoder(setname), msg)
             nzo.set_unpack_info('Repair', msg)
             nzo.status = Status.FAILED
             finished = 0
@@ -1966,7 +1966,7 @@ def create_env(nzo=None, extra_env_fields=None):
         return None
 
     # Have to make sure no Unicode slipped in somehow
-    env = { deunicode(k): deunicode(v) for k, v in env.iteritems() }
+    env = { deunicode(k): deunicode(v) for k, v in env.items() }
     return env
 
 

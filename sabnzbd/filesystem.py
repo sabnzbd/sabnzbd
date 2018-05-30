@@ -36,7 +36,7 @@ import stat
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
-     GIGI, MEBI, DEF_CACHE_LIMIT
+     GIGI, MEBI
 from sabnzbd.encoding import ubtou, unicoder, special_fixer, gUTF
 
 

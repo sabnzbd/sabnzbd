@@ -40,7 +40,7 @@ from sabnzbd.constants import GIGI, ATTRIB_FILE, JOB_ADMIN, \
     LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY, \
     RENAMES_FILE, MAX_BAD_ARTICLES, Status, PNFO
 from sabnzbd.misc import to_units, cat_to_opts, cat_convert, int_conv, \
-    format_time_string, calc_age, cmp
+    format_time_string, calc_age, cmp, caller_name
 from sabnzbd.filesystem import sanitize_foldername, get_unique_path, get_admin_path, \
     remove_all, sanitize_filename, globber_full, set_permissions, long_path, \
     trim_win_path, fix_unix_encoding, is_obfuscated_filename, get_ext, get_filename, \
@@ -444,7 +444,7 @@ class NzbObject(TryList):
         # Information fields
         self.url = url or filename
         self.groups = []
-        self.avg_date = datetime.datetime.fromtimestamp(0.0)
+        self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0        # Avg age in seconds (calculated from avg_age)
 
         # Bookkeeping values
