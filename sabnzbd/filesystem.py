@@ -32,7 +32,6 @@ import time
 import datetime
 import fnmatch
 import stat
-from urllib.parse import urlparse
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -63,6 +62,18 @@ def is_writable(path):
         return bool(os.stat(path).st_mode & stat.S_IWUSR)
     else:
         return True
+
+
+def remove_file(path):
+    """ Wrapper function so any file removal is logged """
+    logging.debug('[%s] Deleting file %s', sabnzbd.misc.caller_name(), path)
+    os.remove(path)
+
+
+def remove_dir(dir):
+    """ Wrapper function so any dir removal is logged """
+    logging.debug('[%s] Deleting dir %s', sabnzbd.misc.caller_name(), dir)
+    os.rmdir(dir)
 
 
 _DEVICES = ('con', 'prn', 'aux', 'nul',

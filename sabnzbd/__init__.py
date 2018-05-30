@@ -909,7 +909,7 @@ def load_data(_id, path, remove=True, do_pickle=True, silent=False):
                 data = data_file.read()
 
         if remove:
-            misc.remove_file(path)
+            filesystem.remove_file(path)
     except:
         logging.error(T('Loading %s failed'), path)
         logging.info("Traceback: ", exc_info=True)
@@ -923,7 +923,7 @@ def remove_data(_id, path):
     path = os.path.join(path, _id)
     try:
         if os.path.exists(path):
-            misc.remove_file(path)
+            filesystem.remove_file(path)
     except:
         logging.debug("Failed to remove %s", path)
 
@@ -961,7 +961,7 @@ def load_admin(_id, remove=False, silent=False):
         with open(path, 'rb') as data_file:
             data = pickle.load(data_file)
         if remove:
-            misc.remove_file(path)
+            filesystem.remove_file(path)
     except:
         if not silent:
             excepterror = str(sys.exc_info()[0])
@@ -1015,7 +1015,7 @@ def check_repair_request():
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     if os.path.exists(path):
         try:
-            misc.remove_file(path)
+            filesystem.remove_file(path)
         except:
             pass
         return True
@@ -1086,7 +1086,7 @@ def pid_file(pid_path=None, pid_file=None, port=0):
                 f.write('%d\n' % os.getpid())
                 f.close()
             else:
-                misc.remove_file(DIR_PID)
+                filesystem.remove_file(DIR_PID)
         except:
             logging.warning('Cannot access PID file %s', DIR_PID)
 

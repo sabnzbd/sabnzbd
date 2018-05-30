@@ -40,7 +40,8 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import get_all_passwords, int_conv, remove_file, caller_name
+from sabnzbd.misc import get_all_passwords, int_conv, caller_name
+from sabnzbd.filesystem import remove_file
 
 DB_LOCK = threading.RLock()
 

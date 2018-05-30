@@ -40,7 +40,7 @@ import sabnzbd.scheduler as scheduler
 from Cheetah.Template import Template
 from sabnzbd.misc import to_units, from_units, time_format, calc_age, \
     cat_to_opts, int_conv, get_base_url
-from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all
+from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
@@ -1141,7 +1141,7 @@ class ConfigPage(object):
             raise NeedLogin()
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf['configfn'] = config.get_filename()
+        conf['configfn'] = clip_path(config.get_filename())
         conf['cmdline'] = sabnzbd.CMDLINE
         conf['build'] = sabnzbd.version.__baseline__[:7]
 

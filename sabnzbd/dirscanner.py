@@ -34,7 +34,7 @@ from sabnzbd.decorators import NzbQueueLocker
 from sabnzbd.encoding import ubtou, platform_encode
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
-import sabnzbd.filesystem
+import sabnzbd.filesystem as filesystem
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 
@@ -162,9 +162,9 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         zf.close()
         try:
             if not keep:
-                misc.remove_file(path)
+                filesystem.remove_file(path)
         except:
-            logging.error(T('Error removing %s'), sabnzbd.filesystem.clip_path(path))
+            logging.error(T('Error removing %s'), filesystem.clip_path(path))
             logging.info("Traceback: ", exc_info=True)
             status = 1
     else:
@@ -208,7 +208,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
             data = f.read()
         f.close()
     except:
-        logging.warning(T('Cannot read %s'), sabnzbd.filesystem.clip_path(path))
+        logging.warning(T('Cannot read %s'), filesystem.clip_path(path))
         logging.info("Traceback: ", exc_info=True)
         return -2, nzo_ids
 
@@ -250,9 +250,9 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         nzo.update_rating()
     try:
         if not keep:
-            misc.remove_file(path)
+            filesystem.remove_file(path)
     except:
-        logging.error(T('Error removing %s'), sabnzbd.filesystem.clip_path(path))
+        logging.error(T('Error removing %s'), filesystem.clip_path(path))
         logging.info("Traceback: ", exc_info=True)
         return 1, nzo_ids
 
@@ -349,7 +349,7 @@ class DirScanner(threading.Thread):
                 files = os.listdir(folder)
             except:
                 if not self.error_reported and not catdir:
-                    logging.error(T('Cannot read Watched Folder %s'), sabnzbd.filesystem.clip_path(folder))
+                    logging.error(T('Cannot read Watched Folder %s'), filesystem.clip_path(folder))
                     self.error_reported = True
                 files = []
 
@@ -432,7 +432,7 @@ class DirScanner(threading.Thread):
                     list = os.listdir(dirscan_dir)
                 except:
                     if not self.error_reported:
-                        logging.error(T('Cannot read Watched Folder %s'), sabnzbd.filesystem.clip_path(dirscan_dir))
+                        logging.error(T('Cannot read Watched Folder %s'), filesystem.clip_path(dirscan_dir))
                         self.error_reported = True
                     list = []
 

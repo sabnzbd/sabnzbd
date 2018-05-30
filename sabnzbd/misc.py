@@ -33,8 +33,6 @@ import datetime
 import fnmatch
 import stat
 import inspect
-import urllib2
-from urlparse import urlparse
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -742,7 +740,7 @@ def get_base_url(url):
     """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
         But also api.althub.co.za -> althub.co.za
     """
-    url_host = urlparse(url).hostname
+    url_host = urllib.parse.urlparse(url).hostname
     if url_host:
         url_split = url_host.split(".")
         # Exception for localhost and IPv6 addresses
@@ -763,7 +761,7 @@ def match_str(text, matches):
 
 def get_urlbase(url):
     """ Return the base URL (like http://server.domain.com/) """
-    parsed_uri = urlparse(url)
+    parsed_uri = urllib.parse.urlparse(url)
     return '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
 
 

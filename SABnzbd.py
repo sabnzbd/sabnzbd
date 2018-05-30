@@ -1310,7 +1310,6 @@ def main():
                             'server.socket_port': cherryport,
                             'server.shutdown_timeout': 0,
                             'log.screen': False,
-                            'engine.timeout_monitor.on': False,
                             'engine.autoreload.on': False,
                             'tools.encode.on': True,
                             'tools.gzip.on': True,
