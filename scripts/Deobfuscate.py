@@ -28,7 +28,7 @@ NOTES:
  1) To use this script you need Python installed on your system and
     select "Add to path" during its installation. Select this folder in
     Config > Folders > Scripts Folder and select this script for each job
-    you want it sued for, or link it to a category in Config > Categories.
+    you want it used for, or link it to a category in Config > Categories.
  2) Beware that files on the 'Cleanup List' are removed before
     scripts are called and if any of them happen to be required by
     the found par2 file, it will fail.
