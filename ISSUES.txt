@@ -66,3 +66,7 @@
   Config->Special->wait_for_dfolder to 1.
   SABnzbd will appear to hang until the drive is mounted.
 
+- If you experience speed-drops to KB/s when using a VPN, try setting the number of connections
+  to your servers to a total of 7. There is a CPU-usage reduction feature in SABnzbd that
+  gets confused by the way some VPN's handle the state of a connection. Below 8 connections
+  this feature is not active.
