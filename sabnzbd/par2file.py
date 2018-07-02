@@ -26,7 +26,9 @@ import struct
 
 
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
-PAR_ID = "PAR2\x00PKT"
+PAR_PKT_ID = "PAR2\x00PKT"
+PAR_FILE_ID = "PAR 2.0\x00FileDesc"
+PAR_CREATOR_ID = "PAR 2.0\x00Creator"
 PAR_RECOVERY_ID = "RecvSlic"
 
 
@@ -35,7 +37,7 @@ def is_parfile(filename):
     try:
         with open(filename, "rb") as f:
             buf = f.read(8)
-            return buf.startswith(PAR_ID)
+            return buf.startswith(PAR_PKT_ID)
     except:
         pass
     return False
@@ -129,7 +131,8 @@ def parse_par2_file_packet(f, header):
 
     nothing = None, None, None
 
-    if header != PAR_ID:
+    if header != PAR_PKT_ID:
+        print header
         return nothing
 
     # Length must be multiple of 4 and at least 20
@@ -157,10 +160,14 @@ def parse_par2_file_packet(f, header):
 
     # See if it's the right packet and get name + hash
     for offset in range(0, len, 8):
-        if data[offset:offset + 16] == "PAR 2.0\0FileDesc":
+        if data[offset:offset + 16] == PAR_FILE_ID:
             hash = data[offset + 32:offset + 48]
             hash16k = data[offset + 48:offset + 64]
             filename = data[offset + 72:].strip('\0')
             return filename, hash, hash16k
+        elif data[offset:offset + 15] == PAR_CREATOR_ID:
+            # Here untill the end is the creator-text
+            # Usefull in case of bugs in the par2-creating software
+            logging.debug('Par2-creator of %s is: %s', os.path.basename(f.name), data[offset+16:])
 
     return nothing
