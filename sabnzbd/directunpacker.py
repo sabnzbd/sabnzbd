@@ -31,6 +31,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, clip_path, long_path, remove_all, globber, \
     format_time_string, has_win_device, real_path, remove_file
 from sabnzbd.encoding import TRANS, unicoder
+from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
@@ -45,6 +46,10 @@ if sabnzbd.WIN32:
 
 # Load the regular POpen (which is now patched on Windows)
 from subprocess import Popen
+
+# Need a lock to make sure start and stop is handled correctlty
+# Otherwise we could stop while the thread was still starting
+START_STOP_LOCK = threading.RLock()
 
 MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
@@ -110,6 +115,7 @@ class DirectUnpacker(threading.Thread):
         if none_counter > found_counter:
             self.total_volumes = {}
 
+    @synchronized(START_STOP_LOCK)
     def add(self, nzf):
         """ Add jobs and start instance of DirectUnpack """
         if not cfg.direct_unpack_tested():
@@ -309,6 +315,7 @@ class DirectUnpacker(threading.Thread):
             with self.next_file_lock:
                 self.next_file_lock.wait()
 
+    @synchronized(START_STOP_LOCK)
     def create_unrar_instance(self):
         """ Start the unrar instance using the user's options """
         # Generate extraction path and save for post-proc
@@ -366,6 +373,7 @@ class DirectUnpacker(threading.Thread):
         # Doing the first
         logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
+    @synchronized(START_STOP_LOCK)
     def abort(self):
         """ Abort running instance and delete generated files """
         if not self.killed:
