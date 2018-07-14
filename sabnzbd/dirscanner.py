@@ -76,7 +76,7 @@ def is_archive(path):
         except:
             logging.info(T('Cannot read %s'), path, exc_info=True)
             return -1, None, ''
-    elif rarfile.is_rarfile(path):
+    elif misc.is_rarfile(path):
         try:
             # Set path to tool to open it
             rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND

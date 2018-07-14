@@ -44,6 +44,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, special_fixer, gUTF
+import sabnzbd.utils.rarfile as rarfile
 
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -1239,6 +1240,14 @@ def get_admin_path(name, future):
         return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
         return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+
+
+def is_rarfile(rarfile_path):
+    """ Wrapper in case it crashes due to missing file or long-path problems """
+    try:
+        return rarfile.is_rarfile(rarfile_path)
+    except:
+        return False
 
 
 def on_cleanup_list(filename, skip_nzb=False):

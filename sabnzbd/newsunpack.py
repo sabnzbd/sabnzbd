@@ -32,8 +32,8 @@ import sabnzbd
 from sabnzbd.encoding import TRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
-    real_path, globber, globber_full, get_all_passwords, renamer, clip_path, \
-    has_win_device, calc_age, long_path, remove_file, recursive_listdir
+    real_path, globber, globber_full, get_all_passwords, renamer, clip_path, calc_age, \
+    has_win_device, long_path, remove_file, recursive_listdir, is_rarfile
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -649,7 +649,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
 
     # Get list of all the volumes part of this set
-    logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
+    logging.debug("Analyzing rar file ... %s found", is_rarfile(rarfile_path))
     logging.debug("Running unrar %s", command)
     p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -2101,11 +2101,7 @@ def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=
         # Extra check for rar (takes CPU/disk)
         file_is_rar = False
         if check_rar:
-            try:
-                # Can fail on Windows due to long-path after recursive-unpack
-                file_is_rar = rarfile.is_rarfile(file)
-            except:
-                pass
+            file_is_rar = is_rarfile(file)
 
         # Run through all the checks
         if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
