@@ -376,7 +376,7 @@ class DirectUnpacker(threading.Thread):
     @synchronized(START_STOP_LOCK)
     def abort(self):
         """ Abort running instance and delete generated files """
-        if not self.killed:
+        if not self.killed and self.cur_setname:
             logging.info('Aborting DirectUnpack for %s', self.cur_setname)
             self.killed = True
 
