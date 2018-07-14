@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2018-03-15 13:08+0000\n"
-"PO-Revision-Date: 2018-04-15 21:22+0000\n"
-"Last-Translator: ciho <Unknown>\n"
+"PO-Revision-Date: 2018-05-31 06:22+0000\n"
+"Last-Translator: scope <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-04-16 05:40+0000\n"
-"X-Generator: Launchpad (build 18610)\n"
+"X-Launchpad-Export-Date: 2018-06-01 05:38+0000\n"
+"X-Generator: Launchpad (build 18667)\n"
 
 #: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
@@ -63,7 +63,7 @@ msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "Downloads will not unpacked."
-msgstr "Downloads werden nicht enpackt."
+msgstr "Downloads werden nicht entpackt."
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
