@@ -827,9 +827,9 @@ class NzbObject(TryList):
 
         # Run user pre-queue script if needed
         if not reuse and cfg.pre_script():
-            accept, name, pp, cat_pp, script_pp, priority, group = \
-                sabnzbd.newsunpack.pre_queue(self.final_name_pw_clean, pp, cat, script,
-                                             priority, self.bytes, self.groups)
+            # Call the script
+            accept, name, pp, cat_pp, script_pp, priority, group = sabnzbd.newsunpack.pre_queue(self, pp, cat)
+
             # Accept or reject
             accept = int_conv(accept)
             if accept < 1:

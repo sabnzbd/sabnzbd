@@ -1947,16 +1947,16 @@ def create_env(nzo=None, extra_env_fields={}):
                              '7zip_command': sabnzbd.newsunpack.SEVEN_COMMAND,
                              'version': sabnzbd.__version__})
 
-        # Add extra fields
-        for field in extra_env_fields:
-            try:
-                if extra_env_fields[field] is not None:
-                    env['SAB_' + field.upper()] = extra_env_fields[field]
-                else:
-                    env['SAB_' + field.upper()] = ''
-            except:
-                # Catch key/unicode errors
-                pass
+    # Add extra fields
+    for field in extra_env_fields:
+        try:
+            if extra_env_fields[field] is not None:
+                env['SAB_' + field.upper()] = extra_env_fields[field]
+            else:
+                env['SAB_' + field.upper()] = ''
+        except:
+            # Catch key/unicode errors
+            pass
 
     if sabnzbd.DARWIN:
         if 'PYTHONPATH' in env:
@@ -2297,23 +2297,33 @@ def analyse_show(name):
            info.get('ep_name', '')
 
 
-def pre_queue(name, pp, cat, script, priority, size, groups):
-    """ Run pre-queue script (if any) and process results """
+def pre_queue(nzo, pp, cat):
+    """ Run pre-queue script (if any) and process results.
+        pp and cat are supplied seperate since they can change.
+    """
     def fix(p):
         if not p or str(p).lower() == 'none':
             return ''
         return unicoder(p)
 
-    values = [1, name, pp, cat, script, priority, None]
+    values = [1, nzo.final_name_pw_clean, pp, cat, nzo.script, nzo.priority, None]
     script_path = make_script_path(cfg.pre_script())
     if script_path:
-        command = [script_path, name, pp, cat, script, priority, str(size), ' '.join(groups)]
-        command.extend(analyse_show(name))
+        # Basic command-line parameters
+        command = [script_path, nzo.final_name_pw_clean, pp, cat, nzo.script, nzo.priority, str(nzo.bytes), ' '.join(nzo.groups)]
+        command.extend(analyse_show(nzo.final_name_pw_clean))
         command = [fix(arg) for arg in command]
+
+        # Fields not in the NZO directly
+        extra_env_fields = {'groups': ' '.join(nzo.groups),
+                            'show_name': command[8],
+                            'show_season': command[9],
+                            'show_episode': command[10],
+                            'show_episode_name': command[11]}
 
         try:
             stup, need_shell, command, creationflags = build_command(command)
-            env = create_env()
+            env = create_env(nzo, extra_env_fields)
             logging.info('Running pre-queue script %s', command)
             p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -2334,11 +2344,11 @@ def pre_queue(name, pp, cat, script, priority, size, groups):
                 n += 1
         accept = int_conv(values[0])
         if  accept < 1:
-            logging.info('Pre-Q refuses %s', name)
+            logging.info('Pre-Q refuses %s', nzo.final_name_pw_clean)
         elif accept == 2:
-            logging.info('Pre-Q accepts&fails %s', name)
+            logging.info('Pre-Q accepts&fails %s', nzo.final_name_pw_clean)
         else:
-            logging.info('Pre-Q accepts %s', name)
+            logging.info('Pre-Q accepts %s', nzo.final_name_pw_clean)
 
     return values
 
