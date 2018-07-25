@@ -22,19 +22,25 @@ Options:
     -V
     --version
         Display version information and exit.
+
+    -n
+        Replace newline characters in the translation strings^
 """
 
 import os
 import sys
 import ast
 import getopt
+import re
 import struct
 import array
 from email.parser import HeaderParser
 
+
 __version__ = "1.1"
 
 MESSAGES = {}
+nonewlines = False
 
 
 def usage(code, msg=''):
@@ -44,11 +50,17 @@ def usage(code, msg=''):
     sys.exit(code)
 
 
+RE_HTML = re.compile(b'<[^>]+>')
+
+
 def add(id, str, fuzzy):
     "Add a non-fuzzy translation to the dictionary."
     global MESSAGES
     if not fuzzy and str:
-        MESSAGES[id] = str
+        if nonewlines and id and (b'\r' in str or b'\n' in str) and RE_HTML.search(str):
+            MESSAGES[id] = str.replace(b'\n', b'').replace(b'\r', b'')
+        else:
+            MESSAGES[id] = str
 
 
 def generate():
@@ -201,8 +213,9 @@ def make(filename, outfile):
 
 
 def main():
+    global nonewlines
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hVo:',
+        opts, args = getopt.getopt(sys.argv[1:], 'nhVo:',
                                    ['help', 'version', 'output-file='])
     except getopt.error as msg:
         usage(1, msg)
@@ -217,6 +230,8 @@ def main():
             sys.exit(0)
         elif opt in ('-o', '--output-file'):
             outfile = arg
+        elif opt in ('-n', ):
+            nonewlines = True
     # do it
     if not args:
         print('No input file given', file=sys.stderr)
