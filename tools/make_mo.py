@@ -140,7 +140,8 @@ RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
 
 def run(cmd):
     """ Run system command, returns exit-code and stdout """
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True,
+                         encoding='UTF-8')
     txt = p.stdout.read()
     return p.wait(), txt
 
@@ -179,13 +180,12 @@ def remove_mo_files():
 
 def translate_tmpl(prefix, lng):
     """ Translate template 'prefix' into language 'lng' """
-    src = open(EMAIL_DIR + '/%s-en.tmpl' % prefix, 'r')
-    data = src.read().decode('utf-8')
+    src = open(EMAIL_DIR + '/%s-en.tmpl' % prefix, 'rb')
+    data = src.read()
     src.close()
-    data = _(data).encode('utf-8')
     fp = open('email/%s-%s.tmpl' % (prefix, lng), 'wb')
-    if not -1 < data.find('UTF-8') < 30:
-        fp.write('#encoding UTF-8\n')
+    if not -1 < data.find(b'UTF-8') < 30:
+        fp.write(b'#encoding UTF-8\n')
     fp.write(data)
     fp.close()
 
@@ -200,7 +200,7 @@ def make_templates():
             print(('Create email template for %s' % lng))
             trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False, codeset='latin-1')
             # The unicode flag will make _() return Unicode
-            trans.install(str=True, names=['lgettext'])
+            trans.install(names=['lgettext'])
 
             translate_tmpl('email', lng)
             translate_tmpl('rss', lng)
