@@ -14,7 +14,7 @@ def diskspeedmeasure(dirname):
         method: keep writing a file, until 1 second is passed.
         Then divide bytes written by time passed
     """
-    maxtime = 0.5  # sec
+    maxtime = 1.0  # sec
     total_written = 0
     filename = os.path.join(dirname, 'outputTESTING.txt')
     fp = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)  # low-level I/O
