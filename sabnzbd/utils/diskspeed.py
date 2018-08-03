@@ -17,7 +17,9 @@ def diskspeedmeasure(dirname):
     maxtime = 1.0  # sec
     total_written = 0
     filename = os.path.join(dirname, 'outputTESTING.txt')
-    fp = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)  # low-level I/O
+
+    # Use low-level I/O
+    fp = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)
 
     # Start looping
     total_time = 0.0
@@ -30,7 +32,8 @@ def diskspeedmeasure(dirname):
 
     # Remove the file
     try:
-        fp.close()
+        # Have to use low-level close
+        os.close(fp)
         os.remove(filename)
     except:
         pass
