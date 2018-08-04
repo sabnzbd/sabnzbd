@@ -1098,38 +1098,37 @@ class NzbObject(TryList):
     def get_extra_blocks(self, setname, needed_blocks):
         """ We want par2-files of all sets that are similar to this one
             So that we also can handle multi-sets with duplicate filenames
-            Block-table has as keys the nr-blocks
             Returns number of added blocks in case they are available
+            In case of duplicate files for the same set, we might add too
+            little par2 on the first add-run, but that's a risk we need to take.
         """
         logging.info('Need %s more blocks, checking blocks', needed_blocks)
+
         avail_blocks = 0
-        block_table = {}
+        block_list = []
         for setname_search in self.extrapars:
             # Do it for our set, or highlight matching one
-            # We might catch to many par2's, but that's okay
+            # We might catch too many par2's, but that's okay
             if setname_search == setname or difflib.SequenceMatcher(None, setname, setname_search).ratio() > 0.85:
                 for nzf in self.extrapars[setname_search]:
                     # Don't count extrapars that are completed already
                     if nzf.completed:
                         continue
-                    blocks = int_conv(nzf.blocks)
-                    if blocks not in block_table:
-                        block_table[blocks] = []
-                        # We assume same block-vol-naming for each set
-                        avail_blocks += blocks
-                    block_table[blocks].append(nzf)
+                    block_list.append(nzf)
+                    avail_blocks += nzf.blocks
 
+        # Sort by smallest blocks first
+        block_list.sort(key=lambda x: x.blocks)
         logging.info('%s blocks available', avail_blocks)
 
         # Enough?
         if avail_blocks >= needed_blocks:
             added_blocks = 0
             while added_blocks < needed_blocks:
-                block_size = min(block_table.keys())
-                for new_nzf in block_table[block_size]:
-                    self.add_parfile(new_nzf)
-                added_blocks += block_size
-                block_table.pop(block_size)
+                new_nzf = block_list.pop()
+                self.add_parfile(new_nzf)
+                added_blocks += new_nzf.blocks
+
             logging.info('Added %s blocks to %s', added_blocks, self.final_name)
             return added_blocks
         else:
