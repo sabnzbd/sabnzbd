@@ -324,7 +324,7 @@ class NzbFile(TryList):
         self.is_par2 = True
         self.setname = setname
         self.vol = vol
-        self.blocks = int(blocks)
+        self.blocks = int_conv(blocks)
 
     def get_article(self, server, servers):
         """ Get next article to be downloaded """
@@ -1407,7 +1407,7 @@ class NzbObject(TryList):
                 if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
                     for new_nzf in self.extrapars[parset]:
                         self.add_parfile(new_nzf)
-                        blocks_new += int_conv(new_nzf.blocks)
+                        blocks_new += new_nzf.blocks
                         # Enough now?
                         if blocks_new >= self.bad_articles:
                             logging.info('Prospectively added %s repair blocks to %s', blocks_new, self.final_name)
@@ -1502,11 +1502,11 @@ class NzbObject(TryList):
                 self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
     @synchronized(NZO_LOCK)
-    def increase_bad_articles_counter(self, type):
+    def increase_bad_articles_counter(self, article_type):
         """ Record information about bad articles """
-        if type not in self.nzo_info:
-            self.nzo_info[type] = 0
-        self.nzo_info[type] += 1
+        if article_type not in self.nzo_info:
+            self.nzo_info[article_type] = 0
+        self.nzo_info[article_type] += 1
         self.bad_articles += 1
 
     def get_article(self, server, servers):

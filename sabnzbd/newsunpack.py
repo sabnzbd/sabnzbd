@@ -1330,7 +1330,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
                 block_table = {}
                 for nzf in nzo.extrapars[setname]:
                     if not nzf.completed:
-                        block_table[int_conv(nzf.blocks)] = nzf
+                        block_table[nzf.blocks] = nzf
 
                 if block_table:
                     nzf = block_table[min(block_table.keys())]
@@ -1643,7 +1643,7 @@ def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False)
             block_table = {}
             for nzf in nzo.extrapars[setname]:
                 if not nzf.completed:
-                    block_table[int_conv(nzf.blocks)] = nzf
+                    block_table[nzf.blocks] = nzf
 
             if block_table:
                 nzf = block_table[min(block_table.keys())]
