@@ -90,9 +90,9 @@ def print_splitter():
 def decodePar(parfile):
     result = False
     dir = os.path.dirname(parfile)
-    with open(parfile, 'rb') as file:
+    with open(parfile, 'rb') as parfileToDecode:
         while (True):
-            header = file.read(STRUCT_PACKET_HEADER.size)
+            header = parfileToDecode.read(STRUCT_PACKET_HEADER.size)
             if not header: break # file fully read
 
             (_, packetLength, _, _, packetType) = STRUCT_PACKET_HEADER.unpack(header)
@@ -101,14 +101,14 @@ def decodePar(parfile):
             # only process File Description packets
             if (packetType != PACKET_TYPE_FILE_DESC):
                 # skip this packet
-                file.seek(bodyLength, os.SEEK_CUR)
+                parfileToDecode.seek(bodyLength, os.SEEK_CUR)
                 continue
 
-            chunck = file.read(STRUCT_FILE_DESC_PACKET.size)
+            chunck = parfileToDecode.read(STRUCT_FILE_DESC_PACKET.size)
             (_, _, hash16k, filelength) = STRUCT_FILE_DESC_PACKET.unpack(chunck)
 
             # filename makes up for the rest of the packet, padded with null characters
-            targetName = file.read(bodyLength - STRUCT_FILE_DESC_PACKET.size).rstrip('\0')
+            targetName = parfileToDecode.read(bodyLength - STRUCT_FILE_DESC_PACKET.size).rstrip('\0')
             targetPath = path.join(dir, targetName)
 
             # file already exists, skip it
