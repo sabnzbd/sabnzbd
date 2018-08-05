@@ -87,9 +87,10 @@ def print_splitter():
     print '\n------------------------\n'
 
 
-def decodePar(dir, parfile):
+def decodePar(parfile):
     result = False
-    with open(path.join(dir, parfile), 'rb') as file:
+    dir = os.path.dirname(parfile)
+    with open(parfile, 'rb') as file:
         while (True):
             header = file.read(STRUCT_PACKET_HEADER.size)
             if not header: break # file fully read
@@ -166,7 +167,7 @@ if not matches:
 for par2_file in matches:
     # Analyse data and analyse result
     print_splitter()
-    if decodePar(os.environ['SAB_COMPLETE_DIR'], par2_file):
+    if decodePar(par2_file):
         print 'Recursive repair/verify finished.'
         run_renamer = False
     else:
