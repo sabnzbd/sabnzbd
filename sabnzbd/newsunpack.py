@@ -503,6 +503,8 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                     if wait_count > 60:
                         # We abort after 2 minutes of no changes
                         nzo.direct_unpacker.abort()
+                else:
+                    wait_count = 0
                 last_stats = nzo.direct_unpacker.get_formatted_stats()
 
         # Did we already direct-unpack it? Not when recursive-unpacking
