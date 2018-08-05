@@ -134,8 +134,8 @@ def findFile(dir, filelength, hash16k):
         # check if the size matches as an indication
         if (path.getsize(filepath) != filelength): continue
 
-        with open(filepath, 'rb') as file:
-            data = file.read(16 * 1024)
+        with open(filepath, 'rb') as fileToMatch:
+            data = fileToMatch.read(16 * 1024)
             m = hashlib.md5()
             m.update(data)
 
