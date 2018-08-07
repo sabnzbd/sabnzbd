@@ -28,8 +28,8 @@ from time import sleep
 import hashlib
 
 import sabnzbd
-from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-    set_permissions, long_path, clip_path, has_win_device, get_all_passwords, diskspace, \
+from sabnzbd.misc import get_filepath, sanitize_filename, set_permissions, \
+    long_path, clip_path, has_win_device, get_all_passwords, diskspace, \
     get_filename, get_ext, is_rarfile
 from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg

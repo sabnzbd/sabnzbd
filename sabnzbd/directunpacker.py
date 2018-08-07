@@ -28,8 +28,8 @@ import logging
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path, long_path, remove_all, globber, \
-    format_time_string, has_win_device, real_path, remove_file
+from sabnzbd.misc import int_conv, clip_path, long_path, remove_all, \
+    format_time_string, real_path, remove_file
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist

@@ -25,7 +25,6 @@ from threading import Thread
 from nntplib import NNTPPermanentError
 import time
 import logging
-import re
 import ssl
 
 import sabnzbd

@@ -19,6 +19,7 @@
 sabtray.py - Systray icon for SABnzbd on Windows, contributed by Jan Schejbal
 """
 
+import os
 import logging
 from time import sleep
 
@@ -29,8 +30,6 @@ import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
-import os
-import cherrypy
 
 # contains the tray icon, which demands its own thread
 from sabnzbd.utils.systrayiconthread import SysTrayIconThread

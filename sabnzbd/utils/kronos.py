@@ -78,7 +78,6 @@ import os
 import sys
 import sched
 import time
-import traceback
 import weakref
 import logging
 

@@ -21,7 +21,6 @@ sabnzbd.sabtraylinux - System tray icon for Linux, inspired from the Windows one
 
 import gtk
 import gobject
-import cherrypy
 from time import sleep
 import subprocess
 from threading import Thread

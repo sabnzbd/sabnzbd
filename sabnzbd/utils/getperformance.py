@@ -1,4 +1,5 @@
-import platform, subprocess
+import platform
+import subprocess
 
 
 def getcpu():

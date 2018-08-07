@@ -44,7 +44,6 @@ from sabnzbd.misc import real_path, to_units, from_units, time_format, \
     long_path, calc_age, same_file, probablyipv4, probablyipv6, \
     int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
     platform_encode
@@ -59,13 +58,13 @@ from sabnzbd.decoder import HAVE_YENC, SABYENC_ENABLED
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 
-from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, DEF_STDINTF, \
+from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, \
     DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY
 
 from sabnzbd.lang import list_languages
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-    api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
+    api_handler, build_queue, remove_callable, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
     format_bytes, std_time, report, del_hist_job, Ttemplate, build_queue_header, \
     _api_test_email, _api_test_notif

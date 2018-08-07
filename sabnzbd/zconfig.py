@@ -21,7 +21,6 @@ sabnzbd.zconfig - bonjour/zeroconfig support
 
 import os
 import logging
-import cherrypy
 
 _HOST_PORT = (None, None)
 

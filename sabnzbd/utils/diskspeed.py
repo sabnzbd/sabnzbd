@@ -3,7 +3,6 @@
 import time
 import os
 import sys
-import logging
 
 _DUMP_DATA_SIZE = 10 * 1024 * 1024
 _DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)

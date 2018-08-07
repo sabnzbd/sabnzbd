@@ -23,7 +23,6 @@ sabnzbd.notifier - Send notifications to any notification services
 from __future__ import with_statement
 import os.path
 import logging
-import socket
 import urllib2
 import httplib
 import urllib
