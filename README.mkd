@@ -1,18 +1,22 @@
-Release Notes - SABnzbd 2.3.4
+Release Notes - SABnzbd 2.3.5 RC 1
 =========================================================
 
-## Changes since 2.3.3
-- Device hostname in hostname-verification always lowercased
-- Hostnames ending in ".local" are always accepted
-- URLGrabber would not always detect correct filename
-- URLGrabber would ignore some successful downloads
-- Always send NNTP QUIT after server-test
-- Added option "--disable-file-log" to disable file-based logging
-- Added CORS-header to API
-- Windows: Service compatibility with Windows 10 April update
-- Windows: Update Python to 2.7.15
-- Windows: Update 7zip to 18.05
-- macOS: Restore compatibility with El Capitan (10.11)
+## Bug fixes since 2.3.4
+- Reworked Deobfuscate.py script for much faster renaming
+- All scripts can now receive input through environment variables
+- Unable to set only one Indexer Category per category
+- Could falsely report not enough blocks are available for repair
+- Direct Unpack could abort unnecessarily
+- Rare crash during file assembly
+- Server hostname is now used in warnings and logs
+- Improved disk performance measurement
+- Windows: Tray icon also shows remaining size when paused
+- Windows: Wizard would not default to installer language
+- Windows: Update MultiPar to 1.3.0.1
+- Windows and macOS: Update UnRar to 5.60
+
+Looking for help with SABnzbd development:
+https://www.reddit.com/r/usenet/918nxv/
 
 ## Upgrading from 2.2.x and older
 - Finish queue
