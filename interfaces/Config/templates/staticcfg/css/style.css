@@ -529,7 +529,7 @@ tr.separator {
 }
 #filebrowser_modal .checkbox {
     float: left;
-    margin:  8px 5px 0x;
+    margin:  8px 5px 0px;
 }
 #filebrowser_modal .checkbox input {
     margin-top: 1px;
@@ -1002,7 +1002,7 @@ input[type="checkbox"] {
 }
 
 .Servers .col2.server-disabled .label {
-    color: ##777 !important;
+    color: #777 !important;
 }
 
 .Servers .col2 .label:nth-child(2) {
