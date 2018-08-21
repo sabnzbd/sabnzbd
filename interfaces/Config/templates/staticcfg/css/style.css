@@ -1141,6 +1141,7 @@ input[type="checkbox"] {
 }
 .value-and-select select {
     min-width: 30px;
+    margin-top: 1px;
 }
 
 .dotOne, .dotTwo, .dotThree {
