@@ -661,13 +661,13 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         try:
             filename = nzbfile.filename.encode('cp1252').decode('utf-8')
         except:
-            # Correct encoding afterall!
+            # Correct encoding after all!
             filename = nzbfile.filename
         filename = encoding.special_fixer(filename)
         keep = False
 
     if not sabnzbd.WIN32:
-        # If windows client sends file to Unix server backslashed may
+        # If windows client sends file to Unix server backslashes may
         # be included, so convert these
         filename = filename.replace('\\', '/')
 
@@ -963,9 +963,9 @@ def save_admin(data, _id):
         try:
             with open(path, 'wb') as data_file:
                 if cfg.use_pickle():
-                    data = pickle.dump(data, data_file)
+                    pickle.dump(data, data_file)
                 else:
-                    data = cPickle.dump(data, data_file)
+                    cPickle.dump(data, data_file)
             break
         except:
             if t == 2:

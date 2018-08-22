@@ -460,9 +460,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
         When 'delete' is set, originals will be deleted.
         When 'one_folder' is set, all files will be in a single folder
     """
-    extracted_files = []
-    success = False
-
+    newfiles = extracted_files = []
     rar_sets = {}
     for rar in rars:
         rar_set = os.path.splitext(os.path.basename(rar))[0]

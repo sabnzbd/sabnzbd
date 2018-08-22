@@ -249,11 +249,12 @@ _DEVICES = ('con', 'prn', 'aux', 'nul',
             'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
             'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9')
 
+
 def replace_win_devices(name):
-    ''' Remove reserved Windows device names from a name.
+    """ Remove reserved Windows device names from a name.
         aux.txt ==> _aux.txt
         txt.aux ==> txt.aux
-    '''
+    """
     if name:
         lname = name.lower()
         for dev in _DEVICES:
@@ -261,9 +262,9 @@ def replace_win_devices(name):
                 name = '_' + name
                 break
 
-    # Remove special NTFS filename
-    if lname.startswith('$mft'):
-        name = name.replace('$', 'S', 1)
+        # Remove special NTFS filename
+        if lname.startswith('$mft'):
+            name = name.replace('$', 'S', 1)
 
     return name
 
@@ -1082,7 +1083,7 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
-    dName = nzo.work_name
+    dName = dirname = nzo.work_name
     if not nzo.created:
         for n in xrange(200):
             dName = dirname
@@ -1156,11 +1157,12 @@ def renamer(old, new):
 @synchronized(DIR_LOCK)
 def remove_dir(path):
     """ Remove directory with retries for Win32 """
+    logging.debug('[%s] Deleting dir %s', caller_name(), path)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
             try:
-                remove_dir(path)
+                os.rmdir(path)
                 return
             except WindowsError, err:
                 if err[0] == 32:
@@ -1171,7 +1173,7 @@ def remove_dir(path):
             time.sleep(3)
         raise WindowsError(err)
     else:
-        remove_dir(path)
+        os.rmdir(path)
 
 
 @synchronized(DIR_LOCK)
@@ -1201,12 +1203,6 @@ def remove_file(path):
     """ Wrapper function so any file removal is logged """
     logging.debug('[%s] Deleting file %s', caller_name(), path)
     os.remove(path)
-
-
-def remove_dir(dir):
-    """ Wrapper function so any dir removal is logged """
-    logging.debug('[%s] Deleting dir %s', caller_name(), dir)
-    os.rmdir(dir)
 
 
 def trim_win_path(path):
@@ -1295,8 +1291,8 @@ def memory_usage():
     except:
         logging.debug('Error retrieving memory usage')
         logging.info("Traceback: ", exc_info=True)
-    else:
-        return ''
+
+
 try:
     _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
 except:

@@ -728,7 +728,7 @@ def evaluate_inipath(path):
             return path
 
 
-def commandline_handler(frozen=True):
+def commandline_handler():
     """ Split win32-service commands are true parameters
         Returns:
             service, sab_opts, serv_opts, upload_nzbs
@@ -829,7 +829,6 @@ def main():
     vista_plus = False
     win64 = False
     repair = 0
-    api_url = None
     no_login = False
     sabnzbd.RESTART_ARGS = [sys.argv[0]]
     pid_path = None
@@ -1049,7 +1048,7 @@ def main():
                         else:
                             # In case HTTPS == HTTP port
                             cherryport = newport
-                            sabnzbd.cfg.port.set(newport)
+                            sabnzbd.cfg.cherryport.set(newport)
         except:
             # Something else wrong, probably badly specified host
             Bail_Out(browserhost, cherryport, '49')
@@ -1180,7 +1179,7 @@ def main():
         logging.info('Preferred encoding = ERROR')
         preferredencoding = ''
 
-    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
+    # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly advised:
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in preferredencoding.lower() and '8' in preferredencoding.lower()):
         logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % preferredencoding)
 
@@ -1237,8 +1236,6 @@ def main():
 
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
-    else:
-        autobrowser = sabnzbd.cfg.autobrowser()
 
     if not sabnzbd.WIN_SERVICE and not getattr(sys, 'frozen', None) == 'macosx_app':
         signal.signal(signal.SIGINT, sabnzbd.sig_handler)
@@ -1601,7 +1598,7 @@ if sabnzbd.WIN32:
             win32serviceutil.ServiceFramework.__init__(self, args)
 
             self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-            self.overlapped = pywintypes.OVERLAPPED()  # @UndefinedVariable
+            self.overlapped = pywintypes.OVERLAPPED()
             self.overlapped.hEvent = win32event.CreateEvent(None, 0, 0, None)
             sabnzbd.WIN_SERVICE = self
 
