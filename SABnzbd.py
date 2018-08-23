@@ -502,7 +502,7 @@ def all_localhosts():
 def check_resolve(host):
     """ Return True if 'host' resolves """
     try:
-        dummy = socket.getaddrinfo(host, None)
+        socket.getaddrinfo(host, None)
     except:
         # Does not resolve
         return False
@@ -598,7 +598,7 @@ def get_webhost(cherryhost, cherryport, https_port):
             cherryhost = cherryhost.strip('[]')
         else:
             try:
-                info = socket.getaddrinfo(cherryhost, None)
+                socket.getaddrinfo(cherryhost, None)
             except:
                 cherryhost = cherryhost.strip('[]')
 
@@ -1005,13 +1005,13 @@ def main():
         if enable_https and https_port:
             try:
                 cherrypy.process.servers.check_port(cherryhost, https_port, timeout=0.05)
-            except IOError, error:
+            except IOError:
                 Bail_Out(browserhost, cherryport)
             except:
                 Bail_Out(browserhost, cherryport, '49')
         try:
             cherrypy.process.servers.check_port(cherryhost, cherryport, timeout=0.05)
-        except IOError, error:
+        except IOError:
             Bail_Out(browserhost, cherryport)
         except:
             Bail_Out(browserhost, cherryport, '49')

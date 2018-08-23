@@ -1204,7 +1204,7 @@ def test_cert_checking():
             ssl_sock.connect((cfg.selftest_host(), 443))
             ssl_sock.close()
             return True
-        except (socket.gaierror, socket.timeout) as e:
+        except (socket.gaierror, socket.timeout):
             # Non-SSL related error.
             # We now assume that certificates work instead of forcing
             # lower quality just because some (temporary) internet problem

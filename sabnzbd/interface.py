@@ -161,7 +161,7 @@ def check_hostname():
     if not host:
         return False
 
-    # Remove the port-part (like ':8080'), if it is there, always on the right hand side. 
+    # Remove the port-part (like ':8080'), if it is there, always on the right hand side.
     # Not to be confused with IPv6 colons (within square brackets)
     host = re.sub(':[0123456789]+$', '', host).lower()
 
@@ -174,7 +174,7 @@ def check_hostname():
         return True
 
     # Fine if ends with ".local" or ".local.", aka mDNS name
-    # See rfc6762 Multicast DNS 
+    # See rfc6762 Multicast DNS
     if host.endswith(('.local', '.local.')):
         return True
 
@@ -774,7 +774,7 @@ class NzoPage(object):
 
             # /SABnzbd_nzo_xxxxx/files
             elif 'files' in args:
-                info = self.nzo_files(info, pnfo_list, nzo_id)
+                info = self.nzo_files(info, nzo_id)
 
             # /SABnzbd_nzo_xxxxx/save
             elif 'save' in args:
@@ -784,7 +784,7 @@ class NzoPage(object):
             # /SABnzbd_nzo_xxxxx/
             else:
                 info = self.nzo_details(info, pnfo_list, nzo_id)
-                info = self.nzo_files(info, pnfo_list, nzo_id)
+                info = self.nzo_files(info, nzo_id)
 
             template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'nzo.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -836,7 +836,7 @@ class NzoPage(object):
 
         return info
 
-    def nzo_files(self, info, pnfo_list, nzo_id):
+    def nzo_files(self, info, nzo_id):
         active = []
         nzo = NzbQueue.do.get_nzo(nzo_id)
         if nzo:
@@ -2077,7 +2077,7 @@ class ConfigScheduling(object):
                 if '%' not in value and from_units(value) < 1.0:
                     value = T('off')  # : "Off" value for speedlimit in scheduler
                 else:
-                    if '%' not in value and int_conv(value) > 1 and int_conv(value) < 101:
+                    if '%' not in value and 1 < int_conv(value) < 101:
                         value += '%'
                     value = value.upper()
             if action in actions:
@@ -2132,7 +2132,6 @@ class ConfigScheduling(object):
     @secured_expose(check_session_key=True, check_configlock=True)
     def addSchedule(self, **kwargs):
         servers = config.get_servers()
-        categories = list_cats(False)
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
         days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])

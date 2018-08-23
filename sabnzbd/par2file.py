@@ -49,7 +49,6 @@ def analyse_par2(name, filepath=None):
         setname is empty when not a par2 file
     """
     name = name.strip()
-    setname = None
     vol = block = 0
     m = PROBABLY_PAR2_RE.search(name)
     if m:

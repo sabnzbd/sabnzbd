@@ -290,7 +290,7 @@ class RSSQueue(object):
                     msg = T('Do not have valid authentication for feed %s') % feed
                     logging.info(msg)
 
-                if status >= 500 and status <= 599:
+                if 500 <= status <= 599:
                     msg = T('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
                     logging.info(msg)
 
@@ -330,12 +330,8 @@ class RSSQueue(object):
 
             if readout:
                 try:
-                    link, category, size, age, season, episode = _get_link(uri, entry)
+                    link, category, size, age, season, episode = _get_link(entry)
                 except (AttributeError, IndexError):
-                    link = None
-                    category = u''
-                    size = 0L
-                    age = None
                     logging.info(T('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info=True)
                     return T('Incompatible feed')
@@ -627,14 +623,11 @@ def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgca
         else:
             jobs[link]['status'] = flag
 
-def _get_link(uri, entry):
+def _get_link(entry):
     """ Retrieve the post link from this entry
         Returns (link, category, size)
     """
-    link = None
-    category = ''
     size = 0L
-    uri = uri.lower()
     age = datetime.datetime.now()
 
     # Try standard link and enclosures first

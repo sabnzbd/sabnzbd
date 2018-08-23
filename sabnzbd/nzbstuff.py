@@ -1022,7 +1022,7 @@ class NzbObject(TryList):
 
         # Sort the sets
         for setname in self.extrapars:
-            self.extrapars[parset].sort(key=lambda x: x.blocks)
+            self.extrapars[setname].sort(key=lambda x: x.blocks)
 
         # Also re-parse all filenames in case par2 came after first articles
         self.verify_all_filenames_and_resort()
@@ -2005,7 +2005,7 @@ def scan_password(name):
     slash = name.find('/')
 
     # Look for name/password, but make sure that '/' comes before any {{
-    if slash >= 0 and slash < braces and 'password=' not in name:
+    if 0 <= slash < braces and 'password=' not in name:
         # Is it maybe in 'name / password' notation?
         if slash == name.find(' / ') + 1:
             # Remove the extra space after name and before password

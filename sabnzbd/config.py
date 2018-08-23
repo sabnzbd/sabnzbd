@@ -411,8 +411,8 @@ class ConfigServer(object):
             except KeyError:
                 continue
             exec 'self.%s.set(value)' % kw
-            if not self.displayname():
-                self.displayname.set(self.__name)
+        if not self.displayname():
+            self.displayname.set(self.__name)
         return True
 
     def get_dict(self, safe=False):
@@ -896,7 +896,7 @@ def get_servers():
         return {}
 
 
-def define_categories(force=False):
+def define_categories():
     """ Define categories listed in the Setup file
         return a list of ConfigCat instances
     """

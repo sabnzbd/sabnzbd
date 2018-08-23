@@ -236,7 +236,7 @@ def Func2(StrParI1, StrParI2):
         if Func1(StrParI1[IntLoc], StrParI2[IntLoc+1]) == Ident1:
             CharLoc = 'A'
             IntLoc = IntLoc + 1
-    if CharLoc >= 'W' and CharLoc <= 'Z':
+    if 'W' <= CharLoc <= 'Z':
         IntLoc = 7
     if CharLoc == 'X':
         return TRUE

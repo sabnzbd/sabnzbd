@@ -69,7 +69,7 @@ class NzbQueue(object):
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
 
             # Process the data and check compatibility
-            nzo_ids = self.check_compatibility(data)
+            nzo_ids = self.check_compatibility(repair, data)
 
         # First handle jobs in the queue file
         folders = []
@@ -104,7 +104,7 @@ class NzbQueue(object):
                         except:
                             pass
 
-    def check_compatibility(self, data):
+    def check_compatibility(self, repair, data):
         """ Do compatibility checks on the loaded data """
         nzo_ids = []
         if not data:
@@ -204,7 +204,6 @@ class NzbQueue(object):
             verified = sabnzbd.load_data(VERIFIED_FILE, path, remove=False) or {'x': False}
             return all(verified[x] for x in verified)
 
-        nzo_id = None
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         if hasattr(new_nzb, 'filename'):

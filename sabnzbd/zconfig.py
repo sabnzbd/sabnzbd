@@ -79,11 +79,6 @@ def set_bonjour(host=None, port=None):
         return
 
     name = hostname()
-    if '.local' in name:
-        suffix = ''
-    else:
-        suffix = '.local'
-
     logging.debug('Try to publish in Bonjour as "%s" (%s:%s)', name, host, port)
     try:
         refObject = pybonjour.DNSServiceRegister(

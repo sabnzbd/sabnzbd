@@ -748,7 +748,6 @@ def to_units(val, spaces=0, postfix=''):
         Show single decimal for M and higher
     """
     dec_limit = 1
-    decimals = 0
     if val < 0:
         sign = '-'
     else:
@@ -1453,7 +1452,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
         private_key = generate_key(key_size=2048, output_file=ssl_key)
-        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost')
+        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd')
         logging.info('Self-signed certificates generated successfully')
     except:
         logging.error(T('Error creating SSL key and certificate'))

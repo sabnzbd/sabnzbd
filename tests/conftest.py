@@ -21,7 +21,6 @@ tests.conftest - Wrappers to start SABnzbd for testing
 
 import os
 import itertools
-import urllib2
 import pytest
 import shutil
 import time

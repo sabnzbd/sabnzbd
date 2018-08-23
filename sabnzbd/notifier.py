@@ -462,7 +462,7 @@ def send_pushover(title, msg, gtype, force=False, test=None):
                  "expire": emergency_expire
         }
         return do_send_pushover(body)
-    if prio > -3 and prio < 2:
+    if -3 < prio < 2:
         body = { "token": apikey,
                  "user": userkey,
                  "device": device,

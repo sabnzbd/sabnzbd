@@ -125,7 +125,7 @@ class Decoder(Thread):
                     nzf.article_count += 1
                     found = True
 
-                except IOError, e:
+                except IOError:
                     logme = T('Decoding %s failed') % art_id
                     logging.warning(logme)
                     logging.info("Traceback: ", exc_info=True)
@@ -134,7 +134,7 @@ class Decoder(Thread):
                     sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
                     register = False
 
-                except MemoryError, e:
+                except MemoryError:
                     logme = T('Decoder failure: Out of memory')
                     logging.warning(logme)
                     anfo = sabnzbd.articlecache.ArticleCache.do.cache_info()
@@ -240,7 +240,6 @@ class Decoder(Thread):
             nzf = article.nzf
             yenc, data = yCheck(data)
             ybegin, ypart, yend = yenc
-            decoded_data = None
 
             # Deal with non-yencoded posts
             if not ybegin:

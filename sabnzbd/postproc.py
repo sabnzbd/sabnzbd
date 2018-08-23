@@ -281,7 +281,6 @@ def process_job(nzo):
     nzb_list = []
     # These need to be initialized in case of a crash
     workdir_complete = ''
-    postproc_time = 0
     script_log = ''
     script_line = ''
 
@@ -336,15 +335,12 @@ def process_job(nzo):
                 unpack_error = 1
 
         script = nzo.script
-        cat = nzo.cat
-
         logging.info('Starting Post-Processing on %s' +
                      ' => Repair:%s, Unpack:%s, Delete:%s, Script:%s, Cat:%s',
                      filename, flag_repair, flag_unpack, flag_delete, script, nzo.cat)
 
         # Set complete dir to workdir in case we need to abort
         workdir_complete = workdir
-        marker_file = None
 
         # Par processing, if enabled
         if all_ok and flag_repair:

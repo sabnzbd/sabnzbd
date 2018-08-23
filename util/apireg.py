@@ -69,7 +69,7 @@ def set_connection_info(url, user=True):
     try:
         hive = _winreg.ConnectRegistry(None, section)
         try:
-            key = _winreg.CreateKey(hive, keypath)
+            _winreg.CreateKey(hive, keypath)
         except:
             pass
         key = _winreg.OpenKey(hive, keypath)

@@ -70,7 +70,6 @@ def isFAT(dir):
 
             '''
             dfcmd = "df " + dir
-            device = ''
             for thisline in os.popen(dfcmd).readlines():
                 if thisline.find('/')==0:
                     if debug: print thisline

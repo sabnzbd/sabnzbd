@@ -150,7 +150,7 @@ class NNTP(object):
     # Pre-define attributes to save memory
     __slots__ = ('host', 'port', 'nw', 'blocking', 'error_msg', 'sock')
 
-    def __init__(self, host, port, info, sslenabled, send_group, nw, user=None, password=None, block=False, write_fds=None):
+    def __init__(self, host, port, info, sslenabled, nw, block=False, write_fds=None):
         self.host = host
         self.port = port
         self.nw = nw
@@ -312,8 +312,7 @@ class NewsWrapper(object):
 
         # Construct NNTP object and shorthands
         self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
-                         self.server.send_group, self, self.server.username, self.server.password,
-                         self.blocking, write_fds)
+                         self, self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
         self.timeout = time.time() + self.server.timeout
 

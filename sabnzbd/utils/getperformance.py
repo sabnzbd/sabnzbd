@@ -61,7 +61,7 @@ def getpystone():
         maxpystone = max(maxpystone, int(pystonefloat))
         # Stop when pystone() has been running for at least 0.1 second
         if duration > 0.1:
-            break;
+            break
     return maxpystone
 
 

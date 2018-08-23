@@ -220,6 +220,8 @@ def _api_queue_pause(output, value, kwargs):
     if value:
         items = value.split(',')
         handled = NzbQueue.do.pause_multiple_nzo(items)
+    else:
+        handled = False
     return report(output, keyword='', data={'status': bool(handled), 'nzo_ids': handled})
 
 
@@ -228,6 +230,8 @@ def _api_queue_resume(output, value, kwargs):
     if value:
         items = value.split(',')
         handled = NzbQueue.do.resume_multiple_nzo(items)
+    else:
+        handled = False
     return report(output, keyword='', data={'status': bool(handled), 'nzo_ids': handled})
 
 
@@ -462,6 +466,7 @@ def _api_change_opts(name, output, kwargs):
     """ API: accepts output, value(=nzo_id), value2(=pp) """
     value = kwargs.get('value')
     value2 = kwargs.get('value2')
+    result = 0
     if value and value2 and value2.isdigit():
         result = NzbQueue.do.change_opts(value, int(value2))
     return report(output, keyword='status', data=bool(result > 0))
@@ -802,7 +807,6 @@ def _api_browse(name, output, kwargs):
     compact = kwargs.get('compact')
 
     if compact and compact == '1':
-        paths = []
         name = platform_encode(kwargs.get('term', ''))
         paths = [entry['path'] for entry in folders_at_path(os.path.dirname(name)) if 'path' in entry]
         return report(output, keyword='', data=paths)
@@ -1685,7 +1689,6 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     header['size'] = format_bytes(bytes)
     header['noofslots_total'] = qnfo.q_fullsize
 
-    status = ''
     if Downloader.do.paused or Downloader.do.postproc:
         status = Status.PAUSED
     elif bytespersec > 0:
@@ -1700,7 +1703,6 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
         # new eta format: 16:00 Fri 07 Feb
         header['eta'] = datestart.strftime(time_format('%H:%M %a %d %b')).decode(codepage)
     except:
-        datestart = datetime.datetime.now()
         header['eta'] = T('unknown')
 
     return (header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page)
@@ -1772,7 +1774,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     if not h_limit:
         items, fetched_items, total_items = history_db.fetch_history(h_start, 1, search, failed_only, categories)
         items = []
-        fetched_items = 0
     else:
         items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only, categories)
 

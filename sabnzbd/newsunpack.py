@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     real_path, globber, globber_full, get_all_passwords, renamer, clip_path, calc_age, \
-    has_win_device, long_path, remove_file, recursive_listdir, is_rarfile
+    long_path, remove_file, recursive_listdir, is_rarfile
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -175,7 +175,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
         proc = p.stdout
         if p.stdin:
             p.stdin.close()
-        line = ''
+
         lines = []
         while 1:
             line = proc.readline()
@@ -236,11 +236,10 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     else:
         xjoinables, xzips, xrars, xsevens, xts = build_filelists(workdir, workdir_complete, check_both=dele)
 
-    rerun = False
     force_rerun = False
     newfiles = []
     error = None
-    new_joins = new_rars = new_zips = new_ts = None
+    new_joins = new_ts = None
 
     if cfg.enable_filejoin():
         new_joins = [jn for jn in xjoinables if jn not in joinables]
@@ -1120,9 +1119,9 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
 
             # Multipar or not?
             if sabnzbd.WIN32 and cfg.multipar():
-                finished, readd, datafiles, used_joinables, used_for_repair = MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=single)
+                finished, readd, datafiles, used_joinables, used_for_repair = MultiPar_Verify(parfile, nzo, setname, joinables, single=single)
             else:
-                finished, readd, datafiles, used_joinables, used_for_repair = PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=single)
+                finished, readd, datafiles, used_joinables, used_for_repair = PAR_Verify(parfile, nzo, setname, joinables, single=single)
 
             if finished:
                 result = True
@@ -1189,7 +1188,7 @@ _RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
 _RE_LOADED_PAR2 = re.compile(r'Loaded (\d+) new packets')
 
 
-def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
+def PAR_Verify(parfile, nzo, setname, joinables, single=False):
     """ Run par2 on par-set """
     used_joinables = []
     used_for_repair = []
@@ -1526,7 +1525,7 @@ def PAR_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
 
 _RE_FILENAME = re.compile(r'"([^"]+)"')
 
-def MultiPar_Verify(parfile, parfile_nzf, nzo, setname, joinables, single=False):
+def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
     """ Run par2 on par-set """
     parfolder = os.path.split(parfile)[0]
     used_joinables = []

@@ -52,7 +52,7 @@ def generate_key(key_size=2048, output_file='key.pem'):
 
 
 # Ported from cryptography docs/x509/tutorial.rst
-def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost'):
+def generate_local_cert(private_key, days_valid=3560, output_file='cert.cert', LN=u'SABnzbd', ON=u'SABnzbd'):
     # Various details about who we are. For a self-signed certificate the
     # subject and issuer are always the same.
     subject = issuer = x509.Name([

@@ -311,7 +311,7 @@ class Downloader(Thread):
         '''
         if value:
             mx = cfg.bandwidth_max.get_int()
-            if '%' in str(value) or (from_units(value) > 0 and from_units(value) < 101):
+            if '%' in str(value) or (0 < from_units(value) < 101):
                 limit = value.strip(' %')
                 self.bandwidth_perc = from_units(limit)
                 if mx:
