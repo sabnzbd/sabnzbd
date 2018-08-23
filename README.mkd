@@ -1,5 +1,8 @@
-Release Notes - SABnzbd 2.3.5 RC 1
+Release Notes - SABnzbd 2.3.5 RC 2
 =========================================================
+
+## Bug fixes since 2.3.5 RC 1
+- Overall improvements in stability and reliability
 
 ## Bug fixes since 2.3.4
 - Reworked Deobfuscate.py script for much faster renaming
