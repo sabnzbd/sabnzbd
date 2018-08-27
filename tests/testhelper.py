@@ -77,7 +77,7 @@ def setUpModule():
         try:
             get_url_result()
             # Woohoo, we're up!
-            return
+            break
         except requests.ConnectionError:
             time.sleep(1)
     else:
