@@ -1,13 +1,21 @@
-language: python
-
-python:
-  - "2.7"
+matrix:
+  include:
+  - os: linux
+    language: python
+  - os: osx
+    env: HOMEBREW_NO_AUTO_UPDATE=1
+    addons:
+      chrome: stable
 
 before_script:
-  - sudo add-apt-repository ppa:jcfp -y
-  - sudo apt-get update -q
-  - sudo apt-get install sabnzbdplus chromium-chromedriver -y
-  - ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      brew cask install chromedriver;
+    else
+      sudo add-apt-repository ppa:jcfp -y;
+      sudo apt-get update -q;
+      sudo apt-get install sabnzbdplus chromium-chromedriver -y;
+      ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver;
+    fi;
 
 install:
   - pip install --upgrade -r tests/requirements.txt
