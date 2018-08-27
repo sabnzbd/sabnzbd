@@ -25,7 +25,6 @@ import subprocess
 import time
 
 import requests
-from selenium.webdriver.support.ui import WebDriverWait
 
 SAB_HOST = 'localhost'
 SAB_PORT = 8081
@@ -72,12 +71,28 @@ def setUpModule():
     # Start SABnzbd
     sab_command = 'python %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s' % (SAB_BASE_DIR, SAB_HOST, SAB_PORT, SAB_CACHE_DIR)
     subprocess.Popen(sab_command.split())
-    time.sleep(10)
+
+    # Wait for SAB to respond
+    for _ in range(10):
+        try:
+            get_url_result()
+            # Woohoo, we're up!
+            return
+        except requests.ConnectionError:
+            time.sleep(1)
+    else:
+        # Make sure we clean up
+        tearDownModule()
+        raise requests.ConnectionError()
 
 
 def tearDownModule():
-    # Gracefull shutdown request
-    get_url_result('shutdown')
+    # Graceful shutdown request
+    try:
+        get_url_result('shutdown')
+    except requests.ConnectionError:
+        pass
+
     # Takes a second to shutdown
     for x in range(10):
         try:

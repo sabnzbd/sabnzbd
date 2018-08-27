@@ -27,6 +27,7 @@ from selenium.common.exceptions import WebDriverException, NoSuchElementExceptio
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 
 from testhelper import *
 
@@ -51,15 +52,25 @@ class SABnzbdBaseTest(unittest.TestCase):
                 driver_options.headless = True
             cls.driver = webdriver.Firefox(firefox_options=driver_options)
 
-        # Get the newsserver-info
-        cls.newsserver_host = os.environ['SAB_NEWSSERVER_HOST']
-        cls.newsserver_user = os.environ['SAB_NEWSSERVER_USER']
-        cls.newsserver_password = os.environ['SAB_NEWSSERVER_PASSWORD']
+        # Get the newsserver-info, if available
+        if "SAB_NEWSSERVER_HOST" in os.environ:
+            cls.newsserver_host = os.environ['SAB_NEWSSERVER_HOST']
+            cls.newsserver_user = os.environ['SAB_NEWSSERVER_USER']
+            cls.newsserver_password = os.environ['SAB_NEWSSERVER_PASSWORD']
 
     @classmethod
     def tearDownClass(cls):
         cls.driver.close()
         cls.driver.quit()
+
+    def no_page_crash(self):
+        # Do a base test if CherryPy did not report test
+        self.assertNotIn('500 Internal Server Error', self.driver.title)
+
+    def open_page(self, url):
+        # Open a page and test for crash
+        self.driver.get(url)
+        self.no_page_crash()
 
     def scroll_to_top(self):
         self.driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
@@ -67,17 +78,11 @@ class SABnzbdBaseTest(unittest.TestCase):
 
     def wait_for_ajax(self):
         wait = WebDriverWait(self.driver, 15)
-        try:
-            wait.until(lambda driver: self.driver.execute_script('return jQuery.active') == 0)
-            wait.until(lambda driver: self.driver.execute_script('return document.readyState') == 'complete')
-        except Exception:
-            pass
-
-    def no_page_crash(self):
-        # Do a base test if CherryPy did not report test
-        self.assertNotIn('500 Internal Server Error', self.driver.title)
+        wait.until(lambda driver_wait: self.driver.execute_script('return jQuery.active') == 0)
+        wait.until(lambda driver_wait: self.driver.execute_script('return document.readyState') == 'complete')
 
 
+@unittest.skipIf("SAB_NEWSSERVER_HOST" not in os.environ, "Test-server not specified")
 class SABnzbdHappyFlow(SABnzbdBaseTest):
 
     def test_happy_flow(self):
@@ -87,8 +92,7 @@ class SABnzbdHappyFlow(SABnzbdBaseTest):
 
     def start_wizard(self):
         # Language-selection
-        self.driver.get("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
+        self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
         self.driver.find_element_by_id("en").click()
         self.driver.find_element_by_css_selector('.btn.btn-default').click()
 
@@ -126,8 +130,7 @@ class SABnzbdHappyFlow(SABnzbdBaseTest):
     def add_nzb_from_url(self):
         test_job_name = 'basic_rar5_%s' % random.randint(500, 1000)
 
-        self.driver.get("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
+        self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
 
         # Wait for modal to open, add URL
         self.driver.find_element_by_css_selector('a[href="#modal-add-nzb"]').click()
@@ -137,7 +140,7 @@ class SABnzbdHappyFlow(SABnzbdBaseTest):
         self.driver.find_element_by_css_selector('form[data-bind="submit: addNZBFromURL"] input[type="submit"]').click()
 
         # We wait for 30 seconds to let it complete
-        for x in range(30):
+        for _ in range(30):
             try:
                 # Locate resulting row
                 result_row = self.driver.find_element_by_xpath('//*[@id="history-tab"]//tr[td//text()[contains(., "%s")]]' % test_job_name)
@@ -148,7 +151,6 @@ class SABnzbdHappyFlow(SABnzbdBaseTest):
                     time.sleep(1)
             except NoSuchElementException:
                 time.sleep(1)
-                pass
         else:
             self.fail("Download did not complete")
 
@@ -156,38 +158,34 @@ class SABnzbdHappyFlow(SABnzbdBaseTest):
         self.assertTrue(os.path.exists(os.path.join(SAB_COMPLETE_DIR, test_job_name, 'testfile.bin')))
 
 
-class SABnzbdConfigStart(SABnzbdBaseTest):
+class SABnzbdBasicPagesTest(SABnzbdBaseTest):
 
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
+    def test_base_pages(self):
+        # Quick-check of all Config pages
+        test_urls = ['config',
+                     'config/general',
+                     'config/folders',
+                     'config/server',
+                     'config/categories',
+                     'config/switches',
+                     'config/sorting',
+                     'config/notify',
+                     'config/scheduling',
+                     'config/rss',
+                     'config/special']
 
-
-class SABnzbdConfigGeneral(SABnzbdBaseTest):
-
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/general" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
-
-
-class SABnzbdConfigFolders(SABnzbdBaseTest):
-
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/folders" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
+        for test_url in test_urls:
+            self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
 
 
+@unittest.skipIf("SAB_NEWSSERVER_HOST" not in os.environ, "Test-server not specified")
 class SABnzbdConfigServers(SABnzbdBaseTest):
 
     server_name = "_SeleniumServer"
 
     def open_config_servers(self):
         # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/server" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
+        self.open_page("http://%s:%s/sabnzbd/config/server" % (SAB_HOST, SAB_PORT))
         self.scroll_to_top()
 
         # Show advanced options
@@ -272,61 +270,13 @@ class SABnzbdConfigCategories(SABnzbdBaseTest):
 
     def test_page(self):
         # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/categories" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://%s:%s/sabnzbd/config/categories" % (SAB_HOST, SAB_PORT))
 
         # Add new category
         self.driver.find_elements_by_name("newname")[1].send_keys("testCat")
         self.driver.find_element_by_xpath("//button/text()[normalize-space(.)='Add']/parent::*").click()
         self.no_page_crash()
         self.assertNotIn(self.category_name, self.driver.page_source)
-
-
-class SABnzbdConfigSwitches(SABnzbdBaseTest):
-
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/switches" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
-
-
-class SABnzbdConfigSorting(SABnzbdBaseTest):
-
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/sorting" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
-
-
-class SABnzbdConfigNotifications(SABnzbdBaseTest):
-
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/notify" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
-
-
-class SABnzbdConfigScheduling(SABnzbdBaseTest):
-
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/scheduling" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
-
-
-class SABnzbdConfigRSS(SABnzbdBaseTest):
-
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/rss" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
-
-
-class SABnzbdConfigSpecials(SABnzbdBaseTest):
-
-    def test_page(self):
-        # Test if base page works
-        self.driver.get("http://%s:%s/sabnzbd/config/special" % (SAB_HOST, SAB_PORT))
-        self.no_page_crash()
 
 
 if __name__ == "__main__":
