@@ -1,8 +1,8 @@
 # SAB-Specific
-cheetah
+cheetah3
 cryptography
 sabyenc
 
 # Testing
-pytest-xprocess
+selenium
 requests

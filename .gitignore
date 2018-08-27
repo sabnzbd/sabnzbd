@@ -23,6 +23,7 @@ SABnzbd*.dmg
 # Testing folders
 .cache
 .xprocess
+tests/cache
 
 # General junk
 *.keep
