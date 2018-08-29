@@ -22,7 +22,7 @@ before_script:
     else
       sudo add-apt-repository ppa:jcfp -y;
       sudo apt-get update -q;
-      sudo apt-get install sabnzbdplus chromium-chromedriver -y;
+      sudo apt-get install unrar p7zip-full par2 chromium-chromedriver -y;
       ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver;
     fi;
 

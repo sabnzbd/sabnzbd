@@ -83,12 +83,20 @@ class SABnzbdBaseTest(unittest.TestCase):
 
 
 @unittest.skipIf("SAB_NEWSSERVER_HOST" not in os.environ, "Test-server not specified")
-class SABnzbdHappyFlow(SABnzbdBaseTest):
+class SABnzbdDownloadFlow(SABnzbdBaseTest):
 
-    def test_happy_flow(self):
-        # So it get's executed in the right order
+    def test_full(self):
+        # Wrapper for all the tests in order
         self.start_wizard()
-        self.add_nzb_from_url()
+
+        # Basic test
+        self.add_nzb_from_url("http://sabnzbd.org/tests/basic_rar5.nzb", "testfile.bin")
+
+        # Unicode test
+        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
+
+        # Unicode test with a missing article
+        #self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
 
     def start_wizard(self):
         # Language-selection
@@ -127,20 +135,20 @@ class SABnzbdHappyFlow(SABnzbdBaseTest):
         self.driver.find_element_by_css_selector('.btn.btn-success').click()
         self.no_page_crash()
 
-    def add_nzb_from_url(self):
-        test_job_name = 'basic_rar5_%s' % random.randint(500, 1000)
+    def add_nzb_from_url(self, file_url, file_output):
+        test_job_name = 'testfile_%s' % random.randint(500, 1000)
 
         self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
 
         # Wait for modal to open, add URL
         self.driver.find_element_by_css_selector('a[href="#modal-add-nzb"]').click()
         time.sleep(1)
-        self.driver.find_element_by_name("nzbURL").send_keys("http://sabnzbd.org/tests/basic_rar5.nzb")
+        self.driver.find_element_by_name("nzbURL").send_keys(file_url)
         self.driver.find_element_by_name("nzbname").send_keys(test_job_name)
         self.driver.find_element_by_css_selector('form[data-bind="submit: addNZBFromURL"] input[type="submit"]').click()
 
         # We wait for 30 seconds to let it complete
-        for _ in range(30):
+        for _ in range(120):
             try:
                 # Locate resulting row
                 result_row = self.driver.find_element_by_xpath('//*[@id="history-tab"]//tr[td//text()[contains(., "%s")]]' % test_job_name)
@@ -155,7 +163,11 @@ class SABnzbdHappyFlow(SABnzbdBaseTest):
             self.fail("Download did not complete")
 
         # Check if the file exists on disk
-        self.assertTrue(os.path.exists(os.path.join(SAB_COMPLETE_DIR, test_job_name, 'testfile.bin')))
+        file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
+        self.assertTrue(os.path.exists(file_to_find), "File not found")
+
+        # Shutil can't handle unicode, need to remove the file here
+        os.remove(file_to_find)
 
 
 class SABnzbdBasicPagesTest(SABnzbdBaseTest):
