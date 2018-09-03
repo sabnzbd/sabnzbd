@@ -1117,8 +1117,8 @@ class NzbObject(TryList):
                     block_list.append(nzf)
                     avail_blocks += nzf.blocks
 
-        # Sort by smallest blocks first
-        block_list.sort(key=lambda x: x.blocks)
+        # Sort by smallest blocks last, to be popped first
+        block_list.sort(key=lambda x: x.blocks, reverse=True)
         logging.info('%s blocks available', avail_blocks)
 
         # Enough?
