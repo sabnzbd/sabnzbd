@@ -986,7 +986,9 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
     nzo.fail_msg = ''
     if fail == 2:
         msg = '%s (%s)' % (T('Unpacking failed, archive requires a password'), os.path.basename(sevenset))
+    if fail > 0:
         nzo.fail_msg = msg
+        nzo.status = Status.FAILED
         logging.error(msg)
     return fail, new_files, msg
 
@@ -1020,7 +1022,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
         parm = '-tzip' if sevenset.lower().endswith('.zip') else '-t7z'
 
     if not os.path.exists(name):
-        return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % unicoder(sevenset)
+        return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % os.path.basename(sevenset)
 
     # For file-bookkeeping
     orig_dir_content = recursive_listdir(extraction_path)
@@ -1038,6 +1040,15 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     logging.debug('7za output: %s', output)
 
     ret = p.wait()
+
+    # Return-code for CRC and Password is the same
+    if ret == 2 and 'ERROR: CRC Failed' in output:
+        # We can output a more general error
+        ret = 1
+        msg = T('ERROR: CRC failed in "%s"') % os.path.basename(sevenset)
+    else:
+        # Default message
+        msg = T('Could not unpack %s') % os.path.basename(sevenset)
 
     # What's new?
     new_files = list(set(orig_dir_content + recursive_listdir(extraction_path)))
@@ -1057,7 +1068,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
                 logging.warning(T('Deleting %s failed!'), sevenset)
 
     # Always return an error message, even when return code is 0
-    return ret, new_files, T('Could not unpack %s') % unicoder(sevenset)
+    return ret, new_files, msg
 
 
 ##############################################################################
