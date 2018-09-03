@@ -435,16 +435,17 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 
             if seq_error:
                 msg = T('Incomplete sequence of joinable files')
-                nzo.fail_msg = T('File join of %s failed') % unicoder(joinable_set)
-                nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
+                nzo.fail_msg = T('File join of %s failed') % unicoder(os.path.basename(joinable_set))
+                nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(os.path.basename(joinable_set)), msg))
                 logging.error(T('Error "%s" while running file_join on %s'), msg, nzo.final_name)
+                return True, []
             else:
                 msg = T('[%s] Joined %s files') % (unicoder(joinable_set), size)
                 nzo.set_unpack_info('Filejoin', msg)
     except:
         msg = sys.exc_info()[1]
         nzo.fail_msg = T('File join of %s failed') % msg
-        nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(joinable_set), msg))
+        nzo.set_unpack_info('Filejoin', T('[%s] Error "%s" while joining files') % (unicoder(os.path.basename(joinable_set)), msg))
         logging.error(T('Error "%s" while running file_join on %s'), msg, nzo.final_name)
         return True, []
 
