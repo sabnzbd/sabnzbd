@@ -1844,6 +1844,10 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
             # Set message for user in case of joining
             if line.startswith('Ready to rejoin'):
                 nzo.set_action_line(T('Joining'), '%2d' % len(used_joinables))
+            else:
+                # If we are repairing a joinable set, it won't actually
+                # do the joining. So we can't remove those files!
+                used_joinables = []
 
         # ----------------- Repair stage
         elif 'Recovering slice' in line:
