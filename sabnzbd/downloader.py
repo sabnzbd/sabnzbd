@@ -305,10 +305,10 @@ class Downloader(Thread):
         self.force_disconnect = True
 
     def limit_speed(self, value):
-        ''' Set the actual download speed in Bytes/sec
+        """ Set the actual download speed in Bytes/sec
             When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a pecentage of the maximum bandwidth
             When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).
-        '''
+        """
         if value:
             mx = cfg.bandwidth_max.get_int()
             if '%' in str(value) or (0 < from_units(value) < 101):

@@ -194,7 +194,7 @@
             <fieldset>
                 <div class="field-pair">
                     <label class="config" for="nscript_script">$T('opt-nscript_script')</label>
-                    <select name="nscript_script">
+                    <select name="nscript_script" id="nscript_script">
                         <!--#for $sc in $scripts#-->
                         <option value="$sc" <!--#if $nscript_script == $sc then 'selected="selected"' else ""#-->>$Tspec($sc)</option>
                         <!--#end for#-->

@@ -118,7 +118,7 @@ class HistoryDB(object):
                 self.execute('ALTER TABLE "history" ADD COLUMN password TEXT;')
 
     def execute(self, command, args=(), save=False):
-        ''' Wrapper for executing SQL commands '''
+        """ Wrapper for executing SQL commands """
         for tries in xrange(5, 0, -1):
             try:
                 if args and isinstance(args, tuple):

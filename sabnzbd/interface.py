@@ -236,8 +236,7 @@ def check_login():
 
 
 def get_users():
-    users = {}
-    users[cfg.username()] = cfg.password()
+    users = {cfg.username(): cfg.password()}
     return users
 
 
@@ -2040,15 +2039,8 @@ class ConfigScheduling(object):
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         def get_days():
-            days = {}
-            days["*"] = T('Daily')
-            days["1"] = T('Monday')
-            days["2"] = T('Tuesday')
-            days["3"] = T('Wednesday')
-            days["4"] = T('Thursday')
-            days["5"] = T('Friday')
-            days["6"] = T('Saturday')
-            days["7"] = T('Sunday')
+            days = {"*": T('Daily'), "1": T('Monday'), "2": T('Tuesday'), "3": T('Wednesday'), "4": T('Thursday'),
+                    "5": T('Friday'), "6": T('Saturday'), "7": T('Sunday')}
             return days
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)

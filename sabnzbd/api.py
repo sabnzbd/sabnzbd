@@ -29,6 +29,7 @@ import cherrypy
 import locale
 
 from threading import Thread
+
 try:
     locale.setlocale(locale.LC_ALL, "")
 except:
@@ -42,8 +43,8 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, Status, \
-     TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
-     KIBI, MEBI, GIGI, JOB_ADMIN
+    TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
+    KIBI, MEBI, GIGI, JOB_ADMIN
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Downloader
@@ -72,7 +73,6 @@ import sabnzbd.rss
 import sabnzbd.emailer
 import sabnzbd.getipaddress as getipaddress
 
-
 ##############################################################################
 # API error messages
 ##############################################################################
@@ -86,7 +86,6 @@ _MSG_NO_PATH = 'file does not exist'
 _MSG_OUTPUT_FORMAT = 'Format not supported'
 _MSG_NO_SUCH_CONFIG = 'Config item does not exist'
 _MSG_BAD_SERVER_PARMS = 'Incorrect server settings'
-
 
 # For Windows: determine executable extensions
 if os.name == 'nt':
@@ -345,7 +344,7 @@ def _api_addfile(name, output, kwargs):
             # Indexer category, so do mapping
             cat = cat_convert(xcat)
         res = sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), cat,
-                            kwargs.get('priority'), kwargs.get('nzbname'))
+                                  kwargs.get('priority'), kwargs.get('nzbname'))
         return report(output, keyword='', data={'status': res[0] == 0, 'nzo_ids': res[1]}, compat=True)
     else:
         return report(output, _MSG_NO_VALUE)
@@ -488,7 +487,6 @@ def _api_history(name, output, kwargs):
     failed_only = kwargs.get('failed_only')
     categories = kwargs.get('category')
 
-
     # Do we need to send anything?
     if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
         return report(output, keyword='history', data=False)
@@ -524,7 +522,7 @@ def _api_history(name, output, kwargs):
         history = {}
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
-               to_units(grand), to_units(month), to_units(week), to_units(day)
+            to_units(grand), to_units(month), to_units(week), to_units(day)
         history['slots'], fetched_items, history['noofslots'] = build_history(start=start,
                                                                               limit=limit, verbose=True,
                                                                               search=search, failed_only=failed_only,
@@ -729,9 +727,7 @@ def _api_reset_quota(name, output, kwargs):
 def _api_test_email(name, output, kwargs):
     """ API: send a test email, return result """
     logging.info("Sending test email")
-    pack = {}
-    pack['download'] = ['action 1', 'action 2']
-    pack['unpack'] = ['action 1', 'action 2']
+    pack = {'download': ['action 1', 'action 2'], 'unpack': ['action 1', 'action 2']}
     res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
                                  os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
                                  123 * MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
@@ -896,12 +892,11 @@ def _api_config_undefined(output, kwargs):
 def _api_server_stats(name, output, kwargs):
     """ API: accepts output """
     sum_t, sum_m, sum_w, sum_d = BPSMeter.do.get_sums()
-    stats = {'total': sum_t, 'month': sum_m, 'week': sum_w, 'day': sum_d}
+    stats = {'total': sum_t, 'month': sum_m, 'week': sum_w, 'day': sum_d, 'servers': {}}
 
-    stats['servers'] = {}
     for svr in config.get_servers():
         t, m, w, d, daily = BPSMeter.do.amounts(svr)
-        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0, 'daily': daily or {} }
+        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0, 'daily': daily or {}}
 
     return report(output, keyword='', data=stats)
 
@@ -1237,10 +1232,10 @@ def build_status(skip_dashboard=False, output=None):
 
             # For the templates or for JSON
             if output:
-                thread_info = { 'thrdnum': nw.thrdnum,
-                                'art_name': art_name,
-                                'nzf_name': nzf_name,
-                                'nzo_name': nzo_name }
+                thread_info = {'thrdnum': nw.thrdnum,
+                               'art_name': art_name,
+                               'nzf_name': nzf_name,
+                               'nzo_name': nzo_name}
                 serverconnections.append(thread_info)
             else:
                 serverconnections.append((nw.thrdnum, art_name, nzf_name, nzo_name))
@@ -1257,20 +1252,20 @@ def build_status(skip_dashboard=False, output=None):
 
         # For the templates or for JSON
         if output:
-            server_info = { 'servername': server.displayname,
-                            'serveractiveconn': connected,
-                            'servertotalconn': server.threads,
-                            'serverconnections': serverconnections,
-                            'serverssl': server.ssl,
-                            'serversslinfo': server.ssl_info,
-                            'serveractive': server.active,
-                            'servererror': server.errormsg,
-                            'serverpriority': server.priority,
-                            'serveroptional': server.optional }
+            server_info = {'servername': server.displayname,
+                           'serveractiveconn': connected,
+                           'servertotalconn': server.threads,
+                           'serverconnections': serverconnections,
+                           'serverssl': server.ssl,
+                           'serversslinfo': server.ssl_info,
+                           'serveractive': server.active,
+                           'servererror': server.errormsg,
+                           'serverpriority': server.priority,
+                           'serveroptional': server.optional}
             info['servers'].append(server_info)
         else:
             info['servers'].append((server.displayname, '', connected, serverconnections, server.ssl,
-                                      server.active, server.errormsg, server.priority, server.optional))
+                                    server.active, server.errormsg, server.priority, server.optional))
 
     info['warnings'] = sabnzbd.GUIHANDLER.content()
 
@@ -1572,7 +1567,9 @@ def Tspec(txt):
         return txt
 
 
-_SKIN_CACHE = {}    # Stores pre-translated acronyms
+_SKIN_CACHE = {}  # Stores pre-translated acronyms
+
+
 # This special is to be used in interface.py for template processing
 # to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
 def Ttemplate(txt):
@@ -1710,7 +1707,6 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
                   categories=None, output=None):
-
     if output:
         converter = unicoder
     else:
