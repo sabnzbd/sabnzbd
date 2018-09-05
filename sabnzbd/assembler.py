@@ -334,11 +334,11 @@ def nzo_filtered_by_rating(nzo):
             nzo.rating_filtered = 1
             reason = rating_filtered(rating, nzo.filename.lower(), True)
             if reason is not None:
-                return (2, reason)
+                return 2, reason
             reason = rating_filtered(rating, nzo.filename.lower(), False)
             if reason is not None:
-                return (1, reason)
-    return (0, "")
+                return 1, reason
+    return 0, ""
 
 
 def rating_filtered(rating, filename, abort):

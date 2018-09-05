@@ -2765,7 +2765,7 @@ def rss_history(url, limit=50, search=None):
             stageLine.append("<tr><dt>Stage %s</dt>" % stage['name'])
             actions = []
             for action in stage['actions']:
-                actions.append("<dd>%s</dd>" % (action))
+                actions.append("<dd>%s</dd>" % action)
             actions.sort()
             actions.reverse()
             for act in actions:

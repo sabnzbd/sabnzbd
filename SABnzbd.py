@@ -659,12 +659,12 @@ def attach_server(host, port, cert=None, key=None, chain=None):
 def is_sabnzbd_running(url):
     """ Return True when there's already a SABnzbd instance running. """
     try:
-        url = '%s&mode=version' % (url)
+        url = '%s&mode=version' % url
         # Do this without certificate verification, few installations will have that
         prev = sabnzbd.set_https_verification(False)
         ver = get_from_url(url)
         sabnzbd.set_https_verification(prev)
-        return (ver and (re.search(r'\d+\.\d+\.', ver) or ver.strip() == sabnzbd.__version__))
+        return ver and (re.search(r'\d+\.\d+\.', ver) or ver.strip() == sabnzbd.__version__)
     except:
         return False
 
@@ -864,9 +864,9 @@ def main():
         elif opt in ('-b', '--browser'):
             try:
                 autobrowser = bool(int(arg))
-            except:
+            except ValueError:
                 autobrowser = True
-        elif opt in ('--autorestarted', ):
+        elif opt == '--autorestarted':
             autorestarted = True
         elif opt in ('-c', '--clean'):
             clean_up = True
@@ -885,36 +885,36 @@ def main():
             exit_sab(0)
         elif opt in ('-p', '--pause'):
             pause = True
-        elif opt in ('--https',):
+        elif opt == '--https':
             https_port = int(arg)
             sabnzbd.RESTART_ARGS.append(opt)
             sabnzbd.RESTART_ARGS.append(arg)
-        elif opt in ('--repair',):
+        elif opt == '--repair':
             repair = 1
             pause = True
-        elif opt in ('--repair-all',):
+        elif opt == '--repair-all':
             repair = 2
             pause = True
-        elif opt in ('--log-all',):
+        elif opt == '--log-all':
             sabnzbd.LOG_ALL = True
-        elif opt in ('--disable-file-log'):
+        elif opt == '--disable-file-log':
             no_file_log = True
-        elif opt in ('--no-login',):
+        elif opt == '--no-login':
             no_login = True
-        elif opt in ('--pid',):
+        elif opt == '--pid':
             pid_path = arg
             sabnzbd.RESTART_ARGS.append(opt)
             sabnzbd.RESTART_ARGS.append(arg)
-        elif opt in ('--pidfile',):
+        elif opt == '--pidfile':
             pid_file = arg
             sabnzbd.RESTART_ARGS.append(opt)
             sabnzbd.RESTART_ARGS.append(arg)
-        elif opt in ('--new',):
+        elif opt == '--new':
             new_instance = True
-        elif opt in ('--console',):
+        elif opt == '--console':
             sabnzbd.RESTART_ARGS.append(opt)
             osx_console = True
-        elif opt in ('--ipv6_hosting',):
+        elif opt == '--ipv6_hosting':
             ipv6_hosting = arg
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))

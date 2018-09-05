@@ -91,7 +91,7 @@ def decodePar(parfile):
     result = False
     dir = os.path.dirname(parfile)
     with open(parfile, 'rb') as parfileToDecode:
-        while (True):
+        while True:
             header = parfileToDecode.read(STRUCT_PACKET_HEADER.size)
             if not header: break # file fully read
 
@@ -99,7 +99,7 @@ def decodePar(parfile):
             bodyLength = packetLength - STRUCT_PACKET_HEADER.size
 
             # only process File Description packets
-            if (packetType != PACKET_TYPE_FILE_DESC):
+            if packetType != PACKET_TYPE_FILE_DESC:
                 # skip this packet
                 parfileToDecode.seek(bodyLength, os.SEEK_CUR)
                 continue
@@ -112,13 +112,13 @@ def decodePar(parfile):
             targetPath = path.join(dir, targetName)
 
             # file already exists, skip it
-            if (path.exists(targetPath)):
+            if path.exists(targetPath):
                 print "File already exists: " + targetName
                 continue
 
             # find and rename file
             srcPath = findFile(dir, filelength, hash16k)
-            if (srcPath is not None):
+            if srcPath is not None:
                 os.rename(srcPath, targetPath)
                 print "Renamed file from " + path.basename(srcPath) + " to " + targetName
                 result = True
@@ -132,7 +132,7 @@ def findFile(dir, filelength, hash16k):
         filepath = path.join(dir, filename)
 
         # check if the size matches as an indication
-        if (path.getsize(filepath) != filelength): continue
+        if path.getsize(filepath) != filelength: continue
 
         with open(filepath, 'rb') as fileToMatch:
             data = fileToMatch.read(16 * 1024)
@@ -140,7 +140,7 @@ def findFile(dir, filelength, hash16k):
             m.update(data)
 
             # compare hash to confirm the match
-            if (m.digest() == hash16k):
+            if m.digest() == hash16k:
                 return filepath
     return None
 

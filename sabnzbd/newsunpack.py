@@ -1378,7 +1378,7 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
 
             elif line.startswith('Repair is possible'):
                 start = time.time()
-                nzo.set_action_line(T('Repairing'), '%2d%%' % (0))
+                nzo.set_action_line(T('Repairing'), '%2d%%' % 0)
 
             elif line.startswith('Repairing:'):
                 chunks = line.split()
@@ -1855,7 +1855,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
             # Before this it will calculate matrix, here is where it starts
             start = time.time()
             in_repair = True
-            nzo.set_action_line(T('Repairing'), '%2d%%' % (0))
+            nzo.set_action_line(T('Repairing'), '%2d%%' % 0)
 
         elif in_repair and line.startswith('Verifying repair'):
             in_repair = False

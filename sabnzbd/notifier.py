@@ -142,7 +142,7 @@ def check_cat(section, job_cat, keyword=None):
         if not keyword:
             keyword = section
         section_cats = sabnzbd.config.get_config(section, '%s_cats' % keyword)()
-        return (['*'] == section_cats or job_cat in section_cats)
+        return ['*'] == section_cats or job_cat in section_cats
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_cats', section, section)
         return True

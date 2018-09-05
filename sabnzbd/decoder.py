@@ -378,7 +378,7 @@ def yCheck(data):
         except IndexError:
             break
 
-    return ((ybegin, ypart, yend), data)
+    return (ybegin, ypart, yend), data
 
 # Example: =ybegin part=1 line=128 size=123 name=-=DUMMY=- abc.par
 YSPLIT_RE = re.compile(r'([a-zA-Z0-9]+)=')

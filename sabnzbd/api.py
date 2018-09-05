@@ -1350,10 +1350,10 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
             # Ensure compatibility of API status
             if status == Status.DELETED or priority == TOP_PRIORITY:
                 status = Status.DOWNLOADING
-            slot['status'] = "%s" % (status)
+            slot['status'] = "%s" % status
 
-        if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \
-           status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)) and priority != TOP_PRIORITY:
+        if (Downloader.do.paused or Downloader.do.postproc or is_propagating or
+            status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)) and priority != TOP_PRIORITY:
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
@@ -1705,7 +1705,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     except:
         header['eta'] = T('unknown')
 
-    return (header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page)
+    return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
@@ -1858,7 +1858,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     if close_db:
         history_db.close()
 
-    return (items, fetched_items, total_items)
+    return items, fetched_items, total_items
 
 
 def get_active_history(queue=None, items=None):

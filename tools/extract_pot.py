@@ -27,7 +27,7 @@ import re
 f = open('sabnzbd/version.py')
 code = f.read()
 f.close()
-exec(code)
+exec code
 
 # Fixed information for the POT header
 HEADER = r'''#

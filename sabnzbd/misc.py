@@ -427,7 +427,7 @@ def is_obfuscated_filename(filename):
     """ Check if this file has an extension, if not, it's
         probably obfuscated and we don't use it
     """
-    return (os.path.splitext(filename)[1] == '')
+    return os.path.splitext(filename)[1] == ''
 
 
 ##############################################################################
@@ -519,16 +519,16 @@ def create_real_path(name, loc, path, umask=False, writable=True):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
                 logging.error(T('Cannot create directory %s'), clip_path(my_dir))
-                return (False, my_dir)
+                return False, my_dir
 
         checks = (os.W_OK + os.R_OK) if writable else os.R_OK
         if os.access(my_dir, checks):
-            return (True, my_dir)
+            return True, my_dir
         else:
             logging.error(T('%s directory: %s error accessing'), name, clip_path(my_dir))
-            return (False, my_dir)
+            return False, my_dir
     else:
-        return (False, "")
+        return False, ""
 
 
 def is_relative_path(p):
@@ -846,7 +846,7 @@ def split_host(srv):
         port = int(port)
     except:
         port = None
-    return (host, port)
+    return host, port
 
 
 def get_from_url(url):

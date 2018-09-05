@@ -49,7 +49,7 @@ def isFAT(dir):
             try:
                 result = win32api.GetVolumeInformation(os.path.splitdrive(dir)[0])
                 if debug: print result
-                if(result[4].startswith("FAT")):
+                if result[4].startswith("FAT"):
                     FAT = True
             except:
                 pass

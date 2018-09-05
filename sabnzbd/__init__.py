@@ -1008,12 +1008,12 @@ def pp_to_opts(pp):
     # Convert the pp to an int
     pp = sabnzbd.interface.int_conv(pp)
     if pp == 0:
-        return (False, False, False)
+        return False, False, False
     if pp == 1:
-        return (True, False, False)
+        return True, False, False
     if pp == 2:
-        return (True, True, False)
-    return (True, True, True)
+        return True, True, False
+    return True, True, True
 
 
 def opts_to_pp(repair, unpack, delete):

@@ -20,7 +20,7 @@ def getcpu():
 
         elif platform.system() == "Linux":
             for myline in open("/proc/cpuinfo"):
-                if myline.startswith(('model name')):
+                if myline.startswith('model name'):
                     # Typical line:
                     # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
                     cputype = myline.split(":", 1)[1]	# get everything after the first ":"

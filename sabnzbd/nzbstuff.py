@@ -167,7 +167,7 @@ class Article(TryList):
                         # if (server_check.priority() < found_priority and server_check.priority() < server.priority and not self.server_in_try_list(server_check)):
                         if server_check.active and (server_check.priority < found_priority):
                             if server_check.priority < server.priority:
-                                if (not self.server_in_try_list(server_check)):
+                                if not self.server_in_try_list(server_check):
                                     if log:
                                         logging.debug('Article %s | Server: %s | setting found priority to %s', self.article, server.host, server_check.priority)
                                     found_priority = server_check.priority
@@ -317,7 +317,7 @@ class NzbFile(TryList):
             if found:
                 self.bytes_left -= article.bytes
 
-        return (not self.articles)
+        return not self.articles
 
     def set_par2(self, setname, vol, blocks):
         """ Designate this this file as a par2 file """
@@ -1190,7 +1190,7 @@ class NzbObject(TryList):
             self.status = Status.QUEUED
             self.set_download_report()
 
-        return (file_done, post_done)
+        return file_done, post_done
 
     @synchronized(NZO_LOCK)
     def remove_saved_article(self, article):
@@ -1291,8 +1291,8 @@ class NzbObject(TryList):
 
         # Convert input
         value = int_conv(value)
-        if value in (REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, \
-             LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY):
+        if value in (REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY,
+                     LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY):
             self.priority = value
             return
 
