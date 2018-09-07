@@ -28,9 +28,9 @@ from time import sleep
 import hashlib
 
 import sabnzbd
-from sabnzbd.misc import get_filepath, sanitize_filename, get_unique_filename, renamer, \
-    set_permissions, long_path, clip_path, has_win_device, get_all_passwords, diskspace, \
-    get_filename, get_ext
+from sabnzbd.misc import get_filepath, sanitize_filename, set_permissions, \
+    long_path, clip_path, has_win_device, get_all_passwords, diskspace, \
+    get_filename, get_ext, is_rarfile
 from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -117,7 +117,7 @@ class Assembler(Thread):
                     nzf.remove_admin()
 
                     # Do rar-related processing
-                    if rarfile.is_rarfile(filepath):
+                    if is_rarfile(filepath):
                         # Encryption and unwanted extension detection
                         rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
                         if rar_encrypted:
@@ -246,7 +246,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                 return encrypted, unwanted
 
             # Is it even a rarfile?
-            if rarfile.is_rarfile(filepath):
+            if is_rarfile(filepath):
                 # Open the rar
                 rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
                 zf = rarfile.RarFile(filepath, all_names=True)
@@ -334,11 +334,11 @@ def nzo_filtered_by_rating(nzo):
             nzo.rating_filtered = 1
             reason = rating_filtered(rating, nzo.filename.lower(), True)
             if reason is not None:
-                return (2, reason)
+                return 2, reason
             reason = rating_filtered(rating, nzo.filename.lower(), False)
             if reason is not None:
-                return (1, reason)
-    return (0, "")
+                return 1, reason
+    return 0, ""
 
 
 def rating_filtered(rating, filename, abort):

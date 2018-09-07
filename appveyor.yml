@@ -1,6 +1,14 @@
+environment:
+  SAB_NEWSSERVER_HOST:
+    secure: UNnTfVHDugC9amTucdTRyxe8RZfVBLYfI1EOTaDUjNM=
+  SAB_NEWSSERVER_USER:
+    secure: npe0D4TiEzXMUVMCH3+SHA==
+  SAB_NEWSSERVER_PASSWORD:
+    secure: 28COv3RG+KAnBLxIrR1EDw==
+
 install:
   - pip install --upgrade -r tests/requirements.txt
   - pip install pypiwin32 subprocessww
 
 build_script:
-  - pytest
+  - python ./tests/test_functional.py

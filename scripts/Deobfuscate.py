@@ -28,7 +28,7 @@ NOTES:
  1) To use this script you need Python installed on your system and
     select "Add to path" during its installation. Select this folder in
     Config > Folders > Scripts Folder and select this script for each job
-    you want it sued for, or link it to a category in Config > Categories.
+    you want it used for, or link it to a category in Config > Categories.
  2) Beware that files on the 'Cleanup List' are removed before
     scripts are called and if any of them happen to be required by
     the found par2 file, it will fail.
@@ -39,37 +39,116 @@ NOTES:
  5) Feedback or bugs in this script can be reported in on our forum:
     https://forums.sabnzbd.org/viewforum.php?f=9
 
+
+Improved by P1nGu1n
+
 """
 
 import os
 import sys
 import time
 import fnmatch
-import subprocess
+import struct
+import hashlib
+from os import path
 
-# Files to exclude and minimal file size for renaming
-EXCLUDED_FILE_EXTS = ('.vob', '.bin')
-MIN_FILE_SIZE = 40*1024*1024
 
 # Are we being called from SABnzbd?
 if not os.environ.get('SAB_VERSION'):
     print "This script needs to be called from SABnzbd as post-processing script."
     sys.exit(1)
 
+
+# Files to exclude and minimal file size for renaming
+EXCLUDED_FILE_EXTS = ('.vob', '.bin')
+MIN_FILE_SIZE = 40*1024*1024
+
+# see: http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
+STRUCT_PACKET_HEADER = struct.Struct("<"
+    "8s"  # Magic sequence
+    "Q"   # Length of the entire packet (including header), must be multiple of 4
+    "16s" # MD5 Hash of packet
+    "16s" # Recovery Set ID
+    "16s" # Packet type
+)
+
+PACKET_TYPE_FILE_DESC = 'PAR 2.0\x00FileDesc'
+STRUCT_FILE_DESC_PACKET = struct.Struct("<"
+    "16s" # File ID
+    "16s" # MD5 hash of the entire file
+    "16s" # MD5 hash of the first 16KiB of the file
+    "Q"   # Length of the file
+)
+
+
+# Supporting functions
 def print_splitter():
     """ Simple helper function """
     print '\n------------------------\n'
 
-# Windows or others?
-par2_command = os.environ['SAB_PAR2_COMMAND']
-if os.environ['SAB_MULTIPAR_COMMAND']:
-    par2_command = os.environ['SAB_MULTIPAR_COMMAND']
 
-# Diagnostic info
+def decodePar(parfile):
+    result = False
+    dir = os.path.dirname(parfile)
+    with open(parfile, 'rb') as parfileToDecode:
+        while True:
+            header = parfileToDecode.read(STRUCT_PACKET_HEADER.size)
+            if not header: break # file fully read
+
+            (_, packetLength, _, _, packetType) = STRUCT_PACKET_HEADER.unpack(header)
+            bodyLength = packetLength - STRUCT_PACKET_HEADER.size
+
+            # only process File Description packets
+            if packetType != PACKET_TYPE_FILE_DESC:
+                # skip this packet
+                parfileToDecode.seek(bodyLength, os.SEEK_CUR)
+                continue
+
+            chunck = parfileToDecode.read(STRUCT_FILE_DESC_PACKET.size)
+            (_, _, hash16k, filelength) = STRUCT_FILE_DESC_PACKET.unpack(chunck)
+
+            # filename makes up for the rest of the packet, padded with null characters
+            targetName = parfileToDecode.read(bodyLength - STRUCT_FILE_DESC_PACKET.size).rstrip('\0')
+            targetPath = path.join(dir, targetName)
+
+            # file already exists, skip it
+            if path.exists(targetPath):
+                print "File already exists: " + targetName
+                continue
+
+            # find and rename file
+            srcPath = findFile(dir, filelength, hash16k)
+            if srcPath is not None:
+                os.rename(srcPath, targetPath)
+                print "Renamed file from " + path.basename(srcPath) + " to " + targetName
+                result = True
+            else:
+                print "No match found for: " + targetName
+    return result
+
+
+def findFile(dir, filelength, hash16k):
+    for filename in os.listdir(dir):
+        filepath = path.join(dir, filename)
+
+        # check if the size matches as an indication
+        if path.getsize(filepath) != filelength: continue
+
+        with open(filepath, 'rb') as fileToMatch:
+            data = fileToMatch.read(16 * 1024)
+            m = hashlib.md5()
+            m.update(data)
+
+            # compare hash to confirm the match
+            if m.digest() == hash16k:
+                return filepath
+    return None
+
+
+# Run main program
 print_splitter()
 print 'SABnzbd version: ', os.environ['SAB_VERSION']
 print 'Job location: ', os.environ['SAB_COMPLETE_DIR']
-print 'Par2-command: ', par2_command
 print_splitter()
 
 # Search for par2 files
@@ -86,33 +165,13 @@ if not matches:
 
 # Run par2 from SABnzbd on them
 for par2_file in matches:
-    # Build command, make it check the whole directory
-    wildcard = os.path.join(os.environ['SAB_COMPLETE_DIR'], '*')
-    command = [str(par2_command), 'r', par2_file, wildcard]
-
-    # Start command
+    # Analyse data and analyse result
     print_splitter()
-    print 'Starting command: ', repr(command)
-    try:
-        result = subprocess.check_output(command)
-    except subprocess.CalledProcessError as e:
-        # Multipar also gives non-zero in case of succes
-        result = e.output
-
-    # Show output
-    print_splitter()
-    print result
-    print_splitter()
-
-    # Last status-line for the History
-    # Check if the magic words are there
-    if 'Repaired successfully' in result or 'All files are correct' in result or \
-       'Repair complete' in result or 'All Files Complete' in result or 'PAR File(s) Incomplete' in result:
+    if decodePar(par2_file):
         print 'Recursive repair/verify finished.'
         run_renamer = False
     else:
         print 'Recursive repair/verify did not complete!'
-
 
 # No matches? Then we try to rename the largest file to the job-name
 if run_renamer:

@@ -44,7 +44,6 @@ from sabnzbd.misc import real_path, to_units, from_units, time_format, \
     long_path, calc_age, same_file, probablyipv4, probablyipv6, \
     int_conv, globber, globber_full, remove_all, get_base_url
 from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
     platform_encode
@@ -59,13 +58,13 @@ from sabnzbd.decoder import HAVE_YENC, SABYENC_ENABLED
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 
-from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, DEF_STDINTF, \
+from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, \
     DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY
 
 from sabnzbd.lang import list_languages
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-    api_handler, build_queue, remove_callable, rss_qstatus, build_status, \
+    api_handler, build_queue, remove_callable, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
     format_bytes, std_time, report, del_hist_job, Ttemplate, build_queue_header, \
     _api_test_email, _api_test_notif
@@ -162,7 +161,7 @@ def check_hostname():
     if not host:
         return False
 
-    # Remove the port-part (like ':8080'), if it is there, always on the right hand side. 
+    # Remove the port-part (like ':8080'), if it is there, always on the right hand side.
     # Not to be confused with IPv6 colons (within square brackets)
     host = re.sub(':[0123456789]+$', '', host).lower()
 
@@ -175,7 +174,7 @@ def check_hostname():
         return True
 
     # Fine if ends with ".local" or ".local.", aka mDNS name
-    # See rfc6762 Multicast DNS 
+    # See rfc6762 Multicast DNS
     if host.endswith(('.local', '.local.')):
         return True
 
@@ -237,8 +236,7 @@ def check_login():
 
 
 def get_users():
-    users = {}
-    users[cfg.username()] = cfg.password()
+    users = {cfg.username(): cfg.password()}
     return users
 
 
@@ -775,7 +773,7 @@ class NzoPage(object):
 
             # /SABnzbd_nzo_xxxxx/files
             elif 'files' in args:
-                info = self.nzo_files(info, pnfo_list, nzo_id)
+                info = self.nzo_files(info, nzo_id)
 
             # /SABnzbd_nzo_xxxxx/save
             elif 'save' in args:
@@ -785,7 +783,7 @@ class NzoPage(object):
             # /SABnzbd_nzo_xxxxx/
             else:
                 info = self.nzo_details(info, pnfo_list, nzo_id)
-                info = self.nzo_files(info, pnfo_list, nzo_id)
+                info = self.nzo_files(info, nzo_id)
 
             template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'nzo.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -837,7 +835,7 @@ class NzoPage(object):
 
         return info
 
-    def nzo_files(self, info, pnfo_list, nzo_id):
+    def nzo_files(self, info, nzo_id):
         active = []
         nzo = NzbQueue.do.get_nzo(nzo_id)
         if nzo:
@@ -2041,15 +2039,8 @@ class ConfigScheduling(object):
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         def get_days():
-            days = {}
-            days["*"] = T('Daily')
-            days["1"] = T('Monday')
-            days["2"] = T('Tuesday')
-            days["3"] = T('Wednesday')
-            days["4"] = T('Thursday')
-            days["5"] = T('Friday')
-            days["6"] = T('Saturday')
-            days["7"] = T('Sunday')
+            days = {"*": T('Daily'), "1": T('Monday'), "2": T('Tuesday'), "3": T('Wednesday'), "4": T('Thursday'),
+                    "5": T('Friday'), "6": T('Saturday'), "7": T('Sunday')}
             return days
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
@@ -2078,7 +2069,7 @@ class ConfigScheduling(object):
                 if '%' not in value and from_units(value) < 1.0:
                     value = T('off')  # : "Off" value for speedlimit in scheduler
                 else:
-                    if '%' not in value and int_conv(value) > 1 and int_conv(value) < 101:
+                    if '%' not in value and 1 < int_conv(value) < 101:
                         value += '%'
                     value = value.upper()
             if action in actions:
@@ -2133,7 +2124,6 @@ class ConfigScheduling(object):
     @secured_expose(check_session_key=True, check_configlock=True)
     def addSchedule(self, **kwargs):
         servers = config.get_servers()
-        categories = list_cats(False)
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
         days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])
@@ -2767,7 +2757,7 @@ def rss_history(url, limit=50, search=None):
             stageLine.append("<tr><dt>Stage %s</dt>" % stage['name'])
             actions = []
             for action in stage['actions']:
-                actions.append("<dd>%s</dd>" % (action))
+                actions.append("<dd>%s</dd>" % action)
             actions.sort()
             actions.reverse()
             for act in actions:

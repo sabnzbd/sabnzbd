@@ -69,7 +69,7 @@ class NzbQueue(object):
             data = sabnzbd.load_admin(QUEUE_FILE_NAME)
 
             # Process the data and check compatibility
-            nzo_ids = self.check_compatibility(data)
+            nzo_ids = self.check_compatibility(repair, data)
 
         # First handle jobs in the queue file
         folders = []
@@ -104,7 +104,7 @@ class NzbQueue(object):
                         except:
                             pass
 
-    def check_compatibility(self, data):
+    def check_compatibility(self, repair, data):
         """ Do compatibility checks on the loaded data """
         nzo_ids = []
         if not data:
@@ -204,7 +204,6 @@ class NzbQueue(object):
             verified = sabnzbd.load_data(VERIFIED_FILE, path, remove=False) or {'x': False}
             return all(verified[x] for x in verified)
 
-        nzo_id = None
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
         if hasattr(new_nzb, 'filename'):
@@ -541,10 +540,10 @@ class NzbQueue(object):
             nzo2 = self.__nzo_table[item_id_2]
         except KeyError:
             # One or both jobs missing
-            return (-1, 0)
+            return -1, 0
 
         if nzo1 == nzo2:
-            return (-1, 0)
+            return -1, 0
 
         # get the priorities of the two items
         nzo1_priority = nzo1.priority
@@ -573,9 +572,9 @@ class NzbQueue(object):
                 logging.info('Switching job [%s] %s => [%s] %s', item_id_pos1, item.final_name, item_id_pos2, self.__nzo_list[item_id_pos2].final_name)
                 del self.__nzo_list[item_id_pos1]
                 self.__nzo_list.insert(item_id_pos2, item)
-                return (item_id_pos2, nzo1.priority)
+                return item_id_pos2, nzo1.priority
         # If moving failed/no movement took place
-        return (-1, nzo1.priority)
+        return -1, nzo1.priority
 
     @NzbQueueLocker
     def move_up_bulk(self, nzo_id, nzf_ids, size):

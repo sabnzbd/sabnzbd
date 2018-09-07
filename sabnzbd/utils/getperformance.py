@@ -1,4 +1,5 @@
-import platform, subprocess
+import platform
+import subprocess
 
 
 def getcpu():
@@ -19,7 +20,7 @@ def getcpu():
 
         elif platform.system() == "Linux":
             for myline in open("/proc/cpuinfo"):
-                if myline.startswith(('model name')):
+                if myline.startswith('model name'):
                     # Typical line:
                     # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
                     cputype = myline.split(":", 1)[1]	# get everything after the first ":"
@@ -39,15 +40,29 @@ def getcpu():
 
 
 def getpystone():
-    value = None
-    for pystonemodule in ['test.pystone', 'pystone']:
+    # Iteratively find the pystone performance of the CPU
+
+    # Prefers using Python's standard pystones library, otherwise SABnzbd's pystones library
+    try:
+        # Try to import from the python standard library
+        from test.pystone import pystones
+    except:
         try:
-            exec "from " + pystonemodule + " import pystones"
-            value = int(pystones(1000)[1])
-            break  # import and calculation worked, so we're done. Get out of the for loop
+            # fallback: try to import from SABnzbd's library
+            from pystone import pystones
         except:
-            pass  # ... the import went wrong, so continue in the for loop
-    return value
+            return None   # no pystone library found
+
+    # if we arrive here, we were able to succesfully import pystone, so start calculation
+    maxpystone = None
+    # Start with a short run, find the the pystone, and increase runtime until duration took > 0.1 second
+    for pyseed in [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000]:
+        duration, pystonefloat = pystones(pyseed)
+        maxpystone = max(maxpystone, int(pystonefloat))
+        # Stop when pystone() has been running for at least 0.1 second
+        if duration > 0.1:
+            break
+    return maxpystone
 
 
 if __name__ == '__main__':

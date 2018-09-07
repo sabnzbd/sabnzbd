@@ -16,12 +16,14 @@ SABnzbd*.exe
 SABnzbd*.gz
 SABnzbd*.dmg
 
-# WingIDE project files
+# WingIDE/PyCharm project files
 *.wp[ru]
+.idea
 
 # Testing folders
 .cache
 .xprocess
+tests/cache
 
 # General junk
 *.keep

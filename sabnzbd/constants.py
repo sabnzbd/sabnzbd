@@ -123,7 +123,7 @@ year_match = r'[\W]([1|2]\d{3})([^\w]|$)'  # Something '(YYYY)' or '.YYYY.' or '
 sample_match = r'((^|[\W_])(sample|proof))'  # something-sample or something-proof
 
 
-class Status():
+class Status:
     COMPLETED = 'Completed'         # PP: Job is finished
     CHECKING = 'Checking'           # Q:  Pre-check is running
     DOWNLOADING = 'Downloading'     # Q:  Normal downloading

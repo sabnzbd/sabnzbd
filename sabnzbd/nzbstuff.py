@@ -167,7 +167,7 @@ class Article(TryList):
                         # if (server_check.priority() < found_priority and server_check.priority() < server.priority and not self.server_in_try_list(server_check)):
                         if server_check.active and (server_check.priority < found_priority):
                             if server_check.priority < server.priority:
-                                if (not self.server_in_try_list(server_check)):
+                                if not self.server_in_try_list(server_check):
                                     if log:
                                         logging.debug('Article %s | Server: %s | setting found priority to %s', self.article, server.host, server_check.priority)
                                     found_priority = server_check.priority
@@ -317,14 +317,14 @@ class NzbFile(TryList):
             if found:
                 self.bytes_left -= article.bytes
 
-        return (not self.articles)
+        return not self.articles
 
     def set_par2(self, setname, vol, blocks):
         """ Designate this this file as a par2 file """
         self.is_par2 = True
         self.setname = setname
         self.vol = vol
-        self.blocks = int(blocks)
+        self.blocks = int_conv(blocks)
 
     def get_article(self, server, servers):
         """ Get next article to be downloaded """
@@ -827,9 +827,9 @@ class NzbObject(TryList):
 
         # Run user pre-queue script if needed
         if not reuse and cfg.pre_script():
-            accept, name, pp, cat_pp, script_pp, priority, group = \
-                sabnzbd.newsunpack.pre_queue(self.final_name_pw_clean, pp, cat, script,
-                                             priority, self.bytes, self.groups)
+            # Call the script
+            accept, name, pp, cat_pp, script_pp, priority, group = sabnzbd.newsunpack.pre_queue(self, pp, cat)
+
             # Accept or reject
             accept = int_conv(accept)
             if accept < 1:
@@ -1022,7 +1022,7 @@ class NzbObject(TryList):
 
         # Sort the sets
         for setname in self.extrapars:
-            self.extrapars[parset].sort(key=lambda x: x.blocks)
+            self.extrapars[setname].sort(key=lambda x: x.blocks)
 
         # Also re-parse all filenames in case par2 came after first articles
         self.verify_all_filenames_and_resort()
@@ -1098,38 +1098,37 @@ class NzbObject(TryList):
     def get_extra_blocks(self, setname, needed_blocks):
         """ We want par2-files of all sets that are similar to this one
             So that we also can handle multi-sets with duplicate filenames
-            Block-table has as keys the nr-blocks
             Returns number of added blocks in case they are available
+            In case of duplicate files for the same set, we might add too
+            little par2 on the first add-run, but that's a risk we need to take.
         """
         logging.info('Need %s more blocks, checking blocks', needed_blocks)
+
         avail_blocks = 0
-        block_table = {}
+        block_list = []
         for setname_search in self.extrapars:
             # Do it for our set, or highlight matching one
-            # We might catch to many par2's, but that's okay
+            # We might catch too many par2's, but that's okay
             if setname_search == setname or difflib.SequenceMatcher(None, setname, setname_search).ratio() > 0.85:
                 for nzf in self.extrapars[setname_search]:
                     # Don't count extrapars that are completed already
                     if nzf.completed:
                         continue
-                    blocks = int_conv(nzf.blocks)
-                    if blocks not in block_table:
-                        block_table[blocks] = []
-                        # We assume same block-vol-naming for each set
-                        avail_blocks += blocks
-                    block_table[blocks].append(nzf)
+                    block_list.append(nzf)
+                    avail_blocks += nzf.blocks
 
+        # Sort by smallest blocks last, to be popped first
+        block_list.sort(key=lambda x: x.blocks, reverse=True)
         logging.info('%s blocks available', avail_blocks)
 
         # Enough?
         if avail_blocks >= needed_blocks:
             added_blocks = 0
             while added_blocks < needed_blocks:
-                block_size = min(block_table.keys())
-                for new_nzf in block_table[block_size]:
-                    self.add_parfile(new_nzf)
-                added_blocks += block_size
-                block_table.pop(block_size)
+                new_nzf = block_list.pop()
+                self.add_parfile(new_nzf)
+                added_blocks += new_nzf.blocks
+
             logging.info('Added %s blocks to %s', added_blocks, self.final_name)
             return added_blocks
         else:
@@ -1191,7 +1190,7 @@ class NzbObject(TryList):
             self.status = Status.QUEUED
             self.set_download_report()
 
-        return (file_done, post_done)
+        return file_done, post_done
 
     @synchronized(NZO_LOCK)
     def remove_saved_article(self, article):
@@ -1292,8 +1291,8 @@ class NzbObject(TryList):
 
         # Convert input
         value = int_conv(value)
-        if value in (REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, \
-             LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY):
+        if value in (REPAIR_PRIORITY, TOP_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY,
+                     LOW_PRIORITY, DEFAULT_PRIORITY, PAUSED_PRIORITY, DUP_PRIORITY, STOP_PRIORITY):
             self.priority = value
             return
 
@@ -1407,7 +1406,7 @@ class NzbObject(TryList):
                 if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
                     for new_nzf in self.extrapars[parset]:
                         self.add_parfile(new_nzf)
-                        blocks_new += int_conv(new_nzf.blocks)
+                        blocks_new += new_nzf.blocks
                         # Enough now?
                         if blocks_new >= self.bad_articles:
                             logging.info('Prospectively added %s repair blocks to %s', blocks_new, self.final_name)
@@ -1502,11 +1501,11 @@ class NzbObject(TryList):
                 self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
 
     @synchronized(NZO_LOCK)
-    def increase_bad_articles_counter(self, type):
+    def increase_bad_articles_counter(self, article_type):
         """ Record information about bad articles """
-        if type not in self.nzo_info:
-            self.nzo_info[type] = 0
-        self.nzo_info[type] += 1
+        if article_type not in self.nzo_info:
+            self.nzo_info[article_type] = 0
+        self.nzo_info[article_type] += 1
         self.bad_articles += 1
 
     def get_article(self, server, servers):
@@ -2006,7 +2005,7 @@ def scan_password(name):
     slash = name.find('/')
 
     # Look for name/password, but make sure that '/' comes before any {{
-    if slash >= 0 and slash < braces and 'password=' not in name:
+    if 0 <= slash < braces and 'password=' not in name:
         # Is it maybe in 'name / password' notation?
         if slash == name.find(' / ') + 1:
             # Remove the extra space after name and before password

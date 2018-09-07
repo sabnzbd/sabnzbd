@@ -90,7 +90,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
                 nw.recv_chunk(block=True)
             nw.finish_connect(nw.status_code)
 
-    except socket.timeout, e:
+    except socket.timeout:
         if port != 119 and not ssl:
             return False, T('Timed out: Try enabling SSL or connecting on a different port.')
         else:
@@ -103,7 +103,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
         return False, unicode(e)
 
-    except TypeError, e:
+    except TypeError:
         return False, T('Invalid server address.')
 
     except IndexError:

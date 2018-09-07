@@ -44,6 +44,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import unicoder, special_fixer, gUTF
+import sabnzbd.utils.rarfile as rarfile
 
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -248,11 +249,12 @@ _DEVICES = ('con', 'prn', 'aux', 'nul',
             'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
             'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9')
 
+
 def replace_win_devices(name):
-    ''' Remove reserved Windows device names from a name.
+    """ Remove reserved Windows device names from a name.
         aux.txt ==> _aux.txt
         txt.aux ==> txt.aux
-    '''
+    """
     if name:
         lname = name.lower()
         for dev in _DEVICES:
@@ -260,9 +262,9 @@ def replace_win_devices(name):
                 name = '_' + name
                 break
 
-    # Remove special NTFS filename
-    if lname.startswith('$mft'):
-        name = name.replace('$', 'S', 1)
+        # Remove special NTFS filename
+        if lname.startswith('$mft'):
+            name = name.replace('$', 'S', 1)
 
     return name
 
@@ -425,7 +427,7 @@ def is_obfuscated_filename(filename):
     """ Check if this file has an extension, if not, it's
         probably obfuscated and we don't use it
     """
-    return (os.path.splitext(filename)[1] == '')
+    return os.path.splitext(filename)[1] == ''
 
 
 ##############################################################################
@@ -517,16 +519,16 @@ def create_real_path(name, loc, path, umask=False, writable=True):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
                 logging.error(T('Cannot create directory %s'), clip_path(my_dir))
-                return (False, my_dir)
+                return False, my_dir
 
         checks = (os.W_OK + os.R_OK) if writable else os.R_OK
         if os.access(my_dir, checks):
-            return (True, my_dir)
+            return True, my_dir
         else:
             logging.error(T('%s directory: %s error accessing'), name, clip_path(my_dir))
-            return (False, my_dir)
+            return False, my_dir
     else:
-        return (False, "")
+        return False, ""
 
 
 def is_relative_path(p):
@@ -746,7 +748,6 @@ def to_units(val, spaces=0, postfix=''):
         Show single decimal for M and higher
     """
     dec_limit = 1
-    decimals = 0
     if val < 0:
         sign = '-'
     else:
@@ -845,7 +846,7 @@ def split_host(srv):
         port = int(port)
     except:
         port = None
-    return (host, port)
+    return host, port
 
 
 def get_from_url(url):
@@ -1081,7 +1082,7 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
-    dName = nzo.work_name
+    dName = dirname = nzo.work_name
     if not nzo.created:
         for n in xrange(200):
             dName = dirname
@@ -1155,11 +1156,12 @@ def renamer(old, new):
 @synchronized(DIR_LOCK)
 def remove_dir(path):
     """ Remove directory with retries for Win32 """
+    logging.debug('[%s] Deleting dir %s', caller_name(), path)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
             try:
-                remove_dir(path)
+                os.rmdir(path)
                 return
             except WindowsError, err:
                 if err[0] == 32:
@@ -1170,7 +1172,7 @@ def remove_dir(path):
             time.sleep(3)
         raise WindowsError(err)
     else:
-        remove_dir(path)
+        os.rmdir(path)
 
 
 @synchronized(DIR_LOCK)
@@ -1200,12 +1202,6 @@ def remove_file(path):
     """ Wrapper function so any file removal is logged """
     logging.debug('[%s] Deleting file %s', caller_name(), path)
     os.remove(path)
-
-
-def remove_dir(dir):
-    """ Wrapper function so any dir removal is logged """
-    logging.debug('[%s] Deleting dir %s', caller_name(), dir)
-    os.rmdir(dir)
 
 
 def trim_win_path(path):
@@ -1239,6 +1235,14 @@ def get_admin_path(name, future):
         return os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
         return os.path.join(os.path.join(cfg.download_dir.get_path(), name), JOB_ADMIN)
+
+
+def is_rarfile(rarfile_path):
+    """ Wrapper in case it crashes due to missing file or long-path problems """
+    try:
+        return rarfile.is_rarfile(rarfile_path)
+    except:
+        return False
 
 
 def on_cleanup_list(filename, skip_nzb=False):
@@ -1286,8 +1290,8 @@ def memory_usage():
     except:
         logging.debug('Error retrieving memory usage')
         logging.info("Traceback: ", exc_info=True)
-    else:
-        return ''
+
+
 try:
     _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
 except:
@@ -1448,7 +1452,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
         private_key = generate_key(key_size=2048, output_file=ssl_key)
-        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd', CN=u'localhost')
+        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd')
         logging.info('Self-signed certificates generated successfully')
     except:
         logging.error(T('Error creating SSL key and certificate'))

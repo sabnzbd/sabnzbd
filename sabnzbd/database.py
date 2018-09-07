@@ -40,7 +40,7 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import get_all_passwords, int_conv, remove_file, caller_name
+from sabnzbd.misc import int_conv, remove_file, caller_name
 
 DB_LOCK = threading.RLock()
 
@@ -118,7 +118,7 @@ class HistoryDB(object):
                 self.execute('ALTER TABLE "history" ADD COLUMN password TEXT;')
 
     def execute(self, command, args=(), save=False):
-        ''' Wrapper for executing SQL commands '''
+        """ Wrapper for executing SQL commands """
         for tries in xrange(5, 0, -1):
             try:
                 if args and isinstance(args, tuple):
@@ -314,7 +314,7 @@ class HistoryDB(object):
         # Stage Name is separated by ::: stage lines by ; and stages by \r\n
         items = [unpack_history_info(item) for item in items]
 
-        return (items, fetched_items, total_items)
+        return items, fetched_items, total_items
 
     def have_episode(self, series, season, episode):
         """ Check whether History contains this series episode """
@@ -375,7 +375,7 @@ class HistoryDB(object):
             except AttributeError:
                 pass
 
-        return (total, month, week)
+        return total, month, week
 
     def get_script_log(self, nzo_id):
         """ Return decompressed log file """

@@ -6,7 +6,6 @@ Functions to check if the path filesystem uses FAT
 
 import sys
 import os
-import subprocess
 
 debug = False
 
@@ -50,7 +49,7 @@ def isFAT(dir):
             try:
                 result = win32api.GetVolumeInformation(os.path.splitdrive(dir)[0])
                 if debug: print result
-                if(result[4].startswith("FAT")):
+                if result[4].startswith("FAT"):
                     FAT = True
             except:
                 pass
@@ -71,7 +70,6 @@ def isFAT(dir):
 
             '''
             dfcmd = "df " + dir
-            device = ''
             for thisline in os.popen(dfcmd).readlines():
                 if thisline.find('/')==0:
                     if debug: print thisline
