@@ -53,7 +53,7 @@ EMAIL_DIR = 'email'
 DOMAIN = 'SABnzbd'
 DOMAIN_EMAIL = 'SABemail'
 DOMAIN_NSIS = 'SABnsis'
-PARMS = '-d %s -p %s -k T -k Ta -k TT -o %s.pot.tmp' % (DOMAIN, PO_DIR, DOMAIN)
+PARMS = '-d %s -p %s -w500 -k T -k Ta -k TT -o %s.pot.tmp' % (DOMAIN, PO_DIR, DOMAIN)
 FILES = 'SABnzbd.py SABHelper.py SABnzbdDelegate.py sabnzbd/*.py sabnzbd/utils/*.py'
 
 FILE_CACHE = {}
@@ -108,8 +108,11 @@ def get_context(line):
         item = item.split(':')[0]
 
         if context:
-            newlines.append('%s [%s]' % (item, context))
-        else:
+            # Format context
+            item = '%s [%s]' % (item, context)
+
+        # Only add new texts
+        if item not in newlines:
             newlines.append(item)
 
     return '#: ' + ' # '.join(newlines) + '\n'
