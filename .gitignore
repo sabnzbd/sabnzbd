@@ -19,6 +19,9 @@ SABnzbd*.dmg
 # WingIDE project files
 *.wp[ru]
 
+# PyCharm project files
+.idea/
+
 # Testing folders
 .cache
 .xprocess
