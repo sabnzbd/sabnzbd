@@ -1509,7 +1509,7 @@ def options_list(output):
     })
 
 
-def retry_job(job, new_nzb, password):
+def retry_job(job, new_nzb=None, password=None):
     """ Re enter failed job in the download queue """
     if job:
         history_db = sabnzbd.get_db_connection()
@@ -1517,8 +1517,9 @@ def retry_job(job, new_nzb, password):
         if futuretype:
             if pp == 'X':
                 pp = None
-            sabnzbd.add_url(url, pp, script, cat)
+            nzo_id = sabnzbd.add_url(url, pp, script, cat)
             history_db.remove_history(job)
+            return nzo_id
         else:
             path = history_db.get_path(job)
             if path:
@@ -1530,8 +1531,13 @@ def retry_job(job, new_nzb, password):
 
 def retry_all_jobs():
     """ Re enter all failed jobs in the download queue """
-    history_db = sabnzbd.connect_db()
-    return NzbQueue.do.retry_all_jobs(history_db)
+    # Fetch all retryable folders from History
+    items = sabnzbd.api.build_history()[0]
+    nzo_ids = []
+    for item in items:
+        if item['retry']:
+            nzo_ids.append(retry_job(item['nzo_id']))
+    return nzo_ids
 
 
 def del_job_files(job_paths):

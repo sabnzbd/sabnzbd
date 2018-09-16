@@ -423,9 +423,10 @@ class HistoryDB(object):
                 pp = items.get('pp')
                 script = items.get('script')
                 cat = items.get('category')
+                return dtype, url, pp, script, cat
             except (AttributeError, IndexError):
-                return '', '', '', '', ''
-        return dtype, url, pp, script, cat
+                pass
+        return '', '', '', '', ''
 
 
 def dict_factory(cursor, row):
