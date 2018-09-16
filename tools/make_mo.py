@@ -21,7 +21,6 @@ make_mo - Compile PO files to MO files
 """
 
 import glob
-import locale
 import os
 import re
 import sys
