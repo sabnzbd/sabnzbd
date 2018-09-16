@@ -1877,9 +1877,13 @@ class ConfigRss(object):
 
     @secured_expose(check_session_key=True, check_configlock=True)
     def upd_rss_filter(self, **kwargs):
+        """ Wrapper, so we can call from api.py """
+        self.internal_upd_rss_filter(**kwargs)
+
+    def internal_upd_rss_filter(self, **kwargs):
         """ Save updated filter definition """
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            feed_cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
@@ -1893,14 +1897,14 @@ class ConfigRss(object):
         enabled = kwargs.get('enabled', '0')
 
         if filt:
-            cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'),
+            feed_cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'),
                                                              platform_encode(filt), prio, enabled))
 
             # Move filter if requested
             index = int_conv(kwargs.get('index', ''))
             new_index = kwargs.get('new_index', '')
             if new_index and int_conv(new_index) != index:
-                cfg.filters.move(int(index), int_conv(new_index))
+                feed_cfg.filters.move(int(index), int_conv(new_index))
 
             config.save_config()
         self.__evaluate = False
@@ -1918,13 +1922,17 @@ class ConfigRss(object):
 
     @secured_expose(check_session_key=True, check_configlock=True)
     def del_rss_filter(self, **kwargs):
+        """ Wrapper, so we can call from api.py """
+        self.internal_del_rss_filter(**kwargs)
+
+    def internal_del_rss_filter(self, **kwargs):
         """ Remove one RSS filter """
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            feed_cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
-        cfg.filters.delete(int(kwargs.get('index', 0)))
+        feed_cfg.filters.delete(int(kwargs.get('index', 0)))
         config.save_config()
         self.__evaluate = False
         self.__show_eval_button = True

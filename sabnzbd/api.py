@@ -1149,6 +1149,24 @@ def handle_rss_api(output, kwargs):
         feed.set_dict(kwargs)
     else:
         config.ConfigRSS(name, kwargs)
+
+    action = kwargs.get('filter_action')
+    if action in ('add', 'update'):
+        # Use the general function, but catch the redirect-raise
+        try:
+            kwargs['feed'] = name
+            sabnzbd.interface.ConfigRss('/').internal_upd_rss_filter(**kwargs)
+        except cherrypy.HTTPRedirect:
+            pass
+
+    elif action == 'delete':
+        # Use the general function, but catch the redirect-raise
+        try:
+            kwargs['feed'] = name
+            sabnzbd.interface.ConfigRss('/').internal_del_rss_filter(**kwargs)
+        except cherrypy.HTTPRedirect:
+            pass
+
     return name
 
 
