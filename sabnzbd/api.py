@@ -501,7 +501,7 @@ def _api_history(name, output, kwargs):
         special = value.lower()
         del_files = bool(int_conv(kwargs.get('del_files')))
         if special in ('all', 'failed', 'completed'):
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             if special in ('all', 'failed'):
                 if del_files:
                     del_job_files(history_db.get_failed_paths(search))
@@ -1512,7 +1512,7 @@ def options_list(output):
 def retry_job(job, new_nzb, password):
     """ Re enter failed job in the download queue """
     if job:
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
             if pp == 'X':
@@ -1548,7 +1548,7 @@ def del_hist_job(job, del_files):
         if path:
             PostProcessor.do.delete(job, del_files=del_files)
         else:
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             path = history_db.get_path(job)
             history_db.remove_history(job)
 
@@ -1759,7 +1759,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
 
     # Aquire the db instance
     try:
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         close_db = False
     except:
         # Required for repairs at startup because Cherrypy isn't active yet

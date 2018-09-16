@@ -202,7 +202,7 @@ def sig_handler(signum=None, frame=None):
 INIT_LOCK = Lock()
 
 
-def connect_db(thread_index=0):
+def get_db_connection(thread_index=0):
     # Create a connection and store it in the current thread
     if not (hasattr(cherrypy.thread_data, 'history_db') and cherrypy.thread_data.history_db):
         cherrypy.thread_data.history_db = sabnzbd.database.HistoryDB()
@@ -223,7 +223,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     __SHUTTING_DOWN__ = False
 
     # Set global database connection for Web-UI threads
-    cherrypy.engine.subscribe('start_thread', connect_db)
+    cherrypy.engine.subscribe('start_thread', get_db_connection)
 
     # Paused?
     pause_downloader = pause_downloader or cfg.start_paused()
