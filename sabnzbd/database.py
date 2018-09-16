@@ -400,7 +400,7 @@ class HistoryDB(object):
         return name
 
     def get_path(self, nzo_id):
-        """ Return the `incomplete` path of the job `nzo_id` """
+        """ Return the `incomplete` path of the job `nzo_id` if it is still there """
         t = (nzo_id,)
         path = ''
         if self.execute('SELECT path FROM history WHERE nzo_id=?', t):
@@ -408,7 +408,9 @@ class HistoryDB(object):
                 path = self.c.fetchone().get('path')
             except AttributeError:
                 pass
-        return path
+        if os.path.exists(path):
+            return path
+        return None
 
     def get_other(self, nzo_id):
         """ Return additional data for job `nzo_id` """
