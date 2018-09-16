@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # -*- coding: utf-8 -*-
 # Copyright 2010-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
@@ -21,6 +21,7 @@ make_mo - Compile PO files to MO files
 """
 
 import glob
+import locale
 import os
 import re
 import sys
@@ -140,9 +141,14 @@ RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
 
 def run(cmd):
     """ Run system command, returns exit-code and stdout """
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    txt = p.stdout.read()
-    return p.wait(), txt
+    try:
+        txt = subprocess.check_output(cmd, encoding='utf-8')
+        ret = 0
+    except subprocess.CalledProcessError as e:
+        txt = e.output
+        ret = e.returncode
+
+    return ret, txt
 
 
 def process_po_folder(domain, folder, extra=''):
@@ -159,7 +165,10 @@ def process_po_folder(domain, folder, extra=''):
         # Create the MO file
         mo_file = os.path.join(mo_path, mo_name)
         print(('Compile %s' % mo_file))
-        ret, output = run('%s %s -o "%s" "%s"' % (TOOL, extra, mo_file, fname))
+        cmd = [TOOL, '-o', mo_file,  fname]
+        if extra != '':
+            cmd.insert(1, extra)
+        ret, output = run(cmd)
         if ret != 0:
             print(('\nMissing %s. Please install this package first.' % TOOL))
             exit(1)
@@ -179,15 +188,13 @@ def remove_mo_files():
 
 def translate_tmpl(prefix, lng):
     """ Translate template 'prefix' into language 'lng' """
-    src = open(EMAIL_DIR + '/%s-en.tmpl' % prefix, 'r')
-    data = src.read().decode('utf-8')
-    src.close()
-    data = _(data).encode('utf-8')
-    fp = open('email/%s-%s.tmpl' % (prefix, lng), 'wb')
-    if not -1 < data.find('UTF-8') < 30:
-        fp.write('#encoding UTF-8\n')
-    fp.write(data)
-    fp.close()
+    with open(EMAIL_DIR + '/%s-en.tmpl' % prefix, 'r', encoding='utf-8') as src:
+        data = src.read()
+
+    with open('email/%s-%s.tmpl' % (prefix, lng), 'w', encoding='utf-8') as fp:
+        if not -1 < data.find('UTF-8') < 30:
+            fp.write('#encoding UTF-8\n')
+        fp.write(data)
 
 
 def make_templates():
@@ -200,7 +207,7 @@ def make_templates():
             print(('Create email template for %s' % lng))
             trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False, codeset='latin-1')
             # The unicode flag will make _() return Unicode
-            trans.install(str=True, names=['lgettext'])
+            trans.install(names=['lgettext'])
 
             translate_tmpl('email', lng)
             translate_tmpl('rss', lng)
@@ -241,8 +248,7 @@ def patch_nsis():
                         else:
                             trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset='latin-1')
                             # The unicode flag will make _() return Unicode
-                            trans.install(str=True, names=['lgettext'])
-                            trans = _(text).encode('utf-8')
+                            trans.install(names=['lgettext'])
                             trans = trans.replace('\r', '').replace('\n', '\\r\\n')
                             trans = trans.replace('\\', '$\\').replace('"', '$\\"')
                         line = '%s%s%s%s} "%s"\n' % (leader, item, rest, lng, trans)
@@ -265,9 +271,9 @@ path, py = os.path.split(sys.argv[0])
 tl = os.path.abspath(os.path.normpath(os.path.join(path, 'msgfmt.py')))
 if os.path.exists(tl):
     if os.name == 'nt':
-        TOOL = 'python "%s"' % tl
+        TOOL = 'python3 %s' % tl
     else:
-        TOOL = '"%s"' % tl
+        TOOL = tl
 
 result = True
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
