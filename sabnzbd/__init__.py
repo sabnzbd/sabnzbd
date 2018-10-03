@@ -1195,6 +1195,10 @@ def test_cert_checking():
         On systems with at least Python > 2.7.9
     """
     if sabnzbd.HAVE_SSL_CONTEXT:
+        # User disabled the test, assume proper SSL certificates
+        if not cfg.selftest_host():
+            return True
+        # Try a connection to our test-host
         try:
             import ssl
             ctx = ssl.create_default_context()
