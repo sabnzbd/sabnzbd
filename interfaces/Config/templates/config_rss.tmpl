@@ -390,9 +390,10 @@
                         <th class="no-sort">$T('link-download')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th width="65%">$T('sort-title')</th>
+                        <th width="60%">$T('sort-title')</th>
                         <th>$T('category')</th>
                         <th class="default-sort">$T('nzo-age')</th>
+                        <th>$T('source')</th>
                     </tr>
                 </thead>
                 <!--#for $job in $matched#-->
@@ -411,6 +412,11 @@
                         <td>$job['title']</td>
                         <td>$job['cat']</td>
                         <td data-sort-value="$job['age_ms']">$job['age']</td>
+                        <td data-sort-value="$job['baselink']" title="$job['baselink']">
+                            <!--#if $job['baselink']#-->
+                            <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
+                            <!--#end if#-->
+                        </td>
                     </tr>
                 <!--#end for#-->
             </table>
@@ -426,9 +432,10 @@
                         <th class="no-sort">$T('link-download')</th>
                         <th>$T('rss-filter')</th>
                         <th>$T('size')</th>
-                        <th width="65%">$T('sort-title')</th>
+                        <th width="60%">$T('sort-title')</th>
                         <th>$T('category')</th>
                         <th class="default-sort">$T('nzo-age')</th>
+                        <th>$T('source')</th>
                     </tr>
                 </thead>
                 <!--#for $job in $unmatched#-->
@@ -447,6 +454,11 @@
                         <td>$job['title']</td>
                         <td>$job['cat']</td>
                         <td data-sort-value="$job['age_ms']">$job['age']</td>
+                        <td data-sort-value="$job['baselink']" title="$job['baselink']">
+                            <!--#if $job['baselink']#-->
+                            <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
+                            <!--#end if#-->
+                        </td>
                     </tr>
                 <!--#end for#-->
             </table>
