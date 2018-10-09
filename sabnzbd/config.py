@@ -990,7 +990,7 @@ def get_rss():
             for feed_uri in feed.uri():
                 if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
                     # Current one has no scheme but previous one does, append to previous
-                    new_feed_uris[-1] += '%2C' + feed_uri
+                    new_feed_uris[-1] += ',' + feed_uri
                     have_new_uri = True
                     continue
                 # Add full working URL
