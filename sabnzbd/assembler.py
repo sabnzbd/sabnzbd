@@ -81,11 +81,6 @@ class Assembler(Thread):
                         # Abort all direct unpackers, just to be sure
                         sabnzbd.directunpacker.abort_all()
 
-                    # Place job back in queue and wait 30 seconds to hope it gets resolved
-                    self.process(job)
-                    sleep(30)
-                    continue
-
                 # Prepare filename
                 nzo.verify_nzf_filename(nzf)
                 nzf.filename = sanitize_filename(nzf.filename)
