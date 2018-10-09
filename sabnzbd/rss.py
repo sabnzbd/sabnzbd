@@ -287,7 +287,7 @@ class RSSQueue(object):
 
                 status = feed_parsed.get('status', 999)
                 if status in (401, 402, 403):
-                    msg = T('Do not have valid authentication for feed %s') % feed
+                    msg = T('Do not have valid authentication for feed %s') % uri
                     logging.info(msg)
 
                 if 500 <= status <= 599:
@@ -301,11 +301,14 @@ class RSSQueue(object):
                         msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
                         msg += ' - https://sabnzbd.org/certificate-errors'
                         logging.error(msg)
+                    elif feed_parsed['href'] != uri and 'login' in feed_parsed['href']:
+                        # Redirect to login page!
+                        msg = T('Do not have valid authentication for feed %s') % uri
                     else:
                         msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
                     logging.info(msg)
 
-                if not entries:
+                if not entries and not msg:
                     msg = T('RSS Feed %s was empty') % uri
                     logging.info(msg)
                 all_entries.extend(entries)
