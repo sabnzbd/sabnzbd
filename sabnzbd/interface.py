@@ -2530,6 +2530,7 @@ def GetRssLog(feed):
         # These fields could be empty
         job['cat'] = job.get('cat', '')
         job['size'] = job.get('size', '')
+        job['infourl'] = job.get('infourl', '')
 
         # Auto-fetched jobs didn't have these fields set
         if job.get('url'):

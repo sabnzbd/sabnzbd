@@ -413,8 +413,10 @@
                         <td>$job['cat']</td>
                         <td data-sort-value="$job['age_ms']">$job['age']</td>
                         <td data-sort-value="$job['baselink']" title="$job['baselink']">
-                            <!--#if $job['baselink']#-->
+                            <!--#if not $job['infourl']#-->
                             <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
+                            <!--#else#-->
+                            <a class="favicon source-icon" href="$job['infourl']" target="_blank" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></a>
                             <!--#end if#-->
                         </td>
                     </tr>
@@ -455,8 +457,10 @@
                         <td>$job['cat']</td>
                         <td data-sort-value="$job['age_ms']">$job['age']</td>
                         <td data-sort-value="$job['baselink']" title="$job['baselink']">
-                            <!--#if $job['baselink']#-->
+                            <!--#if not $job['infourl']#-->
                             <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
+                            <!--#else#-->
+                            <a class="favicon source-icon" href="$job['infourl']" target="_blank" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></a>
                             <!--#end if#-->
                         </td>
                     </tr>
@@ -488,8 +492,10 @@
                             <td>$job['title']</td>
                             <td>$job['cat']</td>
                             <td data-sort-value="$job['baselink']" title="$job['baselink']">
-                                <!--#if $job['baselink']#-->
+                                <!--#if not $job['infourl']#-->
                                 <div class="favicon source-icon" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></div>
+                                <!--#else#-->
+                                <a class="favicon source-icon" href="$job['infourl']" target="_blank" style="background-image: url(//$job['baselink']/favicon.ico);" data-domain="$job['baselink']"></a>
                                 <!--#end if#-->
                             </td>
                         </tr>

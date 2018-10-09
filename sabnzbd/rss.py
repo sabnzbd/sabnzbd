@@ -330,7 +330,7 @@ class RSSQueue(object):
 
             if readout:
                 try:
-                    link, category, size, age, season, episode = _get_link(entry)
+                    link, infourl, category, size, age, season, episode = _get_link(entry)
                 except (AttributeError, IndexError):
                     logging.info(T('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info=True)
@@ -478,13 +478,13 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, feed, link, title, size, age, season, episode, 'G', category, myCat, myPP,
-                                     myScript, act, star, priority=myPrio, rule=str(n))
+                        _HandleLink(jobs, feed, link, infourl, title, size, age, season, episode, 'G', category, myCat,
+                                    myPP, myScript, act, star, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, feed, link, title, size, age, season, episode, 'B', category, myCat, myPP,
-                                     myScript, False, star, priority=myPrio, rule=str(n))
+                        _HandleLink(jobs, feed, link, infourl, title, size, age, season, episode, 'B', category, myCat,
+                                    myPP, myScript, False, star, priority=myPrio, rule=str(n))
 
         # Send email if wanted and not "forced"
         if new_downloads and cfg.email_rss() and not force:
@@ -584,7 +584,7 @@ class RSSQueue(object):
         return ''
 
 
-def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgcat, cat, pp, script,
+def _HandleLink(jobs, feed, link, infourl, title, size, age, season, episode, flag, orgcat, cat, pp, script,
                 download, star, priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '':
@@ -595,6 +595,7 @@ def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgca
     jobs[link] = {}
     jobs[link]['title'] = title
     jobs[link]['url'] = link
+    jobs[link]['infourl'] = infourl
     jobs[link]['cat'] = cat
     jobs[link]['pp'] = pp
     jobs[link]['script'] = script
@@ -640,6 +641,11 @@ def _get_link(entry):
             size = int(entry.enclosures[0]['length'])
         except:
             pass
+
+    # GUID usually has URL to result on page
+    infourl = None
+    if entry.id and entry.id != link and entry.id.startswith('http'):
+        infourl = entry.id
 
     if size == 0L:
         _RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
@@ -690,10 +696,10 @@ def _get_link(entry):
                     except:
                         category = ''
 
-        return link, category, size, age, season, episode
+        return link, infourl, category, size, age, season, episode
     else:
         logging.warning(T('Empty RSS entry found (%s)'), link)
-        return None, '', 0L, None, 0, 0
+        return None, None, '', 0L, None, 0, 0
 
 
 def special_rss_site(url):
