@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -250,7 +250,7 @@ def endjob(filename, cat, status, path, bytes, fail_msg, stages, script, script_
     parm['script_ret'] = script_ret
     parm['cat'] = cat
     parm['size'] = "%sB" % to_units(bytes)
-    parm['end_time'] = time.strftime(time_format('%Y-%m-%d %H:%M:%S'), time.localtime(time.time())).decode(codepage)
+    parm['end_time'] = time.strftime(time_format('%Y-%m-%d %H:%M:%S'), time.localtime(time.time()))
 
     return send_with_template('email', parm, test)
 

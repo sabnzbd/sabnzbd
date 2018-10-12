@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -93,7 +93,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.add_nzb_from_url("http://sabnzbd.org/tests/basic_rar5.nzb", "testfile.bin")
 
         # Unicode test
-        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
+        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", "\u4f60\u597d\u4e16\u754c.bin")
 
         # Unicode test with a missing article
         #self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", u"\u4f60\u597d\u4e16\u754c.bin")

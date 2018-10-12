@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2011-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -27,7 +27,7 @@ import re
 f = open('sabnzbd/version.py')
 code = f.read()
 f.close()
-exec code
+exec(code)
 
 # Fixed information for the POT header
 HEADER = r'''#

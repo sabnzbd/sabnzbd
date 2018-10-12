@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python33 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -16,7 +16,6 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-import imp
 if sys.version_info[:2] <= (3, 0):
     print("Sorry, requires Python 3")
     sys.exit(1)
@@ -47,22 +46,6 @@ except:
 
 import cherrypy
 import portend
-
-SQLITE_DLL = True
-try:
-    from sqlite3 import version as sqlite3_version
-except:
-    try:
-        from pysqlite2.dbapi2 import version as sqlite3_version
-    except:
-        if os.name != 'nt':
-            print("Sorry, requires Python module sqlite3")
-            print("Try: apt-get install python-pysqlite2")
-            sys.exit(1)
-        else:
-            SQLITE_DLL = False
-
-
 import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
@@ -70,10 +53,9 @@ from sabnzbd.constants import *
 import sabnzbd.newsunpack
 from sabnzbd.misc import check_latest_version, exit_sab, \
     split_host, create_https_certificates, windows_variant, ip_extract, \
-    set_serv_parms, get_serv_parms
+    set_serv_parms, get_serv_parms, get_from_url
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full
-from sabnzbd.panic import panic_tmpl, panic_port, panic_host, \
-    panic_sqlite, panic, launch_a_browser
+from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
@@ -227,7 +209,7 @@ def daemonize():
         print("fork() failed")
         sys.exit(1)
 
-    dev_null = file('/dev/null', 'r')
+    dev_null = open('/dev/null', 'r')
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
 
 
@@ -638,7 +620,7 @@ def is_sabnzbd_running(url):
         prev = sabnzbd.set_https_verification(False)
         ver = get_from_url(url)
         sabnzbd.set_https_verification(prev)
-        return ver and (re.search(r'\d+\.\d+\.', ver) or ver.strip() == sabnzbd.__version__)
+        return ver and (re.search(b'\d+\.\d+\.', ver) or ver.strip() == sabnzbd.__version__)
     except:
         return False
 
@@ -666,7 +648,7 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
         # Upload any specified nzb files to the running instance
         if upload_nzbs:
             from sabnzbd.utils.upload import upload_file
-            prev = sabnzbd.set_https_verification(0)
+            prev = sabnzbd.set_https_verification(False)
             for f in upload_nzbs:
                 upload_file(url, f)
             sabnzbd.set_https_verification(prev)
@@ -930,10 +912,6 @@ def main():
         vista_plus, win64 = windows_variant()
         sabnzbd.WIN64 = win64
 
-    if not SQLITE_DLL:
-        panic_sqlite(sabnzbd.MY_FULLNAME)
-        exit_sab(2)
-
     if inifile:
         # INI file given, simplest case
         inifile = evaluate_inipath(inifile)
@@ -1103,7 +1081,7 @@ def main():
             x = sys.stderr.fileno
             x = sys.stdout.fileno
             ol_path = os.path.join(logdir, DEF_LOG_ERRFILE)
-            out_log = file(ol_path, 'a+', 0)
+            out_log = open(ol_path, 'a+', 0)
             sys.stderr.flush()
             sys.stdout.flush()
             os.dup2(out_log.fileno(), sys.stderr.fileno())
@@ -1125,7 +1103,7 @@ def main():
                 logging.info('Console logging only')
             if noConsoleLoggingOSX:
                 logging.info('Console logging for OSX App disabled')
-                so = file('/dev/null', 'a+')
+                so = open('/dev/null', 'a+')
                 os.dup2(so.fileno(), sys.stdout.fileno())
                 os.dup2(so.fileno(), sys.stderr.fileno())
         except AttributeError:
@@ -1340,7 +1318,7 @@ def main():
     wizard_static = {'tools.staticdir.on': True, 'tools.staticdir.dir': os.path.join(sabnzbd.WIZARD_DIR, 'static'), 'tools.staticdir.content_types': forced_mime_types}
 
     appconfig = {'/api': {
-                            'tools.basic_auth.on': False,
+                            'tools.auth_basic.on': False,
                             'tools.response_headers.on': True,
                             'tools.response_headers.headers': [('Access-Control-Allow-Origin', '*')]
                          },

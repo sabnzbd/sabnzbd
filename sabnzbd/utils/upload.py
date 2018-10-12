@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2009-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@ from sabnzbd.filesystem import get_ext, get_filename
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES
 
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
+from sabnzbd.misc import get_from_url
 
 
 def upload_file(url, fp):

@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -27,6 +27,7 @@ import time
 import json
 import cherrypy
 import locale
+import html
 
 from threading import Thread
 
@@ -54,7 +55,7 @@ from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
 from sabnzbd.filesystem import diskspace, get_ext, get_filename, globber, \
      globber_full, clip_path, remove_all
 from sabnzbd.filesystem import same_file
-from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
+from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
@@ -719,9 +720,9 @@ def _api_test_email(name, output, kwargs):
     """ API: send a test email, return result """
     logging.info("Sending test email")
     pack = {'download': ['action 1', 'action 2'], 'unpack': ['action 1', 'action 2']}
-    res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
-                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
-                                 123 * MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
+    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 'unknown', True,
+                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                 123 * MEBI, None, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
                                  test=kwargs)
     if res == 'Email succeeded':
         res = None
@@ -1355,7 +1356,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
             try:
                 datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
                 # new eta format: 16:00 Fri 07 Feb
-                slot['eta'] = datestart.strftime(time_format('%H:%M %a %d %b')).decode(codepage)
+                slot['eta'] = datestart.strftime(time_format('%H:%M %a %d %b'))
             except:
                 datestart = datetime.datetime.now()
                 slot['eta'] = 'unknown'
@@ -1582,7 +1583,7 @@ def Ttemplate(txt):
     if txt in _SKIN_CACHE:
         return _SKIN_CACHE[txt]
     else:
-        tra = html_escape(Tx(SKIN_TEXT.get(txt, txt)))
+        tra = html.escape(Tx(SKIN_TEXT.get(txt, txt)))
         _SKIN_CACHE[txt] = tra
         return tra
 

@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -24,8 +24,6 @@ import re
 import logging
 import threading
 import shutil
-import time
-import random
 import uuid
 from urllib.parse import urlparse
 import sabnzbd.misc

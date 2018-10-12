@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -76,7 +76,7 @@ def is_archive(path):
         except:
             logging.info(T('Cannot read %s'), path, exc_info=True)
             return -1, None, ''
-    elif misc.is_rarfile(path):
+    elif rarfile.is_rarfile(path):
         try:
             # Set path to tool to open it
             rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND

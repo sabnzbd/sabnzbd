@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -19,7 +19,6 @@
 sabnzbd.decoder - article decoder
 """
 
-import binascii
 import logging
 import re
 import hashlib
@@ -27,12 +26,11 @@ from time import sleep
 from threading import Thread
 
 import sabnzbd
-from sabnzbd.constants import Status, MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION_REQUIRED
+from sabnzbd.constants import MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION_REQUIRED
 import sabnzbd.articlecache
 import sabnzbd.downloader
 import sabnzbd.nzbqueue
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import yenc_name_fixer
 from sabnzbd.misc import match_str
 
 # Check for correct SABYenc version

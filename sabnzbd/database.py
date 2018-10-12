@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -19,20 +19,13 @@
 sabnzbd.database - Database Support
 """
 
-try:
-    import sqlite3
-except:
-    try:
-        import pysqlite2.dbapi2 as sqlite3
-    except:
-        pass
-
 import os
 import time
 import zlib
 import logging
 import sys
 import threading
+import sqlite3
 
 import sabnzbd
 import sabnzbd.cfg
@@ -40,7 +33,7 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
-from sabnzbd.misc import get_all_passwords, int_conv, caller_name
+from sabnzbd.misc import int_conv, caller_name
 from sabnzbd.filesystem import remove_file
 
 DB_LOCK = threading.RLock()

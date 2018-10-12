@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -23,10 +23,8 @@ sabnzbd.notifier - Send notifications to any notification services
 
 import os.path
 import logging
-import socket
 import urllib.request, urllib.error, urllib.parse
 import http.client
-import time
 import subprocess
 import json
 from threading import Thread

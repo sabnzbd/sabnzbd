@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -41,8 +41,9 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import to_units, from_units, time_format, calc_age, \
-    cat_to_opts, int_conv, get_base_url, probablyipv4
-from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
+    int_conv, get_base_url, probablyipv4, probablyipv6
+from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, \
+    clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
@@ -247,13 +248,13 @@ def encrypt_pwd(pwd):
 def set_auth(conf):
     """ Set the authentication for CherryPy """
     if cfg.username() and cfg.password() and not cfg.html_login():
-        conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': 'SABnzbd',
-                     'tools.basic_auth.users': get_users, 'tools.basic_auth.encrypt': encrypt_pwd})
-        conf.update({'/api': {'tools.basic_auth.on': False},
-                     '%s/api' % cfg.url_base(): {'tools.basic_auth.on': False},
+        conf.update({'tools.auth_basic.on': True, 'tools.auth_basic.realm': 'SABnzbd',
+                     'tools.auth_basic.users': get_users, 'tools.auth_basic.encrypt': encrypt_pwd})
+        conf.update({'/api': {'tools.auth_basic.on': False},
+                     '%s/api' % cfg.url_base(): {'tools.auth_basic.on': False},
                      })
     else:
-        conf.update({'tools.basic_auth.on': False})
+        conf.update({'tools.auth_basic.on': False})
 
 
 def check_session(kwargs):
@@ -297,14 +298,14 @@ def check_apikey(kwargs, nokey=False):
             key = kwargs.get('session')
         if not key:
             if cfg.api_warnings():
-                log_warning(T('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
+                log_warning_and_ip(T('API Key missing, please enter the api key from Config->General into your 3rd party program:'))
             return report(output, 'API Key Required')
         elif req_access == 1 and key == cfg.nzb_key():
             return None
         elif key == cfg.api_key():
             return None
         else:
-            log_warning(T('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
+            log_warning_and_ip(T('API Key incorrect, Use the api key from Config->General in your 3rd party program:'))
             return report(output, 'API Key Incorrect')
 
     # No active APIKEY, check web credentials instead
@@ -313,7 +314,7 @@ def check_apikey(kwargs, nokey=False):
             pass
         else:
             if cfg.api_warnings():
-                log_warning(T('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
+                log_warning_and_ip(T('Authentication missing, please enter username/password from Config->General into your 3rd party program:'))
             return report(output, 'Missing authentication')
     return None
 
@@ -2560,7 +2561,7 @@ def GetRssLog(feed):
 
         if job.get('time_downloaded'):
             job['time_downloaded_ms'] = time.mktime(job['time_downloaded'])
-            job['time_downloaded'] = time.strftime(time_format('%H:%M %a %d %b'), job['time_downloaded']).decode(codepage)
+            job['time_downloaded'] = time.strftime(time_format('%H:%M %a %d %b'), job['time_downloaded'])
         else:
             job['time_downloaded_ms'] = ''
             job['time_downloaded'] = ''

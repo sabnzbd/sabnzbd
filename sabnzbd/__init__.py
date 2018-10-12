@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -1153,32 +1153,29 @@ def test_ipv6():
 
 
 def test_cert_checking():
-    """ Test quality of certificate validation
-        On systems with at least Python > 2.7.9
-    """
-    if sabnzbd.HAVE_SSL_CONTEXT:
-        # User disabled the test, assume proper SSL certificates
-        if not cfg.selftest_host():
-            return True
-        # Try a connection to our test-host
-        try:
-            import ssl
-            ctx = ssl.create_default_context()
-            base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
-            ssl_sock.settimeout(2.0)
-            ssl_sock.connect((cfg.selftest_host(), 443))
-            ssl_sock.close()
-            return True
-        except (socket.gaierror, socket.timeout):
-            # Non-SSL related error.
-            # We now assume that certificates work instead of forcing
-            # lower quality just because some (temporary) internet problem
-            logging.info('Could not determine system certificate validation quality due to connection problems')
-            return True
-        except:
-            # Seems something is still wrong
-            sabnzbd.set_https_verification(0)
+    """ Test quality of certificate validation """
+    # User disabled the test, assume proper SSL certificates
+    if not cfg.selftest_host():
+        return True
+    # Try a connection to our test-host
+    try:
+        import ssl
+        ctx = ssl.create_default_context()
+        base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
+        ssl_sock.settimeout(2.0)
+        ssl_sock.connect((cfg.selftest_host(), 443))
+        ssl_sock.close()
+        return True
+    except (socket.gaierror, socket.timeout):
+        # Non-SSL related error.
+        # We now assume that certificates work instead of forcing
+        # lower quality just because some (temporary) internet problem
+        logging.info('Could not determine system certificate validation quality due to connection problems')
+        return True
+    except:
+        # Seems something is still wrong
+        sabnzbd.set_https_verification(False)
     return False
 
 

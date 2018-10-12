@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # -*- coding: utf-8 -*-
 # Copyright 2010-2018 The SABnzbd-Team <team@sabnzbd.org>
 #

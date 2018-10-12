@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -30,14 +30,17 @@ from subprocess import Popen
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string
-from sabnzbd.filesystem import clip_path, long_path, remove_all, globber, \
-    has_win_device, real_path
+from sabnzbd.filesystem import clip_path, long_path, remove_all, real_path, remove_file
 from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
+
+# Need a lock to make sure start and stop is handled correctlty
+# Otherwise we could stop while the thread was still starting
+START_STOP_LOCK = threading.RLock()
 
 MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []

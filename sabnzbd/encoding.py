@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -246,15 +246,6 @@ _HTML_TABLE = {
 }
 
 
-def html_escape(txt):
-    """ Replace HTML metacharacters with &-constructs """
-    # Replacement for inefficient xml.sax.saxutils.escape function
-    if any(ch in txt for ch in _HTML_TABLE):
-        return ''.join((_HTML_TABLE.get(ch, ch) for ch in txt))
-    else:
-        return txt
-
-
 def deunicode(p):
     return p
     """ Return the correct 8bit ASCII encoding for the platform:
@@ -283,10 +274,14 @@ def deunicode(p):
 
 def utob(str_in):
     """ Shorthand for converting UTF-8 to bytes """
+    if isinstance(str_in, bytes):
+        return str_in
     return str_in.encode('utf-8')
 
 
 def ubtou(str_in):
     """ Shorthand for converting unicode bytes to UTF-8 """
+    if not isinstance(str_in, bytes):
+        return str_in
     return str_in.decode('utf-8')
 

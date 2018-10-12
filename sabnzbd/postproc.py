@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -20,7 +20,6 @@ sabnzbd.postproc - threaded post-processing of jobs
 """
 
 import os
-import queue
 import logging
 import sabnzbd
 import xml.sax.saxutils
@@ -36,7 +35,7 @@ from sabnzbd.misc import on_cleanup_list
 from sabnzbd.filesystem import real_path, get_unique_path, create_dirs, move_to_path, \
     make_script_path, long_path, clip_path, renamer, remove_dir, remove_all, globber, \
     globber_full, set_permissions, cleanup_empty_directories, fix_unix_encoding, \
-    sanitize_and_trim_path, sanitize_files_in_folder
+    sanitize_and_trim_path, sanitize_files_in_folder, remove_file, recursive_listdir
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE

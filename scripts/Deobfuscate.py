@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -113,17 +113,17 @@ def decodePar(parfile):
 
             # file already exists, skip it
             if path.exists(targetPath):
-                print "File already exists: " + targetName
+                print("File already exists: " + targetName)
                 continue
 
             # find and rename file
             srcPath = findFile(dir, filelength, hash16k)
             if srcPath is not None:
                 os.rename(srcPath, targetPath)
-                print "Renamed file from " + path.basename(srcPath) + " to " + targetName
+                print("Renamed file from " + path.basename(srcPath) + " to " + targetName)
                 result = True
             else:
-                print "No match found for: " + targetName
+                print("No match found for: " + targetName)
     return result
 
 

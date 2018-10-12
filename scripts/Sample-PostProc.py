@@ -10,35 +10,35 @@ import sys, os
 
 # Raw parsing of input parameters en SABnzbd environment variables
 counter = 0
-print "\nINPUT from argv:\n"
+print("\nINPUT from argv:\n")
 for item in sys.argv:
-    print "Argument", counter, ":", item
+    print("Argument", counter, ":", item)
     counter += 1
 
-print "\nINPUT from environment variables (only SAB specifics):\n"
+print("\nINPUT from environment variables (only SAB specifics):\n")
 for item in os.environ:
     if item.find("SAB_") ==  0:
-        print item, os.environ[item]
+        print(item, os.environ[item])
 
 # More intelligent parsing:
 try:
     (scriptname,directory,orgnzbname,jobname,reportnumber,category,group,postprocstatus,url) = sys.argv
 except:
-    print "No SAB compliant number of commandline parameters found (should be 8):", len(sys.argv)-1
+    print("No SAB compliant number of commandline parameters found (should be 8):", len(sys.argv)-1)
     sys.exit(1)    # non-zero return code
 
 # Some examples:
-print "\nExamples of some specific values:\n"
-print "jobname is", jobname
+print("\nExamples of some specific values:\n")
+print("jobname is", jobname)
 try:
     sabversion = os.environ['SAB_VERSION']
-    print "sabversion is", sabversion
+    print("sabversion is", sabversion)
 except:
     pass
 
 ''' your code here '''
 
 # We're done:
-print "\nScript done. All OK."    # the last line will appear in the SABnzb History GUI
+print("\nScript done. All OK.")    # the last line will appear in the SABnzb History GUI
 sys.exit(0)    # The result code towards SABnzbd
 

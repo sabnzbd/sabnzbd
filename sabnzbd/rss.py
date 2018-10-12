@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@ from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, wildcard_to_re, cat_to_opts, \
-    match_str, from_units, int_conv, get_urlbase
+    match_str, from_units, int_conv, get_base_url
 import sabnzbd.emailer as emailer
 from sabnzbd.encoding import unicoder, xml_name
 
@@ -298,7 +298,7 @@ class RSSQueue(object):
                 if 'bozo_exception' in feed_parsed and not entries:
                     msg = str(feed_parsed['bozo_exception'])
                     if 'CERTIFICATE_VERIFY_FAILED' in msg:
-                        msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
+                        msg = T('Server %s uses an untrusted HTTPS certificate') % get_base_url(uri)
                         msg += ' - https://sabnzbd.org/certificate-errors'
                         logging.error(msg)
                     elif feed_parsed['href'] != uri and 'login' in feed_parsed['href']:
@@ -631,7 +631,7 @@ def _get_link(entry):
     """ Retrieve the post link from this entry
         Returns (link, category, size)
     """
-    size = 0L
+    size = 0
     age = datetime.datetime.now()
 
     # Try standard link and enclosures first
@@ -650,7 +650,7 @@ def _get_link(entry):
     if entry.id and entry.id != link and entry.id.startswith('http'):
         infourl = entry.id
 
-    if size == 0L:
+    if size == 0:
         _RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
         _RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
         # Try to find size in Description
@@ -702,7 +702,7 @@ def _get_link(entry):
         return link, infourl, category, size, age, season, episode
     else:
         logging.warning(T('Empty RSS entry found (%s)'), link)
-        return None, None, '', 0L, None, 0, 0
+        return None, None, '', 0, None, 0, 0
 
 
 def special_rss_site(url):

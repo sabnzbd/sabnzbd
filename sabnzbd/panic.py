@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -180,10 +180,6 @@ def panic_queue(name):
 
 def panic_tmpl(name):
     launch_a_browser(panic_message(PANIC_TEMPL, name, 0))
-
-
-def panic_sqlite(name):
-    launch_a_browser(panic_message(PANIC_SQLITE, name, 0))
 
 
 def panic(reason, remedy=""):

@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -31,12 +31,12 @@ import functools
 from subprocess import Popen
 
 import sabnzbd
-from sabnzbd.encoding import ubtou, TRANS, UNTRANS, unicoder, platform_encode, deunicode
+from sabnzbd.encoding import ubtou, TRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
     get_all_passwords, calc_age, cmp
-from sabnzbd.filesystem import  make_script_path, real_path, globber, globber_full, \
-    renamer, clip_path,has_win_device, long_path
+from sabnzbd.filesystem import make_script_path, real_path, globber, globber_full, \
+    renamer, clip_path, long_path, remove_file, recursive_listdir
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -649,7 +649,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
 
     # Get list of all the volumes part of this set
-    logging.debug("Analyzing rar file ... %s found", is_rarfile(rarfile_path))
+    logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     logging.debug("Running unrar %s", command)
     p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -2116,7 +2116,7 @@ def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=
         # Extra check for rar (takes CPU/disk)
         file_is_rar = False
         if check_rar:
-            file_is_rar = is_rarfile(file)
+            file_is_rar = rarfile.is_rarfile(file)
 
         # Run through all the checks
         if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
@@ -2373,17 +2373,6 @@ def list2cmdline(lst):
         else:
             nlst.append('"%s"' % arg)
     return ' '.join(nlst)
-
-
-def get_from_url(url):
-    """ Retrieve URL and return content
-        `timeout` sets non-standard timeout
-    """
-    import urllib.request, urllib.error, urllib.parse
-    try:
-        return urllib.request.urlopen(url).read()
-    except:
-        return None
 
 
 def is_sevenfile(path):

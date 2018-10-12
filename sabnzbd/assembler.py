@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -29,8 +29,8 @@ import hashlib
 
 import sabnzbd
 from sabnzbd.misc import get_all_passwords
-from sabnzbd.filesystem import get_filepath, sanitize_filename, get_unique_filename,  \
-    renamer, set_permissions, long_path, clip_path, has_win_device, diskspace, \
+from sabnzbd.filesystem import get_filepath, sanitize_filename, \
+    set_permissions, long_path, clip_path, has_win_device, diskspace, \
     get_filename, get_ext
 from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg
@@ -109,7 +109,7 @@ class Assembler(Thread):
                     nzf.remove_admin()
 
                     # Do rar-related processing
-                    if is_rarfile(filepath):
+                    if rarfile.is_rarfile(filepath):
                         # Encryption and unwanted extension detection
                         rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
                         if rar_encrypted:
@@ -238,7 +238,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                 return encrypted, unwanted
 
             # Is it even a rarfile?
-            if is_rarfile(filepath):
+            if rarfile.is_rarfile(filepath):
                 # Open the rar
                 rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
                 zf = rarfile.RarFile(filepath, all_names=True)

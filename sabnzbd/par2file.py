@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -131,7 +131,7 @@ def parse_par2_file_packet(f, header):
     nothing = None, None, None
 
     if header != PAR_PKT_ID:
-        print header
+        print(header)
         return nothing
 
     # Length must be multiple of 4 and at least 20

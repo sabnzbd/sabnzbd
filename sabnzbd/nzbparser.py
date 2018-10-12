@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -19,7 +19,6 @@
 sabnzbd.nzbparser - Parse and import NZB files
 """
 
-import io
 import time
 import logging
 import hashlib
@@ -86,7 +85,7 @@ def nzbfile_parser(raw_data, nzo):
 
                     # Dubplicate parts?
                     if partnum in article_db:
-                        if article_id != sarticle_db[partnum][0]:
+                        if article_id != article_db[partnum][0]:
                             logging.info('Duplicate part %s, but different ID-s (%s // %s)', partnum, article_db[partnum][0], article_id)
                             nzo.increase_bad_articles_counter('duplicate_articles')
                         else:
@@ -123,5 +122,5 @@ def nzbfile_parser(raw_data, nzo):
     nzo.md5sum = md5sum.hexdigest()
 
     if skipped_files:
-        logging.warning(T('Failed to import %s files from %s'), self.skipped_files, self.nzo.filename)
+        logging.warning(T('Failed to import %s files from %s'), skipped_files, nzo.filename)
 

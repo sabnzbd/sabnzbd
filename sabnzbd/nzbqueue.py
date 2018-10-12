@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -27,8 +27,8 @@ import functools
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name
-from sabnzbd.filesystem import get_admin_path, remove_all, globber_full
+from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp
+from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NzbQueueLocker

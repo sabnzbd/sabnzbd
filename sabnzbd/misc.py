@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -18,30 +18,24 @@
 """
 sabnzbd.misc - misc classes
 """
-
 import os
 import sys
 import logging
 import urllib.request, urllib.parse, urllib.error
 import re
-import ctypes
-import shutil
-import threading
 import subprocess
 import socket
 import time
 import datetime
-import fnmatch
-import stat
 import inspect
+import ctypes
 
 import sabnzbd
-from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
-     GIGI, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
+from sabnzbd.constants import DEFAULT_PRIORITY, \
+     MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.utils.rarfile as rarfile
+from sabnzbd.encoding import ubtou, unicoder
 
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -290,11 +284,20 @@ def set_serv_parms(service, args):
     return True
 
 
+def get_from_url(url):
+    """ Retrieve URL and return content """
+    try:
+        with urllib.request.urlopen(url) as response:
+            return response.read()
+    except:
+        return None
+
+
 def convert_version(text):
     """ Convert version string to numerical value and a testversion indicator """
     version = 0
     test = True
-    m = RE_VERSION.search(text)
+    m = RE_VERSION.search(ubtou(text))
     if m:
         version = int(m.group(1)) * 1000000 + int(m.group(2)) * 10000 + int(m.group(3)) * 100
         try:
@@ -340,17 +343,9 @@ def check_latest_version():
         logging.debug("Unsupported release number (%s), will not check", sabnzbd.__version__)
         return
 
-    # Using catch-all except's is poor coding practice.
-    # However, the last thing you want is the app crashing due
-    # to bad file content.
-
-    try:
-        fn = urllib.request.urlretrieve('https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/latest.txt')[0]
-        f = open(fn, 'r')
-        data = f.read()
-        f.close()
-        os.remove(fn)
-    except:
+    # Fetch version info
+    data = get_from_url('https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/latest.txt')
+    if not data:
         logging.info('Cannot retrieve version information from GitHub.com')
         logging.debug('Traceback: ', exc_info=True)
         return
@@ -543,6 +538,37 @@ def get_cache_limit():
     return ''
 
 
+def get_windows_memory():
+    """ Use ctypes to extract available memory """
+    class MEMORYSTATUSEX(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", ctypes.c_ulong),
+            ("dwMemoryLoad", ctypes.c_ulong),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("sullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+
+        def __init__(self):
+            # have to initialize this to the size of MEMORYSTATUSEX
+            self.dwLength = ctypes.sizeof(self)
+            super(MEMORYSTATUSEX, self).__init__()
+
+    stat = MEMORYSTATUSEX()
+    ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
+    return stat.ullTotalPhys
+
+
+def get_darwin_memory():
+    """ Use system-call to extract total memory on macOS """
+    system_output = sabnzbd.newsunpack.run_simple(['sysctl', 'hw.memsize'])
+    return float(system_output.split()[1])
+
+
 def on_cleanup_list(filename, skip_nzb=False):
     """ Return True if a filename matches the clean-up list """
     lst = cfg.cleanup_list()
@@ -642,7 +668,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
         private_key = generate_key(key_size=2048, output_file=ssl_key)
-        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd')
+        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN='SABnzbd', ON='SABnzbd')
         logging.info('Self-signed certificates generated successfully')
     except:
         logging.error(T('Error creating SSL key and certificate'))
@@ -789,12 +815,6 @@ def match_str(text, matches):
         if match in text:
             return match
     return None
-
-
-def get_urlbase(url):
-    """ Return the base URL (like http://server.domain.com/) """
-    parsed_uri = urllib.parse.urlparse(url)
-    return '{uri.scheme}://{uri.netloc}/'.format(uri=parsed_uri)
 
 
 def nntp_to_msg(text):

@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -22,10 +22,12 @@ sabnzbd.getipaddress
 import socket
 import multiprocessing.pool
 import functools
+import urllib.request
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
+
 
 # decorator stuff:
 def timeout(max_timeout):
@@ -72,14 +74,13 @@ def localipv4():
 def publicipv4():
     # Because of dual IPv4/IPv6 clients, finding the public ipv4 needs special attention,
     # meaning forcing IPv4 connections, and not allowing IPv6 connections
+    public_ipv4 = None
     try:
-        import urllib.request, urllib.error, urllib.parse
         ipv4_found = False
         # we only want IPv4 resolving, so socket.AF_INET:
         result = addresslookup4(sabnzbd.cfg.selftest_host())
     except:
         # something very bad: no urllib2, no resolving of selftest_host, no network at all
-        public_ipv4 = None
         return public_ipv4
 
     # we got one or more IPv4 address(es), so let's connect to them

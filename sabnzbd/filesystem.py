@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -22,22 +22,17 @@ sabnzbd.misc - filesystem operations
 import os
 import sys
 import logging
-import urllib.request, urllib.parse, urllib.error
 import re
 import shutil
 import threading
-import subprocess
-import socket
 import time
-import datetime
 import fnmatch
 import stat
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
-     GIGI, MEBI
-from sabnzbd.encoding import ubtou, unicoder, special_fixer, gUTF
+from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
+from sabnzbd.encoding import special_fixer, gUTF
 
 
 def get_ext(filename):
@@ -597,6 +592,22 @@ def create_dirs(dirpath):
 
 
 @synchronized(DIR_LOCK)
+def recursive_listdir(dir):
+    """ List all files in dirs and sub-dirs """
+    filelist = []
+    for root, dirs, files in os.walk(dir):
+        for file in files:
+            if '.AppleDouble' not in root and '.DS_Store' not in root:
+                try:
+                    p = os.path.join(root, file)
+                    filelist.append(p)
+                except UnicodeDecodeError:
+                    # Just skip failing names
+                    pass
+    return filelist
+
+
+@synchronized(DIR_LOCK)
 def move_to_path(path, new_path):
     """ Move a file to a new path, optionally give unique filename
         Return (ok, new_path)
@@ -665,10 +676,9 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
-    dName = nzo.work_name
     if not nzo.created:
         for n in range(200):
-            dName = dirname
+            dName = nzo.work_name
             if n:
                 dName += '.' + str(n)
             try:

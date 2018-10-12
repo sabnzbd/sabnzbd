@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2008-2012 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -20,12 +20,10 @@ sabnzbd.rating - Rating support functions
 """
 
 import http.client
-import urllib.request, urllib.parse, urllib.error
 import urllib.parse
 import time
 import logging
 import copy
-import socket
 import queue
 import collections
 from threading import RLock, Thread

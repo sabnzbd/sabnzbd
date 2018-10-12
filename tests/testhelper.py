@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -99,5 +99,5 @@ def tearDownModule():
             shutil.rmtree(SAB_CACHE_DIR)
             break
         except OSError:
-            print "Unable to remove cache dir (try %d)" % x
+            print("Unable to remove cache dir (try %d)" % x)
             time.sleep(1)

@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -19,17 +19,12 @@
 sabnzbd.nzbstuff - misc
 """
 
-# Standard Library
 import os
 import time
 import re
 import logging
 import datetime
 import threading
-import xml.sax
-import xml.sax.handler
-import xml.sax.xmlreader
-import hashlib
 import functools
 import difflib
 
@@ -44,11 +39,11 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, int_conv, \
 from sabnzbd.filesystem import sanitize_foldername, get_unique_path, get_admin_path, \
     remove_all, sanitize_filename, globber_full, set_permissions, long_path, \
     trim_win_path, fix_unix_encoding, is_obfuscated_filename, get_ext, get_filename, \
-    get_unique_filename, renamer
+    get_unique_filename, renamer, remove_file, remove_dir
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import utob, unicoder, platform_encode
+from sabnzbd.encoding import unicoder, platform_encode
 import sabnzbd.nzbparser
 from sabnzbd.database import HistoryDB
 from sabnzbd.rating import Rating
