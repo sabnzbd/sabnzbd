@@ -164,9 +164,10 @@ def process_po_folder(domain, folder, extra=''):
         # Create the MO file
         mo_file = os.path.join(mo_path, mo_name)
         print(('Compile %s' % mo_file))
-        cmd = [TOOL, '-o', mo_file,  fname]
-        if extra != '':
-            cmd.insert(1, extra)
+        if extra:
+            cmd = TOOL + [extra, '-o', mo_file,  fname]
+        else:
+            cmd = TOOL + ['-o', mo_file, fname]
         ret, output = run(cmd)
         if ret != 0:
             print(('\nMissing %s. Please install this package first.' % TOOL))
@@ -270,9 +271,9 @@ path, py = os.path.split(sys.argv[0])
 tl = os.path.abspath(os.path.normpath(os.path.join(path, 'msgfmt.py')))
 if os.path.exists(tl):
     if os.name == 'nt':
-        TOOL = 'python3 %s' % tl
+        TOOL = [sys.executable, tl]
     else:
-        TOOL = tl
+        TOOL = [tl]
 
 result = True
 if len(sys.argv) > 1 and sys.argv[1] == 'all':
