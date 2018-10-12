@@ -15,6 +15,8 @@ Options:
         Specify the output file to write to.  If omitted, output will go to a
         file named filename.mo (based off the input file name).
 
+    -n Remove all newlines (\\r\\n) from translations
+
     -h
     --help
         Print this message and exit.
@@ -30,11 +32,17 @@ import ast
 import getopt
 import struct
 import array
+import re
 from email.parser import HeaderParser
 
 __version__ = "1.1"
 
 MESSAGES = {}
+nonewlines = False
+
+
+# Detector for HTML elements
+RE_HTML = re.compile(b'<[^>]+>')
 
 
 def usage(code, msg=''):
@@ -45,10 +53,18 @@ def usage(code, msg=''):
 
 
 def add(id, str, fuzzy):
-    "Add a non-fuzzy translation to the dictionary."
-    global MESSAGES
+    """ Add a non-fuzzy translation to the dictionary. """
+    global MESSAGES, nonewlines, RE_HTML
     if not fuzzy and str:
-        MESSAGES[id] = str
+        if id.count(b'%s') == str.count(b'%s'):
+            if nonewlines and id and (b'\r' in str or b'\n' in str) and RE_HTML.search(str):
+                MESSAGES[id] = str.replace(b'\n', b'').replace(b'\r', b'')
+            else:
+                MESSAGES[id] = str
+        else:
+            print('WARNING: %s mismatch, skipping!')
+            print('    %s' % id)
+            print('    %s' % str)
 
 
 def generate():
@@ -68,7 +84,7 @@ def generate():
     # The header is 7 32-bit unsigned integers.  We don't use hash tables, so
     # the keys start right after the index tables.
     # translated string.
-    keystart = 7*4+16*len(keys)
+    keystart = 7 * 4 + 16 * len(keys)
     # and the values start after the keys
     valuestart = keystart + len(ids)
     koffsets = []
@@ -76,17 +92,17 @@ def generate():
     # The string table first has the list of keys, then the list of values.
     # Each entry has first the size of the string, then the file offset.
     for o1, l1, o2, l2 in offsets:
-        koffsets += [l1, o1+keystart]
-        voffsets += [l2, o2+valuestart]
+        koffsets += [l1, o1 + keystart]
+        voffsets += [l2, o2 + valuestart]
     offsets = koffsets + voffsets
     output = struct.pack("Iiiiiii",
-                         0x950412de,       # Magic
-                         0,                 # Version
-                         len(keys),         # # of entries
-                         7*4,               # start of key index
-                         7*4+len(keys)*8,   # start of value index
-                         0, 0)              # size and offset of hash table
-    output += array.array("i", offsets).tostring()
+                         0x950412de,  # Magic
+                         0,  # Version
+                         len(keys),  # # of entries
+                         7 * 4,  # start of key index
+                         7 * 4 + len(keys) * 8,  # start of value index
+                         0, 0)  # size and offset of hash table
+    output += array.array("i", offsets).tobytes()
     output += ids
     output += strs
     return output
@@ -105,7 +121,8 @@ def make(filename, outfile):
         outfile = os.path.splitext(infile)[0] + '.mo'
 
     try:
-        lines = open(infile, 'rb').readlines()
+        with open(infile, 'rb') as f:
+            lines = f.readlines()
     except IOError as msg:
         print(msg, file=sys.stderr)
         sys.exit(1)
@@ -154,7 +171,7 @@ def make(filename, outfile):
                       file=sys.stderr)
                 sys.exit(1)
             l = l[12:]
-            msgid += b'\0' # separator of singular and plural
+            msgid += b'\0'  # separator of singular and plural
             is_plural = True
         # Now we are in a msgstr section
         elif l.startswith('msgstr'):
@@ -166,7 +183,7 @@ def make(filename, outfile):
                     sys.exit(1)
                 l = l.split(']', 1)[1]
                 if msgstr:
-                    msgstr += b'\0' # Separator of the various plural forms
+                    msgstr += b'\0'  # Separator of the various plural forms
             else:
                 if is_plural:
                     print('indexed msgstr required for plural on  %s:%d' % (infile, lno),
@@ -195,14 +212,16 @@ def make(filename, outfile):
     output = generate()
 
     try:
-        open(outfile,"wb").write(output)
+        with open(outfile, "wb") as f:
+            f.write(output)
     except IOError as msg:
         print(msg, file=sys.stderr)
 
 
 def main():
+    global nonewlines
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'hVo:',
+        opts, args = getopt.getopt(sys.argv[1:], 'nhVo:',
                                    ['help', 'version', 'output-file='])
     except getopt.error as msg:
         usage(1, msg)
@@ -217,6 +236,8 @@ def main():
             sys.exit(0)
         elif opt in ('-o', '--output-file'):
             outfile = arg
+        elif opt in ('-n',):
+            nonewlines = True
     # do it
     if not args:
         print('No input file given', file=sys.stderr)
