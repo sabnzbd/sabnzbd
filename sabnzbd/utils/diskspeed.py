@@ -3,7 +3,6 @@
 import time
 import os
 import sys
-import logging
 
 _DUMP_DATA_SIZE = 10 * 1024 * 1024
 _DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)
@@ -14,10 +13,13 @@ def diskspeedmeasure(dirname):
         method: keep writing a file, until 1 second is passed.
         Then divide bytes written by time passed
     """
-    maxtime = 0.5  # sec
+    maxtime = 1.0  # sec
     total_written = 0
     filename = os.path.join(dirname, 'outputTESTING.txt')
     fp = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)  # low-level I/O
+
+    # Use low-level I/O
+    fp = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)
 
     # Start looping
     total_time = 0.0
@@ -30,7 +32,8 @@ def diskspeedmeasure(dirname):
 
     # Remove the file
     try:
-        fp.close()
+        # Have to use low-level close
+        os.close(fp)
         os.remove(filename)
     except:
         pass

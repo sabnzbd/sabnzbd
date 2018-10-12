@@ -33,6 +33,7 @@ from sabnzbd.misc import int_conv, format_time_string
 from sabnzbd.filesystem import clip_path, long_path, remove_all, globber, \
     has_win_device, real_path
 from sabnzbd.encoding import TRANS, unicoder
+from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
@@ -102,6 +103,7 @@ class DirectUnpacker(threading.Thread):
         if none_counter > found_counter:
             self.total_volumes = {}
 
+    @synchronized(START_STOP_LOCK)
     def add(self, nzf):
         """ Add jobs and start instance of DirectUnpack """
         if not cfg.direct_unpack_tested():
@@ -162,10 +164,10 @@ class DirectUnpacker(threading.Thread):
                 break
 
             # Error? Let PP-handle it
-            if linebuf.endswith(('ERROR: ', 'Cannot create', 'in the encrypted file', 'CRC failed', \
-                    'checksum failed', 'You need to start extraction from a previous volume',  \
-                    'password is incorrect', 'Write error', 'checksum error', \
-                    'start extraction from a previous volume')):
+            if linebuf.endswith(('ERROR: ', 'Cannot create', 'in the encrypted file', 'CRC failed',
+                                 'checksum failed', 'You need to start extraction from a previous volume',
+                                 'password is incorrect', 'Write error', 'checksum error',
+                                 'start extraction from a previous volume')):
                 logging.info('Error in DirectUnpack of %s', self.cur_setname)
                 self.abort()
 
@@ -301,6 +303,7 @@ class DirectUnpacker(threading.Thread):
             with self.next_file_lock:
                 self.next_file_lock.wait()
 
+    @synchronized(START_STOP_LOCK)
     def create_unrar_instance(self):
         """ Start the unrar instance using the user's options """
         # Generate extraction path and save for post-proc
@@ -358,9 +361,10 @@ class DirectUnpacker(threading.Thread):
         # Doing the first
         logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
+    @synchronized(START_STOP_LOCK)
     def abort(self):
         """ Abort running instance and delete generated files """
-        if not self.killed:
+        if not self.killed and self.cur_setname:
             logging.info('Aborting DirectUnpack for %s', self.cur_setname)
             self.killed = True
 

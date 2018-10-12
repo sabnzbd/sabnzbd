@@ -76,7 +76,7 @@ legend,
     background-color: #666;
 }
 
-.navbar-collapse.in .dropdown-menu, {
+.navbar-collapse.in .dropdown-menu {
     border: none;
 }
 

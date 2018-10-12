@@ -237,7 +237,7 @@ class SeriesSorter(object):
 
         one = '-'.join(extra_list)
         two = '-'.join(extra2_list)
-        return (one, two)
+        return one, two
 
     def get_shownames(self):
         """ Get the show name from the match object and format it """

@@ -47,16 +47,10 @@ SKIN_TEXT = {
     'post-Propagating'   : TT('Propagation delay'),
     'post-Checking'      : TT('Checking'), #: PP status
 
-    'sch-frequency'      : TT('Frequency'), #:  #: Config->Scheduler
-    'sch-action'         : TT('Action'), #:  #: Config->Scheduler
-    'sch-arguments'      : TT('Arguments'), #:  #: Config->Scheduler
     'sch-task'           : TT('Task'), #:  #: Config->Scheduler
     'sch-disable_server' : TT('disable server'), #:  #: Config->Scheduler
     'sch-enable_server'  : TT('enable server'), #:  #: Config->Scheduler
-    'sch-resume'         : TT('Resume'), #:  #: Config->Scheduler
-    'sch-pause'          : TT('Pause'), #:  #: Config->Scheduler
-    'sch-shutdown'       : TT('Shutdown'), #:  #: Config->Scheduler
-    'sch-restart'        : TT('Restart'), #:  #: Config->Scheduler
+
     'sch-speedlimit'     : TT('Speedlimit'), #:  #: Config->Scheduler
     'sch-pause_all'      : TT('Pause All'), #:  #: Config->Scheduler
     'sch-pause_post'     : TT('Pause post-processing'), #:  #: Config->Scheduler

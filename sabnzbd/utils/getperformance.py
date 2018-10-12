@@ -20,7 +20,7 @@ def getcpu():
 
         elif platform.system() == "Linux":
             for myline in open("/proc/cpuinfo"):
-                if myline.startswith(('model name')):
+                if myline.startswith('model name'):
                     # Typical line:
                     # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
                     cputype = myline.split(":", 1)[1]	# get everything after the first ":"
@@ -44,6 +44,17 @@ def getpystone():
         return int(pystones(1000)[1])
     except:
         return None
+
+    # if we arrive here, we were able to succesfully import pystone, so start calculation
+    maxpystone = None
+    # Start with a short run, find the the pystone, and increase runtime until duration took > 0.1 second
+    for pyseed in [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000]:
+        duration, pystonefloat = pystones(pyseed)
+        maxpystone = max(maxpystone, int(pystonefloat))
+        # Stop when pystone() has been running for at least 0.1 second
+        if duration > 0.1:
+            break
+    return maxpystone
 
 
 if __name__ == '__main__':

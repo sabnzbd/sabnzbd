@@ -21,7 +21,6 @@ Optional:
 - `python-cryptography` (enables certificate generation and detection of encrypted RAR-files during download)
 - `python-dbus` (enable option to Shutdown/Restart/Standby PC on queue finish)
 - `7zip`
-- `unzip`
 
 Your package manager should supply these. If not, we've got links in our more in-depth [installation guide](https://github.com/sabnzbd/sabnzbd/blob/master/INSTALL.txt).
 

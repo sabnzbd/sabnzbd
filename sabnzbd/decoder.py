@@ -118,7 +118,7 @@ class Decoder(Thread):
                     nzf.article_count += 1
                     found = True
 
-                except IOError as e:
+                except IOError:
                     logme = T('Decoding %s failed') % art_id
                     logging.warning(logme)
                     logging.info("Traceback: ", exc_info=True)
@@ -127,7 +127,7 @@ class Decoder(Thread):
                     sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
                     register = False
 
-                except MemoryError as e:
+                except MemoryError:
                     logme = T('Decoder failure: Out of memory')
                     logging.warning(logme)
                     anfo = sabnzbd.articlecache.ArticleCache.do.cache_info()
@@ -295,7 +295,7 @@ def yCheck(data):
         except IndexError:
             break
 
-    return ((ybegin, ypart, yend), data)
+    return (ybegin, ypart, yend), data
 
 # Example: =ybegin part=1 line=128 size=123 name=-=DUMMY=- abc.par
 YSPLIT_RE = re.compile(r'([a-zA-Z0-9]+)=')

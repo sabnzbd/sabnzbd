@@ -26,7 +26,6 @@ import logging
 import socket
 import urllib.request, urllib.error, urllib.parse
 import http.client
-import urllib.request, urllib.parse, urllib.error
 import time
 import subprocess
 import json
@@ -145,7 +144,7 @@ def check_cat(section, job_cat, keyword=None):
         if not keyword:
             keyword = section
         section_cats = sabnzbd.config.get_config(section, '%s_cats' % keyword)()
-        return (['*'] == section_cats or job_cat in section_cats)
+        return ['*'] == section_cats or job_cat in section_cats
     except TypeError:
         logging.debug('Incorrect Notify option %s:%s_cats', section, section)
         return True
@@ -463,7 +462,7 @@ def send_pushover(title, msg, gtype, force=False, test=None):
                  "expire": emergency_expire
         }
         return do_send_pushover(body)
-    if prio > -3 and prio < 2:
+    if -3 < prio < 2:
         body = { "token": apikey,
                  "user": userkey,
                  "device": device,

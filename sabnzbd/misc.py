@@ -41,7 +41,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, FUTURE_Q_FOLDER, JOB_ADMIN, \
      GIGI, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import ubtou, unicoder, special_fixer, gUTF
+import sabnzbd.utils.rarfile as rarfile
 
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -426,7 +426,6 @@ def to_units(val, spaces=0, postfix=''):
         Show single decimal for M and higher
     """
     dec_limit = 1
-    decimals = 0
     if val < 0:
         sign = '-'
     else:
@@ -503,7 +502,7 @@ def split_host(srv):
         port = int(port)
     except:
         port = None
-    return (host, port)
+    return host, port
 
 
 def get_cache_limit():
@@ -573,8 +572,8 @@ def memory_usage():
     except:
         logging.debug('Error retrieving memory usage')
         logging.info("Traceback: ", exc_info=True)
-    else:
-        return ''
+
+
 try:
     _PAGE_SIZE = os.sysconf("SC_PAGE_SIZE")
 except:
@@ -643,7 +642,7 @@ def create_https_certificates(ssl_cert, ssl_key):
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
         private_key = generate_key(key_size=2048, output_file=ssl_key)
-        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN='SABnzbd', ON='SABnzbd', CN='localhost')
+        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN=u'SABnzbd', ON=u'SABnzbd')
         logging.info('Self-signed certificates generated successfully')
     except:
         logging.error(T('Error creating SSL key and certificate'))

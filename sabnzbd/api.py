@@ -29,6 +29,7 @@ import cherrypy
 import locale
 
 from threading import Thread
+
 try:
     import win32api
     import win32file
@@ -37,8 +38,8 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, Status, \
-     TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
-     KIBI, MEBI, GIGI, JOB_ADMIN
+    TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
+    KIBI, MEBI, GIGI, JOB_ADMIN
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Downloader
@@ -67,7 +68,6 @@ import sabnzbd.rss
 import sabnzbd.emailer
 import sabnzbd.getipaddress as getipaddress
 
-
 ##############################################################################
 # API error messages
 ##############################################################################
@@ -81,7 +81,6 @@ _MSG_NO_PATH = 'file does not exist'
 _MSG_OUTPUT_FORMAT = 'Format not supported'
 _MSG_NO_SUCH_CONFIG = 'Config item does not exist'
 _MSG_BAD_SERVER_PARMS = 'Incorrect server settings'
-
 
 # For Windows: determine executable extensions
 if os.name == 'nt':
@@ -211,6 +210,8 @@ def _api_queue_pause(output, value, kwargs):
     if value:
         items = value.split(',')
         handled = NzbQueue.do.pause_multiple_nzo(items)
+    else:
+        handled = False
     return report(output, keyword='', data={'status': bool(handled), 'nzo_ids': handled})
 
 
@@ -219,6 +220,8 @@ def _api_queue_resume(output, value, kwargs):
     if value:
         items = value.split(',')
         handled = NzbQueue.do.resume_multiple_nzo(items)
+    else:
+        handled = False
     return report(output, keyword='', data={'status': bool(handled), 'nzo_ids': handled})
 
 
@@ -332,7 +335,7 @@ def _api_addfile(name, output, kwargs):
             # Indexer category, so do mapping
             cat = cat_convert(xcat)
         res = sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), cat,
-                            kwargs.get('priority'), kwargs.get('nzbname'))
+                                  kwargs.get('priority'), kwargs.get('nzbname'))
         return report(output, keyword='', data={'status': res[0] == 0, 'nzo_ids': res[1]}, compat=True)
     else:
         return report(output, _MSG_NO_VALUE)
@@ -453,6 +456,7 @@ def _api_change_opts(name, output, kwargs):
     """ API: accepts output, value(=nzo_id), value2(=pp) """
     value = kwargs.get('value')
     value2 = kwargs.get('value2')
+    result = 0
     if value and value2 and value2.isdigit():
         result = NzbQueue.do.change_opts(value, int(value2))
     return report(output, keyword='status', data=bool(result > 0))
@@ -474,7 +478,6 @@ def _api_history(name, output, kwargs):
     failed_only = kwargs.get('failed_only')
     categories = kwargs.get('category')
 
-
     # Do we need to send anything?
     if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
         return report(output, keyword='history', data=False)
@@ -489,7 +492,7 @@ def _api_history(name, output, kwargs):
         special = value.lower()
         del_files = bool(int_conv(kwargs.get('del_files')))
         if special in ('all', 'failed', 'completed'):
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             if special in ('all', 'failed'):
                 if del_files:
                     del_job_files(history_db.get_failed_paths(search))
@@ -510,7 +513,7 @@ def _api_history(name, output, kwargs):
         history = {}
         grand, month, week, day = BPSMeter.do.get_sums()
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
-               to_units(grand), to_units(month), to_units(week), to_units(day)
+            to_units(grand), to_units(month), to_units(week), to_units(day)
         history['slots'], fetched_items, history['noofslots'] = build_history(start=start,
                                                                               limit=limit, verbose=True,
                                                                               search=search, failed_only=failed_only,
@@ -715,12 +718,10 @@ def _api_reset_quota(name, output, kwargs):
 def _api_test_email(name, output, kwargs):
     """ API: send a test email, return result """
     logging.info("Sending test email")
-    pack = {}
-    pack['download'] = ['action 1', 'action 2']
-    pack['unpack'] = ['action 1', 'action 2']
-    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 'unknown', True,
-                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
-                                 123 * MEBI, None, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
+    pack = {'download': ['action 1', 'action 2'], 'unpack': ['action 1', 'action 2']}
+    res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
+                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
+                                 123 * MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
                                  test=kwargs)
     if res == 'Email succeeded':
         res = None
@@ -793,7 +794,6 @@ def _api_browse(name, output, kwargs):
     compact = kwargs.get('compact')
 
     if compact and compact == '1':
-        paths = []
         name = platform_encode(kwargs.get('term', ''))
         paths = [entry['path'] for entry in folders_at_path(os.path.dirname(name)) if 'path' in entry]
         return report(output, keyword='', data=paths)
@@ -883,12 +883,11 @@ def _api_config_undefined(output, kwargs):
 def _api_server_stats(name, output, kwargs):
     """ API: accepts output """
     sum_t, sum_m, sum_w, sum_d = BPSMeter.do.get_sums()
-    stats = {'total': sum_t, 'month': sum_m, 'week': sum_w, 'day': sum_d}
+    stats = {'total': sum_t, 'month': sum_m, 'week': sum_w, 'day': sum_d, 'servers': {}}
 
-    stats['servers'] = {}
     for svr in config.get_servers():
         t, m, w, d, daily = BPSMeter.do.amounts(svr)
-        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0, 'daily': daily or {} }
+        stats['servers'][svr] = {'total': t or 0, 'month': m or 0, 'week': w or 0, 'day': d or 0, 'daily': daily or {}}
 
     return report(output, keyword='', data=stats)
 
@@ -1131,6 +1130,24 @@ def handle_rss_api(output, kwargs):
         feed.set_dict(kwargs)
     else:
         config.ConfigRSS(name, kwargs)
+
+    action = kwargs.get('filter_action')
+    if action in ('add', 'update'):
+        # Use the general function, but catch the redirect-raise
+        try:
+            kwargs['feed'] = name
+            sabnzbd.interface.ConfigRss('/').internal_upd_rss_filter(**kwargs)
+        except cherrypy.HTTPRedirect:
+            pass
+
+    elif action == 'delete':
+        # Use the general function, but catch the redirect-raise
+        try:
+            kwargs['feed'] = name
+            sabnzbd.interface.ConfigRss('/').internal_del_rss_filter(**kwargs)
+        except cherrypy.HTTPRedirect:
+            pass
+
     return name
 
 
@@ -1214,10 +1231,10 @@ def build_status(skip_dashboard=False, output=None):
 
             # For the templates or for JSON
             if output:
-                thread_info = { 'thrdnum': nw.thrdnum,
-                                'art_name': art_name,
-                                'nzf_name': nzf_name,
-                                'nzo_name': nzo_name }
+                thread_info = {'thrdnum': nw.thrdnum,
+                               'art_name': art_name,
+                               'nzf_name': nzf_name,
+                               'nzo_name': nzo_name}
                 serverconnections.append(thread_info)
             else:
                 serverconnections.append((nw.thrdnum, art_name, nzf_name, nzo_name))
@@ -1233,20 +1250,20 @@ def build_status(skip_dashboard=False, output=None):
 
         # For the templates or for JSON
         if output:
-            server_info = { 'servername': server.displayname,
-                            'serveractiveconn': connected,
-                            'servertotalconn': server.threads,
-                            'serverconnections': serverconnections,
-                            'serverssl': server.ssl,
-                            'serversslinfo': server.ssl_info,
-                            'serveractive': server.active,
-                            'servererror': server.errormsg,
-                            'serverpriority': server.priority,
-                            'serveroptional': server.optional }
+            server_info = {'servername': server.displayname,
+                           'serveractiveconn': connected,
+                           'servertotalconn': server.threads,
+                           'serverconnections': serverconnections,
+                           'serverssl': server.ssl,
+                           'serversslinfo': server.ssl_info,
+                           'serveractive': server.active,
+                           'servererror': server.errormsg,
+                           'serverpriority': server.priority,
+                           'serveroptional': server.optional}
             info['servers'].append(server_info)
         else:
             info['servers'].append((server.displayname, '', connected, serverconnections, server.ssl,
-                                      server.active, server.errormsg, server.priority, server.optional))
+                                    server.active, server.errormsg, server.priority, server.optional))
 
     info['warnings'] = sabnzbd.GUIHANDLER.content()
 
@@ -1326,10 +1343,10 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
             # Ensure compatibility of API status
             if status == Status.DELETED or priority == TOP_PRIORITY:
                 status = Status.DOWNLOADING
-            slot['status'] = "%s" % (status)
+            slot['status'] = "%s" % status
 
-        if (Downloader.do.paused or Downloader.do.postproc or is_propagating or  \
-           status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)) and priority != TOP_PRIORITY:
+        if (Downloader.do.paused or Downloader.do.postproc or is_propagating or
+            status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)) and priority != TOP_PRIORITY:
             slot['timeleft'] = '0:00:00'
             slot['eta'] = 'unknown'
         else:
@@ -1490,16 +1507,17 @@ def options_list(output):
     })
 
 
-def retry_job(job, new_nzb, password):
+def retry_job(job, new_nzb=None, password=None):
     """ Re enter failed job in the download queue """
     if job:
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
             if pp == 'X':
                 pp = None
-            sabnzbd.add_url(url, pp, script, cat)
+            nzo_id = sabnzbd.add_url(url, pp, script, cat)
             history_db.remove_history(job)
+            return nzo_id
         else:
             path = history_db.get_path(job)
             if path:
@@ -1511,8 +1529,13 @@ def retry_job(job, new_nzb, password):
 
 def retry_all_jobs():
     """ Re enter all failed jobs in the download queue """
-    history_db = sabnzbd.connect_db()
-    return NzbQueue.do.retry_all_jobs(history_db)
+    # Fetch all retryable folders from History
+    items = sabnzbd.api.build_history()[0]
+    nzo_ids = []
+    for item in items:
+        if item['retry']:
+            nzo_ids.append(retry_job(item['nzo_id']))
+    return nzo_ids
 
 
 def del_job_files(job_paths):
@@ -1529,7 +1552,7 @@ def del_hist_job(job, del_files):
         if path:
             PostProcessor.do.delete(job, del_files=del_files)
         else:
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             path = history_db.get_path(job)
             history_db.remove_history(job)
 
@@ -1548,7 +1571,9 @@ def Tspec(txt):
         return txt
 
 
-_SKIN_CACHE = {}    # Stores pre-translated acronyms
+_SKIN_CACHE = {}  # Stores pre-translated acronyms
+
+
 # This special is to be used in interface.py for template processing
 # to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
 def Ttemplate(txt):
@@ -1668,7 +1693,6 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     header['size'] = format_bytes(bytes)
     header['noofslots_total'] = qnfo.q_fullsize
 
-    status = ''
     if Downloader.do.paused or Downloader.do.postproc:
         status = Status.PAUSED
     elif bytespersec > 0:
@@ -1683,15 +1707,13 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
         # new eta format: 16:00 Fri 07 Feb
         header['eta'] = datestart.strftime(time_format('%H:%M %a %d %b'))
     except:
-        datestart = datetime.datetime.now()
         header['eta'] = T('unknown')
 
-    return (header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page)
+    return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
 def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
                   categories=None, output=None):
-
     if output:
         converter = unicoder
     else:
@@ -1744,7 +1766,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
 
     # Aquire the db instance
     try:
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         close_db = False
     except:
         # Required for repairs at startup because Cherrypy isn't active yet
@@ -1755,7 +1777,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     if not h_limit:
         items, fetched_items, total_items = history_db.fetch_history(h_start, 1, search, failed_only, categories)
         items = []
-        fetched_items = 0
     else:
         items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only, categories)
 
@@ -1840,7 +1861,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     if close_db:
         history_db.close()
 
-    return (items, fetched_items, total_items)
+    return items, fetched_items, total_items
 
 
 def get_active_history(queue=None, items=None):

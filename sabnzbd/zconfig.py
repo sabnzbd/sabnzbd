@@ -21,7 +21,6 @@ sabnzbd.zconfig - bonjour/zeroconfig support
 
 import os
 import logging
-import cherrypy
 
 _HOST_PORT = (None, None)
 
@@ -80,11 +79,6 @@ def set_bonjour(host=None, port=None):
         return
 
     name = hostname()
-    if '.local' in name:
-        suffix = ''
-    else:
-        suffix = '.local'
-
     logging.debug('Try to publish in Bonjour as "%s" (%s:%s)', name, host, port)
     try:
         refObject = pybonjour.DNSServiceRegister(

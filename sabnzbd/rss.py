@@ -287,10 +287,10 @@ class RSSQueue(object):
 
                 status = feed_parsed.get('status', 999)
                 if status in (401, 402, 403):
-                    msg = T('Do not have valid authentication for feed %s') % feed
+                    msg = T('Do not have valid authentication for feed %s') % uri
                     logging.info(msg)
 
-                if status >= 500 and status <= 599:
+                if 500 <= status <= 599:
                     msg = T('Server side error (server code %s); could not get %s on %s') % (status, feed, uri)
                     logging.info(msg)
 
@@ -301,11 +301,14 @@ class RSSQueue(object):
                         msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
                         msg += ' - https://sabnzbd.org/certificate-errors'
                         logging.error(msg)
+                    elif feed_parsed['href'] != uri and 'login' in feed_parsed['href']:
+                        # Redirect to login page!
+                        msg = T('Do not have valid authentication for feed %s') % uri
                     else:
                         msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
                     logging.info(msg)
 
-                if not entries:
+                if not entries and not msg:
                     msg = T('RSS Feed %s was empty') % uri
                     logging.info(msg)
                 all_entries.extend(entries)
@@ -330,12 +333,8 @@ class RSSQueue(object):
 
             if readout:
                 try:
-                    link, category, size, age, season, episode = _get_link(uri, entry)
+                    link, infourl, category, size, age, season, episode = _get_link(entry)
                 except (AttributeError, IndexError):
-                    link = None
-                    category = ''
-                    size = 0
-                    age = None
                     logging.info(T('Incompatible feed') + ' ' + uri)
                     logging.info("Traceback: ", exc_info=True)
                     return T('Incompatible feed')
@@ -482,13 +481,13 @@ class RSSQueue(object):
                     else:
                         star = first
                     if result:
-                        _HandleLink(jobs, feed, link, title, size, age, season, episode, 'G', category, myCat, myPP,
-                                     myScript, act, star, priority=myPrio, rule=str(n))
+                        _HandleLink(jobs, feed, link, infourl, title, size, age, season, episode, 'G', category, myCat,
+                                    myPP, myScript, act, star, priority=myPrio, rule=str(n))
                         if act:
                             new_downloads.append(title)
                     else:
-                        _HandleLink(jobs, feed, link, title, size, age, season, episode, 'B', category, myCat, myPP,
-                                     myScript, False, star, priority=myPrio, rule=str(n))
+                        _HandleLink(jobs, feed, link, infourl, title, size, age, season, episode, 'B', category, myCat,
+                                    myPP, myScript, False, star, priority=myPrio, rule=str(n))
 
         # Send email if wanted and not "forced"
         if new_downloads and cfg.email_rss() and not force:
@@ -588,7 +587,7 @@ class RSSQueue(object):
         return ''
 
 
-def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgcat, cat, pp, script,
+def _HandleLink(jobs, feed, link, infourl, title, size, age, season, episode, flag, orgcat, cat, pp, script,
                 download, star, priority=NORMAL_PRIORITY, rule=0):
     """ Process one link """
     if script == '':
@@ -599,6 +598,7 @@ def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgca
     jobs[link] = {}
     jobs[link]['title'] = title
     jobs[link]['url'] = link
+    jobs[link]['infourl'] = infourl
     jobs[link]['cat'] = cat
     jobs[link]['pp'] = pp
     jobs[link]['script'] = script
@@ -627,14 +627,11 @@ def _HandleLink(jobs, feed, link, title, size, age, season, episode, flag, orgca
         else:
             jobs[link]['status'] = flag
 
-def _get_link(uri, entry):
+def _get_link(entry):
     """ Retrieve the post link from this entry
         Returns (link, category, size)
     """
-    link = None
-    category = ''
-    size = 0
-    uri = uri.lower()
+    size = 0L
     age = datetime.datetime.now()
 
     # Try standard link and enclosures first
@@ -648,7 +645,12 @@ def _get_link(uri, entry):
         except:
             pass
 
-    if size == 0:
+    # GUID usually has URL to result on page
+    infourl = None
+    if entry.id and entry.id != link and entry.id.startswith('http'):
+        infourl = entry.id
+
+    if size == 0L:
         _RE_SIZE1 = re.compile(r'Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
         _RE_SIZE2 = re.compile(r'\W*(\d+\.\d+\s*[KMG]{0,1})B\W*', re.I)
         # Try to find size in Description
@@ -697,10 +699,10 @@ def _get_link(uri, entry):
                     except:
                         category = ''
 
-        return link, category, size, age, season, episode
+        return link, infourl, category, size, age, season, episode
     else:
         logging.warning(T('Empty RSS entry found (%s)'), link)
-        return None, '', 0, None, 0, 0
+        return None, None, '', 0L, None, 0, 0
 
 
 def special_rss_site(url):

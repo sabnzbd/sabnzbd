@@ -6,7 +6,6 @@ Functions to check if the path filesystem uses FAT
 
 import sys
 import os
-import subprocess
 
 debug = False
 
@@ -71,7 +70,6 @@ def isFAT(dir):
 
             '''
             dfcmd = "df " + dir
-            device = ''
             for thisline in os.popen(dfcmd).readlines():
                 if thisline.find('/')==0:
                     if debug: print(thisline)

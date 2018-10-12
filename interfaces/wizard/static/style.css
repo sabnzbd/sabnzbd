@@ -88,18 +88,11 @@ label {
     float: right;
     margin: 0;
 }
-.sup {
-    vertical-align: sup !important;
-}
-
 .align-right {
     text-align: right;
 }
 .align-center {
     text-align: center;
-}
-.float-center {
-    float: center;
 }
 .unselected,
 .selected {
@@ -123,9 +116,6 @@ label {
 .bigger {
     font-size: 14px;
 }
-.padded {
-    padding: 12px;
-}
 .bigger input {
     font-size: 16px;
 }
@@ -134,9 +124,6 @@ label {
 }
 .full-width {
     width: 100%;
-}
-.bigbutton {
-    font-size: 18px !important;
 }
 .correct {
     border: 2px solid #00cc22;
@@ -153,7 +140,6 @@ label {
 .text-input-wide {
     width: 230px;
 }
-.text-input-thin,
 #server-hidden-settings input[type="number"] {
     width: 100px;
 }

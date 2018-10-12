@@ -69,7 +69,7 @@ def set_connection_info(url, user=True):
     try:
         hive = winreg.ConnectRegistry(None, section)
         try:
-            key = winreg.CreateKey(hive, keypath)
+            _winreg.CreateKey(hive, keypath)
         except:
             pass
         key = winreg.OpenKey(hive, keypath)
@@ -105,18 +105,42 @@ def get_install_lng():
     """ Return language-code used by the installer """
     lng = 0
     try:
-        hive = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-        key = winreg.OpenKey(hive, r"Software\SABnzbd")
-        for i in range(0, winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = winreg.EnumValue(key, i)
+        hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
+        key = _winreg.OpenKey(hive, r"Software\SABnzbd")
+        for i in range(0, _winreg.QueryInfoKey(key)[1]):
+            name, value, val_type = _winreg.EnumValue(key, i)
             if name == 'Installer Language':
                 lng = value
         winreg.CloseKey(key)
     except WindowsError:
         pass
     finally:
-        winreg.CloseKey(hive)
-    return lng
+        _winreg.CloseKey(hive)
+
+    if lng in LanguageMap:
+        return LanguageMap[lng]
+    return 'en'
+
+
+# Map from NSIS-codepage to our language-strings
+LanguageMap = {
+    '1033': 'en',
+    '1036': 'fr',
+    '1031': 'de',
+    '1043': 'nl',
+    '1035': 'fi',
+    '1045': 'pl',
+    '1053': 'sv',
+    '1030': 'da',
+    '2068': 'nb',
+    '1048': 'ro',
+    '1034': 'es',
+    '1046': 'pr_BR',
+    '3098': 'sr',
+    '1037': 'he',
+    '1049': 'ru',
+    '2052': 'zh_CN'
+}
 
 
 if __name__ == '__main__':

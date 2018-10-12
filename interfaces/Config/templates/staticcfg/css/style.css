@@ -4,16 +4,13 @@ body {
 }
 #logo {
     display: block;
-    margin: auto;
-    margin-top: 3px;
+    margin: 3px auto auto;
 }
 
 #content {
     color: #000;
-    padding: 15px 20px 20px;
+    padding: 65px 20px 20px;
     font-size: 13px;
-    padding-top: 65px;
-    padding-bottom: 20px;
 }
 .colmask {
     z-index: 20;
@@ -529,7 +526,7 @@ tr.separator {
 }
 #filebrowser_modal .checkbox {
     float: left;
-    margin:  8px 5px 0x;
+    margin:  8px 5px 0px;
 }
 #filebrowser_modal .checkbox input {
     margin-top: 1px;
@@ -576,6 +573,7 @@ h2.activeRSS {
     float: left;
     margin: 0 6px 0 2px;
     text-align: center;
+    color: black !important;
 }
 .source-icon span {
     top: -3px;
@@ -600,8 +598,7 @@ h2.activeRSS {
     padding-top: .4em;
 }
 #subscriptions .chk {
-    padding: 5px;
-    padding-top: 8px;
+    padding: 8px 5px 5px;
     vertical-align: middle;
 }
 #subscriptions .title {
@@ -773,7 +770,6 @@ input[type=radio] {
 input[type="button"],
 input[type="submit"] {
     color: #333;
-    background-color: #fff;
     display:inline-block;
     padding:6px 12px;
     margin-bottom: 0;
@@ -784,7 +780,7 @@ input[type="submit"] {
     white-space:nowrap;
     vertical-align:middle;
     cursor:pointer;
-    background-image:none;
+    background: #fff none;
     border:1px solid #ccc;
     height: 34px;
 }
@@ -1002,7 +998,7 @@ input[type="checkbox"] {
 }
 
 .Servers .col2.server-disabled .label {
-    color: ##777 !important;
+    color: #777 !important;
 }
 
 .Servers .col2 .label:nth-child(2) {
@@ -1063,9 +1059,7 @@ input[type="checkbox"] {
 
 .Servers .col2 label,
 .Email .col2 label {
-    margin: 0;
-    margin-left: 4px;
-    margin-top: 2px;
+    margin: 2px 0 0 4px;
     cursor: pointer;
 }
 
@@ -1141,6 +1135,7 @@ input[type="checkbox"] {
 }
 .value-and-select select {
     min-width: 30px;
+    margin-top: 1px;
 }
 
 .dotOne, .dotTwo, .dotThree {
@@ -1341,9 +1336,7 @@ input[type="checkbox"] {
     }
 
     .desc {
-        margin: 0;
-        margin-left: 3px;
-        margin-top: 2px;
+        margin: 2px 0 0 3px;
         padding: 0 !important;
     }
 

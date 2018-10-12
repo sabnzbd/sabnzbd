@@ -76,7 +76,7 @@ def is_archive(path):
         except:
             logging.info(T('Cannot read %s'), path, exc_info=True)
             return -1, None, ''
-    elif rarfile.is_rarfile(path):
+    elif misc.is_rarfile(path):
         try:
             # Set path to tool to open it
             rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
@@ -233,7 +233,7 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
     #     # Empty, but correct file
     #     return -1, nzo_ids
     except:
-        if data.find("<nzb") >= 0 and data.find("</nzb") < 0:
+        if data.find("<nzb") >= 0 > data.find("</nzb"):
             # Looks like an incomplete file, retry
             return -2, nzo_ids
         else:

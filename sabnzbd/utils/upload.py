@@ -25,7 +25,6 @@ import os
 from sabnzbd.encoding import unicoder
 import sabnzbd.cfg as cfg
 from sabnzbd.filesystem import get_ext, get_filename
-import sabnzbd.newsunpack
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES
 
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile

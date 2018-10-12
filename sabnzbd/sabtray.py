@@ -19,6 +19,7 @@
 sabtray.py - Systray icon for SABnzbd on Windows, contributed by Jan Schejbal
 """
 
+import os
 import logging
 from time import sleep
 
@@ -29,8 +30,6 @@ import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
-import os
-import cherrypy
 
 # contains the tray icon, which demands its own thread
 from sabnzbd.utils.systrayiconthread import SysTrayIconThread
@@ -98,10 +97,13 @@ class SABTrayThread(SysTrayIconThread):
             speed = to_units(bpsnow)
 
             if self.sabpaused:
-                self.hover_text = self.txt_paused
+                if bytes_left > 0:
+                    self.hover_text = "%s - %s: %sB" % (self.txt_paused, self.txt_remaining, mb_left)
+                else:
+                    self.hover_text = self.txt_paused
                 self.icon = self.sabicons['pause']
             elif bytes_left > 0:
-                self.hover_text = "%sB/s %s: %sB (%s)" % (speed, self.txt_remaining, mb_left, time_left)
+                self.hover_text = "%sB/s - %s: %sB (%s)" % (speed, self.txt_remaining, mb_left, time_left)
                 self.icon = self.sabicons['green']
             else:
                 self.hover_text = self.txt_idle

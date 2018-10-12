@@ -19,7 +19,6 @@
 sabnzbd.mailslot - Mailslot communication
 """
 
-import os
 from win32file import GENERIC_WRITE, FILE_SHARE_READ, \
                       OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL
 from ctypes import c_uint, c_buffer, byref, sizeof, windll

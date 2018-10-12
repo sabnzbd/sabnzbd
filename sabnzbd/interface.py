@@ -44,7 +44,6 @@ from sabnzbd.misc import to_units, from_units, time_format, calc_age, \
     cat_to_opts, int_conv, get_base_url, probablyipv4
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.rating import Rating
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
     platform_encode
@@ -59,7 +58,7 @@ from sabnzbd.decoder import SABYENC_ENABLED
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 
-from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, DEF_STDINTF, \
+from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, \
     DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY
 
 from sabnzbd.lang import list_languages
@@ -237,8 +236,7 @@ def check_login():
 
 
 def get_users():
-    users = {}
-    users[cfg.username()] = cfg.password()
+    users = {cfg.username(): cfg.password()}
     return users
 
 
@@ -501,7 +499,7 @@ class MainPage(object):
         # No session key check, due to fixed URLs
         name = kwargs.get('name')
         if name:
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise Raiser(self.__root)
@@ -775,7 +773,7 @@ class NzoPage(object):
 
             # /SABnzbd_nzo_xxxxx/files
             elif 'files' in args:
-                info = self.nzo_files(info, pnfo_list, nzo_id)
+                info = self.nzo_files(info, nzo_id)
 
             # /SABnzbd_nzo_xxxxx/save
             elif 'save' in args:
@@ -785,7 +783,7 @@ class NzoPage(object):
             # /SABnzbd_nzo_xxxxx/
             else:
                 info = self.nzo_details(info, pnfo_list, nzo_id)
-                info = self.nzo_files(info, pnfo_list, nzo_id)
+                info = self.nzo_files(info, nzo_id)
 
             template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'nzo.tmpl'),
                                 filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
@@ -837,7 +835,7 @@ class NzoPage(object):
 
         return info
 
-    def nzo_files(self, info, pnfo_list, nzo_id):
+    def nzo_files(self, info, nzo_id):
         active = []
         nzo = NzbQueue.do.get_nzo(nzo_id)
         if nzo:
@@ -1108,7 +1106,7 @@ class HistoryPage(object):
 
     @secured_expose(check_session_key=True)
     def purge(self, **kwargs):
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         history_db.remove_history()
         raise queueRaiser(self.__root, kwargs)
 
@@ -1135,7 +1133,7 @@ class HistoryPage(object):
     @secured_expose(check_session_key=True)
     def purge_failed(self, **kwargs):
         del_files = bool(int_conv(kwargs.get('del_files')))
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         if del_files:
             del_job_files(history_db.get_failed_paths())
         history_db.remove_failed()
@@ -1175,7 +1173,7 @@ class HistoryPage(object):
         # No session key check, due to fixed URLs
         name = kwargs.get('name')
         if name:
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise Raiser(self.__root)
@@ -1881,9 +1879,13 @@ class ConfigRss(object):
 
     @secured_expose(check_session_key=True, check_configlock=True)
     def upd_rss_filter(self, **kwargs):
+        """ Wrapper, so we can call from api.py """
+        self.internal_upd_rss_filter(**kwargs)
+
+    def internal_upd_rss_filter(self, **kwargs):
         """ Save updated filter definition """
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            feed_cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
@@ -1897,14 +1899,14 @@ class ConfigRss(object):
         enabled = kwargs.get('enabled', '0')
 
         if filt:
-            cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'),
+            feed_cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'),
                                                              platform_encode(filt), prio, enabled))
 
             # Move filter if requested
             index = int_conv(kwargs.get('index', ''))
             new_index = kwargs.get('new_index', '')
             if new_index and int_conv(new_index) != index:
-                cfg.filters.move(int(index), int_conv(new_index))
+                feed_cfg.filters.move(int(index), int_conv(new_index))
 
             config.save_config()
         self.__evaluate = False
@@ -1922,13 +1924,17 @@ class ConfigRss(object):
 
     @secured_expose(check_session_key=True, check_configlock=True)
     def del_rss_filter(self, **kwargs):
+        """ Wrapper, so we can call from api.py """
+        self.internal_del_rss_filter(**kwargs)
+
+    def internal_del_rss_filter(self, **kwargs):
         """ Remove one RSS filter """
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            feed_cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
-        cfg.filters.delete(int(kwargs.get('index', 0)))
+        feed_cfg.filters.delete(int(kwargs.get('index', 0)))
         config.save_config()
         self.__evaluate = False
         self.__show_eval_button = True
@@ -2043,15 +2049,8 @@ class ConfigScheduling(object):
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         def get_days():
-            days = {}
-            days["*"] = T('Daily')
-            days["1"] = T('Monday')
-            days["2"] = T('Tuesday')
-            days["3"] = T('Wednesday')
-            days["4"] = T('Thursday')
-            days["5"] = T('Friday')
-            days["6"] = T('Saturday')
-            days["7"] = T('Sunday')
+            days = {"*": T('Daily'), "1": T('Monday'), "2": T('Tuesday'), "3": T('Wednesday'), "4": T('Thursday'),
+                    "5": T('Friday'), "6": T('Saturday'), "7": T('Sunday')}
             return days
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
@@ -2080,7 +2079,7 @@ class ConfigScheduling(object):
                 if '%' not in value and from_units(value) < 1.0:
                     value = T('off')  # : "Off" value for speedlimit in scheduler
                 else:
-                    if '%' not in value and int_conv(value) > 1 and int_conv(value) < 101:
+                    if '%' not in value and 1 < int_conv(value) < 101:
                         value += '%'
                     value = value.upper()
             if action in actions:
@@ -2135,7 +2134,6 @@ class ConfigScheduling(object):
     @secured_expose(check_session_key=True, check_configlock=True)
     def addSchedule(self, **kwargs):
         servers = config.get_servers()
-        categories = list_cats(False)
         minute = kwargs.get('minute')
         hour = kwargs.get('hour')
         days_of_week = ''.join([str(x) for x in kwargs.get('daysofweek', '')])
@@ -2534,6 +2532,7 @@ def GetRssLog(feed):
         # These fields could be empty
         job['cat'] = job.get('cat', '')
         job['size'] = job.get('size', '')
+        job['infourl'] = job.get('infourl', '')
 
         # Auto-fetched jobs didn't have these fields set
         if job.get('url'):
@@ -2769,7 +2768,7 @@ def rss_history(url, limit=50, search=None):
             stageLine.append("<tr><dt>Stage %s</dt>" % stage['name'])
             actions = []
             for action in stage['actions']:
-                actions.append("<dd>%s</dd>" % (action))
+                actions.append("<dd>%s</dd>" % action)
             actions.sort()
             actions.reverse()
             for act in actions:
