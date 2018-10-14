@@ -215,7 +215,7 @@ class URLGrabber(Thread):
 
                     # URL was redirected, maybe the redirect has better filename?
                     # Check if the original URL has extension
-                    if url != fetch_request.url and misc.get_ext(filename) not in VALID_NZB_FILES:
+                    if url != fetch_request.url and sabnzbd.filesystem.get_ext(filename) not in VALID_NZB_FILES:
                         filename = os.path.basename(urllib.parse.unquote(fetch_request.url))
                 elif '&nzbname=' in filename:
                     # Sometimes the filename contains the full URL, duh!
@@ -241,7 +241,7 @@ class URLGrabber(Thread):
                         continue
                 fetch_request.close()
 
-                if '<nzb' in data and sabnzbd.filesystem.get_ext(filename) != '.nzb':
+                if b'<nzb' in data and sabnzbd.filesystem.get_ext(filename) != '.nzb':
                     filename += '.nzb'
 
                 # Sanitize filename first (also removing forbidden Windows-names)
@@ -256,7 +256,7 @@ class URLGrabber(Thread):
                 del data
 
                 # Check if nzb file
-                if misc.get_ext(filename) in VALID_NZB_FILES:
+                if sabnzbd.filesystem.get_ext(filename) in VALID_NZB_FILES:
                     res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority,
                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
                                                        nzo_id=future_nzo.nzo_id)[0]
