@@ -353,6 +353,7 @@ class RSSQueue(object):
                         continue
             else:
                 link = entry
+                infourl = jobs[link].get('infourl', '')
                 category = jobs[link].get('orgcat', '')
                 if category in ('', '*'):
                     category = None
