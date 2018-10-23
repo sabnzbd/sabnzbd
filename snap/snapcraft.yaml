@@ -17,7 +17,13 @@ parts:
     source: .
     python-version: python2
     python-packages: [cheetah3, cryptography, sabyenc]
-    stage-packages: [par2, unrar, p7zip-full]
+    stage-packages:
+      - to armhf: ["par2:armhf", "unrar:armhf", "p7zip-full:armhf", "openssl:armhf", "libdb:armhf"]
+      - to arm64: ["par2:arm64", "unrar:arm64", "p7zip-full:arm64", "openssl:arm64", "libdb:arm64"]
+      - else: ["par2", "unrar", "p7zip-full", "libdb"]
+    build-packages:
+      - to armhf: ["libffi-dev:armhf", "python-dev:armhf", "libssl-dev:armhf"]
+      - to arm64: ["libffi-dev:arm64", "python-dev:arm64", "libssl-dev:arm64"]
     override-build: |
       snapcraftctl build
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
