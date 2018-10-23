@@ -1,0 +1,24 @@
+name: sabnzbd
+version: git
+summary: SABnzbd
+description: The automated Usenet download tool
+grade: stable
+confinement: strict
+
+apps:
+  sabnzbd:
+    command: opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
+    daemon: simple
+    plugs: [network, network-bind]
+
+parts:
+  sabnzbd:
+    plugin: python
+    source: .
+    python-version: python2
+    python-packages: [cheetah3, cryptography, sabyenc]
+    stage-packages: [par2, unrar, p7zip-full, unzip]
+    override-build: |
+      snapcraftctl build
+      mkdir -p $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
+      cp -R $SNAPCRAFT_PART_BUILD/* $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
