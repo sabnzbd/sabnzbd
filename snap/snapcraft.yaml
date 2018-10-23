@@ -7,9 +7,9 @@ confinement: strict
 
 apps:
   sabnzbd:
-    command: opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
+    command: python $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
     daemon: simple
-    plugs: [network, network-bind]
+    plugs: [network, network-bind, removable-media]
 
 parts:
   sabnzbd:
@@ -17,7 +17,7 @@ parts:
     source: .
     python-version: python2
     python-packages: [cheetah3, cryptography, sabyenc]
-    stage-packages: [par2, unrar, p7zip-full, unzip]
+    stage-packages: [par2, unrar, p7zip-full]
     override-build: |
       snapcraftctl build
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
