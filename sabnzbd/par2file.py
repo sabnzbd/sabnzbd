@@ -167,8 +167,7 @@ def parse_par2_file_packet(f, header):
         elif data[offset:offset + 15] == PAR_CREATOR_ID:
             # From here until the end is the creator-text
             # Useful in case of bugs in the par2-creating software
-            # Remove any \0 aka \x00
-            logging.debug('Par2-creator of %s is: %s', os.path.basename(f.name), data[offset+16:].replace('\x00',''))
-
+            par2creator = data[offset+16:].strip('\0')  # Remove any trailing \0
+            logging.debug('Par2-creator of %s is: %s', os.path.basename(f.name), par2creator)
 
     return nothing
