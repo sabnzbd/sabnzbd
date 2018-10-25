@@ -12,19 +12,28 @@ apps:
     plugs: [network, network-bind, removable-media]
 
 parts:
+  ppa:
+    plugin: nil
+    build-packages: [software-properties-common]
+    override-build: |
+      add-apt-repository -yu ppa:jcfp/sab-addons
+
   sabnzbd:
+    after: [ppa]
     plugin: python
     source: .
     python-version: python2
     python-packages: [cheetah3, cryptography, sabyenc]
     stage-packages:
-      - to armhf: ["par2:armhf", "unrar:armhf", "p7zip-full:armhf", "openssl:armhf", "libdb:armhf"]
-      - to arm64: ["par2:arm64", "unrar:arm64", "p7zip-full:arm64", "openssl:arm64", "libdb:arm64"]
-      - else: ["par2", "unrar", "p7zip-full", "libdb"]
+      - to armhf: ["unrar:armhf", "p7zip-full:armhf", "openssl:armhf", "par2:armhf"]
+      - to arm64: ["unrar:arm64", "p7zip-full:arm64", "openssl:arm64", "par2:arm64"]
+      - else: ["unrar", "p7zip-full", "par2-tbb"]
     build-packages:
       - to armhf: ["libffi-dev:armhf", "python-dev:armhf", "libssl-dev:armhf"]
       - to arm64: ["libffi-dev:arm64", "python-dev:arm64", "libssl-dev:arm64"]
+      - else: ["libffi-dev", "python-dev", "libssl-dev"]
     override-build: |
       snapcraftctl build
+      python tools/make_mo.py
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
       cp -R $SNAPCRAFT_PART_BUILD/* $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
