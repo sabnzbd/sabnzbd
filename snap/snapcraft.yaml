@@ -24,14 +24,11 @@ parts:
     source: .
     python-version: python2
     python-packages: [cheetah3, cryptography, sabyenc]
+    build-attributes: [no-system-libraries]
     stage-packages:
-      - to armhf: ["unrar:armhf", "p7zip-full:armhf", "openssl:armhf", "par2:armhf"]
-      - to arm64: ["unrar:arm64", "p7zip-full:arm64", "openssl:arm64", "par2:arm64"]
-      - else: ["unrar", "p7zip-full", "openssl", "par2-tbb"]
-    build-packages:
-      - to armhf: ["libffi-dev:armhf", "python-dev:armhf", "libssl-dev:armhf"]
-      - to arm64: ["libffi-dev:arm64", "python-dev:arm64", "libssl-dev:arm64"]
-      - else: ["libffi-dev", "python-dev", "libssl-dev"]
+      - to armhf: ["unrar:armhf", "p7zip-full:armhf", "par2:armhf"]
+      - to arm64: ["unrar:arm64", "p7zip-full:arm64", "par2:arm64"]
+      - else: ["unrar", "p7zip-full", "par2-tbb"]
     override-build: |
       snapcraftctl build
       python tools/make_mo.py
