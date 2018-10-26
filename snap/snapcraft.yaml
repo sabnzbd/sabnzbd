@@ -31,10 +31,10 @@ parts:
       - to amd64: ["unrar:amd64", "p7zip-full:amd64", "par2-tbb:amd64"]
       - to i386: ["unrar:i386", "p7zip-full:i386", "par2-tbb:i386"]
     build-packages:
-      - to armhf: ["libffi-dev:armhf", "python-dev:armhf"]
-      - to arm64: ["libffi-dev:arm64", "python-dev:arm64"]
-      - to amd64: ["libffi-dev:amd64", "python-dev:amd64"]
-      - to i386: ["libffi-dev:i386", "python-dev:i386"]
+      - to armhf: ["libffi-dev:armhf", "python-dev:armhf", "libssl-dev:armhf"]
+      - to arm64: ["libffi-dev:arm64", "python-dev:arm64", "libssl-dev:arm64"]
+      - to amd64: ["libffi-dev:amd64", "python-dev:amd64", "libssl-dev:amd64"]
+      - to i386: ["libffi-dev:i386", "python-dev:i386", "libssl-dev:i386"]
     override-build: |
       snapcraftctl build
       python tools/make_mo.py
