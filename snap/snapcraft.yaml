@@ -4,6 +4,7 @@ summary: SABnzbd
 description: The automated Usenet download tool
 grade: stable
 confinement: strict
+icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
 
 apps:
   sabnzbd:
