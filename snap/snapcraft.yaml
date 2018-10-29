@@ -2,9 +2,11 @@ name: sabnzbd
 version: git
 summary: SABnzbd
 description: The automated Usenet download tool
-grade: stable
 confinement: strict
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
+adopt-info: sabnzbd
+version-script: |
+  grep -oP '(?<=^Version: ).*' PKG-INFO
 
 apps:
   sabnzbd:
@@ -13,14 +15,7 @@ apps:
     plugs: [network, network-bind, removable-media]
 
 parts:
-  ppa:
-    plugin: nil
-    build-packages: [software-properties-common]
-    override-build: |
-      add-apt-repository -yu ppa:jcfp/sab-addons
-
   sabnzbd:
-    after: [ppa]
     plugin: python
     source: .
     python-version: python2
@@ -29,13 +24,17 @@ parts:
     stage-packages:
       - to armhf: ["unrar:armhf", "p7zip-full:armhf", "par2:armhf"]
       - to arm64: ["unrar:arm64", "p7zip-full:arm64", "par2:arm64"]
-      - to amd64: ["unrar:amd64", "p7zip-full:amd64", "par2-tbb:amd64"]
-      - to i386: ["unrar:i386", "p7zip-full:i386", "par2-tbb:i386"]
+      - to amd64: ["unrar:amd64", "p7zip-full:amd64", "par2:amd64"]
+      - to i386: ["unrar:i386", "p7zip-full:i386", "par2:i386"]
     build-packages:
       - to armhf: ["libffi-dev:armhf", "python-dev:armhf", "libssl-dev:armhf"]
       - to arm64: ["libffi-dev:arm64", "python-dev:arm64", "libssl-dev:arm64"]
       - to amd64: ["libffi-dev:amd64", "python-dev:amd64", "libssl-dev:amd64"]
       - to i386: ["libffi-dev:i386", "python-dev:i386", "libssl-dev:i386"]
+    override-pull: |
+      snapcraftctl pull
+      [ $(git rev-parse --abbrev-ref HEAD) = "master" ] && GRADE=stable || GRADE=devel
+      snapcraftctl set-grade "$GRADE"
     override-build: |
       snapcraftctl build
       python tools/make_mo.py
