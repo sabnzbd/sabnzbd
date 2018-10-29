@@ -1,4 +1,4 @@
-#Compiled python
+# Compiled python
 *.py[cod]
 
 # Working folders for Win build
@@ -6,6 +6,13 @@ build/
 dist/
 locale/
 srcdist/
+
+# Snapcraft
+parts/
+prime/
+stage/
+snap/.snapcraft/
+*.snap
 
 # Generated email templates
 email/*.tmpl
