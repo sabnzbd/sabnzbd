@@ -1,6 +1,12 @@
 SABnzbd - The automated Usenet download tool
 ============================================
 
+[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/sabnzbd/sabnzbd.svg)](https://isitmaintained.com/project/sabnzbd/sabnzbd "Average time to resolve an issue")
+[![Travis CI](https://travis-ci.org/sabnzbd/sabnzbd.svg?branch=develop)](https://travis-ci.org/sabnzbd/sabnzbd)
+[![AppVeryor](https://ci.appveyor.com/api/projects/status/github/sabnzbd/sabnzbd?svg=true&branch=develop)](https://ci.appveyor.com/project/Safihre/sabnzbd)
+[![Snap Status](https://build.snapcraft.io/badge/sabnzbd/sabnzbd.svg)](https://build.snapcraft.io/user/sabnzbd/sabnzbd)
+[![License](https://img.shields.io/badge/license-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+
 SABnzbd is an Open Source Binary Newsreader written in Python.
 
 It's totally free, incredibly easy to use, and works practically everywhere.
