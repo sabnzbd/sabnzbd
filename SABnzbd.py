@@ -182,7 +182,7 @@ def print_help():
     print "  -s  --server <srv:port>  Listen on server:port [*]"
     print "  -t  --templates <templ>  Template directory [*]"
     print
-    print "  -l  --logging <0..2>     Set logging level (-1=off, 0= least, 2= most) [*]"
+    print "  -l  --logging <-1..2>     Set logging level (-1=off, 0= least, 2= most) [*]"
     print "  -w  --weblogging         Enable cherrypy access logging"
     print
     print "  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]"
@@ -209,7 +209,7 @@ def print_help():
     print "      --new                Run a new instance of SABnzbd"
     print ""
     print "NZB (or related) file:"
-    print "  NZB or zipped NZB file, with extension .nzb, .zip, .rar, .gz, or .bz2"
+    print "  NZB or compressed NZB file, with extension .nzb, .zip, .rar, .7z, .gz, or .bz2"
     print ""
 
 
