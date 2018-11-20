@@ -301,7 +301,7 @@ class RSSQueue(object):
                         msg = T('Server %s uses an untrusted HTTPS certificate') % get_urlbase(uri)
                         msg += ' - https://sabnzbd.org/certificate-errors'
                         logging.error(msg)
-                    elif feed_parsed['href'] != uri and 'login' in feed_parsed['href']:
+                    elif 'href' in feed_parsed and feed_parsed['href'] != uri and 'login' in feed_parsed['href']:
                         # Redirect to login page!
                         msg = T('Do not have valid authentication for feed %s') % uri
                     else:
