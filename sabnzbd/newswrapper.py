@@ -25,7 +25,6 @@ from threading import Thread
 from nntplib import NNTPPermanentError
 import time
 import logging
-import re
 import ssl
 
 import sabnzbd
@@ -151,7 +150,7 @@ class NNTP(object):
     # Pre-define attributes to save memory
     __slots__ = ('host', 'port', 'nw', 'blocking', 'error_msg', 'sock')
 
-    def __init__(self, host, port, info, sslenabled, send_group, nw, user=None, password=None, block=False, write_fds=None):
+    def __init__(self, host, port, info, sslenabled, nw, block=False, write_fds=None):
         self.host = host
         self.port = port
         self.nw = nw
@@ -176,14 +175,14 @@ class NNTP(object):
                 ctx = ssl.create_default_context()
 
                 # Only verify hostname when we're strict
-                if(nw.server.ssl_verify < 2):
+                if nw.server.ssl_verify < 2:
                     ctx.check_hostname = False
                 # Certificates optional
-                if(nw.server.ssl_verify == 0):
+                if nw.server.ssl_verify == 0:
                     ctx.verify_mode = ssl.CERT_NONE
 
                 # Did the user set a custom cipher-string?
-                if(nw.server.ssl_ciphers):
+                if nw.server.ssl_ciphers:
                     # At their own risk, socket will error out in case it was invalid
                     ctx.set_ciphers(nw.server.ssl_ciphers)
 
@@ -313,8 +312,7 @@ class NewsWrapper(object):
 
         # Construct NNTP object and shorthands
         self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
-                         self.server.send_group, self, self.server.username, self.server.password,
-                         self.blocking, write_fds)
+                         self, self.blocking, write_fds)
         self.recv = self.nntp.sock.recv
         self.timeout = time.time() + self.server.timeout
 
@@ -376,19 +374,19 @@ class NewsWrapper(object):
         self.timeout = time.time() + self.server.timeout
         if precheck:
             if self.server.have_stat:
-                command = 'STAT <%s>\r\n' % (self.article.article)
+                command = 'STAT <%s>\r\n' % self.article.article
             else:
-                command = 'HEAD <%s>\r\n' % (self.article.article)
+                command = 'HEAD <%s>\r\n' % self.article.article
         elif self.server.have_body:
-            command = 'BODY <%s>\r\n' % (self.article.article)
+            command = 'BODY <%s>\r\n' % self.article.article
         else:
-            command = 'ARTICLE <%s>\r\n' % (self.article.article)
+            command = 'ARTICLE <%s>\r\n' % self.article.article
         self.nntp.sock.sendall(command)
         self.data = []
 
     def send_group(self, group):
         self.timeout = time.time() + self.server.timeout
-        command = 'GROUP %s\r\n' % (group)
+        command = 'GROUP %s\r\n' % group
         self.nntp.sock.sendall(command)
         self.data = []
 
@@ -416,7 +414,7 @@ class NewsWrapper(object):
                     # time.sleep(0.0001)
                     continue
                 else:
-                    return (0, False, True)
+                    return 0, False, True
 
         # Data is processed differently depending on C-yEnc version
         if sabnzbd.decoder.SABYENC_ENABLED:
@@ -426,16 +424,16 @@ class NewsWrapper(object):
             # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
             chunk_len = len(chunk)
             if chunk[-5:] == '\r\n.\r\n':
-                return (chunk_len, True, False)
+                return chunk_len, True, False
             elif chunk_len < 5 and len(self.data) > 1:
                 # We need to make sure the end is not split over 2 chunks
                 # This is faster than join()
                 combine_chunk = self.data[-2][-5:] + chunk
                 if combine_chunk[-5:] == '\r\n.\r\n':
-                    return (chunk_len, True, False)
+                    return chunk_len, True, False
 
             # Still in middle of data, so continue!
-            return (chunk_len, False, False)
+            return chunk_len, False, False
         else:
             self.last_line += chunk
             new_lines = self.last_line.split('\r\n')
@@ -459,9 +457,9 @@ class NewsWrapper(object):
 
             if self.lines and self.lines[-1] == '.':
                 self.lines = self.lines[1:-1]
-                return (len(chunk), True, False)
+                return len(chunk), True, False
             else:
-                return (len(chunk), False, False)
+                return len(chunk), False, False
 
     def soft_reset(self):
         self.timeout = None

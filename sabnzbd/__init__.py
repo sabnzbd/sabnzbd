@@ -661,13 +661,13 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         try:
             filename = nzbfile.filename.encode('cp1252').decode('utf-8')
         except:
-            # Correct encoding afterall!
+            # Correct encoding after all!
             filename = nzbfile.filename
         filename = encoding.special_fixer(filename)
         keep = False
 
     if not sabnzbd.WIN32:
-        # If windows client sends file to Unix server backslashed may
+        # If windows client sends file to Unix server backslashes may
         # be included, so convert these
         filename = filename.replace('\\', '/')
 
@@ -963,9 +963,9 @@ def save_admin(data, _id):
         try:
             with open(path, 'wb') as data_file:
                 if cfg.use_pickle():
-                    data = pickle.dump(data, data_file)
+                    pickle.dump(data, data_file)
                 else:
-                    data = cPickle.dump(data, data_file)
+                    cPickle.dump(data, data_file)
             break
         except:
             if t == 2:
@@ -1008,12 +1008,12 @@ def pp_to_opts(pp):
     # Convert the pp to an int
     pp = sabnzbd.interface.int_conv(pp)
     if pp == 0:
-        return (False, False, False)
+        return False, False, False
     if pp == 1:
-        return (True, False, False)
+        return True, False, False
     if pp == 2:
-        return (True, True, False)
-    return (True, True, True)
+        return True, True, False
+    return True, True, True
 
 
 def opts_to_pp(repair, unpack, delete):
@@ -1204,7 +1204,7 @@ def test_cert_checking():
             ssl_sock.connect((cfg.selftest_host(), 443))
             ssl_sock.close()
             return True
-        except (socket.gaierror, socket.timeout) as e:
+        except (socket.gaierror, socket.timeout):
             # Non-SSL related error.
             # We now assume that certificates work instead of forcing
             # lower quality just because some (temporary) internet problem

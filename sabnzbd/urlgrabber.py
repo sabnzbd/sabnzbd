@@ -199,7 +199,7 @@ class URLGrabber(Thread):
                     retry = True
                     fetch_request = None
                 elif retry:
-                    fetch_request, msg, retry, wait, data = _analyse(fetch_request, url, future_nzo)
+                    fetch_request, msg, retry, wait, data = _analyse(fetch_request, future_nzo)
 
                 if not fetch_request:
                     if retry:
@@ -351,7 +351,7 @@ def _build_request(url):
     return urllib2.urlopen(req)
 
 
-def _analyse(fetch_request, url, future_nzo):
+def _analyse(fetch_request, future_nzo):
     """ Analyze response of indexer
         returns fetch_request|None, error-message|None, retry, wait-seconds, data
     """

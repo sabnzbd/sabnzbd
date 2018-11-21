@@ -208,7 +208,7 @@ class SABnzbdDelegate(NSObject):
 
         for speed in sorted(speeds.keys()):
             menu_speed_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_('%s' % (speeds[speed]), 'speedlimitAction:', '')
-            menu_speed_item.setRepresentedObject_("%s" % (speed))
+            menu_speed_item.setRepresentedObject_("%s" % speed)
             self.menu_speed.addItem_(menu_speed_item)
 
         self.speed_menu_item.setSubmenu_(self.menu_speed)
@@ -414,7 +414,7 @@ class SABnzbdDelegate(NSObject):
                     if history['status'] != Status.COMPLETED:
                         jobfailed = NSAttributedString.alloc().initWithString_attributes_(job, self.failedAttributes)
                         menu_history_item.setAttributedTitle_(jobfailed)
-                    menu_history_item.setRepresentedObject_("%s" % (path))
+                    menu_history_item.setRepresentedObject_("%s" % path)
                     self.menu_history.addItem_(menu_history_item)
             else:
                 menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(T('Empty'), '', '')
@@ -483,9 +483,9 @@ class SABnzbdDelegate(NSObject):
             if self.state != "" and self.info != "":
                 self.state_menu_item.setTitle_("%s - %s" % (self.state, self.info))
             if self.info == "":
-                self.state_menu_item.setTitle_("%s" % (self.state))
+                self.state_menu_item.setTitle_("%s" % self.state)
             else:
-                self.state_menu_item.setTitle_("%s" % (self.info))
+                self.state_menu_item.setTitle_("%s" % self.info)
 
         except:
             logging.info("[osx] stateUpdate Exception %s" % (sys.exc_info()[0]))

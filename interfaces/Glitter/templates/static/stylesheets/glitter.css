@@ -105,10 +105,7 @@ h2 {
 .navbar-logo {
     vertical-align: middle;
     display: inline-block;
-    margin-right: 12px;
-    margin-left: 15px;
-    margin-top: 4px;
-    margin-bottom: -1px;
+    margin: 4px 12px -1px 15px;
 }
 
 .navbar-logo svg {
@@ -288,8 +285,7 @@ li.dropdown {
     opacity: 0.9;
     color: black;
     z-index: 2000;
-    padding: 1em;
-    padding-top: 15%;
+    padding: 15% 1em 1em;
 }
 
 .main-filedrop.in span {
@@ -721,8 +717,7 @@ td.delete .dropdown>a {
 
 td.delete input[type="checkbox"],
 .add-nzb-inputbox-options input[type="checkbox"]{
-    margin: 0;
-    margin-bottom: -2px;
+    margin: 0 0 -2px;
     display: block;
 }
 
@@ -1155,8 +1150,7 @@ tr.queue-item>td:first-child>a {
 #history-options {
     margin-top: 0;
     margin-left: 10px;
-    padding: 0;
-    padding-left: 4px;
+    padding: 0 0 0 4px;
 }
 
 #history-options .hover-button {
@@ -1536,8 +1530,7 @@ tr.queue-item>td:first-child>a {
 
 .add-nzb-inputbox span {
     display: inline-block;
-    margin: 8px 2px 0px 5px;
-    margin-left: -20px;
+    margin: 8px 2px 0px -20px;
 }
 
 .btn-file {
@@ -1630,11 +1623,9 @@ input[name="nzbURL"] {
 
 #modal-item-files .multioperations-selector {
     clear: left;
-    margin: 0;
     float: left;
     padding: 5px 8px;
-    margin-bottom: 5px;
-    margin-right: 10px;
+    margin: 0 10px 5px 0;
     border: 1px solid #cccccc;
 }
 
@@ -2045,9 +2036,8 @@ a:focus {
     right: 17px;
     display: inline-block;
     border-right: 6px solid transparent;
-    border-bottom: 6px solid #ccc;
+    border-bottom: 6px solid rgba(0, 0, 0, 0.2);
     border-left: 6px solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.2);
     content: '';
 }
 

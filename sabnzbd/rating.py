@@ -25,7 +25,6 @@ import urlparse
 import time
 import logging
 import copy
-import socket
 import Queue
 import collections
 from threading import RLock, Thread
