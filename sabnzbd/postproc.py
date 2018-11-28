@@ -376,19 +376,16 @@ def process_job(nzo):
             newfiles = []
             # Run Stage 2: Unpack
             if flag_unpack:
-                if all_ok:
-                    # set the current nzo status to "Extracting...". Used in History
-                    nzo.status = Status.EXTRACTING
-                    logging.info("Running unpack_magic on %s", filename)
-                    unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
-                    logging.info("Unpacked files %s", newfiles)
+                # set the current nzo status to "Extracting...". Used in History
+                nzo.status = Status.EXTRACTING
+                logging.info("Running unpack_magic on %s", filename)
+                unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
+                logging.info("Unpacked files %s", newfiles)
 
-                    if sabnzbd.WIN32:
-                        # Sanitize the resulting files
-                        newfiles = sanitize_files_in_folder(tmp_workdir_complete)
-                    logging.info("Finished unpack_magic on %s", filename)
-                else:
-                    nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
+                if sabnzbd.WIN32:
+                    # Sanitize the resulting files
+                    newfiles = sanitize_files_in_folder(tmp_workdir_complete)
+                logging.info("Finished unpack_magic on %s", filename)
 
             if cfg.safe_postproc():
                 all_ok = all_ok and not unpack_error
@@ -449,7 +446,6 @@ def process_job(nzo):
                 else:
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
-                    workdir_complete = workdir_complete
 
             if empty:
                 job_result = -1

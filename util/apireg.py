@@ -80,7 +80,6 @@ def set_connection_info(url, user=True):
     except WindowsError:
         if user:
             set_connection_info(url, user=False)
-        pass
     finally:
         _winreg.CloseKey(hive)
 
@@ -96,7 +95,6 @@ def del_connection_info(user=True):
     except WindowsError:
         if user:
             del_connection_info(user=False)
-        pass
     finally:
         _winreg.CloseKey(hive)
 
