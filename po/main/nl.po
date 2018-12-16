@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-09-07 08:30+0000\n"
+"POT-Creation-Date: 2018-12-14 08:30+0000\n"
 "PO-Revision-Date: 2018-03-16 12:21+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-09-08 06:22+0000\n"
-"X-Generator: Launchpad (build 18767)\n"
+"X-Launchpad-Export-Date: 2018-12-15 05:53+0000\n"
+"X-Generator: Launchpad (build 18837)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -978,10 +978,6 @@ msgstr "[%s] Snelle Controle OK"
 msgid "Starting Repair"
 msgstr "Reparatie starten"
 
-#: sabnzbd/newsunpack.py [Warning message]
-msgid "Par verify failed on %s, while QuickCheck succeeded!"
-msgstr "Par-verificatie van %s misgelukt, maar QuickCheck wel gelukt."
-
 #: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparatie mislukt, %s"
@@ -1530,10 +1526,6 @@ msgstr ""
 #: sabnzbd/postproc.py
 msgid "Download failed - Not on your server(s)"
 msgstr "Download mislukt - Niet meer op je server(s)"
-
-#: sabnzbd/postproc.py
-msgid "No post-processing because of failed verification"
-msgstr "Geen nabewerking vanwege mislukte verificatie"
 
 #: sabnzbd/postproc.py
 msgid "Moving"
@@ -5088,6 +5080,9 @@ msgstr "URL ophalen mislukt; %s"
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr "Verwijderen van nzo van nabewerkingswachtrij mislukt"
+
+#~ msgid "No post-processing because of failed verification"
+#~ msgstr "Geen nabewerking vanwege mislukte verificatie"
 
 #~ msgid "View script output"
 #~ msgstr "Toon script resultaat"

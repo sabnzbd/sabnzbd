@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2018-09-07 08:30+0000\n"
+"POT-Creation-Date: 2018-12-14 08:30+0000\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-09-08 06:24+0000\n"
-"X-Generator: Launchpad (build 18767)\n"
+"X-Launchpad-Export-Date: 2018-12-15 05:54+0000\n"
+"X-Generator: Launchpad (build 18837)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -945,10 +945,6 @@ msgstr "[%s] Брза Провера ОК"
 msgid "Starting Repair"
 msgstr "Покретање пооправљања"
 
-#: sabnzbd/newsunpack.py [Warning message]
-msgid "Par verify failed on %s, while QuickCheck succeeded!"
-msgstr "Par provera neuspešna na %s, dok je QuickCheck uspešan!"
-
 #: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Neuspešna popravka, %s"
@@ -1483,10 +1479,6 @@ msgstr "Преузимање је можда погрешно. има %s од п
 #: sabnzbd/postproc.py
 msgid "Download failed - Not on your server(s)"
 msgstr "Неуспешно преузимање - није на вашем серверу"
-
-#: sabnzbd/postproc.py
-msgid "No post-processing because of failed verification"
-msgstr "Нема пост-процесирање пошто провера није успела"
 
 #: sabnzbd/postproc.py
 msgid "Moving"
@@ -5182,6 +5174,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "Queued"
 #~ msgstr "У реду"
+
+#~ msgid "No post-processing because of failed verification"
+#~ msgstr "Нема пост-процесирање пошто провера није успела"
 
 #~ msgid "View script output"
 #~ msgstr "Видети резултат скрипта"

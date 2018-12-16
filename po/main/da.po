@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-09-07 08:30+0000\n"
+"POT-Creation-Date: 2018-12-14 08:30+0000\n"
 "PO-Revision-Date: 2018-11-28 04:21+0000\n"
 "Last-Translator: scootergrisen <scootergrisen@gmail.com>\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-11-29 05:46+0000\n"
-"X-Generator: Launchpad (build 18826)\n"
+"X-Launchpad-Export-Date: 2018-12-15 05:53+0000\n"
+"X-Generator: Launchpad (build 18837)\n"
 "Language: da\n"
 
 #: SABnzbd.py [Error message]
@@ -959,10 +959,6 @@ msgstr "[%s] Hurtig kontrol OK"
 msgid "Starting Repair"
 msgstr "Starter reparation"
 
-#: sabnzbd/newsunpack.py [Warning message]
-msgid "Par verify failed on %s, while QuickCheck succeeded!"
-msgstr "Par verificering mislykkedes på %s, mens QuickCheck lykkedes!"
-
 #: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Reparation mislykkedes, %s"
@@ -1498,10 +1494,6 @@ msgstr "Overførslen kan mislykkes, kun %s af det krævede %s tilgængelig"
 #: sabnzbd/postproc.py
 msgid "Download failed - Not on your server(s)"
 msgstr "Download mislykkedes - ikke på din server (e)"
-
-#: sabnzbd/postproc.py
-msgid "No post-processing because of failed verification"
-msgstr "Ingen efterbehandling på grund af mislykket godkendelse"
 
 #: sabnzbd/postproc.py
 msgid "Moving"
@@ -5491,6 +5483,9 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Automatic Feedback"
 #~ msgstr "Automatisk tilbagemelding"
+
+#~ msgid "No post-processing because of failed verification"
+#~ msgstr "Ingen efterbehandling på grund af mislykket godkendelse"
 
 #~ msgid "Sort by name"
 #~ msgstr "Sortér efter navn"
