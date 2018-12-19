@@ -10,6 +10,8 @@ version-script: |
 
 apps:
   sabnzbd:
+    environment:
+      LC_CTYPE: C.UTF-8
     command: python $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
     daemon: simple
     plugs: [network, network-bind, removable-media]
@@ -38,5 +40,7 @@ parts:
     override-build: |
       snapcraftctl build
       python tools/make_mo.py
-      mkdir -p $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
-      cp -R $SNAPCRAFT_PART_BUILD/* $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
+      mkdir -p $SNAPCRAFT_PART_INSTALL/opt
+      cp -R $SNAPCRAFT_PART_BUILD $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
+    organize:
+      usr/bin/unrar-nonfree: usr/bin/unrar
