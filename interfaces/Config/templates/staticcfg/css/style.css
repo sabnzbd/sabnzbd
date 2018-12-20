@@ -573,6 +573,7 @@ h2.activeRSS {
     float: left;
     margin: 0 6px 0 2px;
     text-align: center;
+    color: black !important;
 }
 .source-icon span {
     top: -3px;

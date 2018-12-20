@@ -1,25 +1,24 @@
-Release Notes - SABnzbd 2.3.5
+Release Notes - SABnzbd 2.3.6
 =========================================================
 
-## Bug fixes since 2.3.4
-- Reworked Deobfuscate.py script for much faster renaming
-- All scripts can now receive input through environment variables
-- Unable to set only one Indexer Category per category
-- Could falsely report not enough blocks are available for repair
-- Failures in un-(7)zip or file-joining would not fail the job
-- Direct Unpack could abort unnecessarily
-- Rare crash during file assembly
-- Server hostname is now used in warnings and logs
-- Improved disk performance measurement
-- Overall improvements in stability and reliability
-- Windows: MultiPar repair of joinable files could fail
-- Windows: Tray icon also shows remaining size when paused
-- Windows: Wizard would not default to installer language
-- Windows: Update MultiPar to 1.3.0.1
-- Windows and macOS: Update UnRar to 5.60
+## Improvements and bug fixes since 2.3.5
+- New option require_modern_tls forces TLSv1.2+ for SSL-connections
+- RSS source icon on all tabs of feed overview
+- RSS source icon now links to feed details page (if available)
+- RSS feed URL's with commas would be wrongly escaped
+- Common RSS login problems will show more appropriate error
+- Added API-call to modify RSS-filters
+- Exceeding disk space could result in endless retry-loop
+- History Retry All would not retry failed NZB URL-fetches
+- API-call to retry a job could result in unexpected error
+- Assume correct SSL/certificate setup if test-host was disabled
+- The par2-file creator was logged incorrectly
+- Linux: Correct supported file extensions of tray icon
+- Windows: Update MultiPar to 1.3.0.2
+- Windows and macOS: Update UnRar to 5.61
 
-Looking for help with SABnzbd development:
-https://www.reddit.com/r/usenet/918nxv/
+Still looking for help with SABnzbd (Python 3) development!
+https://www.reddit.com/r/usenet/comments/918nxv/
 
 ## Upgrading from 2.2.x and older
 - Finish queue

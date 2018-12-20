@@ -1750,7 +1750,6 @@ class NzbObject(TryList):
                     remove_dir(self.downpath)
                 except:
                     logging.debug('Folder not removed: %s', self.downpath)
-                    pass
 
     def gather_info(self, full=False):
         queued_files = []

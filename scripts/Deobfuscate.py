@@ -50,7 +50,6 @@ import time
 import fnmatch
 import struct
 import hashlib
-from os import path
 
 
 # Are we being called from SABnzbd?
@@ -109,10 +108,10 @@ def decodePar(parfile):
 
             # filename makes up for the rest of the packet, padded with null characters
             targetName = parfileToDecode.read(bodyLength - STRUCT_FILE_DESC_PACKET.size).rstrip('\0')
-            targetPath = path.join(dir, targetName)
+            targetPath = os.path.join(dir, targetName)
 
             # file already exists, skip it
-            if path.exists(targetPath):
+            if os.path.exists(targetPath):
                 print "File already exists: " + targetName
                 continue
 
@@ -120,7 +119,7 @@ def decodePar(parfile):
             srcPath = findFile(dir, filelength, hash16k)
             if srcPath is not None:
                 os.rename(srcPath, targetPath)
-                print "Renamed file from " + path.basename(srcPath) + " to " + targetName
+                print "Renamed file from " + os.path.basename(srcPath) + " to " + targetName
                 result = True
             else:
                 print "No match found for: " + targetName
@@ -129,10 +128,10 @@ def decodePar(parfile):
 
 def findFile(dir, filelength, hash16k):
     for filename in os.listdir(dir):
-        filepath = path.join(dir, filename)
+        filepath = os.path.join(dir, filename)
 
         # check if the size matches as an indication
-        if path.getsize(filepath) != filelength: continue
+        if os.path.getsize(filepath) != filelength: continue
 
         with open(filepath, 'rb') as fileToMatch:
             data = fileToMatch.read(16 * 1024)

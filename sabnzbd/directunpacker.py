@@ -412,7 +412,6 @@ class DirectUnpacker(threading.Thread):
                     except:
                         # The user will have to remove it themselves
                         logging.info('Failed to clean Direct Unpack after aborting %s', rarfile_nzf.filename, exc_info=True)
-                        pass
                 else:
                     # We can just remove the whole path
                     remove_all(extraction_path, recursive=True)
