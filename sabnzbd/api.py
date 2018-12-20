@@ -65,13 +65,12 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
 from sabnzbd.newsunpack import userxbit
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
 import sabnzbd.emailer
-import sabnzbd.getipaddress as getipaddress
 
 ##############################################################################
 # API error messages
@@ -501,7 +500,7 @@ def _api_history(name, output, kwargs):
         special = value.lower()
         del_files = bool(int_conv(kwargs.get('del_files')))
         if special in ('all', 'failed', 'completed'):
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             if special in ('all', 'failed'):
                 if del_files:
                     del_job_files(history_db.get_failed_paths(search))
@@ -1149,6 +1148,24 @@ def handle_rss_api(output, kwargs):
         feed.set_dict(kwargs)
     else:
         config.ConfigRSS(name, kwargs)
+
+    action = kwargs.get('filter_action')
+    if action in ('add', 'update'):
+        # Use the general function, but catch the redirect-raise
+        try:
+            kwargs['feed'] = name
+            sabnzbd.interface.ConfigRss('/').internal_upd_rss_filter(**kwargs)
+        except cherrypy.HTTPRedirect:
+            pass
+
+    elif action == 'delete':
+        # Use the general function, but catch the redirect-raise
+        try:
+            kwargs['feed'] = name
+            sabnzbd.interface.ConfigRss('/').internal_del_rss_filter(**kwargs)
+        except cherrypy.HTTPRedirect:
+            pass
+
     return name
 
 
@@ -1197,7 +1214,7 @@ def build_status(skip_dashboard=False, output=None):
         info['ipv6'] = ipv6()
         # Dashboard: DNS-check
         try:
-            getipaddress.addresslookup(cfg.selftest_host())
+            addresslookup(cfg.selftest_host())
             info['dnslookup'] = "OK"
         except:
             info['dnslookup'] = None
@@ -1509,16 +1526,17 @@ def options_list(output):
     })
 
 
-def retry_job(job, new_nzb, password):
+def retry_job(job, new_nzb=None, password=None):
     """ Re enter failed job in the download queue """
     if job:
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
             if pp == 'X':
                 pp = None
-            sabnzbd.add_url(url, pp, script, cat)
+            nzo_id = sabnzbd.add_url(url, pp, script, cat)
             history_db.remove_history(job)
+            return nzo_id
         else:
             path = history_db.get_path(job)
             if path:
@@ -1530,8 +1548,13 @@ def retry_job(job, new_nzb, password):
 
 def retry_all_jobs():
     """ Re enter all failed jobs in the download queue """
-    history_db = sabnzbd.connect_db()
-    return NzbQueue.do.retry_all_jobs(history_db)
+    # Fetch all retryable folders from History
+    items = sabnzbd.api.build_history()[0]
+    nzo_ids = []
+    for item in items:
+        if item['retry']:
+            nzo_ids.append(retry_job(item['nzo_id']))
+    return nzo_ids
 
 
 def del_job_files(job_paths):
@@ -1548,7 +1571,7 @@ def del_hist_job(job, del_files):
         if path:
             PostProcessor.do.delete(job, del_files=del_files)
         else:
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             path = history_db.get_path(job)
             history_db.remove_history(job)
 
@@ -1759,7 +1782,7 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
 
     # Aquire the db instance
     try:
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         close_db = False
     except:
         # Required for repairs at startup because Cherrypy isn't active yet
@@ -2010,7 +2033,6 @@ def history_remove_failed():
     del_job_files(history_db.get_failed_paths())
     history_db.remove_failed()
     history_db.close()
-    del history_db
 
 
 def history_remove_completed():
@@ -2019,4 +2041,3 @@ def history_remove_completed():
     history_db = HistoryDB()
     history_db.remove_completed()
     history_db.close()
-    del history_db

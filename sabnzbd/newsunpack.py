@@ -1142,10 +1142,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                 # Remove this set so we don't try to check it again
                 nzo.remove_parset(parfile_nzf.setname)
             else:
-                if qc_result:
-                    logging.warning(T('Par verify failed on %s, while QuickCheck succeeded!'), parfile)
-                else:
-                    logging.info('Par verify failed on %s!', parfile)
+                logging.info('Par verify failed on %s!', parfile)
 
                 if not readd:
                     # Failed to repair -> remove this set

@@ -499,7 +499,7 @@ class MainPage(object):
         # No session key check, due to fixed URLs
         name = kwargs.get('name')
         if name:
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise Raiser(self.__root)
@@ -1106,7 +1106,7 @@ class HistoryPage(object):
 
     @secured_expose(check_session_key=True)
     def purge(self, **kwargs):
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         history_db.remove_history()
         raise queueRaiser(self.__root, kwargs)
 
@@ -1133,7 +1133,7 @@ class HistoryPage(object):
     @secured_expose(check_session_key=True)
     def purge_failed(self, **kwargs):
         del_files = bool(int_conv(kwargs.get('del_files')))
-        history_db = sabnzbd.connect_db()
+        history_db = sabnzbd.get_db_connection()
         if del_files:
             del_job_files(history_db.get_failed_paths())
         history_db.remove_failed()
@@ -1173,7 +1173,7 @@ class HistoryPage(object):
         # No session key check, due to fixed URLs
         name = kwargs.get('name')
         if name:
-            history_db = sabnzbd.connect_db()
+            history_db = sabnzbd.get_db_connection()
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise Raiser(self.__root)
@@ -1371,7 +1371,7 @@ SPECIAL_BOOL_LIST = \
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
               'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'reject_duplicate_files', 'warn_dupl_jobs',
               'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging',
-              'ignore_empty_files', 'x_frame_options'
+              'ignore_empty_files', 'x_frame_options', 'require_modern_tls'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
@@ -1877,9 +1877,13 @@ class ConfigRss(object):
 
     @secured_expose(check_session_key=True, check_configlock=True)
     def upd_rss_filter(self, **kwargs):
+        """ Wrapper, so we can call from api.py """
+        self.internal_upd_rss_filter(**kwargs)
+
+    def internal_upd_rss_filter(self, **kwargs):
         """ Save updated filter definition """
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            feed_cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
@@ -1893,14 +1897,14 @@ class ConfigRss(object):
         enabled = kwargs.get('enabled', '0')
 
         if filt:
-            cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'),
+            feed_cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'),
                                                              platform_encode(filt), prio, enabled))
 
             # Move filter if requested
             index = int_conv(kwargs.get('index', ''))
             new_index = kwargs.get('new_index', '')
             if new_index and int_conv(new_index) != index:
-                cfg.filters.move(int(index), int_conv(new_index))
+                feed_cfg.filters.move(int(index), int_conv(new_index))
 
             config.save_config()
         self.__evaluate = False
@@ -1918,13 +1922,17 @@ class ConfigRss(object):
 
     @secured_expose(check_session_key=True, check_configlock=True)
     def del_rss_filter(self, **kwargs):
+        """ Wrapper, so we can call from api.py """
+        self.internal_del_rss_filter(**kwargs)
+
+    def internal_del_rss_filter(self, **kwargs):
         """ Remove one RSS filter """
         try:
-            cfg = config.get_rss()[kwargs.get('feed')]
+            feed_cfg = config.get_rss()[kwargs.get('feed')]
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
-        cfg.filters.delete(int(kwargs.get('index', 0)))
+        feed_cfg.filters.delete(int(kwargs.get('index', 0)))
         config.save_config()
         self.__evaluate = False
         self.__show_eval_button = True
@@ -2522,6 +2530,7 @@ def GetRssLog(feed):
         # These fields could be empty
         job['cat'] = job.get('cat', '')
         job['size'] = job.get('size', '')
+        job['infourl'] = job.get('infourl', '')
 
         # Auto-fetched jobs didn't have these fields set
         if job.get('url'):

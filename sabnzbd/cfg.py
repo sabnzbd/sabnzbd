@@ -265,6 +265,7 @@ no_penalties = OptionBool('misc', 'no_penalties', False)
 debug_log_decoding = OptionBool('misc', 'debug_log_decoding', False)
 ignore_empty_files = OptionBool('misc', 'ignore_empty_files', False)
 x_frame_options = OptionBool('misc', 'x_frame_options', True)
+require_modern_tls = OptionBool('misc', 'require_modern_tls', False)
 
 # Text values
 rss_odd_titles = OptionList('misc', 'rss_odd_titles', ['nzbindex.nl/', 'nzbindex.com/', 'nzbclub.com/'])
