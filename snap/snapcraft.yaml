@@ -35,7 +35,11 @@ parts:
       - to i386: ["libffi-dev:i386", "python-dev:i386", "libssl-dev:i386"]
     override-pull: |
       snapcraftctl pull
-      [ $(git rev-parse --abbrev-ref HEAD) = "master" ] && GRADE=stable || GRADE=devel
+      if [ $(git rev-parse --abbrev-ref HEAD) = "master" ]; then
+        GRADE=stable
+      else
+        GRADE=devel
+      fi
       snapcraftctl set-grade "$GRADE"
     override-build: |
       snapcraftctl build
