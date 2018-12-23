@@ -272,13 +272,13 @@ class NzbFile(TryList):
         if self.valid and self.nzf_id:
             # Save first article seperate, but not for all but first par2 file
             # Non-par2 files and the first par2 will have no volume and block number
-            # When DirectUnpack is disabled, do not do any of this to also preserve disk IO
             setname, vol, block = sabnzbd.par2file.analyse_par2(self.filename)
-            if cfg.direct_unpack() and not vol and not block:
+            if not vol and not block:
                 first_num = min(article_db.keys())
                 first_article = self.add_article(article_db.pop(first_num), first_num)
                 first_article.lowest_partnum = True
                 self.nzo.first_articles.append(first_article)
+                self.nzo.first_articles_count += 1
 
             # Any articles left?
             if article_db:
@@ -578,7 +578,7 @@ NzbObjectSaver = (
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted', 'bad_articles',
     'duplicate', 'oversized', 'precheck', 'incomplete', 'reuse', 'meta', 'first_articles',
-    'md5sum', 'servercount', 'unwanted_ext', 'renames', 'rating_filtered'
+    'first_articles_count', 'md5sum', 'servercount', 'unwanted_ext', 'renames', 'rating_filtered'
 )
 
 # Lock to prevent errors when saving the NZO data
@@ -672,6 +672,7 @@ class NzbObject(TryList):
         self.avg_bps_total = 0
 
         self.first_articles = []
+        self.first_articles_count = 0
         self.saved_articles = []
 
         self.nzo_id = None
@@ -1137,6 +1138,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def remove_article(self, article, found):
+        """ Remove article from the NzbFile and do check if it can succeed"""
+        job_can_succeed = True
         nzf = article.nzf
 
         # First or regular article?
@@ -1144,8 +1147,14 @@ class NzbObject(TryList):
             self.first_articles.remove(article)
 
             # All first articles done?
-            if not self.first_articles and self.md5of16k:
-                self.verify_all_filenames_and_resort()
+            if not self.first_articles:
+                # Do we have rename information from par2
+                if self.md5of16k:
+                    self.verify_all_filenames_and_resort()
+
+                # Check the availability of these first articles
+                if cfg.fail_hopeless_jobs() and cfg.fast_fail():
+                    job_can_succeed = self.check_first_article_availability()
 
         # Remove from file-tracking
         file_done = nzf.remove_article(article, found)
@@ -1157,14 +1166,18 @@ class NzbObject(TryList):
         # File completed, remove and do checks
         if file_done:
             self.remove_nzf(nzf)
-            if not self.reuse and cfg.fail_hopeless_jobs() and not self.check_quality(99)[0]:
-                # set the nzo status to return "Queued"
-                self.status = Status.QUEUED
-                self.set_download_report()
-                self.fail_msg = T('Aborted, cannot be completed') + ' - https://sabnzbd.org/not-complete'
-                self.set_unpack_info('Download', self.fail_msg, unique=False)
-                logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
-                return True, True
+            if not self.reuse and cfg.fail_hopeless_jobs():
+                job_can_succeed, _ratio = self.check_availability_ratio(99)
+
+        # Abort the job due to failure
+        if not job_can_succeed:
+            # Set the nzo status to return "Queued"
+            self.status = Status.QUEUED
+            self.set_download_report()
+            self.fail_msg = T('Aborted, cannot be completed') + ' - https://sabnzbd.org/not-complete'
+            self.set_unpack_info('Download', self.fail_msg, unique=False)
+            logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
+            return True, True
 
         if not found:
             # Add extra parfiles when there was a damaged article and not pre-checking
@@ -1425,7 +1438,7 @@ class NzbObject(TryList):
         if self.direct_unpacker:
             self.direct_unpacker.abort()
 
-    def check_quality(self, req_ratio=0):
+    def check_availability_ratio(self, req_ratio=0):
         """ Determine amount of articles present on servers
             and return (gross available, nett) bytes
         """
@@ -1456,6 +1469,19 @@ class NzbObject(TryList):
             enough = have >= need
         logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
         return enough, ratio
+
+    def check_first_article_availability(self):
+        """ Use the first articles to see if
+            it's likely the job will succeed
+        """
+        # Ignore this check on retry
+        if not self.reuse:
+            # Ignore undamaged or small downloads
+            if self.bad_articles and self.first_articles_count >= 10:
+                # We need a float-division, see if more than 80% is there
+                if (self.first_articles_count / float(self.bad_articles)) >= 0.8:
+                    return False
+        return True
 
     @synchronized(NZO_LOCK)
     def set_download_report(self):
@@ -1911,6 +1937,7 @@ class NzbObject(TryList):
             self.renames = {}
         if self.bad_articles is None:
             self.bad_articles = 0
+            self.first_articles_count = 0
         if self.bytes_missing is None:
             self.bytes_missing = 0
         if self.bytes_tried is None:
