@@ -1459,46 +1459,54 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def set_download_report(self):
+        """ Format the stats for the history information """
+        # Pretty-format the per-server stats
+        if self.servercount:
+            # Sort the servers first
+            servers = config.get_servers()
+            server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
+            msgs = ['%s=%sB' % (servers[server_name].displayname(), to_units(self.servercount[server_name])) for server_name in server_names if server_name in self.servercount]
+            self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
+
+            # In case there were no bytes available at all of this download
+            # we list the number of bytes we used while trying
+            if not self.bytes_downloaded:
+                self.bytes_downloaded = sum(self.servercount.values())
+
+        # Format information about the download itself
+        download_msgs = []
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:
-            # get the deltatime since the download started
+            # Get the deltatime since the download started
             avg_bps = self.avg_bps_total / self.avg_bps_freq
             timecompleted = datetime.timedelta(seconds=self.bytes_downloaded / (avg_bps * 1024))
-
             seconds = timecompleted.seconds
-            # find the total time including days
+
+            # Find the total time including days
             totaltime = (timecompleted.days / 86400) + seconds
             self.nzo_info['download_time'] = totaltime
 
-            # format the total time the download took, in days, hours, and minutes, or seconds.
+            # Format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
+            download_msgs.append(T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024)))
+            download_msgs.append(T('Age') + ': ' + calc_age(self.avg_date, True))
 
-            msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024))
-            msg1 += u'<br/>' + T('Age') + ': ' + calc_age(self.avg_date, True)
+        bad = self.nzo_info.get('bad_articles', 0)
+        miss = self.nzo_info.get('missing_articles', 0)
+        killed = self.nzo_info.get('killed_articles', 0)
+        dups = self.nzo_info.get('duplicate_articles', 0)
 
-            bad = self.nzo_info.get('bad_articles', 0)
-            miss = self.nzo_info.get('missing_articles', 0)
-            killed = self.nzo_info.get('killed_articles', 0)
-            dups = self.nzo_info.get('duplicate_articles', 0)
-            msg2 = msg3 = msg4 = msg5 = ''
-            if bad:
-                msg2 = (u'<br/>' + T('%s articles were malformed')) % bad
-            if miss:
-                msg3 = (u'<br/>' + T('%s articles were missing')) % miss
-            if dups:
-                msg4 = (u'<br/>' + T('%s articles had non-matching duplicates')) % dups
-            if killed:
-                msg5 = (u'<br/>' + T('%s articles were removed')) % killed
-            msg = u''.join((msg1, msg2, msg3, msg4, msg5, ))
-            self.set_unpack_info('Download', msg, unique=True)
-            if self.url:
-                self.set_unpack_info('Source', self.url, unique=True)
+        if bad:
+            download_msgs.append(T('%s articles were malformed') % bad)
+        if miss:
+            download_msgs.append(T('%s articles were missing') % miss)
+        if dups:
+            download_msgs.append(T('%s articles had non-matching duplicates') % dups)
+        if killed:
+            download_msgs.append(T('%s articles were removed') % killed)
+        self.set_unpack_info('Download', u'<br/>'.join(download_msgs), unique=True)
 
-            if len(self.servercount) > 0:
-                # Sort the servers first
-                servers = config.get_servers()
-                server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
-                msgs = ['%s=%sB' % (servers[server_name].displayname(), to_units(self.servercount[server_name])) for server_name in server_names if server_name in self.servercount]
-                self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
+        if self.url:
+            self.set_unpack_info('Source', self.url, unique=True)
 
     @synchronized(NZO_LOCK)
     def increase_bad_articles_counter(self, article_type):

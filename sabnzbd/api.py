@@ -1834,10 +1834,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                 item['show_details'] = 'True'
             else:
                 item['show_details'] = ''
-        if item['bytes']:
-            item['size'] = format_bytes(item['bytes'])
-        else:
-            item['size'] = ''
+
+        item['size'] = format_bytes(item['bytes'])
+
         if 'loaded' not in item:
             item['loaded'] = False
 
