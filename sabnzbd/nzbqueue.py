@@ -787,7 +787,7 @@ class NzbQueue(object):
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result
-                enough, _ratio = nzo.check_quality()
+                enough, _ratio = nzo.check_availability_ratio()
                 if enough:
                     # Enough data present, do real download
                     self.cleanup_nzo(nzo, keep_basic=True)
