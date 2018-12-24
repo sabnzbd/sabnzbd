@@ -3,9 +3,8 @@ version: git
 summary: SABnzbd
 description: The automated Usenet download tool
 confinement: strict
-grade: edge
+grade: devel
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
-adopt-info: sabnzbd
 version-script: |
   grep -oP '(?<=^Version: ).*' PKG-INFO
 
@@ -25,7 +24,7 @@ parts:
     python-packages: [cheetah3, cryptography, sabyenc]
     build-attributes: [no-system-libraries]
     stage-packages: [unrar, p7zip-full, par2]
-    build-packages: [libffi-dev, python-dev, ibssl-dev]
+    build-packages: [libffi-dev, python-dev, libssl-dev]
     override-build: |
       snapcraftctl build
       python tools/make_mo.py
