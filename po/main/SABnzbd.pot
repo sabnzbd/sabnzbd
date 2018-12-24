@@ -1,6 +1,6 @@
 #
 # SABnzbd Translation Template file MAIN
-# Copyright 2011-2018 The SABnzbd-Team
+# Copyright 2011-2019 The SABnzbd-Team
 #   team@sabnzbd.org
 #
 msgid ""

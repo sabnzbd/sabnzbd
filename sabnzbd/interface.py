@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -149,7 +149,7 @@ def check_access(access_type=4):
 
 def check_hostname():
     """ Check if hostname is allowed, to mitigate DNS-rebinding attack.
-        Similar to CVE-2018-5702, we need to add protection even
+        Similar to CVE-2019-5702, we need to add protection even
         if only allowed to be accessed via localhost.
     """
     # If login is enabled, no API-key can be deducted
