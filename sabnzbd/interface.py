@@ -34,7 +34,6 @@ from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
 
-from sabnzbd.utils.rsslib import RSS, Item
 import sabnzbd
 import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
@@ -65,7 +64,7 @@ from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, \
 from sabnzbd.lang import list_languages
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-    api_handler, build_queue, rss_qstatus, build_status, \
+    api_handler, build_queue, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
     format_bytes, std_time, report, del_hist_job, Ttemplate, build_queue_header, \
     _api_test_email, _api_test_notif
@@ -2732,72 +2731,3 @@ class ConfigNotify(object):
     def testnotification(self, **kwargs):
         _api_test_notif(name=None, output=None, kwargs=None)
         raise Raiser(self.__root)
-
-
-def rss_history(url, limit=50, search=None):
-    url = url.replace('rss', '')
-
-    youngest = None
-
-    rss = RSS()
-    rss.channel.title = "SABnzbd History"
-    rss.channel.description = "Overview of completed downloads"
-    rss.channel.link = "https://sabnzbd.org/"
-    rss.channel.language = "en"
-
-    items, _fetched_items, _max_items = build_history(limit=limit, search=search)
-
-    for history in items:
-        item = Item()
-
-        item.pubDate = std_time(history['completed'])
-        item.title = history['name']
-
-        if not youngest:
-            youngest = history['completed']
-        elif history['completed'] < youngest:
-            youngest = history['completed']
-
-        if history['url_info']:
-            item.link = history['url_info']
-        else:
-            item.link = url
-            item.guid = history['nzo_id']
-
-        stageLine = []
-        for stage in history['stage_log']:
-            stageLine.append("<tr><dt>Stage %s</dt>" % stage['name'])
-            actions = []
-            for action in stage['actions']:
-                actions.append("<dd>%s</dd>" % action)
-            actions.sort()
-            actions.reverse()
-            for act in actions:
-                stageLine.append(act)
-            stageLine.append("</tr>")
-        item.description = ''.join(stageLine)
-        rss.addItem(item)
-
-    rss.channel.lastBuildDate = std_time(youngest)
-    rss.channel.pubDate = std_time(time.time())
-
-    return rss.write()
-
-
-def rss_warnings():
-    """ Return an RSS feed with last warnings/errors """
-    rss = RSS()
-    rss.channel.title = "SABnzbd Warnings"
-    rss.channel.description = "Overview of warnings/errors"
-    rss.channel.link = "https://sabnzbd.org/"
-    rss.channel.language = "en"
-
-    for warn in sabnzbd.GUIHANDLER.content():
-        item = Item()
-        item.title = warn
-        rss.addItem(item)
-
-    rss.channel.lastBuildDate = std_time(time.time())
-    rss.channel.pubDate = rss.channel.lastBuildDate
-    return rss.write()
-

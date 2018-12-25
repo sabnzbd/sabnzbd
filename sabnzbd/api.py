@@ -47,7 +47,6 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
-from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
 from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
@@ -263,8 +262,6 @@ def _api_queue_default(output, value, kwargs):
     if output in ('xml', 'json'):
         info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
         return report(output, keyword='queue', data=info)
-    elif output == 'rss':
-        return rss_qstatus()
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
 
@@ -1433,66 +1430,6 @@ def build_file_list(nzo_id):
                          'status': 'queued'})
 
     return jobs
-
-
-def rss_qstatus():
-    """ Return a RSS feed with the queue status """
-    qnfo = NzbQueue.do.queue_info()
-    pnfo_list = qnfo.list
-
-    rss = RSS()
-    rss.channel.title = "SABnzbd Queue"
-    rss.channel.description = "Overview of current downloads"
-    rss.channel.link = "http://%s:%s%s/queue" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
-    rss.channel.language = "en"
-
-    item = Item()
-    item.title = 'Total ETA: %s - Queued: %.2f MB - Speed: %.2f kB/s' % \
-                 (
-                     calc_timeleft(qnfo.bytes_left, BPSMeter.do.get_bps()),
-                     qnfo.bytes_left / MEBI,
-                     BPSMeter.do.get_bps() / KIBI
-                 )
-    rss.addItem(item)
-
-    sum_bytesleft = 0
-    for pnfo in pnfo_list:
-        filename = pnfo.filename
-        bytesleft = pnfo.bytes_left / MEBI
-        bytes = pnfo.bytes / MEBI
-        mbleft = (bytesleft / MEBI)
-        mb = (bytes / MEBI)
-        nzo_id = pnfo.nzo_id
-
-        if mb == mbleft:
-            percentage = "0%"
-        else:
-            percentage = "%s%%" % (int(((mb - mbleft) / mb) * 100))
-
-        filename = xml_name(filename)
-        name = '%s (%s)' % (filename, percentage)
-
-        item = Item()
-        item.title = name
-        item.link = "http://%s:%s%s/history" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
-        item.guid = nzo_id
-        status_line = []
-        status_line.append('<tr>')
-        # Total MB/MB left
-        status_line.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
-        # ETA
-        sum_bytesleft += pnfo.bytes_left
-        status_line.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.get_bps()))
-        status_line.append("<dt>Age: %s</dt>" % calc_age(pnfo.avg_date))
-        status_line.append("</tr>")
-        item.description = ''.join(status_line)
-        rss.addItem(item)
-
-    rss.channel.lastBuildDate = std_time(time.time())
-    rss.channel.pubDate = rss.channel.lastBuildDate
-    rss.channel.ttl = "1"
-    return rss.write()
-
 
 def options_list(output):
     return report(output, keyword='options', data={
