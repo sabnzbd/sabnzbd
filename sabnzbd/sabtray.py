@@ -67,25 +67,18 @@ class SABTrayThread(SysTrayIconThread):
         SysTrayIconThread.__init__(self, self.sabicons['default'], text, menu_options, None, 0, "SabTrayIcon")
 
     def set_texts(self):
-        def fix(txt):
-            if trans:
-                return Tx(txt)
-            else:
-                return txt
-
-        trans = str(get_codepage()) == str(sabnzbd.lang.CODEPAGE)
-        self.txt_show_int = fix(TT('Show interface'))
-        self.txt_open_comp = fix(TT('Open complete folder'))
-        self.txt_trouble = fix(TT('Troubleshoot'))
-        self.txt_pause = fix(TT('Pause'))
-        self.txt_shutdown = fix(TT('Shutdown'))
-        self.txt_resume = fix(TT('Resume'))
-        self.txt_restart = fix(TT('Restart'))
-        self.txt_restart_nl = fix(TT('Restart without login'))
-        self.txt_idle = fix(TT('Idle'))
-        self.txt_paused = fix(TT('Paused'))
-        self.txt_remaining = fix(TT('Remaining'))
-        self.txt_rss = fix(TT('Read all RSS feeds'))
+        self.txt_show_int = T('Show interface')
+        self.txt_open_comp = T('Open complete folder')
+        self.txt_trouble = T('Troubleshoot')
+        self.txt_pause = T('Pause')
+        self.txt_shutdown = T('Shutdown')
+        self.txt_resume = T('Resume')
+        self.txt_restart = T('Restart')
+        self.txt_restart_nl = T('Restart without login')
+        self.txt_idle = T('Idle')
+        self.txt_paused = T('Paused')
+        self.txt_remaining = T('Remaining')
+        self.txt_rss = T('Read all RSS feeds')
 
     # called every few ms by SysTrayIconThread
     def doUpdates(self):

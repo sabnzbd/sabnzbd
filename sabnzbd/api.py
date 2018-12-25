@@ -302,7 +302,7 @@ def _api_options(name, output, kwargs):
 
 def _api_translate(name, output, kwargs):
     """ API: accepts output, value(=acronym) """
-    return report(output, keyword='value', data=Tx(kwargs.get('value', '')))
+    return report(output, keyword='value', data=T(kwargs.get('value', '')))
 
 
 def _api_addfile(name, output, kwargs):
@@ -1572,17 +1572,18 @@ def Tspec(txt):
 
 
 _SKIN_CACHE = {}  # Stores pre-translated acronyms
-
-
-# This special is to be used in interface.py for template processing
-# to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
 def Ttemplate(txt):
-    """ Translation function for Skin texts """
+    """ Translation function for Skin texts
+        This special is to be used in interface.py for template processing
+        to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
+    """
     global _SKIN_CACHE
     if txt in _SKIN_CACHE:
         return _SKIN_CACHE[txt]
     else:
-        tra = html.escape(Tx(SKIN_TEXT.get(txt, txt)))
+        # We need to remove the " and ' to be JS/JSON-string-safe
+        # Saving it in dictionary is 20x faster on next look-up
+        tra = T(SKIN_TEXT.get(txt, txt)).replace('"', '&quot;').replace("'", '&apos;')
         _SKIN_CACHE[txt] = tra
         return tra
 
@@ -1590,9 +1591,7 @@ def Ttemplate(txt):
 def clear_trans_cache():
     """ Clean cache for skin translations """
     global _SKIN_CACHE
-    dummy = _SKIN_CACHE
     _SKIN_CACHE = {}
-    del dummy
     sabnzbd.WEBUI_READY = True
 
 
@@ -1620,7 +1619,6 @@ def build_header(webdir='', output=None, trans_functions=True):
         if trans_functions:
             header['T'] = Ttemplate
             header['Tspec'] = Tspec
-            header['Tx'] = Ttemplate
 
         header['uptime'] = uptime
         header['color_scheme'] = sabnzbd.WEB_COLOR or ''

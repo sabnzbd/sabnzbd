@@ -41,7 +41,7 @@
       <!--#end if#-->
     </td>
     <td>$line.size</td>
-    <td>$Tx('post-'+$line.status)</td>
+    <td>$T('post-'+$line.status)</td>
     <td class="right_align">
       <!--#if not $line.loaded#-->
         <!--#if $line.retry#-->
@@ -66,7 +66,7 @@ t = time.strftime(time_format("%H:%M:%S on %A %d %B %Y"), completed)
     Completed at $t
     <br />
     <!--#for $stage in $line.stage_log#-->
-      <span class="bold">$Tx('stage-'+$stage.name.title.lower()): </span><br />
+      <span class="bold">$T('stage-'+$stage.name.title.lower()): </span><br />
       <!--#for $item in $stage.actions #-->
         <span class="left-margin">$item</span><br />
       <!--#end for#-->

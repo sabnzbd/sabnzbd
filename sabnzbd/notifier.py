@@ -217,7 +217,7 @@ def register_growl(growl_server, growl_password):
     growler = GrowlNotifier(
         applicationName='SABnzbd%s' % sys_name,
         applicationIcon=get_icon(),
-        notifications=[Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS],
+        notifications=[T(NOTIFICATION[key]) for key in NOTIFY_KEYS],
         hostname=host or 'localhost',
         port=port or 23053,
         password=growl_password or None
@@ -274,7 +274,7 @@ def send_growl(title, msg, gtype, test=None):
             logging.debug('Send to Growl: %s %s %s', gtype, title, msg)
             try:
                 ret = _GROWL.notify(
-                    noteType=Tx(NOTIFICATION.get(gtype, 'other')),
+                    noteType=T(NOTIFICATION.get(gtype, 'other')),
                     title=title,
                     description=unicoder(msg),
                 )
@@ -313,7 +313,7 @@ if _HAVE_CLASSIC_GROWL:
         """ Send to local Growl server, OSX-only """
         global _local_growl
         if not _local_growl:
-            notes = [Tx(NOTIFICATION[key]) for key in NOTIFY_KEYS]
+            notes = [T(NOTIFICATION[key]) for key in NOTIFY_KEYS]
             _local_growl = Growl.GrowlNotifier(
                 applicationName='SABnzbd',
                 applicationIcon=_OSX_ICON,
@@ -321,7 +321,7 @@ if _HAVE_CLASSIC_GROWL:
                 defaultNotifications=notes
             )
             _local_growl.register()
-        _local_growl.notify(Tx(NOTIFICATION.get(gtype, 'other')), title, msg)
+        _local_growl.notify(T(NOTIFICATION.get(gtype, 'other')), title, msg)
         return None
 
 
@@ -366,7 +366,7 @@ def send_notification_center(title, msg, gtype):
     tool = ncenter_path()
     if tool:
         try:
-            command = [tool, '-title', title, '-message', msg, '-group', Tx(NOTIFICATION.get(gtype, 'other'))]
+            command = [tool, '-title', title, '-message', msg, '-group', T(NOTIFICATION.get(gtype, 'other'))]
             proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
             output = proc.stdout.read()
             proc.wait()
@@ -406,7 +406,7 @@ def send_prowl(title, msg, gtype, force=False, test=None):
     if not apikey:
         return T('Cannot send, missing required data')
 
-    title = Tx(NOTIFICATION.get(gtype, 'other'))
+    title = T(NOTIFICATION.get(gtype, 'other'))
     title = urllib.parse.quote(title.encode('utf8'))
     msg = urllib.parse.quote(msg.encode('utf8'))
     prio = get_prio(gtype, 'prowl')
@@ -443,7 +443,7 @@ def send_pushover(title, msg, gtype, force=False, test=None):
     if not apikey or not userkey:
         return T('Cannot send, missing required data')
 
-    title = Tx(NOTIFICATION.get(gtype, 'other'))
+    title = T(NOTIFICATION.get(gtype, 'other'))
     prio = get_prio(gtype, 'pushover')
 
     if force:
@@ -498,7 +498,7 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
     if not apikey:
         return T('Cannot send, missing required data')
 
-    title = 'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
+    title = 'SABnzbd: ' + T(NOTIFICATION.get(gtype, 'other'))
 
     try:
         conn = http.client.HTTPSConnection('api.pushbullet.com:443')
@@ -533,7 +533,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
         parameters = sabnzbd.cfg.nscript_parameters()
     if not script:
         return T('Cannot send, missing required data')
-    title = 'SABnzbd: ' + Tx(NOTIFICATION.get(gtype, 'other'))
+    title = 'SABnzbd: ' + T(NOTIFICATION.get(gtype, 'other'))
 
     if force or check_classes(gtype, 'nscript'):
         script_path = make_script_path(script)
