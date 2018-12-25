@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -157,6 +157,10 @@ class NNTP(object):
             if sabnzbd.CERTIFICATE_VALIDATION:
                 # Setup the SSL socket
                 ctx = ssl.create_default_context()
+
+                if sabnzbd.cfg.require_modern_tls():
+                    # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
+                    ctx.options |= ssl.OP_NO_SSLv2 | ssl.OP_NO_SSLv3 | ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
 
                 # Only verify hostname when we're strict
                 if nw.server.ssl_verify < 2:

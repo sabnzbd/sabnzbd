@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -61,13 +61,12 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
 from sabnzbd.newsunpack import userxbit
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
 import sabnzbd.emailer
-import sabnzbd.getipaddress as getipaddress
 
 ##############################################################################
 # API error messages
@@ -1197,7 +1196,7 @@ def build_status(skip_dashboard=False, output=None):
         info['ipv6'] = ipv6()
         # Dashboard: DNS-check
         try:
-            getipaddress.addresslookup(cfg.selftest_host())
+            addresslookup(cfg.selftest_host())
             info['dnslookup'] = "OK"
         except:
             info['dnslookup'] = None
@@ -1819,10 +1818,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                 item['show_details'] = 'True'
             else:
                 item['show_details'] = ''
-        if item['bytes']:
-            item['size'] = format_bytes(item['bytes'])
-        else:
-            item['size'] = ''
+
+        item['size'] = format_bytes(item['bytes'])
+
         if 'loaded' not in item:
             item['loaded'] = False
 
@@ -2004,7 +2002,6 @@ def history_remove_failed():
     del_job_files(history_db.get_failed_paths())
     history_db.remove_failed()
     history_db.close()
-    del history_db
 
 
 def history_remove_completed():
@@ -2013,4 +2010,3 @@ def history_remove_completed():
     history_db = HistoryDB()
     history_db.remove_completed()
     history_db.close()
-    del history_db

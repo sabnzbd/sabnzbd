@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -136,12 +136,13 @@ class StatusIcon(Thread):
         dialog.set_select_multiple(True)
 
         filter = gtk.FileFilter()
-        filter.set_name("*.nbz,*.nbz.gz,*.bz2,*.zip,*.rar")
-        filter.add_pattern("*.nzb*")
-        filter.add_pattern("*.nzb.gz")
-        filter.add_pattern("*.nzb.bz2")
+        filter.set_name("*.nzb,*.gz,*.bz2,*.zip,*.rar,*.7z")
+        filter.add_pattern("*.nzb")
+        filter.add_pattern("*.gz")
+        filter.add_pattern("*.bz2")
         filter.add_pattern("*.zip")
         filter.add_pattern("*.rar")
+        filter.add_pattern("*.7z")
         dialog.add_filter(filter)
 
         response = dialog.run()

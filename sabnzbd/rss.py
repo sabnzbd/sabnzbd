@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -301,7 +301,7 @@ class RSSQueue(object):
                         msg = T('Server %s uses an untrusted HTTPS certificate') % get_base_url(uri)
                         msg += ' - https://sabnzbd.org/certificate-errors'
                         logging.error(msg)
-                    elif feed_parsed['href'] != uri and 'login' in feed_parsed['href']:
+                    elif 'href' in feed_parsed and feed_parsed['href'] != uri and 'login' in feed_parsed['href']:
                         # Redirect to login page!
                         msg = T('Do not have valid authentication for feed %s') % uri
                     else:
@@ -353,6 +353,7 @@ class RSSQueue(object):
                         continue
             else:
                 link = entry
+                infourl = jobs[link].get('infourl', '')
                 category = jobs[link].get('orgcat', '')
                 if category in ('', '*'):
                     category = None
@@ -647,7 +648,7 @@ def _get_link(entry):
 
     # GUID usually has URL to result on page
     infourl = None
-    if entry.id and entry.id != link and entry.id.startswith('http'):
+    if entry.get('id') and entry.id != link and entry.id.startswith('http'):
         infourl = entry.id
 
     if size == 0:

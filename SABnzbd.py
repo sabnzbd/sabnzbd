@@ -1,5 +1,5 @@
 #!/usr/bin/python33 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -146,7 +146,7 @@ def print_help():
     print("  -s  --server <srv:port>  Listen on server:port [*]")
     print("  -t  --templates <templ>  Template directory [*]")
     print()
-    print("  -l  --logging <0..2>     Set logging level (-1=off, 0= least, 2= most) [*]")
+    print("  -l  --logging <-1..2>     Set logging level (-1=off, 0= least, 2= most) [*]")
     print("  -w  --weblogging         Enable cherrypy access logging")
     print()
     print("  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]")
@@ -171,13 +171,17 @@ def print_help():
     print("      --disable-file-log   Logging is only written to console")
     print("      --console            Force console logging for OSX app")
     print("      --new                Run a new instance of SABnzbd")
+    print()
+    print("NZB (or related) file:")
+    print("  NZB or compressed NZB file, with extension .nzb, .zip, .rar, .7z, .gz, or .bz2")
+    print()
 
 
 def print_version():
     print(("""
 %s-%s
 
-Copyright (C) 2007-2018, The SABnzbd-Team <team@sabnzbd.org>
+Copyright (C) 2007-2019, The SABnzbd-Team <team@sabnzbd.org>
 SABnzbd comes with ABSOLUTELY NO WARRANTY.
 This is free software, and you are welcome to redistribute it
 under certain conditions. It is licensed under the

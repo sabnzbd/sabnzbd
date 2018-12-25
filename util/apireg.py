@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2012-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2012-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -80,7 +80,6 @@ def set_connection_info(url, user=True):
     except WindowsError:
         if user:
             set_connection_info(url, user=False)
-        pass
     finally:
         winreg.CloseKey(hive)
 
@@ -96,7 +95,6 @@ def del_connection_info(user=True):
     except WindowsError:
         if user:
             del_connection_info(user=False)
-        pass
     finally:
         winreg.CloseKey(hive)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -1142,10 +1142,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
                 # Remove this set so we don't try to check it again
                 nzo.remove_parset(parfile_nzf.setname)
             else:
-                if qc_result:
-                    logging.warning(T('Par verify failed on %s, while QuickCheck succeeded!'), parfile)
-                else:
-                    logging.info('Par verify failed on %s!', parfile)
+                logging.info('Par verify failed on %s!', parfile)
 
                 if not readd:
                     # Failed to repair -> remove this set

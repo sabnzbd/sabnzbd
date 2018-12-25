@@ -10,13 +10,14 @@ import os
 debug = False
 
 
-def isFAT(dir):
+def isFAT(check_dir):
+    """ Check if "check_dir" is on FAT. FAT considered harmful (for big files)
+        Works for Linux, Windows, MacOS
+        NB: On Windows, full path with drive letter is needed!
+    """
 
-# Check if "dir" is on FAT. FAT considered harmful (for big files)
-# Works for Linux, Windows, MacOS
-# NB: On Windows, full path with drive letter is needed!
 
-    FAT = False    # default: not FAT
+    FAT = False # default: not FAT
     # We're dealing with OS calls, so put everything in a try/except, just in case:
     try:
         if 'linux' in sys.platform:
@@ -30,9 +31,8 @@ def isFAT(dir):
             /dev/sda1      vfat 488263616 163545248 324718368  34% /media/sander/INTENSO
             '''
 
-            cmd = "df -T " + dir + " 2>&1"
+            cmd = "df -T " + check_dir + " 2>&1"
             for thisline in os.popen(cmd).readlines():
-                #print thisline
                 if thisline.find('/') == 0:
                     # Starts with /, so a real, local device
                     fstype = thisline.split()[1]
@@ -43,13 +43,13 @@ def isFAT(dir):
                         break
         elif 'win32' in sys.platform:
             import win32api
-            if '?' in dir:
+            if '?' in check_dir:
                 #  Remove \\?\ or \\?\UNC\ prefix from Windows path
-                dir = dir.replace('\\\\?\\UNC\\', '\\\\', 1).replace('\\\\?\\', '', 1)
+                check_dir = check_dir.replace(u'\\\\?\\UNC\\', u'\\\\', 1).replace(u'\\\\?\\', u'', 1)
             try:
-                result = win32api.GetVolumeInformation(os.path.splitdrive(dir)[0])
+                result = win32api.GetVolumeInformation(os.path.splitdrive(check_dir)[0])
                 if debug: print(result)
-                if(result[4].startswith("FAT")):
+                if result[4].startswith("FAT"):
                     FAT = True
             except:
                 pass
@@ -69,7 +69,7 @@ def isFAT(dir):
 
 
             '''
-            dfcmd = "df " + dir
+            dfcmd = "df " + check_dir
             for thisline in os.popen(dfcmd).readlines():
                 if thisline.find('/')==0:
                     if debug: print(thisline)
@@ -87,17 +87,16 @@ def isFAT(dir):
     return FAT
 
 
-
 if __name__ == "__main__":
     if debug: print((sys.platform))
     try:
-        dir = sys.argv[1]
+        dir_to_check = sys.argv[1]
     except:
         print("Specify dir on the command line")
         sys.exit(0)
-    if isFAT(dir):
-        print((dir, "is on FAT"))
+    if isFAT(dir_to_check):
+        print((dir_to_check, "is on FAT"))
     else:
-        print((dir, "is not on FAT"))
+        print((dir_to_check, "is not on FAT"))
 
 

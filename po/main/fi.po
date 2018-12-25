@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-09-07 08:30+0000\n"
+"POT-Creation-Date: 2018-12-14 08:30+0000\n"
 "PO-Revision-Date: 2018-02-14 14:19+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-09-08 06:22+0000\n"
-"X-Generator: Launchpad (build 18767)\n"
+"X-Launchpad-Export-Date: 2018-12-15 05:53+0000\n"
+"X-Generator: Launchpad (build 18837)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -954,11 +954,6 @@ msgstr "[%s] Pikatarkistus OK"
 msgid "Starting Repair"
 msgstr "Aloitetaan korjaus"
 
-#: sabnzbd/newsunpack.py [Warning message]
-msgid "Par verify failed on %s, while QuickCheck succeeded!"
-msgstr ""
-"Par varmennus epäonnistui kohteessa %s, mutta Pikatarkistus onnistui!"
-
 #: sabnzbd/newsunpack.py
 msgid "Repairing failed, %s"
 msgstr "Korjaus epäonnistui, %s"
@@ -1499,10 +1494,6 @@ msgstr "Lataaminen saattaa epäonnistua, vain %s osaa %s osasta saatavilla"
 #: sabnzbd/postproc.py
 msgid "Download failed - Not on your server(s)"
 msgstr "Lataus epäonnistui - Ei ole palvelimilla"
-
-#: sabnzbd/postproc.py
-msgid "No post-processing because of failed verification"
-msgstr "Jälkikäsittelyä ei suoritettu, koska varmennus epäonnistui"
 
 #: sabnzbd/postproc.py
 msgid "Moving"
@@ -5142,6 +5133,9 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ "jotka ovat suurempia kuin 1023.<br>\n"
 #~ "    <br>\n"
 #~ "    Ole hyvä ja uudelleenkäynnistä SABnzbd toisella porttinumerolla."
+
+#~ msgid "No post-processing because of failed verification"
+#~ msgstr "Jälkikäsittelyä ei suoritettu, koska varmennus epäonnistui"
 
 #~ msgid "Add new downloads"
 #~ msgstr "Lisää uusia latauksia"
