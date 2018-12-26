@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2018-12-24 17:40+W. Europe Standard Time\n"
+"POT-Creation-Date: 2018-12-26 18:01+W. Europe Standard Time\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -2412,6 +2412,14 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Adds a verified test NZB of the specified size, filled with random data. Can be used to verify your setup."
 msgstr ""
 
 #: sabnzbd/skintext.py
