@@ -18,26 +18,25 @@
 """
 sabnzbd.utils.upload - File association functions for adding nzb files to sabnzbd
 """
-
-import urllib.request, urllib.parse, urllib.error
-import logging
 import os
-from sabnzbd.encoding import unicoder
+import logging
+import urllib.request
+import urllib.parse
+import urllib.error
+
 import sabnzbd.cfg as cfg
 from sabnzbd.filesystem import get_ext, get_filename
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES
-
 from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
 from sabnzbd.misc import get_from_url
 
 
 def upload_file(url, fp):
-    """ Function for uploading nzbs to a running sabnzbd instance """
+    """ Function for uploading nzbs to a running SABnzbd instance """
     try:
-        fp = unicoder(fp).encode('utf-8')
         fp = urllib.parse.quote_plus(fp)
         url = '%s&mode=addlocalfile&name=%s' % (url, fp)
-        # Add local apikey if it wasn't already in the registered URL
+        # Add local API-key if it wasn't already in the registered URL
         apikey = cfg.api_key()
         if apikey and 'apikey' not in url:
             url = '%s&apikey=%s' % (url, apikey)
@@ -54,7 +53,7 @@ def upload_file(url, fp):
 
 
 def add_local(f):
-    """ Function for easily adding nzb/zip/rar/nzb.gz to sabnzbd """
+    """ Function for easily adding nzb/zip/rar/nzb.gz to SABnzbd """
     if os.path.exists(f):
         fn = get_filename(f)
         if fn:
