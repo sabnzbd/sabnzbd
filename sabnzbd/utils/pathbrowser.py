@@ -19,18 +19,19 @@
 # along with Sick Beard. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import functools
+import sabnzbd
 
 if os.name == 'nt':
-    import win32api, win32con, win32file
+    import win32api
+    import win32con
+    import win32file
+    from ctypes import windll
     MASK = win32con.FILE_ATTRIBUTE_DIRECTORY | win32con.FILE_ATTRIBUTE_HIDDEN
     TMASK = win32con.FILE_ATTRIBUTE_DIRECTORY
     DRIVES = (2, 3, 4)
     NT = True
 else:
     NT = False
-
-import sabnzbd
 
 _JUNKFOLDERS = (
         'boot', 'bootmgr', 'cache', 'msocache', 'recovery', '$recycle.bin', 'recycler',
@@ -39,14 +40,10 @@ _JUNKFOLDERS = (
         )
 
 
-# this is for the drive letter code, it only works on windows
-if os.name == 'nt':
-    from ctypes import windll
-
-
-# adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
 def get_win_drives():
-    """ Return list of detected drives """
+    """ Return list of detected drives, adapted from:
+        http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
+    """
     assert NT
     drives = []
     bitmask = windll.kernel32.GetLogicalDrives()
@@ -57,7 +54,7 @@ def get_win_drives():
     return drives
 
 
-def folders_at_path(path, include_parent = False, show_hidden = False):
+def folders_at_path(path, include_parent=False, show_hidden=False):
     """ Returns a list of dictionaries with the folders contained at the given path
         Give the empty string as the path to list the contents of the root path
         under Unix this means "/", on Windows this will be a list of drive letters)
@@ -70,7 +67,7 @@ def folders_at_path(path, include_parent = False, show_hidden = False):
         else:
             path = '/'
 
-    # walk up the tree until we find a valid path
+    # Walk up the tree until we find a valid path
     path = sabnzbd.filesystem.real_path(sabnzbd.DIR_HOME, path)
     while path and not os.path.isdir(path):
         if path == os.path.dirname(path):
@@ -78,12 +75,12 @@ def folders_at_path(path, include_parent = False, show_hidden = False):
         else:
             path = os.path.dirname(path)
 
-    # fix up the path and find the parent
+    # Fix up the path and find the parent
     path = os.path.abspath(os.path.normpath(path))
     parent_path = os.path.dirname(path)
 
-    # if we're at the root then the next step is the meta-node showing our drive letters
-    if path == parent_path and os.name == 'nt':
+    # If we're at the root then the next step is the meta-node showing our drive letters
+    if path == parent_path and NT:
         parent_path = ""
 
     # List all files and folders
@@ -100,17 +97,18 @@ def folders_at_path(path, include_parent = False, show_hidden = False):
                 list_folder = True
         except:
             list_folder = False
-        if list_folder:
-            file_list.append({ 'name': sabnzbd.filesystem.clip_path(filename), 'path': sabnzbd.filesystem.clip_path(fpath) })
 
-    # Remove junk and sort results
-    file_list = [entry for entry in file_list if os.path.isdir(entry['path']) and entry['name'].lower() not in _JUNKFOLDERS]
+        # Remove junk and sort results
+        if list_folder and  os.path.isdir(fpath) and filename.lower() not in _JUNKFOLDERS:
+            file_list.append({'name': sabnzbd.filesystem.clip_path(filename), 'path': sabnzbd.filesystem.clip_path(fpath)})
+
+    # Sort results
     file_list = sorted(file_list, key=lambda x: os.path.basename(x['name']).lower())
 
     # Add current path
     file_list.insert(0, {'current_path': sabnzbd.filesystem.clip_path(path)})
     if include_parent and parent_path != path:
-        file_list.insert(1,{ 'name': "..", 'path': sabnzbd.filesystem.clip_path(parent_path) })
+        file_list.insert(1, {'name': "..", 'path': sabnzbd.filesystem.clip_path(parent_path)})
 
     return file_list
 
