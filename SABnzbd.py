@@ -281,7 +281,7 @@ def fix_webname(name):
         return 'Glitter'
     elif xname in ('Glitter', 'Plush'):
         return xname
-    elif xname in ('Smpl', 'Wizard'):
+    elif xname in ('Wizard', ):
         return name.lower()
     elif xname in ('Config',):
         return 'Glitter'
