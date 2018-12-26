@@ -122,6 +122,9 @@ class SysTrayIconThread(Thread):
                                option_icon,
                                self._add_ids_to_menu_options(option_action),
                                self._next_action_id))
+            elif option_text == "SEPARATOR":
+                # Skip, add separator later
+                result.append(menu_option + (self._next_action_id,))
             else:
                 print(('Unknown item', option_text, option_icon, option_action))
             self._next_action_id += 1
@@ -233,7 +236,11 @@ class SysTrayIconThread(Thread):
             if option_id in self.menu_actions_by_id:
                 item, extras = win32gui_struct.PackMENUITEMINFO(text=option_text,
                                                                 hbmpItem=option_icon,
-                                                                wID=option_id)
+                                                                wID=option_id,
+                                                                )
+                win32gui.InsertMenuItem(menu, 0, 1, item)
+            elif option_text == "SEPARATOR":
+                item, extras = win32gui_struct.PackMENUITEMINFO(fType=win32con.MFT_SEPARATOR)
                 win32gui.InsertMenuItem(menu, 0, 1, item)
             else:
                 submenu = win32gui.CreatePopupMenu()
