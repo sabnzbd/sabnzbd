@@ -849,6 +849,24 @@ function ViewModel() {
         })
     }
 
+    // Download a test-NZB
+    self.testDownload = function(data, event) {
+        var nzbSize = $(event.target).data('size')
+        // Build request
+        var theCall = {
+            mode: "addurl",
+            name: "https://sabnzbd.org/tests/test_download_" + nzbSize + ".nzb",
+            priority: self.queue.priorityName["Force"]
+        }
+
+        // Add
+        callAPI(theCall).then(function(r) {
+            // Hide and reset/refresh
+            self.refresh()
+            $("#modal-options").modal("hide");
+        });
+    }
+
     // Unblock server
     self.unblockServer = function(servername) {
         callSpecialAPI("./status/unblock_server/", {

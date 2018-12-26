@@ -299,6 +299,8 @@ SKIN_TEXT = {
     'dashboard-speedTestFailed' : TT('Could not write. Check that the directory is writable.'),
     'dashboard-clickToStart' : TT('Click on Repeat test button below to determine'),
     'dashboard-repeatTest' : TT('Repeat test'),
+    'dashboard-testDownload' : TT('Test download'),
+    'dashboard-testDownload-explain' : TT('Adds a verified test NZB of the specified size, filled with random data. Can be used to verify your setup.'),
 
 # Configuration
     'confgFile' : TT('Config File'),

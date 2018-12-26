@@ -1419,6 +1419,14 @@ tr.queue-item>td:first-child>a {
     margin: 5px 0px 10px;
 }
 
+#modal-options .test-download .btn {
+    padding: 1px 5px;
+}
+
+#modal-options #options-status .test-download .btn .glyphicon {
+    margin-right: 2px;
+}
+
 #modal-options .options-function-box {
     margin-top: 5px;
 }
