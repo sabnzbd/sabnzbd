@@ -355,7 +355,7 @@ def check_latest_version():
     except:
         latest_label = ''
     try:
-        url = data.split()[1]
+        url = ubtou(data.split()[1])
     except:
         url = ''
     try:
@@ -363,7 +363,7 @@ def check_latest_version():
     except:
         latest_testlabel = ''
     try:
-        url_beta = data.split()[3]
+        url_beta = ubtou(data.split()[3])
     except:
         url_beta = url
 
