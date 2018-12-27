@@ -747,9 +747,9 @@ class NzbObject(TryList):
             date sorting and unwanted extensions
         """
         if cfg.auto_sort():
-            self.files.sort(cmp=nzf_cmp_date)
+            self.files.sort(key=functools.cmp_to_key(nzf_cmp_date))
         else:
-            self.files.sort(cmp=nzf_cmp_name)
+            self.files.sort(key=functools.cmp_to_key(nzf_cmp_name))
 
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
