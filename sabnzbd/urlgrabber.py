@@ -22,10 +22,11 @@ sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 import os
 import sys
 import time
-import re
 import logging
 import queue
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
 from http.client import IncompleteRead
 from threading import Thread
 
@@ -147,12 +148,6 @@ class URLGrabber(Thread):
                     elif hasattr(e, 'headers') and 'retry-after' in e.headers:
                         # Catch if the server send retry (e.headers is case-INsensitive)
                         wait = misc.int_conv(e.headers['retry-after'])
-
-                # Check if dereference is used
-                new_url = dereferring(url, fetch_request)
-                if new_url:
-                    self.add(new_url, future_nzo)
-                    continue
 
                 if fetch_request:
                     for hdr in fetch_request.headers:
@@ -333,6 +328,7 @@ class URLGrabber(Thread):
 def _build_request(url):
     # Detect basic auth
     # Adapted from python-feedparser
+    user_passwd = None
     urltype, rest = urllib.parse.splittype(url)
     realhost, rest = urllib.parse.splithost(rest)
     if realhost:
@@ -369,20 +365,3 @@ def _analyse(fetch_request, future_nzo):
         return None, msg, True, when, data
 
     return fetch_request, fetch_request.msg, False, 0, data
-
-
-def dereferring(url, fetch_request):
-    """ Find out if we're being diverted to another location.
-        If so, return new url else None
-    """
-    if 'derefer.me' in url:
-        _RE_DEREFER = re.compile(r'content=".*url=([^"]+)">')
-        data = fetch_request.read()
-        for line in data.split('\n'):
-            if '<meta' in line:
-                m = _RE_DEREFER.search(data)
-                if m:
-                    return m.group(1)
-    return None
-
-
