@@ -69,7 +69,7 @@ def set_connection_info(url, user=True):
     try:
         hive = winreg.ConnectRegistry(None, section)
         try:
-            _winreg.CreateKey(hive, keypath)
+            winreg.CreateKey(hive, keypath)
         except:
             pass
         key = winreg.OpenKey(hive, keypath)
@@ -103,17 +103,17 @@ def get_install_lng():
     """ Return language-code used by the installer """
     lng = 0
     try:
-        hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
-        key = _winreg.OpenKey(hive, r"Software\SABnzbd")
-        for i in range(0, _winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = _winreg.EnumValue(key, i)
+        hive = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+        key = winreg.OpenKey(hive, r"Software\SABnzbd")
+        for i in range(0, winreg.QueryInfoKey(key)[1]):
+            name, value, val_type = winreg.EnumValue(key, i)
             if name == 'Installer Language':
                 lng = value
         winreg.CloseKey(key)
     except WindowsError:
         pass
     finally:
-        _winreg.CloseKey(hive)
+        winreg.CloseKey(hive)
 
     if lng in LanguageMap:
         return LanguageMap[lng]

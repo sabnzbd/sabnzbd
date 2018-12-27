@@ -95,12 +95,12 @@ class Option(object):
         """ Return value a dictionary """
         return {self.__keyword: self.get()}
 
-    def set_dict(self, dict):
+    def set_dict(self, input_dict):
         """ Set value based on dictionary """
         if self.__protect:
             return False
         try:
-            return self.set(dict['value'])
+            return self.set(input_dict['value'])
         except KeyError:
             return False
 
@@ -134,11 +134,11 @@ class OptionNumber(Option):
     """ Numeric option class, int/float is determined from default value """
 
     def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True, protect=False):
-        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
         self.__minval = minval
         self.__maxval = maxval
         self.__validation = validation
         self.__int = isinstance(default_val, int)
+        super().__init__(section,keyword, default_val, add=add, protect=protect)
 
     def set(self, value):
         """ set new value, limited by range """
@@ -149,16 +149,16 @@ class OptionNumber(Option):
                 else:
                     value = float(value)
             except ValueError:
-                value = self._Option__default_val
+                value = super().default()
             if self.__validation:
                 error, val = self.__validation(value)
-                self._Option__set(val)
+                super().set(val)
             else:
                 if self.__maxval is not None and value > self.__maxval:
                     value = self.__maxval
                 elif self.__minval is not None and value < self.__minval:
                     value = self.__minval
-                self._Option__set(value)
+                super().set(value)
         return None
 
 
@@ -166,15 +166,15 @@ class OptionBool(Option):
     """ Boolean option class """
 
     def __init__(self, section, keyword, default_val=False, add=True, protect=False):
-        Option.__init__(self, section, keyword, int(default_val), add=add, protect=protect)
+        super().__init__(section,keyword, int(default_val), add=add, protect=protect)
 
     def set(self, value):
         if value is None:
             value = 0
         try:
-            self._Option__set(int(value))
+            super().set(int(value))
         except ValueError:
-            self._Option__set(0)
+            super().set(0)
         return None
 
 
@@ -187,14 +187,11 @@ class OptionDir(Option):
         self.__apply_umask = apply_umask
         self.__create = create
         self.__writable = writable
-        Option.__init__(self, section, keyword, default_val, add=add)
+        super().__init__(section,keyword, default_val, add=add)
 
     def get(self):
         """ Return value, corrected for platform """
-        if self._Option__value is not None:
-            p = self._Option__value
-        else:
-            p = self._Option__default_val
+        p = super().get()
         if sabnzbd.WIN32:
             return p.replace('/', '\\') if '/' in p else p
         else:
@@ -232,14 +229,14 @@ class OptionDir(Option):
         if value is not None and (create or value != self.get()):
             value = value.strip()
             if self.__validation:
-                error, value = self.__validation(self.__root, value, self._Option__default_val)
+                error, value = self.__validation(self.__root, value, super().default())
             if not error:
                 if value and (self.__create or create):
                     res, path = sabnzbd.filesystem.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
                     if not res:
                         error = T('Cannot create %s folder %s') % (self.ident()[1], path)
             if not error:
-                self._Option__set(value)
+                super().set(value)
         return error
 
     def set_create(self, value):
@@ -254,7 +251,7 @@ class OptionList(Option):
         self.__validation = validation
         if default_val is None:
             default_val = []
-        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
+        super().__init__(section,keyword, default_val, add=add, protect=protect)
 
     def set(self, value):
         """ Set the list given a comma-separated string or a list """
@@ -268,7 +265,7 @@ class OptionList(Option):
             if self.__validation:
                 error, value = self.__validation(value)
             if not error:
-                self._Option__set(value)
+                super().set(value)
         return error
 
     def get_string(self):
@@ -292,9 +289,9 @@ class OptionStr(Option):
     """ String class """
 
     def __init__(self, section, keyword, default_val='', validation=None, add=True, strip=True, protect=False):
-        Option.__init__(self, section, keyword, default_val, add=add, protect=protect)
         self.__validation = validation
         self.__strip = strip
+        super().__init__(section, keyword, default_val, add=add, protect=protect)
 
     def get_float(self):
         """ Return value converted to a float, allowing KMGT notation """
@@ -311,9 +308,9 @@ class OptionStr(Option):
             value = value.strip()
         if self.__validation:
             error, val = self.__validation(value)
-            self._Option__set(val)
+            super().set(val)
         else:
-            self._Option__set(value)
+            super().set(value)
         return error
 
 
@@ -321,32 +318,28 @@ class OptionPassword(Option):
     """ Password class """
 
     def __init__(self, section, keyword, default_val='', add=True):
-        Option.__init__(self, section, keyword, default_val, add=add)
         self.get_string = self.get_stars
+        super().__init__(section, keyword, default_val, add=add)
 
     def get(self):
         """ Return decoded password """
-        value = self._Option__value
-        if value is None:
-            return self._Option__default_val
-        else:
-            return decode_password(value, self.ident())
+        return decode_password(super().get(), self.ident())
 
     def get_stars(self):
         """ Return decoded password as asterisk string """
-        return '*' * len(decode_password(self.get(), self.ident()))
+        return '*' * len(self.get())
 
     def get_dict(self, safe=False):
         """ Return value a dictionary """
         if safe:
-            return {self._Option__keyword: self.get_stars()}
+            return {self.ident()[1]: self.get_stars()}
         else:
-            return {self._Option__keyword: self.get()}
+            return {self.ident()[1]: self.get()}
 
     def set(self, pw):
         """ Set password, encode it """
         if (pw is not None and pw == '') or (pw and pw.strip('*')):
-            self._Option__set(encode_password(pw))
+            super().set(encode_password(pw))
         return None
 
 
@@ -416,28 +409,28 @@ class ConfigServer(object):
 
     def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
-        dict = {}
-        dict['name'] = self.__name
-        dict['displayname'] = self.displayname()
-        dict['host'] = self.host()
-        dict['port'] = self.port()
-        dict['timeout'] = self.timeout()
-        dict['username'] = self.username()
+        output_dict = {}
+        output_dict['name'] = self.__name
+        output_dict['displayname'] = self.displayname()
+        output_dict['host'] = self.host()
+        output_dict['port'] = self.port()
+        output_dict['timeout'] = self.timeout()
+        output_dict['username'] = self.username()
         if safe:
-            dict['password'] = self.password.get_stars()
+            output_dict['password'] = self.password.get_stars()
         else:
-            dict['password'] = self.password()
-        dict['connections'] = self.connections()
-        dict['ssl'] = self.ssl()
-        dict['ssl_verify'] = self.ssl_verify()
-        dict['ssl_ciphers'] = self.ssl_ciphers()
-        dict['enable'] = self.enable()
-        dict['optional'] = self.optional()
-        dict['retention'] = self.retention()
-        dict['send_group'] = self.send_group()
-        dict['priority'] = self.priority()
-        dict['notes'] = self.notes()
-        return dict
+            output_dict['password'] = self.password()
+        output_dict['connections'] = self.connections()
+        output_dict['ssl'] = self.ssl()
+        output_dict['ssl_verify'] = self.ssl_verify()
+        output_dict['ssl_ciphers'] = self.ssl_ciphers()
+        output_dict['enable'] = self.enable()
+        output_dict['optional'] = self.optional()
+        output_dict['retention'] = self.retention()
+        output_dict['send_group'] = self.send_group()
+        output_dict['priority'] = self.priority()
+        output_dict['notes'] = self.notes()
+        return output_dict
 
     def delete(self):
         """ Remove from database """
@@ -480,15 +473,15 @@ class ConfigCat(object):
 
     def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
-        dict = {}
-        dict['name'] = self.__name
-        dict['order'] = self.order()
-        dict['pp'] = self.pp()
-        dict['script'] = self.script()
-        dict['dir'] = self.dir()
-        dict['newzbin'] = self.newzbin.get_string()
-        dict['priority'] = self.priority()
-        return dict
+        output_dict = {}
+        output_dict['name'] = self.__name
+        output_dict['order'] = self.order()
+        output_dict['pp'] = self.pp()
+        output_dict['script'] = self.script()
+        output_dict['dir'] = self.dir()
+        output_dict['newzbin'] = self.newzbin.get_string()
+        output_dict['priority'] = self.priority()
+        return output_dict
 
     def delete(self):
         """ Remove from database """
@@ -499,7 +492,7 @@ class OptionFilters(Option):
     """ Filter list class """
 
     def __init__(self, section, keyword, add=True):
-        Option.__init__(self, section, keyword, add=add)
+        super().__init__(section, keyword, add=add)
         self.set([])
 
     def move(self, current, new):
@@ -534,12 +527,12 @@ class OptionFilters(Option):
 
     def get_dict(self, safe=False):
         """ Return filter list as a dictionary with keys 'filter[0-9]+' """
-        dict = {}
+        output_dict = {}
         n = 0
-        for filter in self.get():
-            dict['filter' + str(n)] = filter
+        for filter_name in self.get():
+            output_dict['filter' + str(n)] = filter_name
             n = n + 1
-        return dict
+        return output_dict
 
     def set_dict(self, values):
         """ Create filter list from dictionary with keys 'filter[0-9]+' """
@@ -595,18 +588,18 @@ class ConfigRSS(object):
 
     def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
-        dict = {}
-        dict['name'] = self.__name
-        dict['uri'] = self.uri()
-        dict['cat'] = self.cat()
-        dict['pp'] = self.pp()
-        dict['script'] = self.script()
-        dict['enable'] = self.enable()
-        dict['priority'] = self.priority()
+        output_dict = {}
+        output_dict['name'] = self.__name
+        output_dict['uri'] = self.uri()
+        output_dict['cat'] = self.cat()
+        output_dict['pp'] = self.pp()
+        output_dict['script'] = self.script()
+        output_dict['enable'] = self.enable()
+        output_dict['priority'] = self.priority()
         filters = self.filters.get_dict()
         for kw in filters:
-            dict[kw] = filters[kw]
-        return dict
+            output_dict[kw] = filters[kw]
+        return output_dict
 
     def delete(self):
         """ Remove from database """
@@ -906,15 +899,6 @@ def define_categories():
     except KeyError:
         pass
 
-
-def old_def(item, default):
-    """ Get old INI setting from [misc], if missing use 'default' """
-    try:
-        return CFG['misc'][item]
-    except KeyError:
-        return default
-
-
 def get_categories(cat=0):
     """ Return link to categories section.
         This section will always contain special category '*'
@@ -927,8 +911,7 @@ def get_categories(cat=0):
 
     # Add Default categories
     if '*' not in cats:
-        ConfigCat('*', {'pp': old_def('dirscan_opts', '3'), 'script': old_def('dirscan_script', 'None'),
-                        'priority': old_def('dirscan_priority', NORMAL_PRIORITY)})
+        ConfigCat('*', {'pp': '3', 'script': 'None', 'priority': NORMAL_PRIORITY})
         # Add some category suggestions
         ConfigCat('movies', {})
         ConfigCat('tv', {})
