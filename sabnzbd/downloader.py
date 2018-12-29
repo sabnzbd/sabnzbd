@@ -173,6 +173,8 @@ class Downloader(Thread):
 
         # Used for reducing speed
         self.delayed = False
+        self.bandwidth_limit = 0
+        self.bandwidth_perc = 0
 
         # Used to see if we can add a slowdown to the Downloader-loop
         self.can_be_slowed = None
@@ -409,7 +411,7 @@ class Downloader(Thread):
         sabnzbd.EXTERNAL_IPV6 = sabnzbd.test_ipv6()
         logging.debug('External IPv6 test result: %s', sabnzbd.EXTERNAL_IPV6)
 
-        # Then we check SSL certifcate checking
+        # Then we check SSL certificate checking
         sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.test_cert_checking()
         logging.debug('SSL verification test: %s', sabnzbd.CERTIFICATE_VALIDATION)
 
@@ -524,8 +526,8 @@ class Downloader(Thread):
                 self.force_disconnect = False
 
             # => Select
-            readkeys = list(self.read_fds.keys())
-            writekeys = list(self.write_fds.keys())
+            readkeys = self.read_fds.keys()
+            writekeys = self.write_fds.keys()
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
@@ -586,31 +588,29 @@ class Downloader(Thread):
                     nzo = article.nzf.nzo
 
                 try:
-                    bytes, done, skip = nw.recv_chunk()
+                    bytes_received, done, skip = nw.recv_chunk()
                 except:
-                    bytes, done, skip = (0, False, False)
+                    bytes_received, done, skip = (0, False, False)
 
                 if skip:
                     BPSMeter.do.update()
                     continue
 
-                if bytes < 1:
+                if bytes_received < 1:
                     self.__reset_nw(nw, "server closed connection", warn=False, wait=False)
                     continue
 
                 else:
                     if self.bandwidth_limit:
                         bps = BPSMeter.do.get_bps()
-                        bps += bytes
+                        bps += bytes_received
                         limit = self.bandwidth_limit
                         if bps > limit:
                             while BPSMeter.do.get_bps() > limit:
                                 time.sleep(0.05)
                                 BPSMeter.do.update()
-                    BPSMeter.do.update(server.id, bytes)
-
-                    if nzo:
-                        nzo.update_download_stats(BPSMeter.do.get_bps(), server.id, bytes)
+                    BPSMeter.do.update(server.id, bytes_received)
+                    nzo.update_download_stats(BPSMeter.do.get_bps(), server.id, bytes_received)
 
                 if not done and nw.status_code != 222:
                     if not nw.connected or nw.status_code == 480:
