@@ -180,7 +180,7 @@ class DirectUnpacker(threading.Thread):
                                  'checksum failed', 'You need to start extraction from a previous volume',
                                  'password is incorrect', 'Write error', 'checksum error',
                                  'start extraction from a previous volume')):
-                logging.info('Error in DirectUnpack of %s', self.cur_setname)
+                logging.info('Error in DirectUnpack of %s: %s', self.cur_setname, linebuf.strip())
                 self.abort()
 
             if linebuf.endswith('\n'):
