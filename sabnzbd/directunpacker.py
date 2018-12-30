@@ -385,9 +385,25 @@ class DirectUnpacker(threading.Thread):
 
             # Abort Unrar
             if self.active_instance:
+                # First we try to abort gracefully
+                try:
+                    self.active_instance.stdin.write('Q\n')
+                    time.sleep(0.2)
+                except IOError:
+                    pass
+
+                # Now force kill and give it a bit of time
                 self.active_instance.kill()
-                # We need to wait for it to kill the process
-                self.active_instance.wait()
+                time.sleep(0.2)
+
+                # Have to collect the return-code to avoid zombie
+                # But it will block forever if the process is in special state.
+                # That should never happen, but it can happen on broken unrar's
+                if self.active_instance.poll():
+                    self.active_instance.communicate()
+                else:
+                    # It is still running?!? This should never happen
+                    logging.warning(T('Unable to stop the unrar process.'))
 
             # Wake up the thread
             with self.next_file_lock:
