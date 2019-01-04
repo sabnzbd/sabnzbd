@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:00+0000\n"
+"POT-Creation-Date: 2018-12-27 15:51+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:49+0000\n"
+"X-Launchpad-Export-Date: 2018-12-28 04:47+0000\n"
 "X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
@@ -2102,7 +2102,7 @@ msgstr "通知"
 msgid "Email"
 msgstr "Email"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "分类"
 
@@ -2499,6 +2499,16 @@ msgstr "点击下面的“重复”按钮可开始测试"
 #: sabnzbd/skintext.py
 msgid "Repeat test"
 msgstr "重复测试"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -3549,17 +3559,6 @@ msgid "Send group command before requesting articles."
 msgstr "请求文章之前发送 group 命令。"
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr "只为这些分类使用该服务器。"
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr "已启用的服务器均未选择“默认”分类。队列中未分配到服务器对应分类的任务不会开始下载。"
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "注释"
 
@@ -3738,10 +3737,6 @@ msgid "Enable Growl"
 msgstr "启用 Growl"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "将通知发送到 Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "仅当使用远程 Growl 服务器时需要 (主机:端口)"
 
@@ -3757,17 +3752,9 @@ msgstr "Growl 服务器可选密码"
 msgid "Enable NotifyOSD"
 msgstr "启用NotifyOSD"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "将通知发送到 NotifyOSD"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "通知中心"
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
-msgstr "将通知发送到“通知中心”"
 
 #: sabnzbd/skintext.py
 msgid "Enable Windows Notifications"
@@ -5215,6 +5202,12 @@ msgstr "URL 装取失败; %s"
 #~ msgid "Email Account Settings"
 #~ msgstr "Email 账号设置"
 
+#~ msgid "Send notifications to Growl"
+#~ msgstr "将通知发送到 Growl"
+
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "将通知发送到 NotifyOSD"
+
 #~ msgid "User-defined categories"
 #~ msgstr "用户定义的分类"
 
@@ -5352,6 +5345,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Enable classes of messages to be reported (none, one or multiple)"
 #~ msgstr "启用要报告的消息分组 (无、一或多个)"
+
+#~ msgid "Send notifications to Notification Center"
+#~ msgstr "将通知发送到“通知中心”"
 
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr "*警告*: 已中止任务 \"%s\"，因为发现了加密的 RAR 文件"

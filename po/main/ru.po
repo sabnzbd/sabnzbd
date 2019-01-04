@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-24 11:00+0000\n"
+"POT-Creation-Date: 2018-12-27 15:51+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:48+0000\n"
+"X-Launchpad-Export-Date: 2018-12-28 04:47+0000\n"
 "X-Generator: Launchpad (build 18847)\n"
 "Generated-By: pygettext.py 1.5\n"
 
@@ -2124,7 +2124,7 @@ msgstr "Уведомления"
 msgid "Email"
 msgstr "Эл. почта"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "Категории"
 
@@ -2520,6 +2520,16 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3612,17 +3622,6 @@ msgid "Send group command before requesting articles."
 msgstr "Отправлять команду группы перед запросом статей."
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr ""
 
@@ -3810,10 +3809,6 @@ msgid "Enable Growl"
 msgstr "Использовать Growl"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "Отправлять уведомления в Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Используется только для удалённого сервера Growl (адрес:порт)"
 
@@ -3829,16 +3824,8 @@ msgstr "Необязательный пароль для сервера Growl"
 msgid "Enable NotifyOSD"
 msgstr "Использовать NotifyOSD"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "Отправлять уведомления в NotifyOSD"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -5319,6 +5306,12 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "Email Account Settings"
 #~ msgstr "Параметры учётной записи электронной почты"
+
+#~ msgid "Send notifications to Growl"
+#~ msgstr "Отправлять уведомления в Growl"
+
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "Отправлять уведомления в NotifyOSD"
 
 #~ msgid "User-defined categories"
 #~ msgstr "Пользовательские категории"

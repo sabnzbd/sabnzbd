@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:00+0000\n"
+"POT-Creation-Date: 2018-12-27 15:51+0000\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:48+0000\n"
+"X-Launchpad-Export-Date: 2018-12-28 04:47+0000\n"
 "X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
@@ -2133,7 +2133,7 @@ msgstr "Powiadomienia"
 msgid "Email"
 msgstr "Email"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "Kategorie"
 
@@ -2530,6 +2530,16 @@ msgstr "Kliknij znajdujący się poniżej przycisk Powtórz test, aby zmierzyć"
 #: sabnzbd/skintext.py
 msgid "Repeat test"
 msgstr "Powtórz test"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -3637,17 +3647,6 @@ msgid "Send group command before requesting articles."
 msgstr "Wyślij polecenie GROUP przed żądaniem artykułu"
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr "Używaj tego serwera tylko dla tych kategorii"
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Notatki osobiste"
 
@@ -3828,10 +3827,6 @@ msgid "Enable Growl"
 msgstr "Włącz Growl"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "Wysyłaj powiadomienia Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Tylko dla zdalnych serwerów Growl (host:port)"
 
@@ -3847,17 +3842,9 @@ msgstr "Opcjonalne hasło dla serwera Growl"
 msgid "Enable NotifyOSD"
 msgstr "Włącz NotifyOSD"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "Wysyłaj powiadomienia do NotifyOSD"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Centrum powiadomień"
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
-msgstr "Wysyłaj powiadomienia do centrum powiadomień"
 
 #: sabnzbd/skintext.py
 msgid "Enable Windows Notifications"
@@ -5147,6 +5134,12 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 #~ msgid "Email Account Settings"
 #~ msgstr "Ustawienia konta email"
 
+#~ msgid "Send notifications to Growl"
+#~ msgstr "Wysyłaj powiadomienia Growl"
+
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "Wysyłaj powiadomienia do NotifyOSD"
+
 #~ msgid "Enable sorting and renaming of episodes."
 #~ msgstr "Włącz sortowanie i zmianę nazw odcinków"
 
@@ -5421,6 +5414,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 
 #~ msgid "Click below to test."
 #~ msgstr "Kliknij przycisk poniżej, aby przetestować"
+
+#~ msgid "Send notifications to Notification Center"
+#~ msgstr "Wysyłaj powiadomienia do centrum powiadomień"
 
 #~ msgid "Notification classes"
 #~ msgstr "Klasy powiadomień"

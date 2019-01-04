@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:00+0000\n"
+"POT-Creation-Date: 2018-12-27 15:51+0000\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:48+0000\n"
+"X-Launchpad-Export-Date: 2018-12-28 04:47+0000\n"
 "X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
@@ -2138,7 +2138,7 @@ msgstr "Notificări"
 msgid "Email"
 msgstr "Email"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "Categorii"
 
@@ -2535,6 +2535,16 @@ msgstr "Click pe butonul de Repetare test pentru a determina"
 #: sabnzbd/skintext.py
 msgid "Repeat test"
 msgstr "Repetă test"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -3638,20 +3648,6 @@ msgid "Send group command before requesting articles."
 msgstr "Trimite comanda group înainte de a cere articole."
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr "Utilizează acest server doar pentru aceste categorii."
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr ""
-"Nici unul din serverele activate au categoria 'Default' delectată. Sarcinile "
-"din coada de descărcare care nu au desemnate o categorie corespunzătoare "
-"serverelor nu vor fi descărcate."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Note personale"
 
@@ -3832,10 +3828,6 @@ msgid "Enable Growl"
 msgstr "Activează Growl"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "Trimite notificări Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Foloseşte doar pentru server Growl de la distanţă (gazdă:port)"
 
@@ -3851,17 +3843,9 @@ msgstr "Parolă opţională server Growl"
 msgid "Enable NotifyOSD"
 msgstr "Activează NotifyOSD"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "Trimite notificări către NotifyOSD"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Centru Notificări"
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
-msgstr "Trimite notificări la Centru Notificări"
 
 #: sabnzbd/skintext.py
 msgid "Enable Windows Notifications"
@@ -5462,6 +5446,12 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ "Verifică rezultatul dezarhivării ( trebuie să fie dezactivat pentru unele "
 #~ "sisteme de fișiere )"
 
+#~ msgid "Send notifications to Growl"
+#~ msgstr "Trimite notificări Growl"
+
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "Trimite notificări către NotifyOSD"
+
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "Fișier par2 invalid, nu pot verifica sau repara"
 
@@ -5480,6 +5470,9 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "Notification classes"
 #~ msgstr "Clase notificări"
+
+#~ msgid "Send notifications to Notification Center"
+#~ msgstr "Trimite notificări la Centru Notificări"
 
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr ""
