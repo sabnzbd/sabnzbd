@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-27 15:51+0000\n"
-"PO-Revision-Date: 2018-12-28 17:42+0000\n"
+"POT-Creation-Date: 2019-01-04 12:42+0000\n"
+"PO-Revision-Date: 2019-01-05 10:03+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-29 04:47+0000\n"
+"X-Launchpad-Export-Date: 2019-01-06 04:48+0000\n"
 "X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
@@ -431,6 +431,10 @@ msgstr "הושלם"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "פורקו %s קבצים/תיקיות תוך %s"
+
+#: sabnzbd/directunpacker.py [Warning message]
+msgid "Unable to stop the unrar process."
+msgstr "לא היה ניתן לעצור את תהליך החילוץ"
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
