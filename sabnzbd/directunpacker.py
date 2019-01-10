@@ -344,6 +344,11 @@ class DirectUnpacker(threading.Thread):
         # The first NZF
         self.rarfile_nzf = self.have_next_volume()
 
+        # Ignore if maybe this set is not there any more
+        # This can happen due to race/timing issues when creating the sets
+        if not self.rarfile_nzf:
+            return
+
         # Generate command
         rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
         if sabnzbd.WIN32:
