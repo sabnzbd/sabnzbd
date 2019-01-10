@@ -408,7 +408,10 @@ class DirectUnpacker(threading.Thread):
                     self.active_instance.communicate()
                 else:
                     # It is still running?!? This should never happen
-                    logging.warning(T('Unable to stop the unrar process.'))
+                    # Wait a little bit longer just to be sure..
+                    time.sleep(2.0)
+                    if not self.active_instance.poll():
+                        logging.warning(T('Unable to stop the unrar process.'))
 
             # Wake up the thread
             with self.next_file_lock:
