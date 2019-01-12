@@ -3,7 +3,7 @@ version: git
 summary: SABnzbd
 description: The automated Usenet download tool
 confinement: strict
-grade: devel
+grade: stable
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
 version-script: |
   grep -oP '(?<=^Version: ).*' PKG-INFO
