@@ -450,6 +450,8 @@
                 \$(this).html(\$(this).html().replace("$T('showDetails')", "$T('hideDetails')"));
             } else {
                 \$(this).html(\$(this).html().replace("$T('hideDetails')", "$T('showDetails')"));
+                // Recalculate the charts if changed while details were open
+                showCharts()
             }
             // Add coloring
             addRowColor()

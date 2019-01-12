@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-14 08:30+0000\n"
+"POT-Creation-Date: 2019-01-04 12:42+0000\n"
 "PO-Revision-Date: 2018-05-31 06:22+0000\n"
 "Last-Translator: scope <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-15 05:53+0000\n"
-"X-Generator: Launchpad (build 18837)\n"
+"X-Launchpad-Export-Date: 2019-01-05 05:41+0000\n"
+"X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -456,6 +456,10 @@ msgstr "Fertiggestellt"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "%s Datei(en)/Ordner entpackt in %s"
+
+#: sabnzbd/directunpacker.py [Warning message]
+msgid "Unable to stop the unrar process."
+msgstr ""
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -2192,7 +2196,7 @@ msgstr "Benachrichtigungen"
 msgid "Email"
 msgstr "E-Mail"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "Kategorien"
 
@@ -2592,6 +2596,16 @@ msgstr "Klick auf \"Test wiederholen\" um es festzustellen"
 #: sabnzbd/skintext.py
 msgid "Repeat test"
 msgstr "Test wiederholen"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -3756,20 +3770,6 @@ msgid "Send group command before requesting articles."
 msgstr "Gruppen-Befehl senden, bevor Artikeln angefordert werden."
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr "Diesen Server nur für diese Kategorien benutzen."
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr ""
-"Keiner der aktivierten Server hat die \"Standard\" Kategorie ausgewählt. "
-"Jobs in der Warteschlange die nicht mit einer Server Kategorie verbunden "
-"sind werden nicht Heruntergeladen."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Persönliche Notizen"
 
@@ -3952,10 +3952,6 @@ msgid "Enable Growl"
 msgstr "Growl aktivieren"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "Benachrichtigungen an Growl senden"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Nur für entfernten Growl-Server verwenden (Rechnername:Port)"
 
@@ -3971,17 +3967,9 @@ msgstr "Optionales Passwort für den Growl-Server"
 msgid "Enable NotifyOSD"
 msgstr "NotifyOSD aktivieren"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "Benachrichtigungen an NotifyOSD senden"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Benachrichtigungscenter"
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
-msgstr "Benachrichtigung an Benachrichtigungscenter schicken"
 
 #: sabnzbd/skintext.py
 msgid "Enable Windows Notifications"
@@ -5588,6 +5576,12 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Apply maximum retries only to optional servers"
 #~ msgstr "Die Anzahl Wiederholungen nur auf optionale Server anwenden"
 
+#~ msgid "Send notifications to Growl"
+#~ msgstr "Benachrichtigungen an Growl senden"
+
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "Benachrichtigungen an NotifyOSD senden"
+
 #~ msgid "Check result of unpacking"
 #~ msgstr "Resultat des Entpackens überprüfen"
 
@@ -5617,6 +5611,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "Notification classes"
 #~ msgstr "Benachrichtigungsarten"
+
+#~ msgid "Send notifications to Notification Center"
+#~ msgstr "Benachrichtigung an Benachrichtigungscenter schicken"
 
 #~ msgid "Enable classes of messages to be reported (none, one or multiple)"
 #~ msgstr ""

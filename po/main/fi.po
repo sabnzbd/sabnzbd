@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-14 08:30+0000\n"
+"POT-Creation-Date: 2019-01-04 12:42+0000\n"
 "PO-Revision-Date: 2018-02-14 14:19+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-15 05:53+0000\n"
-"X-Generator: Launchpad (build 18837)\n"
+"X-Launchpad-Export-Date: 2019-01-05 05:41+0000\n"
+"X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -437,6 +437,10 @@ msgstr "Valmistunut"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "Purettiin %s tiedostoa/kansiota kohteeseen %s"
+
+#: sabnzbd/directunpacker.py [Warning message]
+msgid "Unable to stop the unrar process."
+msgstr ""
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -2133,7 +2137,7 @@ msgstr "Ilmoitukset"
 msgid "Email"
 msgstr "Sähköposti"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "Kategoriat"
 
@@ -2531,6 +2535,16 @@ msgstr "Paina Toista testi -painiketta alapuolella määrittääksesi"
 #: sabnzbd/skintext.py
 msgid "Repeat test"
 msgstr "Toista testi"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -3656,20 +3670,6 @@ msgid "Send group command before requesting articles."
 msgstr "Lähettää ryhmäkomennon ennen artikkeleiden pyytämistä."
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr "Käytä tätä palvelinta vain näihin kategorioihin."
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr ""
-"Ainoallakaan käytössä olevalla palvelimella ei ole 'Oletus' kategoriaa "
-"valittuna. Jonossa olevia latauksia, joita ei ole lisätty johonkin "
-"palvelimen kategoriaan ei tulla lataamaan."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Henkilökohtaiset huomautukset"
 
@@ -3850,10 +3850,6 @@ msgid "Enable Growl"
 msgstr "Growl käytössä"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "Lähetä ilmoitukset Growliin"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Käytä vain Growl etäpalvelimelle (isäntä:portti)"
 
@@ -3869,17 +3865,9 @@ msgstr "Vaihtoehtoinen salasana Growl palvelimelle"
 msgid "Enable NotifyOSD"
 msgstr "NotifyOSD käytössä"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "Lähetä ilmoitukset NotifyOSD:hen"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Ilmoituskeskus"
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
-msgstr "Lähetä ilmoitukset ilmoituskeskukseen"
 
 #: sabnzbd/skintext.py
 msgid "Enable Windows Notifications"
@@ -5390,6 +5378,12 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ msgid "Are you sure you want to delete"
 #~ msgstr "Oletko varma, että haluat poistaa"
 
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "Lähetä ilmoitukset NotifyOSD:hen"
+
+#~ msgid "Send notifications to Growl"
+#~ msgstr "Lähetä ilmoitukset Growliin"
+
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr "Ei voitu poistaa nzo:ta jälkikäsittelyn jonosta (id)"
 
@@ -5492,6 +5486,9 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ msgstr ""
 #~ "Ottaa luokat käyttöön viesteille joita raportoidaan (ei mitään, yksi tai "
 #~ "monta)"
+
+#~ msgid "Send notifications to Notification Center"
+#~ msgstr "Lähetä ilmoitukset ilmoituskeskukseen"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "Ryhmien / Indeksoijan tunnisteet"

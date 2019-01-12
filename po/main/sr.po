@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2018-12-14 08:30+0000\n"
+"POT-Creation-Date: 2019-01-04 12:42+0000\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-15 05:54+0000\n"
-"X-Generator: Launchpad (build 18837)\n"
+"X-Launchpad-Export-Date: 2019-01-05 05:42+0000\n"
+"X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -430,6 +430,10 @@ msgstr "Завршено"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "Издвојено %s датотека/фасцикла у %s"
+
+#: sabnzbd/directunpacker.py [Warning message]
+msgid "Unable to stop the unrar process."
+msgstr ""
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -2118,7 +2122,7 @@ msgstr "Обавештења"
 msgid "Email"
 msgstr "Е-пошта"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "Категорије"
 
@@ -2515,6 +2519,16 @@ msgstr "Kliknite na dugme Ponovi test ispod, da odredite"
 #: sabnzbd/skintext.py
 msgid "Repeat test"
 msgstr "Ponovi test"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -3606,17 +3620,6 @@ msgid "Send group command before requesting articles."
 msgstr "Послати команду 'group' пре тражења артикла."
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr "Koristi ovaj server samo za sledeće kategorije"
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Lične zabeleške"
 
@@ -3796,10 +3799,6 @@ msgid "Enable Growl"
 msgstr "Упали „Growl“"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "Пошаљи обавештења у „Growl“"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Користи само удаљен „Growl“ сервер (хост:порт)"
 
@@ -3815,17 +3814,9 @@ msgstr "Опциона лозинка за „Growl“ сервер"
 msgid "Enable NotifyOSD"
 msgstr "Упали „NotifyOSD“"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "Шаљи обавештења у „NotifyOSD“"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Центар за обавештења"
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
-msgstr "Пошаљи нотификације у Центру нотификације"
 
 #: sabnzbd/skintext.py
 msgid "Enable Windows Notifications"
@@ -5279,6 +5270,12 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgstr ""
 #~ "Провери резултат издвоја (треба да се угаси за неке системе датотеке)."
 
+#~ msgid "Send notifications to Growl"
+#~ msgstr "Пошаљи обавештења у „Growl“"
+
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "Шаљи обавештења у „NotifyOSD“"
+
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "Погрешне par2 дат., не може да се провери/поправи"
 
@@ -5400,6 +5397,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "Notification classes"
 #~ msgstr "Класе нотификације"
+
+#~ msgid "Send notifications to Notification Center"
+#~ msgstr "Пошаљи нотификације у Центру нотификације"
 
 #~ msgid "Enable classes of messages to be reported (none, one or multiple)"
 #~ msgstr "Омогући класе поруке да буду извештене (без, једна или више)"

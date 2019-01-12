@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-14 08:30+0000\n"
-"PO-Revision-Date: 2018-09-26 20:48+0000\n"
+"POT-Creation-Date: 2019-01-04 12:42+0000\n"
+"PO-Revision-Date: 2019-01-05 10:03+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-15 05:53+0000\n"
-"X-Generator: Launchpad (build 18837)\n"
+"X-Launchpad-Export-Date: 2019-01-06 04:48+0000\n"
+"X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -431,6 +431,10 @@ msgstr "הושלם"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "פורקו %s קבצים/תיקיות תוך %s"
+
+#: sabnzbd/directunpacker.py [Warning message]
+msgid "Unable to stop the unrar process."
+msgstr "לא היה ניתן לעצור את תהליך החילוץ"
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -1245,7 +1249,7 @@ msgstr "אזהרות"
 
 #: sabnzbd/osxmenu.py # sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py
 msgid "Idle"
-msgstr "סרק"
+msgstr "מנוחה"
 
 #: sabnzbd/osxmenu.py
 msgid "Configuration"
@@ -2127,7 +2131,7 @@ msgstr "התראות"
 msgid "Email"
 msgstr "דוא\"ל"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "קטגוריות"
 
@@ -2526,6 +2530,18 @@ msgstr "לחץ על הכפתור חזור על בחינה למטה כדי לקב
 #: sabnzbd/skintext.py
 msgid "Repeat test"
 msgstr "חזור על בחינה"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr "בחן הורדה"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
+msgstr ""
+"מוסיף בחינה מוודאת של הגודל המצוין, ממולא בנתונים אקראיים. יכול לשמש כדי "
+"לוודא ההגדרה שלך"
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -3626,19 +3642,6 @@ msgid "Send group command before requesting articles."
 msgstr ".פקודת שלח קבוצה לפני בקשת מאמרים"
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr ".השתמש רק בשרת זה עבור קטגוריות אלו"
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr ""
-".לאף אחד מהשרתים המאופשרים אין את הקטגוריה 'ברירת מחדל' נבחרת. עבודות בתור "
-"שאינן מוקצאות לאחד ממדורי השרת לא יורדו"
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "הערות אישיות"
 
@@ -3818,10 +3821,6 @@ msgid "Enable Growl"
 msgstr "Growl אפשר"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "Growl שלח התראות אל"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "מרוחק (מארח:פתחה) Growl השתמש רק עבור שרת"
 
@@ -3837,17 +3836,9 @@ msgstr "שרת Growl סיסמה רשותית עבור"
 msgid "Enable NotifyOSD"
 msgstr "NotifyOSD אפשר"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "NotifyOSD שלח התראות אל"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "מרכז ההתראות"
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
-msgstr "שלח התראות אל מרכז ההתראות"
 
 #: sabnzbd/skintext.py
 msgid "Enable Windows Notifications"
@@ -4344,7 +4335,7 @@ msgstr "..SABnzbd אבד חיבור אל"
 
 #: sabnzbd/skintext.py
 msgid "In case of SABnzbd restart this screen will disappear automatically!"
-msgstr "!המסך יעלם באופן אוטומטי SABnzbd במקרה של הפעלה מחדש של"
+msgstr "!המסך ייעלם באופן אוטומטי SABnzbd במקרה של הפעלה מחדש של"
 
 #: sabnzbd/skintext.py
 msgid "WARNING:"
@@ -4698,7 +4689,7 @@ msgstr "פנוי (זמני)"
 
 #: sabnzbd/skintext.py
 msgid "IDLE"
-msgstr "מושבת"
+msgstr "מנוחה"
 
 #: sabnzbd/skintext.py
 msgid "Downloads"
@@ -4953,6 +4944,15 @@ msgstr "%s ;משיכת כתובת נכשלה"
 
 #~ msgid "Email Test Result"
 #~ msgstr "תוצאת בחינת דוא\"ל"
+
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "NotifyOSD שלח התראות אל"
+
+#~ msgid "Send notifications to Notification Center"
+#~ msgstr "שלח התראות אל מרכז ההתראות"
+
+#~ msgid "Send notifications to Growl"
+#~ msgstr "Growl שלח התראות אל"
 
 #~ msgid "Show files"
 #~ msgstr "הראה קבצים"
