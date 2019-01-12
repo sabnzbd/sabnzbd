@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-14 08:30+0000\n"
-"PO-Revision-Date: 2018-03-16 21:07+0000\n"
+"POT-Creation-Date: 2019-01-04 12:42+0000\n"
+"PO-Revision-Date: 2019-01-05 12:50+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-15 05:53+0000\n"
-"X-Generator: Launchpad (build 18837)\n"
+"X-Launchpad-Export-Date: 2019-01-06 04:48+0000\n"
+"X-Generator: Launchpad (build 18847)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -458,6 +458,10 @@ msgstr "Terminé"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "%s fichier(s)/dossier(s) extrait(s) en %s"
+
+#: sabnzbd/directunpacker.py [Warning message]
+msgid "Unable to stop the unrar process."
+msgstr "Impossible d'arrêter le processus unrar."
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -2198,7 +2202,7 @@ msgstr "Notifications"
 msgid "Email"
 msgstr "Email"
 
-#: sabnzbd/skintext.py [Main menu item] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Main menu item]
 msgid "Categories"
 msgstr "Catégories"
 
@@ -2599,6 +2603,18 @@ msgstr "Cliquez sur le bouton de test \"Répéter\" ci-dessous pour déterminer"
 #: sabnzbd/skintext.py
 msgid "Repeat test"
 msgstr "Refaire le test"
+
+#: sabnzbd/skintext.py
+msgid "Test download"
+msgstr "Tester le téléchargement"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Adds a verified test NZB of the specified size, filled with random data. Can "
+"be used to verify your setup."
+msgstr ""
+"Ajoute un fichier test NZB, de la taille spécifiée, rempli de données "
+"aléatoires. Peut être utilisé pour vérifier votre configuration."
 
 #: sabnzbd/skintext.py
 msgid "Config File"
@@ -3764,20 +3780,6 @@ msgid "Send group command before requesting articles."
 msgstr "Envoyer la commande 'group' avant la demande des articles."
 
 #: sabnzbd/skintext.py
-msgid "Only use this server for these categories."
-msgstr "Utilisez uniquement ce serveur pour ces catégories."
-
-#: sabnzbd/skintext.py
-msgid ""
-"None of the enabled servers have the 'Default' category selected. Jobs in "
-"the queue that are not assigned to one of the server's categories will not "
-"be downloaded."
-msgstr ""
-"Aucun des serveurs activés n'a la catégorie \"Par défaut\" sélectionnée. Les "
-"tâches de la file d'attente qui ne sont pas affectées à une des catégories "
-"de serveur ne seront pas téléchargées."
-
-#: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Notes personnelles"
 
@@ -3962,10 +3964,6 @@ msgid "Enable Growl"
 msgstr "Activer Growl"
 
 #: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Send notifications to Growl"
-msgstr "Envoie les notifications à Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
 msgid "Only use for remote Growl server (host:port)"
 msgstr "Utiliser seulement pour le serveur Growl à distance (hôte:port)"
 
@@ -3981,17 +3979,9 @@ msgstr "Mot de passe optionnel pour le serveur Growl"
 msgid "Enable NotifyOSD"
 msgstr "Activer NotifyOSD"
 
-#: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
-msgid "Send notifications to NotifyOSD"
-msgstr "Envoie les notifications à NotifyOSD"
-
 #: sabnzbd/skintext.py # sabnzbd/skintext.py [Header for OSX Notfication Center section]
 msgid "Notification Center"
 msgstr "Centre de notification"
-
-#: sabnzbd/skintext.py
-msgid "Send notifications to Notification Center"
-msgstr "Envoyer des notifications au centre de notification"
 
 #: sabnzbd/skintext.py
 msgid "Enable Windows Notifications"
@@ -5526,6 +5516,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "Email Account Settings"
 #~ msgstr "Paramètres du compte email"
 
+#~ msgid "Send notifications to NotifyOSD"
+#~ msgstr "Envoie les notifications à NotifyOSD"
+
 #~ msgid "Generic Sorting"
 #~ msgstr "Tri générique"
 
@@ -5536,6 +5529,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgstr ""
 #~ "Activer les classes de messages qui doivent être communiqués (aucun, un ou "
 #~ "plusieurs)"
+
+#~ msgid "Send notifications to Notification Center"
+#~ msgstr "Envoyer des notifications au centre de notification"
 
 #~ msgid "Refer to https://www.oznzb.com/profile"
 #~ msgstr "Reportez-vous à https://www.oznzb.com/profile"
@@ -5662,6 +5658,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 
 #~ msgid "Skip"
 #~ msgstr "Ignorer"
+
+#~ msgid "Send notifications to Growl"
+#~ msgstr "Envoie les notifications à Growl"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "balises Groupes / Indexeur"

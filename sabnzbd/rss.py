@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -648,7 +648,7 @@ def _get_link(entry):
 
     # GUID usually has URL to result on page
     infourl = None
-    if entry.id and entry.id != link and entry.id.startswith('http'):
+    if entry.get('id') and entry.id != link and entry.id.startswith('http'):
         infourl = entry.id
 
     if size == 0L:

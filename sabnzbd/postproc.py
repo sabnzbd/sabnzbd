@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -311,7 +311,7 @@ def process_job(nzo):
         # if no files are present (except __admin__), fail the job
         if all_ok and len(globber(workdir)) < 2:
             if nzo.precheck:
-                _enough, ratio = nzo.check_quality()
+                _enough, ratio = nzo.check_availability_ratio()
                 req_ratio = float(cfg.req_completion_rate()) / 100.0
                 # Make sure that rounded ratio doesn't equal required ratio
                 # when it is actually below required

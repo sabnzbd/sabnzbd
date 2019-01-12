@@ -1,6 +1,6 @@
 #!/usr/bin/python -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2012-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2012-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -299,6 +299,8 @@ SKIN_TEXT = {
     'dashboard-speedTestFailed' : TT('Could not write. Check that the directory is writable.'),
     'dashboard-clickToStart' : TT('Click on Repeat test button below to determine'),
     'dashboard-repeatTest' : TT('Repeat test'),
+    'dashboard-testDownload' : TT('Test download'),
+    'dashboard-testDownload-explain' : TT('Adds a verified test NZB of the specified size, filled with random data. Can be used to verify your setup.'),
 
 # Configuration
     'confgFile' : TT('Config File'),
@@ -312,7 +314,6 @@ SKIN_TEXT = {
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
     'confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
     'explain-sessionExpire': TT('When your IP address changes or SABnzbd is restarted the session will expire.'),
-    #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'opt-enable_unzip' : TT('Enable Unzip'),
     'opt-enable_7zip' : TT('Enable 7zip'),
     'opt-multicore-par2' : TT('Multicore Par2'),
@@ -577,9 +578,6 @@ SKIN_TEXT = {
     'srv-bandwidth' : TT('Bandwidth'),
     'srv-send_group' : TT('Send Group'),
     'srv-explain-send_group' : TT('Send group command before requesting articles.'),
-    'srv-categories' : TT('Categories'),
-    'srv-explain-categories' : TT('Only use this server for these categories.'),
-    'srv-explain-no-categories' : TT('None of the enabled servers have the \'Default\' category selected. Jobs in the queue that are not assigned to one of the server\'s categories will not be downloaded.'),
     'srv-notes' : TT('Personal notes'),
 
 # Config->Scheduling
@@ -639,15 +637,12 @@ SKIN_TEXT = {
     'explain-email_pwd' : TT('For authenticated email, password.'),
     'growlSettings' : TT('Growl'), #: Header Growl section
     'opt-growl_enable' : TT('Enable Growl'), #: Don't translate "Growl"
-    'explain-growl_enable' : TT('Send notifications to Growl'), #: Don't translate "Growl"
     'opt-growl_server' : TT('Server address'), #: Address of Growl server
     'explain-growl_server' : TT('Only use for remote Growl server (host:port)'), #: Don't translate "Growl"
     'opt-growl_password' : TT('Server password'), #: Growl server password
     'explain-growl_password' : TT('Optional password for Growl server'), #: Don't translate "Growl"
     'opt-ntfosd_enable' : TT('Enable NotifyOSD'), #: Don't translate "NotifyOSD"
-    'explain-ntfosd_enable' : TT('Send notifications to NotifyOSD'), #: Don't translate "NotifyOSD"
     'opt-ncenter_enable' : TT('Notification Center'),
-    'explain-ncenter_enable' : TT('Send notifications to Notification Center'),
     'opt-acenter_enable' : TT('Enable Windows Notifications'),
     'testNotify' : TT('Test Notification'),
     'section-NC' : TT('Notification Center'), #: Header for OSX Notfication Center section

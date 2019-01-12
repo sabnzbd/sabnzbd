@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -146,6 +146,7 @@ nice = OptionStr('misc', 'nice', '', validation=no_nonsense)
 win_process_prio = OptionNumber('misc', 'win_process_prio', 3)
 ionice = OptionStr('misc', 'ionice', '', validation=no_nonsense)
 fail_hopeless_jobs = OptionBool('misc', 'fail_hopeless_jobs', True)
+fast_fail = OptionBool('misc', 'fast_fail', True)
 autodisconnect = OptionBool('misc', 'auto_disconnect', True)
 no_dupes = OptionNumber('misc', 'no_dupes', 0)
 no_series_dupes = OptionNumber('misc', 'no_series_dupes', 0)

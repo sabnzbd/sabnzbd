@@ -1,5 +1,5 @@
 #!/usr/bin/python -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -1834,10 +1834,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                 item['show_details'] = 'True'
             else:
                 item['show_details'] = ''
-        if item['bytes']:
-            item['size'] = format_bytes(item['bytes'])
-        else:
-            item['size'] = ''
+
+        item['size'] = format_bytes(item['bytes'])
+
         if 'loaded' not in item:
             item['loaded'] = False
 
