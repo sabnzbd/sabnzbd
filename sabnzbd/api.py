@@ -1856,13 +1856,6 @@ def calc_timeleft(bytesleft, bps):
         return '0:00:00'
 
 
-def std_time(when):
-    # Fri, 16 Nov 2007 16:42:01 GMT +0100
-    item = time.strftime(time_format('%a, %d %b %Y %H:%M:%S'), time.localtime(when))
-    item += " GMT %+05d" % (-time.timezone / 36)
-    return item
-
-
 def list_scripts(default=False, none=True):
     """ Return a list of script names, optionally with 'Default' added """
     lst = []
