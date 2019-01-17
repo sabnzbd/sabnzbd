@@ -66,7 +66,7 @@ from sabnzbd.lang import list_languages
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
     api_handler, build_queue, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
-    format_bytes, std_time, report, del_hist_job, Ttemplate, build_queue_header, \
+    format_bytes, report, del_hist_job, Ttemplate, build_queue_header, \
     _api_test_email, _api_test_notif
 
 

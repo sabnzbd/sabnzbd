@@ -27,7 +27,6 @@ import time
 import json
 import cherrypy
 import locale
-import html
 
 from threading import Thread
 
