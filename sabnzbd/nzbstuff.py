@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -263,13 +263,13 @@ class NzbFile(TryList):
         if self.valid and self.nzf_id:
             # Save first article seperate, but not for all but first par2 file
             # Non-par2 files and the first par2 will have no volume and block number
-            # When DirectUnpack is disabled, do not do any of this to also preserve disk IO
             setname, vol, block = sabnzbd.par2file.analyse_par2(self.filename)
-            if cfg.direct_unpack() and not vol and not block:
+            if not vol and not block:
                 first_num = min(article_db.keys())
                 first_article = self.add_article(article_db.pop(first_num), first_num)
                 first_article.lowest_partnum = True
                 self.nzo.first_articles.append(first_article)
+                self.nzo.first_articles_count += 1
 
             # Any articles left?
             if article_db:
@@ -377,7 +377,7 @@ NzbObjectSaver = (
     'futuretype', 'deleted', 'parsed', 'action_line', 'unpack_info', 'fail_msg', 'nzo_info',
     'custom_name', 'password', 'next_save', 'save_timeout', 'encrypted', 'bad_articles',
     'duplicate', 'oversized', 'precheck', 'incomplete', 'reuse', 'meta', 'first_articles',
-    'md5sum', 'servercount', 'unwanted_ext', 'renames', 'rating_filtered'
+    'first_articles_count', 'md5sum', 'servercount', 'unwanted_ext', 'renames', 'rating_filtered'
 )
 
 # Lock to prevent errors when saving the NZO data
@@ -471,6 +471,7 @@ class NzbObject(TryList):
         self.avg_bps_total = 0
 
         self.first_articles = []
+        self.first_articles_count = 0
         self.saved_articles = []
 
         self.nzo_id = None
@@ -746,9 +747,9 @@ class NzbObject(TryList):
             date sorting and unwanted extensions
         """
         if cfg.auto_sort():
-            self.files.sort(cmp=nzf_cmp_date)
+            self.files.sort(key=functools.cmp_to_key(nzf_cmp_date))
         else:
-            self.files.sort(cmp=nzf_cmp_name)
+            self.files.sort(key=functools.cmp_to_key(nzf_cmp_name))
 
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
@@ -926,6 +927,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def remove_article(self, article, found):
+        """ Remove article from the NzbFile and do check if it can succeed"""
+        job_can_succeed = True
         nzf = article.nzf
 
         # First or regular article?
@@ -933,8 +936,14 @@ class NzbObject(TryList):
             self.first_articles.remove(article)
 
             # All first articles done?
-            if not self.first_articles and self.md5of16k:
-                self.verify_all_filenames_and_resort()
+            if not self.first_articles:
+                # Do we have rename information from par2
+                if self.md5of16k:
+                    self.verify_all_filenames_and_resort()
+
+                # Check the availability of these first articles
+                if cfg.fail_hopeless_jobs() and cfg.fast_fail():
+                    job_can_succeed = self.check_first_article_availability()
 
         # Remove from file-tracking
         file_done = nzf.remove_article(article, found)
@@ -946,14 +955,18 @@ class NzbObject(TryList):
         # File completed, remove and do checks
         if file_done:
             self.remove_nzf(nzf)
-            if not self.reuse and cfg.fail_hopeless_jobs() and not self.check_quality(99)[0]:
-                # set the nzo status to return "Queued"
-                self.status = Status.QUEUED
-                self.set_download_report()
-                self.fail_msg = T('Aborted, cannot be completed') + ' - https://sabnzbd.org/not-complete'
-                self.set_unpack_info('Download', self.fail_msg, unique=False)
-                logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
-                return True, True
+            if not self.reuse and cfg.fail_hopeless_jobs():
+                job_can_succeed, _ratio = self.check_availability_ratio(99)
+
+        # Abort the job due to failure
+        if not job_can_succeed:
+            # Set the nzo status to return "Queued"
+            self.status = Status.QUEUED
+            self.set_download_report()
+            self.fail_msg = T('Aborted, cannot be completed') + ' - https://sabnzbd.org/not-complete'
+            self.set_unpack_info('Download', self.fail_msg, unique=False)
+            logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
+            return True, True
 
         if not found:
             # Add extra parfiles when there was a damaged article and not pre-checking
@@ -1214,7 +1227,7 @@ class NzbObject(TryList):
         if self.direct_unpacker:
             self.direct_unpacker.abort()
 
-    def check_quality(self, req_ratio=0):
+    def check_availability_ratio(self, req_ratio=0):
         """ Determine amount of articles present on servers
             and return (gross available, nett) bytes
         """
@@ -1246,48 +1259,69 @@ class NzbObject(TryList):
         logging.debug('Download Quality: enough=%s, have=%s, need=%s, ratio=%s', enough, have, need, ratio)
         return enough, ratio
 
+    def check_first_article_availability(self):
+        """ Use the first articles to see if
+            it's likely the job will succeed
+        """
+        # Ignore this check on retry
+        if not self.reuse:
+            # Ignore undamaged or small downloads
+            if self.bad_articles and self.first_articles_count >= 10:
+                # We need a float-division, see if more than 80% is there
+                if (self.first_articles_count / float(self.bad_articles)) >= 0.8:
+                    return False
+        return True
+
     @synchronized(NZO_LOCK)
     def set_download_report(self):
+        """ Format the stats for the history information """
+        # Pretty-format the per-server stats
+        if self.servercount:
+            # Sort the servers first
+            servers = config.get_servers()
+            server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
+            msgs = ['%s=%sB' % (servers[server_name].displayname(), to_units(self.servercount[server_name])) for server_name in server_names if server_name in self.servercount]
+            self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
+
+            # In case there were no bytes available at all of this download
+            # we list the number of bytes we used while trying
+            if not self.bytes_downloaded:
+                self.bytes_downloaded = sum(self.servercount.values())
+
+        # Format information about the download itself
+        download_msgs = []
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:
-            # get the deltatime since the download started
+            # Get the deltatime since the download started
             avg_bps = self.avg_bps_total / self.avg_bps_freq
             timecompleted = datetime.timedelta(seconds=self.bytes_downloaded / (avg_bps * 1024))
-
             seconds = timecompleted.seconds
-            # find the total time including days
+
+            # Find the total time including days
             totaltime = (timecompleted.days / 86400) + seconds
             self.nzo_info['download_time'] = totaltime
 
-            # format the total time the download took, in days, hours, and minutes, or seconds.
+            # Format the total time the download took, in days, hours, and minutes, or seconds.
             complete_time = format_time_string(seconds, timecompleted.days)
+            download_msgs.append(T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024)))
+            download_msgs.append(T('Age') + ': ' + calc_age(self.avg_date, True))
 
-            msg1 = T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024))
-            msg1 += '<br/>' + T('Age') + ': ' + calc_age(self.avg_date, True)
+        bad = self.nzo_info.get('bad_articles', 0)
+        miss = self.nzo_info.get('missing_articles', 0)
+        killed = self.nzo_info.get('killed_articles', 0)
+        dups = self.nzo_info.get('duplicate_articles', 0)
 
-            bad = self.nzo_info.get('bad_articles', 0)
-            miss = self.nzo_info.get('missing_articles', 0)
-            killed = self.nzo_info.get('killed_articles', 0)
-            dups = self.nzo_info.get('duplicate_articles', 0)
-            msg2 = msg3 = msg4 = msg5 = ''
-            if bad:
-                msg2 = ('<br/>' + T('%s articles were malformed')) % bad
-            if miss:
-                msg3 = ('<br/>' + T('%s articles were missing')) % miss
-            if dups:
-                msg4 = ('<br/>' + T('%s articles had non-matching duplicates')) % dups
-            if killed:
-                msg5 = ('<br/>' + T('%s articles were removed')) % killed
-            msg = ''.join((msg1, msg2, msg3, msg4, msg5, ))
-            self.set_unpack_info('Download', msg, unique=True)
-            if self.url:
-                self.set_unpack_info('Source', self.url, unique=True)
+        if bad:
+            download_msgs.append(T('%s articles were malformed') % bad)
+        if miss:
+            download_msgs.append(T('%s articles were missing') % miss)
+        if dups:
+            download_msgs.append(T('%s articles had non-matching duplicates') % dups)
+        if killed:
+            download_msgs.append(T('%s articles were removed') % killed)
+        self.set_unpack_info('Download', u'<br/>'.join(download_msgs), unique=True)
 
-            if len(self.servercount) > 0:
-                # Sort the servers first
-                servers = config.get_servers()
-                server_names = sorted(list(servers.keys()), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
-                msgs = ['%s=%sB' % (servers[server_name].displayname(), to_units(self.servercount[server_name])) for server_name in server_names if server_name in self.servercount]
-                self.set_unpack_info('Servers', ', '.join(msgs), unique=True)
+        if self.url:
+            self.set_unpack_info('Source', self.url, unique=True)
 
     @synchronized(NZO_LOCK)
     def increase_bad_articles_counter(self, article_type):
@@ -1539,7 +1573,6 @@ class NzbObject(TryList):
                     remove_dir(self.downpath)
                 except:
                     logging.debug('Folder not removed: %s', self.downpath)
-                    pass
 
     def gather_info(self, full=False):
         queued_files = []
@@ -1693,6 +1726,7 @@ class NzbObject(TryList):
             self.renames = {}
         if self.bad_articles is None:
             self.bad_articles = 0
+            self.first_articles_count = 0
         if self.bytes_missing is None:
             self.bytes_missing = 0
         if self.bytes_tried is None:

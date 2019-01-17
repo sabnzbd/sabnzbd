@@ -1,4 +1,4 @@
-#!/usr/bin/python33
+#!/usr/bin/python3
 """Module that provides a cron-like task scheduler.
 
 This task scheduler is designed to be used from inside your own program.

@@ -1622,8 +1622,12 @@ class RAR5Parser(CommonParser):
             return None
         header_size = pos + hdrlen
 
+        # SABnzbd-edit:
+        # Python 3 only supports -1 for read(), while Python 2 doesn't care!
+        read_size = max(-1, header_size - len(start_bytes))
+
         # read full header, check for EOF
-        hdata = start_bytes + fd.read(header_size - len(start_bytes))
+        hdata = start_bytes + fd.read(read_size)
         if len(hdata) != header_size:
             self._set_error('Unexpected EOF when reading header')
             return None

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,8 +24,7 @@ import logging
 import re
 
 import sabnzbd
-from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD, KIBI
-from sabnzbd.encoding import unicoder
+from sabnzbd.constants import BYTES_FILE_NAME, KIBI
 import sabnzbd.cfg as cfg
 
 DAY = float(24 * 60 * 60)
@@ -85,21 +84,6 @@ def next_month(t):
     return time.mktime(ntime)
 
 
-def fix_keys(data):
-    """ Convert keys of each dictionary in tuple 'data' to unicode """
-    new_data = []
-    if isinstance(data, list):
-        for n in range(len(data)):
-            if isinstance(data[n], dict):
-                new = {}
-                for key in data[n]:
-                    new[unicoder(key)] = data[n][key]
-            else:
-                new = data[n]
-            new_data.append(new)
-    return new_data
-
-
 class BPSMeter(object):
     do = None
 
@@ -128,7 +112,7 @@ class BPSMeter(object):
         self.q_period = 'm'                # Daily/Weekly/Monthly quota = d/w/m
         self.quota = self.left = 0.0       # Quota and remaining quota
         self.have_quota = False            # Flag for quota active
-        self.q_time = 0                   # Next reset time for quota
+        self.q_time = 0                    # Next reset time for quota
         self.q_hour = 0                    # Quota reset hour
         self.q_minute = 0                  # Quota reset minute
         self.quota_enabled = True          # Scheduled quota enable/disable
@@ -167,24 +151,13 @@ class BPSMeter(object):
         quota = self.left = cfg.quota_size.get_float()  # Quota for this period
         self.have_quota = bool(cfg.quota_size())
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
-        if not data:
-            data = sabnzbd.load_admin(BYTES_FILE_NAME_OLD)
-            data = fix_keys(data)
         try:
             self.last_update, self.grand_total, \
                 self.day_total, self.week_total, self.month_total, \
-                self.end_of_day, self.end_of_week, self.end_of_month = data[:8]
-            if len(data) >= 11:
-                self.quota, self.left, self.q_time = data[8:11]
-                logging.debug('Read quota q=%s l=%s reset=%s',
-                              self.quota, self.left, self.q_time)
-                if abs(quota - self.quota) > 0.5:
-                    self.change_quota()
-                # Get timeline stats
-                if len(data) == 12:
-                    self.timeline_total = data[11]
-            else:
-                self.quota = self.left = cfg.quota_size.get_float()
+                self.end_of_day, self.end_of_week, self.end_of_month, \
+                self.quota, self.left, self.q_time, self.timeline_total = data
+            if abs(quota - self.quota) > 0.5:
+                self.change_quota()
             res = self.reset_quota()
         except:
             self.defaults()
@@ -281,7 +254,7 @@ class BPSMeter(object):
         self.bps = 0.0
 
     def add_empty_time(self):
-        # Extra zeros, but never more than the maxium!
+        # Extra zeros, but never more than the maximum!
         nr_diffs = min(int(time.time() - self.speed_log_time), self.bps_list_max)
         if nr_diffs > 1:
             self.bps_list.extend([0] * nr_diffs)
@@ -295,8 +268,7 @@ class BPSMeter(object):
         return (sum([v for v in self.grand_total.values()]),
                 sum([v for v in self.month_total.values()]),
                 sum([v for v in self.week_total.values()]),
-                sum([v for v in self.day_total.values()])
-               )
+                sum([v for v in self.day_total.values()]))
 
     def amounts(self, server):
         """ Return grand, month, week, day totals for specified server """
@@ -485,5 +457,6 @@ def quota_handler():
 def midnight_action():
     if BPSMeter.do:
         BPSMeter.do.midnight()
+
 
 BPSMeter()

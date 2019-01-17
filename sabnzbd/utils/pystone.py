@@ -1,4 +1,4 @@
-#!/usr/bin/python33 -OO
+#!/usr/bin/python3 -OO
 
 """
 "PYSTONE" Benchmark Program

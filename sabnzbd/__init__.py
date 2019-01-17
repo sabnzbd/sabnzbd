@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -885,7 +885,8 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
         try:
             with open(path, 'wb') as data_file:
                 if do_pickle:
-                    pickle.dump(data, data_file)
+                    # TODO: Python 2 pickle compatibility
+                    pickle.dump(data, data_file, protocol=2)
                 else:
                     data_file.write(data)
             break
@@ -901,22 +902,24 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
                 time.sleep(0.1)
 
 
-def load_data(_id, path, remove=True, do_pickle=True, silent=False):
+def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
     """ Read data from disk file """
-    path = os.path.join(path, _id)
+    path = os.path.join(path, data_id)
 
     if not os.path.exists(path):
         logging.info("[%s] %s missing", misc.caller_name(), path)
         return None
 
     if not silent:
-        logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), _id, path)
+        logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), data_id, path)
 
     try:
         with open(path, 'rb') as data_file:
             if do_pickle:
-                data = pickle.load(data_file)
+                # TODO: Python 2 pickle compatibility
+                data = pickle.load(data_file, encoding="latin1")
             else:
+                # TODO: See if this file reading still works
                 data = data_file.read()
 
         if remove:
@@ -939,48 +942,16 @@ def remove_data(_id, path):
         logging.debug("Failed to remove %s", path)
 
 
-def save_admin(data, _id):
+def save_admin(data, data_id):
     """ Save data in admin folder in specified format """
-    path = os.path.join(cfg.admin_dir.get_path(), _id)
-    logging.debug("[%s] Saving data for %s in %s", misc.caller_name(), _id, path)
-
-    # We try 3 times, to avoid any dict or access problems
-    for t in range(3):
-        try:
-            with open(path, 'wb') as data_file:
-                data = pickle.dump(data, data_file)
-            break
-        except:
-            if t == 2:
-                logging.error(T('Saving %s failed'), path)
-                logging.info("Traceback: ", exc_info=True)
-            else:
-                # Wait a tiny bit before trying again
-                time.sleep(0.1)
+    logging.debug("[%s] Saving data for %s", misc.caller_name(), data_id)
+    save_data(data, data_id, cfg.admin_dir.get_path())
 
 
-def load_admin(_id, remove=False, silent=False):
+def load_admin(data_id, remove=False, silent=False):
     """ Read data in admin folder in specified format """
-    path = os.path.join(cfg.admin_dir.get_path(), _id)
-    logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), _id, path)
-
-    if not os.path.exists(path):
-        logging.info("[%s] %s missing", misc.caller_name(), path)
-        return None
-
-    try:
-        with open(path, 'rb') as data_file:
-            data = pickle.load(data_file)
-        if remove:
-            filesystem.remove_file(path)
-    except:
-        if not silent:
-            excepterror = str(sys.exc_info()[0])
-            logging.error(T('Loading %s failed with error %s'), path, excepterror)
-            logging.info("Traceback: ", exc_info=True)
-        return None
-
-    return data
+    logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), data_id)
+    return load_data(data_id, cfg.admin_dir.get_path(), remove=remove, silent=silent)
 
 
 def pp_to_opts(pp):

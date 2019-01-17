@@ -676,33 +676,34 @@ def get_filepath(path, nzo, filename):
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
     # download_dir is equal to the complete_dir.
+    new_dirname = dirname = nzo.work_name
     if not nzo.created:
         for n in range(200):
-            dName = nzo.work_name
+            new_dirname = dirname
             if n:
-                dName += '.' + str(n)
+                new_dirname += '.' + str(n)
             try:
-                os.mkdir(os.path.join(path, dName))
+                os.mkdir(os.path.join(path, new_dirname))
                 break
             except:
                 pass
-        nzo.work_name = dName
+        nzo.work_name = new_dirname
         nzo.created = True
 
-    fPath = os.path.join(os.path.join(path, dName), filename)
-    fPath, ext = os.path.splitext(fPath)
+    filepath = os.path.join(os.path.join(path, new_dirname), filename)
+    filepath, ext = os.path.splitext(filepath)
     n = 0
     while True:
         if n:
-            fullPath = "%s.%d%s" % (fPath, n, ext)
+            fullpath = "%s.%d%s" % (filepath, n, ext)
         else:
-            fullPath = fPath + ext
-        if os.path.exists(fullPath):
+            fullpath = filepath + ext
+        if os.path.exists(fullpath):
             n = n + 1
         else:
             break
 
-    return fullPath
+    return fullpath
 
 
 @synchronized(DIR_LOCK)

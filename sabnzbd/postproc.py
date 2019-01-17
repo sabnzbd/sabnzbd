@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -300,7 +300,7 @@ def process_job(nzo):
         # if no files are present (except __admin__), fail the job
         if all_ok and len(globber(workdir)) < 2:
             if nzo.precheck:
-                _enough, ratio = nzo.check_quality()
+                _enough, ratio = nzo.check_availability_ratio()
                 req_ratio = float(cfg.req_completion_rate()) / 100.0
                 # Make sure that rounded ratio doesn't equal required ratio
                 # when it is actually below required
@@ -365,19 +365,16 @@ def process_job(nzo):
             newfiles = []
             # Run Stage 2: Unpack
             if flag_unpack:
-                if all_ok:
-                    # set the current nzo status to "Extracting...". Used in History
-                    nzo.status = Status.EXTRACTING
-                    logging.info("Running unpack_magic on %s", filename)
-                    unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
-                    logging.info("Unpacked files %s", newfiles)
+                # set the current nzo status to "Extracting...". Used in History
+                nzo.status = Status.EXTRACTING
+                logging.info("Running unpack_magic on %s", filename)
+                unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
+                logging.info("Unpacked files %s", newfiles)
 
-                    if sabnzbd.WIN32:
-                        # Sanitize the resulting files
-                        newfiles = sanitize_files_in_folder(tmp_workdir_complete)
-                    logging.info("Finished unpack_magic on %s", filename)
-                else:
-                    nzo.set_unpack_info('Unpack', T('No post-processing because of failed verification'))
+                if sabnzbd.WIN32:
+                    # Sanitize the resulting files
+                    newfiles = sanitize_files_in_folder(tmp_workdir_complete)
+                logging.info("Finished unpack_magic on %s", filename)
 
             if cfg.safe_postproc():
                 all_ok = all_ok and not unpack_error
@@ -438,7 +435,6 @@ def process_job(nzo):
                 else:
                     workdir_complete = tmp_workdir_complete.replace('_UNPACK_', '_FAILED_')
                     workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
-                    workdir_complete = workdir_complete
 
             if empty:
                 job_result = -1

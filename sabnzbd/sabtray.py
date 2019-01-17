@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -50,42 +50,35 @@ class SABTrayThread(SysTrayIconThread):
 
         self.sabpaused = False
         self.counter = 0
-        text = "SABnzbd"
-
         self.set_texts()
+
         menu_options = (
-            (self.txt_show_int, None, self.browse),
-            (self.txt_open_comp, None, self.opencomplete),
-            (self.txt_trouble, None, ((self.txt_restart, None, self.restart),
-                                      (self.txt_restart_nl, None, self.nologin),
-                                      (self.txt_restart + ' - 127.0.0.1:8080', None, self.defhost))),
-            (self.txt_pause + '/' + self.txt_resume, None, self.pauseresume),
-            (self.txt_rss, None, self.rss),
-            (self.txt_shutdown, None, self.shutdown),
+            (T('Show interface'), None, self.browse),
+            (T('Open complete folder'), None, self.opencomplete),
+            ('SEPARATOR', None, None),
+            (T('Pause') + '/' + T('Resume'), None, self.pauseresume),
+            (T('Pause for'), None, ((T('Pause for 5 minutes'), None, self.pausefor5min),
+                                    (T('Pause for 15 minutes'), None, self.pausefor15min),
+                                    (T('Pause for 30 minutes'), None, self.pausefor5min),
+                                    (T('Pause for 1 hour'), None, self.pausefor1hour),
+                                    (T('Pause for 3 hours'), None, self.pausefor3hour),
+                                    (T('Pause for 6 hours'), None, self.pausefor6hour))),
+            ('SEPARATOR', None, None),
+            (T('Read all RSS feeds'), None, self.rss),
+            ('SEPARATOR', None, None),
+            (T('Troubleshoot'), None, ((T('Restart'), None, self.restart_sab),
+                                       (T('Restart without login'), None, self.nologin),
+                                       (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost))),
+            (T('Shutdown'), None, self.shutdown),
         )
 
-        SysTrayIconThread.__init__(self, self.sabicons['default'], text, menu_options, None, 0, "SabTrayIcon")
+        SysTrayIconThread.__init__(self, self.sabicons['default'], "SABnzbd", menu_options, None, 0, "SabTrayIcon")
 
     def set_texts(self):
-        def fix(txt):
-            if trans:
-                return Tx(txt)
-            else:
-                return txt
-
-        trans = str(get_codepage()) == str(sabnzbd.lang.CODEPAGE)
-        self.txt_show_int = fix(TT('Show interface'))
-        self.txt_open_comp = fix(TT('Open complete folder'))
-        self.txt_trouble = fix(TT('Troubleshoot'))
-        self.txt_pause = fix(TT('Pause'))
-        self.txt_shutdown = fix(TT('Shutdown'))
-        self.txt_resume = fix(TT('Resume'))
-        self.txt_restart = fix(TT('Restart'))
-        self.txt_restart_nl = fix(TT('Restart without login'))
-        self.txt_idle = fix(TT('Idle'))
-        self.txt_paused = fix(TT('Paused'))
-        self.txt_remaining = fix(TT('Remaining'))
-        self.txt_rss = fix(TT('Read all RSS feeds'))
+        """ Cache texts for performance, doUpdates is called often """
+        self.txt_idle = T('Idle')
+        self.txt_paused = T('Paused')
+        self.txt_remaining = T('Remaining')
 
     # called every few ms by SysTrayIconThread
     def doUpdates(self):
@@ -138,51 +131,59 @@ class SABTrayThread(SysTrayIconThread):
         else:
             self.pause()
 
-    # menu handler
-    def restart(self, icon):
-        self.hover_text = self.txt_restart
+    def pausefor(self, minutes):
+        """ Need function for each pause-timer """
+        scheduler.plan_resume(minutes)
+
+    def pausefor5min(self, icon):
+        self.pausefor(5)
+
+    def pausefor15min(self, icon):
+        self.pausefor(15)
+
+    def pausefor30min(self, icon):
+        self.pausefor(30)
+
+    def pausefor1hour(self, icon):
+        self.pausefor(60)
+
+    def pausefor3hour(self, icon):
+        self.pausefor(3*60)
+
+    def pausefor6hour(self, icon):
+        self.pausefor(6*60)
+
+    def restart_sab(self, icon):
+        self.hover_text = T('Restart')
         logging.info('Restart requested by tray')
         sabnzbd.trigger_restart()
 
-    # menu handler
     def rss(self, icon):
-        self.hover_text = self.txt_rss
+        self.hover_text = T('Read all RSS feeds')
         scheduler.force_rss()
 
-    # menu handler
     def nologin(self, icon):
         sabnzbd.cfg.username.set('')
         sabnzbd.cfg.password.set('')
         sabnzbd.config.save_config()
-        self.hover_text = self.txt_restart
+        self.hover_text = T('Restart')
         sabnzbd.trigger_restart()
 
-    # menu handler
     def defhost(self, icon):
         sabnzbd.cfg.cherryhost.set('127.0.0.1')
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
-        self.hover_text = self.txt_restart
+        self.hover_text = T('Restart')
         sabnzbd.trigger_restart()
 
-    # menu handler - adapted from interface.py
     def shutdown(self, icon):
-        self.hover_text = self.txt_shutdown
+        self.hover_text = T('Shutdown')
         sabnzbd.shutdown_program()
 
-    # adapted from interface.py
     def pause(self):
         scheduler.plan_resume(0)
         Downloader.do.pause()
 
-    # adapted from interface.py
     def resume(self):
         scheduler.plan_resume(0)
         sabnzbd.unpause_all()
-
-
-def get_codepage():
-    import locale
-    _lang, code = locale.getlocale()
-    logging.debug('SysTray uses codepage %s', code)
-    return code

@@ -1,4 +1,5 @@
-import platform, subprocess
+import platform
+import subprocess
 from .pystone import pystones
 
 
@@ -40,13 +41,8 @@ def getcpu():
 
 
 def getpystone():
-    try:
-        return int(pystones(1000)[1])
-    except:
-        return None
-
-    # if we arrive here, we were able to succesfully import pystone, so start calculation
-    maxpystone = None
+    # Start calculation
+    maxpystone = 0
     # Start with a short run, find the the pystone, and increase runtime until duration took > 0.1 second
     for pyseed in [1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000]:
         duration, pystonefloat = pystones(pyseed)
@@ -58,5 +54,5 @@ def getpystone():
 
 
 if __name__ == '__main__':
-    print((getpystone()))
-    print((getcpu()))
+    print(getpystone())
+    print(getcpu())

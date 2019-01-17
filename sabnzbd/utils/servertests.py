@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -84,7 +84,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         while not nw.connected:
             nw.clear_data()
             nw.recv_chunk(block=True)
-            #more ssl related: handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
+            # Handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
             read_sockets, _, _ = select.select([nw.nntp.sock], [], [], 0.1)
             if read_sockets:
                 nw.recv_chunk(block=True)

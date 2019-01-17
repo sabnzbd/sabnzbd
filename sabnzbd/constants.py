@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -65,7 +65,7 @@ DEF_INTERFACES = 'interfaces'
 DEF_EMAIL_TMPL = 'email'
 DEF_STDCONFIG = 'Config'
 DEF_STDINTF = 'Glitter'
-DEF_SKIN_COLORS = {'smpl': 'white', 'Glitter': 'Default', 'plush': 'gold'}
+DEF_SKIN_COLORS = {'Glitter': 'Default', 'plush': 'gold'}
 DEF_MAIN_TMPL = 'templates/main.tmpl'
 DEF_INI_FILE = 'sabnzbd.ini'
 DEF_HOST = '127.0.0.1'

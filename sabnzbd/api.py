@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -47,7 +47,6 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
-from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
 from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
@@ -61,13 +60,12 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
 from sabnzbd.newsunpack import userxbit
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
 import sabnzbd.emailer
-import sabnzbd.getipaddress as getipaddress
 
 ##############################################################################
 # API error messages
@@ -264,8 +262,6 @@ def _api_queue_default(output, value, kwargs):
     if output in ('xml', 'json'):
         info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
         return report(output, keyword='queue', data=info)
-    elif output == 'rss':
-        return rss_qstatus()
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
 
@@ -303,7 +299,7 @@ def _api_options(name, output, kwargs):
 
 def _api_translate(name, output, kwargs):
     """ API: accepts output, value(=acronym) """
-    return report(output, keyword='value', data=Tx(kwargs.get('value', '')))
+    return report(output, keyword='value', data=T(kwargs.get('value', '')))
 
 
 def _api_addfile(name, output, kwargs):
@@ -1197,7 +1193,7 @@ def build_status(skip_dashboard=False, output=None):
         info['ipv6'] = ipv6()
         # Dashboard: DNS-check
         try:
-            getipaddress.addresslookup(cfg.selftest_host())
+            addresslookup(cfg.selftest_host())
             info['dnslookup'] = "OK"
         except:
             info['dnslookup'] = None
@@ -1435,66 +1431,6 @@ def build_file_list(nzo_id):
 
     return jobs
 
-
-def rss_qstatus():
-    """ Return a RSS feed with the queue status """
-    qnfo = NzbQueue.do.queue_info()
-    pnfo_list = qnfo.list
-
-    rss = RSS()
-    rss.channel.title = "SABnzbd Queue"
-    rss.channel.description = "Overview of current downloads"
-    rss.channel.link = "http://%s:%s%s/queue" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
-    rss.channel.language = "en"
-
-    item = Item()
-    item.title = 'Total ETA: %s - Queued: %.2f MB - Speed: %.2f kB/s' % \
-                 (
-                     calc_timeleft(qnfo.bytes_left, BPSMeter.do.get_bps()),
-                     qnfo.bytes_left / MEBI,
-                     BPSMeter.do.get_bps() / KIBI
-                 )
-    rss.addItem(item)
-
-    sum_bytesleft = 0
-    for pnfo in pnfo_list:
-        filename = pnfo.filename
-        bytesleft = pnfo.bytes_left / MEBI
-        bytes = pnfo.bytes / MEBI
-        mbleft = (bytesleft / MEBI)
-        mb = (bytes / MEBI)
-        nzo_id = pnfo.nzo_id
-
-        if mb == mbleft:
-            percentage = "0%"
-        else:
-            percentage = "%s%%" % (int(((mb - mbleft) / mb) * 100))
-
-        filename = xml_name(filename)
-        name = '%s (%s)' % (filename, percentage)
-
-        item = Item()
-        item.title = name
-        item.link = "http://%s:%s%s/history" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
-        item.guid = nzo_id
-        status_line = []
-        status_line.append('<tr>')
-        # Total MB/MB left
-        status_line.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
-        # ETA
-        sum_bytesleft += pnfo.bytes_left
-        status_line.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.get_bps()))
-        status_line.append("<dt>Age: %s</dt>" % calc_age(pnfo.avg_date))
-        status_line.append("</tr>")
-        item.description = ''.join(status_line)
-        rss.addItem(item)
-
-    rss.channel.lastBuildDate = std_time(time.time())
-    rss.channel.pubDate = rss.channel.lastBuildDate
-    rss.channel.ttl = "1"
-    return rss.write()
-
-
 def options_list(output):
     return report(output, keyword='options', data={
         'sabyenc': sabnzbd.decoder.SABYENC_ENABLED,
@@ -1573,17 +1509,18 @@ def Tspec(txt):
 
 
 _SKIN_CACHE = {}  # Stores pre-translated acronyms
-
-
-# This special is to be used in interface.py for template processing
-# to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
 def Ttemplate(txt):
-    """ Translation function for Skin texts """
+    """ Translation function for Skin texts
+        This special is to be used in interface.py for template processing
+        to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
+    """
     global _SKIN_CACHE
     if txt in _SKIN_CACHE:
         return _SKIN_CACHE[txt]
     else:
-        tra = html.escape(Tx(SKIN_TEXT.get(txt, txt)))
+        # We need to remove the " and ' to be JS/JSON-string-safe
+        # Saving it in dictionary is 20x faster on next look-up
+        tra = T(SKIN_TEXT.get(txt, txt)).replace('"', '&quot;').replace("'", '&apos;')
         _SKIN_CACHE[txt] = tra
         return tra
 
@@ -1591,9 +1528,7 @@ def Ttemplate(txt):
 def clear_trans_cache():
     """ Clean cache for skin translations """
     global _SKIN_CACHE
-    dummy = _SKIN_CACHE
     _SKIN_CACHE = {}
-    del dummy
     sabnzbd.WEBUI_READY = True
 
 
@@ -1621,7 +1556,6 @@ def build_header(webdir='', output=None, trans_functions=True):
         if trans_functions:
             header['T'] = Ttemplate
             header['Tspec'] = Tspec
-            header['Tx'] = Ttemplate
 
         header['uptime'] = uptime
         header['color_scheme'] = sabnzbd.WEB_COLOR or ''
@@ -1819,10 +1753,9 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
                 item['show_details'] = 'True'
             else:
                 item['show_details'] = ''
-        if item['bytes']:
-            item['size'] = format_bytes(item['bytes'])
-        else:
-            item['size'] = ''
+
+        item['size'] = format_bytes(item['bytes'])
+
         if 'loaded' not in item:
             item['loaded'] = False
 
@@ -2004,7 +1937,6 @@ def history_remove_failed():
     del_job_files(history_db.get_failed_paths())
     history_db.remove_failed()
     history_db.close()
-    del history_db
 
 
 def history_remove_completed():
@@ -2013,4 +1945,3 @@ def history_remove_completed():
     history_db = HistoryDB()
     history_db.remove_completed()
     history_db.close()
-    del history_db

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -403,7 +403,6 @@ class DirectUnpacker(threading.Thread):
                     except:
                         # The user will have to remove it themselves
                         logging.info('Failed to clean Direct Unpack after aborting %s', rarfile_nzf.filename, exc_info=True)
-                        pass
                 else:
                     # We can just remove the whole path
                     remove_all(extraction_path, recursive=True)

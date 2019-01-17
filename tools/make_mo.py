@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: utf-8 -*-
-# Copyright 2010-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2010-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -220,7 +220,6 @@ def make_templates():
 
 def patch_nsis():
     """ Patch translation into the NSIS script """
-    RE_NSIS = re.compile(r'^(\s*LangString\s+\w+\s+\$\{LANG_)(\w+)\}\s+(".*)', re.I)
     RE_NSIS = re.compile(r'^(\s*LangString\s+)(\w+)(\s+\$\{LANG_)(\w+)\}\s+(".*)', re.I)
     languages = [os.path.split(path)[1] for path in glob.glob(os.path.join(MO_DIR, '*'))]
 

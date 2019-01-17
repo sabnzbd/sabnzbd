@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: utf-8 -*-
-# Copyright 2011-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2011-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,29 +24,24 @@ sabnzbd.lang - Language support
 # be done at the top of the application's main file.
 # This will ensure that the default language is available
 # and the special functions are active.
+# This module cannot import any application modules!!
 #
 # Required keywords for pygettext.py: -k T -k Ta -k TT
 #
 # The following pseudo-builtins are provided.
 # T()   Unicode translation
-# Ta()  Latin-1 translation
-# Tx()  Unicode translation of an expression (not a literal string)
 # TT()  Dummy translation, use to mark table entries for POT scanning
-
 
 import gettext
 import builtins
 import glob
 import os
-import operator
 import locale
-# This module cannot import any application modules!!
 
 __all__ = ['set_locale_info', 'set_language', 'list_languages']
 
 _DOMAIN = ''        # Holds translation domain
 _LOCALEDIR = ''     # Holds path to the translation base folder
-CODEPAGE = '1252'
 
 
 def set_locale_info(domain, localedir):
@@ -58,20 +53,13 @@ def set_locale_info(domain, localedir):
 
 def set_language(language=None):
     """ Activate language, empty language will set default texts. """
-    global CODEPAGE
     if not language:
         language = ''
-    CODEPAGE = str(LanguageTable.get(language, (0, 0, 0))[2] or 1252)
 
     # 'codeset' will determine the output of lgettext
-    lng = gettext.translation(_DOMAIN, _LOCALEDIR, [language], fallback=True, codeset='latin-1')
-
-    # The unicode flag will make _() return Unicode
-    lng.install(names=['lgettext'])
-    builtins.__dict__['T'] = builtins.__dict__['_']           # Unicode
-    builtins.__dict__['Ta'] = builtins.__dict__['_']          # Unicode (Used to Latin-1, compatibility support)
-    builtins.__dict__['Tx'] = builtins.__dict__['_']          # Dynamic translation (unicode)
-    builtins.__dict__['TT'] = lambda x: str(x)               # Use in text tables
+    lng = gettext.translation(_DOMAIN, _LOCALEDIR, [language], fallback=True)
+    builtins.__dict__['T'] = lng.gettext
+    builtins.__dict__['TT'] = lambda x: str(x)  # Use in text tables
 
 
 def list_languages():
@@ -80,12 +68,7 @@ def list_languages():
         When any language file is found, the default tuple ('en', 'English')
         will be included. Otherwise an empty list is returned.
     """
-    # Findst find all the MO files.
-    # Each folder should also contain a dummy text file giving the language
-    # Example:
-    #   <localedir>/nl/LC_MESSAGES/SABnzbd.mo
-    #   <localedir>/nl/LC_MESSAGES/Nederlands
-
+    # Find all the MO files.
     lst = []
     for path in glob.glob(os.path.join(_LOCALEDIR, '*')):
         if os.path.isdir(path) and not path.endswith('en'):
@@ -104,11 +87,10 @@ def list_languages():
                 lng = lng_full
             language = language[1]
             lst.append((lng, language))
-    if lst:
-        lst.append(('en', 'English'))
-        return sorted(lst, key=operator.itemgetter(1))
-    else:
-        return lst
+
+    lst.append(('en', 'English'))
+    lst.sort()
+    return lst
 
 
 LanguageTable = {

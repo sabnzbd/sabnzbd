@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2018 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,10 +22,11 @@ sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 import os
 import sys
 import time
-import re
 import logging
 import queue
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
+import urllib.parse
 from http.client import IncompleteRead
 from threading import Thread
 
@@ -148,12 +149,6 @@ class URLGrabber(Thread):
                         # Catch if the server send retry (e.headers is case-INsensitive)
                         wait = misc.int_conv(e.headers['retry-after'])
 
-                # Check if dereference is used
-                new_url = dereferring(url, fetch_request)
-                if new_url:
-                    self.add(new_url, future_nzo)
-                    continue
-
                 if fetch_request:
                     for hdr in fetch_request.headers:
                         try:
@@ -215,7 +210,7 @@ class URLGrabber(Thread):
 
                     # URL was redirected, maybe the redirect has better filename?
                     # Check if the original URL has extension
-                    if url != fetch_request.url and misc.get_ext(filename) not in VALID_NZB_FILES:
+                    if url != fetch_request.url and sabnzbd.filesystem.get_ext(filename) not in VALID_NZB_FILES:
                         filename = os.path.basename(urllib.parse.unquote(fetch_request.url))
                 elif '&nzbname=' in filename:
                     # Sometimes the filename contains the full URL, duh!
@@ -241,7 +236,7 @@ class URLGrabber(Thread):
                         continue
                 fetch_request.close()
 
-                if '<nzb' in data and sabnzbd.filesystem.get_ext(filename) != '.nzb':
+                if b'<nzb' in data and sabnzbd.filesystem.get_ext(filename) != '.nzb':
                     filename += '.nzb'
 
                 # Sanitize filename first (also removing forbidden Windows-names)
@@ -256,7 +251,7 @@ class URLGrabber(Thread):
                 del data
 
                 # Check if nzb file
-                if misc.get_ext(filename) in VALID_NZB_FILES:
+                if sabnzbd.filesystem.get_ext(filename) in VALID_NZB_FILES:
                     res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority,
                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
                                                        nzo_id=future_nzo.nzo_id)[0]
@@ -333,6 +328,7 @@ class URLGrabber(Thread):
 def _build_request(url):
     # Detect basic auth
     # Adapted from python-feedparser
+    user_passwd = None
     urltype, rest = urllib.parse.splittype(url)
     realhost, rest = urllib.parse.splithost(rest)
     if realhost:
@@ -369,20 +365,3 @@ def _analyse(fetch_request, future_nzo):
         return None, msg, True, when, data
 
     return fetch_request, fetch_request.msg, False, 0, data
-
-
-def dereferring(url, fetch_request):
-    """ Find out if we're being diverted to another location.
-        If so, return new url else None
-    """
-    if 'derefer.me' in url:
-        _RE_DEREFER = re.compile(r'content=".*url=([^"]+)">')
-        data = fetch_request.read()
-        for line in data.split('\n'):
-            if '<meta' in line:
-                m = _RE_DEREFER.search(data)
-                if m:
-                    return m.group(1)
-    return None
-
-
