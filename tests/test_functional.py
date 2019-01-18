@@ -29,7 +29,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 
-from testhelper import *
+from tests.testhelper import *
 
 
 class SABnzbdBaseTest(unittest.TestCase):
