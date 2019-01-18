@@ -37,8 +37,7 @@ class MiscTest(unittest.TestCase):
         min_date = datetime.date.today() - datetime.timedelta(days=330)
         r = list(misc.monthrange(min_date, datetime.date.today()))
         self.assertEqual(12, len(r))
-        for e in r:
-            print(r)
+        print(r)
 
     def test_safe_lower(self):
         self.assertEqual("all caps", misc.safe_lower("ALL CAPS"))
