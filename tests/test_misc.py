@@ -31,3 +31,9 @@ class MiscTest(unittest.TestCase):
         self.assertTime('1m', m)
         self.assertTime('1h', h)
         self.assertTime('1d', d)
+
+    def test_monthrange(self):
+        # months_recorded = list(sabnzbd.misc.monthrange(min_date, datetime.date.today()))
+        min_date = datetime.date.today() - datetime.timedelta(days=330)
+        r = list(misc.monthrange(min_date, datetime.date.today()))
+        self.assertEqual(12, len(r))
