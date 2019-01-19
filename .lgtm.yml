@@ -1,11 +1,13 @@
-# Dont include included libraries
-path_classifiers:
-    library:
-        - cherrypy
-        - gntp
-
 # Exclude SMPL/Plush since these are not used anymore
+# Exclude included libraries
 extraction:
-    exclude:
-        - interfaces/smpl
-        - interfaces/Plush
+    javascript:
+        index:
+            - exclude: interfaces/smpl
+            - exclude: interfaces/Plush
+            - exclude: "**/*jquery*"
+            - exclude: "**/*min*"
+    python:
+        index:
+            - exclude: cherrypy
+            - exclude: gntp
