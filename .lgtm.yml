@@ -3,3 +3,8 @@ path_classifiers:
     library:
         - cherrypy
         - gntp
+
+extraction:
+  javascript:
+    index:
+      exclude: interfaces/smpl
