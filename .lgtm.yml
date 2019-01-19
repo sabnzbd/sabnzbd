@@ -3,11 +3,11 @@
 extraction:
     javascript:
         index:
-            - exclude: interfaces/smpl
-            - exclude: interfaces/Plush
+            - exclude: "interfaces/smpl"
+            - exclude: "interfaces/Plush"
             - exclude: "**/*jquery*"
             - exclude: "**/*min*"
     python:
         index:
-            - exclude: cherrypy
-            - exclude: gntp
+            - exclude: "cherrypy"
+            - exclude: "gntp"
