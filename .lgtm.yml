@@ -1,0 +1,11 @@
+# Dont include included libraries
+path_classifiers:
+    library:
+        - cherrypy
+        - gntp
+
+# Exclude SMPL/Plush since these are not used anymore
+extraction:
+    exclude:
+        - interfaces/smpl
+        - interfaces/Plush
