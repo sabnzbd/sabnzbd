@@ -3,6 +3,7 @@ extraction:
     index:
       exclude: interfaces/smpl
       exclude: interfaces/Plush
+      exclude: "**/*min*"
   python:
     index:
       exclude: cherrypy
