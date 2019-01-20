@@ -1,0 +1,10 @@
+extraction:
+  javascript:
+    index:
+      exclude: interfaces/smpl
+      exclude: interfaces/Plush
+      exclude: "**/*min*"
+  python:
+    index:
+      exclude: cherrypy
+      exclude: gntp
