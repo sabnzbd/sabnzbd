@@ -1,9 +1,7 @@
 path_classifiers:
   library:
+    - interfaces/smpl
+    - interfaces/Plush
     - cherrypy
     - gntp
-
-extraction:
-  javascript:
-    index:
-      exclude: "**/*min*"
+    - "**/*min*"
