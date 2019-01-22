@@ -1,10 +1,7 @@
-extraction:
-  javascript:
-    index:
-      exclude: interfaces/smpl
-      exclude: interfaces/Plush
-      exclude: "**/*min*"
-  python:
-    index:
-      exclude: cherrypy
-      exclude: gntp
+path_classifiers:
+  library:
+    - interfaces/smpl
+    - interfaces/Plush
+    - cherrypy
+    - gntp
+    - "**/*min*"
