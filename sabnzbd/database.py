@@ -434,49 +434,24 @@ def dict_factory(cursor, row):
 _PP_LOOKUP = {0: '', 1: 'R', 2: 'U', 3: 'D'}
 def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_output='', script_line=''):
     """ Collects all the information needed for the database """
-
+    completed = int(time.time())
     if not downpath:
         downpath = nzo.downpath
-    path = decode_factory(downpath)
-    storage = decode_factory(storage)
-    script_line = decode_factory(script_line)
-
-    flagRepair, flagUnpack, flagDelete = nzo.repair_opts
-    nzo_info = decode_factory(nzo.nzo_info)
-
-    url = decode_factory(nzo.url)
-
-    completed = int(time.time())
-    name = decode_factory(nzo.final_name)
-
-    nzb_name = decode_factory(nzo.filename)
-    category = decode_factory(nzo.cat)
-    pp = _PP_LOOKUP.get(sabnzbd.opts_to_pp(flagRepair, flagUnpack, flagDelete), 'X')
-    script = decode_factory(nzo.script)
-    status = decode_factory(nzo.status)
-    nzo_id = nzo.nzo_id
-    bytes = nzo.bytes_downloaded
+    pp = _PP_LOOKUP.get(sabnzbd.opts_to_pp(*nzo.repair_opts), 'X')
 
     if script_output:
         # Compress the output of the script
-        script_log = sqlite3.Binary(zlib.compress(script_output))
-        #
-    else:
-        script_log = ''
+        script_output = sqlite3.Binary(zlib.compress(script_output))
 
-    download_time = decode_factory(nzo_info.get('download_time', 0))
-
-    downloaded = nzo.bytes_downloaded
+    download_time = nzo.nzo_info.get('download_time', 0)
     completeness = 0
-    fail_message = decode_factory(nzo.fail_msg)
-    url_info = nzo_info.get('details', '') or nzo_info.get('more_info', '')
+    url_info = nzo.nzo_info.get('details', '') or nzo.nzo_info.get('more_info', '')
 
     # Get the dictionary containing the stages and their unpack process
-    stages = decode_factory(nzo.unpack_info)
     # Pack the dictionary up into a single string
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lines = []
-    for key, results in stages.items():
+    for key, results in nzo.unpack_info.items():
         lines.append('%s:::%s' % (key, ';'.join(results)))
     stage_log = '\r\n'.join(lines)
 
@@ -490,9 +465,9 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
         if seriesname and season and episode:
             series = '%s/%s/%s' % (seriesname.lower(), season, episode)
 
-    return (completed, name, nzb_name, category, pp, script, report, url, status, nzo_id, storage, path,
-            script_log, script_line, download_time, postproc_time, stage_log, downloaded, completeness,
-            fail_message, url_info, bytes, series, nzo.md5sum, nzo.password)
+    return (completed, nzo.final_name, nzo.filename, nzo.cat, pp, nzo.script, report, nzo.url, nzo.status, nzo.nzo_id, storage, downpath,
+            script_output, script_line, download_time, postproc_time, stage_log, nzo.bytes_downloaded, completeness,
+            nzo.fail_msg, url_info, nzo.bytes_downloaded, series, nzo.md5sum, nzo.password)
 
 
 def unpack_history_info(item):
@@ -547,26 +522,3 @@ def midnight_history_purge():
     history_db = HistoryDB()
     history_db.auto_history_purge()
     history_db.close()
-
-
-def decode_factory(text):
-    # TODO: REMOVE
-    """ Recursively looks through the supplied argument
-        and converts and text to Unicode
-    """
-    if isinstance(text, str):
-        return unicoder(text)
-
-    elif isinstance(text, list):
-        new_text = []
-        for t in text:
-            new_text.append(decode_factory(t))
-        return new_text
-
-    elif isinstance(text, dict):
-        new_text = {}
-        for key in text:
-            new_text[key] = decode_factory(text[key])
-        return new_text
-    else:
-        return text
