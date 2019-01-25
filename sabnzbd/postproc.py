@@ -39,7 +39,7 @@ from sabnzbd.filesystem import real_path, get_unique_path, create_dirs, move_to_
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
-from sabnzbd.encoding import TRANS, unicoder
+from sabnzbd.encoding import unicoder
 from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
@@ -488,7 +488,7 @@ def process_job(nzo):
         if (not nzb_list) and cfg.email_endjob():
             if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
                 emailer.endjob(nzo.final_name, nzo.cat, all_ok, workdir_complete, nzo.bytes_downloaded,
-                               nzo.fail_msg, nzo.unpack_info, script, TRANS(script_log), script_ret)
+                               nzo.fail_msg, nzo.unpack_info, script, script_log, script_ret)
 
         if script_output:
             # Can do this only now, otherwise it would show up in the email

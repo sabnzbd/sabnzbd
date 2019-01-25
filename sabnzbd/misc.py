@@ -35,7 +35,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, \
      MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import ubtou, unicoder
+from sabnzbd.encoding import ubtou, unicoder, platform_btou
 
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -783,7 +783,7 @@ def ip_extract():
         p = subprocess.Popen(program, shell=False, stdin=subprocess.PIPE,
                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                              startupinfo=None, creationflags=0)
-        output = p.stdout.read()
+        output = platform_btou(p.stdout.read())
         p.wait()
         for line in output.split('\n'):
             m = RE_IP4.search(line)

@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.encoding - Unicoded filename support
+sabnzbd.encoding - Unicode/byte translation functions
 """
 
 import locale
@@ -26,6 +26,40 @@ from Cheetah.Filters import Filter
 
 import sabnzbd
 
+CODEPAGE = locale.getpreferredencoding()
+
+
+def utob(str_in):
+    """ Shorthand for converting UTF-8 to bytes """
+    if isinstance(str_in, bytes):
+        return str_in
+    return str_in.encode('utf-8')
+
+
+def ubtou(str_in):
+    """ Shorthand for converting unicode bytes to UTF-8 """
+    if not isinstance(str_in, bytes):
+        return str_in
+    return str_in.decode('utf-8')
+
+
+def platform_btou(str_in):
+    """ Return Unicode, if not already Unicode, decode with locale encoding.
+        NOTE: Used for POpen because universal_newlines/text parameter doesn't
+        always work! We cannot use encoding-parameter because it's Python 3.7+
+    """
+    if isinstance(str_in, bytes):
+        try:
+            return ubtou(str_in)
+        except UnicodeDecodeError:
+            return str_in.decode(CODEPAGE, errors='replace').replace('?', '!')
+    else:
+        return str_in
+
+
+#########################################
+## OLD STUFF
+#########################################
 gUTF = False
 
 
@@ -165,46 +199,6 @@ class EmailFilter(Filter):
             return str(str(val))
 
 
-################################################################################
-#
-# Map CodePage-850 characters to Python's pseudo-Unicode 8bit ASCII
-# Use to transform 8-bit console output to plain Python strings
-# For example for unrar and par2 output
-#
-
-
-
-def TRANS(p):
-    return p
-    """ For Windows: Translate CP850 to Python's Latin-1 and return in Unicode
-        Others: return original string
-    """
-    if sabnzbd.WIN32:
-        if p:
-            return p.translate(string.maketrans(TAB_850, TAB_LATIN)).decode('cp1252', 'replace')
-        else:
-            # translate() fails on empty or None strings
-            return ''
-    else:
-        return unicoder(p)
-
-
-def UNTRANS(p):
-    return p
-    """ For Windows: Translate Python's Latin-1 to CP850
-        Others: return original string
-    """
-    global gTABLE_LATIN_850
-    if sabnzbd.WIN32:
-        if p:
-            return p.encode('cp1252', 'replace').translate(gTABLE_LATIN_850)
-        else:
-            # translate() fails on empty or None strings
-            return ''
-    else:
-        return p
-
-
 def fixup_ff4(p):
     return p
     """ Fix incompatibility between CherryPy and Firefox-4 on OSX,
@@ -270,18 +264,4 @@ def deunicode(p):
                 return p
     else:
         return str(p)
-
-
-def utob(str_in):
-    """ Shorthand for converting UTF-8 to bytes """
-    if isinstance(str_in, bytes):
-        return str_in
-    return str_in.encode('utf-8')
-
-
-def ubtou(str_in):
-    """ Shorthand for converting unicode bytes to UTF-8 """
-    if not isinstance(str_in, bytes):
-        return str_in
-    return str_in.decode('utf-8')
 

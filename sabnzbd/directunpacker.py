@@ -31,7 +31,7 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string
 from sabnzbd.filesystem import clip_path, long_path, remove_all, real_path, remove_file
-from sabnzbd.encoding import TRANS, unicoder
+from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
@@ -159,9 +159,8 @@ class DirectUnpacker(threading.Thread):
             if not self.active_instance:
                 break
 
-            char = self.active_instance.stdout.read(1)
+            char = platform_btou(self.active_instance.stdout.read(1))
             linebuf += char
-
             if not char:
                 # End of program
                 break
@@ -177,7 +176,7 @@ class DirectUnpacker(threading.Thread):
             if linebuf.endswith('\n'):
                 # List files we used
                 if linebuf.startswith('Extracting from'):
-                    filename = TRANS((re.search(EXTRACTFROM_RE, linebuf.strip()).group(1)))
+                    filename = (re.search(EXTRACTFROM_RE, linebuf.strip()).group(1))
                     if filename not in rarfiles:
                         rarfiles.append(filename)
 
@@ -185,7 +184,7 @@ class DirectUnpacker(threading.Thread):
                 m = re.search(EXTRACTED_RE, linebuf)
                 if m:
                     # In case of flat-unpack, UnRar still prints the whole path (?!)
-                    unpacked_file = TRANS(m.group(2))
+                    unpacked_file = m.group(2)
                     if cfg.flat_unpack():
                         unpacked_file = os.path.basename(unpacked_file)
                     extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
@@ -205,7 +204,7 @@ class DirectUnpacker(threading.Thread):
                 # List success in history-info
                 msg = T('Unpacked %s files/folders in %s') % (len(extracted), format_time_string(self.unpack_time))
                 msg = '%s - %s' % (T('Direct Unpack'), msg)
-                self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
+                self.nzo.set_unpack_info('Unpack', '[%s] %s' % (self.cur_setname, msg))
 
                 # Write current log and clear
                 unrar_log.append(linebuf.strip())
@@ -247,7 +246,7 @@ class DirectUnpacker(threading.Thread):
                     # If unrar stopped or is killed somehow, writing will cause a crash
                     try:
                         # Give unrar some time to do it's thing
-                        self.active_instance.stdin.write('C\n')
+                        self.active_instance.stdin.write(b'C\n')
                         start_time = time.time()
                         time.sleep(0.1)
                     except IOError:
@@ -360,9 +359,10 @@ class DirectUnpacker(threading.Thread):
         self.cur_volume = 1
         stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
         logging.debug('Running unrar for DirectUnpack %s', command)
+        # Need to disable buffer to have direct feedback
         self.active_instance = Popen(command, shell=False, stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                    startupinfo=stup, creationflags=creationflags)
+                                    startupinfo=stup, creationflags=creationflags, bufsize=0)
         # Add to runners
         ACTIVE_UNPACKERS.append(self)
 
@@ -383,7 +383,7 @@ class DirectUnpacker(threading.Thread):
             if self.active_instance:
                 # First we try to abort gracefully
                 try:
-                    self.active_instance.stdin.write('Q\n')
+                    self.active_instance.stdin.write(b'Q\n')
                     time.sleep(0.2)
                 except IOError:
                     pass
@@ -391,18 +391,6 @@ class DirectUnpacker(threading.Thread):
                 # Now force kill and give it a bit of time
                 self.active_instance.kill()
                 time.sleep(0.2)
-
-                # Have to collect the return-code to avoid zombie
-                # But it will block forever if the process is in special state.
-                # That should never happen, but it can happen on broken unrar's
-                if self.active_instance.poll():
-                    self.active_instance.communicate()
-                else:
-                    # It is still running?!? This should never happen
-                    # Wait a little bit longer just to be sure..
-                    time.sleep(2.0)
-                    if not self.active_instance.poll():
-                        logging.warning(T('Unable to stop the unrar process.'))
 
             # Wake up the thread
             with self.next_file_lock:

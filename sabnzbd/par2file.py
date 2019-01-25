@@ -40,7 +40,6 @@ def is_parfile(filename):
             buf = f.read(8)
             return buf.startswith(PAR_PKT_ID)
     except:
-        print(sys.exc_info())
         pass
     return False
 

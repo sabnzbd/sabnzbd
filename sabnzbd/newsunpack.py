@@ -31,7 +31,7 @@ import functools
 from subprocess import Popen
 
 import sabnzbd
-from sabnzbd.encoding import ubtou, TRANS, unicoder, platform_encode, deunicode
+from sabnzbd.encoding import ubtou, unicoder, platform_encode, deunicode, platform_btou
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
     get_all_passwords, calc_age, cmp
@@ -167,9 +167,8 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
 
         logging.info('Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)',
                      extern_proc, complete_dir, nzo.filename, nicename, '', nzo.cat, nzo.group, status, failure_url)
-        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                            startupinfo=stup, env=env, creationflags=creationflags)
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                  startupinfo=stup, env=env, creationflags=creationflags)
 
         # Follow the output, so we can abort it
         proc = p.stdout
@@ -178,7 +177,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
 
         lines = []
         while 1:
-            line = proc.readline()
+            line = platform_btou(proc.readline())
             if not line:
                 break
             line = line.strip()
@@ -211,14 +210,13 @@ def external_script(script, p1, p2, p3=None, p4=None):
         stup, need_shell, command, creationflags = build_command(command)
         env = create_env()
         logging.info('Running user script %s(%s, %s)', script, p1, p2)
-        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                            startupinfo=stup, env=env, creationflags=creationflags)
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                  startupinfo=stup, env=env, creationflags=creationflags)
     except:
         logging.debug("Failed script %s, Traceback: ", script, exc_info=True)
         return "Cannot run script %s\r\n" % script, -1
 
-    output = p.stdout.read()
+    output = platform_btou(p.stdout.read())
     ret = p.wait()
     return output, ret
 
@@ -651,9 +649,8 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     logging.debug("Running unrar %s", command)
-    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         startupinfo=stup, creationflags=creationflags)
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+              startupinfo=stup, creationflags=creationflags)
 
     proc = p.stdout
     if p.stdin:
@@ -670,7 +667,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     lines = []
 
     while 1:
-        line = proc.readline()
+        line = platform_btou(proc.readline())
         if not line:
             break
 
@@ -687,7 +684,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         lines.append(line)
 
         if line.startswith('Extracting from'):
-            filename = TRANS((re.search(EXTRACTFROM_RE, line).group(1)))
+            filename = (re.search(EXTRACTFROM_RE, line).group(1))
             if filename not in rarfiles:
                 rarfiles.append(filename)
             curr += 1
@@ -702,7 +699,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             logging.debug("unrar recovery result: %s" % line)
 
         elif line.startswith('Cannot find volume') and not inrecovery:
-            filename = os.path.basename(TRANS(line[19:]))
+            filename = os.path.basename(line[19:])
             nzo.fail_msg = T('Unpacking failed, unable to find %s') % unicoder(filename)
             msg = ('[%s] ' + T('Unpacking failed, unable to find %s')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg))
@@ -710,7 +707,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             fail = 1
 
         elif line.endswith('- CRC failed'):
-            filename = TRANS(line[:-12].strip())
+            filename = line[:-12].strip()
             nzo.fail_msg = T('Unpacking failed, CRC error')
             msg = ('[%s] ' + T('ERROR: CRC failed in "%s"')) % (setname, filename)
             nzo.set_unpack_info('Unpack', unicoder(msg))
@@ -765,7 +762,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
                 # unrar 3.x syntax
                 m = re.search(r'Encrypted file:  CRC failed in (.+) \(password', line)
             if m:
-                filename = TRANS(m.group(1)).strip()
+                filename = m.group(1).strip()
             else:
                 filename = os.path.split(rarfile_path)[1]
             nzo.fail_msg = T('Unpacking failed, archive requires a password')
@@ -777,7 +774,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             # Unrecognizable RAR file
             m = re.search('(.+) is not RAR archive', line)
             if m:
-                filename = TRANS(m.group(1)).strip()
+                filename = m.group(1).strip()
             else:
                 filename = '???'
             nzo.fail_msg = T('Unusable RAR file')
@@ -790,7 +787,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             # packed data checksum error in volume FILE
             m = re.search(r'error in volume (.+)', line)
             if m:
-                filename = TRANS(m.group(1)).strip()
+                filename = m.group(1).strip()
             else:
                 filename = '???'
             nzo.fail_msg = T('Corrupt RAR file')
@@ -802,7 +799,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             m = re.search(EXTRACTED_RE, line)
             if m:
                 # In case of flat-unpack, UnRar still prints the whole path (?!)
-                unpacked_file = TRANS(m.group(2))
+                unpacked_file = m.group(2)
                 if cfg.flat_unpack():
                     unpacked_file = os.path.basename(unpacked_file)
                 extracted.append(real_path(extraction_path, unpacked_file))
@@ -908,7 +905,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
-    output = p.stdout.read()
+    output = platform_btou(p.stdout.read())
     logging.debug('unzip output: \n%s', output)
 
     ret = p.wait()
@@ -1037,7 +1034,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
                          stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                          startupinfo=stup, creationflags=creationflags)
 
-    output = p.stdout.read()
+    output = platform_btou(p.stdout.read())
     logging.debug('7za output: %s', output)
 
     ret = p.wait()
@@ -1274,7 +1271,7 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
 
         # Loop over the output, whee
         while 1:
-            char = proc.read(1)
+            char = platform_btou(proc.read(1))
             if not char:
                 break
 
@@ -1407,8 +1404,8 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
                 m = _RE_BLOCK_FOUND.search(line)
                 if m:
                     workdir = os.path.split(parfile)[0]
-                    old_name = TRANS(m.group(1))
-                    new_name = TRANS(m.group(2))
+                    old_name = m.group(1)
+                    new_name = m.group(2)
                     if joinables:
                         # Find out if a joinable file has been used for joining
                         uline = unicoder(line)
@@ -1451,8 +1448,8 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
             elif 'is a match for' in line:
                 m = _RE_IS_MATCH_FOR.search(line)
                 if m:
-                    old_name = TRANS(m.group(1))
-                    new_name = TRANS(m.group(2))
+                    old_name = m.group(1)
+                    new_name = m.group(2)
                     logging.debug('PAR2 will rename "%s" to "%s"', old_name, new_name)
                     renames[new_name] = old_name
 
@@ -1501,9 +1498,9 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
 
                     # Remove redundant extra files that are just duplicates of original ones
                     if 'duplicate data blocks' in line:
-                        used_for_repair.append(TRANS(m.group(1)))
+                        used_for_repair.append(m.group(1))
                     else:
-                        datafiles.append(TRANS(m.group(1)))
+                        datafiles.append(m.group(1))
                     continue
 
                 # Verify done
@@ -1573,9 +1570,8 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
     logging.info('Starting MultiPar: %s', command)
 
     lines = []
-    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                         startupinfo=stup, creationflags=creationflags)
+    p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+              startupinfo=stup, creationflags=creationflags)
 
     proc = p.stdout
 
@@ -1603,7 +1599,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
 
     # Loop over the output, whee
     while 1:
-        char = proc.read(1)
+        char = platform_btou(proc.read(1))
         if not char:
             break
 
@@ -1697,12 +1693,12 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
             if m:
                 verifynum += 1
                 nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
-                old_name = TRANS(m.group(1))
+                old_name = m.group(1)
         elif misnamed_files and 'Misnamed' in line:
             # Then it finds the actual
             m = _RE_FILENAME.search(line)
             if m and old_name:
-                new_name = TRANS(m.group(1))
+                new_name = m.group(1)
                 logging.debug('MultiPar will rename "%s" to "%s"', old_name, new_name)
                 renames[new_name] = old_name
                 # New name is also part of data!
@@ -1725,7 +1721,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
                 if line.startswith('= ') or '%' not in line:
                     verifynum += 1
                 nzo.set_action_line(T('Checking'), '%02d/%02d' % (verifynum, verifytotal))
-                old_name = TRANS(m.group(1))
+                old_name = m.group(1)
 
         # ----------------- Verify stage
         # Which files need extra verification?
@@ -1754,12 +1750,12 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
                 nzo.status = Status.VERIFYING
                 if line.split()[1] in ('Damaged', 'Found'):
                     verifynum += 1
-                    datafiles.append(TRANS(m.group(1)))
+                    datafiles.append(m.group(1))
 
                     # Set old_name in case it was misnamed and found (not when we are joining)
                     old_name = None
                     if line.split()[1] == 'Found' and not joinables:
-                        old_name = TRANS(m.group(1))
+                        old_name = m.group(1)
 
                     # Sometimes we don't know the total (filejoin)
                     if verifytotal <= 1:
@@ -1767,9 +1763,9 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
                     else:
                         nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
 
-                elif old_name and old_name != TRANS(m.group(1)):
+                elif old_name and old_name != m.group(1):
                     # Hey we found another misnamed one!
-                    new_name = TRANS(m.group(1))
+                    new_name = m.group(1)
                     logging.debug('MultiPar will rename "%s" to "%s"', old_name, new_name)
                     renames[new_name] = old_name
                     # Put it back with it's new name!
@@ -1793,7 +1789,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
                     for jn in joinables:
                         if uline.find(os.path.split(jn)[1]) > 0:
                             used_joinables.append(jn)
-                            datafiles.append(TRANS(m.group(1)))
+                            datafiles.append(m.group(1))
                             break
 
         elif line.startswith('Need'):
@@ -2333,14 +2329,14 @@ def pre_queue(nzo, pp, cat):
             stup, need_shell, command, creationflags = build_command(command)
             env = create_env(nzo, extra_env_fields)
             logging.info('Running pre-queue script %s', command)
-            p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                startupinfo=stup, env=env, creationflags=creationflags)
+            p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                      stderr=subprocess.STDOUT, startupinfo=stup, env=env,
+                      creationflags=creationflags)
         except:
             logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
             return values
 
-        output = p.stdout.read()
+        output = platform_btou(p.stdout.read())
         ret = p.wait()
         logging.info('Pre-queue script returns %s and output=\n%s', ret, output)
         if ret == 0:
@@ -2390,11 +2386,10 @@ class SevenZip(object):
         command = [SEVEN_COMMAND, 'l', '-p', '-y', '-slt', self.path]
         stup, need_shell, command, creationflags = build_command(command)
 
-        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             startupinfo=stup, creationflags=creationflags)
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                  startupinfo=stup, creationflags=creationflags)
 
-        output = p.stdout.read()
+        output = platform_btou(p.stdout.read())
         _ = p.wait()
         re_path = re.compile('^Path = (.+)')
         for line in output.split('\n'):
@@ -2417,11 +2412,10 @@ class SevenZip(object):
         else:
             stderr = open('/dev/null', 'w')
 
-        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=stderr,
-                             startupinfo=stup, creationflags=creationflags)
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stderr,
+                  startupinfo=stup, creationflags=creationflags)
 
-        output = p.stdout.read()
+        output = platform_btou(p.stdout.read())
         _ = p.wait()
         stderr.close()
         return output
@@ -2434,6 +2428,6 @@ class SevenZip(object):
 def run_simple(cmd):
     """ Run simple external command and return output """
     p = Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    txt = ubtou(p.stdout.read())
+    txt = platform_btou(p.stdout.read())
     p.wait()
     return txt

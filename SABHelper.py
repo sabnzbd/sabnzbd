@@ -52,7 +52,7 @@ def HandleCommandLine(allow_service=True):
 
 
 def start_sab():
-    return subprocess.Popen('net start SABnzbd', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True).stdout.read()
+    return subprocess.Popen('net start SABnzbd', stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
 
 
 def main():

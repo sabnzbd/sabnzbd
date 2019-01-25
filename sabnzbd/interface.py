@@ -45,7 +45,7 @@ from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remo
     clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
+from sabnzbd.encoding import xml_name, LatinFilter, unicoder, special_fixer, \
     platform_encode
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -2494,13 +2494,8 @@ def badParameterResponse(msg, ajax=None):
 ''' % (sabnzbd.__version__, T('ERROR:'), T('Incorrect parameter'), unicoder(msg), T('Back'))
 
 
-def ShowString(name, string):
+def ShowString(name, msg):
     """ Return a html page listing a file and a 'back' button """
-    try:
-        msg = TRANS(string)
-    except:
-        msg = "Encoding Error\n"
-
     return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>

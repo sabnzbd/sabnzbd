@@ -31,7 +31,7 @@ from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import unicoder
+from sabnzbd.encoding import unicoder, platform_btou
 from sabnzbd.constants import NOTIFY_KEYS
 from sabnzbd.misc import split_host
 from sabnzbd.filesystem import make_script_path
@@ -368,7 +368,7 @@ def send_notification_center(title, msg, gtype):
         try:
             command = [tool, '-title', title, '-message', msg, '-group', T(NOTIFICATION.get(gtype, 'other'))]
             proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
-            output = proc.stdout.read()
+            output = platform_btou(proc.stdout.read())
             proc.wait()
             if 'Notification delivered' in output or 'Removing previously' in output:
                 output = ''
