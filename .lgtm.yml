@@ -1,7 +1,10 @@
 path_classifiers:
-  library:
+  oldinterfaces:
     - interfaces/smpl
     - interfaces/Plush
+  library:
     - cherrypy
     - gntp
+    - six
+    - "*knockout*"
     - "**/*min*"
