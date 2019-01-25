@@ -60,7 +60,7 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder, deunicode
+from sabnzbd.encoding import unicoder
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 
@@ -273,7 +273,6 @@ def CheckColor(color, web_dir):
 
 def fix_webname(name):
     if name:
-        name = deunicode(name)
         xname = name.title()
     else:
         xname = ''
@@ -479,7 +478,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         cherryhost = ''
 
     if cherryhost is None:
-        cherryhost = deunicode(sabnzbd.cfg.cherryhost())
+        cherryhost = sabnzbd.cfg.cherryhost()
     else:
         sabnzbd.cfg.cherryhost.set(cherryhost)
 

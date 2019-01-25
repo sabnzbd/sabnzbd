@@ -823,10 +823,8 @@ class RarFile(object):
         """Let 'unrar' test the archive.
         """
         # Modified for SABnzbd by clipping paths
-        # and de-unicoding only here
         from sabnzbd.filesystem import clip_path
-        from sabnzbd.encoding import deunicode
-        rarpath = deunicode(clip_path(self._rarfile))
+        rarpath = clip_path(self._rarfile)
 
         cmd = [UNRAR_TOOL] + list(TEST_ARGS)
         add_password_arg(cmd, self._password)

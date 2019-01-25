@@ -653,7 +653,6 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         except:
             # Correct encoding after all!
             filename = nzbfile.filename
-        filename = encoding.special_fixer(filename)
         keep = False
 
     if not sabnzbd.WIN32:

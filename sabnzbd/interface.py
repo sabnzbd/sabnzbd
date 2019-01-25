@@ -45,7 +45,7 @@ from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remo
     clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import xml_name, LatinFilter, special_fixer, platform_encode
+from sabnzbd.encoding import xml_name, LatinFilter, platform_encode
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
@@ -874,7 +874,7 @@ class NzoPage(object):
         if index is not None:
             NzbQueue.do.switch(nzo_id, index)
         if name is not None:
-            NzbQueue.do.change_name(nzo_id, special_fixer(name), password)
+            NzbQueue.do.change_name(nzo_id, name, password)
 
         if cat is not None and nzo.cat is not cat and not (nzo.cat == '*' and cat == 'Default'):
             NzbQueue.do.change_cat(nzo_id, cat, priority)

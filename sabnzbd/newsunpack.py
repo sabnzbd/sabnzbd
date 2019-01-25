@@ -31,7 +31,7 @@ import functools
 from subprocess import Popen
 
 import sabnzbd
-from sabnzbd.encoding import platform_encode, deunicode, platform_btou
+from sabnzbd.encoding import platform_encode, platform_btou
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
     get_all_passwords, calc_age, cmp
@@ -1959,8 +1959,6 @@ def create_env(nzo=None, extra_env_fields={}):
         # No modification
         return None
 
-    # Have to make sure no Unicode slipped in somehow
-    env = { deunicode(k): deunicode(v) for k, v in env.items() }
     return env
 
 
@@ -2328,7 +2326,7 @@ def pre_queue(nzo, pp, cat):
             for line in output.split('\n'):
                 line = line.strip('\r\n \'"')
                 if n < len(values) and line:
-                    values[n] = deunicode(line)
+                    values[n] = line
                 n += 1
         accept = int_conv(values[0])
         if  accept < 1:

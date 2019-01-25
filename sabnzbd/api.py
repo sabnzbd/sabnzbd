@@ -53,7 +53,7 @@ from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
 from sabnzbd.filesystem import diskspace, get_ext, get_filename, globber, \
      globber_full, clip_path, remove_all
 from sabnzbd.filesystem import same_file
-from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode
+from sabnzbd.encoding import xml_name, unicoder, platform_encode
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
@@ -185,7 +185,7 @@ def _api_queue_rename(output, value, kwargs):
     value2 = kwargs.get('value2')
     value3 = kwargs.get('value3')
     if value and value2:
-        ret = NzbQueue.do.change_name(value, special_fixer(value2), special_fixer(value3))
+        ret = NzbQueue.do.change_name(value, value2, value3)
         return report(output, keyword='', data={'status': ret})
     else:
         return report(output, _MSG_NO_VALUE2)

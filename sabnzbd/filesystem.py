@@ -32,7 +32,7 @@ import stat
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
-from sabnzbd.encoding import special_fixer, gUTF
+from sabnzbd.encoding import gUTF
 
 
 def get_ext(filename):
@@ -434,6 +434,8 @@ def trim_win_path(path):
 
 def fix_unix_encoding(folder):
     """ Fix bad name encoding for Unix systems """
+    # TODO: Remove?!
+    return
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN and gUTF:
         for root, dirs, files in os.walk(folder.encode('utf-8')):
             for name in files:

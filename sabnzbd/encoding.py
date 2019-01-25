@@ -106,27 +106,6 @@ def yenc_name_fixer(p):
         return p.decode('cp1252', errors='replace').replace('?', '!')
 
 
-def special_fixer(p):
-    """ Return string appropriate for the platform.
-        Also takes care of the situation where a non-Windows/UTF-8 system
-        receives a latin-1 encoded name.
-    """
-    if p:
-        # Remove \" constructions from incoming headers
-        p = p.replace(r'\"', r'"')
-    if not p or isinstance(p, str):
-        return p
-    try:
-        # First see if it isn't just UTF-8
-        p.decode('utf-8')
-        if sabnzbd.DARWIN and '&#' in p:
-            p = fixup_ff4(p)
-        return p.decode('utf-8')
-    except:
-        # Now assume it's 8bit ASCII
-        return p.decode(codepage)
-
-
 def unicoder(p, force=False):
     return p
     """ Make sure a Unicode string is returned
@@ -197,71 +176,3 @@ class EmailFilter(Filter):
             return ''
         else:
             return str(str(val))
-
-
-def fixup_ff4(p):
-    return p
-    """ Fix incompatibility between CherryPy and Firefox-4 on OSX,
-        where a filename contains &#xx; encodings
-    """
-    name = []
-    num = 0
-    start = amp = False
-    for ch in p:
-        if start:
-            if ch.isdigit():
-                num += ch
-            elif ch == ';':
-                name.append(chr(int(num)).encode('utf8'))
-                start = False
-            else:
-                name.append('&#%s%s' % (num, ch))
-                start = False
-        elif ch == '&':
-            amp = True
-        elif amp:
-            amp = False
-            if ch == '#':
-                start = True
-                num = ''
-            else:
-                name.append('&' + ch)
-        else:
-            name.append(ch)
-    return ''.join(name)
-
-
-_HTML_TABLE = {
-    #'&' : '&amp;', # Not yet, texts need to be cleaned from HTML first
-    #'>' : '&gt;',  # Not yet, texts need to be cleaned from HTML first
-    #'<' : '&lt;',  # Not yet, texts need to be cleaned from HTML first
-    '"': '&quot;',
-    "'": '&apos;'
-}
-
-
-def deunicode(p):
-    return p
-    """ Return the correct 8bit ASCII encoding for the platform:
-        Latin-1 for Windows/Posix-non-UTF and UTF-8 for OSX/Posix-UTF
-    """
-    if isinstance(p, str):
-        if gUTF:
-            return p.encode('utf-8')
-        else:
-            return p.encode(codepage, 'replace')
-    elif isinstance(p, str):
-        if gUTF:
-            try:
-                p.decode('utf-8')
-                return p
-            except:
-                return p.decode(codepage).encode('utf-8')
-        else:
-            try:
-                return p.decode('utf-8').encode(codepage, 'replace')
-            except:
-                return p
-    else:
-        return str(p)
-
