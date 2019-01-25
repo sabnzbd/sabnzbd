@@ -31,7 +31,7 @@ from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import unicoder, platform_btou
+from sabnzbd.encoding import platform_btou
 from sabnzbd.constants import NOTIFY_KEYS
 from sabnzbd.misc import split_host
 from sabnzbd.filesystem import make_script_path
@@ -276,7 +276,7 @@ def send_growl(title, msg, gtype, test=None):
                 ret = _GROWL.notify(
                     noteType=T(NOTIFICATION.get(gtype, 'other')),
                     title=title,
-                    description=unicoder(msg),
+                    description=msg,
                 )
                 if ret is None or isinstance(ret, bool):
                     return None

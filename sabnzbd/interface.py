@@ -45,8 +45,7 @@ from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remo
     clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import xml_name, LatinFilter, unicoder, special_fixer, \
-    platform_encode
+from sabnzbd.encoding import xml_name, LatinFilter, special_fixer, platform_encode
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
@@ -1544,7 +1543,7 @@ def change_web_dir(web_dir):
     web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 
     if not os.path.exists(web_dir_path):
-        return badParameterResponse('Cannot find web template: %s' % unicoder(web_dir_path))
+        return badParameterResponse('Cannot find web template: %s' % web_dir_path)
     else:
         cfg.web_dir.set(web_dir)
         cfg.web_color.set(web_color)
@@ -2491,7 +2490,7 @@ def badParameterResponse(msg, ajax=None):
 <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
 </body>
 </html>
-''' % (sabnzbd.__version__, T('ERROR:'), T('Incorrect parameter'), unicoder(msg), T('Back'))
+''' % (sabnzbd.__version__, T('ERROR:'), T('Incorrect parameter'), msg, T('Back'))
 
 
 def ShowString(name, msg):
@@ -2508,7 +2507,7 @@ def ShowString(name, msg):
            <code><pre>%s</pre></code>
 </body>
 </html>
-''' % (xml_name(name), T('Back'), xml_name(name), escape(unicoder(msg)))
+''' % (xml_name(name), T('Back'), xml_name(name), escape(msg))
 
 
 def GetRssLog(feed):
@@ -2671,39 +2670,39 @@ class ConfigNotify(object):
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_GROWL:
             msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NCENTER:
             msg = config.get_config('ncenter', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_ACENTER:
             msg = config.get_config('acenter', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NTFOSD:
             msg = config.get_config('ntfosd', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PROWL:
             msg = config.get_config('prowl', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PUSHOVER:
             msg = config.get_config('pushover', kw).set(platform_encode(kwargs.get(kw)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PUSHBULLET:
             msg = config.get_config('pushbullet', kw).set(platform_encode(kwargs.get(kw, 0)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NSCRIPT:
             msg = config.get_config('nscript', kw).set(platform_encode(kwargs.get(kw, 0)))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
 
         config.save_config()
         self.__lastmail = None

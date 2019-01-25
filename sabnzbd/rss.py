@@ -33,7 +33,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, wildcard_to_re, cat_to_opts, \
     match_str, from_units, int_conv, get_base_url
 import sabnzbd.emailer as emailer
-from sabnzbd.encoding import unicoder, xml_name
+from sabnzbd.encoding import xml_name
 
 import feedparser
 
@@ -322,7 +322,7 @@ class RSSQueue(object):
         # Error in readout or now new readout
         if readout:
             if not entries:
-                return unicoder(msg)
+                return msg
         else:
             entries = list(jobs.keys())
 

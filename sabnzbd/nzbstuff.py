@@ -43,7 +43,7 @@ from sabnzbd.filesystem import sanitize_foldername, get_unique_path, get_admin_p
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder, platform_encode
+from sabnzbd.encoding import platform_encode
 import sabnzbd.nzbparser
 from sabnzbd.database import HistoryDB
 from sabnzbd.rating import Rating
@@ -601,12 +601,12 @@ class NzbObject(TryList):
         # Pickup backed-up attributes when re-using
         if reuse:
             cat, pp, script, priority, name, password, self.url = get_attrib_file(self.workpath, 7)
-            cat = unicoder(cat, True)
-            script = unicoder(script, True)
+            cat = cat, True
+            script = script, True
             if name:
-                self.final_name = unicoder(name, True)
+                self.final_name = name, True
             if password:
-                self.password = unicoder(password, True)
+                self.password = password, True
 
         # Determine category and find pp/script values
         self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, priority)

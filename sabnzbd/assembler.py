@@ -39,7 +39,6 @@ from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.encoding import unicoder
 from sabnzbd.rating import Rating
 
 
@@ -205,11 +204,10 @@ RE_SUBS = re.compile(r'\W+sub|subs|subpack|subtitle|subtitles(?![a-z])', re.I)
 SAFE_EXTS = ('.mkv', '.mp4', '.avi', '.wmv', '.mpg', '.webm')
 def is_cloaked(nzo, path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
-    fname = unicoder(get_filename(path)).lower()
-    fname = os.path.splitext(fname)[0]
+    fname = os.path.splitext(get_filename(path.lower()))[0]
     for name in names:
         name = get_filename(name.lower())
-        name, ext = os.path.splitext(unicoder(name))
+        name, ext = os.path.splitext(name)
         if ext == '.rar' and fname.startswith(name) and (len(fname) - len(name)) < 8 and len(names) < 3 and not RE_SUBS.search(fname):
             # Only warn once
             if nzo.encrypted == 0:

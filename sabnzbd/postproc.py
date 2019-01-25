@@ -39,7 +39,6 @@ from sabnzbd.filesystem import real_path, get_unique_path, create_dirs, move_to_
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
-from sabnzbd.encoding import unicoder
 from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
@@ -392,7 +391,7 @@ def process_job(nzo):
                             if new_path:
                                 newfiles.append(new_path)
                             if not ok:
-                                nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (unicoder(path), unicoder(new_path)))
+                                nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (path, new_path))
                                 all_ok = False
                                 break
 
@@ -414,7 +413,7 @@ def process_job(nzo):
                 else:
                     nzb_list = None
                 if nzb_list:
-                    nzo.set_unpack_info('Download', T('Sent %s to queue') % unicoder(nzb_list))
+                    nzo.set_unpack_info('Download', T('Sent %s to queue') % nzb_list)
                     cleanup_empty_directories(tmp_workdir_complete)
                 else:
                     cleanup_list(tmp_workdir_complete, False)
@@ -460,17 +459,17 @@ def process_job(nzo):
             if (all_ok or not cfg.safe_postproc()) and (not nzb_list) and script_path:
                 # Set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING
-                nzo.set_action_line(T('Running script'), unicoder(script))
-                nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
+                nzo.set_action_line(T('Running script'), script)
+                nzo.set_unpack_info('Script', T('Running user script %s') % script, unique=True)
                 script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete),
                                                              nzo.final_name, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
                 if script_line:
-                    nzo.set_unpack_info('Script', unicoder(script_line), unique=True)
+                    nzo.set_unpack_info('Script', script_line, unique=True)
                 else:
-                    nzo.set_unpack_info('Script', T('Ran %s') % unicoder(script), unique=True)
+                    nzo.set_unpack_info('Script', T('Ran %s') % script, unique=True)
             else:
                 script = ""
                 script_line = ""
@@ -621,7 +620,7 @@ def prepare_extraction_path(nzo):
         marker_file = set_marker(workdir_complete)
 
     if not workdir_complete or not os.path.exists(workdir_complete):
-        logging.error(T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, nzo.final_name)))
+        logging.error(T('Cannot create final folder %s') % os.path.join(complete_dir, nzo.final_name))
         raise IOError
 
     if cfg.folder_rename() and not one_folder:
@@ -683,7 +682,7 @@ def parring(nzo, workdir):
     else:
         # We must not have found any par2..
         logging.info("No par2 sets for %s", filename)
-        nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
+        nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % filename)
         if cfg.sfv_check() and not verified.get('', False):
             par_error = not try_sfv_check(nzo, workdir, '')
             verified[''] = not par_error
@@ -726,7 +725,7 @@ def try_sfv_check(nzo, workdir, setname):
 
             failed = sfv_check(sfv)
             if failed:
-                fail_msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
+                fail_msg = T('Some files failed to verify against "%s"') % os.path.basename(sfv)
                 msg = fail_msg + '; '
                 msg += '; '.join(failed)
                 nzo.set_unpack_info('Repair', msg)
@@ -770,7 +769,7 @@ def try_rar_check(nzo, workdir, setname):
 
             # Skip if it's encrypted
             if zf.needs_password():
-                msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), T('Passworded'))
+                msg = T('[%s] RAR-based verification failed: %s') % (os.path.basename(rars[0]), T('Passworded'))
                 nzo.set_unpack_info('Repair', msg)
                 return True
 
@@ -783,7 +782,7 @@ def try_rar_check(nzo, workdir, setname):
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
-            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n', ' ')))
+            msg = T('[%s] RAR-based verification failed: %s') % (os.path.basename(rars[0]), e.message.replace('\r\n', ' '))
             nzo.set_unpack_info('Repair', msg)
             logging.info(msg)
             return False

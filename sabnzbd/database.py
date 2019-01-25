@@ -550,6 +550,7 @@ def midnight_history_purge():
 
 
 def decode_factory(text):
+    # TODO: REMOVE
     """ Recursively looks through the supplied argument
         and converts and text to Unicode
     """

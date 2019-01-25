@@ -32,7 +32,6 @@ from threading import Thread
 
 import sabnzbd
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status
-from sabnzbd.encoding import unicoder
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
 import sabnzbd.dirscanner as dirscanner
@@ -307,7 +306,7 @@ class URLGrabber(Thread):
             msg = T('Unusable NZB file')
         else:
             # Failed fetch
-            msg = T('URL Fetching failed; %s') % unicoder(msg)
+            msg = T('URL Fetching failed; %s') % msg
 
         # Mark as failed
         nzo.status = Status.FAILED
