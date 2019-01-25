@@ -301,6 +301,8 @@ SKIN_TEXT = {
     'dashboard-speedTestFailed' : TT('Could not write. Check that the directory is writable.'),
     'dashboard-clickToStart' : TT('Click on Repeat test button below to determine'),
     'dashboard-repeatTest' : TT('Repeat test'),
+    'dashboard-testDownload' : TT('Test download'),
+    'dashboard-testDownload-explain' : TT('Adds a verified test NZB of the specified size, filled with random data. Can be used to verify your setup.'),
 
 # Configuration
     'confgFile' : TT('Config File'),
@@ -314,7 +316,6 @@ SKIN_TEXT = {
     'explain-Repair' : TT('The "Repair" button will restart SABnzbd and do a complete<br />reconstruction of the queue content, preserving already downloaded files.<br />This will modify the queue order.'),
     'confirmWithoutSavingPrompt' : TT('Changes have not been saved, and will be lost.'),
     'explain-sessionExpire': TT('When your IP address changes or SABnzbd is restarted the session will expire.'),
-    #'explain-Shutdown' : TT('This will end the SABnzbd process. <br />You will be unable to access SABnzbd and no downloading will take place until the service is started again.'),
     'opt-enable_unzip' : TT('Enable Unzip'),
     'opt-enable_7zip' : TT('Enable 7zip'),
     'opt-multicore-par2' : TT('Multicore Par2'),

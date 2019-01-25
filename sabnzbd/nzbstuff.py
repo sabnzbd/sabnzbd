@@ -1268,7 +1268,7 @@ class NzbObject(TryList):
             # Ignore undamaged or small downloads
             if self.bad_articles and self.first_articles_count >= 10:
                 # We need a float-division, see if more than 80% is there
-                if (self.first_articles_count / float(self.bad_articles)) >= 0.8:
+                if (float(self.bad_articles) / self.first_articles_count) >= 0.8:
                     return False
         return True
 

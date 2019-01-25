@@ -171,7 +171,7 @@ class DirectUnpacker(threading.Thread):
                                  'checksum failed', 'You need to start extraction from a previous volume',
                                  'password is incorrect', 'Write error', 'checksum error',
                                  'start extraction from a previous volume')):
-                logging.info('Error in DirectUnpack of %s', self.cur_setname)
+                logging.info('Error in DirectUnpack of %s: %s', self.cur_setname, linebuf.strip())
                 self.abort()
 
             if linebuf.endswith('\n'):
@@ -335,6 +335,11 @@ class DirectUnpacker(threading.Thread):
         # The first NZF
         self.rarfile_nzf = self.have_next_volume()
 
+        # Ignore if maybe this set is not there any more
+        # This can happen due to race/timing issues when creating the sets
+        if not self.rarfile_nzf:
+            return
+
         # Generate command
         rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
         if sabnzbd.WIN32:
@@ -376,9 +381,28 @@ class DirectUnpacker(threading.Thread):
 
             # Abort Unrar
             if self.active_instance:
+                # First we try to abort gracefully
+                try:
+                    self.active_instance.stdin.write('Q\n')
+                    time.sleep(0.2)
+                except IOError:
+                    pass
+
+                # Now force kill and give it a bit of time
                 self.active_instance.kill()
-                # We need to wait for it to kill the process
-                self.active_instance.wait()
+                time.sleep(0.2)
+
+                # Have to collect the return-code to avoid zombie
+                # But it will block forever if the process is in special state.
+                # That should never happen, but it can happen on broken unrar's
+                if self.active_instance.poll():
+                    self.active_instance.communicate()
+                else:
+                    # It is still running?!? This should never happen
+                    # Wait a little bit longer just to be sure..
+                    time.sleep(2.0)
+                    if not self.active_instance.poll():
+                        logging.warning(T('Unable to stop the unrar process.'))
 
             # Wake up the thread
             with self.next_file_lock:

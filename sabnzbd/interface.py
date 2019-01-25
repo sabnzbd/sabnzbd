@@ -2588,7 +2588,7 @@ def GetRssLog(feed):
 LIST_EMAIL = (
     'email_endjob', 'email_cats', 'email_full',
     'email_server', 'email_to', 'email_from',
-    'email_account', 'email_pwd', 'email_dir', 'email_rss'
+    'email_account', 'email_pwd', 'email_rss'
 )
 LIST_GROWL = ('growl_enable', 'growl_cats', 'growl_server', 'growl_password',
               'growl_prio_startup', 'growl_prio_download', 'growl_prio_pp', 'growl_prio_complete', 'growl_prio_failed',
