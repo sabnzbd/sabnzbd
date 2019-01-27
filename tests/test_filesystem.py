@@ -44,14 +44,20 @@ class TestFileFolderNameSanitizer:
 
     @set_platform('win32')
     def test_win_devices_on_win(self):
+        assert filesystem.sanitize_filename(None) is None
         assert filesystem.sanitize_filename('aux.txt') == '_aux.txt'
         assert filesystem.sanitize_filename('txt.aux') == 'txt.aux'
+        assert filesystem.sanitize_filename('$mft') == 'Smft'
+        assert filesystem.sanitize_filename('a$mft') == 'a$mft'
 
     @set_platform('linux')
     def test_win_devices_not_win(self):
         # Linux and Darwin are the same for this
+        assert filesystem.sanitize_filename(None) is None
         assert filesystem.sanitize_filename('aux.txt') == 'aux.txt'
         assert filesystem.sanitize_filename('txt.aux') == 'txt.aux'
+        assert filesystem.sanitize_filename('$mft') == '$mft'
+        assert filesystem.sanitize_filename('a$mft') == 'a$mft'
 
 
 class TestFilesystemTest:

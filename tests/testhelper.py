@@ -20,6 +20,7 @@ tests.testhelper - Basic helper functions
 """
 
 import os
+import sys
 import shutil
 import subprocess
 import time
@@ -119,11 +120,12 @@ def start_sabnzbd():
 
     # Check if we have language files
     if not os.path.exists(os.path.join(SAB_BASE_DIR, '..', 'locale')):
-        lang_command = 'python %s/../tools/make_mo.py' % SAB_BASE_DIR
-        subprocess.Popen(lang_command.split())
+        # Compile and wait to complete
+        lang_command = '%s %s/../tools/make_mo.py' % (sys.executable, SAB_BASE_DIR)
+        subprocess.Popen(lang_command.split()).communicate(timeout=30)
 
-    # Start SABnzbd
-    sab_command = 'python %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s' % (SAB_BASE_DIR, SAB_HOST, SAB_PORT, SAB_CACHE_DIR)
+    # Start SABnzbd and continue
+    sab_command = '%s %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s' % (sys.executable, SAB_BASE_DIR, SAB_HOST, SAB_PORT, SAB_CACHE_DIR)
     subprocess.Popen(sab_command.split())
 
     # Wait for SAB to respond

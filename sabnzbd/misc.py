@@ -821,5 +821,11 @@ def nntp_to_msg(text):
     """ Format raw NNTP bytes data for display """
     if isinstance(text, list):
         text = text[0]
-    lines = text.split(b'\r\n')
-    return ubtou(lines[0])
+
+    # Only need to split if it was raw data
+    # Sometimes (failed login) we put our own texts
+    if not isinstance(text, bytes):
+        return text
+    else:
+        lines = text.split(b'\r\n')
+        return ubtou(lines[0])

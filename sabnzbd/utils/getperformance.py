@@ -1,5 +1,6 @@
 import platform
 import subprocess
+import locale
 from .pystone import pystones
 
 
@@ -11,7 +12,7 @@ def getcpu():
 
     try:
         if platform.system() == "Windows":
-            import winreg as winreg	# needed on Python 2
+            import winreg
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Hardware\Description\System\CentralProcessor\0")
             cputype = winreg.QueryValueEx(key, "ProcessorNameString")[0]
             winreg.CloseKey(key)
@@ -26,12 +27,13 @@ def getcpu():
                     # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
                     cputype = myline.split(":", 1)[1]	# get everything after the first ":"
                     break # we're done
+        cputype = cputype.decode(locale.getpreferredencoding())
     except:
         # An exception, maybe due to a subprocess call gone wrong
         pass
 
     if cputype:
-        # OK, found. Remove unnneeded spaces:
+        # OK, found. Remove unwanted spaces:
         cputype = " ".join(cputype.split())
     else:
         # Not found, so let's fall back to platform()

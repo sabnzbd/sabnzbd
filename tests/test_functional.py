@@ -83,100 +83,6 @@ class SABnzbdBaseTest(unittest.TestCase):
         wait.until(lambda driver_wait: self.driver.execute_script('return document.readyState') == 'complete')
 
 
-@unittest.skipIf("SAB_NEWSSERVER_HOST" not in os.environ, "Test-server not specified")
-class SABnzbdDownloadFlow(SABnzbdBaseTest):
-
-    def test_full(self):
-        # Wrapper for all the tests in order
-        self.start_wizard()
-
-        # Basic test
-        self.add_nzb_from_url("http://sabnzbd.org/tests/basic_rar5.nzb", "testfile.bin")
-
-        # Unicode test
-        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", "\u4f60\u597d\u4e16\u754c.bin")
-
-        # Unicode test with a missing article
-        #self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
-
-    def start_wizard(self):
-        # Language-selection
-        self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
-        self.driver.find_element_by_id("en").click()
-        self.driver.find_element_by_css_selector('.btn.btn-default').click()
-
-        # Fill server-info
-        self.no_page_crash()
-        host_inp = self.driver.find_element_by_name("host")
-        host_inp.clear()
-        host_inp.send_keys(self.newsserver_host)
-        username_imp = self.driver.find_element_by_name("username")
-        username_imp.clear()
-        username_imp.send_keys(self.newsserver_user)
-        pass_inp = self.driver.find_element_by_name("password")
-        pass_inp.clear()
-        pass_inp.send_keys(self.newsserver_password)
-
-        # With SSL
-        ssl_imp = self.driver.find_element_by_name("ssl")
-        if not ssl_imp.get_attribute('checked'):
-            ssl_imp.click()
-
-        # Lower number of connections to prevent testing errors
-        self.driver.find_element_by_partial_link_text("Advanced Settings").click()
-        pass_inp = self.driver.find_element_by_name("connections")
-        pass_inp.clear()
-        pass_inp.send_keys(2)
-
-        # Test server-check
-        self.driver.find_element_by_id("serverTest").click()
-        self.wait_for_ajax()
-        self.assertIn("Connection Successful", self.driver.find_element_by_id("serverResponse").text)
-
-        # Final page done
-        self.driver.find_element_by_id("next-button").click()
-        self.no_page_crash()
-        self.assertIn("http://%s:%s/sabnzbd" % (SAB_HOST, SAB_PORT), self.driver.find_element_by_class_name("quoteBlock").text)
-
-        # Go to SAB!
-        self.driver.find_element_by_css_selector('.btn.btn-success').click()
-        self.no_page_crash()
-
-    def add_nzb_from_url(self, file_url, file_output):
-        test_job_name = 'testfile_%s' % random.randint(500, 1000)
-
-        self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
-
-        # Wait for modal to open, add URL
-        self.driver.find_element_by_css_selector('a[href="#modal-add-nzb"]').click()
-        time.sleep(1)
-        self.driver.find_element_by_name("nzbURL").send_keys(file_url)
-        self.driver.find_element_by_name("nzbname").send_keys(test_job_name)
-        self.driver.find_element_by_css_selector('form[data-bind="submit: addNZBFromURL"] input[type="submit"]').click()
-
-        # We wait for 30 seconds to let it complete
-        for _ in range(120):
-            try:
-                # Locate resulting row
-                result_row = self.driver.find_element_by_xpath('//*[@id="history-tab"]//tr[td//text()[contains(., "%s")]]' % test_job_name)
-                # Did it complete?
-                if result_row.find_element_by_css_selector('td.status').text == 'Completed':
-                    break
-                else:
-                    time.sleep(1)
-            except NoSuchElementException:
-                time.sleep(1)
-        else:
-            self.fail("Download did not complete")
-
-        # Check if the file exists on disk
-        file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
-        self.assertTrue(os.path.exists(file_to_find), "File not found")
-
-        # Shutil can't handle unicode, need to remove the file here
-        os.remove(file_to_find)
-
-
 class SABnzbdBasicPagesTest(SABnzbdBaseTest):
 
     def test_base_pages(self):
@@ -197,7 +103,22 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
             self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
 
 
-@unittest.skipIf("SAB_NEWSSERVER_HOST" not in os.environ, "Test-server not specified")
+class SABnzbdConfigCategories(SABnzbdBaseTest):
+
+    category_name = "testCat"
+
+    def test_page(self):
+        # Test if base page works
+        self.open_page("http://%s:%s/sabnzbd/config/categories" % (SAB_HOST, SAB_PORT))
+
+        # Add new category
+        self.driver.find_elements_by_name("newname")[1].send_keys("testCat")
+        self.driver.find_element_by_xpath("//button/text()[normalize-space(.)='Add']/parent::*").click()
+        self.no_page_crash()
+        self.assertNotIn(self.category_name, self.driver.page_source)
+
+
+@pytest.mark.skipif("SAB_NEWSSERVER_HOST" not in os.environ, reason="Test-server not specified")
 class SABnzbdConfigServers(SABnzbdBaseTest):
 
     server_name = "_SeleniumServer"
@@ -271,32 +192,109 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
         self.driver.find_elements_by_css_selector(".testServer")[1].click()
         self.wait_for_ajax()
         check_result = self.driver.find_elements_by_css_selector('.result-box')[1].text.lower()
-        self.assertTrue("authentication failed" in check_result or "invalid username or password" in check_result)
+        assert "authentication failed" in check_result or "invalid username or password" in check_result
 
         # Test server-check with bad password
         pass_inp.send_keys("bad")
         self.driver.find_elements_by_css_selector(".testServer")[1].click()
         self.wait_for_ajax()
-        self.assertTrue("authentication failed" in check_result or "invalid username or password" in check_result)
+        assert "authentication failed" in check_result or "invalid username or password" in check_result
 
         # Finish
         self.remove_server()
 
 
-class SABnzbdConfigCategories(SABnzbdBaseTest):
+@pytest.mark.skipif("SAB_NEWSSERVER_HOST" not in os.environ, reason="Test-server not specified")
+class SABnzbdDownloadFlow(SABnzbdBaseTest):
 
-    category_name = "testCat"
+    def test_full(self):
+        # Wrapper for all the tests in order
+        self.start_wizard()
 
-    def test_page(self):
-        # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/categories" % (SAB_HOST, SAB_PORT))
+        # Basic test
+        self.add_nzb_from_url("http://sabnzbd.org/tests/basic_rar5.nzb", "testfile.bin")
 
-        # Add new category
-        self.driver.find_elements_by_name("newname")[1].send_keys("testCat")
-        self.driver.find_element_by_xpath("//button/text()[normalize-space(.)='Add']/parent::*").click()
+        # Unicode test
+        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", "\u4f60\u597d\u4e16\u754c.bin")
+
+        # Unicode test with a missing article
+        #self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
+
+    def start_wizard(self):
+        # Language-selection
+        self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
+        self.driver.find_element_by_id("en").click()
+        self.driver.find_element_by_css_selector('.btn.btn-default').click()
+
+        # Fill server-info
         self.no_page_crash()
-        self.assertNotIn(self.category_name, self.driver.page_source)
+        host_inp = self.driver.find_element_by_name("host")
+        host_inp.clear()
+        host_inp.send_keys(self.newsserver_host)
+        username_imp = self.driver.find_element_by_name("username")
+        username_imp.clear()
+        username_imp.send_keys(self.newsserver_user)
+        pass_inp = self.driver.find_element_by_name("password")
+        pass_inp.clear()
+        pass_inp.send_keys(self.newsserver_password)
 
+        # With SSL
+        ssl_imp = self.driver.find_element_by_name("ssl")
+        if not ssl_imp.get_attribute('checked'):
+            ssl_imp.click()
 
-if __name__ == "__main__":
-    unittest.main(failfast=True)
+        # This will fail if the translations failed to compile!
+        self.driver.find_element_by_partial_link_text("Advanced Settings").click()
+
+        # Lower number of connections to prevent testing errors
+        pass_inp = self.driver.find_element_by_name("connections")
+        pass_inp.clear()
+        pass_inp.send_keys(2)
+
+        # Test server-check
+        self.driver.find_element_by_id("serverTest").click()
+        self.wait_for_ajax()
+        self.assertIn("Connection Successful", self.driver.find_element_by_id("serverResponse").text)
+
+        # Final page done
+        self.driver.find_element_by_id("next-button").click()
+        self.no_page_crash()
+        self.assertIn("http://%s:%s/sabnzbd" % (SAB_HOST, SAB_PORT), self.driver.find_element_by_class_name("quoteBlock").text)
+
+        # Go to SAB!
+        self.driver.find_element_by_css_selector('.btn.btn-success').click()
+        self.no_page_crash()
+
+    def add_nzb_from_url(self, file_url, file_output):
+        test_job_name = 'testfile_%s' % random.randint(500, 1000)
+
+        self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
+
+        # Wait for modal to open, add URL
+        self.driver.find_element_by_css_selector('a[href="#modal-add-nzb"]').click()
+        time.sleep(1)
+        self.driver.find_element_by_name("nzbURL").send_keys(file_url)
+        self.driver.find_element_by_name("nzbname").send_keys(test_job_name)
+        self.driver.find_element_by_css_selector('form[data-bind="submit: addNZBFromURL"] input[type="submit"]').click()
+
+        # We wait for 30 seconds to let it complete
+        for _ in range(120):
+            try:
+                # Locate resulting row
+                result_row = self.driver.find_element_by_xpath('//*[@id="history-tab"]//tr[td//text()[contains(., "%s")]]' % test_job_name)
+                # Did it complete?
+                if result_row.find_element_by_css_selector('td.status').text == 'Completed':
+                    break
+                else:
+                    time.sleep(1)
+            except NoSuchElementException:
+                time.sleep(1)
+        else:
+            self.fail("Download did not complete")
+
+        # Check if the file exists on disk
+        file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
+        self.assertTrue(os.path.exists(file_to_find), "File not found")
+
+        # Shutil can't handle unicode, need to remove the file here
+        os.remove(file_to_find)
