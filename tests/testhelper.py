@@ -25,12 +25,32 @@ import subprocess
 import time
 
 import requests
+import sabnzbd.cfg as cfg
 
 SAB_HOST = 'localhost'
 SAB_PORT = 8081
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, 'cache')
 SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, 'Downloads', 'complete')
+
+
+def set_config(settings_dict):
+    """ Change config-values on the fly, per test"""
+    def set_config_decorator(func):
+        def wrapper_func(*args, **kwargs):
+            # Setting up as requested
+            for item, val in settings_dict.items():
+                getattr(cfg, item).set(val)
+
+            # Perform test
+            value = func(*args, **kwargs)
+
+            # Reset values
+            for item, val in settings_dict.items():
+                getattr(cfg, item).default()
+            return value
+        return wrapper_func
+    return set_config_decorator
 
 
 def get_url_result(url=''):
@@ -54,7 +74,7 @@ def upload_nzb(filename):
     return requests.post('http://%s:%s/api' % (SAB_HOST, SAB_PORT), files=files, data=arguments).json()
 
 
-def setUpModule():
+def _setUpModule():
     # Remove cache if already there
     if os.path.isdir(SAB_CACHE_DIR):
         shutil.rmtree(SAB_CACHE_DIR)
@@ -86,7 +106,7 @@ def setUpModule():
         raise requests.ConnectionError()
 
 
-def tearDownModule():
+def _tearDownModule():
     # Graceful shutdown request
     try:
         get_url_result('shutdown')

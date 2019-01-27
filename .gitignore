@@ -30,6 +30,7 @@ SABnzbd*.dmg
 # Testing folders
 .cache
 .xprocess
+.pytest*
 tests/cache
 
 # General junk
