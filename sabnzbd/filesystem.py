@@ -87,9 +87,9 @@ def replace_win_devices(name):
                 name = '_' + name
                 break
 
-    # Remove special NTFS filename
-    if lname.startswith('$mft'):
-        name = name.replace('$', 'S', 1)
+        # Remove special NTFS filename
+        if lname.startswith('$mft'):
+            name = name.replace('$', 'S', 1)
 
     return name
 
@@ -103,15 +103,6 @@ def has_win_device(p):
         if p == dev or p.startswith(dev + '.') or p.startswith('_' + dev + '.'):
             return True
     return False
-
-
-if sabnzbd.WIN32:
-    # the colon should be here too, but we'll handle that separately
-    CH_ILLEGAL = '\/<>?*|"\t'
-    CH_LEGAL = '++{}!@#`+'
-else:
-    CH_ILLEGAL = '/'
-    CH_LEGAL = '+'
 
 
 CH_ILLEGAL = '/'
