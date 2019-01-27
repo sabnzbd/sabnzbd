@@ -1857,7 +1857,7 @@ def get_attrib_file(path, size):
     attribs = []
     path = os.path.join(path, ATTRIB_FILE)
     try:
-        f = open(path, 'r')
+        f = open(path, 'r', encoding="utf-8")
     except:
         return [None for unused in range(size)]
 
@@ -1881,7 +1881,7 @@ def set_attrib_file(path, attribs):
     """ Write job's attributes to file """
     path = os.path.join(path, ATTRIB_FILE)
     try:
-        f = open(path, 'w')
+        f = open(path, 'w', encoding="utf-8")
     except:
         return
 
