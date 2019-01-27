@@ -114,14 +114,26 @@ else:
     CH_LEGAL = '+'
 
 
+CH_ILLEGAL = '/'
+CH_LEGAL = '+'
+CH_ILLEGAL_WIN = '\/<>?*|"\t:'
+CH_LEGAL_WIN = '++{}!@#`+;'
+
+
 def sanitize_filename(name):
     """ Return filename with illegal chars converted to legal ones
         and with the par2 extension always in lowercase
     """
     if not name:
         return name
+
     illegal = CH_ILLEGAL
     legal = CH_LEGAL
+
+    if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
+        # Remove all bad Windows chars too
+        illegal += CH_ILLEGAL_WIN
+        legal += CH_LEGAL_WIN
 
     if ':' in name:
         if sabnzbd.WIN32:
@@ -131,15 +143,15 @@ def sanitize_filename(name):
             # Compensate for the foolish way par2 on OSX handles a colon character
             name = name[name.rfind(':') + 1:]
 
-    if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
-        name = replace_win_devices(name)
-
     lst = []
     for ch in name.strip():
         if ch in illegal:
             ch = legal[illegal.find(ch)]
         lst.append(ch)
     name = ''.join(lst)
+
+    if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
+        name = replace_win_devices(name)
 
     if not name:
         name = 'unknown'
@@ -161,10 +173,10 @@ def sanitize_foldername(name, limit=True):
     illegal = CH_ILLEGAL + ':\x92"'
     legal = CH_LEGAL + "-''"
 
-    if sabnzbd.cfg.sanitize_safe():
+    if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
-        illegal += r'\/<>?*|":'
-        legal += r'++{}!@#`;'
+        illegal += CH_ILLEGAL_WIN
+        legal += CH_LEGAL_WIN
 
     repl = sabnzbd.cfg.replace_illegal()
     lst = []
