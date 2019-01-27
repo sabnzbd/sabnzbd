@@ -23,8 +23,9 @@ import os
 import shutil
 import subprocess
 import time
-
+import pytest
 import requests
+
 import sabnzbd
 import sabnzbd.cfg as cfg
 
@@ -106,7 +107,8 @@ def upload_nzb(filename):
     return requests.post('http://%s:%s/api' % (SAB_HOST, SAB_PORT), files=files, data=arguments).json()
 
 
-def _setUpModule():
+@pytest.fixture(scope="module")
+def start_sabnzbd():
     # Remove cache if already there
     if os.path.isdir(SAB_CACHE_DIR):
         shutil.rmtree(SAB_CACHE_DIR)
@@ -134,11 +136,17 @@ def _setUpModule():
             time.sleep(1)
     else:
         # Make sure we clean up
-        tearDownModule()
+        shutdown_sabnzbd()
         raise requests.ConnectionError()
 
+    # How we run the tests
+    yield True
 
-def _tearDownModule():
+    # Shutdown SABnzbd gracefully
+    shutdown_sabnzbd()
+
+
+def shutdown_sabnzbd():
     # Graceful shutdown request
     try:
         get_url_result('shutdown')
