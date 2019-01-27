@@ -713,7 +713,7 @@ def try_sfv_check(nzo, workdir, setname):
     """
     # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
     sfvs = globber_full(workdir, '*.sfv')
-    sfvs.sort(lambda x: len(x))
+    sfvs.sort(key=lambda x: len(x))
     par_error = False
     found = False
     for sfv in sfvs:
@@ -782,7 +782,7 @@ def try_rar_check(nzo, workdir, setname):
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
-            msg = T('[%s] RAR-based verification failed: %s') % (os.path.basename(rars[0]), e.message.replace('\r\n', ' '))
+            msg = T('[%s] RAR-based verification failed: %s') % (os.path.basename(rars[0]), e)
             nzo.set_unpack_info('Repair', msg)
             logging.info(msg)
             return False

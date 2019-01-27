@@ -158,7 +158,7 @@ class Assembler(Thread):
         fout = open(path, 'ab')
         decodetable = nzf.decodetable
 
-        for articlenum in decodetable:
+        for articlenum in sorted(decodetable):
             # Break if deleted during writing
             if nzf.nzo.status is Status.DELETED:
                 break
