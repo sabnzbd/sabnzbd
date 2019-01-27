@@ -25,6 +25,7 @@ import subprocess
 import time
 
 import requests
+import sabnzbd
 import sabnzbd.cfg as cfg
 
 SAB_HOST = 'localhost'
@@ -51,6 +52,37 @@ def set_config(settings_dict):
             return value
         return wrapper_func
     return set_config_decorator
+
+
+def set_platform(platform):
+    """ Change config-values on the fly, per test"""
+    def set_platform_decorator(func):
+        def wrapper_func(*args, **kwargs):
+            # Save original values
+            is_windows = sabnzbd.WIN32
+            is_darwin = sabnzbd.DARWIN
+
+            # Set current platform
+            if platform == 'win32':
+                sabnzbd.WIN32 = True
+                sabnzbd.DARWIN = False
+            elif platform == 'darwin':
+                sabnzbd.WIN32 = False
+                sabnzbd.DARWIN = True
+            elif platform == 'linux':
+                sabnzbd.WIN32 = False
+                sabnzbd.DARWIN = False
+
+            # Perform test
+            value = func(*args, **kwargs)
+
+            # Reset values
+            sabnzbd.WIN32 = is_windows
+            sabnzbd.DARWIN = is_darwin
+
+            return value
+        return wrapper_func
+    return set_platform_decorator
 
 
 def get_url_result(url=''):

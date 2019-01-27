@@ -19,28 +19,27 @@
 tests.test_misc - Testing functions in misc.py
 """
 
-import unittest
 import datetime
 
 from sabnzbd import misc
 from tests.testhelper import *
 
 
-class MiscTest(unittest.TestCase):
+class TestMisc:
 
     def assertTime(self, offset, age):
-        self.assertEqual(offset, misc.calc_age(age, trans=True))
-        self.assertEqual(offset, misc.calc_age(age, trans=False))
+        assert offset == misc.calc_age(age, trans=True)
+        assert offset == misc.calc_age(age, trans=False)
 
     def test_timeformat24h(self):
-        self.assertEqual('%H:%M:%S', misc.time_format('%H:%M:%S'))
-        self.assertEqual('%H:%M', misc.time_format('%H:%M'))
+        assert '%H:%M:%S' == misc.time_format('%H:%M:%S')
+        assert '%H:%M' == misc.time_format('%H:%M')
 
-    @set_config({"ampm": True})
+    @set_config({'ampm': True})
     def test_timeformatampm(self):
         misc.HAVE_AMPM = True
-        self.assertEqual('%I:%M:%S %p', misc.time_format('%H:%M:%S'))
-        self.assertEqual('%I:%M %p', misc.time_format('%H:%M'))
+        assert '%I:%M:%S %p' == misc.time_format('%H:%M:%S')
+        assert '%I:%M %p' == misc.time_format('%H:%M')
 
     def test_calc_age(self):
         date = datetime.datetime.now()
@@ -53,8 +52,8 @@ class MiscTest(unittest.TestCase):
 
     def test_monthrange(self):
         min_date = datetime.date.today() - datetime.timedelta(days=350)
-        self.assertEqual(12, len(list(misc.monthrange(min_date, datetime.date.today()))))
+        assert 12 == len(list(misc.monthrange(min_date, datetime.date.today())))
 
     def test_safe_lower(self):
-        self.assertEqual("all caps", misc.safe_lower("ALL CAPS"))
-        self.assertEqual("", misc.safe_lower(None))
+        assert 'all caps' == misc.safe_lower('ALL CAPS')
+        assert '' == misc.safe_lower(None)

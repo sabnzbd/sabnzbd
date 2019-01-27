@@ -19,11 +19,42 @@
 tests.test_misc - Testing functions in filesystem.py
 """
 
-import unittest
+import sabnzbd.filesystem as filesystem
 
 from tests.testhelper import *
 
-class FilesystemTest(unittest.TestCase):
+
+class TestFileFolderNameSanitizer:
+
+    def test_empty(self):
+        assert filesystem.sanitize_filename(None) is None
+        assert filesystem.sanitize_foldername(None) is None
+
+    @set_platform('win32')
+    def test_colon_handling_windows(self):
+        assert filesystem.sanitize_filename('test:aftertest') == 'test3Aaftertest'
+
+    @set_platform('darwin')
+    def test_colon_handling_darwin(self):
+        assert filesystem.sanitize_filename('test:aftertest') == 'aftertest'
+
+    @set_platform('linux')
+    def test_colon_handling_other(self):
+        assert filesystem.sanitize_filename('test:aftertest') == 'test:aftertest'
+
+    @set_platform('win32')
+    def test_win_devices_on_win(self):
+        assert filesystem.sanitize_filename('aux.txt') == '_aux.txt'
+        assert filesystem.sanitize_filename('txt.aux') == 'txt.aux'
+
+    @set_platform('linux')
+    def test_win_devices_not_win(self):
+        # Linux and Darwin are the same for this
+        assert filesystem.sanitize_filename('aux.txt') == 'aux.txt'
+        assert filesystem.sanitize_filename('txt.aux') == 'txt.aux'
+
+
+class TestFilesystemTest:
     @set_config({"fail_hopeless_jobs": True})
     def test_een(self):
-        assert cfg.fail_hopeless_jobs() == True
+        pass
