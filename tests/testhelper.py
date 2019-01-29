@@ -124,6 +124,10 @@ def start_sabnzbd():
         lang_command = '%s %s/../tools/make_mo.py' % (sys.executable, SAB_BASE_DIR)
         subprocess.Popen(lang_command.split()).communicate(timeout=30)
 
+        # Check if it exists now, fail otherwise
+        if not os.path.exists(os.path.join(SAB_BASE_DIR, '..', 'locale')):
+            raise FileNotFoundError('Failed to compile language files')
+
     # Start SABnzbd and continue
     sab_command = '%s %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s' % (sys.executable, SAB_BASE_DIR, SAB_HOST, SAB_PORT, SAB_CACHE_DIR)
     subprocess.Popen(sab_command.split())

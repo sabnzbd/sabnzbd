@@ -141,7 +141,7 @@ RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
 def run(cmd):
     """ Run system command, returns exit-code and stdout """
     try:
-        txt = subprocess.check_output(cmd, encoding='utf-8')
+        txt = subprocess.check_output(cmd, universal_newlines=True)
         ret = 0
     except subprocess.CalledProcessError as e:
         txt = e.output
