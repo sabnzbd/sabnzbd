@@ -45,7 +45,7 @@ from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remo
     clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import platform_encode, xml_name
+from sabnzbd.encoding import xml_name
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
@@ -1250,7 +1250,6 @@ class ConfigFolders(object):
         for kw in LIST_DIRPAGE:
             value = kwargs.get(kw)
             if value is not None:
-                value = platform_encode(value)
                 if kw in ('complete_dir', 'dirscan_dir'):
                     msg = config.get_config('misc', kw).set(value, create=True)
                 else:
@@ -1316,7 +1315,7 @@ class ConfigSwitches(object):
     def saveSwitches(self, **kwargs):
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
-            value = platform_encode(kwargs.get(kw))
+            value = kwargs.get(kw)
             if kw == 'unwanted_extensions' and value:
                 value = value.lower().replace('.', '')
             msg = item.set(value)
@@ -1472,7 +1471,7 @@ class ConfigGeneral(object):
         # Handle general options
         for kw in GENERAL_LIST:
             item = config.get_config('misc', kw)
-            value = platform_encode(kwargs.get(kw))
+            value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
@@ -1866,7 +1865,7 @@ class ConfigRss(object):
 
         if filt:
             feed_cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'),
-                                                             platform_encode(filt), prio, enabled))
+                                                             filt, prio, enabled))
 
             # Move filter if requested
             index = int_conv(kwargs.get('index', ''))
@@ -2219,9 +2218,6 @@ class ConfigCats(object):
         else:
             newname = re.sub('"', '', kwargs.get('newname', ''))
         if newname:
-            if kwargs.get('dir'):
-                kwargs['dir'] = platform_encode(kwargs['dir'])
-
             # Check if this cat-dir is not sub-folder of incomplete
             if same_file(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs['dir'])):
                 return T('Category folder cannot be a subfolder of the Temporary Download Folder.')
@@ -2415,7 +2411,6 @@ class Status(object):
 def orphan_delete(kwargs):
     path = kwargs.get('name')
     if path:
-        path = platform_encode(path)
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         logging.info('Removing orphaned job %s', path)
         remove_all(path, recursive=True)
@@ -2431,7 +2426,6 @@ def orphan_delete_all():
 def orphan_add(kwargs):
     path = kwargs.get('name')
     if path:
-        path = platform_encode(path)
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         logging.info('Re-adding orphaned job %s', path)
         NzbQueue.do.repair_job(path, None, None)
@@ -2640,39 +2634,39 @@ class ConfigNotify(object):
         ajax = kwargs.get('ajax')
 
         for kw in LIST_EMAIL:
-            msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('misc', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_GROWL:
-            msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('growl', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NCENTER:
-            msg = config.get_config('ncenter', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('ncenter', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_ACENTER:
-            msg = config.get_config('acenter', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('acenter', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NTFOSD:
-            msg = config.get_config('ntfosd', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('ntfosd', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PROWL:
-            msg = config.get_config('prowl', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('prowl', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PUSHOVER:
-            msg = config.get_config('pushover', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('pushover', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PUSHBULLET:
-            msg = config.get_config('pushbullet', kw).set(platform_encode(kwargs.get(kw, 0)))
+            msg = config.get_config('pushbullet', kw).set(kwargs.get(kw, 0))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NSCRIPT:
-            msg = config.get_config('nscript', kw).set(platform_encode(kwargs.get(kw, 0)))
+            msg = config.get_config('nscript', kw).set(kwargs.get(kw, 0))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
 

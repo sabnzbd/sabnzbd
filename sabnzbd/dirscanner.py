@@ -31,7 +31,7 @@ import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.decorators import NzbQueueLocker
-from sabnzbd.encoding import ubtou, platform_encode
+from sabnzbd.encoding import ubtou
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.filesystem as filesystem
@@ -354,7 +354,7 @@ class DirScanner(threading.Thread):
                 files = []
 
             for filename in files:
-                path = os.path.join(folder, platform_encode(filename))
+                path = os.path.join(folder, filename)
                 if os.path.isdir(path) or path in self.ignored or filename[0] == '.':
                     continue
 
@@ -438,7 +438,7 @@ class DirScanner(threading.Thread):
 
                 cats = config.get_categories()
                 for dd in list:
-                    dpath = os.path.join(dirscan_dir, platform_encode(dd))
+                    dpath = os.path.join(dirscan_dir, dd)
                     if os.path.isdir(dpath) and dd.lower() in cats:
                         run_dir(dpath, dd.lower())
             self.busy = False

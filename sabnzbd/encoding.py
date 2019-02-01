@@ -87,15 +87,3 @@ def change_fsys(value):
             gUTF = True
         else:
             auto_fsys()
-
-
-def platform_encode(p):
-    return p
-    """ Return Unicode name, if not already Unicode, decode with UTF-8 or latin1 """
-    if isinstance(p, str):
-        try:
-            return p.decode('utf-8')
-        except:
-            return p.decode(codepage, errors='replace').replace('?', '!')
-    else:
-        return p

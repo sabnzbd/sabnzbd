@@ -42,7 +42,6 @@ from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.notifier as notifier
-from sabnzbd.encoding import platform_encode
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.dirscanner import ProcessSingleFile
 
@@ -132,7 +131,7 @@ class NzbQueue(object):
         # Retryable folders from History
         items = sabnzbd.api.build_history(output=True)[0]
         # Anything waiting or active or retryable is a known item
-        registered.extend([platform_encode(os.path.basename(item['path']))
+        registered.extend([os.path.basename(item['path'])
                            for item in items if item['retry'] or item['loaded'] or item['status'] == Status.QUEUED])
 
         # Repair unregistered folders

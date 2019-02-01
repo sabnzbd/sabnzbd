@@ -53,7 +53,7 @@ from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
 from sabnzbd.filesystem import diskspace, get_ext, get_filename, globber, \
      globber_full, clip_path, remove_all
 from sabnzbd.filesystem import same_file
-from sabnzbd.encoding import xml_name, platform_encode
+from sabnzbd.encoding import xml_name
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
@@ -789,11 +789,10 @@ def _api_browse(name, output, kwargs):
     compact = kwargs.get('compact')
 
     if compact and compact == '1':
-        name = platform_encode(kwargs.get('term', ''))
+        name = kwargs.get('term', '')
         paths = [entry['path'] for entry in folders_at_path(os.path.dirname(name)) if 'path' in entry]
         return report(output, keyword='', data=paths)
     else:
-        name = platform_encode(name)
         show_hidden = kwargs.get('show_hidden_folders')
         paths = folders_at_path(name, True, show_hidden)
         return report(output, keyword='paths', data=paths)
@@ -1444,7 +1443,7 @@ def retry_job(job, new_nzb=None, password=None):
         else:
             path = history_db.get_path(job)
             if path:
-                nzo_id = NzbQueue.do.repair_job(platform_encode(path), new_nzb, password)
+                nzo_id = NzbQueue.do.repair_job(path, new_nzb, password)
                 history_db.remove_history(job)
                 return nzo_id
     return None
@@ -1708,7 +1707,7 @@ def build_history(start=None, limit=None,search=None, failed_only=0, categories=
         if 'loaded' not in item:
             item['loaded'] = False
 
-        path = platform_encode(item.get('path', ''))
+        path = item.get('path', '')
 
         item['retry'] = int(bool(item.get('status') == 'Failed' and
                                  path and

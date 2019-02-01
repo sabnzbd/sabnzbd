@@ -43,7 +43,6 @@ from sabnzbd.filesystem import sanitize_foldername, get_unique_path, get_admin_p
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import platform_encode
 import sabnzbd.nzbparser
 from sabnzbd.database import HistoryDB
 from sabnzbd.rating import Rating
@@ -391,9 +390,6 @@ class NzbObject(TryList):
                  priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None,
                  reuse=False, dup_check=True):
         TryList.__init__(self)
-
-        filename = platform_encode(filename)
-        nzbname = platform_encode(nzbname)
 
         self.filename = filename    # Original filename
         if nzbname and nzb:
@@ -796,7 +792,7 @@ class NzbObject(TryList):
 
         lparset = parset.lower()
         for xnzf in self.files[:]:
-            name = xnzf.filename or platform_encode(xnzf.subject)
+            name = xnzf.filename or xnzf.subject
             # Move only when not current NZF and filename was extractable from subject
             if name:
                 setname, vol, block = sabnzbd.par2file.analyse_par2(name)
@@ -1135,10 +1131,9 @@ class NzbObject(TryList):
     def set_final_name_pw(self, name, password=None):
         if isinstance(name, str):
             if password is not None:
-                name = platform_encode(name)
-                self.password = platform_encode(password)
+                self.password = password
             else:
-                name, password = scan_password(platform_encode(name))
+                name, password = scan_password(name)
                 if password is not None:
                     self.password = password
 
@@ -1462,7 +1457,7 @@ class NzbObject(TryList):
             nzf.filename_checked = True
             # Find the match and rename
             if nzf.md5of16k in self.md5of16k:
-                new_filename = platform_encode(self.md5of16k[nzf.md5of16k])
+                new_filename = self.md5of16k[nzf.md5of16k]
                 # Was it even new?
                 if new_filename != nzf.filename:
                     logging.info('Detected filename based on par2: %s -> %s', nzf.filename, new_filename)
@@ -1897,7 +1892,7 @@ def name_extractor(subject):
         name = name.strip(' "')
         if name and RE_NORMAL_NAME.search(name):
             result = name
-    return platform_encode(result)
+    return result
 
 
 def matcher(pattern, txt):

@@ -31,7 +31,7 @@ import functools
 from subprocess import Popen
 
 import sabnzbd
-from sabnzbd.encoding import platform_encode, platform_btou
+from sabnzbd.encoding import platform_btou
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
     get_all_passwords, calc_age, cmp
@@ -2136,11 +2136,10 @@ def QuickCheck(set, nzo):
 
     for file in md5pack:
         found = False
-        file_platform = platform_encode(file)
-        file_to_ignore = os.path.splitext(file_platform)[1].lower().replace('.', '') in ignore_ext
+        file_to_ignore = os.path.splitext(file)[1].lower().replace('.', '') in ignore_ext
         for nzf in nzf_list:
             # Do a simple filename based check
-            if file_platform == nzf.filename:
+            if file == nzf.filename:
                 found = True
                 if (nzf.md5sum is not None) and nzf.md5sum == md5pack[file]:
                     logging.debug('Quick-check of file %s OK', file)
@@ -2157,10 +2156,10 @@ def QuickCheck(set, nzo):
             # Now lets do obfuscation check
             if nzf.md5sum == md5pack[file]:
                 try:
-                    logging.debug('Quick-check will rename %s to %s', nzf.filename, file_platform)
-                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file_platform))
-                    renames[file_platform] = nzf.filename
-                    nzf.filename = file_platform
+                    logging.debug('Quick-check will rename %s to %s', nzf.filename, file)
+                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file))
+                    renames[file] = nzf.filename
+                    nzf.filename = file
                     result &= True
                     found = True
                     break
@@ -2235,7 +2234,7 @@ def sfv_check(sfv_path):
         if line and line[0] != ';':
             x = line.rfind(' ')
             if x > 0:
-                filename = platform_encode(line[:x].strip())
+                filename = line[:x].strip()
                 checksum = line[x:].strip()
                 path = os.path.join(root, filename)
                 if os.path.exists(path):
