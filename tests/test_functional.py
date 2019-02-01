@@ -23,7 +23,7 @@ import unittest
 import random
 
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException, NoSuchElementException
+from selenium.common.exceptions import WebDriverException, NoSuchElementException, UnexpectedAlertPresentException
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.common.keys import Keys
@@ -88,19 +88,49 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
     def test_base_pages(self):
         # Quick-check of all Config pages
         test_urls = ['config',
-                     'config/general',
-                     'config/folders',
                      'config/server',
                      'config/categories',
-                     'config/switches',
-                     'config/sorting',
-                     'config/notify',
                      'config/scheduling',
-                     'config/rss',
-                     'config/special']
+                     'config/rss']
 
         for test_url in test_urls:
             self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
+
+    def test_base_submit_pages(self):
+        test_urls_with_submit = ['config/general',
+                                 'config/folders',
+                                 'config/switches',
+                                 'config/sorting',
+                                 'config/notify',
+                                 'config/special']
+
+        for test_url in test_urls_with_submit:
+            self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
+
+            # Can only click the visible buttons
+            submit_btns = self.driver.find_elements_by_class_name('saveButton')
+            for submit_btn in submit_btns:
+                if submit_btn.is_displayed():
+                    break
+            else:
+                raise NoSuchElementException
+
+            # Click the right button
+            submit_btn.click()
+
+            try:
+                self.wait_for_ajax()
+            except UnexpectedAlertPresentException:
+                # Ignore restart-request due to empty sabnzbd.ini in tests
+                self.driver.switch_to.alert.dismiss()
+
+            # For Specials page we get redirected after save, so check for no crash
+            if 'special' in test_url:
+                self.no_page_crash()
+            else:
+                # For others if all is fine, button will be back to normal in 1 second
+                time.sleep(1.0)
+                assert submit_btn.text == "Save Changes"
 
 
 class SABnzbdConfigCategories(SABnzbdBaseTest):

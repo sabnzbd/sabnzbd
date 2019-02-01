@@ -51,8 +51,9 @@ class TestMisc:
         self.assertTime('1d', d)
 
     def test_monthrange(self):
-        min_date = datetime.date.today() - datetime.timedelta(days=350)
-        assert 12 == len(list(misc.monthrange(min_date, datetime.date.today())))
+        # Dynamic dates would be a problem
+        assert 12 == len(list(misc.monthrange(datetime.date(2018, 1, 1), datetime.date(2018, 12, 31))))
+        assert 2 == len(list(misc.monthrange(datetime.date(2019, 1, 1), datetime.date(2019, 2, 1))))
 
     def test_safe_lower(self):
         assert 'all caps' == misc.safe_lower('ALL CAPS')
