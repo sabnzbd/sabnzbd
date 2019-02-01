@@ -719,29 +719,11 @@ def _read_config(path, try_backup=False):
             return False, 'Cannot create INI file %s' % path
 
     try:
-        fp = open(path, 'r')
-        lines = fp.read().split('\n')
-        if len(lines) == 1:
-            fp.seek(0)
-            lines = fp.read().split('\r')
-        lines = [line.rstrip('\r\n') for line in lines]
-        fp.close()
-
-        try:
-            # First try UTF-8 encoding
-            CFG = configobj.ConfigObj(lines, default_encoding='utf-8', encoding='utf-8')
-        except UnicodeDecodeError:
-            # Failed, enable retry
-            CFG = {}
-
-        if not re.search(r'utf[ -]*8', CFG.get('__encoding__', ''), re.I):
-            # INI file is still in 8bit ASCII encoding, so try Latin-1 instead
-            CFG = configobj.ConfigObj(lines, default_encoding='cp1252', encoding='cp1252')
-
+        # Let configobj open the file
+        CFG = configobj.ConfigObj(infile=path, default_encoding='utf-8', encoding='utf-8')
     except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
         if try_backup:
-            if isinstance(strerror, UnicodeEncodeError):
-                strerror = 'Character encoding of the file is inconsistent'
+            # No luck!
             return False, '"%s" is not a valid configuration file<br>Error message: %s' % (path, strerror)
         else:
             # Try backup file
@@ -898,6 +880,7 @@ def define_categories():
             ConfigCat(cat, CFG['categories'][cat])
     except KeyError:
         pass
+
 
 def get_categories(cat=0):
     """ Return link to categories section.
