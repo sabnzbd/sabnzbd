@@ -28,7 +28,6 @@ import glob
 from sabnzbd.constants import *
 import sabnzbd
 from sabnzbd.misc import to_units, split_host, time_format
-from sabnzbd.encoding import EmailFilter
 from sabnzbd.notifier import check_cat
 import sabnzbd.cfg as cfg
 
@@ -201,7 +200,6 @@ def send_with_template(prefix, parm, test=None):
                         parm['to'] = recipient
                         message = Template(source=source,
                                             searchList=[parm],
-                                            filter=EmailFilter,
                                             compilerSettings={'directiveStartToken': '<!--#',
                                                               'directiveEndToken': '#-->'})
                         ret = send(message.respond(), recipient, test)

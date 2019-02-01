@@ -20,9 +20,7 @@ sabnzbd.encoding - Unicode/byte translation functions
 """
 
 import locale
-import string
 from xml.sax.saxutils import escape
-from Cheetah.Filters import Filter
 
 import sabnzbd
 
@@ -55,6 +53,11 @@ def platform_btou(str_in):
             return str_in.decode(CODEPAGE, errors='replace').replace('?', '!')
     else:
         return str_in
+
+
+def xml_name(p):
+    """ Prepare name for use in HTML/XML contect """
+    return escape(str(p))
 
 
 #########################################
@@ -98,14 +101,6 @@ def platform_encode(p):
         return p
 
 
-def yenc_name_fixer(p):
-    """ Return Unicode name of 8bit ASCII string, first try utf-8, then cp1252 """
-    try:
-        return p.decode('utf-8')
-    except:
-        return p.decode('cp1252', errors='replace').replace('?', '!')
-
-
 def unicoder(p, force=False):
     return p
     """ Make sure a Unicode string is returned
@@ -122,40 +117,3 @@ def unicoder(p, force=False):
         return p.decode(codepage, 'replace')
     else:
         return str(str(p))
-
-
-def xml_name(p):
-    """ Prepare name for use in HTML/XML contect """
-    return escape(str(p))
-
-
-class LatinFilter(Filter):
-    """ Make sure Cheetah gets only Unicode strings """
-
-    def filter(self, val, str=str, **kw):
-        if isinstance(val, str):
-            return val
-        else:
-            return str(val)
-
-
-class EmailFilter(Filter):
-    """ Make sure Cheetah gets only Unicode strings
-        First try utf-8, then 8bit ASCII
-    """
-
-    def filter(self, val, str=str, **kw):
-        return val
-
-
-        if isinstance(val, str):
-            return val
-        elif isinstance(val, str):
-            try:
-                return val.decode('utf-8')
-            except:
-                return val.decode(codepage, 'replace')
-        elif val is None:
-            return ''
-        else:
-            return str(str(val))
