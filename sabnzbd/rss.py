@@ -33,7 +33,6 @@ import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, wildcard_to_re, cat_to_opts, \
     match_str, from_units, int_conv, get_base_url
 import sabnzbd.emailer as emailer
-from sabnzbd.encoding import xml_name
 
 import feedparser
 
@@ -305,7 +304,7 @@ class RSSQueue(object):
                         # Redirect to login page!
                         msg = T('Do not have valid authentication for feed %s') % uri
                     else:
-                        msg = T('Failed to retrieve RSS from %s: %s') % (uri, xml_name(msg))
+                        msg = T('Failed to retrieve RSS from %s: %s') % (uri, msg)
                     logging.info(msg)
 
                 if not entries and not msg:

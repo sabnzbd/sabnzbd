@@ -45,7 +45,7 @@ from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remo
     clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import xml_name, LatinFilter, platform_encode
+from sabnzbd.encoding import LatinFilter, platform_encode, xml_name
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
@@ -807,19 +807,15 @@ class NzoPage(object):
                 cat = pnfo.category
                 if not cat:
                     cat = 'None'
-                filename_pw = xml_name(nzo.final_name_pw_clean)
-                filename = xml_name(nzo.final_name)
-                if nzo.password:
-                    password = xml_name(nzo.password).replace('"', '&quot;')
-                else:
-                    password = ''
+                filename_pw = nzo.final_name_pw_clean
+                filename = nzo.final_name
                 priority = pnfo.priority
 
                 slot['nzo_id'] = str(nzo_id)
                 slot['cat'] = cat
                 slot['filename'] = filename_pw
                 slot['filename_clean'] = filename
-                slot['password'] = password or ''
+                slot['password'] = nzo.password or ''
                 slot['script'] = script
                 slot['priority'] = str(priority)
                 slot['unpackopts'] = str(unpackopts)
@@ -840,14 +836,14 @@ class NzoPage(object):
         if nzo:
             pnfo = nzo.gather_info(full=True)
             info['nzo_id'] = pnfo.nzo_id
-            info['filename'] = xml_name(pnfo.filename)
+            info['filename'] = pnfo.filename
 
             for nzf in pnfo.active_files:
                 checked = False
                 if nzf.nzf_id in self.__cached_selection and \
                    self.__cached_selection[nzf.nzf_id] == 'on':
                     checked = True
-                active.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+                active.append({'filename': nzf.filename if nzf.filename else nzf.subject,
                                'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                                'mb': "%.2f" % (nzf.bytes / MEBI),
                                'size': format_bytes(nzf.bytes),
@@ -1057,8 +1053,6 @@ class HistoryPage(object):
 
     def __init__(self, root):
         self.__root = root
-        self.__verbose = False
-        self.__verbose_list = []
         self.__failed_only = False
 
     @secured_expose
@@ -1071,10 +1065,7 @@ class HistoryPage(object):
             failed_only = self.__failed_only
 
         history = build_header()
-
-        history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
-
         history['rating_enable'] = bool(cfg.rating_enable())
 
         postfix = T('B')  # : Abbreviation for bytes, as in GB
@@ -1083,7 +1074,7 @@ class HistoryPage(object):
                to_units(grand, postfix=postfix), to_units(month, postfix=postfix), \
                to_units(week, postfix=postfix), to_units(day, postfix=postfix)
 
-        history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
+        history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, search=search, failed_only=failed_only)
 
         if search:
             history['search'] = escape(search)
@@ -1141,24 +1132,6 @@ class HistoryPage(object):
     @secured_expose(check_session_key=True)
     def reset(self, **kwargs):
         # sabnzbd.reset_byte_counter()
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_session_key=True)
-    def tog_verbose(self, **kwargs):
-        jobs = kwargs.get('jobs')
-        if not jobs:
-            self.__verbose = not self.__verbose
-            self.__verbose_list = []
-        else:
-            if self.__verbose:
-                self.__verbose = False
-            else:
-                jobs = jobs.split(',')
-                for job in jobs:
-                    if job in self.__verbose_list:
-                        self.__verbose_list.remove(job)
-                    else:
-                        self.__verbose_list.append(job)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_session_key=True)
@@ -2516,7 +2489,7 @@ def GetRssLog(feed):
         job = job.copy()
 
         # Now we apply some formatting
-        job['title'] = xml_name(job['title'])
+        job['title'] = job['title']
         job['skip'] = '*' * int(job.get('status', '').endswith('*'))
         # These fields could be empty
         job['cat'] = job.get('cat', '')
@@ -2529,10 +2502,10 @@ def GetRssLog(feed):
             if sabnzbd.rss.special_rss_site(job.get('url')):
                 job['nzbname'] = ''
             else:
-                job['nzbname'] = xml_name(job['title'])
+                job['nzbname'] = job['title']
         else:
             job['baselink'] = ''
-            job['nzbname'] = xml_name(job['title'])
+            job['nzbname'] = job['title']
 
         if job.get('size', 0):
             job['size_units'] = to_units(job['size'])

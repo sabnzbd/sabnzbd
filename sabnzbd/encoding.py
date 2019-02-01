@@ -124,26 +124,9 @@ def unicoder(p, force=False):
         return str(str(p))
 
 
-def xml_name(p, keep_escape=False, encoding=None):
-    return p
+def xml_name(p):
     """ Prepare name for use in HTML/XML contect """
-
-    if isinstance(p, str):
-        pass
-    elif isinstance(p, str):
-        if sabnzbd.DARWIN or encoding == 'utf-8':
-            p = p.decode('utf-8', 'replace')
-        elif gUTF:
-            p = p.decode('utf-8', 'replace')
-        else:
-            p = p.decode(codepage, 'replace')
-    else:
-        p = str(p)
-
-    if keep_escape:
-        return p.encode('ascii', 'xmlcharrefreplace')
-    else:
-        return escape(p).encode('ascii', 'xmlcharrefreplace')
+    return escape(str(p))
 
 
 class LatinFilter(Filter):

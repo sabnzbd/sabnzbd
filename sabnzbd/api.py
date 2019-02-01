@@ -511,7 +511,7 @@ def _api_history(name, output, kwargs):
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
             to_units(grand), to_units(month), to_units(week), to_units(day)
         history['slots'], fetched_items, history['noofslots'] = build_history(start=start,
-                                                                              limit=limit, verbose=True,
+                                                                              limit=limit,
                                                                               search=search, failed_only=failed_only,
                                                                               categories=categories,
                                                                               output=output)
@@ -1075,7 +1075,7 @@ class xml_factory(object):
                 if not isinstance(cat, str):
                     cat = str(cat)
                 name = plural_to_single(keyw, 'item')
-                text.append('<%s>%s</%s>\n' % (name, xml_name(cat, encoding='utf-8'), name))
+                text.append('<%s>%s</%s>\n' % (name, xml_name(cat), name))
         if keyw:
             return '<%s>%s</%s>\n' % (keyw, ''.join(text), keyw)
         else:
@@ -1089,7 +1089,7 @@ class xml_factory(object):
         elif isinstance(lst, tuple):
             text = self._tuple(keyw, lst)
         elif keyw:
-            text = '<%s>%s</%s>\n' % (keyw, xml_name(lst, encoding='utf-8'), keyw)
+            text = '<%s>%s</%s>\n' % (keyw, xml_name(lst), keyw)
         else:
             text = ''
         return text
@@ -1170,8 +1170,8 @@ def build_status(skip_dashboard=False, output=None):
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
     info['loglevel'] = str(cfg.log_level())
-    info['folders'] = [xml_name(item) for item in NzbQueue.do.scan_jobs(all=False, action=False)]
-    info['configfn'] = xml_name(config.get_filename())
+    info['folders'] = NzbQueue.do.scan_jobs(all=False, action=False)
+    info['configfn'] = config.get_filename()
 
     # Dashboard: Speed of System
     info['cpumodel'] = getcpu()
@@ -1217,13 +1217,13 @@ def build_status(skip_dashboard=False, output=None):
                 nzf = article.nzf
                 nzo = nzf.nzo
 
-                art_name = xml_name(article.article)
+                art_name = article.article
                 # filename field is not always present
                 try:
-                    nzf_name = xml_name(nzf.filename)
+                    nzf_name = nzf.filename
                 except:  # attribute error
-                    nzf_name = xml_name(nzf.subject)
-                nzo_name = xml_name(nzo.final_name)
+                    nzf_name = nzf.subject
+                nzo_name = nzo.final_name
 
             # For the templates or for JSON
             if output:
@@ -1267,11 +1267,6 @@ def build_status(skip_dashboard=False, output=None):
 
 
 def build_queue(start=0, limit=0, trans=False, output=None, search=None):
-    if output:
-        converter = unicoder
-    else:
-        converter = xml_name
-
     # build up header full of basic information
     info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(search=search, start=start, limit=limit, output=output)
 
@@ -1288,13 +1283,6 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     info['start'] = start
     info['limit'] = limit
     info['finish'] = info['start'] + info['limit']
-
-    # SMPL-skin specific stuff
-    if info['finish'] > info['noofslots']:
-        info['finish'] = info['noofslots']
-    info['queue_details'] = '0'
-    if 'queue_details' in cherrypy.request.cookie:
-        info['queue_details'] = str(int_conv(cherrypy.request.cookie['queue_details'].value))
 
     n = start
     running_bytes = bytes_left_previous_page
@@ -1314,9 +1302,9 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['unpackopts'] = str(sabnzbd.opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
         slot['priority'] = priorities[priority] if priority >= LOW_PRIORITY else priorities[NORMAL_PRIORITY]
         slot['script'] = pnfo.script if pnfo.script else 'None'
-        slot['filename'] = converter(pnfo.filename)
-        slot['password'] = converter(pnfo.password) if pnfo.password else ''
-        slot['cat'] = converter(pnfo.category) if pnfo.category else 'None'
+        slot['filename'] = pnfo.filename
+        slot['password'] = pnfo.password if pnfo.password else ''
+        slot['cat'] = pnfo.category if pnfo.category else 'None'
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
         slot['size'] = format_bytes(bytes)
@@ -1325,8 +1313,8 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['mbmissing'] = "%.2f" % (pnfo.bytes_missing / MEBI)
         slot['direct_unpack'] = pnfo.direct_unpack
         if not output:
-            slot['mb_fmt'] = locale.format('%d', int(mb), True)
-            slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
+            slot['mb_fmt'] = locale.format_string('%d', int(mb), True)
+            slot['mbdone_fmt'] = locale.format_string('%d', int(mb - mbleft), True)
 
         if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if is_propagating:
@@ -1401,7 +1389,7 @@ def build_file_list(nzo_id):
         queued_files = pnfo.queued_files
 
         for nzf in finished_files:
-            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+            jobs.append({'filename': nzf.filename if nzf.filename else nzf.subject,
                          'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
@@ -1410,7 +1398,7 @@ def build_file_list(nzo_id):
                          'status': 'finished'})
 
         for nzf in active_files:
-            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+            jobs.append({'filename': nzf.filename if nzf.filename else nzf.subject,
                          'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
@@ -1419,8 +1407,8 @@ def build_file_list(nzo_id):
                          'status': 'active'})
 
         for nzf in queued_files:
-            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
-                         'set': xml_name(nzf.setname),
+            jobs.append({'filename': nzf.filename if nzf.filename else nzf.subject,
+                         'set': nzf.setname,
                          'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
@@ -1646,16 +1634,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
-def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
-                  categories=None, output=None):
-    if output:
-        converter = unicoder
-    else:
-        converter = xml_name
-
-    if not verbose_list:
-        verbose_list = []
-
+def build_history(start=None, limit=None,search=None, failed_only=0, categories=None, output=None):
     limit = int_conv(limit)
     if not limit:
         limit = 1000000
@@ -1714,21 +1693,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     else:
         items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only, categories)
 
-    # Fetch which items should show details from the cookie
-    k = []
-    if verbose:
-        details_show_all = True
-    else:
-        details_show_all = False
-    cookie = cherrypy.request.cookie
-    if 'history_verbosity' in cookie:
-        k = cookie['history_verbosity'].value
-
-        if k == 'all':
-            details_show_all = True
-        k = k.split(',')
-    k.extend(verbose_list)
-
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
 
@@ -1740,19 +1704,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
 
     retry_folders = []
     for item in items:
-        for key in item:
-            value = item[key]
-            if isinstance(value, str):
-                item[key] = converter(value)
-
-        if details_show_all:
-            item['show_details'] = 'True'
-        else:
-            if item['nzo_id'] in k:
-                item['show_details'] = 'True'
-            else:
-                item['show_details'] = ''
-
         item['size'] = format_bytes(item['bytes'])
 
         if 'loaded' not in item:
@@ -1825,8 +1776,8 @@ def get_active_history(queue=None, items=None):
     return items
 
 
-def format_bytes(bytes):
-    b = to_units(bytes)
+def format_bytes(bytes_string):
+    b = to_units(bytes_string)
     if b == '':
         return b
     else:
