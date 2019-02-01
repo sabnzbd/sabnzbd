@@ -30,7 +30,6 @@ except ImportError:
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder
 
 PANIC_PORT = 1
 PANIC_TEMPL = 2
@@ -220,7 +219,7 @@ def show_error_dialog(msg):
         Windows-only, otherwise only print to console
     """
     if sabnzbd.WIN32:
-        ctypes.windll.user32.MessageBoxW(0, unicoder(msg), T('Fatal error'), 0)
+        ctypes.windll.user32.MessageBoxW(0, msg, T('Fatal error'), 0)
     print(msg)
 
 

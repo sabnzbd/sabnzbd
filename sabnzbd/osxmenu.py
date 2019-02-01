@@ -45,7 +45,6 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.downloader
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import unicoder
 
 status_icons = {'idle': '../Resources/sab_idle.tiff', 'pause': '../Resources/sab_pause.tiff', 'clicked': '../Resources/sab_clicked.tiff'}
 start_time = NSDate.date()
@@ -358,14 +357,13 @@ class SABnzbdDelegate(NSObject):
                 self.menu_queue.addItem_(NSMenuItem.separatorItem())
 
                 for pnfo in pnfo_list:
-                    filename = unicoder(pnfo.filename)
                     bytesleft = pnfo.bytes_left / MEBI
                     bytesleftprogess += pnfo.bytes_left
                     bytes = pnfo.bytes / MEBI
                     nzo_id = pnfo.nzo_id
                     timeleft = self.calc_timeleft_(bytesleftprogess, bpsnow)
 
-                    job = "%s\t(%d/%d MB) %s" % (filename, bytesleft, bytes, timeleft)
+                    job = "%s\t(%d/%d MB) %s" % (pnfo.filename, bytesleft, bytes, timeleft)
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     self.menu_queue.addItem_(menu_queue_item)
 

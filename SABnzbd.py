@@ -60,7 +60,6 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
-from sabnzbd.encoding import unicoder
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 
@@ -671,8 +670,6 @@ def evaluate_inipath(path):
         but not a leading dot.
         foldername is enough, the standard name will be appended.
     """
-    if sabnzbd.WIN32:
-        path = unicoder(path)
     path = os.path.normpath(os.path.abspath(path))
     inipath = os.path.join(path, DEF_INI_FILE)
     if os.path.isdir(path):
@@ -1570,14 +1567,13 @@ if sabnzbd.WIN32:
             win32evtlogutil.ReportEvent(self._svc_display_name_,
                                         state, 0,
                                         servicemanager.EVENTLOG_INFORMATION_TYPE,
-                                        (self._svc_name_, unicoder(msg)))
+                                        (self._svc_name_, msg))
 
         def ErrLogger(self, msg, text):
             win32evtlogutil.ReportEvent(self._svc_display_name_,
                                         servicemanager.PYS_SERVICE_STOPPED, 0,
                                         servicemanager.EVENTLOG_ERROR_TYPE,
-                                        (self._svc_name_, unicoder(msg)),
-                                        unicoder(text))
+                                        (self._svc_name_, msg), text)
 
 
 def prep_service_parms(args):
@@ -1652,9 +1648,7 @@ if __name__ == '__main__':
     args = []
     for txt in sys.argv:
         if ' ' in txt:
-            txt = '"%s"' % unicoder(txt)
-        else:
-            txt = unicoder(txt)
+            txt = '"%s"' % txt
         args.append(txt)
     sabnzbd.CMDLINE = ' '.join(args)
 

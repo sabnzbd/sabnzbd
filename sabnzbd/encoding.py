@@ -99,21 +99,3 @@ def platform_encode(p):
             return p.decode(codepage, errors='replace').replace('?', '!')
     else:
         return p
-
-
-def unicoder(p, force=False):
-    return p
-    """ Make sure a Unicode string is returned
-        When `force` is True, ignore filesystem encoding
-    """
-    if isinstance(p, str):
-        return p
-    if isinstance(p, str):
-        if gUTF or force:
-            try:
-                return p.decode('utf-8')
-            except:
-                return p.decode(codepage, 'replace')
-        return p.decode(codepage, 'replace')
-    else:
-        return str(str(p))

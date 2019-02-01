@@ -206,7 +206,6 @@ def make_templates():
         if lng != 'en' and os.path.exists(os.path.join(POE_DIR,lng+'.po')):
             print(('Create email template for %s' % lng))
             trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False, codeset='latin-1')
-            # The unicode flag will make _() return Unicode
             trans.install(names=['lgettext'])
 
             translate_tmpl('email', lng)
@@ -246,7 +245,6 @@ def patch_nsis():
                             trans = lcode
                         else:
                             trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset='latin-1')
-                            # The unicode flag will make _() return Unicode
                             trans.install(names=['lgettext'])
                             trans = trans.replace('\r', '').replace('\n', '\\r\\n')
                             trans = trans.replace('\\', '$\\').replace('"', '$\\"')

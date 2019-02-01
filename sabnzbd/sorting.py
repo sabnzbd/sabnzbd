@@ -30,7 +30,6 @@ import sabnzbd
 from sabnzbd.filesystem import move_to_path, cleanup_empty_directories, get_unique_path, \
     get_unique_filename, get_ext, renamer, sanitize_foldername, clip_path
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
-from sabnzbd.encoding import unicoder
 import sabnzbd.cfg as cfg
 
 RE_SAMPLE = re.compile(sample_match, re.I)
@@ -899,7 +898,7 @@ def path_subst(path, mapping):
                     break
         newpath.append(result)
         n += 1
-    return ''.join([unicoder(x) for x in newpath])
+    return ''.join(newpath)
 
 
 def get_titles(nzo, match, name, titleing=False):

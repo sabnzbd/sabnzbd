@@ -1927,7 +1927,7 @@ def create_env(nzo=None, extra_env_fields={}):
                 else:
                     env['SAB_' + field.upper()] = field_value
             except:
-                # Catch key/unicode errors
+                # Catch key errors
                 pass
 
     # Always supply basic info
@@ -1947,7 +1947,7 @@ def create_env(nzo=None, extra_env_fields={}):
             else:
                 env['SAB_' + field.upper()] = ''
         except:
-            # Catch key/unicode errors
+            # Catch key errors
             pass
 
     if sabnzbd.DARWIN:

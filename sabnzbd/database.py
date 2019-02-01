@@ -30,7 +30,6 @@ import sqlite3
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_NAME, STAGES
-from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.misc import int_conv, caller_name
@@ -480,7 +479,7 @@ def unpack_history_info(item):
         try:
             lines = lst.split('\r\n')
         except:
-            logging.error(T('Invalid stage logging in history for %s') + ' (\\r\\n)', unicoder(item['name']))
+            logging.error(T('Invalid stage logging in history for %s') + ' (\\r\\n)', item['name'])
             logging.debug('Lines: %s', lst)
             lines = []
         lst = [None for x in STAGES]
@@ -497,7 +496,7 @@ def unpack_history_info(item):
             try:
                 logs = logs.split(';')
             except:
-                logging.error(T('Invalid stage logging in history for %s') + ' (;)', unicoder(item['name']))
+                logging.error(T('Invalid stage logging in history for %s') + ' (;)', item['name'])
                 logging.debug('Logs: %s', logs)
                 logs = []
             for log in logs:

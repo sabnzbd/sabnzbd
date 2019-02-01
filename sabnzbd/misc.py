@@ -35,7 +35,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, \
      MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import ubtou, unicoder, platform_btou
+from sabnzbd.encoding import ubtou, platform_btou
 
 TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
 RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
@@ -271,13 +271,9 @@ def set_serv_parms(service, args):
     """ Set the service command line parameters in Registry """
     import winreg
 
-    uargs = []
-    for arg in args:
-        uargs.append(unicoder(arg))
-
     try:
         key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
-        winreg.SetValueEx(key, _SERVICE_PARM, None, winreg.REG_MULTI_SZ, uargs)
+        winreg.SetValueEx(key, _SERVICE_PARM, None, winreg.REG_MULTI_SZ, args)
         winreg.CloseKey(key)
     except WindowsError:
         return False

@@ -53,7 +53,7 @@ from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
 from sabnzbd.filesystem import diskspace, get_ext, get_filename, globber, \
      globber_full, clip_path, remove_all
 from sabnzbd.filesystem import same_file
-from sabnzbd.encoding import xml_name, unicoder, platform_encode
+from sabnzbd.encoding import xml_name, platform_encode
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
@@ -601,8 +601,7 @@ def _api_get_cats(name, output, kwargs):
 
 def _api_get_scripts(name, output, kwargs):
     """ API: accepts output """
-    data = [unicoder(val) for val in list_scripts()]
-    return report(output, keyword="scripts", data=data)
+    return report(output, keyword="scripts", data=list_scripts())
 
 
 def _api_version(name, output, kwargs):
@@ -1239,7 +1238,7 @@ def build_status(skip_dashboard=False, output=None):
                 connected += 1
 
         if server.warning and not (connected or server.errormsg):
-            connected = unicoder(server.warning)
+            connected = server.warning
 
         if server.request and not server.info:
             connected = T('&nbsp;Resolving address').replace('&nbsp;', '')
