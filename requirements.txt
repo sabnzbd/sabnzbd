@@ -4,5 +4,6 @@ cryptography
 feedparser
 configobj
 cherrypy
+chardet
 gntp
 git+git://github.com/sabnzbd/sabyenc@sabyenc3#egg=sabyenc

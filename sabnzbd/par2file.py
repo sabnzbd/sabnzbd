@@ -23,8 +23,7 @@ import logging
 import re
 import hashlib
 import struct
-from sabnzbd.encoding import ubtou
-
+from sabnzbd.encoding import correct_unknown_encoding
 
 PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
 PAR_PKT_ID = b"PAR2\x00PKT"
@@ -163,12 +162,12 @@ def parse_par2_file_packet(f, header):
         if data[offset:offset + 16] == PAR_FILE_ID:
             filehash = data[offset + 32:offset + 48]
             hash16k = data[offset + 48:offset + 64]
-            filename = ubtou(data[offset + 72:].strip(b"\0"))
+            filename = correct_unknown_encoding(data[offset + 72:].strip(b"\0"))
             return filename, filehash, hash16k
         elif data[offset:offset + 15] == PAR_CREATOR_ID:
             # From here until the end is the creator-text
             # Useful in case of bugs in the par2-creating software
             par2creator = data[offset+16:].strip(b"\0")  # Remove any trailing \0
-            logging.debug('Par2-creator of %s is: %s', os.path.basename(f.name), ubtou(par2creator))
+            logging.debug('Par2-creator of %s is: %s', os.path.basename(f.name), correct_unknown_encoding(par2creator))
 
     return nothing

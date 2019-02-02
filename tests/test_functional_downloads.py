@@ -35,7 +35,10 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.add_nzb_from_url("http://sabnzbd.org/tests/basic_rar5.nzb", "testfile.bin")
 
         # Unicode test
-        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
+        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", "\u4f60\u597d\u4e16\u754c.bin")
+
+        # Test with unicode files generated on Windows
+        self.add_nzb_from_url("http://sabnzbd.org/tests/test_win_unicode.nzb", "frènch_german_demö")
 
         # Unicode test with a missing article
         # self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
