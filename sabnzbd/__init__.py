@@ -261,13 +261,9 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.quota_size.callback(guard_quota_size)
     cfg.quota_day.callback(guard_quota_dp)
     cfg.quota_period.callback(guard_quota_dp)
-######    cfg.fsys_type.callback(guard_fsys_type)
     cfg.language.callback(guard_language)
     cfg.enable_https_verification.callback(guard_https_ver)
     guard_https_ver()
-
-    # Set Posix filesystem encoding
-######    sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
     # Set cache limit
     if not cfg.cache_limit() or (cfg.cache_limit() in ('200M', '450M') and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
@@ -504,11 +500,6 @@ def guard_quota_size():
 def guard_quota_dp():
     """ Callback for change of quota_day or quota_period """
     scheduler.restart(force=True)
-
-
-# def guard_fsys_type():
-#     """ Callback for change of file system naming type """
-#     sabnzbd.encoding.change_fsys(cfg.fsys_type())
 
 
 def guard_language():

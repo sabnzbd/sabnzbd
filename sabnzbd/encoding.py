@@ -22,7 +22,6 @@ sabnzbd.encoding - Unicode/byte translation functions
 import locale
 from xml.sax.saxutils import escape
 
-import sabnzbd
 
 CODEPAGE = locale.getpreferredencoding()
 
@@ -55,35 +54,20 @@ def platform_btou(str_in):
         return str_in
 
 
+def correct_unknown_encoding(str_in):
+    """ Files created on Windows but unpacked/repaired on
+        linux can result in invalid filenames. Try to fix this
+        encoding by going to bytes and then back to unicode again.
+    """
+    try:
+        return str_in.encode('utf-8', 'surrogateescape').decode('ISO-8859-1')
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        # TODO: Use chardet-package?
+        return str_in
+
+
 def xml_name(p):
     """ Prepare name for use in HTML/XML contect """
     return escape(str(p))
 
 
-#########################################
-## OLD STUFF
-#########################################
-gUTF = False
-
-
-def auto_fsys():
-    global gUTF
-    try:
-        if sabnzbd.DARWIN:
-            gUTF = True
-        else:
-            gUTF = locale.getdefaultlocale()[1].lower().find('utf') >= 0
-    except:
-        # Incorrect locale implementation, assume the worst
-        gUTF = False
-
-
-def change_fsys(value):
-    global gUTF
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
-        if value == 1:
-            gUTF = False
-        elif value == 2:
-            gUTF = True
-        else:
-            auto_fsys()

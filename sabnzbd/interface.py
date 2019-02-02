@@ -1342,9 +1342,6 @@ SPECIAL_BOOL_LIST = \
               'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging',
               'ignore_empty_files', 'x_frame_options', 'require_modern_tls'
      )
-
-    #### 'fsys_type',
-
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'folder_max_length', 'movie_rename_limit', 'nomedia_marker',
               'max_url_retries', 'req_completion_rate', 'wait_ext_drive', 'show_sysload', 'url_base',

@@ -273,7 +273,6 @@ req_completion_rate = OptionNumber('misc', 'req_completion_rate', 100.2, 100, 20
 selftest_host = OptionStr('misc', 'selftest_host', 'self-test.sabnzbd.org')
 movie_rename_limit = OptionStr('misc', 'movie_rename_limit', '100M')
 size_limit = OptionStr('misc', 'size_limit', '0')
-###### fsys_type = OptionNumber('misc', 'fsys_type', 0, 0, 2)
 show_sysload = OptionNumber('misc', 'show_sysload', 2, 0, 2)
 history_limit = OptionNumber('misc', 'history_limit', 10, 0)
 wait_ext_drive = OptionNumber('misc', 'wait_ext_drive', 5, 1, 60)

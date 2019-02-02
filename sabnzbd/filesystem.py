@@ -32,7 +32,7 @@ import stat
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
-from sabnzbd.encoding import gUTF
+from sabnzbd.encoding import correct_unknown_encoding
 
 
 def get_ext(filename):
@@ -436,16 +436,17 @@ def trim_win_path(path):
 
 
 def fix_unix_encoding(folder):
-    """ Fix bad name encoding for Unix systems """
-    # TODO: Remove?!
-    return
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and gUTF:
-        for root, dirs, files in os.walk(folder.encode('utf-8')):
+    """ Fix bad name encoding for Unix systems
+        This happens for example when files are created
+        on Windows but unpacked/repaired on linux
+    """
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
+        for root, dirs, files in os.walk(folder):
             for name in files:
-                new_name = special_fixer(name).encode('utf-8')
+                new_name = correct_unknown_encoding(name)
                 if name != new_name:
                     try:
-                        shutil.move(os.path.join(root, name), os.path.join(root, new_name))
+                        renamer(os.path.join(root, name), os.path.join(root, new_name))
                     except:
                         logging.info('Cannot correct name of %s', os.path.join(root, name))
 
