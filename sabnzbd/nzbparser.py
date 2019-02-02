@@ -54,6 +54,7 @@ def nzbfile_parser(raw_data, nzo):
     # Parse the files
     for file in nzb_tree.iter('file'):
         # Get subject and date
+        file_name = ''
         if file.attrib.get('subject'):
             file_name = file.attrib.get('subject')
 

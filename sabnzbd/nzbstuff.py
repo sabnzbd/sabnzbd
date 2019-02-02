@@ -556,9 +556,8 @@ class NzbObject(TryList):
                 if '</nzb>' not in nzb:
                     logging.warning(T('Incomplete NZB file %s'), filename)
                 else:
-                    raise
                     logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
-                                    filename, err.getMessage(), err.getLineNumber())
+                                    filename, err, '1')
             if self.incomplete:
                 if cfg.allow_incomplete_nzb():
                     self.pause()
