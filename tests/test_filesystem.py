@@ -58,9 +58,3 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename('txt.aux') == 'txt.aux'
         assert filesystem.sanitize_filename('$mft') == '$mft'
         assert filesystem.sanitize_filename('a$mft') == 'a$mft'
-
-
-class TestFilesystemTest:
-    @set_config({"fail_hopeless_jobs": True})
-    def test_een(self):
-        pass

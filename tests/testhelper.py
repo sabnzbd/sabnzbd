@@ -20,12 +20,17 @@ tests.testhelper - Basic helper functions
 """
 
 import os
-import sys
-import shutil
-import subprocess
 import time
+import unittest
 import pytest
 import requests
+
+from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -108,62 +113,53 @@ def upload_nzb(filename):
     return requests.post('http://%s:%s/api' % (SAB_HOST, SAB_PORT), files=files, data=arguments).json()
 
 
-@pytest.fixture(scope="module")
-def start_sabnzbd():
-    # Remove cache if already there
-    if os.path.isdir(SAB_CACHE_DIR):
-        shutil.rmtree(SAB_CACHE_DIR)
+@pytest.mark.usefixtures("start_sabnzbd")
+class SABnzbdBaseTest(unittest.TestCase):
 
-    # Copy basic config file with API key
-    os.mkdir(SAB_CACHE_DIR)
-    shutil.copyfile(os.path.join(SAB_BASE_DIR, 'sabnzbd.basic.ini'), os.path.join(SAB_CACHE_DIR, 'sabnzbd.ini'))
+    @classmethod
+    def setUpClass(cls):
+        # We try Chrome, fallback to Firefox
 
-    # Check if we have language files
-    if not os.path.exists(os.path.join(SAB_BASE_DIR, '..', 'locale')):
-        # Compile and wait to complete
-        lang_command = '%s %s/../tools/make_mo.py' % (sys.executable, SAB_BASE_DIR)
-        subprocess.Popen(lang_command.split()).communicate(timeout=30)
-
-        # Check if it exists now, fail otherwise
-        if not os.path.exists(os.path.join(SAB_BASE_DIR, '..', 'locale')):
-            raise FileNotFoundError('Failed to compile language files')
-
-    # Start SABnzbd and continue
-    sab_command = '%s %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s' % (sys.executable, SAB_BASE_DIR, SAB_HOST, SAB_PORT, SAB_CACHE_DIR)
-    subprocess.Popen(sab_command.split())
-
-    # Wait for SAB to respond
-    for _ in range(10):
         try:
-            get_url_result()
-            # Woohoo, we're up!
-            break
-        except requests.ConnectionError:
-            time.sleep(1)
-    else:
-        # Make sure we clean up
-        shutdown_sabnzbd()
-        raise requests.ConnectionError()
+            driver_options = ChromeOptions()
+            # Headless on Appveyor/Travis
+            if "CI" in os.environ:
+                driver_options.add_argument("--headless")
+                driver_options.add_argument("--no-sandbox")
+            cls.driver = webdriver.Chrome(chrome_options=driver_options)
+        except WebDriverException:
+            driver_options = FirefoxOptions()
+            # Headless on Appveyor/Travis
+            if "CI" in os.environ:
+                driver_options.headless = True
+            cls.driver = webdriver.Firefox(firefox_options=driver_options)
 
-    # How we run the tests
-    yield True
+        # Get the newsserver-info, if available
+        if "SAB_NEWSSERVER_HOST" in os.environ:
+            cls.newsserver_host = os.environ['SAB_NEWSSERVER_HOST']
+            cls.newsserver_user = os.environ['SAB_NEWSSERVER_USER']
+            cls.newsserver_password = os.environ['SAB_NEWSSERVER_PASSWORD']
 
-    # Shutdown SABnzbd gracefully
-    shutdown_sabnzbd()
+    @classmethod
+    def tearDownClass(cls):
+        cls.driver.close()
+        cls.driver.quit()
 
+    def no_page_crash(self):
+        # Do a base test if CherryPy did not report test
+        self.assertNotIn('500 Internal Server Error', self.driver.title)
 
-def shutdown_sabnzbd():
-    # Graceful shutdown request
-    try:
-        get_url_result('shutdown')
-    except requests.ConnectionError:
-        pass
+    def open_page(self, url):
+        # Open a page and test for crash
+        self.driver.get(url)
+        self.no_page_crash()
 
-    # Takes a second to shutdown
-    for x in range(10):
-        try:
-            shutil.rmtree(SAB_CACHE_DIR)
-            break
-        except OSError:
-            print("Unable to remove cache dir (try %d)" % x)
-            time.sleep(1)
+    def scroll_to_top(self):
+        self.driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
+        time.sleep(2)
+
+    def wait_for_ajax(self):
+        wait = WebDriverWait(self.driver, 15)
+        wait.until(lambda driver_wait: self.driver.execute_script('return jQuery.active') == 0)
+        wait.until(lambda driver_wait: self.driver.execute_script('return document.readyState') == 'complete')
+
