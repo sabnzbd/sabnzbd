@@ -27,7 +27,6 @@ import os
 import getopt
 import signal
 import socket
-import locale
 import platform
 import ssl
 import time

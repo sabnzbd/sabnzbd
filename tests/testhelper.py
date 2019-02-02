@@ -126,13 +126,13 @@ class SABnzbdBaseTest(unittest.TestCase):
             if "CI" in os.environ:
                 driver_options.add_argument("--headless")
                 driver_options.add_argument("--no-sandbox")
-            cls.driver = webdriver.Chrome(chrome_options=driver_options)
+            cls.driver = webdriver.Chrome(options=driver_options)
         except WebDriverException:
             driver_options = FirefoxOptions()
             # Headless on Appveyor/Travis
             if "CI" in os.environ:
                 driver_options.headless = True
-            cls.driver = webdriver.Firefox(firefox_options=driver_options)
+            cls.driver = webdriver.Firefox(options=driver_options)
 
         # Get the newsserver-info, if available
         if "SAB_NEWSSERVER_HOST" in os.environ:

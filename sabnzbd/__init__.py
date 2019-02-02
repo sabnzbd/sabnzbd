@@ -30,6 +30,7 @@ import socket
 import cherrypy
 import sys
 import re
+import ssl
 from threading import Lock, Thread
 try:
     import sleepless
@@ -510,17 +511,14 @@ def guard_language():
 
 
 def set_https_verification(value):
-    prev = False
-    try:
-        import ssl
-        if hasattr(ssl, '_create_default_https_context'):
-            prev = ssl._create_default_https_context == ssl.create_default_context
-            if value:
-                ssl._create_default_https_context = ssl.create_default_context
-            else:
-                ssl._create_default_https_context = ssl._create_unverified_context
-    except ImportError:
-        pass
+    """ Set HTTPS-verification state while returning current setting
+        False = disable verification
+    """
+    prev = ssl._create_default_https_context == ssl.create_default_context
+    if value:
+        ssl._create_default_https_context = ssl.create_default_context
+    else:
+        ssl._create_default_https_context = ssl._create_unverified_context
     return prev
 
 
@@ -1116,9 +1114,9 @@ def test_cert_checking():
     # User disabled the test, assume proper SSL certificates
     if not cfg.selftest_host():
         return True
+
     # Try a connection to our test-host
     try:
-        import ssl
         ctx = ssl.create_default_context()
         base_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         ssl_sock = ctx.wrap_socket(base_sock, server_hostname=cfg.selftest_host())
