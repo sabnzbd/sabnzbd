@@ -412,9 +412,8 @@ def from_units(val):
         return 0.0
 
 
-def to_units(val, spaces=0, postfix=''):
+def to_units(val, postfix=''):
     """ Convert number to K/M/G/T/P notation
-        Add "spaces" if not ending in letter
         Show single decimal for M and higher
     """
     dec_limit = 1
@@ -433,8 +432,6 @@ def to_units(val, spaces=0, postfix=''):
         val = val / 1024.0
         n = n + 1
     unit = TAB_UNITS[n]
-    if not unit:
-        unit = ' ' * spaces
     if n > dec_limit:
         decimals = 1
     else:
