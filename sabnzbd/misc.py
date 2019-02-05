@@ -21,7 +21,8 @@ sabnzbd.misc - misc classes
 import os
 import sys
 import logging
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
 import re
 import subprocess
 import socket
@@ -479,19 +480,21 @@ def exit_sab(value):
 
 def split_host(srv):
     """ Split host:port notation, allowing for IPV6 """
-    # Cannot use split, because IPV6 of "a:b:c:port" notation
-    # Split on the last ':'
-    mark = srv.rfind(':')
-    if mark < 0:
-        host = srv
-    else:
-        host = srv[0: mark]
-        port = srv[mark + 1:]
-    try:
-        port = int(port)
-    except:
+    if srv[-1] == ']':
+        # ipv6 literal (with no port)
+        return srv, None
+
+    out = srv.rsplit(":", 1)
+    if len(out) == 1:
+        # No port
         port = None
-    return host, port
+    else:
+        try:
+            port = int(out[1])
+        except ValueError:
+            return srv, None
+
+    return out[0], port
 
 
 def get_cache_limit():
