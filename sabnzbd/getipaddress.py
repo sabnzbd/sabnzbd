@@ -23,20 +23,20 @@ import socket
 import multiprocessing.pool
 import functools
 import urllib.request
+import urllib.error
 
 import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import ubtou
 
 
-# decorator stuff:
 def timeout(max_timeout):
-    """Timeout decorator, parameter in seconds."""
+    """ Timeout decorator, parameter in seconds. """
     def timeout_decorator(item):
-        """Wrap the original function."""
+        """ Wrap the original function. """
         @functools.wraps(item)
         def func_wrapper(*args, **kwargs):
-            """Closure for function."""
+            """ Closure for function. """
             pool = multiprocessing.pool.ThreadPool(processes=1)
             async_result = pool.apply_async(item, args, kwargs)
             # raises a TimeoutError if execution exceeds max_timeout
@@ -63,44 +63,49 @@ def addresslookup6(myhost):
 def localipv4():
     try:
         s_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s_ipv4.connect(('1.2.3.4', 80))    # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
+        # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
+        s_ipv4.connect(('1.2.3.4', 80))
         ipv4 = s_ipv4.getsockname()[0]
         s_ipv4.close()
-    except:
+    except socket.error:
         ipv4 = None
     return ipv4
 
 
 def publicipv4():
-    # Because of dual IPv4/IPv6 clients, finding the public ipv4 needs special attention,
-    # meaning forcing IPv4 connections, and not allowing IPv6 connections
+    """ Because of dual IPv4/IPv6 clients, finding the
+        public ipv4 needs special attention, meaning forcing
+        IPv4 connections, and not allowing IPv6 connections
+    """
     public_ipv4 = None
     try:
         ipv4_found = False
         # we only want IPv4 resolving, so socket.AF_INET:
         result = addresslookup4(sabnzbd.cfg.selftest_host())
-    except:
+    except socket.error:
         # something very bad: no urllib2, no resolving of selftest_host, no network at all
         return public_ipv4
 
     # we got one or more IPv4 address(es), so let's connect to them
     for item in result:
-        selftest_ipv4 = item[4][0]     # get next IPv4 address of sabnzbd.cfg.selftest_host()
+        # get next IPv4 address of sabnzbd.cfg.selftest_host()
+        selftest_ipv4 = item[4][0]
         try:
             # put the selftest_host's IPv4 address into the URL
             req = urllib.request.Request("http://" + selftest_ipv4 + "/")
             # specify the User-Agent, because certain sites refuse connections with "python urllib2" as User-Agent:
-            req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__ )
+            req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
             # specify the Host, because we only provide the IPv4 address in the URL:
             req.add_header('Host', sabnzbd.cfg.selftest_host())
             # get the response, timeout 2 seconds, in case the website is not accessible
             public_ipv4 = ubtou(urllib.request.urlopen(req, timeout=2).read())
             # ... check the response is indeed an IPv4 address:
-            socket.inet_aton(public_ipv4)  # if we got anything else than a plain IPv4 address, this will raise an exception
+            # if we got anything else than a plain IPv4 address, this will raise an exception
+            socket.inet_aton(public_ipv4)
             # if we get here without exception, we're done:
             ipv4_found = True
             break
-        except:
+        except (socket.error, urllib.error.URLError):
             # the connect OR the inet_aton raised an exception, so:
             # continue the for loop to try next server IPv4 address
             pass
@@ -113,9 +118,10 @@ def publicipv4():
 def ipv6():
     try:
         s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        s_ipv6.connect(('2001:db8::8080', 80))    # IPv6 prefix for documentation purpose
-        ipv6 = s_ipv6.getsockname()[0]
+        # IPv6 prefix for documentation purpose
+        s_ipv6.connect(('2001:db8::8080', 80))
+        ipv6_address = s_ipv6.getsockname()[0]
         s_ipv6.close()
-    except:
-        ipv6 = None
-    return ipv6
+    except socket.error:
+        ipv6_address = None
+    return ipv6_address
