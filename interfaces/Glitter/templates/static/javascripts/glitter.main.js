@@ -96,7 +96,7 @@ function ViewModel() {
 
     // Dynamic speed text function
     self.speedText = ko.pureComputed(function() {
-        return self.speed() + ' ' + (self.speedMetrics[self.speedMetric()] ? self.speedMetrics[self.speedMetric()] : "KB/s");
+        return self.speed() + ' ' + (self.speedMetrics[self.speedMetric()] ? self.speedMetrics[self.speedMetric()] : "B/s");
     });
 
     // Dynamic icon
