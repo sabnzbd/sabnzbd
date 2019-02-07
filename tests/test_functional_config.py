@@ -88,6 +88,61 @@ class SABnzbdConfigCategories(SABnzbdBaseTest):
         self.assertNotIn(self.category_name, self.driver.page_source)
 
 
+class SABnzbdConfigRSS(SABnzbdBaseTest):
+
+    rss_url = "https://nzbindex.nl/rss/?q=reftestnzb&sort=agedesc&max=25"
+    rss_name = "_SeleniumFeed"
+
+    def test_rss_basic_flow(self):
+        # Test if base page works
+        self.open_page("http://%s:%s/sabnzbd/config/rss" % (SAB_HOST, SAB_PORT))
+
+        # Test if we can reach the url
+        test_request = requests.get(self.rss_url)
+        if not test_request.ok:
+            # Failures are now allowed
+            pytest.xfail("RSS URL unavailable: %s" % self.rss_url)
+
+        # Uncheck enabled-checkbox for new feeds
+        self.driver.find_element_by_xpath('//form[@action="add_rss_feed"]//input[@name="enable"]').click()
+        input_name = self.driver.find_element_by_xpath('//form[@action="add_rss_feed"]//input[@name="feed"]')
+        input_name.clear()
+        input_name.send_keys(self.rss_name)
+        self.driver.find_element_by_xpath('//form[@action="add_rss_feed"]//input[@name="uri"]').send_keys(self.rss_url)
+        self.driver.find_element_by_xpath('//form[@action="add_rss_feed"]//button').click()
+
+        # Check if we have results
+        tab_results = int(self.driver.find_element_by_xpath('//a[@href="#rss-tab-matched"]/span').text)
+        assert tab_results > 0
+
+        # Check if it matches the number of rows
+        tab_table_results = len(self.driver.find_elements_by_xpath('//div[@id="rss-tab-matched"]/table/tbody/tr'))
+        assert tab_table_results == tab_results
+
+        # Pause the queue do we don't download stuff
+        assert get_api_result('pause') == {'status': True}
+
+        # Download something
+        download_btn = self.driver.find_element_by_xpath('//div[@id="rss-tab-matched"]/table/tbody//button')
+        download_btn.click()
+        self.wait_for_ajax()
+
+        # Does the page think it's a success?
+        assert "Added NZB" in download_btn.text
+
+        # Let's check the queue
+        queue_result_slots = get_api_result('queue')['queue']['slots']
+        assert len(queue_result_slots) == 1
+
+        # Let's remove this thing
+        get_api_result('queue', {'name': 'delete', 'value': queue_result_slots[0]['nzo_id']})
+        queue_result_slots = get_api_result('queue')['queue']['slots']
+        assert len(queue_result_slots) == 0
+
+        # Unpause
+        assert get_api_result('resume') == {'status': True}
+
+
 @pytest.mark.skipif("SAB_NEWSSERVER_HOST" not in os.environ, reason="Test-server not specified")
 class SABnzbdConfigServers(SABnzbdBaseTest):
 
