@@ -50,6 +50,7 @@ except ValueError:
 except ImportError:
     print("Not all required Python modules are available, please check requirements.txt.")
     sys.exit(1)
+
 import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
@@ -1121,12 +1122,12 @@ def main():
     logging.info('Python-version = %s', sys.version)
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
 
-    # Find encoding; relevant for unrar activities
+    # Find encoding; relevant for external processing activities
     logging.info('Preferred encoding = %s', sabnzbd.encoding.CODEPAGE)
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
-    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf' in sabnzbd.encoding.CODEPAGE and '8' in sabnzbd.encoding.CODEPAGE):
-        logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % sys.stdin.encoding)
+    if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ('utf-8' in sabnzbd.encoding.CODEPAGE.lower()):
+        logging.warning(T("SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads.") % sabnzbd.encoding.CODEPAGE)
 
     # SSL Information
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
