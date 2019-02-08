@@ -164,9 +164,7 @@ class Assembler(Thread):
                 break
 
             # Sleep to allow decoder/assembler switching
-            sleep(0.0001)
             article = decodetable[articlenum]
-
             data = ArticleCache.do.load_article(article)
 
             if not data:
@@ -180,8 +178,6 @@ class Assembler(Thread):
         fout.close()
         set_permissions(path)
         nzf.md5sum = md5.digest()
-        del md5
-
         return path
 
 
@@ -262,7 +258,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                 logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
-                                except:
+                                except rarfile.Error:
                                     # On weird passwords the setpassword() will fail
                                     # but the actual rartest() will work
                                     pass

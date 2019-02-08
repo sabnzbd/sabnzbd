@@ -90,18 +90,12 @@ class SABnzbdConfigCategories(SABnzbdBaseTest):
 
 class SABnzbdConfigRSS(SABnzbdBaseTest):
 
-    rss_url = "https://nzbindex.nl/rss/?q=reftestnzb&sort=agedesc&max=25"
+    rss_url = "https://sabnzbd.org/tests/rss_feed_test.xml"
     rss_name = "_SeleniumFeed"
 
     def test_rss_basic_flow(self):
         # Test if base page works
         self.open_page("http://%s:%s/sabnzbd/config/rss" % (SAB_HOST, SAB_PORT))
-
-        # Test if we can reach the url
-        test_request = requests.get(self.rss_url)
-        if not test_request.ok:
-            # Failures are now allowed
-            pytest.xfail("RSS URL unavailable: %s" % self.rss_url)
 
         # Uncheck enabled-checkbox for new feeds
         self.driver.find_element_by_xpath('//form[@action="add_rss_feed"]//input[@name="enable"]').click()

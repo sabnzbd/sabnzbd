@@ -126,6 +126,14 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.is_server_configured()
         self.add_nzb_from_url("http://sabnzbd.org/tests/test_win_unicode.nzb", "frènch_german_demö")
 
+    def test_download_passworded(self):
+        self.is_server_configured()
+        self.add_nzb_from_url("https://sabnzbd.org/tests/test_passworded%7B%7Bsecret%7D%7D.nzb", "random-1MB.bin")
+
+    def test_download_zip(self):
+        self.is_server_configured()
+        self.add_nzb_from_url("https://sabnzbd.org/tests/test_zip.nzb", "testfile.bin")
+
     @pytest.mark.skip(reason="Fails due to wrong par2-renaming. Needs fixing.")
     def test_download_win_unicode(self):
         self.is_server_configured()
