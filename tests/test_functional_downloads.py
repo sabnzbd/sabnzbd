@@ -27,21 +27,13 @@ from tests.testhelper import *
 @pytest.mark.skipif("SAB_NEWSSERVER_HOST" not in os.environ, reason="Test-server not specified")
 class SABnzbdDownloadFlow(SABnzbdBaseTest):
 
-    def test_downloading_ordered(self):
-        # Wrapper for all the tests in order
-        self.start_wizard()
-
-        # Basic test
-        self.add_nzb_from_url("http://sabnzbd.org/tests/basic_rar5.nzb", "testfile.bin")
-
-        # Unicode test
-        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", "\u4f60\u597d\u4e16\u754c.bin")
-
-        # Test with unicode files generated on Windows
-        self.add_nzb_from_url("http://sabnzbd.org/tests/test_win_unicode.nzb", "frènch_german_demö")
-
-        # Unicode test with a missing article
-        # self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
+    def is_server_configured(self):
+        """ Check if the wizard was already performed.
+            If not: run the wizard!
+        """
+        with open(os.path.join(SAB_CACHE_DIR, 'sabnzbd.ini'), 'r') as config_file:
+            if self.newsserver_host not in config_file.read():
+                self.start_wizard()
 
     def start_wizard(self):
         # Language-selection
@@ -121,3 +113,20 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
 
         # Shutil can't handle unicode, need to remove the file here
         os.remove(file_to_find)
+
+    def test_download_basic_rar5(self):
+        self.is_server_configured()
+        self.add_nzb_from_url("http://sabnzbd.org/tests/basic_rar5.nzb", "testfile.bin")
+
+    def test_download_unicode_rar(self):
+        self.is_server_configured()
+        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar.nzb", "\u4f60\u597d\u4e16\u754c.bin")
+
+    def test_download_win_unicode(self):
+        self.is_server_configured()
+        self.add_nzb_from_url("http://sabnzbd.org/tests/test_win_unicode.nzb", "frènch_german_demö")
+
+    @pytest.mark.skip(reason="Fails due to wrong par2-renaming. Needs fixing.")
+    def test_download_win_unicode(self):
+        self.is_server_configured()
+        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
