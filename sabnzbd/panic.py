@@ -59,7 +59,7 @@ def MSG_BAD_NEWS():
 
 
 def MSG_BAD_PORT():
-    return Ta(r'''
+    return T(r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
     Port %s on %s was tried , but it is not available.<br>
     Some other software uses the port or SABnzbd is already running.<br>
@@ -70,11 +70,11 @@ def MSG_BAD_PORT():
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>''' + \
-        Ta(r'If you get this error message again, please try a different number.<br>')
+        T(r'If you get this error message again, please try a different number.<br>')
 
 
 def MSG_BAD_HOST():
-    return Ta(r'''
+    return T(r'''
     SABnzbd needs a valid host address for its internal web server.<br>
     You have specified an invalid address.<br>
     Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>
@@ -89,7 +89,7 @@ def MSG_BAD_HOST():
 
 
 def MSG_BAD_QUEUE():
-    return Ta(r'''
+    return T(r'''
     SABnzbd detected saved data from an other SABnzbd version<br>
     but cannot re-use the data of the other program.<br><br>
     You may want to finish your queue first with the other program.<br><br>
@@ -105,7 +105,7 @@ def MSG_BAD_QUEUE():
 
 
 def MSG_BAD_TEMPL():
-    return Ta(r'''
+    return T(r'''
     SABnzbd cannot find its web interface files in %s.<br>
     Please install the program again.<br>
     <br>
@@ -117,7 +117,7 @@ def MSG_OTHER():
 
 
 def MSG_SQLITE():
-    return Ta(r'''
+    return T(r'''
     SABnzbd detected that the file sqlite3.dll is missing.<br><br>
     Some poorly designed virus-scanners remove this file.<br>
     Please check your virus-scanner, try to re-install SABnzbd and complain to your virus-scanner vendor.<br>

@@ -1187,7 +1187,6 @@ class ConfigPage(object):
 
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
-        conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
         conf['have_sabyenc'] = SABYENC_ENABLED
         conf['have_mt_par2'] = sabnzbd.newsunpack.PAR2_MT
 
@@ -1421,7 +1420,6 @@ class ConfigGeneral(object):
 
         conf['configfn'] = config.get_filename()
         conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
-        conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
 
         wlist = []
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)

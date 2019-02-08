@@ -65,13 +65,6 @@ elif os.name == 'posix':
         except:
             pass
 
-# Check for cryptography
-try:
-    import cryptography
-    HAVE_CRYPTOGRAPHY = cryptography.__version__
-except:
-    HAVE_CRYPTOGRAPHY = False
-
 # Now we can import safely
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor

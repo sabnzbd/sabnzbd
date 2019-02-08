@@ -657,11 +657,6 @@ def int_conv(value):
 
 def create_https_certificates(ssl_cert, ssl_key):
     """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
-    if not sabnzbd.HAVE_CRYPTOGRAPHY:
-        logging.error(T('%s missing'), 'Python Cryptography')
-        return False
-
-    # Save the key and certificate to disk
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
         private_key = generate_key(key_size=2048, output_file=ssl_key)

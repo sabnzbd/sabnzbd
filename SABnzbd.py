@@ -36,15 +36,20 @@ try:
     import Cheetah
     if Cheetah.Version[0] != '3':
         raise ValueError
+    import six
+    import feedparser
+    import configobj
+    import cherrypy
+    import portend
+    import cryptography
+    import chardet
+    import gntp
 except ValueError:
     print("Sorry, requires Python module Cheetah 3 or higher.")
     sys.exit(1)
-except:
-    print("The Python module Cheetah is required")
+except ImportError:
+    print("Not all required Python modules are available, please check requirements.txt.")
     sys.exit(1)
-
-import cherrypy
-import portend
 import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
@@ -61,11 +66,6 @@ import sabnzbd.cfg
 import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-
-from threading import Thread
-
-LOG_FLAG = False        # Global for this module, signaling loglevel change
-
 
 try:
     import win32api
@@ -84,6 +84,9 @@ except ImportError:
         print("Sorry, requires Python module PyWin32.")
         sys.exit(1)
 
+# Global for this module, signaling loglevel change
+LOG_FLAG = False
+
 
 def guard_loglevel():
     """ Callback function for guarding loglevel """
@@ -91,7 +94,7 @@ def guard_loglevel():
     LOG_FLAG = True
 
 
-class guiHandler(logging.Handler):
+class GUIHandler(logging.Handler):
     """ Logging handler collects the last warnings/errors/exceptions
         to be displayed in the web-gui
     """
@@ -215,7 +218,7 @@ def daemonize():
     os.dup2(dev_null.fileno(), sys.stdin.fileno())
 
 
-def Bail_Out(browserhost, cherryport, err=''):
+def abort_and_show_error(browserhost, cherryport, err=''):
     """ Abort program because of CherryPy troubles """
     logging.error(T('Failed to start web-interface') + ' : ' + str(err))
     if not sabnzbd.DAEMON:
@@ -227,7 +230,7 @@ def Bail_Out(browserhost, cherryport, err=''):
     exit_sab(2)
 
 
-def Web_Template(key, defweb, wdir):
+def identify_web_template(key, defweb, wdir):
     """ Determine a correct web template set, return full template path """
     if wdir is None:
         try:
@@ -259,7 +262,7 @@ def Web_Template(key, defweb, wdir):
     return real_path(full_dir, "templates")
 
 
-def CheckColor(color, web_dir):
+def check_template_scheme(color, web_dir):
     """ Check existence of color-scheme """
     if color and os.path.exists(os.path.join(web_dir, 'static/stylesheets/colorschemes/' + color + '.css')):
         return color
@@ -286,9 +289,8 @@ def fix_webname(name):
         return name
 
 
-def GetProfileInfo(vista_plus):
-    """ Get the default data locations """
-    ok = False
+def get_user_profile_paths(vista_plus):
+    """ Get the default data locations on Windows"""
     if sabnzbd.DAEMON:
         # In daemon mode, do not try to access the user profile
         # just assume that everything defaults to the program dir
@@ -322,7 +324,6 @@ def GetProfileInfo(vista_plus):
                     sabnzbd.DIR_APPDATA = '%s\\%s' % (root, DEF_WORKDIR)
                     sabnzbd.DIR_HOME = root
                 sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
-
             except:
                 pass
 
@@ -339,7 +340,6 @@ def GetProfileInfo(vista_plus):
             sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
             sabnzbd.DIR_HOME = home
             return
-
     else:
         # Unix/Linux
         home = os.environ.get('HOME')
@@ -371,10 +371,7 @@ def print_modules():
         # Do not allow downloading
         sabnzbd.NO_DOWNLOADING = True
 
-    if sabnzbd.HAVE_CRYPTOGRAPHY:
-        logging.info('Cryptography module (v%s)... found!', sabnzbd.HAVE_CRYPTOGRAPHY)
-    else:
-        logging.info('Cryptography module... NOT found!')
+    logging.info('Cryptography module (v%s)... found!', cryptography.__version__)
 
     if sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
@@ -441,7 +438,7 @@ def all_localhosts():
         return ips
     try:
         info = socket.getaddrinfo('localhost', None)
-    except:
+    except socket.error:
         # localhost does not resolve
         return ips
     ips = []
@@ -460,7 +457,7 @@ def check_resolve(host):
     """ Return True if 'host' resolves """
     try:
         socket.getaddrinfo(host, None)
-    except:
+    except socket.error:
         # Does not resolve
         return False
     return True
@@ -486,17 +483,17 @@ def get_webhost(cherryhost, cherryport, https_port):
     localhost = hostip = 'localhost'
     try:
         info = socket.getaddrinfo(socket.gethostname(), None)
-    except:
+    except socket.error:
         # Hostname does not resolve
         try:
             # Valid user defined name?
             info = socket.getaddrinfo(cherryhost, None)
-        except:
+        except socket.error:
             if cherryhost not in ('localhost', '127.0.0.1', '::1'):
                 cherryhost = '0.0.0.0'
             try:
                 info = socket.getaddrinfo(localhost, None)
-            except:
+            except socket.error:
                 info = socket.getaddrinfo('127.0.0.1', None)
                 localhost = '127.0.0.1'
     for item in info:
@@ -556,7 +553,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         else:
             try:
                 socket.getaddrinfo(cherryhost, None)
-            except:
+            except socket.error:
                 cherryhost = cherryhost.strip('[]')
 
     if ipv6 and ipv4 and \
@@ -895,7 +892,7 @@ def main():
     LOGLEVELS = (logging.FATAL, logging.WARNING, logging.INFO, logging.DEBUG)
 
     # Setup primary logging to prevent default console logging
-    gui_log = guiHandler(MAX_WARNINGS)
+    gui_log = GUIHandler(MAX_WARNINGS)
     gui_log.setLevel(logging.WARNING)
     format_gui = '%(asctime)s\n%(levelname)s\n%(message)s'
     gui_log.setFormatter(logging.Formatter(format_gui))
@@ -916,7 +913,7 @@ def main():
         inifile = evaluate_inipath(inifile)
     else:
         # No ini file given, need profile data
-        GetProfileInfo(vista_plus)
+        get_user_profile_paths(vista_plus)
         # Find out where INI file is
         inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
 
@@ -960,15 +957,15 @@ def main():
             try:
                 portend.free(cherryhost, https_port, timeout=0.05)
             except IOError:
-                Bail_Out(browserhost, cherryport)
+                abort_and_show_error(browserhost, cherryport)
             except:
-                Bail_Out(browserhost, cherryport, '49')
+                abort_and_show_error(browserhost, cherryport, '49')
         try:
             portend.free(cherryhost, cherryport, timeout=0.05)
         except IOError:
-            Bail_Out(browserhost, cherryport)
+            abort_and_show_error(browserhost, cherryport)
         except:
-            Bail_Out(browserhost, cherryport, '49')
+            abort_and_show_error(browserhost, cherryport, '49')
 
     # Windows instance is reachable through registry
     url = None
@@ -991,7 +988,7 @@ def main():
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
-                        Bail_Out(browserhost, cherryport)
+                        abort_and_show_error(browserhost, cherryport)
                     # Find free port to bind
                     newport = find_free_port(browserhost, port)
                     if newport > 0:
@@ -1005,7 +1002,7 @@ def main():
                             sabnzbd.cfg.cherryport.set(newport)
         except:
             # Something else wrong, probably badly specified host
-            Bail_Out(browserhost, cherryport, '49')
+            abort_and_show_error(browserhost, cherryport, '49')
 
     # NonSSL check if there's no HTTPS or we only use 1 port
     if not (enable_https and not https_port):
@@ -1020,7 +1017,7 @@ def main():
                 if new_instance or not check_for_sabnzbd(url, upload_nzbs, autobrowser):
                     # Bail out if we have fixed our ports after first start-up
                     if sabnzbd.cfg.fixed_ports():
-                        Bail_Out(browserhost, cherryport)
+                        abort_and_show_error(browserhost, cherryport)
                     # Find free port to bind
                     port = find_free_port(browserhost, cherryport)
                     if port > 0:
@@ -1028,7 +1025,7 @@ def main():
                         cherryport = port
         except:
             # Something else wrong, probably badly specified host
-            Bail_Out(browserhost, cherryport, '49')
+            abort_and_show_error(browserhost, cherryport, '49')
 
     # We found a port, now we never check again
     sabnzbd.cfg.fixed_ports.set(True)
@@ -1192,11 +1189,11 @@ def main():
 
     os.chdir(sabnzbd.DIR_PROG)
 
-    sabnzbd.WEB_DIR = Web_Template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
-    sabnzbd.WEB_DIR_CONFIG = Web_Template(None, DEF_STDCONFIG, '')
+    sabnzbd.WEB_DIR = identify_web_template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
+    sabnzbd.WEB_DIR_CONFIG = identify_web_template(None, DEF_STDCONFIG, '')
     sabnzbd.WIZARD_DIR = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
 
-    sabnzbd.WEB_COLOR = CheckColor(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)
+    sabnzbd.WEB_COLOR = check_template_scheme(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
 
     if fork and not sabnzbd.WIN32:
@@ -1341,7 +1338,7 @@ def main():
         cherrypy.engine.start()
     except:
         logging.error(T('Failed to start web-interface: '), exc_info=True)
-        Bail_Out(browserhost, cherryport)
+        abort_and_show_error(browserhost, cherryport)
 
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
@@ -1658,6 +1655,7 @@ if __name__ == '__main__':
     elif getattr(sys, 'frozen', None) == 'macosx_app':
         try:
             # OSX binary runner
+            from threading import Thread
             from PyObjCTools import AppHelper
             from sabnzbd.osxmenu import SABnzbdDelegate
 

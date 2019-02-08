@@ -249,13 +249,11 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                     # Cloaked job?
                     if is_cloaked(nzo, filepath, zf.namelist()):
                         encrypted = True
-                    elif not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
-                        # if no cryptography installed, only error when no password was set
-                        logging.info(T('%s missing'), 'Python Cryptography')
+                    elif not passwords:
+                        # Only error when no password was set
                         nzo.encrypted = 1
                         encrypted = True
-
-                    elif sabnzbd.HAVE_CRYPTOGRAPHY:
+                    else:
                         # Lets test if any of the password work
                         password_hit = False
 
@@ -278,7 +276,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                     break
                                 except Exception as e:
                                     # Did we start from the right volume?
-                                    if 'need to start extraction from a previous volume' in e[0]:
+                                    if 'need to start extraction from a previous volume' in e:
                                         return encrypted, unwanted
                                     # This one failed
                                     pass
@@ -296,10 +294,6 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                             # Encrypted and none of them worked
                             nzo.encrypted = 1
                             encrypted = True
-                    else:
-                        # Don't check other files
-                        nzo.encrypted = -1
-                        encrypted = False
 
                 # Check for unwanted extensions
                 if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions():

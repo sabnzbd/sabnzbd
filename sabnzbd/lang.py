@@ -26,7 +26,7 @@ sabnzbd.lang - Language support
 # and the special functions are active.
 # This module cannot import any application modules!!
 #
-# Required keywords for pygettext.py: -k T -k Ta -k TT
+# Required keywords for pygettext.py: -k T -k TT
 #
 # The following pseudo-builtins are provided.
 # T()   Unicode translation
