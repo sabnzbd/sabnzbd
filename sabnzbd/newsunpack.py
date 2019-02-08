@@ -140,6 +140,7 @@ ENV_NZO_FIELDS = ['bytes', 'bytes_downloaded', 'bytes_tried', 'cat', 'duplicate'
      'fail_msg', 'filename', 'final_name', 'group', 'nzo_id', 'oversized', 'password', 'pp',
      'priority', 'repair', 'script', 'status', 'unpack', 'unwanted_ext', 'url']
 
+
 def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     """ Run a user postproc script, return console output and exit value """
     failure_url = nzo.nzo_info.get('failure', '')
@@ -970,8 +971,8 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
 
     for password in passwords:
         if password:
-            logging.debug('Trying 7zip with password "%s"', password)
             msg = T('Trying 7zip with password "%s"') % password
+            logging.debug(msg)
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg)
         fail, new_files, msg = seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password)
@@ -990,7 +991,7 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
 
 def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password):
     """ Unpack single 7Z set 'sevenset' to 'extraction_path'
-        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), message
+        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
     """
     if one_folder:
         method = 'e'  # Unpack without folders
@@ -1017,7 +1018,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
         parm = '-tzip' if sevenset.lower().endswith('.zip') else '-t7z'
 
     if not os.path.exists(name):
-        return 1, T('7ZIP set "%s" is incomplete, cannot unpack') % os.path.basename(sevenset)
+        return 1, [], T('7ZIP set "%s" is incomplete, cannot unpack') % os.path.basename(sevenset)
 
     # For file-bookkeeping
     orig_dir_content = recursive_listdir(extraction_path)
