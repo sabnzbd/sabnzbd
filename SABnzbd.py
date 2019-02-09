@@ -18,6 +18,7 @@
 import sys
 if sys.version_info[:2] <= (3, 0):
     print("Sorry, requires Python 3")
+    print("You can read more at: https://sabnzbd.org/python3")
     sys.exit(1)
 
 import logging
@@ -49,6 +50,7 @@ except ValueError:
     sys.exit(1)
 except ImportError:
     print("Not all required Python modules are available, please check requirements.txt.")
+    print("You can read more at: https://sabnzbd.org/python3")
     sys.exit(1)
 
 import sabnzbd
