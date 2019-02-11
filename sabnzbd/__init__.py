@@ -626,15 +626,9 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         filename = nzbfile
         keep = True
     else:
-        # File coming from API/TAPI
-        # Consider reception of Latin-1 names for non-Windows platforms
-        # When an OSX/Unix server receives a file from Windows platform
-        # CherryPy delivers filename as UTF-8 disguised as Unicode!
-        try:
-            filename = nzbfile.filename.encode('cp1252').decode('utf-8')
-        except:
-            # Correct encoding after all!
-            filename = nzbfile.filename
+        # TODO: CherryPy mangles unicode-filenames!
+        # See https://github.com/cherrypy/cherrypy/issues/1766
+        filename = encoding.correct_unknown_encoding(nzbfile.filename)
         keep = False
 
     if not sabnzbd.WIN32:
@@ -655,20 +649,13 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
         path = nzbfile
     else:
         try:
-            f, path = tempfile.mkstemp(suffix=suffix, text=False)
-            # More CherryPy madness, sometimes content is in 'value', sometimes not.
-            if nzbfile.value:
-                os.write(f, nzbfile.value)
-            elif hasattr(nzbfile, 'file'):
-                # CherryPy 3.2.2 object
-                if hasattr(nzbfile.file, 'file'):
-                    os.write(f, nzbfile.file.file.read())
-                else:
-                    os.write(f, nzbfile.file.read())
-            os.close(f)
-        except:
+            nzb_file, path = tempfile.mkstemp(suffix=suffix)
+            os.write(nzb_file, nzbfile.value)
+            os.close(nzb_file)
+        except OSError:
             logging.error(T('Cannot create temp file for %s'), filename)
             logging.info("Traceback: ", exc_info=True)
+            return None
 
     if ext.lower() in VALID_ARCHIVES:
         return ProcessArchiveFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,

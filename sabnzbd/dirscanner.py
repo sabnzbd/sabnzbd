@@ -31,7 +31,7 @@ import sabnzbd
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.decorators import NzbQueueLocker
-from sabnzbd.encoding import ubtou
+from sabnzbd.encoding import correct_unknown_encoding
 from sabnzbd.newsunpack import is_sevenfile, SevenZip
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.filesystem as filesystem
@@ -110,7 +110,6 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         catdir = cat
 
     filename, cat = name_to_cat(filename, catdir)
-
     status, zf, extension = is_archive(path)
 
     if status != 0:
@@ -131,8 +130,8 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         for name in names:
             if name.lower().endswith('.nzb'):
                 try:
-                    data = zf.read(name)
-                except:
+                    data = correct_unknown_encoding(zf.read(name))
+                except OSError:
                     logging.error(T('Cannot read %s'), name, exc_info=True)
                     zf.close()
                     return -1, []
@@ -144,9 +143,9 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                                                  priority=priority, nzbname=nzbname)
                         if not nzo.password:
                             nzo.password = password
-                    # except (TypeError, ValueError) as e:
-                    #     # Duplicate or empty, ignore
-                    #     pass
+                    except (TypeError, ValueError):
+                        # Duplicate or empty, ignore
+                        pass
                     except:
                         # Something else is wrong, show error
                         logging.error(T('Error while adding %s, removing'), name, exc_info=True)
@@ -163,7 +162,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
         try:
             if not keep:
                 filesystem.remove_file(path)
-        except:
+        except OSError:
             logging.error(T('Error removing %s'), filesystem.clip_path(path))
             logging.info("Traceback: ", exc_info=True)
             status = 1
@@ -188,25 +187,25 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
         catdir = cat
 
     try:
-        f = open(path, 'rb')
-        check_bytes = f.read(2)
-        f.close()
+        with open(path, 'rb') as nzb_file:
+            check_bytes = nzb_file.read(2)
 
         if check_bytes == b'\x1f\x8b':
             # gzip file or gzip in disguise
             name = filename.replace('.nzb.gz', '.nzb')
-            f = gzip.GzipFile(path, 'rb')
-            data = ubtou(f.read())
+            nzb_reader_handler = gzip.GzipFile
         elif check_bytes == b'BZ':
             # bz2 file or bz2 in disguise
             name = filename.replace('.nzb.bz2', '.nzb')
-            f = bz2.BZ2File(path, 'rb')
-            data = ubtou(f.read())
+            nzb_reader_handler = bz2.BZ2File
         else:
             name = filename
-            f = open(path, 'r')
-            data = f.read()
-        f.close()
+            nzb_reader_handler = open
+
+        # Let's get some data and hope we can decode it
+        with nzb_reader_handler(path, 'rb') as nzb_file:
+            data = correct_unknown_encoding(nzb_file.read())
+
     except:
         logging.warning(T('Cannot read %s'), filesystem.clip_path(path))
         logging.info("Traceback: ", exc_info=True)
@@ -224,14 +223,14 @@ def ProcessSingleFile(filename, path, pp=None, script=None, cat=None, catdir=Non
                                  nzo_info=nzo_info, url=url, reuse=reuse, dup_check=dup_check)
         if not nzo.password:
             nzo.password = password
-    # except TypeError:
-    #     # Duplicate, ignore
-    #     if nzo_id:
-    #         sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
-    #     nzo = None
-    # except ValueError:
-    #     # Empty, but correct file
-    #     return -1, nzo_ids
+    except TypeError:
+        # Duplicate, ignore
+        if nzo_id:
+            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
+        nzo = None
+    except ValueError:
+        # Empty, but correct file
+        return -1, nzo_ids
     except:
         if data.find("<nzb") >= 0 > data.find("</nzb"):
             # Looks like an incomplete file, retry

@@ -23,6 +23,7 @@ import os
 import logging
 import tempfile
 import ctypes
+
 try:
     import webbrowser
 except ImportError:
@@ -30,6 +31,7 @@ except ImportError:
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+from sabnzbd.encoding import utob
 
 PANIC_PORT = 1
 PANIC_TEMPL = 2
@@ -125,7 +127,7 @@ def MSG_SQLITE():
 ''')
 
 
-def panic_message(panic, a=None, b=None):
+def panic_message(panic_code, a=None, b=None):
     """ Create the panic message from templates """
     if sabnzbd.WIN32:
         os_str = T('Press Startkey+R and type the line (example):')
@@ -134,17 +136,17 @@ def panic_message(panic, a=None, b=None):
         os_str = T('Open a Terminal window and type the line (example):')
         prog_path = sabnzbd.MY_FULLNAME
 
-    if panic == PANIC_PORT:
+    if panic_code == PANIC_PORT:
         newport = int(b) + 1
         newport = "%s" % newport
         msg = MSG_BAD_PORT() % (b, a, os_str, prog_path, a, newport)
-    elif panic == PANIC_TEMPL:
+    elif panic_code == PANIC_TEMPL:
         msg = MSG_BAD_TEMPL() % a
-    elif panic == PANIC_QUEUE:
+    elif panic_code == PANIC_QUEUE:
         msg = MSG_BAD_QUEUE() % (a, os_str, prog_path)
-    elif panic == PANIC_SQLITE:
+    elif panic_code == PANIC_SQLITE:
         msg = MSG_SQLITE()
-    elif panic == PANIC_HOST:
+    elif panic_code == PANIC_HOST:
         msg = MSG_BAD_HOST() % (os_str, prog_path, 'localhost', b)
     else:
         msg = MSG_OTHER() % (a, b)
@@ -159,7 +161,7 @@ def panic_message(panic, a=None, b=None):
         return
 
     msgfile, url = tempfile.mkstemp(suffix='.html')
-    os.write(msgfile, msg)
+    os.write(msgfile, utob(msg))
     os.close(msgfile)
     return url
 
