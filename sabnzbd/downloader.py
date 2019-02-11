@@ -903,7 +903,10 @@ class Downloader(Thread):
                     self.init_server(server.id, server.id)
 
     def update_server(self, oldserver, newserver):
+        """ Update the server and make sure we trigger
+            the update in the loop to do housekeeping """
         self.init_server(oldserver, newserver)
+        self.wakeup()
 
     @NzbQueueLocker
     def wakeup(self):

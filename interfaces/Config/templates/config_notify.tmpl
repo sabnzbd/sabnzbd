@@ -62,11 +62,6 @@
                     <span class="desc">$T('explain-email_rss')</span>
                 </div>
                 <div class="field-pair">
-                    <label class="config" for="email_dir">$T('opt-email_dir')</label>
-                    <input type="text" name="email_dir" id="email_dir" value="$email_dir" data-initialdir="$my_home" />
-                    <span class="desc">$T('explain-email_dir')</span>
-                </div>
-                <div class="field-pair">
                     <label class="config" for="email_server">$T('opt-email_server')</label>
                     <input type="text" name="email_server" id="email_server" value="$email_server" />
                     <span class="desc">$T('explain-email_server') ($T('host'):$T('srv-port'))</span>
@@ -404,9 +399,6 @@
 
 <script type="text/javascript">
 \$(document).ready(function(){
-    // Autocomplete and filebrowser
-    \$('#email_dir').typeahead().fileBrowser();
-
     // Expand on enable
     \$('.col2 input[name$="enable"]').change(function() {
         if(this.checked) {

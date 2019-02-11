@@ -1234,6 +1234,9 @@ def main():
 
     logging.info('Read INI file %s', inifile)
 
+    # TODO: Temporary warning about Python 3
+    logging.warning('The develop-branch (which you are using) will soon switch to the Python 3 version of SABnzbd. To continue using the develop-branch you will need to make some setup-changes. The Python 3 version is likely to contain bugs, please report them! You can read more at: https://sabnzbd.org/python3')
+
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
 

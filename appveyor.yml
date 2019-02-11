@@ -1,10 +1,10 @@
 environment:
   SAB_NEWSSERVER_HOST:
-    secure: UNnTfVHDugC9amTucdTRyxe8RZfVBLYfI1EOTaDUjNM=
+    secure: 6SvOPWr5ypJeoumXJAZh90DLpk4C/5UAvzwyX7OOUr4=
   SAB_NEWSSERVER_USER:
-    secure: npe0D4TiEzXMUVMCH3+SHA==
+    secure: Ty3ZG8T5vnacqIFPj5j5hg==
   SAB_NEWSSERVER_PASSWORD:
-    secure: 28COv3RG+KAnBLxIrR1EDw==
+    secure: bO3XHtWTleVF9AqRV/V/nA==
 
 install:
   - pip install --upgrade -r tests/requirements.txt

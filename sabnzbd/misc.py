@@ -280,13 +280,10 @@ def has_win_device(p):
     return False
 
 
-if sabnzbd.WIN32:
-    # the colon should be here too, but we'll handle that separately
-    CH_ILLEGAL = '\/<>?*|"\t'
-    CH_LEGAL = '++{}!@#`+'
-else:
-    CH_ILLEGAL = '/'
-    CH_LEGAL = '+'
+CH_ILLEGAL = '/'
+CH_LEGAL = '+'
+CH_ILLEGAL_WIN = '\/<>?*|"\t:'
+CH_LEGAL_WIN = '++{}!@#`+;'
 
 
 def sanitize_filename(name):
@@ -295,8 +292,14 @@ def sanitize_filename(name):
     """
     if not name:
         return name
+
     illegal = CH_ILLEGAL
     legal = CH_LEGAL
+
+    if sabnzbd.WIN32 or cfg.sanitize_safe():
+        # Remove all bad Windows chars too
+        illegal += CH_ILLEGAL_WIN
+        legal += CH_LEGAL_WIN
 
     if ':' in name:
         if sabnzbd.WIN32:
@@ -306,15 +309,15 @@ def sanitize_filename(name):
             # Compensate for the foolish way par2 on OSX handles a colon character
             name = name[name.rfind(':') + 1:]
 
-    if sabnzbd.WIN32 or cfg.sanitize_safe():
-        name = replace_win_devices(name)
-
     lst = []
     for ch in name.strip():
         if ch in illegal:
             ch = legal[illegal.find(ch)]
         lst.append(ch)
     name = ''.join(lst)
+
+    if sabnzbd.WIN32 or cfg.sanitize_safe():
+        name = replace_win_devices(name)
 
     if not name:
         name = 'unknown'
@@ -345,10 +348,10 @@ def sanitize_foldername(name, limit=True):
         illegal = FL_ILLEGAL
         legal = FL_LEGAL
 
-    if cfg.sanitize_safe():
+    if sabnzbd.WIN32 or cfg.sanitize_safe():
         # Remove all bad Windows chars too
-        illegal += r'\/<>?*|":'
-        legal += r'++{}!@#`;'
+        illegal += CH_ILLEGAL_WIN
+        legal += CH_LEGAL_WIN
 
     repl = cfg.replace_illegal()
     lst = []
