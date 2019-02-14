@@ -3,7 +3,7 @@ Release Notes - SABnzbd 2.3.8 Beta 1
 
 ## Improvements and bug fixes since 2.3.7
 - Changes to newsserver configuration could be delayed
-- Filnames would not be sanitized when using "Make Windows compatible"
+- Filenames would not be sanitized when using "Make Windows compatible"
 - Sorting could fail on root-folders
 - 7z-files were not listed as supported NZB archives
 - Windows: update 7zip to 18.06
