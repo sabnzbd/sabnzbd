@@ -36,9 +36,9 @@ from sabnzbd.misc import match_str
 # Check for correct SABYenc version
 SABYENC_VERSION = None
 try:
-    import sabyenc
+    import sabyenc3
     SABYENC_ENABLED = True
-    SABYENC_VERSION = sabyenc.__version__
+    SABYENC_VERSION = sabyenc3.__version__
     # Verify version to at least match minor version
     if SABYENC_VERSION[:3] != SABYENC_VERSION_REQUIRED[:3]:
         raise ImportError
@@ -208,7 +208,7 @@ class Decoder(Thread):
 
     def decode(self, article, data, raw_data):
         # Let SABYenc do all the heavy lifting
-        decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc.decode_usenet_chunks(raw_data, article.bytes)
+        decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc3.decode_usenet_chunks(raw_data, article.bytes)
 
         # Assume it is yenc
         article.nzf.type = 'yenc'
