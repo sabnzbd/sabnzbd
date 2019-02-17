@@ -188,9 +188,14 @@ def remove_mo_files():
 
 def translate_tmpl(prefix, lng):
     """ Translate template 'prefix' into language 'lng' """
+    # Open the original file
     with open(EMAIL_DIR + '/%s-en.tmpl' % prefix, 'r', encoding='utf-8') as src:
         data = src.read()
 
+    # Run through translator
+    data = _(data)
+
+    # Save the translation
     with open('email/%s-%s.tmpl' % (prefix, lng), 'w', encoding='utf-8') as fp:
         if not -1 < data.find('UTF-8') < 30:
             fp.write('#encoding UTF-8\n')

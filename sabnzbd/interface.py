@@ -58,7 +58,7 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 
 from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, \
-    DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY
+    DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
 
 from sabnzbd.lang import list_languages
 
@@ -72,11 +72,6 @@ from sabnzbd.api import list_scripts, list_cats, del_from_section, \
 ##############################################################################
 # Global constants
 ##############################################################################
-DIRECTIVES = {
-    'directiveStartToken': '<!--#',
-    'directiveEndToken': '#-->',
-    'prioritizeSearchListOverSelf': True
-}
 
 
 ##############################################################################
@@ -420,7 +415,7 @@ class MainPage(object):
                     info['preload_history'] = 'false'
 
             template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'main.tmpl'),
-                                searchList=[info], compilerSettings=DIRECTIVES)
+                                searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
             return template.respond()
         else:
             # Redirect to the setup wizard
@@ -544,7 +539,7 @@ class Wizard(object):
         info = build_header(sabnzbd.WIZARD_DIR)
         info['languages'] = list_languages()
         template = Template(file=os.path.join(sabnzbd.WIZARD_DIR, 'index.html'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_configlock=True)
@@ -585,7 +580,7 @@ class Wizard(object):
                 if s.enable():
                     break
         template = Template(file=os.path.join(sabnzbd.WIZARD_DIR, 'one.html'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_configlock=True)
@@ -606,7 +601,7 @@ class Wizard(object):
         info['complete_dir'] = cfg.complete_dir.get_path()
 
         template = Template(file=os.path.join(sabnzbd.WIZARD_DIR, 'two.html'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose
@@ -732,7 +727,7 @@ class LoginPage(object):
 
         # Show login
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'login', 'main.tmpl'),
-                                searchList=[info], compilerSettings=DIRECTIVES)
+                                searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
 
@@ -784,7 +779,7 @@ class NzoPage(object):
                 info = self.nzo_files(info, nzo_id)
 
             template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'nzo.tmpl'),
-                                searchList=[info], compilerSettings=DIRECTIVES)
+                                searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
             return template.respond()
         else:
             # Job no longer exists, go to main page
@@ -935,7 +930,7 @@ class QueuePage(object):
         info, _pnfo_list, _bytespersec = build_queue(start=start, limit=limit, trans=True, search=search)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'queue.tmpl'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True)
@@ -1090,7 +1085,7 @@ class HistoryPage(object):
         history['time_format'] = time_format
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'history.tmpl'),
-                            searchList=[history], compilerSettings=DIRECTIVES)
+                            searchList=[history], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True)
@@ -1201,7 +1196,7 @@ class ConfigPage(object):
         conf['folders'] = NzbQueue.do.scan_jobs(all=False, action=False)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True)
@@ -1241,7 +1236,7 @@ class ConfigFolders(object):
             conf[kw] = config.get_config('misc', kw)()
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_folders.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1307,7 +1302,7 @@ class ConfigSwitches(object):
         conf['scripts'] = list_scripts() or ['None']
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_switches.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1362,7 +1357,7 @@ class ConfigSpecial(object):
         conf['entries'].extend([(kw, config.get_config('misc', kw).get_string(), config.get_config('misc', kw).default_string()) for kw in SPECIAL_LIST_LIST])
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_special.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1458,7 +1453,7 @@ class ConfigGeneral(object):
         conf['caller_url'] = cherrypy.request.base + cfg.url_base()
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_general.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1537,7 +1532,7 @@ class ConfigServer(object):
         conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_server.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1744,7 +1739,7 @@ class ConfigRss(object):
         conf['feed'] = txt + str(unum)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_rss.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -2088,7 +2083,7 @@ class ConfigScheduling(object):
         conf['categories'] = categories
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_scheduling.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -2195,7 +2190,7 @@ class ConfigCats(object):
         conf['slotinfo'] = slotinfo
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_cat.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -2249,7 +2244,7 @@ class ConfigSorting(object):
         conf['categories'] = list_cats(False)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_sorting.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -2295,7 +2290,7 @@ class Status(object):
     def index(self, **kwargs):
         header = build_status(skip_dashboard=kwargs.get('skip_dashboard'))
         template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'status.tmpl'),
-                            searchList=[header], compilerSettings=DIRECTIVES)
+                            searchList=[header], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True)
@@ -2621,7 +2616,7 @@ class ConfigNotify(object):
         conf['notify_texts'] = sabnzbd.notifier.NOTIFICATION
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_notify.tmpl'),
-                            searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)

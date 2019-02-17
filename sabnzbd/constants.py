@@ -99,6 +99,12 @@ STAGES = {'Source': 0, 'Download': 1, 'Servers': 2, 'Repair': 3, 'Filejoin': 4, 
 VALID_ARCHIVES = ('.zip', '.rar', '.7z')
 VALID_NZB_FILES = ('.nzb', '.gz', '.bz2')
 
+CHEETAH_DIRECTIVES = {
+    'directiveStartToken': '<!--#',
+    'directiveEndToken': '#-->',
+    'prioritizeSearchListOverSelf': True
+}
+
 IGNORED_FOLDERS = ('@eaDir', '.appleDouble')
 
 # (MATCHER, [EXTRA, MATCHERS])

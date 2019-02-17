@@ -73,7 +73,7 @@ class Assembler(Thread):
                         logging.warning(T('Too little diskspace forcing PAUSE'))
                         # Pause downloader, but don't save, since the disk is almost full!
                         sabnzbd.downloader.Downloader.do.pause()
-                        sabnzbd.emailer.diskfull()
+                        sabnzbd.emailer.diskfull_mail()
                         # Abort all direct unpackers, just to be sure
                         sabnzbd.directunpacker.abort_all()
 

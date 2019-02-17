@@ -718,7 +718,7 @@ def _api_test_email(name, output, kwargs):
                                  os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
                                  123 * MEBI, None, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
                                  test=kwargs)
-    if res == 'Email succeeded':
+    if res == T('Email succeeded'):
         res = None
     return report(output, error=res)
 
