@@ -59,7 +59,7 @@ class SABTrayThread(SysTrayIconThread):
             (T('Pause') + '/' + T('Resume'), None, self.pauseresume),
             (T('Pause for'), None, ((T('Pause for 5 minutes'), None, self.pausefor5min),
                                     (T('Pause for 15 minutes'), None, self.pausefor15min),
-                                    (T('Pause for 30 minutes'), None, self.pausefor5min),
+                                    (T('Pause for 30 minutes'), None, self.pausefor30min),
                                     (T('Pause for 1 hour'), None, self.pausefor1hour),
                                     (T('Pause for 3 hours'), None, self.pausefor3hour),
                                     (T('Pause for 6 hours'), None, self.pausefor6hour))),

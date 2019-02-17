@@ -344,17 +344,6 @@ def create_real_path(name, loc, path, umask=False, writable=True):
         return (False, "")
 
 
-def is_relative_path(p):
-    """ Return True if path is relative """
-    p = p.replace('\\', '/')
-    if p and p[0] == '/':
-        return False
-    if sabnzbd.WIN32 and p and len(p) > 2:
-        if p[0].isalpha() and p[1] == ':' and p[2] == '/':
-            return False
-    return True
-
-
 def same_file(a, b):
     """ Return 0 if A and B have nothing in common
         return 1 if A and B are actually the same path

@@ -74,7 +74,7 @@ class TestMisc:
         assert ('*', 1, 'Default', -100) == misc.cat_to_opts('*', pp=1)
         assert ('*', 1, 'test.py', -100) == misc.cat_to_opts('*', pp=1, script='test.py')
 
-    def test_wildcard_to_re(selfs):
+    def test_wildcard_to_re(self):
         assert '\\\\\\^\\$\\.\\[' == misc.wildcard_to_re('\\^$.[')
         assert '\\]\\(\\)\\+.\\|\\{\\}.*' == misc.wildcard_to_re(']()+?|{}*')
 

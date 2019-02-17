@@ -422,15 +422,6 @@ class MainPage(object):
             raise cherrypy.HTTPRedirect('%s/wizard/' % cfg.url_base())
 
     @secured_expose(check_session_key=True)
-    def addFile(self, **kwargs):
-        nzbfile = kwargs.get('nzbfile')
-        if nzbfile is not None and nzbfile.filename:
-            if nzbfile.value or nzbfile.file:
-                sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
-                                    kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
-        raise Raiser(self.__root)
-
-    @secured_expose(check_session_key=True)
     def shutdown(self, **kwargs):
         # Check for PID
         pid_in = kwargs.get('pid')
@@ -1115,22 +1106,8 @@ class HistoryPage(object):
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_session_key=True)
-    def purge_failed(self, **kwargs):
-        del_files = bool(int_conv(kwargs.get('del_files')))
-        history_db = sabnzbd.get_db_connection()
-        if del_files:
-            del_job_files(history_db.get_failed_paths())
-        history_db.remove_failed()
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_session_key=True)
     def reset(self, **kwargs):
         # sabnzbd.reset_byte_counter()
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_session_key=True)
-    def tog_failed_only(self, **kwargs):
-        self.__failed_only = not self.__failed_only
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose
@@ -2667,12 +2644,3 @@ class ConfigNotify(object):
         else:
             raise Raiser(self.__root)
 
-    @secured_expose(check_session_key=True, check_configlock=True)
-    def testmail(self, **kwargs):
-        self.__lastmail = _api_test_email(name=None, output=None, kwargs=None)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_session_key=True, check_configlock=True)
-    def testnotification(self, **kwargs):
-        _api_test_notif(name=None, output=None, kwargs=None)
-        raise Raiser(self.__root)
