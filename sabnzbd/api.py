@@ -1712,7 +1712,7 @@ def build_history(start=None, limit=None,search=None, failed_only=0, categories=
         item['retry'] = int(bool(item.get('status') == 'Failed' and
                                  path and
                                  path not in retry_folders and
-                                 same_file(path, cfg.download_dir.get_path()) and
+                                 same_file(cfg.download_dir.get_path(), path) and
                                  os.path.exists(path)) and
                                  not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*'))
                             )
