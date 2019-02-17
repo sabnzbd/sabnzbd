@@ -207,6 +207,10 @@ class OptionDir(Option):
                 res, path = sabnzbd.filesystem.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
         return path
 
+    def get_clipped_path(self):
+        """ Return clipped full absolute path """
+        return sabnzbd.filesystem.clip_path(self.get_path())
+
     def test_path(self):
         """ Return True if path exists """
         value = self.get()

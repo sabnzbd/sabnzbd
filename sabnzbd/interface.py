@@ -597,8 +597,8 @@ class Wizard(object):
         info = build_header(sabnzbd.WIZARD_DIR)
 
         info['access_url'], info['urls'] = get_access_info()
-        info['download_dir'] = cfg.download_dir.get_path()
-        info['complete_dir'] = cfg.complete_dir.get_path()
+        info['download_dir'] = cfg.download_dir.get_clipped_path()
+        info['complete_dir'] = cfg.complete_dir.get_clipped_path()
 
         template = Template(file=os.path.join(sabnzbd.WIZARD_DIR, 'two.html'),
                             searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
@@ -1425,7 +1425,7 @@ class ConfigGeneral(object):
 
         for web in interfaces:
             rweb = os.path.basename(web)
-            if os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
+            if os.access(os.path.join(web, DEF_MAIN_TMPL), os.R_OK):
                 cols = ListColors(rweb)
                 if cols:
                     for col in cols:
@@ -1449,7 +1449,7 @@ class ConfigGeneral(object):
         conf['bandwidth_perc'] = cfg.bandwidth_perc()
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_ranges'] = cfg.local_ranges.get_string()
-        conf['my_lcldata'] = cfg.admin_dir.get_path()
+        conf['my_lcldata'] = cfg.admin_dir.get_clipped_path()
         conf['caller_url'] = cherrypy.request.base + cfg.url_base()
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_general.tmpl'),
@@ -2174,7 +2174,7 @@ class ConfigCats(object):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf['scripts'] = list_scripts(default=True)
-        conf['defdir'] = cfg.complete_dir.get_path()
+        conf['defdir'] = cfg.complete_dir.get_clipped_path()
 
         categories = config.get_ordered_categories()
         conf['have_cats'] = len(categories) > 1
@@ -2237,7 +2237,7 @@ class ConfigSorting(object):
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf['complete_dir'] = cfg.complete_dir.get_path()
+        conf['complete_dir'] = cfg.complete_dir.get_clipped_path()
 
         for kw in SORT_LIST:
             conf[kw] = config.get_config('misc', kw)()

@@ -15,6 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+import os
 from collections import namedtuple
 from re import compile
 
@@ -56,8 +57,8 @@ SABYENC_VERSION_REQUIRED = '0.1.1'
 DB_HISTORY_VERSION = 1
 DB_HISTORY_NAME = 'history%s.db' % DB_HISTORY_VERSION
 
-DEF_DOWNLOAD_DIR = 'Downloads/incomplete'
-DEF_COMPLETE_DIR = 'Downloads/complete'
+DEF_DOWNLOAD_DIR = os.path.normpath('Downloads/incomplete')
+DEF_COMPLETE_DIR = os.path.normpath('Downloads/complete')
 DEF_ADMIN_DIR = 'admin'
 DEF_NZBBACK_DIR = ''
 DEF_LANGUAGE = 'locale'
@@ -66,7 +67,7 @@ DEF_EMAIL_TMPL = 'email'
 DEF_STDCONFIG = 'Config'
 DEF_STDINTF = 'Glitter'
 DEF_SKIN_COLORS = {'Glitter': 'Default', 'plush': 'gold'}
-DEF_MAIN_TMPL = 'templates/main.tmpl'
+DEF_MAIN_TMPL = os.path.normpath('templates/main.tmpl')
 DEF_INI_FILE = 'sabnzbd.ini'
 DEF_HOST = '127.0.0.1'
 DEF_PORT = 8080

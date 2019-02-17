@@ -918,7 +918,7 @@ def main():
         # No ini file given, need profile data
         get_user_profile_paths(vista_plus)
         # Find out where INI file is
-        inifile = os.path.abspath(sabnzbd.DIR_LCLDATA + '/' + DEF_INI_FILE)
+        inifile = os.path.abspath(os.path.join(sabnzbd.DIR_LCLDATA, DEF_INI_FILE))
 
     # Long-path notation on Windows to be sure
     inifile = long_path(inifile)

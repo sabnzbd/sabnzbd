@@ -1176,11 +1176,11 @@ def build_status(skip_dashboard=False, output=None):
     info['pystone'] = sabnzbd.PYSTONE_SCORE
 
     # Dashboard: Speed of Download directory:
-    info['downloaddir'] = clip_path(cfg.download_dir.get_path())
+    info['downloaddir'] = cfg.download_dir.get_clipped_path()
     info['downloaddirspeed'] = sabnzbd.DOWNLOAD_DIR_SPEED
 
     # Dashboard: Speed of Complete directory:
-    info['completedir'] = clip_path(cfg.complete_dir.get_path())
+    info['completedir'] = cfg.complete_dir.get_clipped_path()
     info['completedirspeed'] = sabnzbd.COMPLETE_DIR_SPEED
 
     # Dashboard: Connection information
