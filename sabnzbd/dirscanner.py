@@ -135,7 +135,7 @@ def ProcessArchiveFile(filename, path, pp=None, script=None, cat=None, catdir=No
                     logging.error(T('Cannot read %s'), name, exc_info=True)
                     zf.close()
                     return -1, []
-                name = os.path.basename(name)
+                name = filesystem.setname_from_path(name)
                 if data:
                     nzo = None
                     try:

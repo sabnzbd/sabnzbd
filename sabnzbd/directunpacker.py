@@ -205,7 +205,7 @@ class DirectUnpacker(threading.Thread):
                 # List success in history-info
                 msg = T('Unpacked %s files/folders in %s') % (len(extracted), format_time_string(self.unpack_time))
                 msg = '%s - %s' % (T('Direct Unpack'), msg)
-                self.nzo.set_unpack_info('Unpack', '[%s] %s' % (self.cur_setname, msg))
+                self.nzo.set_unpack_info('Unpack', msg, self.cur_setname)
 
                 # Write current log and clear
                 unrar_log.append(linebuf.strip())
@@ -393,8 +393,12 @@ class DirectUnpacker(threading.Thread):
                     pass
 
                 # Now force kill and give it a bit of time
-                self.active_instance.kill()
-                time.sleep(0.2)
+                try:
+                    self.active_instance.kill()
+                    time.sleep(0.2)
+                except AttributeError:
+                    # Already killed by the Quit command
+                    pass
 
             # Wake up the thread
             with self.next_file_lock:

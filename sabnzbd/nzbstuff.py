@@ -1590,10 +1590,14 @@ class NzbObject(TryList):
             return self.files_table[nzf_id]
 
     @synchronized(NZO_LOCK)
-    def set_unpack_info(self, key, msg, unique=False):
+    def set_unpack_info(self, key, msg, setname=None, unique=False):
         """ Builds a dictionary containing the stage name (key) and a message
             If unique is present, it will only have a single line message
         """
+        # Add name of the set
+        if setname:
+            msg = "[%s] %s" % (setname, msg)
+
         # Unique messages allow only one line per stage(key)
         if not unique:
             if key not in self.unpack_info:

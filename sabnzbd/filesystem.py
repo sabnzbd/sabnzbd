@@ -51,6 +51,11 @@ def get_filename(path):
         return ''
 
 
+def setname_from_path(path):
+    """ Get the setname from a path """
+    return os.path.splitext(os.path.basename(path))[0]
+
+
 def is_writable(path):
     """ Return True is file is writable (also when non-existent) """
     if os.path.isfile(path):
@@ -332,16 +337,16 @@ def create_real_path(name, loc, path, umask=False, writable=True):
             logging.info('%s directory: %s does not exist, try to create it', name, my_dir)
             if not create_all_dirs(my_dir, umask):
                 logging.error(T('Cannot create directory %s'), clip_path(my_dir))
-                return (False, my_dir)
+                return False, my_dir
 
         checks = (os.W_OK + os.R_OK) if writable else os.R_OK
         if os.access(my_dir, checks):
-            return (True, my_dir)
+            return True, my_dir
         else:
             logging.error(T('%s directory: %s error accessing'), name, clip_path(my_dir))
-            return (False, my_dir)
+            return False, my_dir
     else:
-        return (False, "")
+        return False, ""
 
 
 def same_file(a, b):

@@ -35,7 +35,7 @@ from sabnzbd.misc import on_cleanup_list
 from sabnzbd.filesystem import real_path, get_unique_path, create_dirs, move_to_path, \
     make_script_path, long_path, clip_path, renamer, remove_dir, remove_all, globber, \
     globber_full, set_permissions, cleanup_empty_directories, fix_unix_encoding, \
-    sanitize_and_trim_path, sanitize_files_in_folder, remove_file, recursive_listdir
+    sanitize_and_trim_path, sanitize_files_in_folder, remove_file, recursive_listdir, setname_from_path
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -684,11 +684,11 @@ def parring(nzo, workdir):
         logging.info("No par2 sets for %s", filename)
         nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % filename)
         if cfg.sfv_check() and not verified.get('', False):
-            par_error = not try_sfv_check(nzo, workdir, '')
+            par_error = not try_sfv_check(nzo, workdir)
             verified[''] = not par_error
         # If still no success, do RAR-check
         if not par_error and cfg.enable_unrar():
-            par_error = not try_rar_check(nzo, workdir, '')
+            par_error = not try_rar_check(nzo, workdir)
             verified[''] = not par_error
 
     if re_add:
@@ -705,11 +705,9 @@ def parring(nzo, workdir):
     return par_error, re_add
 
 
-def try_sfv_check(nzo, workdir, setname):
+def try_sfv_check(nzo, workdir):
     """ Attempt to verify set using SFV file
         Return True if verified, False when failed
-        When setname is '', all SFV files will be used, otherwise only the matching one
-        When setname is '' and no SFV files are found, True is returned
     """
     # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
     sfvs = globber_full(workdir, '*.sfv')
@@ -717,49 +715,47 @@ def try_sfv_check(nzo, workdir, setname):
     par_error = False
     found = False
     for sfv in sfvs:
-        if setname.lower() in os.path.basename(sfv).lower():
-            found = True
-            nzo.status = Status.VERIFYING
-            nzo.set_unpack_info('Repair', T('Trying SFV verification'))
-            nzo.set_action_line(T('Trying SFV verification'), '...')
+        found = True
+        setname = setname_from_path(sfv)
+        nzo.status = Status.VERIFYING
+        nzo.set_unpack_info('Repair', T('Trying SFV verification'), setname)
+        nzo.set_action_line(T('Trying SFV verification'), '...')
 
-            failed = sfv_check(sfv)
-            if failed:
-                fail_msg = T('Some files failed to verify against "%s"') % os.path.basename(sfv)
-                msg = fail_msg + '; '
-                msg += '; '.join(failed)
-                nzo.set_unpack_info('Repair', msg)
-                par_error = True
-            else:
-                nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
-            if setname:
-                break
+        failed = sfv_check(sfv)
+        if failed:
+            fail_msg = T('Some files failed to verify against "%s"') % setname
+            msg = fail_msg + '; '
+            msg += '; '.join(failed)
+            nzo.set_unpack_info('Repair', msg, setname)
+            par_error = True
+        else:
+            nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'), setname)
+
     # Show error in GUI
     if found and par_error:
         nzo.status = Status.FAILED
         nzo.fail_msg = fail_msg
-    return (found or not setname) and not par_error
+        return False
+
+    # Success or just no SFV's
+    return True
 
 
-def try_rar_check(nzo, workdir, setname):
+def try_rar_check(nzo, workdir):
     """ Attempt to verify set using the RARs
         Return True if verified, False when failed
         When setname is '', all RAR files will be used, otherwise only the matching one
         If no RAR's are found, returns True
     """
+    # Fetch and sort
     _, _, rars, _, _ = build_filelists(workdir)
-
-    if setname:
-        # Filter based on set
-        rars = [rar for rar in rars if os.path.basename(rar).startswith(setname)]
-
-    # Sort
     rars.sort(key=functools.cmp_to_key(rar_sort))
 
     # Test
     if rars:
+        setname = setname_from_path(rars[0])
         nzo.status = Status.VERIFYING
-        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'))
+        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'), setname)
         nzo.set_action_line(T('Trying RAR-based verification'), '...')
         try:
             # Set path to unrar and open the file
@@ -769,7 +765,7 @@ def try_rar_check(nzo, workdir, setname):
 
             # Skip if it's encrypted
             if zf.needs_password():
-                msg = T('[%s] RAR-based verification failed: %s') % (os.path.basename(rars[0]), T('Passworded'))
+                msg = T('[%s] RAR-based verification failed: %s') % (setname, T('Passworded'))
                 nzo.set_unpack_info('Repair', msg)
                 return True
 
@@ -777,13 +773,13 @@ def try_rar_check(nzo, workdir, setname):
             zf.testrar()
             # Success!
             msg = T('RAR files verified successfully')
-            nzo.set_unpack_info('Repair', msg)
+            nzo.set_unpack_info('Repair', msg, setname)
             logging.info(msg)
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
-            msg = T('[%s] RAR-based verification failed: %s') % (os.path.basename(rars[0]), e)
-            nzo.set_unpack_info('Repair', msg)
+            msg = T('[%s] RAR-based verification failed: %s') % (setname, e)
+            nzo.set_unpack_info('Repair', msg, setname)
             logging.info(msg)
             return False
     else:
