@@ -32,6 +32,7 @@ import sabnzbd.cfg
 from sabnzbd.constants import DB_HISTORY_NAME, STAGES
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
+from sabnzbd.encoding import ubtou, utob
 from sabnzbd.misc import int_conv, caller_name
 from sabnzbd.filesystem import remove_file
 
@@ -376,7 +377,7 @@ class HistoryDB(object):
         t = (nzo_id,)
         if self.execute('SELECT script_log FROM history WHERE nzo_id=?', t):
             try:
-                data = zlib.decompress(self.c.fetchone().get('script_log'))
+                data = ubtou(zlib.decompress(self.c.fetchone().get('script_log')))
             except:
                 pass
         return data
@@ -440,7 +441,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
 
     if script_output:
         # Compress the output of the script
-        script_output = sqlite3.Binary(zlib.compress(script_output))
+        script_output = sqlite3.Binary(zlib.compress(utob(script_output)))
 
     download_time = nzo.nzo_info.get('download_time', 0)
     completeness = 0
