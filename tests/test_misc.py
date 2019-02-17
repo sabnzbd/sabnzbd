@@ -134,6 +134,8 @@ class TestMisc:
         assert 'wrapper_func' in test_wrapper_2(2)
 
     def test_split_host(self):
+        assert (None, None) == misc.split_host(None)
+        assert (None, None) == misc.split_host('')
         assert ('sabnzbd.org', 123) == misc.split_host('sabnzbd.org:123')
         assert ('sabnzbd.org', None) == misc.split_host('sabnzbd.org')
         assert ('127.0.0.1', 566) == misc.split_host('127.0.0.1:566')

@@ -480,8 +480,11 @@ def exit_sab(value):
 
 def split_host(srv):
     """ Split host:port notation, allowing for IPV6 """
+    if not srv:
+        return None, None
+
+    # IPV6 literal (with no port)
     if srv[-1] == ']':
-        # ipv6 literal (with no port)
         return srv, None
 
     out = srv.rsplit(":", 1)
