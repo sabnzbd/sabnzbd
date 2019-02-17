@@ -360,21 +360,28 @@ def same_file(a, b):
         return 1 if A and B are actually the same path
         return 2 if B is a subfolder of A
     """
+    if sabnzbd.WIN32 or sabnzbd.DARWIN:
+        a = clip_path(a.lower())
+        b = clip_path(b.lower())
+
     a = os.path.normpath(os.path.abspath(a))
     b = os.path.normpath(os.path.abspath(b))
-    if sabnzbd.WIN32 or sabnzbd.DARWIN:
-        a = a.lower()
-        b = b.lower()
 
+    # If it's the same file, it's also a sub-folder
+    is_subfolder = 0
     if b.startswith(a):
-        return 2
-    if "samefile" in os.path.__dict__:
-        try:
-            return int(os.path.samefile(a, b))
-        except:
-            return 0
-    else:
-        return int(a == b)
+        is_subfolder = 2
+
+    try:
+        # Only available on Linux
+        if os.path.samefile(a, b) is True:
+            return 1
+        return is_subfolder
+    except:
+        if int(a == b):
+            return 1
+        else:
+            return is_subfolder
 
 
 def check_mount(path):
@@ -395,7 +402,6 @@ def check_mount(path):
             logging.debug('Waiting for %s to come online', m.group(1))
             time.sleep(1)
     return not m
-
 
 
 def safe_fnmatch(f, pattern):
@@ -471,17 +477,6 @@ def get_admin_path(name, future):
         return os.path.join(sabnzbd.cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
         return os.path.join(os.path.join(sabnzbd.cfg.download_dir.get_path(), name), JOB_ADMIN)
-
-def starts_with_path(path, prefix):
-    """ Return True if 'path' starts with 'prefix',
-        considering case-sensitivity of the file system
-    """
-    if sabnzbd.WIN32:
-        return clip_path(path).lower().startswith(prefix.lower())
-    elif sabnzbd.DARWIN:
-        return path.lower().startswith(prefix.lower())
-    else:
-        return path.startswith(prefix)
 
 
 def set_chmod(path, permissions, report):
@@ -742,7 +737,7 @@ def renamer(old, new):
                 return
             except WindowsError as err:
                 logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
-                if err[0] == 32:
+                if err.errno == 32:
                     logging.debug('Retry rename %s to %s', old, new)
                     retries -= 1
                 else:

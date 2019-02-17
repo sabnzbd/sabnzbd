@@ -58,3 +58,28 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename('txt.aux') == 'txt.aux'
         assert filesystem.sanitize_filename('$mft') == '$mft'
         assert filesystem.sanitize_filename('a$mft') == 'a$mft'
+
+
+class TestSameFile:
+
+    def test_nothing_in_common(self):
+        assert 0 == filesystem.same_file('C:\\', 'D:\\')
+        assert 0 == filesystem.same_file('C:\\', '/home/test')
+        assert 0 == filesystem.same_file('/home/', '/data/test')
+        assert 0 == filesystem.same_file('/test/home/test', '/home/')
+
+    def test_same(self):
+        assert 1 == filesystem.same_file('/home/123', '/home/123')
+        assert 1 == filesystem.same_file('D:\\', 'D:\\')
+
+    def test_subfolder(self):
+        assert 2 == filesystem.same_file('\\\\?\\C:\\', '\\\\?\\C:\\Users\\')
+        assert 2 == filesystem.same_file('/home/test123', '/home/test123/sub')
+
+    @set_platform('win32')
+    def test_capitalization(self):
+        # Only matters on Windows/macOS
+        assert 1 == filesystem.same_file('/HOME/123', '/home/123')
+        assert 1 == filesystem.same_file('D:\\', 'd:\\')
+        assert 2 == filesystem.same_file('\\\\?\\c:\\', '\\\\?\\C:\\Users\\')
+        assert 2 == filesystem.same_file('/HOME/test123', '/home/test123/sub')
