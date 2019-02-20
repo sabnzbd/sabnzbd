@@ -627,20 +627,20 @@ def format_time_string(seconds, days=0):
 
     def unit(single, n):
         if n == 1:
-            return sabnzbd.api.Ttemplate(single)
+            return T(single)
         else:
-            return sabnzbd.api.Ttemplate(single + 's')
+            return T(single + 's')
 
     seconds = int_conv(seconds)
     completestr = []
     if days:
         completestr.append('%s %s' % (days, unit('day', days)))
-    if (seconds / 3600) >= 1:
-        completestr.append('%s %s' % (seconds / 3600, unit('hour', (seconds / 3600))))
-        seconds -= (seconds / 3600) * 3600
-    if (seconds / 60) >= 1:
-        completestr.append('%s %s' % (seconds / 60, unit('minute', (seconds / 60))))
-        seconds -= (seconds / 60) * 60
+    if (seconds // 3600) >= 1:
+        completestr.append('%s %s' % (seconds // 3600, unit('hour', (seconds // 3600))))
+        seconds -= (seconds // 3600) * 3600
+    if (seconds // 60) >= 1:
+        completestr.append('%s %s' % (seconds // 60, unit('minute', (seconds // 60))))
+        seconds -= (seconds // 60) * 60
     if seconds > 0:
         completestr.append('%s %s' % (seconds, unit('second', seconds)))
     elif not completestr:
