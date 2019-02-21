@@ -393,27 +393,6 @@ class MainPage(object):
             bytespersec_list = BPSMeter.do.get_bps_list()
             info['bytespersec_list'] = ','.join([str(bps) for bps in bytespersec_list])
 
-            # For Glitter we pre-load the JSON output
-            if 'Glitter' in sabnzbd.WEB_DIR:
-                # Queue
-                queue = build_queue(limit=cfg.queue_limit(), output='json')[0]
-
-                # History
-                history = {}
-                grand, month, week, day = BPSMeter.do.get_sums()
-                history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
-                       to_units(grand), to_units(month), to_units(week), to_units(day)
-                history['slots'], fetched_items, history['noofslots'] = build_history(limit=cfg.history_limit(), output='json')
-
-                # Make sure the JSON works, otherwise leave empty
-                try:
-                    info['preload_queue'] = json.dumps({'queue': queue})
-                    info['preload_history'] = json.dumps({'history': history})
-                except UnicodeDecodeError:
-                    # We use the javascript recognized 'false'
-                    info['preload_queue'] = 'false'
-                    info['preload_history'] = 'false'
-
             template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'main.tmpl'),
                                 searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
             return template.respond()

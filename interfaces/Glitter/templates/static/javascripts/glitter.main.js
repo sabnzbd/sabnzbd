@@ -360,19 +360,6 @@ function ViewModel() {
         }
 
         /**
-            Do first load with start-data
-            Only works when the server knows the settings!
-        **/
-        if(glitterPreLoadHistory && self.useGlobalOptions()) {
-            self.updateQueue(glitterPreLoadQueue);
-            self.updateHistory(glitterPreLoadHistory);
-            glitterPreLoadQueue = undefined;
-            glitterPreLoadHistory = undefined;
-            self.setNextUpdate()
-            return;
-        }
-
-        /**
             Full refresh
         **/
         // Do requests for full information
