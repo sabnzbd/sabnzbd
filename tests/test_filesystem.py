@@ -32,7 +32,7 @@ class TestFileFolderNameSanitizer:
 
     @set_platform('win32')
     def test_colon_handling_windows(self):
-        assert filesystem.sanitize_filename('test:aftertest') == 'test3Aaftertest'
+        assert filesystem.sanitize_filename('test:aftertest') == 'test;aftertest'
 
     @set_platform('darwin')
     def test_colon_handling_darwin(self):

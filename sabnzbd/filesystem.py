@@ -131,13 +131,9 @@ def sanitize_filename(name):
         illegal += CH_ILLEGAL_WIN
         legal += CH_LEGAL_WIN
 
-    if ':' in name:
-        if sabnzbd.WIN32:
-            # Compensate for the odd way par2 on Windows substitutes a colon character
-            name = name.replace(':', '3A')
-        elif sabnzbd.DARWIN:
-            # Compensate for the foolish way par2 on OSX handles a colon character
-            name = name[name.rfind(':') + 1:]
+    if ':' in name and sabnzbd.DARWIN:
+        # Compensate for the foolish way par2 on OSX handles a colon character
+        name = name[name.rfind(':') + 1:]
 
     lst = []
     for ch in name.strip():
