@@ -622,28 +622,36 @@ def loadavg():
     return p
 
 
-def format_time_string(seconds, days=0):
+def format_time_string(seconds):
     """ Return a formatted and translated time string """
-
     def unit(single, n):
+        # Seconds and minutes are special due to historical reasons
+        if single == 'minute' or (single == 'second' and n == 1):
+            single = single[:3]
         if n == 1:
             return T(single)
-        else:
-            return T(single + 's')
+        return T(single + 's')
 
+    # Format the string, size by size
     seconds = int_conv(seconds)
     completestr = []
-    if days:
+    days = seconds // 86400
+    if days >= 1:
         completestr.append('%s %s' % (days, unit('day', days)))
-    if (seconds // 3600) >= 1:
-        completestr.append('%s %s' % (seconds // 3600, unit('hour', (seconds // 3600))))
-        seconds -= (seconds // 3600) * 3600
-    if (seconds // 60) >= 1:
-        completestr.append('%s %s' % (seconds // 60, unit('minute', (seconds // 60))))
-        seconds -= (seconds // 60) * 60
+        seconds -= days * 86400
+    hours = seconds // 3600
+    if hours >= 1:
+        completestr.append('%s %s' % (hours, unit('hour', hours)))
+        seconds -= hours * 3600
+    minutes = seconds // 60
+    if minutes >= 1:
+        completestr.append('%s %s' % (minutes, unit('minute', minutes)))
+        seconds -= minutes * 60
     if seconds > 0:
         completestr.append('%s %s' % (seconds, unit('second', seconds)))
-    elif not completestr:
+
+    # Zero or invalid integer
+    if not completestr:
         completestr.append('0 %s' % unit('second', 0))
 
     return ' '.join(completestr)

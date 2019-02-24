@@ -1285,17 +1285,13 @@ class NzbObject(TryList):
         # Format information about the download itself
         download_msgs = []
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:
-            # Get the deltatime since the download started
+            # Get the seconds it took to complete the download
             avg_bps = self.avg_bps_total / self.avg_bps_freq
-            timecompleted = datetime.timedelta(seconds=self.bytes_downloaded / (avg_bps * 1024))
-            seconds = timecompleted.seconds
-
-            # Find the total time including days
-            totaltime = (timecompleted.days / 86400) + seconds
-            self.nzo_info['download_time'] = totaltime
+            download_time = self.bytes_downloaded / (avg_bps * 1024)
+            self.nzo_info['download_time'] = download_time
 
             # Format the total time the download took, in days, hours, and minutes, or seconds.
-            complete_time = format_time_string(seconds, timecompleted.days)
+            complete_time = format_time_string(download_time)
             download_msgs.append(T('Downloaded in %s at an average of %sB/s') % (complete_time, to_units(avg_bps * 1024)))
             download_msgs.append(T('Age') + ': ' + calc_age(self.avg_date, True))
 
