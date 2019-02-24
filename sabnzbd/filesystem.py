@@ -113,7 +113,7 @@ def has_win_device(p):
 CH_ILLEGAL = '/'
 CH_LEGAL = '+'
 CH_ILLEGAL_WIN = '\/<>?*|"\t:'
-CH_LEGAL_WIN = '++{}!@#`+;'
+CH_LEGAL_WIN = "++{}!@#'+-"
 
 
 def sanitize_filename(name):
@@ -162,8 +162,8 @@ def sanitize_foldername(name, limit=True):
     if not name:
         return name
 
-    illegal = CH_ILLEGAL + ':\x92"'
-    legal = CH_LEGAL + "-''"
+    illegal = CH_ILLEGAL + ':"'
+    legal = CH_LEGAL + "-'"
 
     if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
         # Remove all bad Windows chars too
@@ -702,9 +702,11 @@ def renamer(old, new):
     """ Rename file/folder with retries for Win32 """
     # Sanitize last part of new name
     path, name = os.path.split(new)
-    # Use the more stringent folder rename to end up with a nicer name,
-    # but do not trim size
-    new = os.path.join(path, sanitize_foldername(name, False))
+    new = os.path.join(path, sanitize_filename(name))
+
+    # Skip if nothing changes
+    if old == new:
+        return
 
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
