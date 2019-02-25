@@ -1287,7 +1287,7 @@ class NzbObject(TryList):
         if self.avg_bps_total and self.bytes_downloaded and self.avg_bps_freq:
             # Get the seconds it took to complete the download
             avg_bps = self.avg_bps_total / self.avg_bps_freq
-            download_time = self.bytes_downloaded / (avg_bps * 1024)
+            download_time = int_conv(self.bytes_downloaded / (avg_bps * 1024))
             self.nzo_info['download_time'] = download_time
 
             # Format the total time the download took, in days, hours, and minutes, or seconds.
