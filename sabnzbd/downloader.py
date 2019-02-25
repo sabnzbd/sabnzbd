@@ -40,7 +40,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
-from sabnzbd.misc import from_units, nntp_to_msg
+from sabnzbd.misc import from_units, nntp_to_msg, int_conv
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
@@ -625,7 +625,7 @@ class Downloader(Thread):
                             block = False
                             penalty = 0
                             msg = error.response
-                            ecode = int(msg[:3])
+                            ecode = int_conv(msg[:3])
                             display_msg = ' [%s]' % msg
                             logging.debug('Server login problem: %s, %s', ecode, msg)
                             if ecode in (502, 400, 481, 482) and clues_too_many(msg):

@@ -217,7 +217,17 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
         pass_inp.send_keys("bad")
         self.driver.find_elements_by_css_selector(".testServer")[1].click()
         self.wait_for_ajax()
+        check_result = self.driver.find_elements_by_css_selector('.result-box')[1].text.lower()
         assert "authentication failed" in check_result or "invalid username or password" in check_result
+
+        # Test no username and password
+        pass_inp.clear()
+        username_inp = self.driver.find_elements_by_css_selector("input[data-hide='username']")[1]
+        username_inp.clear()
+        self.driver.find_elements_by_css_selector(".testServer")[1].click()
+        self.wait_for_ajax()
+        check_result = self.driver.find_elements_by_css_selector('.result-box')[1].text.lower()
+        assert "server requires username and password" in check_result
 
         # Finish
         self.remove_server()
