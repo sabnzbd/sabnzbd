@@ -8,3 +8,6 @@ cherrypy
 portend
 chardet
 gntp
+
+# Only on Windows
+pypiwin32; sys_platform == 'win32'

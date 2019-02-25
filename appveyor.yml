@@ -17,7 +17,6 @@ install:
   - python --version
   - pip install --upgrade -r requirements.txt
   - pip install --upgrade -r tests/requirements.txt
-  - pip install pypiwin32
 
 build_script:
   - python -m pytest
