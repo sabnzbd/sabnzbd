@@ -15,7 +15,7 @@ def diskspeedmeasure(dirname):
     """
     maxtime = 1.0  # sec
     total_written = 0
-    filename = os.path.join(dirname, 'outputTESTING.txt')
+    filename = os.path.join(dirname, "outputTESTING.txt")
 
     # Use low-level I/O
     fp = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)

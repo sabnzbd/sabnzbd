@@ -13,20 +13,21 @@ def getcpu():
     try:
         if platform.system() == "Windows":
             import winreg
+
             key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Hardware\Description\System\CentralProcessor\0")
             cputype = winreg.QueryValueEx(key, "ProcessorNameString")[0]
             winreg.CloseKey(key)
 
         elif platform.system() == "Darwin":
-            cputype = subprocess.check_output(['sysctl', "-n", "machdep.cpu.brand_string"]).strip()
+            cputype = subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"]).strip()
 
         elif platform.system() == "Linux":
             for myline in open("/proc/cpuinfo"):
-                if myline.startswith('model name'):
+                if myline.startswith("model name"):
                     # Typical line:
                     # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
-                    cputype = myline.split(":", 1)[1]	# get everything after the first ":"
-                    break # we're done
+                    cputype = myline.split(":", 1)[1]  # get everything after the first ":"
+                    break  # we're done
         cputype = cputype.decode(locale.getpreferredencoding())
     except:
         # An exception, maybe due to a subprocess call gone wrong
@@ -55,6 +56,6 @@ def getpystone():
     return maxpystone
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print(getpystone())
     print(getcpu())

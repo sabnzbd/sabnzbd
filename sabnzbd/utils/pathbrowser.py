@@ -1,4 +1,4 @@
-#------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # This file is an excerpt from Sick Beard's browser.py
 # Modified and improved to fit SABnzbd.
 #
@@ -21,11 +21,12 @@
 import os
 import sabnzbd
 
-if os.name == 'nt':
+if os.name == "nt":
     import win32api
     import win32con
     import win32file
     from ctypes import windll
+
     MASK = win32con.FILE_ATTRIBUTE_DIRECTORY | win32con.FILE_ATTRIBUTE_HIDDEN
     TMASK = win32con.FILE_ATTRIBUTE_DIRECTORY
     DRIVES = (2, 3, 4)
@@ -34,10 +35,24 @@ else:
     NT = False
 
 _JUNKFOLDERS = (
-        'boot', 'bootmgr', 'cache', 'msocache', 'recovery', '$recycle.bin', 'recycler',
-        'system volume information', 'temporary internet files', 'perflogs', # windows specific
-        '.fseventd', '.spotlight', '.trashes', '.vol', 'cachedmessages', 'caches', 'trash' # osx specific
-        )
+    "boot",
+    "bootmgr",
+    "cache",
+    "msocache",
+    "recovery",
+    "$recycle.bin",
+    "recycler",
+    "system volume information",
+    "temporary internet files",
+    "perflogs",  # windows specific
+    ".fseventd",
+    ".spotlight",
+    ".trashes",
+    ".vol",
+    "cachedmessages",
+    "caches",
+    "trash",  # osx specific
+)
 
 
 def get_win_drives():
@@ -47,8 +62,8 @@ def get_win_drives():
     assert NT
     drives = []
     bitmask = windll.kernel32.GetLogicalDrives()
-    for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-        if (bitmask & 1) and win32file.GetDriveType('%s:\\' % letter) in DRIVES:
+    for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        if (bitmask & 1) and win32file.GetDriveType("%s:\\" % letter) in DRIVES:
             drives.append(letter)
         bitmask >>= 1
     return drives
@@ -61,17 +76,17 @@ def folders_at_path(path, include_parent=False, show_hidden=False):
     """
     if path == "":
         if NT:
-            entries = [{'name': letter + ':\\', 'path': letter + ':\\'} for letter in get_win_drives()]
-            entries.insert(0, {'current_path': 'Root'})
+            entries = [{"name": letter + ":\\", "path": letter + ":\\"} for letter in get_win_drives()]
+            entries.insert(0, {"current_path": "Root"})
             return entries
         else:
-            path = '/'
+            path = "/"
 
     # Walk up the tree until we find a valid path
     path = sabnzbd.filesystem.real_path(sabnzbd.DIR_HOME, path)
     while path and not os.path.isdir(path):
         if path == os.path.dirname(path):
-            return folders_at_path('', include_parent)
+            return folders_at_path("", include_parent)
         else:
             path = os.path.dirname(path)
 
@@ -92,23 +107,24 @@ def folders_at_path(path, include_parent=False, show_hidden=False):
                 # Remove hidden folders
                 list_folder = (win32api.GetFileAttributes(fpath) & MASK) == TMASK
             elif not show_hidden:
-                list_folder = not filename.startswith('.')
+                list_folder = not filename.startswith(".")
             else:
                 list_folder = True
         except:
             list_folder = False
 
         # Remove junk and sort results
-        if list_folder and  os.path.isdir(fpath) and filename.lower() not in _JUNKFOLDERS:
-            file_list.append({'name': sabnzbd.filesystem.clip_path(filename), 'path': sabnzbd.filesystem.clip_path(fpath)})
+        if list_folder and os.path.isdir(fpath) and filename.lower() not in _JUNKFOLDERS:
+            file_list.append(
+                {"name": sabnzbd.filesystem.clip_path(filename), "path": sabnzbd.filesystem.clip_path(fpath)}
+            )
 
     # Sort results
-    file_list = sorted(file_list, key=lambda x: os.path.basename(x['name']).lower())
+    file_list = sorted(file_list, key=lambda x: os.path.basename(x["name"]).lower())
 
     # Add current path
-    file_list.insert(0, {'current_path': sabnzbd.filesystem.clip_path(path)})
+    file_list.insert(0, {"current_path": sabnzbd.filesystem.clip_path(path)})
     if include_parent and parent_path != path:
-        file_list.insert(1, {'name': "..", 'path': sabnzbd.filesystem.clip_path(parent_path)})
+        file_list.insert(1, {"name": "..", "path": sabnzbd.filesystem.clip_path(parent_path)})
 
     return file_list
-

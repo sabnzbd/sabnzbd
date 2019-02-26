@@ -35,17 +35,17 @@ def upload_file(url, fp):
     """ Function for uploading nzbs to a running SABnzbd instance """
     try:
         fp = urllib.parse.quote_plus(fp)
-        url = '%s&mode=addlocalfile&name=%s' % (url, fp)
+        url = "%s&mode=addlocalfile&name=%s" % (url, fp)
         # Add local API-key if it wasn't already in the registered URL
         apikey = cfg.api_key()
-        if apikey and 'apikey' not in url:
-            url = '%s&apikey=%s' % (url, apikey)
-        if 'apikey' not in url:
+        if apikey and "apikey" not in url:
+            url = "%s&apikey=%s" % (url, apikey)
+        if "apikey" not in url:
             # Use alternative login method
             username = cfg.username()
             password = cfg.password()
             if username and password:
-                url = '%s&ma_username=%s&ma_password=%s' % (url, username, password)
+                url = "%s&ma_username=%s&ma_password=%s" % (url, username, password)
         get_from_url(url)
     except:
         logging.error("Failed to upload file: %s", fp)
