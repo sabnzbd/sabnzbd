@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import sys
-if sys.version_info[:2] <= (3, 0):
-    print("Sorry, requires Python 3")
+if sys.hexversion < 0x03050000:
+    print("Sorry, requires Python 3.5 or above")
     print("You can read more at: https://sabnzbd.org/python3")
     sys.exit(1)
 
