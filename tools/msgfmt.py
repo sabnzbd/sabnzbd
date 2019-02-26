@@ -42,10 +42,10 @@ nonewlines = False
 
 
 # Detector for HTML elements
-RE_HTML = re.compile(b'<[^>]+>')
+RE_HTML = re.compile(b"<[^>]+>")
 
 
-def usage(code, msg=''):
+def usage(code, msg=""):
     print(__doc__, file=sys.stderr)
     if msg:
         print(msg, file=sys.stderr)
@@ -56,15 +56,15 @@ def add(id, str, fuzzy):
     """ Add a non-fuzzy translation to the dictionary. """
     global MESSAGES, nonewlines, RE_HTML
     if not fuzzy and str:
-        if id.count(b'%s') == str.count(b'%s'):
-            if nonewlines and id and (b'\r' in str or b'\n' in str) and RE_HTML.search(str):
-                MESSAGES[id] = str.replace(b'\n', b'').replace(b'\r', b'')
+        if id.count(b"%s") == str.count(b"%s"):
+            if nonewlines and id and (b"\r" in str or b"\n" in str) and RE_HTML.search(str):
+                MESSAGES[id] = str.replace(b"\n", b"").replace(b"\r", b"")
             else:
                 MESSAGES[id] = str
         else:
-            print('WARNING: %s mismatch, skipping!')
-            print('    %s' % id)
-            print('    %s' % str)
+            print("WARNING: %s mismatch, skipping!")
+            print("    %s" % id)
+            print("    %s" % str)
 
 
 def generate():
@@ -73,14 +73,14 @@ def generate():
     # the keys are sorted in the .mo file
     keys = sorted(MESSAGES.keys())
     offsets = []
-    ids = strs = b''
+    ids = strs = b""
     for id in keys:
         # For each string, we need size and file offset.  Each string is NUL
         # terminated; the NUL does not count into the size.
         offsets.append((len(ids), len(id), len(strs), len(MESSAGES[id])))
-        ids += id + b'\0'
-        strs += MESSAGES[id] + b'\0'
-    output = ''
+        ids += id + b"\0"
+        strs += MESSAGES[id] + b"\0"
+    output = ""
     # The header is 7 32-bit unsigned integers.  We don't use hash tables, so
     # the keys start right after the index tables.
     # translated string.
@@ -95,13 +95,16 @@ def generate():
         koffsets += [l1, o1 + keystart]
         voffsets += [l2, o2 + valuestart]
     offsets = koffsets + voffsets
-    output = struct.pack("Iiiiiii",
-                         0x950412de,  # Magic
-                         0,  # Version
-                         len(keys),  # # of entries
-                         7 * 4,  # start of key index
-                         7 * 4 + len(keys) * 8,  # start of value index
-                         0, 0)  # size and offset of hash table
+    output = struct.pack(
+        "Iiiiiii",
+        0x950412DE,  # Magic
+        0,  # Version
+        len(keys),  # # of entries
+        7 * 4,  # start of key index
+        7 * 4 + len(keys) * 8,  # start of value index
+        0,
+        0,
+    )  # size and offset of hash table
     output += array.array("i", offsets).tobytes()
     output += ids
     output += strs
@@ -113,15 +116,15 @@ def make(filename, outfile):
     STR = 2
 
     # Compute .mo name from .po name and arguments
-    if filename.endswith('.po'):
+    if filename.endswith(".po"):
         infile = filename
     else:
-        infile = filename + '.po'
+        infile = filename + ".po"
     if outfile is None:
-        outfile = os.path.splitext(infile)[0] + '.mo'
+        outfile = os.path.splitext(infile)[0] + ".mo"
 
     try:
-        with open(infile, 'rb') as f:
+        with open(infile, "rb") as f:
             lines = f.readlines()
     except IOError as msg:
         print(msg, file=sys.stderr)
@@ -132,7 +135,7 @@ def make(filename, outfile):
 
     # Start off assuming Latin-1, so everything decodes without failure,
     # until we know the exact encoding
-    encoding = 'latin-1'
+    encoding = "latin-1"
 
     # Parse the catalog
     lno = 0
@@ -140,18 +143,18 @@ def make(filename, outfile):
         l = l.decode(encoding)
         lno += 1
         # If we get a comment line after a msgstr, this is a new entry
-        if l[0] == '#' and section == STR:
+        if l[0] == "#" and section == STR:
             add(msgid, msgstr, fuzzy)
             section = None
             fuzzy = 0
         # Record a fuzzy mark
-        if l[:2] == '#,' and 'fuzzy' in l:
+        if l[:2] == "#," and "fuzzy" in l:
             fuzzy = 1
         # Skip comments
-        if l[0] == '#':
+        if l[0] == "#":
             continue
         # Now we are in a msgid section, output previous section
-        if l.startswith('msgid') and not l.startswith('msgid_plural'):
+        if l.startswith("msgid") and not l.startswith("msgid_plural"):
             if section == STR:
                 add(msgid, msgstr, fuzzy)
                 if not msgid:
@@ -162,32 +165,29 @@ def make(filename, outfile):
                         encoding = charset
             section = ID
             l = l[5:]
-            msgid = msgstr = b''
+            msgid = msgstr = b""
             is_plural = False
         # This is a message with plural forms
-        elif l.startswith('msgid_plural'):
+        elif l.startswith("msgid_plural"):
             if section != ID:
-                print('msgid_plural not preceded by msgid on %s:%d' % (infile, lno),
-                      file=sys.stderr)
+                print("msgid_plural not preceded by msgid on %s:%d" % (infile, lno), file=sys.stderr)
                 sys.exit(1)
             l = l[12:]
-            msgid += b'\0'  # separator of singular and plural
+            msgid += b"\0"  # separator of singular and plural
             is_plural = True
         # Now we are in a msgstr section
-        elif l.startswith('msgstr'):
+        elif l.startswith("msgstr"):
             section = STR
-            if l.startswith('msgstr['):
+            if l.startswith("msgstr["):
                 if not is_plural:
-                    print('plural without msgid_plural on %s:%d' % (infile, lno),
-                          file=sys.stderr)
+                    print("plural without msgid_plural on %s:%d" % (infile, lno), file=sys.stderr)
                     sys.exit(1)
-                l = l.split(']', 1)[1]
+                l = l.split("]", 1)[1]
                 if msgstr:
-                    msgstr += b'\0'  # Separator of the various plural forms
+                    msgstr += b"\0"  # Separator of the various plural forms
             else:
                 if is_plural:
-                    print('indexed msgstr required for plural on  %s:%d' % (infile, lno),
-                          file=sys.stderr)
+                    print("indexed msgstr required for plural on  %s:%d" % (infile, lno), file=sys.stderr)
                     sys.exit(1)
                 l = l[6:]
         # Skip empty lines
@@ -200,8 +200,7 @@ def make(filename, outfile):
         elif section == STR:
             msgstr += l.encode(encoding)
         else:
-            print('Syntax error on %s:%d' % (infile, lno), \
-                  'before:', file=sys.stderr)
+            print("Syntax error on %s:%d" % (infile, lno), "before:", file=sys.stderr)
             print(l, file=sys.stderr)
             sys.exit(1)
     # Add last entry
@@ -221,26 +220,25 @@ def make(filename, outfile):
 def main():
     global nonewlines
     try:
-        opts, args = getopt.getopt(sys.argv[1:], 'nhVo:',
-                                   ['help', 'version', 'output-file='])
+        opts, args = getopt.getopt(sys.argv[1:], "nhVo:", ["help", "version", "output-file="])
     except getopt.error as msg:
         usage(1, msg)
 
     outfile = None
     # parse options
     for opt, arg in opts:
-        if opt in ('-h', '--help'):
+        if opt in ("-h", "--help"):
             usage(0)
-        elif opt in ('-V', '--version'):
+        elif opt in ("-V", "--version"):
             print("msgfmt.py", __version__)
             sys.exit(0)
-        elif opt in ('-o', '--output-file'):
+        elif opt in ("-o", "--output-file"):
             outfile = arg
-        elif opt in ('-n',):
+        elif opt in ("-n",):
             nonewlines = True
     # do it
     if not args:
-        print('No input file given', file=sys.stderr)
+        print("No input file given", file=sys.stderr)
         print("Try `msgfmt --help' for more information.", file=sys.stderr)
         return
 
@@ -248,5 +246,5 @@ def main():
         make(filename, outfile)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
