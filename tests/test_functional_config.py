@@ -24,31 +24,28 @@ from tests.testhelper import *
 
 
 class SABnzbdBasicPagesTest(SABnzbdBaseTest):
-
     def test_base_pages(self):
         # Quick-check of all Config pages
-        test_urls = ['config',
-                     'config/server',
-                     'config/categories',
-                     'config/scheduling',
-                     'config/rss']
+        test_urls = ["config", "config/server", "config/categories", "config/scheduling", "config/rss"]
 
         for test_url in test_urls:
             self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
 
     def test_base_submit_pages(self):
-        test_urls_with_submit = ['config/general',
-                                 'config/folders',
-                                 'config/switches',
-                                 'config/sorting',
-                                 'config/notify',
-                                 'config/special']
+        test_urls_with_submit = [
+            "config/general",
+            "config/folders",
+            "config/switches",
+            "config/sorting",
+            "config/notify",
+            "config/special",
+        ]
 
         for test_url in test_urls_with_submit:
             self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
 
             # Can only click the visible buttons
-            submit_btns = self.driver.find_elements_by_class_name('saveButton')
+            submit_btns = self.driver.find_elements_by_class_name("saveButton")
             for submit_btn in submit_btns:
                 if submit_btn.is_displayed():
                     break
@@ -65,7 +62,7 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
                 self.driver.switch_to.alert.dismiss()
 
             # For Specials page we get redirected after save, so check for no crash
-            if 'special' in test_url:
+            if "special" in test_url:
                 self.no_page_crash()
             else:
                 # For others if all is fine, button will be back to normal in 1 second
@@ -114,7 +111,7 @@ class SABnzbdConfigRSS(SABnzbdBaseTest):
         assert tab_table_results == tab_results
 
         # Pause the queue do we don't download stuff
-        assert get_api_result('pause') == {'status': True}
+        assert get_api_result("pause") == {"status": True}
 
         # Download something
         download_btn = self.driver.find_element_by_xpath('//div[@id="rss-tab-matched"]/table/tbody//button')
@@ -125,16 +122,16 @@ class SABnzbdConfigRSS(SABnzbdBaseTest):
         assert "Added NZB" in download_btn.text
 
         # Let's check the queue
-        queue_result_slots = get_api_result('queue')['queue']['slots']
+        queue_result_slots = get_api_result("queue")["queue"]["slots"]
         assert len(queue_result_slots) == 1
 
         # Let's remove this thing
-        get_api_result('queue', {'name': 'delete', 'value': queue_result_slots[0]['nzo_id']})
-        queue_result_slots = get_api_result('queue')['queue']['slots']
+        get_api_result("queue", {"name": "delete", "value": queue_result_slots[0]["nzo_id"]})
+        queue_result_slots = get_api_result("queue")["queue"]["slots"]
         assert len(queue_result_slots) == 0
 
         # Unpause
-        assert get_api_result('resume') == {'status': True}
+        assert get_api_result("resume") == {"status": True}
 
 
 @pytest.mark.skipif("SAB_NEWSSERVER_HOST" not in os.environ, reason="Test-server not specified")
@@ -149,7 +146,7 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
 
         # Show advanced options
         advanced_btn = self.driver.find_element_by_name("advanced-settings-button")
-        if not advanced_btn.get_attribute('checked'):
+        if not advanced_btn.get_attribute("checked"):
             advanced_btn.click()
 
     def add_test_server(self):
@@ -167,16 +164,17 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
 
         # With SSL
         ssl_imp = self.driver.find_element_by_name("ssl")
-        if not ssl_imp.get_attribute('checked'):
+        if not ssl_imp.get_attribute("checked"):
             ssl_imp.click()
 
         # Check that we filled the right port automatically
-        self.assertEqual(self.driver.find_element_by_id("port").get_attribute('value'), '563')
+        self.assertEqual(self.driver.find_element_by_id("port").get_attribute("value"), "563")
 
         # Test server-check
         self.driver.find_element_by_css_selector("#addServerContent .testServer").click()
         self.wait_for_ajax()
-        self.assertIn("Connection Successful", self.driver.find_element_by_css_selector('#addServerContent .result-box').text)
+        check_result = self.driver.find_element_by_css_selector("#addServerContent .result-box").text
+        assert "Connection Successful" in check_result
 
         # Set test-servername
         self.driver.find_element_by_id("displayname").send_keys(self.server_name)
@@ -210,14 +208,14 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
         pass_inp.clear()
         self.driver.find_elements_by_css_selector(".testServer")[1].click()
         self.wait_for_ajax()
-        check_result = self.driver.find_elements_by_css_selector('.result-box')[1].text.lower()
+        check_result = self.driver.find_elements_by_css_selector(".result-box")[1].text.lower()
         assert "authentication failed" in check_result or "invalid username or password" in check_result
 
         # Test server-check with bad password
         pass_inp.send_keys("bad")
         self.driver.find_elements_by_css_selector(".testServer")[1].click()
         self.wait_for_ajax()
-        check_result = self.driver.find_elements_by_css_selector('.result-box')[1].text.lower()
+        check_result = self.driver.find_elements_by_css_selector(".result-box")[1].text.lower()
         assert "authentication failed" in check_result or "invalid username or password" in check_result
 
         # Test no username and password
@@ -226,7 +224,7 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
         username_inp.clear()
         self.driver.find_elements_by_css_selector(".testServer")[1].click()
         self.wait_for_ajax()
-        check_result = self.driver.find_elements_by_css_selector('.result-box')[1].text.lower()
+        check_result = self.driver.find_elements_by_css_selector(".result-box")[1].text.lower()
         assert "server requires username and password" in check_result
 
         # Finish

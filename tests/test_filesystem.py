@@ -34,7 +34,7 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("test:aftertest") == "test-aftertest"
         # They should act the same
         assert filesystem.sanitize_filename("test:aftertest") == filesystem.sanitize_foldername("test:aftertest")
-        #TODO: Add a lot more tests here!
+        # TODO: Add a lot more tests here!
 
     @set_platform("darwin")
     def test_colon_handling_darwin(self):

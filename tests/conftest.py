@@ -34,20 +34,26 @@ def start_sabnzbd():
 
     # Copy basic config file with API key
     os.mkdir(SAB_CACHE_DIR)
-    shutil.copyfile(os.path.join(SAB_BASE_DIR, 'sabnzbd.basic.ini'), os.path.join(SAB_CACHE_DIR, 'sabnzbd.ini'))
+    shutil.copyfile(os.path.join(SAB_BASE_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
 
     # Check if we have language files
-    if not os.path.exists(os.path.join(SAB_BASE_DIR, '..', 'locale')):
+    if not os.path.exists(os.path.join(SAB_BASE_DIR, "..", "locale")):
         # Compile and wait to complete
-        lang_command = '%s %s/../tools/make_mo.py' % (sys.executable, SAB_BASE_DIR)
+        lang_command = "%s %s/../tools/make_mo.py" % (sys.executable, SAB_BASE_DIR)
         subprocess.Popen(lang_command.split()).communicate(timeout=30)
 
         # Check if it exists now, fail otherwise
-        if not os.path.exists(os.path.join(SAB_BASE_DIR, '..', 'locale')):
-            raise FileNotFoundError('Failed to compile language files')
+        if not os.path.exists(os.path.join(SAB_BASE_DIR, "..", "locale")):
+            raise FileNotFoundError("Failed to compile language files")
 
     # Start SABnzbd and continue
-    sab_command = '%s %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s' % (sys.executable, SAB_BASE_DIR, SAB_HOST, SAB_PORT, SAB_CACHE_DIR)
+    sab_command = "%s %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s" % (
+        sys.executable,
+        SAB_BASE_DIR,
+        SAB_HOST,
+        SAB_PORT,
+        SAB_CACHE_DIR,
+    )
     subprocess.Popen(sab_command.split())
 
     # Wait for SAB to respond
@@ -73,7 +79,7 @@ def start_sabnzbd():
 def shutdown_sabnzbd():
     # Graceful shutdown request
     try:
-        get_url_result('shutdown')
+        get_url_result("shutdown")
     except requests.ConnectionError:
         pass
 

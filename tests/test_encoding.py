@@ -23,7 +23,6 @@ import sabnzbd.encoding as enc
 
 
 class TestEncoding:
-
     def test_correct_unknown_encoding(self):
         # Windows encoding in bytes
         assert "frènch_german_demö" == enc.correct_unknown_encoding(b"fr\xe8nch_german_dem\xf6")

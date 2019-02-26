@@ -26,12 +26,11 @@ from tests.testhelper import *
 
 @pytest.mark.skipif("SAB_NEWSSERVER_HOST" not in os.environ, reason="Test-server not specified")
 class SABnzbdDownloadFlow(SABnzbdBaseTest):
-
     def is_server_configured(self):
         """ Check if the wizard was already performed.
             If not: run the wizard!
         """
-        with open(os.path.join(SAB_CACHE_DIR, 'sabnzbd.ini'), 'r') as config_file:
+        with open(os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"), "r") as config_file:
             if self.newsserver_host not in config_file.read():
                 self.start_wizard()
 
@@ -39,7 +38,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         # Language-selection
         self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
         self.driver.find_element_by_id("en").click()
-        self.driver.find_element_by_css_selector('.btn.btn-default').click()
+        self.driver.find_element_by_css_selector(".btn.btn-default").click()
 
         # Fill server-info
         self.no_page_crash()
@@ -55,7 +54,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
 
         # With SSL
         ssl_imp = self.driver.find_element_by_name("ssl")
-        if not ssl_imp.get_attribute('checked'):
+        if not ssl_imp.get_attribute("checked"):
             ssl_imp.click()
 
         # This will fail if the translations failed to compile!
@@ -74,14 +73,15 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         # Final page done
         self.driver.find_element_by_id("next-button").click()
         self.no_page_crash()
-        self.assertIn("http://%s:%s/sabnzbd" % (SAB_HOST, SAB_PORT), self.driver.find_element_by_class_name("quoteBlock").text)
+        check_result = self.driver.find_element_by_class_name("quoteBlock").text
+        assert "http://%s:%s/sabnzbd" % (SAB_HOST, SAB_PORT) in check_result
 
         # Go to SAB!
-        self.driver.find_element_by_css_selector('.btn.btn-success').click()
+        self.driver.find_element_by_css_selector(".btn.btn-success").click()
         self.no_page_crash()
 
     def add_nzb_from_url(self, file_url, file_output):
-        test_job_name = 'testfile_%s' % random.randint(500, 1000)
+        test_job_name = "testfile_%s" % random.randint(500, 1000)
 
         self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
 
@@ -96,9 +96,11 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         for _ in range(120):
             try:
                 # Locate resulting row
-                result_row = self.driver.find_element_by_xpath('//*[@id="history-tab"]//tr[td//text()[contains(., "%s")]]' % test_job_name)
+                result_row = self.driver.find_element_by_xpath(
+                    '//*[@id="history-tab"]//tr[td//text()[contains(., "%s")]]' % test_job_name
+                )
                 # Did it complete?
-                if result_row.find_element_by_css_selector('td.status').text == 'Completed':
+                if result_row.find_element_by_css_selector("td.status").text == "Completed":
                     break
                 else:
                     time.sleep(1)
@@ -137,4 +139,4 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
     @pytest.mark.skip(reason="Fails due to wrong par2-renaming. Needs fixing.")
     def test_download_win_unicode(self):
         self.is_server_configured()
-        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", u"\u4f60\u597d\u4e16\u754c.bin")
+        self.add_nzb_from_url("http://sabnzbd.org/tests/unicode_rar_broken.nzb", "\u4f60\u597d\u4e16\u754c.bin")

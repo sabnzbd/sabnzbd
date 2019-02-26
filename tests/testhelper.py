@@ -35,15 +35,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 import sabnzbd
 import sabnzbd.cfg as cfg
 
-SAB_HOST = 'localhost'
+SAB_HOST = "localhost"
 SAB_PORT = 8081
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, 'cache')
-SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, 'Downloads', 'complete')
+SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache")
+SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "complete")
 
 
 def set_config(settings_dict):
     """ Change config-values on the fly, per test"""
+
     def set_config_decorator(func):
         def wrapper_func(*args, **kwargs):
             # Setting up as requested
@@ -57,12 +58,15 @@ def set_config(settings_dict):
             for item, val in settings_dict.items():
                 getattr(cfg, item).default()
             return value
+
         return wrapper_func
+
     return set_config_decorator
 
 
 def set_platform(platform):
     """ Change config-values on the fly, per test"""
+
     def set_platform_decorator(func):
         def wrapper_func(*args, **kwargs):
             # Save original values
@@ -70,13 +74,13 @@ def set_platform(platform):
             is_darwin = sabnzbd.DARWIN
 
             # Set current platform
-            if platform == 'win32':
+            if platform == "win32":
                 sabnzbd.WIN32 = True
                 sabnzbd.DARWIN = False
-            elif platform == 'darwin':
+            elif platform == "darwin":
                 sabnzbd.WIN32 = False
                 sabnzbd.DARWIN = True
-            elif platform == 'linux':
+            elif platform == "linux":
                 sabnzbd.WIN32 = False
                 sabnzbd.DARWIN = False
 
@@ -88,34 +92,35 @@ def set_platform(platform):
             sabnzbd.DARWIN = is_darwin
 
             return value
+
         return wrapper_func
+
     return set_platform_decorator
 
 
-def get_url_result(url=''):
+def get_url_result(url=""):
     """ Do basic request to web page """
-    arguments = {'session': 'apikey'}
-    return requests.get('http://%s:%s/%s/' % (SAB_HOST, SAB_PORT, url), params=arguments).text
+    arguments = {"session": "apikey"}
+    return requests.get("http://%s:%s/%s/" % (SAB_HOST, SAB_PORT, url), params=arguments).text
 
 
 def get_api_result(mode, extra_arguments={}):
     """ Build JSON request to SABnzbd """
-    arguments = {'apikey': 'apikey', 'output': 'json', 'mode': mode}
+    arguments = {"apikey": "apikey", "output": "json", "mode": mode}
     arguments.update(extra_arguments)
-    r = requests.get('http://%s:%s/api' % (SAB_HOST, SAB_PORT), params=arguments)
+    r = requests.get("http://%s:%s/api" % (SAB_HOST, SAB_PORT), params=arguments)
     return r.json()
 
 
 def upload_nzb(filename):
     """ Upload file and return nzo_id reponse """
-    files = {'name': open(filename, 'rb')}
-    arguments = {'apikey': 'apikey', 'mode': 'addfile', 'output': 'json'}
-    return requests.post('http://%s:%s/api' % (SAB_HOST, SAB_PORT), files=files, data=arguments).json()
+    files = {"name": open(filename, "rb")}
+    arguments = {"apikey": "apikey", "mode": "addfile", "output": "json"}
+    return requests.post("http://%s:%s/api" % (SAB_HOST, SAB_PORT), files=files, data=arguments).json()
 
 
 @pytest.mark.usefixtures("start_sabnzbd")
 class SABnzbdBaseTest(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         # We try Chrome, fallback to Firefox
@@ -136,9 +141,9 @@ class SABnzbdBaseTest(unittest.TestCase):
 
         # Get the newsserver-info, if available
         if "SAB_NEWSSERVER_HOST" in os.environ:
-            cls.newsserver_host = os.environ['SAB_NEWSSERVER_HOST']
-            cls.newsserver_user = os.environ['SAB_NEWSSERVER_USER']
-            cls.newsserver_password = os.environ['SAB_NEWSSERVER_PASSWORD']
+            cls.newsserver_host = os.environ["SAB_NEWSSERVER_HOST"]
+            cls.newsserver_user = os.environ["SAB_NEWSSERVER_USER"]
+            cls.newsserver_password = os.environ["SAB_NEWSSERVER_PASSWORD"]
 
     @classmethod
     def tearDownClass(cls):
@@ -147,7 +152,7 @@ class SABnzbdBaseTest(unittest.TestCase):
 
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test
-        self.assertNotIn('500 Internal Server Error', self.driver.title)
+        self.assertNotIn("500 Internal Server Error", self.driver.title)
 
     def open_page(self, url):
         # Open a page and test for crash
@@ -155,11 +160,10 @@ class SABnzbdBaseTest(unittest.TestCase):
         self.no_page_crash()
 
     def scroll_to_top(self):
-        self.driver.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.HOME)
+        self.driver.find_element_by_tag_name("body").send_keys(Keys.CONTROL + Keys.HOME)
         time.sleep(2)
 
     def wait_for_ajax(self):
         wait = WebDriverWait(self.driver, 15)
-        wait.until(lambda driver_wait: self.driver.execute_script('return jQuery.active') == 0)
-        wait.until(lambda driver_wait: self.driver.execute_script('return document.readyState') == 'complete')
-
+        wait.until(lambda driver_wait: self.driver.execute_script("return jQuery.active") == 0)
+        wait.until(lambda driver_wait: self.driver.execute_script("return document.readyState") == "complete")

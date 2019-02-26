@@ -159,17 +159,17 @@ class TestMisc:
         assert "1 sec" == misc.format_time_string(1)
         assert "10 seconds" == misc.format_time_string(10)
         assert "1 min" == misc.format_time_string(60)
-        assert "1 hour 1 min 1 sec" == misc.format_time_string(60*60 + 60 + 1)
+        assert "1 hour 1 min 1 sec" == misc.format_time_string(60 * 60 + 60 + 1)
         assert "1 day 59 seconds" == misc.format_time_string(86400 + 59)
-        assert "2 days 2 hours 2 seconds" == misc.format_time_string(2*86400 + 2*60*60 + 2)
+        assert "2 days 2 hours 2 seconds" == misc.format_time_string(2 * 86400 + 2 * 60 * 60 + 2)
 
     def test_format_time_string_locale(self):
         # Have to set the languages, if it was compiled
-        locale_dir = os.path.join(SAB_BASE_DIR, '..', sabnzbd.constants.DEF_LANGUAGE)
+        locale_dir = os.path.join(SAB_BASE_DIR, "..", sabnzbd.constants.DEF_LANGUAGE)
         if not os.path.exists(locale_dir):
             pytest.mark.skip("No language files compiled")
 
-        lang.set_locale_info('SABnzbd', locale_dir)
+        lang.set_locale_info("SABnzbd", locale_dir)
         lang.set_language("de")
         assert "1 Sekunde" == misc.format_time_string(1)
         assert "10 Sekunden" == misc.format_time_string(10)
