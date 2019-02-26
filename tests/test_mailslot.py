@@ -21,6 +21,7 @@ tests.test_misc - Testing mailslot communiction on Windows
 
 import sys
 import subprocess
+import time
 import pytest
 
 if not sys.platform.startswith("win"):
@@ -32,6 +33,8 @@ class TestMailslot:
         """ Do the basic testing provided by the module """
         # Start async both processes
         server_p = subprocess.Popen([sys.executable, "util/mailslot.py", "server"], stdout=subprocess.PIPE)
+        # Need to pause to give server time to listen
+        time.sleep(0.5)
         client_p = subprocess.Popen([sys.executable, "util/mailslot.py", "client"], stdout=subprocess.PIPE)
 
         # Server outputs basic response
