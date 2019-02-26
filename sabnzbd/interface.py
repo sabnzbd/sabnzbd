@@ -45,7 +45,7 @@ from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remo
     clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import xml_name
+from sabnzbd.encoding import xml_name, utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
@@ -2297,7 +2297,7 @@ class Status(object):
         # Set headers
         cherrypy.response.headers['Content-Type'] = 'application/x-download;charset=utf-8'
         cherrypy.response.headers['Content-Disposition'] = 'attachment;filename="sabnzbd.log"'
-        return log_data
+        return utob(log_data)
 
     @secured_expose(check_session_key=True)
     def clearwarnings(self, **kwargs):
