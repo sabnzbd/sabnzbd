@@ -19,7 +19,6 @@
 tests.test_functional_misc - Functional tests of various functions
 """
 
-import getpass
 from tests.testhelper import *
 
 
@@ -35,7 +34,3 @@ class SABnzbdShowLoggingTest(SABnzbdBaseTest):
         # Make sure sabnzbd.ini was appended
         assert "__encoding__ = utf-8" in log_result
         assert "[misc]" in log_result
-
-        # Did we filter out username?
-        assert getpass.getuser() not in log_result
-        assert "<USERNAME>" in log_result

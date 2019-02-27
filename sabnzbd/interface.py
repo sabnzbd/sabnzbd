@@ -2230,12 +2230,12 @@ class ConfigSorting(object):
 
 
 ##############################################################################
-LOG_API_RE = re.compile(r"(apikey|api)(=|:)[\w]+", re.I)
-LOG_API_JSON_RE = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
-LOG_USER_RE = re.compile(r"(user|username)\s?=\s?[\S]+", re.I)
-LOG_PASS_RE = re.compile(r"(password)\s?=\s?[\S]+", re.I)
-LOG_INI_HIDE_RE = re.compile(r"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+", re.I)
-LOG_HASH_RE = re.compile(r"([a-fA-F\d]{25})", re.I)
+LOG_API_RE = re.compile(b"(apikey|api)(=|:)[\w]+", re.I)
+LOG_API_JSON_RE = re.compile(b"'(apikey|api)': '[\w]+'", re.I)
+LOG_USER_RE = re.compile(b"(user|username)\s?=\s?[\S]+", re.I)
+LOG_PASS_RE = re.compile(b"(password)\s?=\s?[\S]+", re.I)
+LOG_INI_HIDE_RE = re.compile(b"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+", re.I)
+LOG_HASH_RE = re.compile(b"([a-fA-F\d]{25})", re.I)
 
 class Status(object):
 
@@ -2272,32 +2272,32 @@ class Status(object):
             pass
 
         # Fetch the INI and the log-data and add a message at the top
-        log_data  = '--------------------------------\n\n'
-        log_data += 'The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed.'
-        log_data += '\n\n--------------------------------\n'
-        log_data += open(sabnzbd.LOGFILE, "r").read()
-        log_data += open(config.get_filename(), 'r').read()
+        log_data  = b'--------------------------------\n\n'
+        log_data += b'The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed.'
+        log_data += b'\n\n--------------------------------\n'
+        log_data += open(sabnzbd.LOGFILE, "rb").read()
+        log_data += open(config.get_filename(), 'rb').read()
 
         # We need to remove all passwords/usernames/api-keys
-        log_data = LOG_API_RE.sub("apikey=<APIKEY>", log_data)
-        log_data = LOG_API_JSON_RE.sub("'apikey':<APIKEY>'", log_data)
-        log_data = LOG_USER_RE.sub(r'\g<1>=<USER>', log_data)
-        log_data = LOG_PASS_RE.sub("password=<PASSWORD>", log_data)
-        log_data = LOG_INI_HIDE_RE.sub(r"\1 = <REMOVED>", log_data)
-        log_data = LOG_HASH_RE.sub("<HASH>", log_data)
+        log_data = LOG_API_RE.sub(b"apikey=<APIKEY>", log_data)
+        log_data = LOG_API_JSON_RE.sub(b"'apikey':<APIKEY>'", log_data)
+        log_data = LOG_USER_RE.sub(b'\g<1>=<USER>', log_data)
+        log_data = LOG_PASS_RE.sub(b"password=<PASSWORD>", log_data)
+        log_data = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", log_data)
+        log_data = LOG_HASH_RE.sub(b"<HASH>", log_data)
 
         # Try to replace the username
         try:
             import getpass
             cur_user = getpass.getuser()
             if cur_user:
-                log_data = log_data.replace(cur_user, '<USERNAME>')
+                log_data = log_data.replace(utob(cur_user), b'<USERNAME>')
         except:
             pass
         # Set headers
         cherrypy.response.headers['Content-Type'] = 'application/x-download;charset=utf-8'
         cherrypy.response.headers['Content-Disposition'] = 'attachment;filename="sabnzbd.log"'
-        return utob(log_data)
+        return log_data
 
     @secured_expose(check_session_key=True)
     def clearwarnings(self, **kwargs):
