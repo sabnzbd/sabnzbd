@@ -205,6 +205,9 @@ class RSSQueue:
         #           season : season number (if applicable)
         #           episode : episode number (if applicable)
 
+        # Patch feedparser
+        patch_feedparser()
+
     def stop(self):
         self.shutdown = True
 
@@ -495,7 +498,6 @@ class RSSQueue:
                     if result:
                         _HandleLink(
                             jobs,
-                            feed,
                             link,
                             infourl,
                             title,
@@ -511,14 +513,13 @@ class RSSQueue:
                             act,
                             star,
                             priority=myPrio,
-                            rule=str(n),
+                            rule=n,
                         )
                         if act:
                             new_downloads.append(title)
                     else:
                         _HandleLink(
                             jobs,
-                            feed,
                             link,
                             infourl,
                             title,
@@ -534,7 +535,7 @@ class RSSQueue:
                             False,
                             star,
                             priority=myPrio,
-                            rule=str(n),
+                            rule=n,
                         )
 
         # Send email if wanted and not "forced"
@@ -634,9 +635,40 @@ class RSSQueue:
         return ""
 
 
+def patch_feedparser():
+    """ Apply options that work for SABnzbd
+        Add additional parsing of attributes
+    """
+    feedparser.SANITIZE_HTML = 0
+    feedparser.PARSE_MICROFORMATS = 0
+
+    # Add our own namespace
+    feedparser._FeedParserMixin.namespaces["http://www.newznab.com/DTD/2010/feeds/attributes/"] = "newznab"
+
+    # Add parsers for the namespace
+    def _start_newznab_attr(self, attrsD):
+        context = self._getContext()
+        # Add the dict
+        if "newznab" not in context:
+            context["newznab"] = {}
+        # Don't crash when it fails
+        try:
+            # Add keys
+            context["newznab"][attrsD["name"]] = attrsD["value"]
+            # Try to get date-object
+            if attrsD["name"] == "usenetdate":
+                context["newznab"][attrsD["name"] + "_parsed"] = feedparser._parse_date(attrsD["value"])
+        except KeyError:
+            pass
+
+    feedparser._FeedParserMixin._start_newznab_attr = _start_newznab_attr
+    feedparser._FeedParserMixin._start_nZEDb_attr = _start_newznab_attr
+    feedparser._FeedParserMixin._start_nzedb_attr = _start_newznab_attr
+    feedparser._FeedParserMixin._start_nntmux_attr = _start_newznab_attr
+
+
 def _HandleLink(
     jobs,
-    feed,
     link,
     infourl,
     title,
@@ -672,7 +704,7 @@ def _HandleLink(
     jobs[link]["size"] = size
     jobs[link]["age"] = age
     jobs[link]["time"] = time.time()
-    jobs[link]["rule"] = rule
+    jobs[link]["rule"] = str(rule)
     jobs[link]["season"] = season
     jobs[link]["episode"] = episode
 
@@ -745,22 +777,22 @@ def _get_link(entry):
     try:
         season = re.findall("\d+", entry["newznab"]["season"])[0]
         episode = re.findall("\d+", entry["newznab"]["episode"])[0]
-    except:
+    except (KeyError, IndexError):
         season = episode = 0
 
     if link and "http" in link.lower():
         try:
             category = entry.cattext
-        except:
+        except AttributeError:
             try:
                 category = entry.category
-            except:
+            except AttributeError:
                 try:  # nzb.su
                     category = entry.tags[0]["term"]
-                except:
+                except (AttributeError, KeyError):
                     try:
                         category = entry.description
-                    except:
+                    except AttributeError:
                         category = ""
 
         return link, infourl, category, size, age, season, episode
