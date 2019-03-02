@@ -59,7 +59,7 @@ def _reset_warn():
     _g_warnings = 0
 
 
-class NzbRating(object):
+class NzbRating:
 
     def __init__(self):
         self.avg_video = 0

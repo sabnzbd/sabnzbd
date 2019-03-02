@@ -89,7 +89,7 @@ def move_to_parent_folder(workdir):
     return dest, True
 
 
-class Sorter(object):
+class Sorter:
     """ Generic Sorter class """
 
     def __init__(self, nzo, cat):
@@ -173,7 +173,7 @@ class Sorter(object):
         return workdir_complete, ok
 
 
-class SeriesSorter(object):
+class SeriesSorter:
     """ Methods for Series Sorting """
 
     def __init__(self, nzo, job_name, path, cat):
@@ -492,7 +492,7 @@ def check_for_sequence(regex, files):
         return {}
 
 
-class MovieSorter(object):
+class MovieSorter:
     """ Methods for Generic Sorting """
 
     def __init__(self, nzo, job_name, path, cat):
@@ -694,7 +694,7 @@ class MovieSorter(object):
                 logging.debug("Movie files not in sequence %s", _files)
 
 
-class DateSorter(object):
+class DateSorter:
     """ Methods for Date Sorting """
 
     def __init__(self, nzo, job_name, path, cat):

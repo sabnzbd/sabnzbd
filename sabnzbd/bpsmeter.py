@@ -84,7 +84,7 @@ def next_month(t):
     return time.mktime(ntime)
 
 
-class BPSMeter(object):
+class BPSMeter:
     do = None
 
     def __init__(self):

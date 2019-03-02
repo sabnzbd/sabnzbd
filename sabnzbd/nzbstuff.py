@@ -61,7 +61,7 @@ RE_PROPER = re.compile(r'(^|[\. _-])(PROPER|REAL|REPACK)([\. _-]|$)')
 
 TRYLIST_LOCK = threading.Lock()
 
-class TryList(object):
+class TryList:
     """ TryList keeps track of which servers have been tried for a specific article
     """
     # Pre-define attributes to save memory

@@ -46,7 +46,7 @@ from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.dirscanner import ProcessSingleFile
 
 
-class NzbQueue(object):
+class NzbQueue:
     """ Singleton NzbQueue """
     do = None
 

@@ -48,7 +48,7 @@ modified = False            # Signals a change in option dictionary
 paramfinder = re.compile(r'''(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)''')
 
 
-class Option(object):
+class Option:
     """ Basic option class, basic fields """
 
     def __init__(self, section, keyword, default_val=None, add=True, protect=False):
@@ -370,7 +370,7 @@ def delete_from_database(section, keyword):
     modified = True
 
 
-class ConfigServer(object):
+class ConfigServer:
     """ Class defining a single server """
 
     def __init__(self, name, values):
@@ -448,7 +448,7 @@ class ConfigServer(object):
         return 'servers', self.__name
 
 
-class ConfigCat(object):
+class ConfigCat:
     """ Class defining a single category """
 
     def __init__(self, name, values):
@@ -559,7 +559,7 @@ class OptionFilters(Option):
         return True
 
 
-class ConfigRSS(object):
+class ConfigRSS:
     """ Class defining a single Feed definition """
 
     def __init__(self, name, values):

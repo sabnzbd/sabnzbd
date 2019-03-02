@@ -60,7 +60,7 @@ def convert_search(search):
     return search
 
 
-class HistoryDB(object):
+class HistoryDB:
     """ Class to access the History database
         Each class-instance will create an access channel that
         can be used in one thread.

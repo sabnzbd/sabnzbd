@@ -354,7 +354,7 @@ def rssRaiser(root, kwargs):
 ##############################################################################
 # Page definitions
 ##############################################################################
-class MainPage(object):
+class MainPage:
 
     def __init__(self):
         self.__root = '/'
@@ -493,7 +493,7 @@ class MainPage(object):
         return 'User-agent: *\nDisallow: /\n'
 
 ##############################################################################
-class Wizard(object):
+class Wizard:
 
     def __init__(self, root):
         self.__root = root
@@ -656,7 +656,7 @@ def get_access_info():
     return access_url, urls
 
 ##############################################################################
-class LoginPage(object):
+class LoginPage:
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -702,7 +702,7 @@ class LoginPage(object):
 
 
 ##############################################################################
-class NzoPage(object):
+class NzoPage:
 
     def __init__(self, root):
         self.__root = root
@@ -887,7 +887,7 @@ class NzoPage(object):
 
 
 ##############################################################################
-class QueuePage(object):
+class QueuePage:
 
     def __init__(self, root):
         self.__root = root
@@ -1013,7 +1013,7 @@ class QueuePage(object):
 
 
 ##############################################################################
-class HistoryPage(object):
+class HistoryPage:
 
     def __init__(self, root):
         self.__root = root
@@ -1114,7 +1114,7 @@ class HistoryPage(object):
 
 
 ##############################################################################
-class ConfigPage(object):
+class ConfigPage:
 
     def __init__(self, root):
         self.__root = root
@@ -1179,7 +1179,7 @@ LIST_DIRPAGE = (
 )
 
 
-class ConfigFolders(object):
+class ConfigFolders:
 
     def __init__(self, root):
         self.__root = root
@@ -1237,7 +1237,7 @@ SWITCH_LIST = \
      )
 
 
-class ConfigSwitches(object):
+class ConfigSwitches:
 
     def __init__(self, root):
         self.__root = root
@@ -1300,7 +1300,7 @@ SPECIAL_VALUE_LIST = \
 SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore', 'host_whitelist')
 
 
-class ConfigSpecial(object):
+class ConfigSpecial:
 
     def __init__(self, root):
         self.__root = root
@@ -1338,7 +1338,7 @@ GENERAL_LIST = (
 )
 
 
-class ConfigGeneral(object):
+class ConfigGeneral:
 
     def __init__(self, root):
         self.__root = root
@@ -1467,7 +1467,7 @@ def change_web_dir(web_dir):
 
 
 ##############################################################################
-class ConfigServer(object):
+class ConfigServer:
 
     def __init__(self, root):
         self.__root = root
@@ -1617,7 +1617,7 @@ def handle_server_test(kwargs, root):
 
 
 ##############################################################################
-class ConfigRss(object):
+class ConfigRss:
 
     def __init__(self, root):
         self.__root = root
@@ -1952,7 +1952,7 @@ _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedl
                   )
 
 
-class ConfigScheduling(object):
+class ConfigScheduling:
 
     def __init__(self, root):
         self.__root = root
@@ -2120,7 +2120,7 @@ class ConfigScheduling(object):
 
 
 ##############################################################################
-class ConfigCats(object):
+class ConfigCats:
 
     def __init__(self, root):
         self.__root = root
@@ -2185,7 +2185,7 @@ SORT_LIST = (
 )
 
 
-class ConfigSorting(object):
+class ConfigSorting:
 
     def __init__(self, root):
         self.__root = root
@@ -2237,7 +2237,7 @@ LOG_PASS_RE = re.compile(b"(password)\s?=\s?[\S]+", re.I)
 LOG_INI_HIDE_RE = re.compile(b"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+", re.I)
 LOG_HASH_RE = re.compile(b"([a-fA-F\d]{25})", re.I)
 
-class Status(object):
+class Status:
 
     def __init__(self, root):
         self.__root = root
@@ -2530,7 +2530,7 @@ LIST_NSCRIPT = ('nscript_enable', 'nscript_cats', 'nscript_script', 'nscript_par
                 'nscript_prio_new_login')
 
 
-class ConfigNotify(object):
+class ConfigNotify:
 
     def __init__(self, root):
         self.__root = root

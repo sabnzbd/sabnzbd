@@ -1035,7 +1035,7 @@ def report(output, error=None, keyword='value', data=None, compat=False):
     return response
 
 
-class xml_factory(object):
+class xml_factory:
     """ Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
         Current limitations:
             In Two tiered lists hard-coded name of "item": <cat_list><item> </item></cat_list>

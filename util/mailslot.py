@@ -32,7 +32,7 @@ CloseHandle = windll.kernel32.CloseHandle
 CreateMailslot = windll.kernel32.CreateMailslotW
 
 
-class MailSlot(object):
+class MailSlot:
     """ Simple Windows Mailslot communication """
 
     slotname = r"mailslot\SABnzbd\ServiceSlot"

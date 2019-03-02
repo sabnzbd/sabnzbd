@@ -2357,7 +2357,7 @@ def is_sevenfile(path):
     return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == '.7z'
 
 
-class SevenZip(object):
+class SevenZip:
     """ Minimal emulation of ZipFile class for 7Zip """
 
     def __init__(self, path):

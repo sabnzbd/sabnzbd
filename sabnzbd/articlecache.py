@@ -32,7 +32,7 @@ from sabnzbd.constants import GIGI, ANFO
 ARTICLE_LOCK = threading.Lock()
 
 
-class ArticleCache(object):
+class ArticleCache:
     do = None
 
     def __init__(self):

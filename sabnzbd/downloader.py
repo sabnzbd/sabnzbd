@@ -58,7 +58,7 @@ _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 TIMER_LOCK = RLock()
 
 
-class Server(object):
+class Server:
 
     def __init__(self, id, displayname, host, port, timeout, threads, priority, ssl, ssl_verify, ssl_ciphers,
                  send_group, username=None, password=None, optional=False, retention=0):

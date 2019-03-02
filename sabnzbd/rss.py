@@ -167,7 +167,7 @@ _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*", re.I)
 _RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]{0,1})B\W*", re.I)
 
 
-class RSSQueue(object):
+class RSSQueue:
     def __init__(self):
         self.jobs = {}
         self.next_run = time.time()

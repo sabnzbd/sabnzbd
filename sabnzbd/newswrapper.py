@@ -130,7 +130,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
             nntp.error(e)
 
 
-class NNTP(object):
+class NNTP:
     # Pre-define attributes to save memory
     __slots__ = ('host', 'port', 'nw', 'blocking', 'error_msg', 'sock')
 
@@ -252,7 +252,7 @@ class NNTP(object):
             self.nw.server.warning = msg
 
 
-class NewsWrapper(object):
+class NewsWrapper:
     # Pre-define attributes to save memory
     __slots__ = ('server', 'thrdnum', 'blocking', 'timeout', 'article', 'data', 'lines', 'last_line',  'nntp',
                  'recv', 'connected', 'user_sent', 'pass_sent', 'group', 'user_ok', 'pass_ok', 'force_login')
