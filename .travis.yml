@@ -42,11 +42,12 @@ install:
   - python3 -m pip install --upgrade -r tests/requirements.txt
 
 script:
-  - python3 -m pytest
+  - python3 -m pytest -v
 
   # Force code-style for folders that we already did, only on 1 job
   - if [[ $TRAVIS_PYTHON_VERSION == "3.7" ]]; then python3 -m black tests -l120 --py36 -N --check; fi
   - if [[ $TRAVIS_PYTHON_VERSION == "3.7" ]]; then python3 -m black tools -l120 --py36 -N --check; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == "3.7" ]]; then python3 -m black util -l120 --py36 -N --check; fi
   - if [[ $TRAVIS_PYTHON_VERSION == "3.7" ]]; then python3 -m black sabnzbd/utils -l120 --py36 -N --check; fi
 
 notifications:

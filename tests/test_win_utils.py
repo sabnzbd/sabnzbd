@@ -27,6 +27,8 @@ import pytest
 if not sys.platform.startswith("win"):
     pytest.skip("Skipping Windows-only tests", allow_module_level=True)
 
+import util.apireg as ar
+
 
 class TestMailslot:
     def test_mailslot_basic(self):
@@ -49,3 +51,23 @@ class TestMailslot:
 
         # Client outputs nothing
         assert not client_p.stdout.readlines()
+
+
+class TestAPIReg:
+    def test_set_get_connection_info_user(self):
+        """ Test the saving of the URL in USER-registery
+            We can't test the SYSTEM one.
+        """
+
+        test_url = "sab_test:8080"
+        ar.set_connection_info(test_url, True)
+        assert ar.get_connection_info(True) == test_url
+        assert not ar.get_connection_info(False)
+
+        # Remove and check if gone
+        ar.del_connection_info(True)
+        assert not ar.get_connection_info(True)
+
+    def test_get_install_lng(self):
+        """ Not much to test yet.. """
+        assert ar.get_install_lng() == "en"

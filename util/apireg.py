@@ -44,10 +44,10 @@ def get_connection_info(user=True):
 
     try:
         hive = winreg.ConnectRegistry(None, section)
-        key = winreg.OpenKey(hive, keypath + r'\api')
+        key = winreg.OpenKey(hive, keypath + r"\api")
         for i in range(0, winreg.QueryInfoKey(key)[1]):
             name, value, val_type = winreg.EnumValue(key, i)
-            if name == 'url':
+            if name == "url":
                 url = value
 
         winreg.CloseKey(key)
@@ -70,11 +70,11 @@ def set_connection_info(url, user=True):
         hive = winreg.ConnectRegistry(None, section)
         try:
             winreg.CreateKey(hive, keypath)
-        except:
+        except OSError:
             pass
         key = winreg.OpenKey(hive, keypath)
-        mykey = winreg.CreateKey(key, 'api')
-        winreg.SetValueEx(mykey, 'url', None, winreg.REG_SZ, url)
+        mykey = winreg.CreateKey(key, "api")
+        winreg.SetValueEx(mykey, "url", None, winreg.REG_SZ, url)
         winreg.CloseKey(mykey)
         winreg.CloseKey(key)
     except WindowsError:
@@ -90,7 +90,7 @@ def del_connection_info(user=True):
     try:
         hive = winreg.ConnectRegistry(None, section)
         key = winreg.OpenKey(hive, keypath)
-        winreg.DeleteKey(key, 'api')
+        winreg.DeleteKey(key, "api")
         winreg.CloseKey(key)
     except WindowsError:
         if user:
@@ -107,7 +107,7 @@ def get_install_lng():
         key = winreg.OpenKey(hive, r"Software\SABnzbd")
         for i in range(0, winreg.QueryInfoKey(key)[1]):
             name, value, val_type = winreg.EnumValue(key, i)
-            if name == 'Installer Language':
+            if name == "Installer Language":
                 lng = value
         winreg.CloseKey(key)
     except WindowsError:
@@ -117,32 +117,32 @@ def get_install_lng():
 
     if lng in LanguageMap:
         return LanguageMap[lng]
-    return 'en'
+    return "en"
 
 
 # Map from NSIS-codepage to our language-strings
 LanguageMap = {
-    '1033': 'en',
-    '1036': 'fr',
-    '1031': 'de',
-    '1043': 'nl',
-    '1035': 'fi',
-    '1045': 'pl',
-    '1053': 'sv',
-    '1030': 'da',
-    '2068': 'nb',
-    '1048': 'ro',
-    '1034': 'es',
-    '1046': 'pr_BR',
-    '3098': 'sr',
-    '1037': 'he',
-    '1049': 'ru',
-    '2052': 'zh_CN'
+    "1033": "en",
+    "1036": "fr",
+    "1031": "de",
+    "1043": "nl",
+    "1035": "fi",
+    "1045": "pl",
+    "1053": "sv",
+    "1030": "da",
+    "2068": "nb",
+    "1048": "ro",
+    "1034": "es",
+    "1046": "pr_BR",
+    "3098": "sr",
+    "1037": "he",
+    "1049": "ru",
+    "2052": "zh_CN",
 }
 
 
-if __name__ == '__main__':
-    print(('URL = %s' % get_connection_info()))
-    print(('Language = %s' % get_install_lng()))
+if __name__ == "__main__":
+    print("URL = %s" % get_connection_info())
+    print("Language = %s" % get_install_lng())
     # del_connection_info()
     # set_connection_info('localhost', '8080', 'blabla', user=False)
