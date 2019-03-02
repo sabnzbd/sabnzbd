@@ -18,12 +18,17 @@
 """
 tests.test_functional_misc - Functional tests of various functions
 """
+import os
+import sys
+import subprocess
+import sabnzbd.encoding
 
 from tests.testhelper import *
 
 
 class SABnzbdShowLoggingTest(SABnzbdBaseTest):
     def test_showlog(self):
+        """ Test the output of the filtered-log button """
         # Basic URL-fetching, easier than Selenium file download
         log_result = get_url_result("status/showlog")
 
@@ -34,3 +39,38 @@ class SABnzbdShowLoggingTest(SABnzbdBaseTest):
         # Make sure sabnzbd.ini was appended
         assert "__encoding__ = utf-8" in log_result
         assert "[misc]" in log_result
+
+
+class TestSamplePostProc:
+    def test_sample_post_proc(self):
+        """ Make sure we don't break things """
+        # Set parameters
+        script_params = [
+            "somedir222",
+            "nzbname",
+            "frènch_german_demö",
+            "Index12",
+            "Cat88",
+            "MyGroup",
+            "PP0",
+            "https://example.com/",
+        ]
+        script_call = [sys.executable, "scripts/Sample-PostProc.py", "server"]
+        script_call.extend(script_params)
+
+        # Set parameters via env
+        env = os.environ.copy()
+        env["SAB_VERSION"] = "frènch_german_demö_version"
+
+        # Run script and check output
+        script_call = subprocess.Popen(script_call, stdout=subprocess.PIPE, env=env)
+        script_output, errs = script_call.communicate(timeout=15)
+
+        # This is a bit bad, since we use our own function
+        # But in a way it is also a test if the function does its job!
+        script_output = sabnzbd.encoding.platform_btou(script_output)
+
+        # Check if all parameters are there
+        for param in script_params:
+            assert param in script_output
+        assert env["SAB_VERSION"] in script_output
