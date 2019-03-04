@@ -258,11 +258,8 @@ def _api_queue_default(output, value, kwargs):
     limit = int_conv(kwargs.get('limit'))
     search = kwargs.get('search')
 
-    if output in ('xml', 'json'):
-        info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
-        return report(output, keyword='queue', data=info)
-    else:
-        return report(output, _MSG_NOT_IMPLEMENTED)
+    info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
+    return report(output, keyword='queue', data=info)
 
 
 def _api_queue_rating(output, value, kwargs):
@@ -410,10 +407,7 @@ def _api_switch(name, output, kwargs):
     if value and value2:
         pos, prio = NzbQueue.do.switch(value, value2)
         # Returns the new position and new priority (if different)
-        if output not in ('xml', 'json'):
-            return report(output, data=(pos, prio))
-        else:
-            return report(output, keyword='result', data={'position': pos, 'priority': prio})
+        return report(output, keyword='result', data={'position': pos, 'priority': prio})
     else:
         return report(output, _MSG_NO_VALUE2)
 
@@ -1021,14 +1015,7 @@ def report(output, error=None, keyword='value', data=None, compat=False):
         elif compat or data is None:
             response = 'ok\n'
         else:
-            if type(data) in (list, tuple):
-                # Special handling for list/tuple (backward compatibility)
-                data = [str(val) for val in data]
-                data = ' '.join(data)
-            if isinstance(data, str):
-                response = '%s\n' % data
-            else:
-                response = '%s\n' % str(data)
+            response = '%s\n' % str(data)
 
     cherrypy.response.headers['Content-Type'] = content
     cherrypy.response.headers['Pragma'] = 'no-cache'
