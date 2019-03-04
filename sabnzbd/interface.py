@@ -56,6 +56,7 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.decoder import SABYENC_ENABLED
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
+from sabnzbd.utils.internetspeed import internetspeed
 
 from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, \
     DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
@@ -2352,7 +2353,7 @@ class Status:
         sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
         # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = 100
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(),1)
 
         raise Raiser(self.__root)  # Refresh screen
 
