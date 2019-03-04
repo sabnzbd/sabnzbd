@@ -299,6 +299,7 @@ SKIN_TEXT = {
     'dashboard-completeDirSpeed' : TT('Complete folder speed'),
     'dashboard-writingSpeed' : TT('Writing speed'),
     'dashboard-speedTestFailed' : TT('Could not write. Check that the directory is writable.'),
+    'dashboard-internetBandwidth' : TT('Internet Bandwidth'),
     'dashboard-clickToStart' : TT('Click on Repeat test button below to determine'),
     'dashboard-repeatTest' : TT('Repeat test'),
     'dashboard-testDownload' : TT('Test download'),

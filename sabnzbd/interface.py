@@ -2351,6 +2351,9 @@ class Status:
         time.sleep(1.0)
         sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
 
+        # Internet bandwidth
+        sabnzbd.INTERNET_BANDWIDTH = 100
+
         raise Raiser(self.__root)  # Refresh screen
 
 
