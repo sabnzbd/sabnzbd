@@ -1170,6 +1170,9 @@ def build_status(skip_dashboard=False, output=None):
     info['completedir'] = cfg.complete_dir.get_clipped_path()
     info['completedirspeed'] = sabnzbd.COMPLETE_DIR_SPEED
 
+    # Dashboard: Measured download-speed
+    info['internetbandwidth'] = sabnzbd.INTERNET_BANDWIDTH
+
     # Dashboard: Connection information
     if not int_conv(skip_dashboard):
         info['localipv4'] = localipv4()

@@ -137,6 +137,15 @@
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
+                        <div class="row">
+                            <div class="col-sm-6">$T('dashboard-internetBandwidth')</div>
+                            <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
+                                <span data-bind="text: statusInfo.internetbandwidth()"></span> MB/s
+                                <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <small>(<span data-bind="text: statusInfo.internetbandwidth()*8"></span> Mbps)</small>
+                            </div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                        </div>
                         <div class="row test-download">
                             <div class="col-sm-6">$T('dashboard-testDownload')</div>
                             <div class="col-sm-6">

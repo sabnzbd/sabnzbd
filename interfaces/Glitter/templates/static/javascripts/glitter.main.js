@@ -65,6 +65,7 @@ function ViewModel() {
     self.statusInfo.downloaddirspeed = ko.observable();
     self.statusInfo.completedir = ko.observable();
     self.statusInfo.completedirspeed = ko.observable();
+    self.statusInfo.internetbandwidth = ko.observable();
 
     /***
         Dynamic functions
@@ -763,6 +764,7 @@ function ViewModel() {
                 self.statusInfo.downloaddirspeed(data.status.downloaddirspeed)
                 self.statusInfo.completedir(data.status.completedir)
                 self.statusInfo.completedirspeed(data.status.completedirspeed)
+                self.statusInfo.internetbandwidth(data.status.internetbandwidth)
                 self.statusInfo.dnslookup(data.status.dnslookup)
                 self.statusInfo.localipv4(data.status.localipv4)
                 self.statusInfo.publicipv4(data.status.publicipv4)
