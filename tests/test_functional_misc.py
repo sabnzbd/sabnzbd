@@ -18,7 +18,7 @@
 """
 tests.test_functional_misc - Functional tests of various functions
 """
-import os
+
 import sys
 import subprocess
 import sabnzbd.encoding
@@ -74,3 +74,27 @@ class TestSamplePostProc:
         for param in script_params:
             assert param in script_output
         assert env["SAB_VERSION"] in script_output
+
+
+class TestExtractPot:
+    def test_extract_pot(self):
+        """ Simple test if translation extraction still works """
+        script_call = [sys.executable, "tools/extract_pot.py"]
+
+        # Run script and check output
+        script_call = subprocess.Popen(script_call, stdout=subprocess.PIPE)
+        script_output, errs = script_call.communicate(timeout=15)
+        script_output = sabnzbd.encoding.platform_btou(script_output)
+
+        # Success message?
+        assert "Creating POT file" in script_output
+        assert "Finished creating POT file" in script_output
+        assert "Post-process POT file" in script_output
+        assert "Finished post-process POT file" in script_output
+        assert "Creating email POT file" in script_output
+        assert "Finished creating email POT file" in script_output
+
+        # Check if the file was modified less than 30 seconds ago
+        cur_time = time.time()
+        assert (cur_time - os.path.getmtime("po/main/SABnzbd.pot")) < 30
+        assert (cur_time - os.path.getmtime("po/email/SABemail.pot")) < 30
