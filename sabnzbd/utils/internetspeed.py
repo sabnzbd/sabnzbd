@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-
 import sys
 import time
-
-debug = False
+import logging
 
 SizeUrlList = [
     [5, "https://sabnzbd.org/tests/internetspeed/5MB.bin"],
@@ -13,11 +11,8 @@ SizeUrlList = [
 
 
 def measurespeed(url):
-
-    # Download the specified url, and report back MB/s (as a float)
-
-    if debug:
-        print("URL is %s" % url)
+    """ Download the specified url, and report back MB/s (as a float) """
+    logging.debug("URL is %s" % url)
     start = time.time()
     try:
         if sys.version_info[0] == 2:
@@ -31,14 +26,13 @@ def measurespeed(url):
             req = urllib.request.Request(url, data=None, headers={"User-Agent": "Mozilla/5.0 (Macintosh)"})
             downloadedbytes = len(urllib.request.urlopen(req, timeout=4).read())
         else:
-            print("ERROR: no python version?!")
+            logging.error("ERROR: no python version?!")
             return 0, 0
     except:
         # No connection at all?
         downloadedbytes = 0
 
-    if debug:
-        print("Downloaded bytes: %d" % downloadedbytes)
+    logging.debug("Downloaded bytes: %d" % downloadedbytes)
 
     duration = time.time() - start
 
@@ -51,16 +45,12 @@ def BytestoBits(MBps):
 
 
 def internetspeed():
-
-    # Report Internet speed in MB/s as a float
-
+    """ Report Internet speed in MB/s as a float """
     # Do basic test with a small download
-    if debug:
-        print("Basic measurement, with small download:")
+    logging.debug("Basic measurement, with small download:")
     urlbasic = SizeUrlList[0][1]  # get first URL, which is smallest download
     baseMBps = measurespeed(urlbasic)
-    if debug:
-        print("Speed in MB/s: %.2f" % baseMBps)
+    logging.debug("Speed in MB/s: %.2f" % baseMBps)
     if baseMBps == 0:
         # no Internet connection, or other problem
         return baseMBps
@@ -84,11 +74,9 @@ def internetspeed():
     maxMBps = baseMBps
     # Execute:
     if URLtoDO:
-        if debug:
-            print(URLtoDO)
+        logging.debug(URLtoDO)
         MBps = measurespeed(URLtoDO)
-        if debug:
-            print("Speed in MB/s: %.2f" % MBps)
+        logging.debug("Speed in MB/s: %.2f" % MBps)
         if MBps > maxMBps:
             maxMBps = MBps
 
