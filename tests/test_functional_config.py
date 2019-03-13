@@ -70,6 +70,77 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
                 assert submit_btn.text == "Save Changes"
 
 
+class SABnzbdConfigLogin(SABnzbdBaseTest):
+    def test_login(self):
+        # Test if base page works
+        self.open_page("http://%s:%s/sabnzbd/config/general" % (SAB_HOST, SAB_PORT))
+
+        # Set the username and password
+        username_imp = self.driver.find_element_by_css_selector("input[data-hide='username']")
+        username_imp.clear()
+        username_imp.send_keys("test_username")
+        pass_inp = self.driver.find_element_by_css_selector("input[data-hide='password']")
+        pass_inp.clear()
+        pass_inp.send_keys("test_password")
+
+        # Submit and ignore alert
+        self.driver.find_element_by_class_name("saveButton").click()
+
+        try:
+            self.wait_for_ajax()
+        except UnexpectedAlertPresentException:
+            # Ignore restart-request
+            self.driver.switch_to.alert.dismiss()
+
+        # Open any page and check if we get redirected
+        self.open_page("http://%s:%s/sabnzbd/general" % (SAB_HOST, SAB_PORT))
+        assert "/login/" in self.driver.current_url
+
+        # Fill nonsense and submit
+        username_login = self.driver.find_element_by_css_selector("input[name='username']")
+        username_login.clear()
+        username_login.send_keys("nonsense")
+        pass_login = self.driver.find_element_by_css_selector("input[name='password']")
+        pass_login.clear()
+        pass_login.send_keys("nonsense")
+        self.driver.find_element_by_tag_name("button").click()
+
+        # Check if we were denied
+        assert "Authentication failed" in self.driver.find_element_by_class_name("alert-danger").text
+
+        # Fill right stuff
+        username_login = self.driver.find_element_by_css_selector("input[name='username']")
+        username_login.clear()
+        username_login.send_keys("test_username")
+        pass_login = self.driver.find_element_by_css_selector("input[name='password']")
+        pass_login.clear()
+        pass_login.send_keys("test_password")
+        self.driver.find_element_by_tag_name("button").click()
+
+        # Can we now go to the page and empty the settings again?
+        self.open_page("http://%s:%s/sabnzbd/config/general" % (SAB_HOST, SAB_PORT))
+        assert "/login/" not in self.driver.current_url
+
+        # Set the username and password
+        username_imp = self.driver.find_element_by_css_selector("input[data-hide='username']")
+        username_imp.clear()
+        pass_inp = self.driver.find_element_by_css_selector("input[data-hide='password']")
+        pass_inp.clear()
+
+        # Submit and ignore alert
+        self.driver.find_element_by_class_name("saveButton").click()
+
+        try:
+            self.wait_for_ajax()
+        except UnexpectedAlertPresentException:
+            # Ignore restart-request
+            self.driver.switch_to.alert.dismiss()
+
+        # Open any page and check if we get redirected
+        self.open_page("http://%s:%s/sabnzbd/general" % (SAB_HOST, SAB_PORT))
+        assert "/login/" not in self.driver.current_url
+
+
 class SABnzbdConfigCategories(SABnzbdBaseTest):
 
     category_name = "testCat"

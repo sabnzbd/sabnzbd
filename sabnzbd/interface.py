@@ -186,8 +186,9 @@ def set_login_cookie(remove=False, remember_me=False):
         current process ID of the SAB instance and a random
         number, so cookies cannot be re-used
     """
-    salt = randint(1,1000)
-    cherrypy.response.cookie['login_cookie'] = hashlib.sha1(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
+    salt = randint(1, 1000)
+    cookie_str = utob(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET)
+    cherrypy.response.cookie['login_cookie'] = hashlib.sha1(cookie_str).hexdigest()
     cherrypy.response.cookie['login_cookie']['path'] = '/'
     cherrypy.response.cookie['login_cookie']['httponly'] = 1
     cherrypy.response.cookie['login_salt'] = salt
@@ -213,7 +214,8 @@ def check_login_cookie():
     if 'login_cookie' not in cherrypy.request.cookie or 'login_salt' not in cherrypy.request.cookie:
         return False
 
-    return cherrypy.request.cookie['login_cookie'].value == hashlib.sha1(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
+    cookie_str = utob(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET)
+    return cherrypy.request.cookie['login_cookie'].value == hashlib.sha1(cookie_str).hexdigest()
 
 
 def check_login():
