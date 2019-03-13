@@ -166,15 +166,13 @@ class Downloader(Thread):
         # Used for scheduled pausing
         self.paused = paused
 
-        # used for throttling bandwidth and scheduling bandwidth changes
-        cfg.bandwidth_perc.callback(self.speed_set)
-        cfg.bandwidth_max.callback(self.speed_set)
-        self.speed_set()
-
         # Used for reducing speed
         self.delayed = False
         self.bandwidth_limit = 0
         self.bandwidth_perc = 0
+        cfg.bandwidth_perc.callback(self.speed_set)
+        cfg.bandwidth_max.callback(self.speed_set)
+        self.speed_set()
 
         # Used to see if we can add a slowdown to the Downloader-loop
         self.can_be_slowed = None
