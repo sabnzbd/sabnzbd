@@ -173,7 +173,6 @@ def print_help():
     print("      --no-login           Start with username and password reset")
     print("      --log-all            Log all article handling (for developers)")
     print("      --disable-file-log   Logging is only written to console")
-    print("      --console            Force console logging for OSX app")
     print("      --new                Run a new instance of SABnzbd")
     print()
     print("NZB (or related) file:")
@@ -195,6 +194,7 @@ GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
 
 def daemonize():
+    """ Daemonize the process, based on various StackOverflow answers """
     try:
         pid = os.fork()
         if pid > 0:
@@ -217,8 +217,18 @@ def daemonize():
         print("fork() failed")
         sys.exit(1)
 
-    dev_null = open('/dev/null', 'r')
-    os.dup2(dev_null.fileno(), sys.stdin.fileno())
+    # Flush I/O buffers
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+    # Replace file descriptors for stdin, stdout, and stderr
+    log_path = os.path.join(sabnzbd.cfg.log_dir.get_path(), DEF_LOG_ERRFILE)
+    with open('/dev/null', 'rb', 0) as f:
+        os.dup2(f.fileno(), sys.stdin.fileno())
+    with open(log_path, 'ab', 0) as f:
+        os.dup2(f.fileno(), sys.stdout.fileno())
+    with open(log_path, 'ab', 0) as f:
+        os.dup2(f.fileno(), sys.stderr.fileno())
 
 
 def abort_and_show_error(browserhost, cherryport, err=''):
@@ -250,10 +260,8 @@ def identify_web_template(key, defweb, wdir):
 
     full_dir = real_path(sabnzbd.DIR_INTERFACES, wdir)
     full_main = real_path(full_dir, DEF_MAIN_TMPL)
-    logging.info("Web dir is %s", full_dir)
 
     if not os.path.exists(full_main):
-        # end temp fix
         logging.warning(T('Cannot find web template: %s, trying standard template'), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
@@ -262,6 +270,7 @@ def identify_web_template(key, defweb, wdir):
             panic_tmpl(full_dir)
             exit_sab(1)
 
+    logging.info("Template location for %s is %s", defweb, full_dir)
     return real_path(full_dir, "templates")
 
 
@@ -866,9 +875,6 @@ def main():
             sabnzbd.RESTART_ARGS.append(arg)
         elif opt == '--new':
             new_instance = True
-        elif opt == '--console':
-            sabnzbd.RESTART_ARGS.append(opt)
-            osx_console = True
         elif opt == '--ipv6_hosting':
             ipv6_hosting = arg
 
@@ -884,13 +890,8 @@ def main():
         sabnzbd.MY_FULLNAME = sabnzbd.MY_FULLNAME.replace("/Resources/SABnzbd.py", "/MacOS/SABnzbd")
 
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
-    consoleLogging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
-    consoleLogging = consoleLogging and not sabnzbd.DAEMON
-
-    # No console logging needed for OSX app
-    noConsoleLoggingOSX = (not osx_console) and (sabnzbd.DIR_PROG.find('.app/Contents/Resources') > 0)
-    if noConsoleLoggingOSX:
-        consoleLogging = 1
+    console_logging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
+    console_logging = console_logging and not sabnzbd.DAEMON
 
     LOGLEVELS = (logging.FATAL, logging.WARNING, logging.INFO, logging.DEBUG)
 
@@ -1075,38 +1076,17 @@ def main():
         print("Can't write to logfile")
         exit_sab(2)
 
-    if fork:
-        try:
-            x = sys.stderr.fileno
-            x = sys.stdout.fileno
-            ol_path = os.path.join(logdir, DEF_LOG_ERRFILE)
-            out_log = open(ol_path, 'a+', 0)
-            sys.stderr.flush()
-            sys.stdout.flush()
-            os.dup2(out_log.fileno(), sys.stderr.fileno())
-            os.dup2(out_log.fileno(), sys.stdout.fileno())
-        except AttributeError:
-            pass
-
+    # Fork on non-Windows processes
+    if fork and not sabnzbd.WIN32:
+        daemonize()
     else:
-        try:
-            x = sys.stderr.fileno
-            x = sys.stdout.fileno
-
-            if consoleLogging:
-                console = logging.StreamHandler()
-                console.setLevel(LOGLEVELS[logging_level + 1])
-                console.setFormatter(logging.Formatter(logformat))
-                logger.addHandler(console)
-            if no_file_log:
-                logging.info('Console logging only')
-            if noConsoleLoggingOSX:
-                logging.info('Console logging for OSX App disabled')
-                so = open('/dev/null', 'a+')
-                os.dup2(so.fileno(), sys.stdout.fileno())
-                os.dup2(so.fileno(), sys.stderr.fileno())
-        except AttributeError:
-            pass
+        if console_logging:
+            console = logging.StreamHandler()
+            console.setLevel(LOGLEVELS[logging_level + 1])
+            console.setFormatter(logging.Formatter(logformat))
+            logger.addHandler(console)
+        if no_file_log:
+            logging.info('Console logging only')
 
     logging.info('--------------------------------')
     logging.info('%s-%s (rev=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
@@ -1179,7 +1159,7 @@ def main():
         if cpumodel:
             logging.debug('CPU model = %s', cpumodel)
 
-    logging.info('Read INI file %s', inifile)
+    logging.info('Using INI file %s', inifile)
 
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
@@ -1198,9 +1178,6 @@ def main():
 
     sabnzbd.WEB_COLOR = check_template_scheme(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
-
-    if fork and not sabnzbd.WIN32:
-        daemonize()
 
     # Save the INI file
     config.save_config(force=True)
@@ -1450,7 +1427,7 @@ def main():
             LOG_FLAG = False
             level = LOGLEVELS[sabnzbd.cfg.log_level() + 1]
             logger.setLevel(level)
-            if consoleLogging:
+            if console_logging:
                 console.setLevel(level)
 
         # 30 sec polling tasks

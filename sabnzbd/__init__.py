@@ -1024,7 +1024,7 @@ def pid_file(pid_path=None, pid_file=None, port=0):
     global DIR_PID
     if not sabnzbd.WIN32:
         if pid_path and pid_path.startswith('/'):
-            DIR_PID = os.path.join(pid_path, 'sabnzbd-%s.pid' % port)
+            DIR_PID = os.path.join(pid_path, 'sabnzbd-%d.pid' % port)
         elif pid_file and pid_file.startswith('/'):
             DIR_PID = pid_file
 

@@ -98,3 +98,47 @@ class TestExtractPot:
         cur_time = time.time()
         assert (cur_time - os.path.getmtime("po/main/SABnzbd.pot")) < 30
         assert (cur_time - os.path.getmtime("po/email/SABemail.pot")) < 30
+
+
+@pytest.mark.skipif(sys.platform.startswith("win"), reason="Skipping on Windows")
+class TestDaemonizing(SABnzbdBaseTest):
+    def test_daemonizing_basic(self):
+        """ Simple test to see if daemon-mode still works
+            We inherit from SABnzbdBaseTest so we can use it's clean-up logic!
+        """
+        daemon_host = "localhost"
+        daemon_port = 23456
+        ini_location = os.path.join(SAB_CACHE_DIR, "daemon_test")
+
+        # Combine it all into the script call
+        script_call = [
+            sys.executable,
+            "SABnzbd.py",
+            "-d",
+            "-s",
+            "%s:%s" % (daemon_host, daemon_port),
+            "-f",
+            ini_location,
+            "--pid",
+            ini_location,
+        ]
+
+        # Run script and check output
+        script_call = subprocess.Popen(script_call, stdout=subprocess.PIPE)
+        script_output, errs = script_call.communicate(timeout=15)
+
+        # No error or output should be thrown by main process
+        assert not script_output
+        assert not errs
+
+        # It should be online after 3 seconds
+        time.sleep(3.0)
+        assert "version" in get_api_result("version", daemon_host, daemon_port)
+
+        # Did it create the PID file
+        pid_file = os.path.join(ini_location, "sabnzbd-%d.pid" % daemon_port)
+        assert os.path.exists(pid_file)
+
+        # Let's shut it down and give it some time to do so
+        get_url_result("shutdown")
+        time.sleep(3.0)

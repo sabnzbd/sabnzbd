@@ -126,7 +126,7 @@ class SABnzbdConfigRSS(SABnzbdBaseTest):
         assert len(queue_result_slots) == 1
 
         # Let's remove this thing
-        get_api_result("queue", {"name": "delete", "value": queue_result_slots[0]["nzo_id"]})
+        get_api_result("queue", extra_arguments={"name": "delete", "value": queue_result_slots[0]["nzo_id"]})
         queue_result_slots = get_api_result("queue")["queue"]["slots"]
         assert len(queue_result_slots) == 0
 
