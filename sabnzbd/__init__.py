@@ -852,8 +852,8 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
         try:
             with open(path, 'wb') as data_file:
                 if do_pickle:
-                    # TODO: Python 2 pickle compatibility
-                    pickle.dump(data, data_file, protocol=2)
+                    # TODO: Change to HIGHEST_PROTOCOL after some time (breaks going back to Py2-SAB)
+                    pickle.dump(data, data_file)
                 else:
                     data_file.write(data)
             break
@@ -883,8 +883,7 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
     try:
         with open(path, 'rb') as data_file:
             if do_pickle:
-                # TODO: Python 2 pickle compatibility
-                data = pickle.load(data_file, encoding="latin1")
+                data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
             else:
                 # TODO: See if this file reading still works
                 data = data_file.read()
