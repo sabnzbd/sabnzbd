@@ -251,9 +251,9 @@ class URLGrabber(Thread):
 
                 # Check if nzb file
                 if sabnzbd.filesystem.get_ext(filename) in VALID_NZB_FILES:
-                    res = dirscanner.ProcessSingleFile(filename, path, pp=pp, script=script, cat=cat, priority=priority,
-                                                       nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
-                                                       nzo_id=future_nzo.nzo_id)[0]
+                    res = dirscanner.process_single_nzb(filename, path, pp=pp, script=script, cat=cat, priority=priority,
+                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
+                                                        nzo_id=future_nzo.nzo_id)[0]
                     if res:
                         if res == -2:
                             logging.info('Incomplete NZB, retry after 5 min %s', url)
@@ -276,9 +276,9 @@ class URLGrabber(Thread):
                             os.rename(path, path + exp_ext)
                             path = path + exp_ext
 
-                        dirscanner.ProcessArchiveFile(filename, path, pp, script, cat, priority=priority,
-                                                     nzbname=nzbname, url=future_nzo.url, keep=False,
-                                                     nzo_id=future_nzo.nzo_id)
+                        dirscanner.process_nzb_archive_file(filename, path, pp, script, cat, priority=priority,
+                                                            nzbname=nzbname, url=future_nzo.url, keep=False,
+                                                            nzo_id=future_nzo.nzo_id)
                     else:
                         # Not a supported filetype, not an nzb (text/html ect)
                         try:

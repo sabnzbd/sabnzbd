@@ -841,7 +841,7 @@ def prefix(path, pre):
 
 def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
     """ Check if this job contains only NZB files,
-        if so send to queue and remove if on CleanList
+        if so send to queue and remove if on clean-up list
         Returns list of processed NZB's
     """
     files = recursive_listdir(wdir)
@@ -855,9 +855,9 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
         nzbname = None
 
     # Process all NZB files
-    for file_ in files:
-        dirscanner.ProcessSingleFile(os.path.split(file_)[1], file_, pp, script, cat,
-                                     priority=priority, keep=False, dup_check=False, nzbname=nzbname)
+    for nzb_file in files:
+        dirscanner.process_single_nzb(os.path.split(nzb_file)[1], file_, pp, script, cat,
+                                      priority=priority, keep=False, dup_check=False, nzbname=nzbname)
     return files
 
 

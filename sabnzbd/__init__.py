@@ -74,7 +74,7 @@ from sabnzbd.rating import Rating
 import sabnzbd.misc as misc
 import sabnzbd.filesystem as filesystem
 import sabnzbd.powersup as powersup
-from sabnzbd.dirscanner import DirScanner, ProcessArchiveFile, ProcessSingleFile
+from sabnzbd.dirscanner import DirScanner, process_nzb_archive_file, process_single_nzb
 from sabnzbd.urlgrabber import URLGrabber
 import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
@@ -659,11 +659,11 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             return None
 
     if ext.lower() in VALID_ARCHIVES:
-        return ProcessArchiveFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,
-                                  password=password)
+        return process_nzb_archive_file(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,
+                                        password=password)
     else:
-        return ProcessSingleFile(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,
-                                 keep=keep, reuse=reuse, password=password)
+        return process_single_nzb(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,
+                                  keep=keep, reuse=reuse, password=password)
 
 
 def enable_server(server):

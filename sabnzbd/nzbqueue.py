@@ -43,7 +43,7 @@ import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.notifier as notifier
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.dirscanner import ProcessSingleFile
+from sabnzbd.dirscanner import process_single_nzb
 
 
 class NzbQueue:
@@ -189,7 +189,7 @@ class NzbQueue:
             logging.debug('Failed to find NZB file after pre-check (%s)', nzo.nzo_id)
             return
 
-        res, nzo_ids = ProcessSingleFile(nzo.work_name + '.nzb', nzb_path, keep=True, reuse=True)
+        res, nzo_ids = process_single_nzb(nzo.work_name + '.nzb', nzb_path, keep=True, reuse=True)
         if res == 0 and nzo_ids:
             nzo = self.replace_in_q(nzo, nzo_ids[0])
             # Reset reuse flag to make pause/abort on encryption possible

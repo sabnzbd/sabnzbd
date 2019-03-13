@@ -27,7 +27,7 @@ import urllib.error
 import sabnzbd.cfg as cfg
 from sabnzbd.filesystem import get_ext, get_filename
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES
-from sabnzbd.dirscanner import ProcessArchiveFile, ProcessSingleFile
+from sabnzbd.dirscanner import process_nzb_archive_file, process_single_nzb
 from sabnzbd.misc import get_from_url
 
 
@@ -58,9 +58,9 @@ def add_local(f):
         fn = get_filename(f)
         if fn:
             if get_ext(fn) in VALID_ARCHIVES:
-                ProcessArchiveFile(fn, f, keep=True)
+                process_nzb_archive_file(fn, f, keep=True)
             elif get_ext(fn) in VALID_NZB_FILES:
-                ProcessSingleFile(fn, f, keep=True)
+                process_single_nzb(fn, f, keep=True)
         else:
             logging.error("Filename not found: %s", f)
     else:

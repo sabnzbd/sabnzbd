@@ -383,10 +383,10 @@ def _api_addlocalfile(name, output, kwargs):
                 nzbname = kwargs.get('nzbname')
 
                 if get_ext(name) in VALID_ARCHIVES:
-                    res = sabnzbd.dirscanner.ProcessArchiveFile(
+                    res = sabnzbd.dirscanner.process_nzb_archive_file(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
                 elif get_ext(name) in VALID_NZB_FILES:
-                    res = sabnzbd.dirscanner.ProcessSingleFile(
+                    res = sabnzbd.dirscanner.process_single_nzb(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:
                 logging.info('API-call addlocalfile: "%s" not a proper file name', name)

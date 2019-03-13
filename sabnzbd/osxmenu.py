@@ -748,10 +748,10 @@ class SABnzbdDelegate(NSObject):
                 if fn:
                     if get_ext(name) in VALID_ARCHIVES:
                         # logging.info('[osx] archive')
-                        dirscanner.ProcessArchiveFile(fn, name, keep=True)
+                        dirscanner.process_nzb_archive_file(fn, name, keep=True)
                     elif get_ext(name) in VALID_NZB_FILES:
                         # logging.info('[osx] nzb')
-                        dirscanner.ProcessSingleFile(fn, name, keep=True)
+                        dirscanner.process_single_nzb(fn, name, keep=True)
         # logging.info('opening done')
 
     def applicationShouldTerminate_(self, sender):
