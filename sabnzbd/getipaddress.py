@@ -82,7 +82,7 @@ def publicipv4():
         ipv4_found = False
         # we only want IPv4 resolving, so socket.AF_INET:
         result = addresslookup4(sabnzbd.cfg.selftest_host())
-    except socket.error:
+    except (socket.error, multiprocessing.context.TimeoutError):
         # something very bad: no urllib2, no resolving of selftest_host, no network at all
         return public_ipv4
 
