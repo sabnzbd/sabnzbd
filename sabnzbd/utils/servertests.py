@@ -42,17 +42,28 @@ def test_nntp_server_dict(kwargs):
         return False, T("There are no connections set. Please set at least one connection.")
     ssl = int_conv(kwargs.get("ssl", 0))
     ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
+    ssl_ciphers = kwargs.get("ssl_ciphers")
     port = int_conv(kwargs.get("port", 0))
+
     if not port:
         if ssl:
             port = 563
         else:
             port = 119
 
-    return test_nntp_server(host, port, server, username=username, password=password, ssl=ssl, ssl_verify=ssl_verify)
+    return test_nntp_server(
+        host,
+        port,
+        server,
+        username=username,
+        password=password,
+        ssl=ssl,
+        ssl_verify=ssl_verify,
+        ssl_ciphers=ssl_ciphers,
+    )
 
 
-def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_verify=1):
+def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_verify=1, ssl_ciphers=None):
     """ Will connect (blocking) to the nttp server and report back any errors """
     timeout = 4.0
     if "*" in password and not password.strip("*"):
@@ -73,7 +84,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         if not got_pass:
             return False, T("Password masked in ******, please re-enter")
     try:
-        s = Server(-1, "", host, port, timeout, 0, 0, ssl, ssl_verify, None, False, username, password)
+        s = Server(-1, "", host, port, timeout, 0, 0, ssl, ssl_verify, ssl_ciphers, False, username, password)
     except:
         return False, T("Invalid server details")
 

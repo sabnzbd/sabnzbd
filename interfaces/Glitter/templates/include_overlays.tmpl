@@ -1,3 +1,5 @@
+<!--#from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES#-->
+<!--#set $file_exts = ', '.join(VALID_NZB_FILES + VALID_ARCHIVES)#-->
 <!-- Notifcation box -->
 <div class="main-notification-box" style="display: none">
     <div class="main-notification-box-uploading">
@@ -442,7 +444,7 @@
                     <form data-bind="submit: addNZBFromURL" class="col-sm-6">
                         <fieldset>
                             <legend class="row-wrap-text">$T('Glitter-addFromURL')</legend>
-                            <div class="input-group" data-tooltip="true" data-placement="bottom" title="$T('Glitter-nzbFormats')">
+                            <div class="input-group" data-tooltip="true" data-placement="bottom" title="$file_exts">
                                 <input type="text" name="nzbURL" class="form-control" placeholder="$T('enterURL')" />
                                 <span class="input-group-btn">
                                     <input type="submit" name="Add" value="$T('add')" class="btn btn-default" />
@@ -453,10 +455,10 @@
                     <form data-bind="submit: addNZBFromFileForm" class="col-sm-6">
                         <fieldset>
                             <legend class="row-wrap-text">$T('Glitter-addFromFile')</legend>
-                            <div class="input-group" data-tooltip="true" data-placement="bottom" title="$T('Glitter-nzbFormats')">
+                            <div class="input-group" data-tooltip="true" data-placement="bottom" title="$file_exts">
                                 <label class="btn btn-default btn-file">
                                     <span class="glyphicon glyphicon-file"></span> <em>$T('Glitter-chooseFile')&hellip;</em>
-                                    <input type="file" multiple name="nzbFile" class="form-control" accept=".nzb,.rar,.zip,.gz,.bz2" data-bind="event : { change: updateBrowseLabel }" />
+                                    <input type="file" multiple name="nzbFile" class="form-control" accept="$file_exts" data-bind="event : { change: updateBrowseLabel }" />
                                 </label>
 
                                 <span class="input-group-btn">
@@ -578,10 +580,10 @@
                     <input type="hidden" name="retry_job_id" />
                     <fieldset>
                         <legend>$T('opt-extra-NZB')</legend>
-                        <div class="input-group input-group-addfile" data-tooltip="true" data-placement="bottom" title="$T('Glitter-nzbFormats')">
+                        <div class="input-group input-group-addfile" data-tooltip="true" data-placement="bottom" title="$file_exts">
                             <label class="btn btn-default btn-file">
                                 <span class="glyphicon glyphicon-file"></span> <em>$T('Glitter-chooseFile')&hellip;</em>
-                                <input type="file" name="nzbFile" class="form-control" accept=".nzb,.rar,.zip,.gz,.bz2" data-bind="event : { change: updateBrowseLabel }" />
+                                <input type="file" name="nzbFile" class="form-control" accept="$file_exts" data-bind="event : { change: updateBrowseLabel }" />
                             </label>
                         </div>
                     </fieldset>

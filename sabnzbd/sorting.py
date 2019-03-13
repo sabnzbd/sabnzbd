@@ -376,7 +376,12 @@ class SeriesSorter:
         else:
             head = path
 
-        return os.path.normpath(head)
+        if head:
+            return os.path.normpath(head)
+        else:
+            # The normpath function translates "" to "."
+            # which results in wrong path.join later on
+            return head
 
     def rename(self, files, current_path):
         """ Rename for Series """
@@ -625,7 +630,12 @@ class MovieSorter:
         else:
             head = path
 
-        return os.path.normpath(head)
+        if head:
+            return os.path.normpath(head)
+        else:
+            # The normpath function translates "" to "."
+            # which results in wrong path.join later on
+            return head
 
     def rename(self, _files, current_path):
         """ Rename for Generic files """
@@ -847,7 +857,12 @@ class DateSorter:
         else:
             head = path
 
-        return os.path.normpath(head)
+        if head:
+            return os.path.normpath(head)
+        else:
+            # The normpath function translates "" to "."
+            # which results in wrong path.join later on
+            return head
 
     def rename(self, files, current_path):
         """ Renaming Date file """
