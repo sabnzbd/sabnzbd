@@ -829,7 +829,6 @@ SKIN_TEXT = {
     'Glitter-addFromFile' : TT('Upload NZB'),
     'Glitter-chooseFile' : TT('Browse'),
     'Glitter-addnzbFilename' : TT('Optionally specify a filename'),
-    'Glitter-nzbFormats' : TT('Formats: .nzb, .rar, .zip, .gz, .bz2'),
     'Glitter-submit' : TT('Submit'),
     'Glitter-openInfoURL' : TT('Open Informational URL'),
     'Glitter-sendThanks' : TT('Submitted. Thank you!'),

@@ -25,7 +25,7 @@ Be careful to use those special features.
 
 [ System requirement ]
 
- MultiPar requires a PC with Windows XP or later (Windows Vista, 7, 8, etc).
+ MultiPar requires a PC with Windows XP or later (Windows Vista, 7, 8, 10, etc).
 
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -71,10 +71,11 @@ Don't send current PAR3 files to others, who may not have the same version.
 
 [ How to install or uninstall with installer package ]
 
- Double click setup file ( MultiPar126_setup.exe or something like this name ),
+ Double click setup file ( MultiPar129_setup.exe or something like this name ),
 and follow the installer dialog.
 At version up, if you want to use previous setting, overwrite install is possible.
-You may need to re-start OS after over write install or uninstall rarely.
+Before overwrite install, you should un-check "Integrate MultiPar into Shell".
+You may need to re-start OS after overwrite install or uninstall rarely.
 To install under "Program Files" directory on Windows Vista/7/8,
 you must start the installer with administrative privileges by selecting
 "Run as administrator" on right-click menu.
@@ -99,7 +100,7 @@ In either case, user made icons and association are available for the user only.
 
 [ How to install with archive version ]
 
- Unpack compressed file ( MultiPar126.zip or something like this name ) in a folder.
+ Unpack compressed file ( MultiPar129.zip or something like this name ) in a folder.
 MultiPar.exe is the interface of MultiPar.
 
  You can create short-cut icon or send-to link at Option window later.
