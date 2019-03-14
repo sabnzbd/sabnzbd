@@ -64,18 +64,6 @@ def is_writable(path):
         return True
 
 
-def remove_file(path):
-    """ Wrapper function so any file removal is logged """
-    logging.debug('[%s] Deleting file %s', sabnzbd.misc.caller_name(), path)
-    os.remove(path)
-
-
-def remove_dir(dir):
-    """ Wrapper function so any dir removal is logged """
-    logging.debug('[%s] Deleting dir %s', sabnzbd.misc.caller_name(), dir)
-    os.rmdir(dir)
-
-
 _DEVICES = ('con', 'prn', 'aux', 'nul',
             'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9',
             'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9')
@@ -740,10 +728,16 @@ def renamer(old, new):
         shutil.move(old, new)
 
 
+def remove_file(path):
+    """ Wrapper function so any file removal is logged """
+    logging.debug('[%s] Deleting file %s', sabnzbd.misc.caller_name(), path)
+    os.remove(path)
+
+
 @synchronized(DIR_LOCK)
 def remove_dir(path):
     """ Remove directory with retries for Win32 """
-    logging.debug('Removing dir %s', path)
+    logging.debug('[%s] Removing dir %s', sabnzbd.misc.caller_name(), path)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
@@ -751,7 +745,8 @@ def remove_dir(path):
                 os.rmdir(path)
                 return
             except WindowsError as err:
-                if err[0] == 32:
+                # In use by another process
+                if err.errno == 32:
                     logging.debug('Retry delete %s', path)
                     retries -= 1
                 else:

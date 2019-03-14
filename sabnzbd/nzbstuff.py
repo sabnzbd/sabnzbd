@@ -1562,7 +1562,7 @@ class NzbObject(TryList):
                 try:
                     remove_dir(self.downpath)
                 except:
-                    logging.debug('Folder not removed: %s', self.downpath)
+                    logging.info('Folder cannot be removed: %s', self.downpath, exc_info=True)
 
     def gather_info(self, full=False):
         queued_files = []
