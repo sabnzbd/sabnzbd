@@ -93,7 +93,7 @@ def send_email(message, email_to, test=None):
                 mailconn = smtplib.SMTP(server, port)
                 mailconn.ehlo()
             except:
-                logging.info('Traceback: ', exc_info=True)
+                logging.info("Traceback: ", exc_info=True)
                 return errormsg(T("Failed to connect to mail server"))
 
         # TLS support
@@ -105,7 +105,7 @@ def send_email(message, email_to, test=None):
                     mailconn.starttls()
                     mailconn.ehlo()
                 except:
-                    logging.info('Traceback: ', exc_info=True)
+                    logging.info("Traceback: ", exc_info=True)
                     return errormsg(T("Failed to initiate TLS connection"))
 
         # Authentication
@@ -119,7 +119,7 @@ def send_email(message, email_to, test=None):
             except smtplib.SMTPException:
                 return errormsg(T("No suitable authentication method was found"))
             except:
-                logging.info('Traceback: ', exc_info=True)
+                logging.info("Traceback: ", exc_info=True)
                 return errormsg(T("Unknown authentication failure in mail server"))
 
         try:
@@ -134,13 +134,13 @@ def send_email(message, email_to, test=None):
         except smtplib.SMTPDataError:
             msg = errormsg("The server replied with an unexpected error code (other than a refusal of a recipient).")
         except:
-            logging.info('Traceback: ', exc_info=True)
+            logging.info("Traceback: ", exc_info=True)
             msg = errormsg(T("Failed to send e-mail"))
 
         try:
             mailconn.close()
         except:
-            logging.info('Traceback: ', exc_info=True)
+            logging.info("Traceback: ", exc_info=True)
             errormsg(T("Failed to close mail connection"))
 
         if msg:
@@ -192,7 +192,9 @@ def send_with_template(prefix, parm, test=None):
     return ret
 
 
-def endjob(filename, cat, status, path, bytes_downloaded, fail_msg, stages, script, script_output, script_ret, test=None):
+def endjob(
+    filename, cat, status, path, bytes_downloaded, fail_msg, stages, script, script_output, script_ret, test=None
+):
     """ Send end-of-job email """
     # Is it allowed?
     if not check_cat("misc", cat, keyword="email") and not test:
@@ -258,7 +260,9 @@ SABnzbd has stopped downloading, because the disk is almost full.
 Please make room and resume SABnzbd manually.
 
 """
-            ) % (cfg.email_to.get_string(), cfg.email_from(), get_email_date()), cfg.email_to(),
+            )
+            % (cfg.email_to.get_string(), cfg.email_from(), get_email_date()),
+            cfg.email_to(),
         )
     else:
         return ""

@@ -32,8 +32,10 @@ from sabnzbd.encoding import ubtou
 
 def timeout(max_timeout):
     """ Timeout decorator, parameter in seconds. """
+
     def timeout_decorator(item):
         """ Wrap the original function. """
+
         @functools.wraps(item)
         def func_wrapper(*args, **kwargs):
             """ Closure for function. """
@@ -41,7 +43,9 @@ def timeout(max_timeout):
             async_result = pool.apply_async(item, args, kwargs)
             # raises a TimeoutError if execution exceeds max_timeout
             return async_result.get(max_timeout)
+
         return func_wrapper
+
     return timeout_decorator
 
 
@@ -64,7 +68,7 @@ def localipv4():
     try:
         s_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
-        s_ipv4.connect(('1.2.3.4', 80))
+        s_ipv4.connect(("1.2.3.4", 80))
         ipv4 = s_ipv4.getsockname()[0]
         s_ipv4.close()
     except socket.error:
@@ -94,9 +98,9 @@ def publicipv4():
             # put the selftest_host's IPv4 address into the URL
             req = urllib.request.Request("http://" + selftest_ipv4 + "/")
             # specify the User-Agent, because certain sites refuse connections with "python urllib2" as User-Agent:
-            req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
+            req.add_header("User-Agent", "SABnzbd+/%s" % sabnzbd.version.__version__)
             # specify the Host, because we only provide the IPv4 address in the URL:
-            req.add_header('Host', sabnzbd.cfg.selftest_host())
+            req.add_header("Host", sabnzbd.cfg.selftest_host())
             # get the response, timeout 2 seconds, in case the website is not accessible
             public_ipv4 = ubtou(urllib.request.urlopen(req, timeout=2).read())
             # ... check the response is indeed an IPv4 address:
@@ -119,7 +123,7 @@ def ipv6():
     try:
         s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
         # IPv6 prefix for documentation purpose
-        s_ipv6.connect(('2001:db8::8080', 80))
+        s_ipv6.connect(("2001:db8::8080", 80))
         ipv6_address = s_ipv6.getsockname()[0]
         s_ipv6.close()
     except socket.error:

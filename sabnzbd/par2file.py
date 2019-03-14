@@ -25,7 +25,7 @@ import hashlib
 import struct
 from sabnzbd.encoding import correct_unknown_encoding
 
-PROBABLY_PAR2_RE = re.compile(r'(.*)\.vol(\d*)[\+\-](\d*)\.par2', re.I)
+PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[\+\-](\d*)\.par2", re.I)
 PAR_PKT_ID = b"PAR2\x00PKT"
 PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
 PAR_CREATOR_ID = b"PAR 2.0\x00Creator"
@@ -86,7 +86,7 @@ def parse_par2_file(nzf, fname):
     duplicates16k = []
 
     try:
-        f = open(fname, 'rb')
+        f = open(fname, "rb")
     except:
         return table
 
@@ -107,11 +107,11 @@ def parse_par2_file(nzf, fname):
 
     except (struct.error, IndexError):
         logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
-        logging.info('Traceback: ', exc_info=True)
+        logging.info("Traceback: ", exc_info=True)
         table = {}
     except:
-        logging.debug('QuickCheck parser crashed in file %s', fname)
-        logging.info('Traceback: ', exc_info=True)
+        logging.debug("QuickCheck parser crashed in file %s", fname)
+        logging.info("Traceback: ", exc_info=True)
         table = {}
     f.close()
 
@@ -120,7 +120,7 @@ def parse_par2_file(nzf, fname):
     for hash16k in duplicates16k:
         if hash16k in nzf.nzo.md5of16k:
             old_name = nzf.nzo.md5of16k.pop(hash16k)
-            logging.debug('Par2-16k signature of %s not unique, discarding', old_name)
+            logging.debug("Par2-16k signature of %s not unique, discarding", old_name)
 
     return table
 
@@ -134,7 +134,7 @@ def parse_par2_file_packet(f, header):
         return nothing
 
     # Length must be multiple of 4 and at least 20
-    pack_len = struct.unpack('<Q', f.read(8))[0]
+    pack_len = struct.unpack("<Q", f.read(8))[0]
     if int(pack_len / 4) * 4 != pack_len or pack_len < 20:
         return nothing
 
@@ -158,15 +158,15 @@ def parse_par2_file_packet(f, header):
 
     # See if it's the right packet and get name + hash
     for offset in range(0, pack_len, 8):
-        if data[offset:offset + 16] == PAR_FILE_ID:
-            filehash = data[offset + 32:offset + 48]
-            hash16k = data[offset + 48:offset + 64]
-            filename = correct_unknown_encoding(data[offset + 72:].strip(b"\0"))
+        if data[offset : offset + 16] == PAR_FILE_ID:
+            filehash = data[offset + 32 : offset + 48]
+            hash16k = data[offset + 48 : offset + 64]
+            filename = correct_unknown_encoding(data[offset + 72 :].strip(b"\0"))
             return filename, filehash, hash16k
-        elif data[offset:offset + 15] == PAR_CREATOR_ID:
+        elif data[offset : offset + 15] == PAR_CREATOR_ID:
             # From here until the end is the creator-text
             # Useful in case of bugs in the par2-creating software
-            par2creator = data[offset+16:].strip(b"\0")  # Remove any trailing \0
-            logging.debug('Par2-creator of %s is: %s', os.path.basename(f.name), correct_unknown_encoding(par2creator))
+            par2creator = data[offset + 16 :].strip(b"\0")  # Remove any trailing \0
+            logging.debug("Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator))
 
     return nothing

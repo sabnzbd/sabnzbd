@@ -32,6 +32,7 @@ import sys
 import re
 import ssl
 from threading import Lock, Thread
+
 try:
     import sleepless
 except ImportError:
@@ -43,24 +44,28 @@ except ImportError:
 WIN32 = DARWIN = FOUNDATION = WIN64 = False
 KERNEL32 = None
 
-if os.name == 'nt':
+if os.name == "nt":
     WIN32 = True
     from util.apireg import del_connection_info
+
     try:
         import ctypes
+
         KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
     except:
         pass
-elif os.name == 'posix':
+elif os.name == "posix":
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
     import platform
-    if platform.system().lower() == 'darwin':
+
+    if platform.system().lower() == "darwin":
         DARWIN = True
         # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
-        DARWIN_VERSION = int(platform.mac_ver()[0].split('.')[1])
+        DARWIN_VERSION = int(platform.mac_ver()[0].split(".")[1])
         try:
             import Foundation
+
             FOUNDATION = True
         except:
             pass
@@ -93,8 +98,14 @@ import sabnzbd.interface
 import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.directunpacker as directunpacker
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import NORMAL_PRIORITY, VALID_ARCHIVES, \
-    REPAIR_REQUEST, QUEUE_FILE_NAME, QUEUE_VERSION, QUEUE_FILE_TMPL
+from sabnzbd.constants import (
+    NORMAL_PRIORITY,
+    VALID_ARCHIVES,
+    REPAIR_REQUEST,
+    QUEUE_FILE_NAME,
+    QUEUE_VERSION,
+    QUEUE_FILE_TMPL,
+)
 import sabnzbd.getipaddress as getipaddress
 
 LINUX_POWER = powersup.HAVE_DBUS
@@ -127,10 +138,10 @@ LOG_ALL = False
 AMBI_LOCALHOST = False
 WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
-CMDLINE = ''  # Rendering of original command line arguments
+CMDLINE = ""  # Rendering of original command line arguments
 
 CERTIFICATE_VALIDATION = True
-NO_DOWNLOADING = False # When essentials are missing (SABYenc/par2/unrar)
+NO_DOWNLOADING = False  # When essentials are missing (SABYenc/par2/unrar)
 
 WEB_DIR = None
 WEB_DIR_CONFIG = None
@@ -166,13 +177,14 @@ def sig_handler(signum=None, frame=None):
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if signum is not None:
-        logging.warning(T('Signal %s caught, saving and exiting...'), signum)
+        logging.warning(T("Signal %s caught, saving and exiting..."), signum)
     try:
         save_state()
         sabnzbd.zconfig.remove_server()
     finally:
         if sabnzbd.WIN32:
             from util.apireg import del_connection_info
+
             del_connection_info()
             if sabnzbd.WINTRAY:
                 sabnzbd.WINTRAY.terminate = True
@@ -191,18 +203,14 @@ INIT_LOCK = Lock()
 
 def get_db_connection(thread_index=0):
     # Create a connection and store it in the current thread
-    if not (hasattr(cherrypy.thread_data, 'history_db') and cherrypy.thread_data.history_db):
+    if not (hasattr(cherrypy.thread_data, "history_db") and cherrypy.thread_data.history_db):
         cherrypy.thread_data.history_db = sabnzbd.database.HistoryDB()
     return cherrypy.thread_data.history_db
 
 
 @synchronized(INIT_LOCK)
 def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0):
-    global __INITIALIZED__, __SHUTTING_DOWN__,\
-        LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, \
-        DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, \
-        DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG, DIR_INTERFACES, \
-        DARWIN, RESTART_REQ
+    global __INITIALIZED__, __SHUTTING_DOWN__, LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG, DIR_INTERFACES, DARWIN, RESTART_REQ
 
     if __INITIALIZED__:
         return False
@@ -210,7 +218,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     __SHUTTING_DOWN__ = False
 
     # Set global database connection for Web-UI threads
-    cherrypy.engine.subscribe('start_thread', get_db_connection)
+    cherrypy.engine.subscribe("start_thread", get_db_connection)
 
     # Paused?
     pause_downloader = pause_downloader or cfg.start_paused()
@@ -218,7 +226,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     # Clean-up, if requested
     if clean_up:
         # New admin folder
-        filesystem.remove_all(cfg.admin_dir.get_path(), '*.sab')
+        filesystem.remove_all(cfg.admin_dir.get_path(), "*.sab")
 
     # Optionally wait for "incomplete" to become online
     if cfg.wait_for_dfolder():
@@ -234,7 +242,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     # Maybe it's a network path that's temporarily missing.
     path = cfg.dirscan_dir.get_path()
     if not os.path.exists(path):
-        filesystem.create_real_path(cfg.dirscan_dir.ident(), '', path, False)
+        filesystem.create_real_path(cfg.dirscan_dir.ident(), "", path, False)
 
     # Set call backs for Config items
     cfg.cache_limit.callback(new_limit)
@@ -261,14 +269,14 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     guard_https_ver()
 
     # Set cache limit
-    if not cfg.cache_limit() or (cfg.cache_limit() in ('200M', '450M') and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
+    if not cfg.cache_limit() or (cfg.cache_limit() in ("200M", "450M") and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
         cfg.cache_limit.set(misc.get_cache_limit())
     ArticleCache.do.new_limit(cfg.cache_limit.get_int())
 
     check_incomplete_vs_complete()
 
     # Set language files
-    lang.set_locale_info('SABnzbd', DIR_LANGUAGE)
+    lang.set_locale_info("SABnzbd", DIR_LANGUAGE)
     lang.set_language(cfg.language())
     sabnzbd.api.clear_trans_cache()
 
@@ -279,8 +287,8 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
         schedules = cfg.schedules()
         newsched = []
         for sched in schedules:
-            if 'speedlimit' in sched:
-                newsched.append(re.sub(r'(speedlimit \d+)$', r'\1K', sched))
+            if "speedlimit" in sched:
+                newsched.append(re.sub(r"(speedlimit \d+)$", r"\1K", sched))
             else:
                 newsched.append(sched)
         cfg.schedules.set(newsched)
@@ -288,7 +296,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     # Second time schedule conversion
     if cfg.sched_converted() != 2:
-        cfg.schedules.set(['%s %s' % (1, schedule) for schedule in cfg.schedules()])
+        cfg.schedules.set(["%s %s" % (1, schedule) for schedule in cfg.schedules()])
         cfg.sched_converted.set(2)
         config.save_config()
 
@@ -327,7 +335,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     if evalSched:
         scheduler.analyse(pause_downloader)
 
-    logging.info('All processes started')
+    logging.info("All processes started")
     RESTART_REQ = False
     __INITIALIZED__ = True
     return True
@@ -338,23 +346,23 @@ def start():
     global __INITIALIZED__
 
     if __INITIALIZED__:
-        logging.debug('Starting postprocessor')
+        logging.debug("Starting postprocessor")
         PostProcessor.do.start()
 
-        logging.debug('Starting assembler')
+        logging.debug("Starting assembler")
         Assembler.do.start()
 
-        logging.debug('Starting downloader')
+        logging.debug("Starting downloader")
         Downloader.do.start()
 
         scheduler.start()
 
-        logging.debug('Starting dirscanner')
+        logging.debug("Starting dirscanner")
         DirScanner.do.start()
 
         Rating.do.start()
 
-        logging.debug('Starting urlgrabber')
+        logging.debug("Starting urlgrabber")
         URLGrabber.do.start()
 
 
@@ -363,7 +371,7 @@ def halt():
     global __INITIALIZED__, __SHUTTING_DOWN__
 
     if __INITIALIZED__:
-        logging.info('SABnzbd shutting down...')
+        logging.info("SABnzbd shutting down...")
         __SHUTTING_DOWN__ = True
 
         # Stop the windows tray icon
@@ -376,21 +384,21 @@ def halt():
 
         rss.stop()
 
-        logging.debug('Stopping URLGrabber')
+        logging.debug("Stopping URLGrabber")
         URLGrabber.do.stop()
         try:
             URLGrabber.do.join()
         except:
             pass
 
-        logging.debug('Stopping rating')
+        logging.debug("Stopping rating")
         Rating.do.stop()
         try:
             Rating.do.join()
         except:
             pass
 
-        logging.debug('Stopping dirscanner')
+        logging.debug("Stopping dirscanner")
         DirScanner.do.stop()
         try:
             DirScanner.do.join()
@@ -398,17 +406,17 @@ def halt():
             pass
 
         # Stop Required Objects
-        logging.debug('Stopping downloader')
+        logging.debug("Stopping downloader")
         sabnzbd.downloader.stop()
 
-        logging.debug('Stopping assembler')
+        logging.debug("Stopping assembler")
         Assembler.do.stop()
         try:
             Assembler.do.join()
         except:
             pass
 
-        logging.debug('Stopping postprocessor')
+        logging.debug("Stopping postprocessor")
         PostProcessor.do.stop()
         try:
             PostProcessor.do.join()
@@ -419,7 +427,7 @@ def halt():
         try:
             save_state()
         except:
-            logging.error(T('Fatal error at saving state'), exc_info=True)
+            logging.error(T("Fatal error at saving state"), exc_info=True)
 
         # The Scheduler cannot be stopped when the stop was scheduled.
         # Since all warm-restarts have been removed, it's not longer
@@ -427,7 +435,7 @@ def halt():
         # We must tell the scheduler to deactivate.
         scheduler.abort()
 
-        logging.info('All processes stopped')
+        logging.info("All processes stopped")
 
         __INITIALIZED__ = False
 
@@ -440,7 +448,7 @@ def trigger_restart(timeout=None):
 
     # Add extra arguments
     if sabnzbd.downloader.Downloader.do.paused:
-        sabnzbd.RESTART_ARGS.append('-p')
+        sabnzbd.RESTART_ARGS.append("-p")
     sys.argv = sabnzbd.RESTART_ARGS
 
     # Stop all services
@@ -452,7 +460,7 @@ def trigger_restart(timeout=None):
         del_connection_info()
 
     # Leave the harder restarts to the polling in SABnzbd.py
-    if sabnzbd.WIN_SERVICE or getattr(sys, 'frozen', None) == 'macosx_app':
+    if sabnzbd.WIN_SERVICE or getattr(sys, "frozen", None) == "macosx_app":
         sabnzbd.TRIGGER_RESTART = True
     else:
         # Do the restart right now
@@ -523,20 +531,20 @@ def guard_https_ver():
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
     """ Add NZB based on a URL, attributes optional """
-    if 'http' not in url:
+    if "http" not in url:
         return
     if not pp or pp == "-1":
         pp = None
-    if script and script.lower() == 'default':
+    if script and script.lower() == "default":
         script = None
-    if cat and cat.lower() == 'default':
+    if cat and cat.lower() == "default":
         cat = None
-    logging.info('Fetching %s', url)
+    logging.info("Fetching %s", url)
 
     # Add feed name if it came from RSS
-    msg = T('Trying to fetch NZB from %s') % url
+    msg = T("Trying to fetch NZB from %s") % url
     if nzbname:
-        msg = '%s - %s' % (nzbname, msg)
+        msg = "%s - %s" % (nzbname, msg)
 
     # Generate the placeholder
     future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
@@ -560,7 +568,7 @@ def pause_all():
     global PAUSED_ALL
     PAUSED_ALL = True
     Downloader.do.pause()
-    logging.debug('PAUSED_ALL active')
+    logging.debug("PAUSED_ALL active")
 
 
 def unpause_all():
@@ -568,17 +576,18 @@ def unpause_all():
     global PAUSED_ALL
     PAUSED_ALL = False
     Downloader.do.resume()
-    logging.debug('PAUSED_ALL inactive')
+    logging.debug("PAUSED_ALL inactive")
 
 
 ##############################################################################
 # NZB Saving Methods
 ##############################################################################
 
+
 def backup_exists(filename):
     """ Return True if backup exists and no_dupes is set """
     path = cfg.nzb_backup_dir.get_path()
-    return path and os.path.exists(os.path.join(path, filename + '.gz'))
+    return path and os.path.exists(os.path.join(path, filename + ".gz"))
 
 
 def backup_nzb(filename, data):
@@ -590,20 +599,20 @@ def backup_nzb(filename, data):
 
 def save_compressed(folder, filename, data):
     """ Save compressed NZB file in folder """
-    if filename.endswith('.nzb'):
-        filename += '.gz'
+    if filename.endswith(".nzb"):
+        filename += ".gz"
     else:
-        filename += '.nzb.gz'
+        filename += ".nzb.gz"
     logging.info("Backing up %s", os.path.join(folder, filename))
     try:
         # Have to get around the path being put inside the tgz
-        with open(os.path.join(folder, filename), 'wb') as tgz_file:
+        with open(os.path.join(folder, filename), "wb") as tgz_file:
             f = gzip.GzipFile(filename, fileobj=tgz_file)
             f.write(encoding.utob(data))
             f.flush()
             f.close()
     except:
-        logging.error(T('Saving %s failed'), os.path.join(folder, filename))
+        logging.error(T("Saving %s failed"), os.path.join(folder, filename))
         logging.info("Traceback: ", exc_info=True)
 
 
@@ -611,15 +620,18 @@ def save_compressed(folder, filename, data):
 # Unsynchronized methods
 ##############################################################################
 
-def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False, password=None):
+
+def add_nzbfile(
+    nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False, password=None
+):
     """ Add disk-based NZB file, optional attributes,
         'reuse' flag will suppress duplicate detection
     """
     if pp and pp == "-1":
         pp = None
-    if script and script.lower() == 'default':
+    if script and script.lower() == "default":
         script = None
-    if cat and cat.lower() == 'default':
+    if cat and cat.lower() == "default":
         cat = None
 
     if isinstance(nzbfile, str):
@@ -635,16 +647,16 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
     if not sabnzbd.WIN32:
         # If windows client sends file to Unix server backslashes may
         # be included, so convert these
-        filename = filename.replace('\\', '/')
+        filename = filename.replace("\\", "/")
 
     filename = os.path.basename(filename)
     ext = os.path.splitext(filename)[1]
     if ext.lower() in VALID_ARCHIVES:
         suffix = ext.lower()
     else:
-        suffix = '.nzb'
+        suffix = ".nzb"
 
-    logging.info('Adding %s', filename)
+    logging.info("Adding %s", filename)
 
     if isinstance(nzbfile, str):
         path = nzbfile
@@ -654,24 +666,35 @@ def add_nzbfile(nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORIT
             os.write(nzb_file, nzbfile.value)
             os.close(nzb_file)
         except OSError:
-            logging.error(T('Cannot create temp file for %s'), filename)
+            logging.error(T("Cannot create temp file for %s"), filename)
             logging.info("Traceback: ", exc_info=True)
             return None
 
     if ext.lower() in VALID_ARCHIVES:
-        return process_nzb_archive_file(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,
-                                        password=password)
+        return process_nzb_archive_file(
+            filename, path, pp, script, cat, priority=priority, nzbname=nzbname, password=password
+        )
     else:
-        return process_single_nzb(filename, path, pp, script, cat, priority=priority, nzbname=nzbname,
-                                  keep=keep, reuse=reuse, password=password)
+        return process_single_nzb(
+            filename,
+            path,
+            pp,
+            script,
+            cat,
+            priority=priority,
+            nzbname=nzbname,
+            keep=keep,
+            reuse=reuse,
+            password=password,
+        )
 
 
 def enable_server(server):
     """ Enable server (scheduler only) """
     try:
-        config.get_config('servers', server).enable.set(1)
+        config.get_config("servers", server).enable.set(1)
     except:
-        logging.warning(T('Trying to set status of non-existing server %s'), server)
+        logging.warning(T("Trying to set status of non-existing server %s"), server)
         return
     config.save_config()
     Downloader.do.update_server(server, server)
@@ -680,9 +703,9 @@ def enable_server(server):
 def disable_server(server):
     """ Disable server (scheduler only) """
     try:
-        config.get_config('servers', server).enable.set(0)
+        config.get_config("servers", server).enable.set(0)
     except:
-        logging.warning(T('Trying to set status of non-existing server %s'), server)
+        logging.warning(T("Trying to set status of non-existing server %s"), server)
         return
     config.save_config()
     Downloader.do.update_server(server, server)
@@ -751,18 +774,18 @@ def change_queue_complete_action(action, new=True):
 
     _action = None
     _argument = None
-    if 'script_' in action:
+    if "script_" in action:
         # all scripts are labeled script_xxx
         _action = run_script
-        _argument = action.replace('script_', '')
+        _argument = action.replace("script_", "")
     elif new or cfg.queue_complete_pers.get():
-        if action == 'shutdown_pc':
+        if action == "shutdown_pc":
             _action = system_shutdown
-        elif action == 'hibernate_pc':
+        elif action == "hibernate_pc":
             _action = system_hibernate
-        elif action == 'standby_pc':
+        elif action == "standby_pc":
             _action = system_standby
-        elif action == 'shutdown_program':
+        elif action == "shutdown_program":
             _action = shutdown_program
         else:
             action = None
@@ -770,7 +793,7 @@ def change_queue_complete_action(action, new=True):
         action = None
 
     if new:
-        cfg.queue_complete.set(action or '')
+        cfg.queue_complete.set(action or "")
         config.save_config()
 
     # keep the name of the action for matching the current select in queue.tmpl
@@ -785,10 +808,16 @@ def run_script(script):
     if os.path.exists(command[0]):
         try:
             stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command(command)
-            logging.info('Spawning external command %s', command)
-            subprocess.Popen(command, shell=need_shell, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             startupinfo=stup, creationflags=creationflags)
+            logging.info("Spawning external command %s", command)
+            subprocess.Popen(
+                command,
+                shell=need_shell,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                startupinfo=stup,
+                creationflags=creationflags,
+            )
         except:
             logging.debug("Failed script %s, Traceback: ", script, exc_info=True)
 
@@ -811,7 +840,7 @@ def keep_awake():
                         # set ES_SYSTEM_REQUIRED
                         KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
                     else:
-                        sleepless.keep_awake('SABnzbd is busy downloading and/or post-processing')
+                        sleepless.keep_awake("SABnzbd is busy downloading and/or post-processing")
             if not awake and sleepless:
                 sleepless.allow_sleep()
 
@@ -819,6 +848,7 @@ def keep_awake():
 ################################################################################
 # Data IO                                                                      #
 ################################################################################
+
 
 def get_new_id(prefix, folder, check_list=None):
     """ Return unique prefixed admin identifier within folder
@@ -828,13 +858,13 @@ def get_new_id(prefix, folder, check_list=None):
         try:
             if not os.path.exists(folder):
                 os.makedirs(folder)
-            fd, path = tempfile.mkstemp('', 'SABnzbd_%s_' % prefix, folder)
+            fd, path = tempfile.mkstemp("", "SABnzbd_%s_" % prefix, folder)
             os.close(fd)
             head, tail = os.path.split(path)
             if not check_list or tail not in check_list:
                 return tail
         except:
-            logging.error(T('Failure in tempfile.mkstemp'))
+            logging.error(T("Failure in tempfile.mkstemp"))
             logging.info("Traceback: ", exc_info=True)
             break
     # Cannot create unique id, crash the process
@@ -844,13 +874,13 @@ def get_new_id(prefix, folder, check_list=None):
 def save_data(data, _id, path, do_pickle=True, silent=False):
     """ Save data to a diskfile """
     if not silent:
-        logging.debug('[%s] Saving data for %s in %s', misc.caller_name(), _id, path)
+        logging.debug("[%s] Saving data for %s in %s", misc.caller_name(), _id, path)
     path = os.path.join(path, _id)
 
     # We try 3 times, to avoid any dict or access problems
     for t in range(3):
         try:
-            with open(path, 'wb') as data_file:
+            with open(path, "wb") as data_file:
                 if do_pickle:
                     # TODO: Change to HIGHEST_PROTOCOL after some time (breaks going back to Py2-SAB)
                     pickle.dump(data, data_file)
@@ -862,7 +892,7 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
                 # This can happen, probably a removed folder
                 pass
             elif t == 2:
-                logging.error(T('Saving %s failed'), path)
+                logging.error(T("Saving %s failed"), path)
                 logging.info("Traceback: ", exc_info=True)
             else:
                 # Wait a tiny bit before trying again
@@ -881,7 +911,7 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
         logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), data_id, path)
 
     try:
-        with open(path, 'rb') as data_file:
+        with open(path, "rb") as data_file:
             if do_pickle:
                 data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
             else:
@@ -891,7 +921,7 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
         if remove:
             filesystem.remove_file(path)
     except:
-        logging.error(T('Loading %s failed'), path)
+        logging.error(T("Loading %s failed"), path)
         logging.info("Traceback: ", exc_info=True)
         return None
 
@@ -951,8 +981,8 @@ def request_repair():
     """ Request a full repair on next restart """
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     try:
-        f = open(path, 'w')
-        f.write('\n')
+        f = open(path, "w")
+        f.write("\n")
         f.close()
     except:
         pass
@@ -979,13 +1009,13 @@ def check_all_tasks():
 
     # Non-restartable threads, require program restart
     if not sabnzbd.PostProcessor.do.isAlive():
-        logging.info('Restarting because of crashed postprocessor')
+        logging.info("Restarting because of crashed postprocessor")
         return False
     if not Downloader.do.isAlive():
-        logging.info('Restarting because of crashed downloader')
+        logging.info("Restarting because of crashed downloader")
         return False
     if not Assembler.do.isAlive():
-        logging.info('Restarting because of crashed assembler')
+        logging.info("Restarting because of crashed assembler")
         return False
 
     # Kick the downloader, in case it missed the semaphore
@@ -996,16 +1026,16 @@ def check_all_tasks():
 
     # Restartable threads
     if not DirScanner.do.isAlive():
-        logging.info('Restarting crashed dirscanner')
+        logging.info("Restarting crashed dirscanner")
         DirScanner.do.__init__()
     if not URLGrabber.do.isAlive():
-        logging.info('Restarting crashed urlgrabber')
+        logging.info("Restarting crashed urlgrabber")
         URLGrabber.do.__init__()
     if not Rating.do.isAlive():
-        logging.info('Restarting crashed rating')
+        logging.info("Restarting crashed rating")
         Rating.do.__init__()
     if not sabnzbd.scheduler.sched_check():
-        logging.info('Restarting crashed scheduler')
+        logging.info("Restarting crashed scheduler")
         sabnzbd.scheduler.init()
         sabnzbd.downloader.Downloader.do.unblock_all()
 
@@ -1022,32 +1052,32 @@ def pid_file(pid_path=None, pid_file=None, port=0):
     """ Create or remove pid file """
     global DIR_PID
     if not sabnzbd.WIN32:
-        if pid_path and pid_path.startswith('/'):
-            DIR_PID = os.path.join(pid_path, 'sabnzbd-%d.pid' % port)
-        elif pid_file and pid_file.startswith('/'):
+        if pid_path and pid_path.startswith("/"):
+            DIR_PID = os.path.join(pid_path, "sabnzbd-%d.pid" % port)
+        elif pid_file and pid_file.startswith("/"):
             DIR_PID = pid_file
 
     if DIR_PID:
         try:
             if port:
-                f = open(DIR_PID, 'w')
-                f.write('%d\n' % os.getpid())
+                f = open(DIR_PID, "w")
+                f.write("%d\n" % os.getpid())
                 f.close()
             else:
                 filesystem.remove_file(DIR_PID)
         except:
-            logging.warning('Cannot access PID file %s', DIR_PID)
+            logging.warning("Cannot access PID file %s", DIR_PID)
 
 
 def check_incomplete_vs_complete():
     """ Make sure "incomplete" and "complete" are not identical """
     complete = cfg.complete_dir.get_path()
     if filesystem.same_file(cfg.download_dir.get_path(), complete):
-        if filesystem.real_path('X', cfg.download_dir()) == cfg.download_dir():
+        if filesystem.real_path("X", cfg.download_dir()) == cfg.download_dir():
             # Abs path, so set an abs path too
-            cfg.download_dir.set(os.path.join(complete, 'incomplete'))
+            cfg.download_dir.set(os.path.join(complete, "incomplete"))
         else:
-            cfg.download_dir.set('incomplete')
+            cfg.download_dir.set("incomplete")
 
 
 def wait_for_download_folder():
@@ -1070,7 +1100,9 @@ def test_ipv6():
     try:
         info = getipaddress.addresslookup6(cfg.selftest_host())
     except:
-        logging.debug("Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0] )
+        logging.debug(
+            "Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0]
+        )
         return False
 
     try:
@@ -1079,13 +1111,13 @@ def test_ipv6():
         sock.settimeout(2)  # 2 second timeout
         sock.connect(sa[0:2])
         sock.close()
-        logging.debug('Test IPv6: IPv6 test successful. Enabling IPv6')
+        logging.debug("Test IPv6: IPv6 test successful. Enabling IPv6")
         return True
     except socket.error:
-        logging.debug('Test IPv6: Cannot reach IPv6 test host. Disabling IPv6')
+        logging.debug("Test IPv6: Cannot reach IPv6 test host. Disabling IPv6")
         return False
     except:
-        logging.debug('Test IPv6: Problem during IPv6 connect. Disabling IPv6. Reason: %s', sys.exc_info()[0])
+        logging.debug("Test IPv6: Problem during IPv6 connect. Disabling IPv6. Reason: %s", sys.exc_info()[0])
         return False
 
 
@@ -1108,7 +1140,7 @@ def test_cert_checking():
         # Non-SSL related error.
         # We now assume that certificates work instead of forcing
         # lower quality just because some (temporary) internet problem
-        logging.info('Could not determine system certificate validation quality due to connection problems')
+        logging.info("Could not determine system certificate validation quality due to connection problems")
         return True
     except:
         # Seems something is still wrong
@@ -1120,5 +1152,5 @@ def history_updated():
     """ To make sure we always have a fresh history """
     sabnzbd.LAST_HISTORY_UPDATE += 1
     # Never go over the limit
-    if sabnzbd.LAST_HISTORY_UPDATE+1 >= sys.maxsize:
+    if sabnzbd.LAST_HISTORY_UPDATE + 1 >= sys.maxsize:
         sabnzbd.LAST_HISTORY_UPDATE = 1

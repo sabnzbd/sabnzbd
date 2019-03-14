@@ -32,26 +32,25 @@ import inspect
 import ctypes
 
 import sabnzbd
-from sabnzbd.constants import DEFAULT_PRIORITY, \
-     MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
+from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
 
-TAB_UNITS = ('', 'K', 'M', 'G', 'T', 'P')
-RE_UNITS = re.compile(r'(\d+\.*\d*)\s*([KMGTP]{0,1})', re.I)
-RE_VERSION = re.compile(r'(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)')
-RE_IP4 = re.compile(r'inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)')
-RE_IP6 = re.compile(r'inet6\s+(addr:\s*){0,1}([0-9a-f:]+)', re.I)
+TAB_UNITS = ("", "K", "M", "G", "T", "P")
+RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]{0,1})", re.I)
+RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
+RE_IP4 = re.compile(r"inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)")
+RE_IP6 = re.compile(r"inet6\s+(addr:\s*){0,1}([0-9a-f:]+)", re.I)
 
 # Check if strings are defined for AM and PM
-HAVE_AMPM = bool(time.strftime('%p', time.localtime()))
+HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
 
 
 def time_format(fmt):
     """ Return time-format string adjusted for 12/24 hour clock setting """
     if cfg.ampm() and HAVE_AMPM:
-        return fmt.replace('%H:%M:%S', '%I:%M:%S %p').replace('%H:%M', '%I:%M %p')
+        return fmt.replace("%H:%M:%S", "%I:%M:%S %p").replace("%H:%M", "%I:%M %p")
     else:
         return fmt
 
@@ -62,13 +61,13 @@ def calc_age(date, trans=False):
         When 'trans' is True, time symbols will be translated.
     """
     if trans:
-        d = T('d')  # : Single letter abbreviation of day
-        h = T('h')  # : Single letter abbreviation of hour
-        m = T('m')  # : Single letter abbreviation of minute
+        d = T("d")  # : Single letter abbreviation of day
+        h = T("h")  # : Single letter abbreviation of hour
+        m = T("m")  # : Single letter abbreviation of minute
     else:
-        d = 'd'
-        h = 'h'
-        m = 'm'
+        d = "d"
+        h = "h"
+        m = "m"
     try:
         now = datetime.datetime.now()
         # age = str(now - date).split(".")[0] #old calc_age
@@ -79,11 +78,11 @@ def calc_age(date, trans=False):
         # only one value should be returned
         # if it is less than 1 day then it returns in hours, unless it is less than one hour where it returns in minutes
         if dage.days:
-            age = '%d%s' % (dage.days, d)
+            age = "%d%s" % (dage.days, d)
         elif int(seconds / 3600):
-            age = '%d%s' % (seconds / 3600, h)
+            age = "%d%s" % (seconds / 3600, h)
         else:
-            age = '%d%s' % (seconds / 60, m)
+            age = "%d%s" % (seconds / 60, m)
     except:
         age = "-"
 
@@ -94,7 +93,7 @@ def monthrange(start, finish):
     """ Calculate months between 2 dates, used in the Config template """
     months = (finish.year - start.year) * 12 + finish.month + 1
     for i in range(start.month, months):
-        year  = (i - 1) / 12 + start.year
+        year = (i - 1) / 12 + start.year
         month = (i - 1) % 12 + 1
         yield datetime.date(int(year), int(month), 1)
 
@@ -104,7 +103,7 @@ def safe_lower(txt):
     if txt:
         return txt.lower()
     else:
-        return ''
+        return ""
 
 
 def cmp(x, y):
@@ -124,56 +123,56 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         Specified options have priority over category-options.
         If no valid category is given, special category '*' will supply default values
     """
-    def_cat = config.get_categories('*')
+    def_cat = config.get_categories("*")
     cat = safe_lower(cat)
-    if cat in ('', 'none', 'default'):
-        cat = '*'
+    if cat in ("", "none", "default"):
+        cat = "*"
     try:
         my_cat = config.get_categories()[cat]
     except KeyError:
-        cat = '*'
+        cat = "*"
         my_cat = def_cat
 
     if pp is None:
         pp = my_cat.pp()
-        if pp == '':
+        if pp == "":
             pp = def_cat.pp()
 
     if not script:
         script = my_cat.script()
-        if safe_lower(script) in ('', 'default'):
+        if safe_lower(script) in ("", "default"):
             script = def_cat.script()
 
-    if priority is None or priority == '' or priority == DEFAULT_PRIORITY:
+    if priority is None or priority == "" or priority == DEFAULT_PRIORITY:
         priority = my_cat.priority()
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
 
-    logging.debug('Cat->Attrib cat=%s pp=%s script=%s prio=%s', cat, pp, script, priority)
+    logging.debug("Cat->Attrib cat=%s pp=%s script=%s prio=%s", cat, pp, script, priority)
     return cat, pp, script, priority
 
 
 _wildcard_to_regex = {
-    '\\': r'\\',
-    '^': r'\^',
-    '$': r'\$',
-    '.': r'\.',
-    '[': r'\[',
-    ']': r'\]',
-    '(': r'\(',
-    ')': r'\)',
-    '+': r'\+',
-    '?': r'.',
-    '|': r'\|',
-    '{': r'\{',
-    '}': r'\}',
-    '*': r'.*'
+    "\\": r"\\",
+    "^": r"\^",
+    "$": r"\$",
+    ".": r"\.",
+    "[": r"\[",
+    "]": r"\]",
+    "(": r"\(",
+    ")": r"\)",
+    "+": r"\+",
+    "?": r".",
+    "|": r"\|",
+    "{": r"\{",
+    "}": r"\}",
+    "*": r".*",
 }
 
 
 def wildcard_to_re(text):
     """ Convert plain wildcard string (with '*' and '?') to regex. """
-    return ''.join([_wildcard_to_regex.get(ch, ch) for ch in text])
+    return "".join([_wildcard_to_regex.get(ch, ch) for ch in text])
 
 
 def cat_convert(cat):
@@ -182,36 +181,36 @@ def cat_convert(cat):
         If no match found, but the indexer-cat starts with the user-cat, return user-cat
         If no match found, return None
     """
-    if cat and cat.lower() != 'none':
+    if cat and cat.lower() != "none":
         cats = config.get_ordered_categories()
         raw_cats = config.get_categories()
         for ucat in cats:
             try:
                 # Ordered cat-list has tags only as string
-                indexer = raw_cats[ucat['name']].newzbin()
+                indexer = raw_cats[ucat["name"]].newzbin()
                 if not isinstance(indexer, list):
                     indexer = [indexer]
             except:
                 indexer = []
             for name in indexer:
-                if re.search('^%s$' % wildcard_to_re(name), cat, re.I):
-                    if '.' in name:
-                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat['name'])
+                if re.search("^%s$" % wildcard_to_re(name), cat, re.I):
+                    if "." in name:
+                        logging.debug('Convert group "%s" to user-cat "%s"', cat, ucat["name"])
                     else:
-                        logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
-                    return ucat['name']
+                        logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat["name"])
+                    return ucat["name"]
 
         # Try to find full match between user category and indexer category
         for ucat in cats:
-            if cat.lower() == ucat['name'].lower():
-                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
-                return ucat['name']
+            if cat.lower() == ucat["name"].lower():
+                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat["name"])
+                return ucat["name"]
 
         # Try to find partial match between user category and indexer category
         for ucat in cats:
-            if cat.lower().startswith(ucat['name'].lower()):
-                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat['name'])
-                return ucat['name']
+            if cat.lower().startswith(ucat["name"].lower()):
+                logging.debug('Convert index site category "%s" to user-cat "%s"', cat, ucat["name"])
+                return ucat["name"]
 
     return None
 
@@ -234,20 +233,21 @@ def windows_variant():
             # This does *not* work:
             #     return os.environ['PROCESSOR_ARCHITECTURE'] == 'AMD64'
             # because the Python runtime returns 'X86' even on an x64 system!
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                    r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
+            key = winreg.OpenKey(
+                winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+            )
             for n in range(winreg.QueryInfoKey(key)[1]):
                 name, value, _val_type = winreg.EnumValue(key, n)
-                if name == 'PROCESSOR_ARCHITECTURE':
-                    x64 = value.upper() == 'AMD64'
+                if name == "PROCESSOR_ARCHITECTURE":
+                    x64 = value.upper() == "AMD64"
                     break
             winreg.CloseKey(key)
 
     return vista_plus, x64
 
 
-_SERVICE_KEY = 'SYSTEM\\CurrentControlSet\\services\\'
-_SERVICE_PARM = 'CommandLine'
+_SERVICE_KEY = "SYSTEM\\CurrentControlSet\\services\\"
+_SERVICE_PARM = "CommandLine"
 
 
 def get_serv_parms(service):
@@ -299,9 +299,9 @@ def convert_version(text):
     if m:
         version = int(m.group(1)) * 1000000 + int(m.group(2)) * 10000 + int(m.group(3)) * 100
         try:
-            if m.group(4).lower() == 'rc':
+            if m.group(4).lower() == "rc":
                 version = version + 80
-            elif m.group(4).lower() == 'beta':
+            elif m.group(4).lower() == "beta":
                 version = version + 40
             version = version + int(m.group(5))
         except:
@@ -342,24 +342,24 @@ def check_latest_version():
         return
 
     # Fetch version info
-    data = get_from_url('https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/latest.txt')
+    data = get_from_url("https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/latest.txt")
     if not data:
-        logging.info('Cannot retrieve version information from GitHub.com')
-        logging.debug('Traceback: ', exc_info=True)
+        logging.info("Cannot retrieve version information from GitHub.com")
+        logging.debug("Traceback: ", exc_info=True)
         return
 
     try:
         latest_label = data.split()[0]
     except:
-        latest_label = ''
+        latest_label = ""
     try:
         url = ubtou(data.split()[1])
     except:
-        url = ''
+        url = ""
     try:
         latest_testlabel = data.split()[2]
     except:
-        latest_testlabel = ''
+        latest_testlabel = ""
     try:
         url_beta = ubtou(data.split()[3])
     except:
@@ -368,8 +368,14 @@ def check_latest_version():
     latest = convert_version(latest_label)[0]
     latest_test = convert_version(latest_testlabel)[0]
 
-    logging.debug('Checked for a new release, cur= %s, latest= %s (on %s), latest_test= %s (on %s)',
-                  current, latest, url, latest_test, url_beta)
+    logging.debug(
+        "Checked for a new release, cur= %s, latest= %s (on %s), latest_test= %s (on %s)",
+        current,
+        latest,
+        url,
+        latest_test,
+        url_beta,
+    )
 
     if latest_test and cfg.version_check() > 1:
         # User always wants to see the latest test release
@@ -413,22 +419,22 @@ def from_units(val):
         return 0.0
 
 
-def to_units(val, postfix=''):
+def to_units(val, postfix=""):
     """ Convert number to K/M/G/T/P notation
         Show single decimal for M and higher
     """
     dec_limit = 1
     if val < 0:
-        sign = '-'
+        sign = "-"
     else:
-        sign = ''
+        sign = ""
     val = str(abs(val)).strip()
 
     n = 0
     try:
         val = float(val)
     except:
-        return ''
+        return ""
     while (val > 1023.0) and (n < 5):
         val = val / 1024.0
         n = n + 1
@@ -438,7 +444,7 @@ def to_units(val, postfix=''):
     else:
         decimals = 0
 
-    fmt = '%%s%%.%sf %%s%%s' % decimals
+    fmt = "%%s%%.%sf %%s%%s" % decimals
     return fmt % (sign, val, unit, postfix)
 
 
@@ -449,19 +455,19 @@ def caller_name(skip=2):
     """
     # Only do the tracing on Debug (function is always called)
     if cfg.log_level() != 2:
-        return 'N/A'
+        return "N/A"
 
     parentframe = sys._getframe(skip)
     function_name = parentframe.f_code.co_name
 
     # Modulename not available in the binaries, we can use the filename instead
-    if getattr(sys, 'frozen', None):
+    if getattr(sys, "frozen", None):
         module_name = inspect.getfile(parentframe)
     else:
         module_name = inspect.getmodule(parentframe).__name__
 
     # For decorated functions we have to go deeper
-    if function_name in ('call_func', 'wrap') and skip == 2:
+    if function_name in ("call_func", "wrap") and skip == 2:
         return caller_name(4)
 
     return ".".join([module_name, function_name])
@@ -471,9 +477,10 @@ def exit_sab(value):
     """ Leave the program after flushing stderr/stdout """
     sys.stderr.flush()
     sys.stdout.flush()
-    if getattr(sys, 'frozen', None) == 'macosx_app':
+    if getattr(sys, "frozen", None) == "macosx_app":
         sabnzbd.SABSTOP = True
         from PyObjCTools import AppHelper
+
         AppHelper.stopEventLoop()
     sys.exit(value)
 
@@ -484,7 +491,7 @@ def split_host(srv):
         return None, None
 
     # IPV6 literal (with no port)
-    if srv[-1] == ']':
+    if srv[-1] == "]":
         return srv, None
 
     out = srv.rsplit(":", 1)
@@ -515,17 +522,17 @@ def get_cache_limit():
             mem_bytes = get_darwin_memory()
         else:
             # Linux
-            mem_bytes = (os.sysconf('SC_PAGE_SIZE') * os.sysconf('SC_PHYS_PAGES'))
+            mem_bytes = os.sysconf("SC_PAGE_SIZE") * os.sysconf("SC_PHYS_PAGES")
 
         # Use 1/4th of available memory
-        mem_bytes = mem_bytes/4
+        mem_bytes = mem_bytes / 4
 
         # We don't want to set a value that's too high
         if mem_bytes > from_units(DEF_ARTICLE_CACHE_MAX):
             return DEF_ARTICLE_CACHE_MAX
 
         # We make sure it's at least a valid value
-        if mem_bytes > from_units('32M'):
+        if mem_bytes > from_units("32M"):
             return to_units(mem_bytes)
     except:
         pass
@@ -535,11 +542,12 @@ def get_cache_limit():
         return DEF_ARTICLE_CACHE_DEFAULT
 
     # If failed, leave empty for Linux so user needs to decide
-    return ''
+    return ""
 
 
 def get_windows_memory():
     """ Use ctypes to extract available memory """
+
     class MEMORYSTATUSEX(ctypes.Structure):
         _fields_ = [
             ("dwLength", ctypes.c_ulong),
@@ -565,7 +573,7 @@ def get_windows_memory():
 
 def get_darwin_memory():
     """ Use system-call to extract total memory on macOS """
-    system_output = sabnzbd.newsunpack.run_simple(['sysctl', 'hw.memsize'])
+    system_output = sabnzbd.newsunpack.run_simple(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
 
 
@@ -577,9 +585,9 @@ def on_cleanup_list(filename, skip_nzb=False):
         ext = ext.strip().lower()
         name = name.strip()
         for k in lst:
-            item = k.strip().strip('.').lower()
-            item = '.' + item
-            if (item == ext or (ext == '' and item == name)) and not (skip_nzb and item == '.nzb'):
+            item = k.strip().strip(".").lower()
+            item = "." + item
+            if (item == ext or (ext == "" and item == name)) and not (skip_nzb and item == ".nzb"):
                 return True
     return False
 
@@ -587,7 +595,7 @@ def on_cleanup_list(filename, skip_nzb=False):
 def memory_usage():
     try:
         # Probably only works on Linux because it uses /proc/<pid>/statm
-        t = open('/proc/%d/statm' % os.getpid())
+        t = open("/proc/%d/statm" % os.getpid())
         v = t.read().split()
         t.close()
         virt = int(_PAGE_SIZE * int(v[0]) / MEBI)
@@ -596,7 +604,7 @@ def memory_usage():
     except IOError:
         pass
     except:
-        logging.debug('Error retrieving memory usage')
+        logging.debug("Error retrieving memory usage")
         logging.info("Traceback: ", exc_info=True)
 
 
@@ -609,52 +617,53 @@ _HAVE_STATM = _PAGE_SIZE and memory_usage()
 
 def loadavg():
     """ Return 1, 5 and 15 minute load average of host or "" if not supported """
-    p = ''
+    p = ""
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         opt = cfg.show_sysload()
         if opt:
             try:
-                p = '%.2f | %.2f | %.2f' % os.getloadavg()
+                p = "%.2f | %.2f | %.2f" % os.getloadavg()
             except:
                 pass
             if opt > 1 and _HAVE_STATM:
-                p = '%s | %s' % (p, memory_usage())
+                p = "%s | %s" % (p, memory_usage())
     return p
 
 
 def format_time_string(seconds):
     """ Return a formatted and translated time string """
+
     def unit(single, n):
         # Seconds and minutes are special due to historical reasons
-        if single == 'minute' or (single == 'second' and n == 1):
+        if single == "minute" or (single == "second" and n == 1):
             single = single[:3]
         if n == 1:
             return T(single)
-        return T(single + 's')
+        return T(single + "s")
 
     # Format the string, size by size
     seconds = int_conv(seconds)
     completestr = []
     days = seconds // 86400
     if days >= 1:
-        completestr.append('%s %s' % (days, unit('day', days)))
+        completestr.append("%s %s" % (days, unit("day", days)))
         seconds -= days * 86400
     hours = seconds // 3600
     if hours >= 1:
-        completestr.append('%s %s' % (hours, unit('hour', hours)))
+        completestr.append("%s %s" % (hours, unit("hour", hours)))
         seconds -= hours * 3600
     minutes = seconds // 60
     if minutes >= 1:
-        completestr.append('%s %s' % (minutes, unit('minute', minutes)))
+        completestr.append("%s %s" % (minutes, unit("minute", minutes)))
         seconds -= minutes * 60
     if seconds > 0:
-        completestr.append('%s %s' % (seconds, unit('second', seconds)))
+        completestr.append("%s %s" % (seconds, unit("second", seconds)))
 
     # Zero or invalid integer
     if not completestr:
-        completestr.append('0 %s' % unit('second', 0))
+        completestr.append("0 %s" % unit("second", 0))
 
-    return ' '.join(completestr)
+    return " ".join(completestr)
 
 
 def int_conv(value):
@@ -670,11 +679,12 @@ def create_https_certificates(ssl_cert, ssl_key):
     """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
+
         private_key = generate_key(key_size=2048, output_file=ssl_key)
-        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN='SABnzbd', ON='SABnzbd')
-        logging.info('Self-signed certificates generated successfully')
+        generate_local_cert(private_key, days_valid=3560, output_file=ssl_cert, LN="SABnzbd", ON="SABnzbd")
+        logging.info("Self-signed certificates generated successfully")
     except:
-        logging.error(T('Error creating SSL key and certificate'))
+        logging.error(T("Error creating SSL key and certificate"))
         logging.info("Traceback: ", exc_info=True)
         return False
 
@@ -684,13 +694,13 @@ def create_https_certificates(ssl_cert, ssl_key):
 def get_all_passwords(nzo):
     """ Get all passwords, from the NZB, meta and password file """
     if nzo.password:
-        logging.info('Found a password that was set by the user: %s', nzo.password)
+        logging.info("Found a password that was set by the user: %s", nzo.password)
         passwords = [nzo.password.strip()]
     else:
         passwords = []
 
-    meta_passwords = nzo.meta.get('password', [])
-    pw = nzo.nzo_info.get('password')
+    meta_passwords = nzo.meta.get("password", [])
+    pw = nzo.nzo_info.get("password")
     if pw:
         meta_passwords.append(pw)
 
@@ -700,44 +710,48 @@ def get_all_passwords(nzo):
             passwords.extend(meta_passwords[1:])
         else:
             passwords.extend(meta_passwords)
-        logging.info('Read %s passwords from meta data in NZB: %s', len(meta_passwords), meta_passwords)
+        logging.info("Read %s passwords from meta data in NZB: %s", len(meta_passwords), meta_passwords)
 
     pw_file = cfg.password_file.get_path()
     if pw_file:
         try:
-            with open(pw_file, 'r') as pwf:
-                lines = pwf.read().split('\n')
+            with open(pw_file, "r") as pwf:
+                lines = pwf.read().split("\n")
             # Remove empty lines and space-only passwords and remove surrounding spaces
-            pws = [pw.strip('\r\n ') for pw in lines if pw.strip('\r\n ')]
-            logging.debug('Read these passwords from file: %s', pws)
+            pws = [pw.strip("\r\n ") for pw in lines if pw.strip("\r\n ")]
+            logging.debug("Read these passwords from file: %s", pws)
             passwords.extend(pws)
-            logging.info('Read %s passwords from file %s', len(pws), pw_file)
+            logging.info("Read %s passwords from file %s", len(pws), pw_file)
 
             # Check size
             if len(pws) > 30:
-                logging.warning(T('Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords.'))
+                logging.warning(
+                    T(
+                        "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
+                    )
+                )
         except:
-            logging.warning('Failed to read the passwords file %s', pw_file)
+            logging.warning("Failed to read the passwords file %s", pw_file)
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
-        passwords.append('')
+        passwords.append("")
     elif not passwords or nzo.encrypted < 1:
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
-        passwords.insert(0, '')
+        passwords.insert(0, "")
     return passwords
 
 
 def find_on_path(targets):
     """ Search the PATH for a program and return full path """
     if sabnzbd.WIN32:
-        paths = os.getenv('PATH').split(';')
+        paths = os.getenv("PATH").split(";")
     else:
-        paths = os.getenv('PATH').split(':')
+        paths = os.getenv("PATH").split(":")
 
     if isinstance(targets, str):
-        targets = (targets, )
+        targets = (targets,)
 
     for path in paths:
         for target in targets:
@@ -748,7 +762,7 @@ def find_on_path(targets):
 
 
 def probablyipv4(ip):
-    if ip.count('.') == 3 and re.sub('[0123456789.]', '', ip) == '':
+    if ip.count(".") == 3 and re.sub("[0123456789.]", "", ip) == "":
         return True
     else:
         return False
@@ -757,7 +771,7 @@ def probablyipv4(ip):
 def probablyipv6(ip):
     # Returns True if the given input is probably an IPv6 address
     # Square Brackets like '[2001::1]' are OK
-    if ip.count(':') >= 2 and re.sub('[0123456789abcdefABCDEF:\[\]]', '', ip) == '':
+    if ip.count(":") >= 2 and re.sub("[0123456789abcdefABCDEF:\[\]]", "", ip) == "":
         return True
     else:
         return False
@@ -766,11 +780,11 @@ def probablyipv6(ip):
 def ip_extract():
     """ Return list of IP addresses of this system """
     ips = []
-    program = find_on_path('ip')
+    program = find_on_path("ip")
     if program:
-        program = [program, 'a']
+        program = [program, "a"]
     else:
-        program = find_on_path('ifconfig')
+        program = find_on_path("ifconfig")
         if program:
             program = [program]
 
@@ -779,16 +793,22 @@ def ip_extract():
             info = socket.getaddrinfo(socket.gethostname(), None)
         except:
             # Hostname does not resolve, use localhost
-            info = socket.getaddrinfo('localhost', None)
+            info = socket.getaddrinfo("localhost", None)
         for item in info:
             ips.append(item[4][0])
     else:
-        p = subprocess.Popen(program, shell=False, stdin=subprocess.PIPE,
-                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                             startupinfo=None, creationflags=0)
+        p = subprocess.Popen(
+            program,
+            shell=False,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            startupinfo=None,
+            creationflags=0,
+        )
         output = platform_btou(p.stdout.read())
         p.wait()
-        for line in output.split('\n'):
+        for line in output.split("\n"):
             m = RE_IP4.search(line)
             if not (m and m.group(2)):
                 m = RE_IP6.search(line)
@@ -809,7 +829,7 @@ def get_base_url(url):
             return url_host
         return ".".join(len(url_split[-2]) < 4 and url_split[-3:] or url_split[-2:])
     else:
-        return ''
+        return ""
 
 
 def match_str(text, matches):
@@ -830,5 +850,5 @@ def nntp_to_msg(text):
     if not isinstance(text, bytes):
         return text
     else:
-        lines = text.split(b'\r\n')
+        lines = text.split(b"\r\n")
         return ubtou(lines[0])

@@ -27,7 +27,7 @@ import shutil
 import uuid
 from urllib.parse import urlparse
 import sabnzbd.misc
-import sabnzbd.filesystem
+from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
 import configobj
 from sabnzbd.decorators import synchronized
@@ -36,16 +36,16 @@ CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()
 
 
-CFG = {}                    # Holds INI structure
-                            # during re-write this variable is global
-                            # to allow direct access to INI structure
+CFG = {}  # Holds INI structure
+# during re-write this variable is global
+# to allow direct access to INI structure
 
-database = {}               # Holds the option dictionary
+database = {}  # Holds the option dictionary
 
-modified = False            # Signals a change in option dictionary
-                            # Should be reset after saving to settings file
+modified = False  # Signals a change in option dictionary
+# Should be reset after saving to settings file
 
-paramfinder = re.compile(r'''(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)''')
+paramfinder = re.compile(r"""(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)""")
 
 
 class Option:
@@ -60,7 +60,7 @@ class Option:
             `callback`    : procedure to call when value is successfully changed
             `protect`     : Do not allow setting via the API (specifically set_dict)
         """
-        self.__sections = section.split(',')
+        self.__sections = section.split(",")
         self.__keyword = keyword
         self.__default_val = default_val
         self.__value = None
@@ -100,7 +100,7 @@ class Option:
         if self.__protect:
             return False
         try:
-            return self.set(input_dict['value'])
+            return self.set(input_dict["value"])
         except KeyError:
             return False
 
@@ -133,12 +133,14 @@ class Option:
 class OptionNumber(Option):
     """ Numeric option class, int/float is determined from default value """
 
-    def __init__(self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True, protect=False):
+    def __init__(
+        self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True, protect=False
+    ):
         self.__minval = minval
         self.__maxval = maxval
         self.__validation = validation
         self.__int = isinstance(default_val, int)
-        super().__init__(section,keyword, default_val, add=add, protect=protect)
+        super().__init__(section, keyword, default_val, add=add, protect=protect)
 
     def set(self, value):
         """ set new value, limited by range """
@@ -166,7 +168,7 @@ class OptionBool(Option):
     """ Boolean option class """
 
     def __init__(self, section, keyword, default_val=False, add=True, protect=False):
-        super().__init__(section,keyword, int(default_val), add=add, protect=protect)
+        super().__init__(section, keyword, int(default_val), add=add, protect=protect)
 
     def set(self, value):
         if value is None:
@@ -181,41 +183,43 @@ class OptionBool(Option):
 class OptionDir(Option):
     """ Directory option class """
 
-    def __init__(self, section, keyword, default_val='', apply_umask=False, create=True, validation=None, writable=True, add=True):
+    def __init__(
+        self, section, keyword, default_val="", apply_umask=False, create=True, validation=None, writable=True, add=True
+    ):
         self.__validation = validation
-        self.__root = ''   # Base directory for relative paths
+        self.__root = ""  # Base directory for relative paths
         self.__apply_umask = apply_umask
         self.__create = create
         self.__writable = writable
-        super().__init__(section,keyword, default_val, add=add)
+        super().__init__(section, keyword, default_val, add=add)
 
     def get(self):
         """ Return value, corrected for platform """
         p = super().get()
         if sabnzbd.WIN32:
-            return p.replace('/', '\\') if '/' in p else p
+            return p.replace("/", "\\") if "/" in p else p
         else:
-            return p.replace('\\', '/') if '\\' in p else p
+            return p.replace("\\", "/") if "\\" in p else p
 
     def get_path(self):
         """ Return full absolute path """
         value = self.get()
-        path = ''
+        path = ""
         if value:
-            path = sabnzbd.filesystem.real_path(self.__root, value)
+            path = real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                res, path = sabnzbd.filesystem.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
+                res, path = create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
         return path
 
     def get_clipped_path(self):
         """ Return clipped full absolute path """
-        return sabnzbd.filesystem.clip_path(self.get_path())
+        return clip_path(self.get_path())
 
     def test_path(self):
         """ Return True if path exists """
         value = self.get()
         if value:
-            return os.path.exists(sabnzbd.filesystem.real_path(self.__root, value))
+            return os.path.exists(real_path(self.__root, value))
         else:
             return False
 
@@ -236,9 +240,11 @@ class OptionDir(Option):
                 error, value = self.__validation(self.__root, value, super().default())
             if not error:
                 if value and (self.__create or create):
-                    res, path = sabnzbd.filesystem.create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
+                    res, path = create_real_path(
+                        self.ident()[1], self.__root, value, self.__apply_umask, self.__writable
+                    )
                     if not res:
-                        error = T('Cannot create %s folder %s') % (self.ident()[1], path)
+                        error = T("Cannot create %s folder %s") % (self.ident()[1], path)
             if not error:
                 super().set(value)
         return error
@@ -255,14 +261,14 @@ class OptionList(Option):
         self.__validation = validation
         if default_val is None:
             default_val = []
-        super().__init__(section,keyword, default_val, add=add, protect=protect)
+        super().__init__(section, keyword, default_val, add=add, protect=protect)
 
     def set(self, value):
         """ Set the list given a comma-separated string or a list """
         error = None
         if value is not None:
             if not isinstance(value, list):
-                if '"' not in value and ',' not in value:
+                if '"' not in value and "," not in value:
                     value = value.split()
                 else:
                     value = paramfinder.findall(value)
@@ -278,7 +284,7 @@ class OptionList(Option):
         if isinstance(lst, str):
             return lst
         else:
-            return ', '.join(lst)
+            return ", ".join(lst)
 
     def default_string(self):
         """ Return the default list as a comma-separated string """
@@ -286,13 +292,13 @@ class OptionList(Option):
         if isinstance(lst, str):
             return lst
         else:
-            return ', '.join(lst)
+            return ", ".join(lst)
 
 
 class OptionStr(Option):
     """ String class """
 
-    def __init__(self, section, keyword, default_val='', validation=None, add=True, strip=True, protect=False):
+    def __init__(self, section, keyword, default_val="", validation=None, add=True, strip=True, protect=False):
         self.__validation = validation
         self.__strip = strip
         super().__init__(section, keyword, default_val, add=add, protect=protect)
@@ -321,7 +327,7 @@ class OptionStr(Option):
 class OptionPassword(Option):
     """ Password class """
 
-    def __init__(self, section, keyword, default_val='', add=True):
+    def __init__(self, section, keyword, default_val="", add=True):
         self.get_string = self.get_stars
         super().__init__(section, keyword, default_val, add=add)
 
@@ -331,7 +337,7 @@ class OptionPassword(Option):
 
     def get_stars(self):
         """ Return decoded password as asterisk string """
-        return '*' * len(self.get())
+        return "*" * len(self.get())
 
     def get_dict(self, safe=False):
         """ Return value a dictionary """
@@ -342,7 +348,7 @@ class OptionPassword(Option):
 
     def set(self, pw):
         """ Set password, encode it """
-        if (pw is not None and pw == '') or (pw and pw.strip('*')):
+        if (pw is not None and pw == "") or (pw and pw.strip("*")):
             super().set(encode_password(pw))
         return None
 
@@ -361,8 +367,8 @@ def delete_from_database(section, keyword):
     """ Remove section/keyword from INI database """
     global database, CFG, modified
     del database[section][keyword]
-    if section == 'servers' and '[' in keyword:
-        keyword = keyword.replace('[', '{').replace(']', '}')
+    if section == "servers" and "[" in keyword:
+        keyword = keyword.replace("[", "{").replace("]", "}")
     try:
         del CFG[section][keyword]
     except KeyError:
@@ -376,37 +382,54 @@ class ConfigServer:
     def __init__(self, name, values):
 
         self.__name = name
-        name = 'servers,' + self.__name
+        name = "servers," + self.__name
 
-        self.displayname = OptionStr(name, 'displayname', '', add=False)
-        self.host = OptionStr(name, 'host', '', add=False)
-        self.port = OptionNumber(name, 'port', 119, 0, 2 ** 16 - 1, add=False)
-        self.timeout = OptionNumber(name, 'timeout', 60, 20, 240, add=False)
-        self.username = OptionStr(name, 'username', '', add=False)
-        self.password = OptionPassword(name, 'password', '', add=False)
-        self.connections = OptionNumber(name, 'connections', 1, 0, 100, add=False)
-        self.ssl = OptionBool(name, 'ssl', False, add=False)
-        self.ssl_verify = OptionNumber(name, 'ssl_verify', 2, add=False)  # 0=No, 1=Normal, 2=Strict (hostname verification)
-        self.ssl_ciphers = OptionStr(name, 'ssl_ciphers', '', add=False)
-        self.enable = OptionBool(name, 'enable', True, add=False)
-        self.optional = OptionBool(name, 'optional', False, add=False)
-        self.retention = OptionNumber(name, 'retention', add=False)
-        self.send_group = OptionBool(name, 'send_group', False, add=False)
-        self.priority = OptionNumber(name, 'priority', 0, 0, 99, add=False)
-        self.notes = OptionStr(name, 'notes', '', add=False)
+        self.displayname = OptionStr(name, "displayname", "", add=False)
+        self.host = OptionStr(name, "host", "", add=False)
+        self.port = OptionNumber(name, "port", 119, 0, 2 ** 16 - 1, add=False)
+        self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
+        self.username = OptionStr(name, "username", "", add=False)
+        self.password = OptionPassword(name, "password", "", add=False)
+        self.connections = OptionNumber(name, "connections", 1, 0, 100, add=False)
+        self.ssl = OptionBool(name, "ssl", False, add=False)
+        # 0=No, 1=Normal, 2=Strict (hostname verification)
+        self.ssl_verify = OptionNumber(name, "ssl_verify", 2, add=False)
+        self.ssl_ciphers = OptionStr(name, "ssl_ciphers", "", add=False)
+        self.enable = OptionBool(name, "enable", True, add=False)
+        self.optional = OptionBool(name, "optional", False, add=False)
+        self.retention = OptionNumber(name, "retention", add=False)
+        self.send_group = OptionBool(name, "send_group", False, add=False)
+        self.priority = OptionNumber(name, "priority", 0, 0, 99, add=False)
+        self.notes = OptionStr(name, "notes", "", add=False)
 
         self.set_dict(values)
-        add_to_database('servers', self.__name, self)
+        add_to_database("servers", self.__name, self)
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('displayname', 'host', 'port', 'timeout', 'username', 'password', 'connections', 'ssl',
-                   'ssl_verify', 'ssl_ciphers', 'send_group', 'enable', 'optional', 'retention', 'priority', 'notes'):
+        for kw in (
+            "displayname",
+            "host",
+            "port",
+            "timeout",
+            "username",
+            "password",
+            "connections",
+            "ssl",
+            "ssl_verify",
+            "ssl_ciphers",
+            "send_group",
+            "enable",
+            "optional",
+            "retention",
+            "priority",
+            "notes",
+        ):
             try:
                 value = values[kw]
             except KeyError:
                 continue
-            exec('self.%s.set(value)' % kw)
+            exec("self.%s.set(value)" % kw)
             if not self.displayname():
                 self.displayname.set(self.__name)
         return True
@@ -414,38 +437,38 @@ class ConfigServer:
     def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
         output_dict = {}
-        output_dict['name'] = self.__name
-        output_dict['displayname'] = self.displayname()
-        output_dict['host'] = self.host()
-        output_dict['port'] = self.port()
-        output_dict['timeout'] = self.timeout()
-        output_dict['username'] = self.username()
+        output_dict["name"] = self.__name
+        output_dict["displayname"] = self.displayname()
+        output_dict["host"] = self.host()
+        output_dict["port"] = self.port()
+        output_dict["timeout"] = self.timeout()
+        output_dict["username"] = self.username()
         if safe:
-            output_dict['password'] = self.password.get_stars()
+            output_dict["password"] = self.password.get_stars()
         else:
-            output_dict['password'] = self.password()
-        output_dict['connections'] = self.connections()
-        output_dict['ssl'] = self.ssl()
-        output_dict['ssl_verify'] = self.ssl_verify()
-        output_dict['ssl_ciphers'] = self.ssl_ciphers()
-        output_dict['enable'] = self.enable()
-        output_dict['optional'] = self.optional()
-        output_dict['retention'] = self.retention()
-        output_dict['send_group'] = self.send_group()
-        output_dict['priority'] = self.priority()
-        output_dict['notes'] = self.notes()
+            output_dict["password"] = self.password()
+        output_dict["connections"] = self.connections()
+        output_dict["ssl"] = self.ssl()
+        output_dict["ssl_verify"] = self.ssl_verify()
+        output_dict["ssl_ciphers"] = self.ssl_ciphers()
+        output_dict["enable"] = self.enable()
+        output_dict["optional"] = self.optional()
+        output_dict["retention"] = self.retention()
+        output_dict["send_group"] = self.send_group()
+        output_dict["priority"] = self.priority()
+        output_dict["notes"] = self.notes()
         return output_dict
 
     def delete(self):
         """ Remove from database """
-        delete_from_database('servers', self.__name)
+        delete_from_database("servers", self.__name)
 
     def rename(self, name):
         """ Give server new display name """
         self.displayname.set(name)
 
     def ident(self):
-        return 'servers', self.__name
+        return "servers", self.__name
 
 
 class ConfigCat:
@@ -453,43 +476,43 @@ class ConfigCat:
 
     def __init__(self, name, values):
         self.__name = name
-        name = 'categories,' + name
+        name = "categories," + name
 
-        self.order = OptionNumber(name, 'order', 0, 0, 100, add=False)
-        self.pp = OptionStr(name, 'pp', '', add=False)
-        self.script = OptionStr(name, 'script', 'Default', add=False)
-        self.dir = OptionDir(name, 'dir', add=False, create=False)
-        self.newzbin = OptionList(name, 'newzbin', add=False, validation=validate_single_tag)
-        self.priority = OptionNumber(name, 'priority', DEFAULT_PRIORITY, add=False)
+        self.order = OptionNumber(name, "order", 0, 0, 100, add=False)
+        self.pp = OptionStr(name, "pp", "", add=False)
+        self.script = OptionStr(name, "script", "Default", add=False)
+        self.dir = OptionDir(name, "dir", add=False, create=False)
+        self.newzbin = OptionList(name, "newzbin", add=False, validation=validate_single_tag)
+        self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, add=False)
 
         self.set_dict(values)
-        add_to_database('categories', self.__name, self)
+        add_to_database("categories", self.__name, self)
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('order', 'pp', 'script', 'dir', 'newzbin', 'priority'):
+        for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
             try:
                 value = values[kw]
             except KeyError:
                 continue
-            exec('self.%s.set(value)' % kw)
+            exec("self.%s.set(value)" % kw)
         return True
 
     def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
         output_dict = {}
-        output_dict['name'] = self.__name
-        output_dict['order'] = self.order()
-        output_dict['pp'] = self.pp()
-        output_dict['script'] = self.script()
-        output_dict['dir'] = self.dir()
-        output_dict['newzbin'] = self.newzbin.get_string()
-        output_dict['priority'] = self.priority()
+        output_dict["name"] = self.__name
+        output_dict["order"] = self.order()
+        output_dict["pp"] = self.pp()
+        output_dict["script"] = self.script()
+        output_dict["dir"] = self.dir()
+        output_dict["newzbin"] = self.newzbin.get_string()
+        output_dict["priority"] = self.priority()
         return output_dict
 
     def delete(self):
         """ Remove from database """
-        delete_from_database('categories', self.__name)
+        delete_from_database("categories", self.__name)
 
 
 class OptionFilters(Option):
@@ -534,7 +557,7 @@ class OptionFilters(Option):
         output_dict = {}
         n = 0
         for filter_name in self.get():
-            output_dict['filter' + str(n)] = filter_name
+            output_dict["filter" + str(n)] = filter_name
             n = n + 1
         return output_dict
 
@@ -542,7 +565,7 @@ class OptionFilters(Option):
         """ Create filter list from dictionary with keys 'filter[0-9]+' """
         filters = []
         for n in range(len(values)):
-            kw = 'filter%d' % n
+            kw = "filter%d" % n
             val = values.get(kw)
             if val is not None:
                 val = values[kw]
@@ -551,9 +574,9 @@ class OptionFilters(Option):
                 else:
                     filters.append(paramfinder.findall(val))
                 while len(filters[-1]) < 7:
-                    filters[-1].append('1')
+                    filters[-1].append("1")
                 if not filters[-1][6]:
-                    filters[-1][6] = '1'
+                    filters[-1][6] = "1"
         if filters:
             self.set(filters)
         return True
@@ -564,28 +587,28 @@ class ConfigRSS:
 
     def __init__(self, name, values):
         self.__name = name
-        name = 'rss,' + name
+        name = "rss," + name
 
-        self.uri = OptionList(name, 'uri', add=False)
-        self.cat = OptionStr(name, 'cat', add=False)
-        self.pp = OptionStr(name, 'pp', '', add=False)
-        self.script = OptionStr(name, 'script', add=False)
-        self.enable = OptionBool(name, 'enable', add=False)
-        self.priority = OptionNumber(name, 'priority', DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
-        self.filters = OptionFilters(name, 'filters', add=False)
-        self.filters.set([['', '', '', 'A', '*', DEFAULT_PRIORITY, '1']])
+        self.uri = OptionList(name, "uri", add=False)
+        self.cat = OptionStr(name, "cat", add=False)
+        self.pp = OptionStr(name, "pp", "", add=False)
+        self.script = OptionStr(name, "script", add=False)
+        self.enable = OptionBool(name, "enable", add=False)
+        self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
+        self.filters = OptionFilters(name, "filters", add=False)
+        self.filters.set([["", "", "", "A", "*", DEFAULT_PRIORITY, "1"]])
 
         self.set_dict(values)
-        add_to_database('rss', self.__name, self)
+        add_to_database("rss", self.__name, self)
 
     def set_dict(self, values):
         """ Set one or more fields, passed as dictionary """
-        for kw in ('uri', 'cat', 'pp', 'script', 'priority', 'enable'):
+        for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
             try:
                 value = values[kw]
             except KeyError:
                 continue
-            exec('self.%s.set(value)' % kw)
+            exec("self.%s.set(value)" % kw)
 
         self.filters.set_dict(values)
         return True
@@ -593,13 +616,13 @@ class ConfigRSS:
     def get_dict(self, safe=False):
         """ Return a dictionary with all attributes """
         output_dict = {}
-        output_dict['name'] = self.__name
-        output_dict['uri'] = self.uri()
-        output_dict['cat'] = self.cat()
-        output_dict['pp'] = self.pp()
-        output_dict['script'] = self.script()
-        output_dict['enable'] = self.enable()
-        output_dict['priority'] = self.priority()
+        output_dict["name"] = self.__name
+        output_dict["uri"] = self.uri()
+        output_dict["cat"] = self.cat()
+        output_dict["pp"] = self.pp()
+        output_dict["script"] = self.script()
+        output_dict["enable"] = self.enable()
+        output_dict["priority"] = self.priority()
         filters = self.filters.get_dict()
         for kw in filters:
             output_dict[kw] = filters[kw]
@@ -607,10 +630,10 @@ class ConfigRSS:
 
     def delete(self):
         """ Remove from database """
-        delete_from_database('rss', self.__name)
+        delete_from_database("rss", self.__name)
 
     def ident(self):
-        return 'rss', self.__name
+        return "rss", self.__name
 
 
 def get_dconfig(section, keyword, nested=False):
@@ -628,7 +651,7 @@ def get_dconfig(section, keyword, nested=False):
             sect = database[section]
         except KeyError:
             return False, {}
-        if section in ('servers', 'categories', 'rss'):
+        if section in ("servers", "categories", "rss"):
             data[section] = []
             for keyword in sect.keys():
                 res, conf = get_dconfig(section, keyword, True)
@@ -646,7 +669,7 @@ def get_dconfig(section, keyword, nested=False):
             return False, {}
         data = item.get_dict(safe=True)
         if not nested:
-            if section in ('servers', 'categories', 'rss'):
+            if section in ("servers", "categories", "rss"):
                 data = {section: [data]}
             else:
                 data = {section: data}
@@ -659,14 +682,14 @@ def get_config(section, keyword):
     try:
         return database[section][keyword]
     except KeyError:
-        logging.debug('Missing configuration item %s,%s', section, keyword)
+        logging.debug("Missing configuration item %s,%s", section, keyword)
         return None
 
 
 def set_config(kwargs):
     """ Set a config item, using values in dictionary """
     try:
-        item = database[kwargs.get('section')][kwargs.get('keyword')]
+        item = database[kwargs.get("section")][kwargs.get("keyword")]
     except KeyError:
         return False
     item.set_dict(kwargs)
@@ -704,7 +727,7 @@ def _read_config(path, try_backup=False):
     if try_backup or not os.path.exists(path):
         # Not found, try backup
         try:
-            shutil.copyfile(path + '.bak', path)
+            shutil.copyfile(path + ".bak", path)
             try_backup = True
         except IOError:
             pass
@@ -720,11 +743,11 @@ def _read_config(path, try_backup=False):
             if not sabnzbd.WIN32:
                 os.umask(prev)
         except IOError:
-            return False, 'Cannot create INI file %s' % path
+            return False, "Cannot create INI file %s" % path
 
     try:
         # Let configobj open the file
-        CFG = configobj.ConfigObj(infile=path, default_encoding='utf-8', encoding='utf-8')
+        CFG = configobj.ConfigObj(infile=path, default_encoding="utf-8", encoding="utf-8")
     except (IOError, configobj.ConfigObjError, UnicodeEncodeError) as strerror:
         if try_backup:
             # No luck!
@@ -734,20 +757,20 @@ def _read_config(path, try_backup=False):
             return _read_config(path, True)
 
     try:
-        version = sabnzbd.misc.int_conv(CFG['__version__'])
+        version = sabnzbd.misc.int_conv(CFG["__version__"])
         if version > int(CONFIG_VERSION):
             return False, "Incorrect version number %s in %s" % (version, path)
     except (KeyError, ValueError):
         pass
 
     CFG.filename = path
-    CFG.encoding = 'utf-8'
-    CFG['__encoding__'] = 'utf-8'
-    CFG['__version__'] = str(CONFIG_VERSION)
+    CFG.encoding = "utf-8"
+    CFG["__encoding__"] = "utf-8"
+    CFG["__version__"] = str(CONFIG_VERSION)
 
     # Use CFG data to set values for all static options
     for section in database:
-        if section not in ('servers', 'categories', 'rss'):
+        if section not in ("servers", "categories", "rss"):
             for option in database[section]:
                 sec, kw = database[section][option].ident()
                 sec = sec[-1]
@@ -773,14 +796,14 @@ def save_config(force=False):
         return True
 
     for section in database:
-        if section in ('servers', 'categories', 'rss'):
+        if section in ("servers", "categories", "rss"):
             try:
                 CFG[section]
             except KeyError:
                 CFG[section] = {}
             for subsec in database[section]:
-                if section == 'servers':
-                    subsec_mod = subsec.replace('[', '{').replace(']', '}')
+                if section == "servers":
+                    subsec_mod = subsec.replace("[", "{").replace("]", "}")
                 else:
                     subsec_mod = subsec
                 try:
@@ -809,11 +832,11 @@ def save_config(force=False):
 
     res = False
     filename = CFG.filename
-    bakname = filename + '.bak'
+    bakname = filename + ".bak"
 
     # Check if file is writable
-    if not sabnzbd.filesystem.is_writable(filename):
-        logging.error(T('Cannot write to INI file %s'), filename)
+    if not is_writable(filename):
+        logging.error(T("Cannot write to INI file %s"), filename)
         return res
 
     # copy current file to backup
@@ -822,26 +845,26 @@ def save_config(force=False):
         shutil.copymode(filename, bakname)
     except:
         # Something wrong with the backup,
-        logging.error(T('Cannot create backup file for %s'), bakname)
+        logging.error(T("Cannot create backup file for %s"), bakname)
         logging.info("Traceback: ", exc_info=True)
         return res
 
     # Write new config file
     try:
-        logging.info('Writing settings to INI file %s', filename)
+        logging.info("Writing settings to INI file %s", filename)
         CFG.write()
         shutil.copymode(bakname, filename)
         modified = False
         res = True
     except:
-        logging.error(T('Cannot write to INI file %s'), filename)
+        logging.error(T("Cannot write to INI file %s"), filename)
         logging.info("Traceback: ", exc_info=True)
         try:
-            sabnzbd.filesystem.remove_file(filename)
+            remove_file(filename)
         except:
             pass
         # Restore INI file from backup
-        sabnzbd.filesystem.renamer(bakname, filename)
+        renamer(bakname, filename)
 
     return res
 
@@ -852,9 +875,9 @@ def define_servers():
     """
     global CFG
     try:
-        for server in CFG['servers']:
-            svr = CFG['servers'][server]
-            s = ConfigServer(server.replace('{', '[').replace('}', ']'), svr)
+        for server in CFG["servers"]:
+            svr = CFG["servers"][server]
+            s = ConfigServer(server.replace("{", "[").replace("}", "]"), svr)
 
             # Conversion of global SSL-Ciphers to server ones
             if sabnzbd.cfg.ssl_ciphers():
@@ -863,13 +886,13 @@ def define_servers():
         pass
 
     # No longer needed
-    sabnzbd.cfg.ssl_ciphers.set('')
+    sabnzbd.cfg.ssl_ciphers.set("")
 
 
 def get_servers():
     global database
     try:
-        return database['servers']
+        return database["servers"]
     except KeyError:
         return {}
 
@@ -880,8 +903,8 @@ def define_categories():
     """
     global CFG, categories
     try:
-        for cat in CFG['categories']:
-            ConfigCat(cat, CFG['categories'][cat])
+        for cat in CFG["categories"]:
+            ConfigCat(cat, CFG["categories"][cat])
     except KeyError:
         pass
 
@@ -892,18 +915,18 @@ def get_categories(cat=0):
         When 'cat' is given, a link to that category or to '*' is returned
     """
     global database
-    if 'categories' not in database:
-        database['categories'] = {}
-    cats = database['categories']
+    if "categories" not in database:
+        database["categories"] = {}
+    cats = database["categories"]
 
     # Add Default categories
-    if '*' not in cats:
-        ConfigCat('*', {'pp': '3', 'script': 'None', 'priority': NORMAL_PRIORITY})
+    if "*" not in cats:
+        ConfigCat("*", {"pp": "3", "script": "None", "priority": NORMAL_PRIORITY})
         # Add some category suggestions
-        ConfigCat('movies', {})
-        ConfigCat('tv', {})
-        ConfigCat('audio', {})
-        ConfigCat('software', {})
+        ConfigCat("movies", {})
+        ConfigCat("tv", {})
+        ConfigCat("audio", {})
+        ConfigCat("software", {})
 
         # Save config for future use
         save_config(True)
@@ -911,7 +934,7 @@ def get_categories(cat=0):
         try:
             cats = cats[cat]
         except KeyError:
-            cats = cats['*']
+            cats = cats["*"]
     return cats
 
 
@@ -924,12 +947,12 @@ def get_ordered_categories():
     # Transform to list and sort
     categories = []
     for cat in database_cats.keys():
-        if cat != '*':
+        if cat != "*":
             categories.append(database_cats[cat].get_dict())
 
     # Sort and add default * category
-    categories.sort(key=lambda cat: cat['order'])
-    categories.insert(0, database_cats['*'].get_dict())
+    categories.sort(key=lambda cat: cat["order"])
+    categories.insert(0, database_cats["*"].get_dict())
 
     return categories
 
@@ -940,8 +963,8 @@ def define_rss():
     """
     global CFG
     try:
-        for r in CFG['rss']:
-            ConfigRSS(r, CFG['rss'][r])
+        for r in CFG["rss"]:
+            ConfigRSS(r, CFG["rss"][r])
     except KeyError:
         pass
 
@@ -950,8 +973,8 @@ def get_rss():
     global database
     try:
         # We have to remove non-seperator commas by detecting if they are valid URL's
-        for feed_key in database['rss']:
-            feed = database['rss'][feed_key]
+        for feed_key in database["rss"]:
+            feed = database["rss"][feed_key]
             # Only modify if we have to, to prevent repeated config-saving
             have_new_uri = False
             # Create a new corrected list
@@ -959,7 +982,7 @@ def get_rss():
             for feed_uri in feed.uri():
                 if new_feed_uris and not urlparse(feed_uri).scheme and urlparse(new_feed_uris[-1]).scheme:
                     # Current one has no scheme but previous one does, append to previous
-                    new_feed_uris[-1] += ',' + feed_uri
+                    new_feed_uris[-1] += "," + feed_uri
                     have_new_uri = True
                     continue
                 # Add full working URL
@@ -968,7 +991,7 @@ def get_rss():
             if have_new_uri:
                 feed.uri.set(new_feed_uris)
 
-        return database['rss']
+        return database["rss"]
     except KeyError:
         return {}
 
@@ -981,7 +1004,9 @@ def get_filename():
 ##############################################################################
 # Default Validation handlers
 ##############################################################################
-__PW_PREFIX = '!!!encoded!!!'
+__PW_PREFIX = "!!!encoded!!!"
+
+
 def encode_password(pw):
     """ Encode password in hexadecimal if needed """
     enc = False
@@ -989,9 +1014,9 @@ def encode_password(pw):
         encPW = __PW_PREFIX
         for c in pw:
             cnum = ord(c)
-            if c == '#' or cnum < 33 or cnum > 126:
+            if c == "#" or cnum < 33 or cnum > 126:
                 enc = True
-            encPW += '%2x' % cnum
+            encPW += "%2x" % cnum
         if enc:
             return encPW
     return pw
@@ -1001,14 +1026,14 @@ def decode_password(pw, name):
     """ Decode hexadecimal encoded password
         but only decode when prefixed
     """
-    decPW = ''
+    decPW = ""
     if pw and pw.startswith(__PW_PREFIX):
         for n in range(len(__PW_PREFIX), len(pw), 2):
             try:
                 ch = chr(int(pw[n] + pw[n + 1], 16))
             except ValueError:
-                logging.error(T('Incorrectly encoded password %s'), name)
-                return ''
+                logging.error(T("Incorrectly encoded password %s"), name)
+                return ""
             decPW += ch
         return decPW
     else:
@@ -1018,8 +1043,8 @@ def decode_password(pw, name):
 def no_nonsense(value):
     """ Strip and Filter out None and 'None' from strings """
     value = str(value).strip()
-    if value.lower() == 'none':
-        value = ''
+    if value.lower() == "none":
+        value = ""
     return None, value
 
 
@@ -1039,13 +1064,13 @@ def validate_octal(value):
         int(value, 8)
         return None, value
     except:
-        return T('%s is not a correct octal value') % value, None
+        return T("%s is not a correct octal value") % value, None
 
 
 def validate_no_unc(root, value, default):
     """ Check if path isn't a UNC path """
     # Only need to check the 'value' part
-    if value and not value.startswith(r'\\'):
+    if value and not value.startswith(r"\\"):
         return validate_notempty(root, value, default)
     else:
         return T('UNC path "%s" not allowed here') % value, None
@@ -1055,12 +1080,12 @@ def validate_safedir(root, value, default):
     """ Allow only when queues are empty and no UNC
         On Windows path should be small
     """
-    if sabnzbd.WIN32 and value and len(sabnzbd.filesystem.real_path(root, value)) >= MAX_WIN_DFOLDER:
-        return T('Error: Path length should be below %s.') % MAX_WIN_DFOLDER, None
+    if sabnzbd.WIN32 and value and len(real_path(root, value)) >= MAX_WIN_DFOLDER:
+        return T("Error: Path length should be below %s.") % MAX_WIN_DFOLDER, None
     if sabnzbd.empty_queues():
         return validate_no_unc(root, value, default)
     else:
-        return T('Error: Queue not empty, cannot change folder.'), None
+        return T("Error: Queue not empty, cannot change folder."), None
 
 
 def validate_notempty(root, value, default):
@@ -1076,8 +1101,8 @@ def validate_single_tag(value):
         into ['TV', '>', 'HD']
     """
     if len(value) == 3:
-        if value[1] == '>':
-            return None, ' '.join(value)
+        if value[1] == ">":
+            return None, " ".join(value)
     return None, value
 
 

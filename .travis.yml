@@ -46,7 +46,28 @@ script:
 
   # Force code-style for folders that we already did, only on 1 job
   - if [[ $TRAVIS_PYTHON_VERSION == "3.7" ]]; then
-      python3 -m black scripts tools tests util sabnzbd/utils sabnzbd/rss.py -l120 --py36 -N --check;
+      python3 -m black
+        scripts
+        tools
+        tests
+        util
+        sabnzbd/utils
+        sabnzbd/__init__.py
+        sabnzbd/cfg.py
+        sabnzbd/config.py
+        sabnzbd/emailer.py
+        sabnzbd/constants.py
+        sabnzbd/decorators.py
+        sabnzbd/getipaddress.py
+        sabnzbd/filesystem.py
+        sabnzbd/dirscanner.py
+        sabnzbd/misc.py
+        sabnzbd/lang.py
+        sabnzbd/nzbparser.py
+        sabnzbd/rss.py
+        sabnzbd/par2file.py
+        sabnzbd/version.py
+        -l120 --py36 -N --check;
     fi
 
 notifications:
