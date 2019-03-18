@@ -7,14 +7,14 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2019-01-04 12:42+0000\n"
-"PO-Revision-Date: 2018-11-28 04:21+0000\n"
-"Last-Translator: scootergrisen <scootergrisen@gmail.com>\n"
+"PO-Revision-Date: 2019-01-26 09:26+0000\n"
+"Last-Translator: B.E. <Unknown>\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-01-05 05:41+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"X-Launchpad-Export-Date: 2019-01-27 05:44+0000\n"
+"X-Generator: Launchpad (build 18857)\n"
 "Language: da\n"
 
 #: SABnzbd.py [Error message]
@@ -889,11 +889,11 @@ msgstr "FEJL: CRC mislykkedes i \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
-msgstr ""
+msgstr "Udpakningen fejlede, da filen er for stor til filsystemet (FAT?)"
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
+msgstr "FEJL: Fil for stor til filsystem (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
@@ -994,6 +994,8 @@ msgstr "[%s] Bekræftelse i %s, kræver reparation"
 msgid ""
 "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
+"Invalide par2 filer eller invalide PAR2 parametre, kan ikke bekræfte eller "
+"reparere"
 
 #: sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
@@ -1029,7 +1031,7 @@ msgstr "Bekræfter"
 
 #: sabnzbd/newsunpack.py
 msgid "Checking extra files"
-msgstr ""
+msgstr "Tjekker ekstra filer"
 
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP status]
 msgid "Checking"
@@ -1837,11 +1839,11 @@ msgstr "Deaktivere kvota styring"
 
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Pause jobs with category"
-msgstr ""
+msgstr "Pause jobs med kategori"
 
 #: sabnzbd/skintext.py [Config->Scheduler]
 msgid "Resume jobs with category"
-msgstr ""
+msgstr "Genoptag jobs med kategori"
 
 #: sabnzbd/skintext.py [Prowl priority] # sabnzbd/skintext.py [Three way switch for duplicates]
 msgid "Off"
@@ -2539,7 +2541,7 @@ msgstr "Gentagelse test"
 
 #: sabnzbd/skintext.py
 msgid "Test download"
-msgstr ""
+msgstr "Test overførsel"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2825,19 +2827,19 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Keep all jobs"
-msgstr ""
+msgstr "Behold alle jobs"
 
 #: sabnzbd/skintext.py
 msgid "Keep maximum number of completed jobs"
-msgstr ""
+msgstr "Behold maximal antal af gennemførte jobs"
 
 #: sabnzbd/skintext.py
 msgid "Keep completed jobs maximum number of days"
-msgstr ""
+msgstr "Behold gennemførte jobs maximal antal af dage"
 
 #: sabnzbd/skintext.py
 msgid "Do not keep any completed jobs"
-msgstr ""
+msgstr "Behold ikke gennemførte jobs"
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
@@ -3179,7 +3181,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Allow proper releases"
-msgstr ""
+msgstr "Tillad reelle udgivelser"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3197,7 +3199,7 @@ msgstr "Mislykkes job (flyt til historik)"
 
 #: sabnzbd/skintext.py [Four way switch for duplicates]
 msgid "Tag job"
-msgstr ""
+msgstr "Marker job"
 
 #: sabnzbd/skintext.py [Three way switch for encrypted posts]
 msgid "Abort"
@@ -3251,7 +3253,7 @@ msgstr "Nogle servere levere en alternativ NZB når et download mislykkes."
 
 #: sabnzbd/skintext.py
 msgid "Use tags from indexer"
-msgstr ""
+msgstr "Brug mærker fra indexer"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3293,7 +3295,7 @@ msgstr "IONice parametre"
 
 #: sabnzbd/skintext.py
 msgid "External process priority"
-msgstr ""
+msgstr "Ekstern proces prioritet"
 
 #: sabnzbd/skintext.py
 msgid "Disconnect on Empty Queue"
@@ -4099,7 +4101,7 @@ msgstr "S01E05 Episodemappe"
 
 #: sabnzbd/skintext.py
 msgid "Job Name as Filename"
-msgstr ""
+msgstr "Job Navn som Filnavn"
 
 #: sabnzbd/skintext.py
 msgid "Title"
@@ -4171,7 +4173,7 @@ msgstr "Originalfilnavn"
 
 #: sabnzbd/skintext.py
 msgid "Original Job Name"
-msgstr ""
+msgstr "Oprindelig Job Navn"
 
 #: sabnzbd/skintext.py
 msgid "Lower Case"

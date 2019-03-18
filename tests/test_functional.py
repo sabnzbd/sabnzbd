@@ -121,6 +121,12 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         if not ssl_imp.get_attribute('checked'):
             ssl_imp.click()
 
+        # Lower number of connections to prevent testing errors
+        self.driver.find_element_by_partial_link_text("Advanced Settings").click()
+        pass_inp = self.driver.find_element_by_name("connections")
+        pass_inp.clear()
+        pass_inp.send_keys(2)
+
         # Test server-check
         self.driver.find_element_by_id("serverTest").click()
         self.wait_for_ajax()
