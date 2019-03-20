@@ -1099,25 +1099,34 @@ class NzbObject(TryList):
     @property
     def final_name_labeled(self):
         prefix = ''
+        # Duplicate label is always active
         if self.duplicate:
             prefix = T('DUPLICATE') + ' / '  # : Queue indicator for duplicate job
-        if self.encrypted > 0 and self.status == 'Paused':
-            prefix += T('ENCRYPTED') + ' / '  #: Queue indicator for encrypted job
-        if self.oversized and self.status == 'Paused':
-            prefix += T('TOO LARGE') + ' / '  # : Queue indicator for oversized job
-        if self.incomplete and self.status == 'Paused':
-            prefix += T('INCOMPLETE') + ' / '  # : Queue indicator for incomplete NZB
-        if self.unwanted_ext and self.status == 'Paused':
-            prefix += T('UNWANTED') + ' / '  # : Queue indicator for unwanted extensions
-        if self.rating_filtered and self.status == 'Paused':
-            prefix += T('FILTERED') + ' / '  # : Queue indicator for filtered
+
+        # Only show label in case the download was not manually resumed
+        if self.status == Status.PAUSED:
+            if self.encrypted > 0:
+                prefix += T('ENCRYPTED') + ' / '  #: Queue indicator for encrypted job
+            if self.oversized:
+                prefix += T('TOO LARGE') + ' / '  # : Queue indicator for oversized job
+            if self.incomplete:
+                prefix += T('INCOMPLETE') + ' / '  # : Queue indicator for incomplete NZB
+            if self.unwanted_ext:
+                prefix += T('UNWANTED') + ' / '  # : Queue indicator for unwanted extensions
+            if self.rating_filtered:
+                prefix += T('FILTERED') + ' / '  # : Queue indicator for filtered
+
+        # Waiting for URL fetching
         if isinstance(self.url_wait, float):
             dif = int(self.url_wait - time.time() + 0.5)
             if dif > 0:
                 prefix += T('WAIT %s sec') % dif + ' / '  # : Queue indicator for waiting URL fetch
+
+        # Propagation delay label
         if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
             wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time()) / 60 + 0.5)
             prefix += T('PROPAGATING %s min') % wait_time + ' / '  # : Queue indicator while waiting for propagation of post
+
         return '%s%s' % (prefix, self.final_name)
 
     @property

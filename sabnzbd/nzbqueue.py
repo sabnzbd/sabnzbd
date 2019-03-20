@@ -352,7 +352,7 @@ class NzbQueue:
             if save:
                 self.save(nzo)
 
-            if not (quiet or nzo.status in ('Fetching',)):
+            if not (quiet or nzo.status == Status.FETCHING):
                 notifier.send_notification(T('NZB added to queue'), nzo.filename, 'download', nzo.cat)
 
         if not quiet and cfg.auto_sort():
@@ -816,14 +816,14 @@ class NzbQueue:
         """
         bytes_left = 0
         for nzo in self.__nzo_list:
-            if nzo.status != 'Paused':
+            if nzo.status != Status.PAUSED:
                 bytes_left += nzo.remaining
         return bytes_left
 
     def is_empty(self):
         empty = True
         for nzo in self.__nzo_list:
-            if not nzo.futuretype and nzo.status != 'Paused':
+            if not nzo.futuretype and nzo.status != Status.PAUSED:
                 empty = False
                 break
         return empty
