@@ -2349,13 +2349,23 @@ class Status:
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
-        # Diskspeed
-        sabnzbd.DOWNLOAD_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
+        # Diskspeed of download (aka incomplete) directory:
+        dir_speed = diskspeedmeasure(sabnzbd.cfg.download_dir.get_path())
+        if dir_speed:
+            sabnzbd.DOWNLOAD_DIR_SPEED = round(dir_speed, 1)
+        else:
+            sabnzbd.DOWNLOAD_DIR_SPEED = 0
+
         time.sleep(1.0)
-        sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
+        # Diskspeed of complete directory:
+        dir_speed = diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path())
+        if dir_speed:
+            sabnzbd.COMPLETE_DIR_SPEED = round(dir_speed, 1)
+        else:
+            sabnzbd.COMPLETE_DIR_SPEED = 0
 
         # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(),1)
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
 
         raise Raiser(self.__root)  # Refresh screen
 
