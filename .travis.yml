@@ -67,7 +67,7 @@ script:
         sabnzbd/rss.py
         sabnzbd/par2file.py
         sabnzbd/version.py
-        -l120 --py36 -N --check;
+        -l120 --check;
     fi
 
 notifications:
