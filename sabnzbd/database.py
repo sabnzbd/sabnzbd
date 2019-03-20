@@ -36,7 +36,7 @@ import threading
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME, STAGES
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
@@ -491,7 +491,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
 
     # Analyze series info only when job is finished
     series = u''
-    if postproc_time:
+    if nzo.status == Status.COMPLETED:
         seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
         if seriesname and season and episode:
             series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
