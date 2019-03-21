@@ -14,7 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+from pyannotate_runtime import collect_types
+collect_types.init_types_collection()
+collect_types.start()
 import sys
 if sys.hexversion < 0x03050000:
     print("Sorry, requires Python 3.5 or above")
@@ -1505,6 +1507,8 @@ def main():
             os._exit(0)
     else:
         notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), 'startup')
+        collect_types.stop()
+        collect_types.dump_stats('type_info.json')
         os._exit(0)
 
 

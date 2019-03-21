@@ -36,6 +36,12 @@ from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT,
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
+from datetime import datetime
+from typing import Any
+from typing import Optional
+from typing import Tuple
+from typing import Union
+from mypy_extensions import NoReturn
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]{0,1})", re.I)
@@ -55,7 +61,7 @@ def time_format(fmt):
         return fmt
 
 
-def calc_age(date, trans=False):
+def calc_age(date: datetime, trans: bool = False) -> str:
     """ Calculate the age difference between now and date.
         Value is returned as either days, hours, or minutes.
         When 'trans' is True, time symbols will be translated.
@@ -98,7 +104,7 @@ def monthrange(start, finish):
         yield datetime.date(int(year), int(month), 1)
 
 
-def safe_lower(txt):
+def safe_lower(txt: str) -> str:
     """ Return lowercased string. Return '' for None """
     if txt:
         return txt.lower()
@@ -106,7 +112,7 @@ def safe_lower(txt):
         return ""
 
 
-def cmp(x, y):
+def cmp(x: str, y: str) -> int:
     """
     Replacement for built-in funciton cmp that was removed in Python 3
 
@@ -118,7 +124,7 @@ def cmp(x, y):
     return (x > y) - (x < y)
 
 
-def cat_to_opts(cat, pp=None, script=None, priority=None):
+def cat_to_opts(cat: str, pp: Optional[Any] = None, script: Optional[str] = None, priority: Union[int, str] = None) -> Tuple[str, str, str, Union[int, str]]:
     """ Derive options from category, if options not already defined.
         Specified options have priority over category-options.
         If no valid category is given, special category '*' will supply default values
@@ -215,7 +221,7 @@ def cat_convert(cat):
     return None
 
 
-def windows_variant():
+def windows_variant() -> Tuple[bool, bool]:
     """ Determine Windows variant
         Return vista_plus, x64
     """
@@ -282,7 +288,7 @@ def set_serv_parms(service, args):
     return True
 
 
-def get_from_url(url):
+def get_from_url(url: str) -> NoReturn:
     """ Retrieve URL and return content """
     try:
         with urllib.request.urlopen(url) as response:
@@ -291,7 +297,7 @@ def get_from_url(url):
         return None
 
 
-def convert_version(text):
+def convert_version(text: Union[bytes, str]) -> Tuple[int, bool]:
     """ Convert version string to numerical value and a testversion indicator """
     version = 0
     test = True
@@ -310,7 +316,7 @@ def convert_version(text):
     return version, test
 
 
-def check_latest_version():
+def check_latest_version() -> None:
     """ Do an online check for the latest version
 
         Perform an online version check
@@ -395,7 +401,7 @@ def check_latest_version():
         sabnzbd.NEW_VERSION = (latest_testlabel, url_beta)
 
 
-def from_units(val):
+def from_units(val: str) -> float:
     """ Convert K/M/G/T/P notation to float """
     val = str(val).strip().upper()
     if val == "-1":
@@ -419,7 +425,7 @@ def from_units(val):
         return 0.0
 
 
-def to_units(val, postfix=""):
+def to_units(val: float, postfix: str = "") -> str:
     """ Convert number to K/M/G/T/P notation
         Show single decimal for M and higher
     """
@@ -448,7 +454,7 @@ def to_units(val, postfix=""):
     return fmt % (sign, val, unit, postfix)
 
 
-def caller_name(skip=2):
+def caller_name(skip: int = 2) -> str:
     """Get a name of a caller in the format module.method
        Originally used: https://gist.github.com/techtonik/2151727
        Adapted for speed by using sys calls directly
@@ -615,7 +621,7 @@ except:
 _HAVE_STATM = _PAGE_SIZE and memory_usage()
 
 
-def loadavg():
+def loadavg() -> str:
     """ Return 1, 5 and 15 minute load average of host or "" if not supported """
     p = ""
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
@@ -630,10 +636,10 @@ def loadavg():
     return p
 
 
-def format_time_string(seconds):
+def format_time_string(seconds: float) -> str:
     """ Return a formatted and translated time string """
 
-    def unit(single, n):
+    def unit(single: str, n: int) -> str:
         # Seconds and minutes are special due to historical reasons
         if single == "minute" or (single == "second" and n == 1):
             single = single[:3]
@@ -666,7 +672,7 @@ def format_time_string(seconds):
     return " ".join(completestr)
 
 
-def int_conv(value):
+def int_conv(value: Union[int, str]) -> int:
     """ Safe conversion to int (can handle None) """
     try:
         value = int(value)
@@ -761,14 +767,14 @@ def find_on_path(targets):
     return None
 
 
-def probablyipv4(ip):
+def probablyipv4(ip: str) -> bool:
     if ip.count(".") == 3 and re.sub("[0123456789.]", "", ip) == "":
         return True
     else:
         return False
 
 
-def probablyipv6(ip):
+def probablyipv6(ip: str) -> bool:
     # Returns True if the given input is probably an IPv6 address
     # Square Brackets like '[2001::1]' are OK
     if ip.count(":") >= 2 and re.sub("[0123456789abcdefABCDEF:\[\]]", "", ip) == "":
