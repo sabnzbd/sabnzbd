@@ -29,7 +29,7 @@ import sqlite3
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME, STAGES
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
@@ -203,12 +203,12 @@ class HistoryDB:
         """ Remove all completed jobs from the database, optional with `search` pattern """
         search = convert_search(search)
         logging.info('Removing all completed jobs from history')
-        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Completed'""", (search,), save=True)
+        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, Status.COMPLETED), save=True)
 
     def get_failed_paths(self, search=None):
         """ Return list of all storage paths of failed jobs (may contain non-existing or empty paths) """
         search = convert_search(search)
-        fetch_ok = self.execute("""SELECT path FROM history WHERE name LIKE ? AND status = 'Failed'""", (search,))
+        fetch_ok = self.execute("""SELECT path FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED))
         if fetch_ok:
             return [item.get('path') for item in self.c.fetchall()]
         else:
@@ -218,7 +218,7 @@ class HistoryDB:
         """ Remove all failed jobs from the database, optional with `search` pattern """
         search = convert_search(search)
         logging.info('Removing all failed jobs from history')
-        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = 'Failed'""", (search,), save=True)
+        return self.execute("""DELETE FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED), save=True)
 
     def remove_history(self, jobs=None):
         """ Remove all jobs in the list `jobs`, empty list will remove all completed jobs """
@@ -229,7 +229,7 @@ class HistoryDB:
                 jobs = [jobs]
 
             for job in jobs:
-                self.execute("""DELETE FROM history WHERE nzo_id=?""", (job,), save=True)
+                self.execute("""DELETE FROM history WHERE nzo_id = ?""", (job,), save=True)
                 logging.info('[%s] Removing job %s from history', caller_name(), job)
 
     def auto_history_purge(self):
@@ -247,13 +247,13 @@ class HistoryDB:
             seconds_to_keep = int(time.time()) - days_to_keep * 86400
             if days_to_keep > 0:
                 logging.info('Removing completed jobs older than %s days from history', days_to_keep)
-                return self.execute("""DELETE FROM history WHERE status = 'Completed' AND completed < ?""", (seconds_to_keep,), save=True)
+                return self.execute("""DELETE FROM history WHERE status = ? AND completed < ?""", (Status.COMPLETED, seconds_to_keep), save=True)
         else:
             # How many to keep?
             to_keep = int_conv(sabnzbd.cfg.history_retention())
             if to_keep > 0:
                 logging.info('Removing all but last %s completed jobs from history', to_keep)
-                return self.execute("""DELETE FROM history WHERE id NOT IN ( SELECT id FROM history WHERE status = 'Completed' ORDER BY completed DESC LIMIT ? )""", (to_keep,), save=True)
+                return self.execute("""DELETE FROM history WHERE id NOT IN ( SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ? )""", (Status.COMPLETED, to_keep), save=True)
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
         """ Add a new job entry to the database """
@@ -277,7 +277,8 @@ class HistoryDB:
             post += ")"
             command_args.extend(categories)
         if failed_only:
-            post += ' AND STATUS = "Failed"'
+            post += ' AND STATUS = ?'
+            command_args.append(Status.FAILED)
 
         cmd = 'SELECT COUNT(*) FROM history WHERE name LIKE ?'
         res = self.execute(cmd + post, tuple(command_args))
@@ -316,7 +317,7 @@ class HistoryDB:
         series = series.lower().replace('.', ' ').replace('_', ' ').replace('  ', ' ')
         if series and season and episode:
             pattern = '%s/%s/%s' % (series, season, episode)
-            res = self.execute("select count(*) from History WHERE series = ? AND STATUS != 'Failed'", (pattern,))
+            res = self.execute("select count(*) from History WHERE series = ? AND STATUS != ?", (pattern, Status.FAILED))
             if res:
                 try:
                     total = self.c.fetchone().get('count(*)')
@@ -327,7 +328,7 @@ class HistoryDB:
     def have_md5sum(self, md5sum):
         """ Check whether this md5sum already in History """
         total = 0
-        res = self.execute("select count(*) from History WHERE md5sum = ? AND STATUS != 'Failed'", (md5sum,))
+        res = self.execute("select count(*) from History WHERE md5sum = ? AND STATUS != ?", (md5sum, Status.FAILED))
         if res:
             try:
                 total = self.c.fetchone().get('count(*)')

@@ -387,7 +387,7 @@ class NzbObject(TryList):
 
     def __init__(self, filename, pp, script, nzb=None,
                  futuretype=False, cat=None, url=None,
-                 priority=NORMAL_PRIORITY, nzbname=None, status="Queued", nzo_info=None,
+                 priority=NORMAL_PRIORITY, nzbname=None, status=Status.QUEUED, nzo_info=None,
                  reuse=False, dup_check=True):
         TryList.__init__(self)
 

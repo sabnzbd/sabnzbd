@@ -1699,7 +1699,7 @@ def build_history(start=None, limit=None,search=None, failed_only=0, categories=
 
         path = item.get('path', '')
 
-        item['retry'] = int(bool(item.get('status') == 'Failed' and
+        item['retry'] = int(bool(item.get('status') == Status.FAILED and
                                  path and
                                  path not in retry_folders and
                                  same_file(cfg.download_dir.get_path(), path) and
