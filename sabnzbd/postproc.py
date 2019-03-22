@@ -120,7 +120,7 @@ class PostProcessor(Thread):
                 elif nzo.status in (Status.DOWNLOADING, Status.QUEUED):
                     self.remove(nzo)
                     nzo.purge_data(keep_basic=False, del_files=del_files)
-                    logging.info('Removed job %s from postproc queue', nzo.work_name)
+                    logging.info('Removed job %s from postproc queue', nzo.final_name)
                     nzo.work_name = ''  # Mark as deleted job
                 break
 

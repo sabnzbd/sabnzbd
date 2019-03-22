@@ -165,7 +165,7 @@ def sanitize_filename(name):
     return name + ext
 
 
-def sanitize_foldername(name, limit=True):
+def sanitize_foldername(name):
     """ Return foldername with dodgy chars converted to safe ones
         Remove any leading and trailing dot and space characters
     """
@@ -194,10 +194,6 @@ def sanitize_foldername(name, limit=True):
 
     if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
-
-    maxlen = sabnzbd.cfg.folder_max_length()
-    if limit and len(name) > maxlen:
-        name = name[:maxlen]
 
     # And finally, make sure it doesn't end in a dot
     if name != "." and name != "..":

@@ -295,6 +295,11 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     if nzo.reuse and depth == 1 and any(build_filelists(workdir, workdir_complete)):
         rerun = True
 
+    # We can't recursive unpack on long paths on Windows
+    # See: https://github.com/sabnzbd/sabnzbd/pull/771
+    if sabnzbd.WIN32 and len(workdir_complete) > 256:
+        rerun = False
+
     # Double-check that we didn't miss any files in workdir
     # But only if dele=True, otherwise of course there will be files left
     if rerun and dele and depth == 1 and any(build_filelists(workdir)):
@@ -486,7 +491,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
             wait_count = 0
             last_stats = nzo.direct_unpacker.get_formatted_stats()
             while nzo.direct_unpacker.is_alive():
-                logging.debug('DirectUnpacker still alive for %s: %s', nzo.work_name, last_stats)
+                logging.debug('DirectUnpacker still alive for %s: %s', nzo.final_name, last_stats)
 
                 # Bump the file-lock in case it's stuck
                 with nzo.direct_unpacker.next_file_lock:

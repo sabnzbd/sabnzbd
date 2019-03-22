@@ -462,7 +462,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
     # Analyze series info only when job is finished
     series = ''
     if postproc_time:
-        seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
+        seriesname, season, episode, _ = sabnzbd.newsunpack.analyse_show(nzo.final_name)
         if seriesname and season and episode:
             series = '%s/%s/%s' % (seriesname.lower(), season, episode)
 

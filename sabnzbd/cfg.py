@@ -76,12 +76,6 @@ def validate_server(value):
         return None, value
 
 
-if sabnzbd.WIN32:
-    DEF_FOLDER_MAX = 128
-else:
-    DEF_FOLDER_MAX = 256
-
-
 ##############################################################################
 # Special settings
 ##############################################################################
@@ -293,7 +287,6 @@ require_modern_tls = OptionBool("misc", "require_modern_tls", False)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
-folder_max_length = OptionNumber("misc", "folder_max_length", DEF_FOLDER_MAX, 20, 65000)
 req_completion_rate = OptionNumber("misc", "req_completion_rate", 100.2, 100, 200)
 selftest_host = OptionStr("misc", "selftest_host", "self-test.sabnzbd.org")
 movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")

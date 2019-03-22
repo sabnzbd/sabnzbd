@@ -472,7 +472,7 @@ class Downloader(Thread):
 
                     if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
                         # Let's get rid of all the articles for this server at once
-                        logging.info('Job %s too old for %s, moving on', article.nzf.nzo.work_name, server.host)
+                        logging.info('Job %s too old for %s, moving on', article.nzf.nzo.final_name, server.host)
                         while article:
                             self.decode(article, None, None)
                             article = article.nzf.nzo.get_article(server, self.servers)

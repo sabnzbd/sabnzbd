@@ -393,31 +393,22 @@ class NzbObject(TryList):
 
         self.filename = filename    # Original filename
         if nzbname and nzb:
-            work_name = nzbname     # Use nzbname if set and only for non-future slot
+            self.work_name = nzbname     # Use nzbname if set and only for non-future slot
         else:
-            work_name = filename
+            self.work_name = filename
 
-        # If non-future: create safe folder name stripped from ".nzb" and junk
-        if nzb and work_name and work_name.lower().endswith('.nzb'):
-            dname, ext = os.path.splitext(work_name)  # Used for folder name for final unpack
-            if ext.lower() == '.nzb':
-                work_name = dname
-        work_name, password = scan_password(work_name)
-        if not work_name:
-            work_name = filename
-        if nzb and work_name and not reuse:
-            work_name = sanitize_foldername(work_name)
-        if not work_name:
+        # Extract password
+        self.work_name, password = scan_password(self.work_name)
+        if not self.work_name:
             # In case only /password was entered for nzbname
-            work_name = filename
+            self.work_name = filename
 
         # Check for password also in filename
         if not password:
-            dummy, password = scan_password(os.path.splitext(filename)[0])
+            _, password = scan_password(os.path.splitext(filename)[0])
 
         # Remove trailing .nzb and .par(2)
-        self.work_name = create_work_name(work_name)
-        self.final_name = create_work_name(work_name)
+        self.final_name = self.work_name = create_work_name(self.work_name)
 
         # Determine category and find pp/script values based on input
         # Later will be re-evaluated based on import steps
@@ -542,7 +533,7 @@ class NzbObject(TryList):
 
         if not os.path.exists(adir):
             os.mkdir(adir)
-        dummy, self.work_name = os.path.split(wdir)
+        _, self.work_name = os.path.split(wdir)
         self.created = True
 
         # Must create a lower level XML parser because we must
@@ -651,7 +642,7 @@ class NzbObject(TryList):
         # Pause job when above size limit
         limit = cfg.size_limit.get_int()
         if not reuse and abs(limit) > 0.5 and self.bytes > limit:
-            logging.info('Job too large, forcing low prio and paused (%s)', self.work_name)
+            logging.info('Job too large, forcing low prio and paused (%s)', self.final_name)
             self.pause()
             self.oversized = True
             self.priority = LOW_PRIORITY
@@ -1806,9 +1797,9 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
 
 
 def create_work_name(name):
-    """ Remove ".nzb" and ".par(2)" """
+    """ Remove ".nzb" and ".par(2)" and sanitize """
     strip_ext = ['.nzb', '.par', '.par2']
-    name = name.strip()
+    name = sanitize_foldername(name.strip())
     if name.find('://') < 0:
         name_base, ext = os.path.splitext(name)
         # In case it was one of these, there might be more
