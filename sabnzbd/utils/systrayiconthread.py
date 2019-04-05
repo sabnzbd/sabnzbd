@@ -190,7 +190,7 @@ class SysTrayIconThread(Thread):
             # Wrapper of win32api, timeout is in ms
             # We need to wait at least untill what user has defined as double click
             self.stop_click_timer()
-            self.click_timer = timer.set_timer(win32gui.GetDoubleClickTime(), self.click)
+            self.click_timer = timer.set_timer(win32gui.GetDoubleClickTime() * 2, self.click)
         return True
 
     def show_menu(self):
