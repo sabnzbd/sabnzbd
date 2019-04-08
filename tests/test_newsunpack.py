@@ -32,11 +32,3 @@ class TestNewsUnpack():
         res = list2cmdline(lst)
         # Make sure the output is cmd.exe-compatible
         assert res == '"cmd1" "9" "cmd3"'
-
-    def test_run_simple(self):
-        """ Test the output of an external command """
-        cmd = "echo $PATH"
-        res = run_simple(cmd)
-        # Make sure the command output is not blank,
-        # should have values on both Windows and Linux
-        assert res != ""
