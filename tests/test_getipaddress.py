@@ -16,23 +16,31 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_utils.test_diskspeed - Testing sabnzdb diskspeed
+tests.test_utils.test_check_dir - Testing sabnzdb checkdir util
 """
 
-from sabnzbd.utils.diskspeed import diskspeedmeasure
-import sys
-import os
+from sabnzbd.getipaddress import *
+from sabnzbd.cfg import selftest_host
+from tests.testhelper import validate_ip
 
-class TestDiskSpeed:
-    def test_disk_speed(self):
-        if "linux" in sys.platform:
-            dir = os.getcwd()
+class TestCheckDir:
 
-        elif "win32" in sys.platform:
-            dir = os.getcwd()
+    def test_addresslookup4(self):
+        address = addresslookup4(selftest_host())
+        for item in address:
+            assert isinstance(item[0], type(socket.AF_INET))
 
-        elif "darwin" in sys.platform:
-            dir = os.getcwd()
 
-        speed = diskspeedmeasure(dir)
-        assert speed
+    def test_publicipv4(self):
+        public_ipv4 = publicipv4()
+        assert validate_ip(public_ipv4)
+
+
+    def test_localipv4(self):
+        local_ipv4 = localipv4()
+        assert validate_ip(local_ipv4)
+
+
+    def test_ipv6(self):
+        test_ipv6 = ipv6()
+        assert test_ipv6

@@ -20,7 +20,9 @@ tests.test_utils - Testing sabnzdb utils
 """
 
 from sabnzbd.utils.certgen import generate_key, generate_local_cert
-
+from cryptography.hazmat.primitives.asymmetric import rsa
+import OpenSSL
+import datetime
 
 class TestCertGen:
     def test_generate_key(self):
@@ -34,6 +36,15 @@ class TestCertGen:
         private_key = generate_key()
         # Generate local certificate using private key
         local_cert = generate_local_cert(private_key)
-
         assert local_cert
 
+        # Validating generated cert file
+        public_key = local_cert.public_key()
+        assert isinstance(public_key, rsa.RSAPublicKey)
+        with open('cert.cert', 'r') as cert_file:
+            cert_content = cert_file.read()
+            x509 = OpenSSL.crypto.load_certificate(OpenSSL.crypto.FILETYPE_PEM, cert_content)
+
+            # Validate that the timestamp at which the certificate stops being valid (expiration date) is in future
+            cert_expiry_date = datetime.datetime.strptime( x509.get_notAfter().decode('ascii'), '%Y%m%d%H%M%SZ')
+            assert datetime.datetime.now() < cert_expiry_date

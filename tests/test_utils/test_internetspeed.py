@@ -19,7 +19,7 @@
 tests.test_utils.test_internetspeed- Testing sabnzdb internetspeed
 """
 
-from sabnzbd.utils.internetspeed import internetspeed, measurespeed
+from sabnzbd.utils.internetspeed import internetspeed, measurespeed, SizeUrlList
 
 class TestInternetSpeed:
     """ This class contains tests to measure internet speed with an active and inactive connection """
@@ -30,7 +30,7 @@ class TestInternetSpeed:
         assert speed == 0.0
 
     def test_measurespeed_valid_url(self):
-        speed = measurespeed("https://sabnzbd.org/tests/internetspeed/5MB.bin")
+        speed = measurespeed(SizeUrlList[0])
 
         assert isinstance(speed, float)
         assert speed > 0
@@ -40,6 +40,3 @@ class TestInternetSpeed:
 
         assert isinstance(curr_speed_MBps, float)
         assert curr_speed_MBps > 0
-
-
-

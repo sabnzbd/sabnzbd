@@ -118,6 +118,9 @@ def upload_nzb(filename, host=SAB_HOST, port=SAB_PORT):
     arguments = {"apikey": "apikey", "mode": "addfile", "output": "json"}
     return requests.post("http://%s:%s/api" % (host, port), files=files, data=arguments).json()
 
+def validate_ip(ip):
+    # Helper method to check if a given string is a valid IP address
+    return ip.count('.') == 3 and all(0 <= int(num) < 256 for num in ip.rstrip().split('.'))
 
 @pytest.mark.usefixtures("start_sabnzbd")
 class SABnzbdBaseTest(unittest.TestCase):

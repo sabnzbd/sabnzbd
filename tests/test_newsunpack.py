@@ -19,16 +19,20 @@
 tests.test_newsunpack- Tests of various functions in newspack
 """
 
-import sys
-import subprocess
 from sabnzbd.newsunpack import *
-from tests.testhelper import *
-
+import pytest
 
 class TestNewsUnpack():
-    def test_list_to_cmd(self):
+
+    @pytest.mark.parametrize('test_input, expected_output', [
+        (['cmd1', 9, 'cmd3'],'"cmd1" "9" "cmd3"'),                          # sending all commands as valid string
+        (["", "cmd1", "5"],'"cmd1" "5"'),                                   # sending blank string
+        (['cmd1', None, 'cmd3', "tail -f"],'"cmd1" "" "cmd3" "tail -f"'),   # sending None in command
+        (['cmd1', 0, "ps ux"],'"cmd1" "" "ps ux"'),                         # sending 0
+    ])
+    def test_list_to_cmd(self, test_input, expected_output ):
         """ Test to convert list to a cmd.exe-compatible command string """
-        lst = ['cmd1', 9, 'cmd3']
-        res = list2cmdline(lst)
+
+        res = list2cmdline(test_input)
         # Make sure the output is cmd.exe-compatible
-        assert res == '"cmd1" "9" "cmd3"'
+        assert res == expected_output
