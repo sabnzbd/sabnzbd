@@ -23,13 +23,25 @@ from sabnzbd.utils.certgen import generate_key, generate_local_cert
 from cryptography.hazmat.primitives.asymmetric import rsa
 import OpenSSL
 import datetime
+import os.path
+import pytest
 
 class TestCertGen:
-    def test_generate_key(self):
-        # Generate private key
-        private_key = generate_key()
 
+    def test_generate_key_default(self):
+        # Generate private key with default key_size and file name
+        private_key = generate_key()
         assert private_key.key_size == 2048
+
+    @pytest.mark.parametrize('key_size, file_name',
+            [(512, 'test_key.pem'), (1024, 'test_123_key.pem'), (4096, '123_key.pem') ])
+    def test_generate_key_custom(self, key_size, file_name):
+        # Generate private key
+        private_key = generate_key(key_size=key_size, output_file=file_name)
+
+        # validate generated private key
+        assert private_key.key_size == key_size
+        assert os.path.isfile(file_name)
 
     def test_generate_local_cert(self):
         # Generate private key
