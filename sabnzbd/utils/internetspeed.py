@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+
+"""
+Module to measure and report Internet speed
+Method: get one or more files, and measure how long it takes
+Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
+"""
+
 import sys
 import time
 import logging
@@ -14,28 +21,31 @@ def measurespeed(url):
     """ Download the specified url, and report back MB/s (as a float) """
     logging.debug("URL is %s" % url)
     start = time.time()
+    downloadedbytes = 0  # default
     try:
         if sys.version_info[0] == 2:
-            import urllib2  # python2 only
+            import urllib2  # python2
 
             req = urllib2.Request(url, headers={"User-Agent": "Mozilla/5.0"})
             downloadedbytes = len(urllib2.urlopen(req, timeout=4).read())
         elif sys.version_info[0] == 3:
-            import urllib.request
+            import urllib.request  # python3
 
             req = urllib.request.Request(url, data=None, headers={"User-Agent": "Mozilla/5.0 (Macintosh)"})
             downloadedbytes = len(urllib.request.urlopen(req, timeout=4).read())
         else:
             logging.error("ERROR: no python version?!")
-            return 0, 0
     except:
         # No connection at all?
-        downloadedbytes = 0
-
-    logging.debug("Downloaded bytes: %d" % downloadedbytes)
+        pass
 
     duration = time.time() - start
 
+    logging.debug("Downloaded bytes: %d" % downloadedbytes)
+    if downloadedbytes == 0:
+        return 0
+
+    logging.debug("Duration in seconds: %f" % duration)
     MBps = (downloadedbytes / 1000111) / duration  # Bytes
     return MBps
 
@@ -88,6 +98,8 @@ def internetspeed():
 ############### MAIN #######################
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+    logging.debug("Log level is DEBUG")
     print("Starting speed test:")
     maxMBps = internetspeed()
     print("Speed in MB/s: %.2f" % maxMBps)
