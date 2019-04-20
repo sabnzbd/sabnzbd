@@ -259,7 +259,7 @@ class HistoryDB(object):
             to_keep = int_conv(sabnzbd.cfg.history_retention())
             if to_keep > 0:
                 logging.info('Removing all but last %s completed jobs from history', to_keep)
-                return self.execute("""DELETE FROM history WHERE id NOT IN ( SELECT id FROM history WHERE status = 'Completed' ORDER BY completed DESC LIMIT ? )""", (to_keep,), save=True)
+                return self.execute("""DELETE FROM history WHERE status = ? AND id NOT IN ( SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ? )""", (Status.COMPLETED, Status.COMPLETED, to_keep), save=True)
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
         """ Add a new job entry to the database """
