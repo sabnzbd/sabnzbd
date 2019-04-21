@@ -18,9 +18,9 @@
 """
 tests.test_functional_misc - Functional tests of various functions
 """
-
 import sys
 import subprocess
+import shutil
 import sabnzbd.encoding
 
 from tests.testhelper import *
@@ -102,13 +102,25 @@ class TestExtractPot:
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Skipping on Windows")
 class TestDaemonizing(SABnzbdBaseTest):
-    def test_daemonizing_basic(self):
-        """ Simple test to see if daemon-mode still works
+    def test_daemonizing(self):
+        """ Simple test to see if daemon-mode still works.
+            Also test removal of large "sabnzbd.error.log"
             We inherit from SABnzbdBaseTest so we can use it's clean-up logic!
         """
         daemon_host = "localhost"
         daemon_port = 23456
         ini_location = os.path.join(SAB_CACHE_DIR, "daemon_test")
+
+        # Create large output-file
+        error_log_path = os.path.join(ini_location, sabnzbd.cfg.log_dir(), sabnzbd.constants.DEF_LOG_ERRFILE)
+        os.makedirs(os.path.dirname(error_log_path), exist_ok=True)
+        with open(error_log_path, "wb") as large_log:
+            large_log.seek(6 * 1024 * 1024)
+            large_log.write(b"\1")
+
+        # We need the basic-config to set the API-key
+        # Otherwise we can't shut it down at the end
+        shutil.copyfile(os.path.join(SAB_BASE_DIR, "sabnzbd.basic.ini"), os.path.join(ini_location, "sabnzbd.ini"))
 
         # Combine it all into the script call
         script_call = [
@@ -139,6 +151,10 @@ class TestDaemonizing(SABnzbdBaseTest):
         pid_file = os.path.join(ini_location, "sabnzbd-%d.pid" % daemon_port)
         assert os.path.exists(pid_file)
 
+        # Did it remove the bad log file?
+        assert os.path.exists(error_log_path)
+        assert os.path.getsize(error_log_path) < 1024
+
         # Let's shut it down and give it some time to do so
-        get_url_result("shutdown")
+        get_url_result("shutdown", daemon_host, daemon_port)
         time.sleep(3.0)

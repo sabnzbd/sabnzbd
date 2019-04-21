@@ -61,7 +61,7 @@ import sabnzbd.newsunpack
 from sabnzbd.misc import check_latest_version, exit_sab, \
     split_host, create_https_certificates, windows_variant, ip_extract, \
     set_serv_parms, get_serv_parms, get_from_url
-from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full
+from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
 import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
@@ -221,8 +221,12 @@ def daemonize():
     sys.stdout.flush()
     sys.stderr.flush()
 
-    # Replace file descriptors for stdin, stdout, and stderr
+    # Get log file  path and remove the log file if it got too large
     log_path = os.path.join(sabnzbd.cfg.log_dir.get_path(), DEF_LOG_ERRFILE)
+    if os.path.exists(log_path) and os.path.getsize(log_path) > sabnzbd.cfg.log_size.get_int():
+        remove_file(log_path)
+
+    # Replace file descriptors for stdin, stdout, and stderr
     with open('/dev/null', 'rb', 0) as f:
         os.dup2(f.fileno(), sys.stdin.fileno())
     with open(log_path, 'ab', 0) as f:

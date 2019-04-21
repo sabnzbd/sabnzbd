@@ -33,7 +33,7 @@ def start_sabnzbd():
         shutil.rmtree(SAB_CACHE_DIR)
 
     # Copy basic config file with API key
-    os.mkdir(SAB_CACHE_DIR)
+    os.makedirs(SAB_CACHE_DIR, exist_ok=True)
     shutil.copyfile(os.path.join(SAB_BASE_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
 
     # Check if we have language files
