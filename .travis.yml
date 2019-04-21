@@ -58,6 +58,7 @@ script:
         sabnzbd/emailer.py
         sabnzbd/constants.py
         sabnzbd/decorators.py
+        sabnzbd/database.py
         sabnzbd/getipaddress.py
         sabnzbd/filesystem.py
         sabnzbd/dirscanner.py
