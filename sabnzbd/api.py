@@ -300,9 +300,6 @@ def _api_translate(name, output, kwargs):
 
 def _api_addfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
-    # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, str):
-        name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
     if name is None or isinstance(name, str):
         name = kwargs.get('nzbfile')
@@ -337,9 +334,6 @@ def _api_addfile(name, output, kwargs):
 def _api_retry(name, output, kwargs):
     """ API: accepts name, output, value(=nzo_id), nzbfile(=optional NZB), password (optional) """
     value = kwargs.get('value')
-    # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, str):
-        name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
     if name is None or isinstance(name, str):
         name = kwargs.get('nzbfile')
@@ -1425,17 +1419,14 @@ def retry_job(job, new_nzb=None, password=None):
         history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
-            if pp == 'X':
-                pp = None
             nzo_id = sabnzbd.add_url(url, pp, script, cat)
-            history_db.remove_history(job)
-            return nzo_id
         else:
             path = history_db.get_path(job)
-            if path:
-                nzo_id = NzbQueue.do.repair_job(path, new_nzb, password)
-                history_db.remove_history(job)
-                return nzo_id
+            nzo_id = NzbQueue.do.repair_job(path, new_nzb, password)
+        if nzo_id:
+            # Only remove from history if we repaired something
+            history_db.remove_history(job)
+            return nzo_id
     return None
 
 
@@ -1453,7 +1444,7 @@ def retry_all_jobs():
 def del_job_files(job_paths):
     """ Remove files of each path in the list """
     for path in job_paths:
-        if path and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):
+        if path and clip_path(path).lower().startswith(cfg.download_dir.get_clipped_path().lower()):
             remove_all(path, recursive=True)
 
 
@@ -1465,12 +1456,8 @@ def del_hist_job(job, del_files):
             PostProcessor.do.delete(job, del_files=del_files)
         else:
             history_db = sabnzbd.get_db_connection()
-            path = history_db.get_path(job)
+            remove_all(history_db.get_path(job), recursive=True)
             history_db.remove_history(job)
-
-        if path and del_files and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):
-            remove_all(path, recursive=True)
-    return True
 
 
 def Tspec(txt):
