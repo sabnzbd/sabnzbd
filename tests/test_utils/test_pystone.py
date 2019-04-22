@@ -16,13 +16,13 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_utils.test_pystone- Testing sabnzdb pystone
+tests.test_utils.test_pystone - Testing SABnzbd pystone
 """
 
 from sabnzbd.utils.pystone import pystones
 
-class TestPystone:
 
+class TestPystone:
     def test_pystone(self):
         """ Tests for performance with various loop sizes """
         loops = [10, 1000, 50000, 100000]
@@ -30,4 +30,3 @@ class TestPystone:
             benchtime, stones = pystones(loop)
             assert benchtime > 0
             assert stones > 0
-

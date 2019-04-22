@@ -16,27 +16,30 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_utils.test_internetspeed- Testing sabnzdb internetspeed
+tests.test_utils.test_internetspeed - Testing SABnzbd internetspeed
 """
 
 from sabnzbd.utils.internetspeed import internetspeed, measurespeed, SizeUrlList
 
+
 class TestInternetSpeed:
-    """ This class contains tests to measure internet speed with an active and inactive connection """
+    """ This class contains tests to measure internet speed
+        with an active and inactive connection
+    """
+
     def test_measurespeed_invalid_url(self):
         speed = measurespeed("www.fake-url-9999999.xyz")
 
-        assert isinstance(speed, float)
-        assert speed == 0.0
+        assert not speed
 
     def test_measurespeed_valid_url(self):
-        speed = measurespeed(SizeUrlList[0])
+        speed = measurespeed(SizeUrlList[0][1])
 
         assert isinstance(speed, float)
         assert speed > 0
 
     def test_internet_speed(self):
-        curr_speed_MBps = internetspeed()
+        curr_speed_mbps = internetspeed()
 
-        assert isinstance(curr_speed_MBps, float)
-        assert curr_speed_MBps > 0
+        assert isinstance(curr_speed_mbps, float)
+        assert curr_speed_mbps > 0

@@ -16,23 +16,18 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_utils.test_diskspeed - Testing sabnzdb diskspeed
+tests.test_utils.test_diskspeed - Testing SABnzbd diskspeed
 """
 
+from tests.testhelper import *
 from sabnzbd.utils.diskspeed import diskspeedmeasure
-import sys
-import os
+
 
 class TestDiskSpeed:
     def test_disk_speed(self):
-        if "linux" in sys.platform:
-            dir = os.getcwd()
-
-        elif "win32" in sys.platform:
-            dir = os.getcwd()
-
-        elif "darwin" in sys.platform:
-            dir = os.getcwd()
-
-        speed = diskspeedmeasure(dir)
+        speed = diskspeedmeasure(SAB_CACHE_DIR)
         assert speed
+        assert isinstance(speed, float)
+
+        # Make sure the test-file was cleaned up after the test
+        assert not os.path.exists(os.path.join(SAB_CACHE_DIR, "outputTESTING.txt"))
