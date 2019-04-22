@@ -242,12 +242,9 @@ class URLGrabber(Thread):
                 filename = sabnzbd.filesystem.sanitize_filename(filename)
 
                 # Write data to temp file
-                path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
-                path = os.path.join(path, filename)
-                f = open(path, 'wb')
-                f.write(data)
-                f.close()
-                del data
+                path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER, filename)
+                with open(path, 'wb') as temp_nzb:
+                    temp_nzb.write(data)
 
                 # Check if nzb file
                 if sabnzbd.filesystem.get_ext(filename) in VALID_NZB_FILES:
@@ -320,7 +317,7 @@ class URLGrabber(Thread):
         nzo.cat, _, nzo.script, _ = misc.cat_to_opts(nzo.cat, script=nzo.script)
 
         # Add to history and run script if desired
-        NzbQueue.do.remove(nzo.nzo_id, add_to_history=False)
+        NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, delete_all_data=False)
         PostProcessor.do.process(nzo)
 
 

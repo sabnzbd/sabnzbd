@@ -255,46 +255,13 @@ def is_obfuscated_filename(filename):
     return os.path.splitext(filename)[1] == ""
 
 
-def create_all_dirs(path, umask=False):
-    """ Create all required path elements and set umask on all
-        Return True if last element could be made or exists
-    """
-    result = True
-    if sabnzbd.WIN32:
-        try:
-            os.makedirs(path)
-        except:
-            result = False
-    else:
-        lst = []
-        lst.extend(path.split("/"))
-        path = ""
-        for d in lst:
-            if d:
-                path += "/" + d
-                if not os.path.exists(path):
-                    try:
-                        os.mkdir(path)
-                        result = True
-                    except:
-                        result = False
-                    if umask:
-                        mask = sabnzbd.cfg.umask()
-                        if mask:
-                            try:
-                                os.chmod(path, int(mask, 8) | 0o700)
-                            except:
-                                pass
-    return result
-
-
 def real_path(loc, path):
     """ When 'path' is relative, return normalized join of 'loc' and 'path'
         When 'path' is absolute, return normalized path
         A path starting with ~ will be located in the user's Home folder
     """
     # The Windows part is a bit convoluted because
-    # os.path.join() doesn't behave the same for all Python versions
+    # C: and C:\ are 2 different things
     if path:
         path = path.strip()
     else:
@@ -316,13 +283,10 @@ def real_path(loc, path):
                 path = os.path.join(loc, path)
         elif path[0] != "/":
             path = os.path.join(loc, path)
-
-        # Always use long-path notation
-        path = long_path(path)
     else:
         path = loc
 
-    return os.path.normpath(os.path.abspath(path))
+    return long_path(os.path.normpath(os.path.abspath(path)))
 
 
 def create_real_path(name, loc, path, umask=False, writable=True):
@@ -544,6 +508,27 @@ DIR_LOCK = threading.RLock()
 
 
 @synchronized(DIR_LOCK)
+def create_all_dirs(path, umask=False):
+    """ Create all required path elements and set umask on all
+        The umask argument is ignored on Windows
+        Return path if elements could be made or exists
+    """
+    try:
+        # Use custom mask if desired
+        mask = 0o700
+        if umask and sabnzbd.cfg.umask():
+            mask = int(sabnzbd.cfg.umask(), 8)
+
+        # Use python functions to create the directory
+        logging.info("Creating directories: %s (mask=%s)", (path, mask))
+        os.makedirs(path, mode=mask, exist_ok=True)
+        return path
+    except OSError:
+        logging.error(T("Failed making (%s)"), clip_path(path), exc_info=True)
+        return False
+
+
+@synchronized(DIR_LOCK)
 def get_unique_path(dirpath, n=0, create_dir=True):
     """ Determine a unique folder or filename """
 
@@ -556,7 +541,7 @@ def get_unique_path(dirpath, n=0, create_dir=True):
 
     if not os.path.exists(path):
         if create_dir:
-            return create_dirs(path)
+            return create_all_dirs(path, umask=True)
         else:
             return path
     else:
@@ -576,17 +561,6 @@ def get_unique_filename(path):
         num += 1
         path = os.path.join(new_path, fname)
     return path
-
-
-@synchronized(DIR_LOCK)
-def create_dirs(dirpath):
-    """ Create directory tree, obeying permissions """
-    if not os.path.exists(dirpath):
-        logging.info("Creating directories: %s", dirpath)
-        if not create_all_dirs(dirpath, True):
-            logging.error(T("Failed making (%s)"), clip_path(dirpath))
-            return None
-    return dirpath
 
 
 @synchronized(DIR_LOCK)
@@ -630,8 +604,7 @@ def move_to_path(path, new_path):
             # Cannot rename, try copying
             logging.debug("File could not be renamed, trying copying: %s", path)
             try:
-                if not os.path.exists(os.path.dirname(new_path)):
-                    create_dirs(os.path.dirname(new_path))
+                create_all_dirs(os.path.dirname(new_path), umask=True)
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
@@ -780,25 +753,32 @@ def remove_dir(path):
 def remove_all(path, pattern="*", keep_folder=False, recursive=False):
     """ Remove folder and all its content (optionally recursive) """
     if os.path.exists(path):
-        files = globber_full(path, pattern)
-        if pattern == "*" and not sabnzbd.WIN32:
-            files.extend(globber_full(path, ".*"))
-
-        for f in files:
-            if os.path.isfile(f):
-                try:
-                    logging.debug("Removing file %s", f)
-                    os.remove(f)
-                except:
-                    logging.info("Cannot remove file %s", f)
-            elif recursive:
-                remove_all(f, pattern, False, True)
-        if not keep_folder:
+        # Fast-remove the whole tree if recursive
+        if pattern == "*" and not keep_folder and recursive:
+            logging.debug("Removing dir recursively %s", path)
             try:
-                logging.debug("Removing dir %s", path)
-                os.rmdir(path)
+                shutil.rmtree(path)
             except:
-                logging.info("Cannot remove folder %s", path)
+                logging.info("Cannot remove folder %s", path, exc_info=True)
+        else:
+            # Get files based on pattern
+            files = globber_full(path, pattern)
+            if pattern == "*" and not sabnzbd.WIN32:
+                files.extend(globber_full(path, ".*"))
+
+            for f in files:
+                if os.path.isfile(f):
+                    try:
+                        remove_file(f)
+                    except:
+                        logging.info("Cannot remove file %s", f, exc_info=True)
+                elif recursive:
+                    remove_all(f, pattern, False, True)
+            if not keep_folder:
+                try:
+                    remove_dir(path)
+                except:
+                    logging.info("Cannot remove folder %s", path, exc_info=True)
 
 
 ##############################################################################

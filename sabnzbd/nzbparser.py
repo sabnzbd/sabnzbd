@@ -84,7 +84,7 @@ def nzbfile_parser(raw_data, nzo):
                     # Update hash
                     md5sum.update(utob(article_id))
 
-                    # Dubplicate parts?
+                    # Duplicate parts?
                     if partnum in article_db:
                         if article_id != article_db[partnum][0]:
                             logging.info(

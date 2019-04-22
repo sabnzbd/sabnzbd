@@ -32,10 +32,10 @@ from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, \
     sfv_check, build_filelists, rar_sort
 from threading import Thread
 from sabnzbd.misc import on_cleanup_list
-from sabnzbd.filesystem import real_path, get_unique_path, create_dirs, move_to_path, \
-    make_script_path, long_path, clip_path, renamer, remove_dir, remove_all, globber, \
+from sabnzbd.filesystem import real_path, get_unique_path, move_to_path, \
+    make_script_path, long_path, clip_path, renamer, remove_dir, globber, \
     globber_full, set_permissions, cleanup_empty_directories, fix_unix_encoding, \
-    sanitize_and_trim_path, sanitize_files_in_folder, remove_file, recursive_listdir, setname_from_path
+    sanitize_and_trim_path, sanitize_files_in_folder, remove_file, recursive_listdir, setname_from_path, create_all_dirs
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -119,7 +119,7 @@ class PostProcessor(Thread):
                     nzo.to_be_removed = True
                 elif nzo.status in (Status.DOWNLOADING, Status.QUEUED):
                     self.remove(nzo)
-                    nzo.purge_data(keep_basic=False, del_files=del_files)
+                    nzo.purge_data(delete_all_data=del_files)
                     logging.info('Removed job %s from postproc queue', nzo.final_name)
                     nzo.work_name = ''  # Mark as deleted job
                 break
@@ -242,7 +242,7 @@ class PostProcessor(Thread):
                 history_db = database.HistoryDB()
                 history_db.remove_history(nzo.nzo_id)
                 history_db.close()
-                nzo.purge_data(keep_basic=False, del_files=True)
+                nzo.purge_data()
 
             # Processing done
             nzo.pp_active = False
@@ -541,23 +541,12 @@ def process_job(nzo):
         workdir_complete = one_file_or_folder(workdir_complete)
         workdir_complete = os.path.normpath(workdir_complete)
 
-    # Clean up the NZO
+    # Clean up the NZO data
     try:
-        logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
-        sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)
+        nzo.purge_data(delete_all_data=all_ok)
     except:
         logging.error(T('Cleanup of %s failed.'), nzo.final_name)
         logging.info("Traceback: ", exc_info=True)
-
-    # Remove download folder
-    if all_ok:
-        try:
-            if os.path.exists(workdir):
-                logging.debug('Removing workdir %s', workdir)
-                remove_all(workdir, recursive=True)
-        except:
-            logging.error(T('Error removing workdir (%s)'), clip_path(workdir))
-            logging.info("Traceback: ", exc_info=True)
 
     # Use automatic retry link on par2 errors and encrypted/bad RARs
     if par_error or unpack_error in (2, 3):
@@ -614,7 +603,7 @@ def prepare_extraction_path(nzo):
     complete_dir = sanitize_and_trim_path(complete_dir)
 
     if one_folder:
-        workdir_complete = create_dirs(complete_dir)
+        workdir_complete = create_all_dirs(complete_dir, umask=True)
     else:
         workdir_complete = get_unique_path(os.path.join(complete_dir, nzo.final_name), create_dir=True)
         marker_file = set_marker(workdir_complete)

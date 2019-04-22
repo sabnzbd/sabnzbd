@@ -163,8 +163,8 @@ def _api_queue_delete(output, value, kwargs):
         return report(output, keyword='', data={'status': bool(removed), 'nzo_ids': removed})
     elif value:
         items = value.split(',')
-        del_files = int_conv(kwargs.get('del_files'))
-        removed = NzbQueue.do.remove_multiple(items, del_files)
+        delete_all_data = int_conv(kwargs.get('del_files'))
+        removed = NzbQueue.do.remove_multiple(items, delete_all_data=delete_all_data)
         return report(output, keyword='', data={'status': bool(removed), 'nzo_ids': removed})
     else:
         return report(output, _MSG_NO_VALUE)
@@ -1677,7 +1677,6 @@ def build_history(start=None, limit=None,search=None, failed_only=0, categories=
     # Unreverse the queue
     items.reverse()
 
-    retry_folders = []
     for item in items:
         item['size'] = format_bytes(item['bytes'])
 
@@ -1686,18 +1685,10 @@ def build_history(start=None, limit=None,search=None, failed_only=0, categories=
 
         path = item.get('path', '')
 
-        item['retry'] = int(bool(item.get('status') == Status.FAILED and
-                                 path and
-                                 path not in retry_folders and
-                                 same_file(cfg.download_dir.get_path(), path) and
-                                 os.path.exists(path)) and
-                                 not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*'))
-                            )
+        item['retry'] = int_conv(item.get('status') == Status.FAILED and path and os.path.exists(path))
+        # Retry of failed URL-fetch
         if item['report'] == 'future':
             item['retry'] = True
-
-        if item['retry']:
-            retry_folders.append(path)
 
         if Rating.do:
             rating = Rating.do.get_rating_by_nzo(item['nzo_id'])

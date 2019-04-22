@@ -911,7 +911,7 @@ class QueuePage:
         uid = kwargs.get('uid')
         del_files = int_conv(kwargs.get('del_files'))
         if uid:
-            NzbQueue.do.remove(uid, False, keep_basic=not del_files, del_files=del_files)
+            NzbQueue.do.remove(uid, add_to_history=False, delete_all_data=del_files)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_session_key=True)

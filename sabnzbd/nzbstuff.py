@@ -407,8 +407,12 @@ class NzbObject(TryList):
         if not password:
             _, password = scan_password(os.path.splitext(filename)[0])
 
-        # Remove trailing .nzb and .par(2)
-        self.final_name = self.work_name = create_work_name(self.work_name)
+        # For future-slots we keep the name given by URLGrabber
+        if nzb is None:
+            self.final_name = self.work_name = filename
+        else:
+            # Remove trailing .nzb and .par(2)
+            self.final_name = self.work_name = create_work_name(self.work_name)
 
         # Determine category and find pp/script values based on input
         # Later will be re-evaluated based on import steps
@@ -416,6 +420,7 @@ class NzbObject(TryList):
             r = u = d = None
         else:
             r, u, d = sabnzbd.pp_to_opts(pp)
+
         self.set_priority(priority) # Parse priority of input
         self.repair = r             # True if we want to repair this set
         self.unpack = u             # True if we want to unpack this set
@@ -523,8 +528,8 @@ class NzbObject(TryList):
             duplicate = series = 0
 
         if reuse:
-            remove_all(adir, 'SABnzbd_nz?_*', True)
-            remove_all(adir, 'SABnzbd_article_*', True)
+            remove_all(adir, 'SABnzbd_nz?_*', keep_folder=True)
+            remove_all(adir, 'SABnzbd_article_*', keep_folder=True)
         else:
             wdir = trim_win_path(wdir)
             wdir = get_unique_path(wdir, create_dir=True)
@@ -536,9 +541,6 @@ class NzbObject(TryList):
         _, self.work_name = os.path.split(wdir)
         self.created = True
 
-        # Must create a lower level XML parser because we must
-        # disable the reading of the DTD file from an external website
-        # by setting "feature_external_ges" to 0.
         if nzb and '<nzb' in nzb:
             try:
                 sabnzbd.nzbparser.nzbfile_parser(nzb, self)
@@ -560,7 +562,7 @@ class NzbObject(TryList):
             sabnzbd.save_compressed(adir, filename, nzb)
 
         if not self.files and not reuse:
-            self.purge_data(keep_basic=False)
+            self.purge_data()
             if cfg.warn_empty_nzb():
                 mylog = logging.warning
             else:
@@ -648,7 +650,7 @@ class NzbObject(TryList):
         if duplicate and ((not series and cfg.no_dupes() == 1) or (series and cfg.no_series_dupes() == 1)):
             if cfg.warn_dupl_jobs():
                 logging.warning(T('Ignoring duplicate NZB "%s"'), filename)
-            self.purge_data(keep_basic=False)
+            self.purge_data()
             raise TypeError
 
         if duplicate and ((not series and cfg.no_dupes() == 3) or (series and cfg.no_series_dupes() == 3)):
@@ -1531,36 +1533,21 @@ class NzbObject(TryList):
         return self.bytes - self.bytes_tried
 
     @synchronized(NZO_LOCK)
-    def purge_data(self, keep_basic=False, del_files=False):
-        """ Remove all admin info, 'keep_basic' preserves attribs and nzb """
-        logging.info('[%s] Purging data for job %s (keep_basic=%s, del_files=%s)', caller_name(), self.final_name, keep_basic, del_files)
+    def purge_data(self, delete_all_data=True):
+        """ Remove (all) job data """
+        logging.info('[%s] Purging data for job %s (delete_all_data=%s)', caller_name(), self.final_name, delete_all_data)
 
-        wpath = self.workpath
-        for nzf in self.files:
-            sabnzbd.remove_data(nzf.nzf_id, wpath)
+        # Abort DirectUnpack and let it remove files
+        self.abort_direct_unpacker()
 
-        for _set in self.extrapars:
-            for nzf in self.extrapars[_set]:
-                sabnzbd.remove_data(nzf.nzf_id, wpath)
-
-        for nzf in self.finished_files:
-            sabnzbd.remove_data(nzf.nzf_id, wpath)
-
-        if not self.futuretype:
-            if keep_basic:
-                remove_all(wpath, 'SABnzbd_nz?_*', keep_folder=True)
-                remove_all(wpath, 'SABnzbd_article_*', keep_folder=True)
-                # We save the renames file
-                sabnzbd.save_data(self.renames, RENAMES_FILE, self.workpath, silent=True)
-            else:
-                remove_all(wpath, recursive=True)
-            if del_files:
-                remove_all(self.downpath, recursive=True)
-            else:
-                try:
-                    remove_dir(self.downpath)
-                except:
-                    logging.info('Folder cannot be removed: %s', self.downpath, exc_info=True)
+        # Delete all, or just basic?
+        if delete_all_data:
+            remove_all(self.downpath, recursive=True)
+        else:
+            # We remove any saved articles and save the renames file
+            remove_all(self.downpath, 'SABnzbd_nz?_*', keep_folder=True)
+            remove_all(self.downpath, 'SABnzbd_article_*', keep_folder=True)
+            sabnzbd.save_data(self.renames, RENAMES_FILE, self.workpath, silent=True)
 
     def gather_info(self, full=False):
         queued_files = []
