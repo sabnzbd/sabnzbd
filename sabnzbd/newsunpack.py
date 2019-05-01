@@ -2217,7 +2217,7 @@ def par2_mt_check(par2_path):
     try:
         par2_version = run_simple([par2_path, '-h'])
         # Look for a threads option
-        if b'-t<' in par2_version:
+        if '-t<' in par2_version:
             return True
     except:
         pass
