@@ -1,16 +1,18 @@
-Release Notes - SABnzbd 2.3.8
+Release Notes - SABnzbd 2.3.9 RC 1
 =========================================================
 
-## Improvements and bug fixes since 2.3.7
-- Changes to newsserver configuration could be delayed
-- Filenames would not be sanitized when using "Make Windows compatible"
-- Sorting could fail on root-folders
-- 7z-files were not listed as supported NZB archives
-- SSL cipher settings were ignored during server test
-- Windows: update 7zip to 19.00
-- Windows: update MultiPar to v1.3.0.4
-- Windows and macOS: update Python to 2.7.16
-- Windows and macOS: update UnRar to 5.70
+## Improvements and bug fixes since 2.3.8
+- Warning "Unable to stop the unrar process" was shown too often
+- Direct Unpack could hang forever on unicode downloads
+- Test Download could fail if clicked on icon instead of button
+- Series Duplicate detection did not always work with Direct Unpack enabled
+- Adding job with non-existing category was not set to Default (*) category
+- Only delete completed jobs from history when using History Retention option
+- Renamed Server Load-balancing to Server IP address selection
+- Linux: remove sabnzbd.error.log file at start-up if it grew too large
+- Windows: double-click delay increased to avoid accidental pausing
+- Windows: update MultiPar to v1.3.0.5
+- Windows and macOS: update UnRar to 5.71
 
 ## Upgrading from 2.2.x and older
 - Finish queue
