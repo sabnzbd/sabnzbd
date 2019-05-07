@@ -51,7 +51,6 @@ from subprocess import Popen
 # Otherwise we could stop while the thread was still starting
 START_STOP_LOCK = threading.RLock()
 
-MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
 
 RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$', re.IGNORECASE)
@@ -76,6 +75,8 @@ class DirectUnpacker(threading.Thread):
 
         self.success_sets = {}
         self.next_sets = []
+
+        self.duplicate_lines = 0
 
         nzo.direct_unpacker = self
 
@@ -271,13 +272,16 @@ class DirectUnpacker(threading.Thread):
                         logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
+                    # In rare occasions we can get stuck forever with repeating lines
                     if last_volume_linebuf == linebuf:
-                        if not self.have_next_volume():
+                        if not self.have_next_volume() or self.duplicate_lines > 10:
                             logging.info('DirectUnpack failed due to missing files %s', self.cur_setname)
                             self.abort()
                         else:
                             logging.debug('Duplicate output line detected: "%s"', last_volume_linebuf)
-
+                            self.duplicate_lines += 1
+                    else:
+                        self.duplicate_lines = 0
                     last_volume_linebuf = linebuf
 
             # Show the log
