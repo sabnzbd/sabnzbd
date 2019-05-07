@@ -51,7 +51,6 @@ from subprocess import Popen
 # Otherwise we could stop while the thread was still starting
 START_STOP_LOCK = threading.RLock()
 
-MAX_ACTIVE_UNPACKERS = 10
 ACTIVE_UNPACKERS = []
 
 RAR_NR = re.compile(r'(.*?)(\.part(\d*).rar|\.r(\d*))$', re.IGNORECASE)
@@ -76,6 +75,8 @@ class DirectUnpacker(threading.Thread):
 
         self.success_sets = {}
         self.next_sets = []
+
+        self.duplicate_lines = 0
 
         nzo.direct_unpacker = self
 
@@ -176,10 +177,10 @@ class DirectUnpacker(threading.Thread):
                 break
 
             # Error? Let PP-handle it
-            if linebuf.endswith(('ERROR: ', 'Cannot create', 'in the encrypted file', 'CRC failed',
-                                 'checksum failed', 'You need to start extraction from a previous volume',
-                                 'password is incorrect', 'Write error', 'checksum error',
-                                 'start extraction from a previous volume')):
+            if linebuf.endswith(('ERROR: ', 'Cannot create', 'in the encrypted file', 'CRC failed', 'checksum failed',
+                                 'You need to start extraction from a previous volume', 'password is incorrect',
+                                 'Write error', 'checksum error', 'start extraction from a previous volume'
+                                 'Unexpected end of archive')):
                 logging.info('Error in DirectUnpack of %s: %s', self.cur_setname, linebuf.strip())
                 self.abort()
 
@@ -271,13 +272,16 @@ class DirectUnpacker(threading.Thread):
                         logging.info('DirectUnpacked volume %s for %s', self.cur_volume, self.cur_setname)
 
                     # If lines did not change and we don't have the next volume, this download is missing files!
+                    # In rare occasions we can get stuck forever with repeating lines
                     if last_volume_linebuf == linebuf:
-                        if not self.have_next_volume():
+                        if not self.have_next_volume() or self.duplicate_lines > 10:
                             logging.info('DirectUnpack failed due to missing files %s', self.cur_setname)
                             self.abort()
                         else:
                             logging.debug('Duplicate output line detected: "%s"', last_volume_linebuf)
-
+                            self.duplicate_lines += 1
+                    else:
+                        self.duplicate_lines = 0
                     last_volume_linebuf = linebuf
 
             # Show the log
@@ -398,20 +402,12 @@ class DirectUnpacker(threading.Thread):
                     pass
 
                 # Now force kill and give it a bit of time
-                self.active_instance.kill()
-                time.sleep(0.2)
-
-                # Have to collect the return-code to avoid zombie
-                # But it will block forever if the process is in special state.
-                # That should never happen, but it can happen on broken unrar's
-                if self.active_instance.poll():
-                    self.active_instance.communicate()
-                else:
-                    # It is still running?!? This should never happen
-                    # Wait a little bit longer just to be sure..
-                    time.sleep(2.0)
-                    if not self.active_instance.poll():
-                        logging.warning(T('Unable to stop the unrar process.'))
+                try:
+                    self.active_instance.kill()
+                    time.sleep(0.2)
+                except AttributeError:
+                    # Already killed by the Quit command
+                    pass
 
             # Wake up the thread
             with self.next_file_lock:

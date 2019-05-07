@@ -131,7 +131,6 @@ def parse_par2_file_packet(f, header):
     nothing = None, None, None
 
     if header != PAR_PKT_ID:
-        print header
         return nothing
 
     # Length must be multiple of 4 and at least 20

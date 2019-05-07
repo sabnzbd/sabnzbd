@@ -89,7 +89,7 @@ import sabnzbd.newsunpack
 from sabnzbd.misc import real_path, \
     check_latest_version, exit_sab, get_from_url, \
     split_host, get_ext, create_https_certificates, \
-    windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full
+    windows_variant, ip_extract, set_serv_parms, get_serv_parms, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, \
     panic_sqlite, panic, launch_a_browser
 import sabnzbd.scheduler as scheduler
@@ -1126,8 +1126,14 @@ def main():
         try:
             x = sys.stderr.fileno
             x = sys.stdout.fileno
-            ol_path = os.path.join(logdir, DEF_LOG_ERRFILE)
-            out_log = file(ol_path, 'a+', 0)
+
+            # Get log file  path and remove the log file if it got too large
+            log_path = os.path.join(logdir, DEF_LOG_ERRFILE)
+            if os.path.exists(log_path) and os.path.getsize(log_path) > sabnzbd.cfg.log_size.get_int():
+                remove_file(log_path)
+
+            # Redirect stderr/stdout
+            out_log = file(log_path, 'a+', 0)
             sys.stderr.flush()
             sys.stdout.flush()
             os.dup2(out_log.fileno(), sys.stderr.fileno())
@@ -1233,6 +1239,9 @@ def main():
             logging.debug('CPU model = %s', cpumodel)
 
     logging.info('Read INI file %s', inifile)
+
+    # TODO: Temporary warning about Python 3
+    logging.warning('The develop-branch (which you are using) will soon switch to the Python 3 version of SABnzbd. To continue using the develop-branch you will need to make some setup-changes. The Python 3 version is likely to contain bugs, please report them! You can read more at: https://sabnzbd.org/python3')
 
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)

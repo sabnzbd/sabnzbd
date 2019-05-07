@@ -35,6 +35,6 @@
 <!--#else if float($mbleft) < 0.1#-->
     SABnzbd
 <!--#else#-->
-    <!--#if float($kbpersec) > 1023 #-->$speed<!--#else#--><!--#echo "%.0f" % float($kbpersec)#--> K<!--#end if#-->B/s - $sizeleft $T('Glitter-left') - SABnzbd
+    ${speed}B/s - $sizeleft $T('Glitter-left') - SABnzbd
 <!--#end if#-->
 |||<!--#echo "%.0f" % float($kbpersec)#-->

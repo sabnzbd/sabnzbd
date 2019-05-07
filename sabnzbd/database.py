@@ -36,7 +36,7 @@ import threading
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME, STAGES
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status
 from sabnzbd.encoding import unicoder
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
@@ -259,11 +259,11 @@ class HistoryDB(object):
             to_keep = int_conv(sabnzbd.cfg.history_retention())
             if to_keep > 0:
                 logging.info('Removing all but last %s completed jobs from history', to_keep)
-                return self.execute("""DELETE FROM history WHERE id NOT IN ( SELECT id FROM history WHERE status = 'Completed' ORDER BY completed DESC LIMIT ? )""", (to_keep,), save=True)
+                return self.execute("""DELETE FROM history WHERE status = ? AND id NOT IN ( SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ? )""", (Status.COMPLETED, Status.COMPLETED, to_keep), save=True)
 
     def add_history_db(self, nzo, storage, path, postproc_time, script_output, script_line):
         """ Add a new job entry to the database """
-        t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
+        t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line, series_info=True)
 
         self.execute("""INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
             url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
@@ -438,7 +438,7 @@ def dict_factory(cursor, row):
 
 
 _PP_LOOKUP = {0: '', 1: 'R', 2: 'U', 3: 'D'}
-def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_output='', script_line=''):
+def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_output='', script_line='', series_info=False):
     """ Collects all the information needed for the database """
 
     if not downpath:
@@ -491,7 +491,7 @@ def build_history_info(nzo, storage='', downpath='', postproc_time=0, script_out
 
     # Analyze series info only when job is finished
     series = u''
-    if postproc_time:
+    if series_info:
         seriesname, season, episode, dummy = sabnzbd.newsunpack.analyse_show(nzo.final_name)
         if seriesname and season and episode:
             series = u'%s/%s/%s' % (seriesname.lower(), season, episode)
