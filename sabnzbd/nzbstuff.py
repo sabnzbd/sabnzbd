@@ -1331,8 +1331,9 @@ class NzbObject(TryList):
             dif = int(self.url_wait - time.time() + 0.5)
             if dif > 0:
                 prefix += T('WAIT %s sec') % dif + ' / '  # : Queue indicator for waiting URL fetch
-        if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
-            wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time()) / 60 + 0.5)
+        propagtion_delay = float(cfg.propagation_delay() * 60)
+        if propagtion_delay and (self.avg_stamp + propagtion_delay) > time.time() and self.priority != TOP_PRIORITY:
+            wait_time = int((self.avg_stamp + propagtion_delay - time.time()) / 60 + 0.5)
             prefix += T('PROPAGATING %s min') % wait_time + ' / '  # : Queue indicator while waiting for propagation of post
         return '%s%s' % (prefix, self.final_name)
 
