@@ -319,7 +319,6 @@ class HistoryDB(object):
     def have_episode(self, series, season, episode):
         """ Check whether History contains this series episode """
         total = 0
-        series = series.lower().replace('.', ' ').replace('_', ' ').replace('  ', ' ')
         if series and season and episode:
             pattern = '%s/%s/%s' % (series, season, episode)
             res = self.execute("select count(*) from History WHERE series = ? AND STATUS != 'Failed'", (pattern,))
@@ -330,10 +329,11 @@ class HistoryDB(object):
                     pass
         return total > 0
 
-    def have_md5sum(self, md5sum):
-        """ Check whether this md5sum already in History """
+    def have_name_or_md5sum(self, name, md5sum):
+        """ Check whether this name or md5sum is already in History """
         total = 0
-        res = self.execute("select count(*) from History WHERE md5sum = ? AND STATUS != 'Failed'", (md5sum,))
+        # Do the check case-insensitive
+        res = self.execute("SELECT count(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != 'Failed'", (name, md5sum))
         if res:
             try:
                 total = self.c.fetchone().get('count(*)')

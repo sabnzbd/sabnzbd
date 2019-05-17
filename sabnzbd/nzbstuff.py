@@ -82,6 +82,7 @@ class TryList(object):
         self.fetcher_priority = 0
 
     def server_in_try_list(self, server):
+        print self, self.try_list
         """ Return whether specified server has been tried """
         with TRYLIST_LOCK:
             return server in self.try_list
@@ -1882,7 +1883,7 @@ class NzbObject(TryList):
 
         # dupe check off nzb contents
         if no_dupes:
-            res = history_db.have_md5sum(self.md5sum)
+            res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
             logging.debug('Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s', self.filename, self.md5sum, res)
             if not res and cfg.backup_for_duplicates():
                 res = sabnzbd.backup_exists(self.filename)
