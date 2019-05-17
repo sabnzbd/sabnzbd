@@ -752,7 +752,7 @@ def remove_dir(path):
 @synchronized(DIR_LOCK)
 def remove_all(path, pattern="*", keep_folder=False, recursive=False):
     """ Remove folder and all its content (optionally recursive) """
-    if os.path.exists(path):
+    if path and os.path.exists(path):
         # Fast-remove the whole tree if recursive
         if pattern == "*" and not keep_folder and recursive:
             logging.debug("Removing dir recursively %s", path)
