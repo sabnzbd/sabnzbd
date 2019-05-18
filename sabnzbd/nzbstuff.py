@@ -82,6 +82,7 @@ class TryList(object):
         self.fetcher_priority = 0
 
     def server_in_try_list(self, server):
+        print self, self.try_list
         """ Return whether specified server has been tried """
         with TRYLIST_LOCK:
             return server in self.try_list
@@ -1331,8 +1332,9 @@ class NzbObject(TryList):
             dif = int(self.url_wait - time.time() + 0.5)
             if dif > 0:
                 prefix += T('WAIT %s sec') % dif + ' / '  # : Queue indicator for waiting URL fetch
-        if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
-            wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time()) / 60 + 0.5)
+        propagtion_delay = float(cfg.propagation_delay() * 60)
+        if propagtion_delay and (self.avg_stamp + propagtion_delay) > time.time() and self.priority != TOP_PRIORITY:
+            wait_time = int((self.avg_stamp + propagtion_delay - time.time()) / 60 + 0.5)
             prefix += T('PROPAGATING %s min') % wait_time + ' / '  # : Queue indicator while waiting for propagation of post
         return '%s%s' % (prefix, self.final_name)
 
@@ -1881,7 +1883,7 @@ class NzbObject(TryList):
 
         # dupe check off nzb contents
         if no_dupes:
-            res = history_db.have_md5sum(self.md5sum)
+            res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
             logging.debug('Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s', self.filename, self.md5sum, res)
             if not res and cfg.backup_for_duplicates():
                 res = sabnzbd.backup_exists(self.filename)
