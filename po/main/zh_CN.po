@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2019-01-04 12:42+0000\n"
+"POT-Creation-Date: 2019-05-07 12:00+0000\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-01-05 05:42+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"X-Launchpad-Export-Date: 2019-05-08 05:50+0000\n"
+"X-Generator: Launchpad (build 18958)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -425,10 +425,6 @@ msgstr "完成"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "已解压 %s 个文件/文件夹，耗时 %s"
-
-#: sabnzbd/directunpacker.py [Warning message]
-msgid "Unable to stop the unrar process."
-msgstr ""
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -3441,20 +3437,20 @@ msgid "Comma separated list"
 msgstr "逗号分隔的列表"
 
 #: sabnzbd/skintext.py
-msgid "Server load-balancing"
-msgstr "服务器负载均衡"
+msgid "Server IP address selection"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Prevent load-balancing"
-msgstr "避免负载均衡"
+msgid "First IP address"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Allow load-balancing"
-msgstr "允许负载均衡"
+msgid "Randomly selected IP address"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Allow load-balancing with optimization for IPv6"
-msgstr "允许负载均衡，并对 IPv6 优化"
+msgid "Quickest IP address, preferring IPv6"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
@@ -4341,10 +4337,6 @@ msgstr "上传 NZB"
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"
 msgstr "可以选择指定文件名"
-
-#: sabnzbd/skintext.py
-msgid "Formats: .nzb, .rar, .zip, .gz, .bz2"
-msgstr "格式: .nzb, .rar, .zip, .gz, .bz2"
 
 #: sabnzbd/skintext.py
 msgid "Submit"
