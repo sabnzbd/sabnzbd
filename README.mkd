@@ -3,7 +3,7 @@ Release Notes - SABnzbd 2.3.9 RC 2
 
 ## Improvements and bug fixes since 2.3.9 RC 1
 - Duplicate job detection would not compare job names
-- Propgation delay could show even if it was not configured
+- Propagation delay could show even if it was not configured
 - Ignore Samples deleted all files of jobs containing the words Sample/Proof
 
 ## Improvements and bug fixes since 2.3.8
