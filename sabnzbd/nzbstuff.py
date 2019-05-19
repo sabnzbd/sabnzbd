@@ -82,7 +82,6 @@ class TryList(object):
         self.fetcher_priority = 0
 
     def server_in_try_list(self, server):
-        print self, self.try_list
         """ Return whether specified server has been tried """
         with TRYLIST_LOCK:
             return server in self.try_list
