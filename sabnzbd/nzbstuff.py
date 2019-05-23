@@ -933,7 +933,6 @@ class NzbObject(TryList):
             # Raise error, so it's not added
             raise TypeError
 
-    @synchronized(NZO_LOCK)
     def update_download_stats(self, bps, serverid, bytes):
         if bps:
             self.avg_bps_total += bps / 1024
