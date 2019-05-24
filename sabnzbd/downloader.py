@@ -600,15 +600,13 @@ class Downloader(Thread):
 
                 else:
                     if self.bandwidth_limit:
-                        bps = BPSMeter.do.get_bps()
-                        bps += bytes_received
                         limit = self.bandwidth_limit
-                        if bps > limit:
-                            while BPSMeter.do.get_bps() > limit:
+                        if bytes_received + BPSMeter.do.bps > limit:
+                            while BPSMeter.do.bps > limit:
                                 time.sleep(0.05)
                                 BPSMeter.do.update()
                     BPSMeter.do.update(server.id, bytes_received)
-                    nzo.update_download_stats(BPSMeter.do.get_bps(), server.id, bytes_received)
+                    nzo.update_download_stats(BPSMeter.do.bps, server.id, bytes_received)
 
                 if not done and nw.status_code != 222:
                     if not nw.connected or nw.status_code == 480:

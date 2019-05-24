@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2019-01-04 12:42+0000\n"
-"PO-Revision-Date: 2019-01-14 07:17+0000\n"
+"POT-Creation-Date: 2019-05-07 12:00+0000\n"
+"PO-Revision-Date: 2019-05-07 23:12+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-01-15 04:50+0000\n"
-"X-Generator: Launchpad (build 18855)\n"
+"X-Launchpad-Export-Date: 2019-05-08 05:49+0000\n"
+"X-Generator: Launchpad (build 18958)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -431,10 +431,6 @@ msgstr "הושלם"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "פורקו %s קבצים/תיקיות תוך %s"
-
-#: sabnzbd/directunpacker.py [Warning message]
-msgid "Unable to stop the unrar process."
-msgstr "לא היה ניתן לעצור את תהליך החילוץ"
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -3518,20 +3514,20 @@ msgid "Comma separated list"
 msgstr "רשימה מופרדת בפסיקים"
 
 #: sabnzbd/skintext.py
-msgid "Server load-balancing"
-msgstr "איזון-עומס של שרת"
+msgid "Server IP address selection"
+msgstr "של שרת IP בחירת כתובת"
 
 #: sabnzbd/skintext.py
-msgid "Prevent load-balancing"
-msgstr "מנע איזון-עומס"
+msgid "First IP address"
+msgstr "ראשונה IP כתובת"
 
 #: sabnzbd/skintext.py
-msgid "Allow load-balancing"
-msgstr "התר איזון-עומס"
+msgid "Randomly selected IP address"
+msgstr "נבחרת באופן אקראי IP כתובת"
 
 #: sabnzbd/skintext.py
-msgid "Allow load-balancing with optimization for IPv6"
-msgstr "IPv6 התר איזון-עומס עם ייעול עבור"
+msgid "Quickest IP address, preferring IPv6"
+msgstr "IPv6 הזריזה ביותר, העדפה אל IP כתובת"
 
 #: sabnzbd/skintext.py
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
@@ -4424,10 +4420,6 @@ msgstr "NZB העלה"
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"
 msgstr "ציין באופן רשותי שם קובץ"
-
-#: sabnzbd/skintext.py
-msgid "Formats: .nzb, .rar, .zip, .gz, .bz2"
-msgstr ".nzb, .rar, .zip, .gz, .bz2 :תסדירים"
 
 #: sabnzbd/skintext.py
 msgid "Submit"

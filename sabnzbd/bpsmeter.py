@@ -292,9 +292,6 @@ class BPSMeter:
             del self.timeline_total[server]
         self.save()
 
-    def get_bps(self):
-        return self.bps
-
     def get_bps_list(self):
         refresh_rate = int(cfg.refresh_rate()) if cfg.refresh_rate() else 1
         self.add_empty_time()
