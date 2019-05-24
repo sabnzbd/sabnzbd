@@ -1,17 +1,15 @@
-Release Notes - SABnzbd 2.3.9 RC 2
+Release Notes - SABnzbd 2.3.9
 =========================================================
 
-## Improvements and bug fixes since 2.3.9 RC 1
+## Improvements and bug fixes since 2.3.8
 - Duplicate job detection would not compare job names
 - Propagation delay could show even if it was not configured
 - Ignore Samples deleted all files of jobs containing the words Sample/Proof
-
-## Improvements and bug fixes since 2.3.8
 - Warning "Unable to stop the unrar process" was shown too often
-- Direct Unpack could hang forever on unicode downloads
-- Test Download could fail if clicked on icon instead of button
+- Direct Unpack could hang forever on Unicode downloads
+- Test Download could fail if clicked on the icon instead of the button
 - Series Duplicate detection did not always work with Direct Unpack enabled
-- Adding job with non-existing category was not set to Default (*) category
+- Adding a job with non-existing category was not set to Default (*) category
 - Only delete completed jobs from history when using History Retention option
 - Renamed Server Load-balancing to Server IP address selection
 - Linux: remove sabnzbd.error.log file at start-up if it grew too large
@@ -31,7 +29,7 @@ Release Notes - SABnzbd 2.3.9 RC 2
   URL's that did not finish fetching before the upgrade will be lost.
 - The organization of the download queue is different from 0.7.x releases.
   This version will not see the 0.7.x queue, but you can restore the jobs
-  by going to Status page and using Queue Repair.
+  by going to the Status and Interface Settings window and using Queue Repair.
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
