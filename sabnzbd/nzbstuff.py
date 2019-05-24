@@ -82,7 +82,6 @@ class TryList(object):
         self.fetcher_priority = 0
 
     def server_in_try_list(self, server):
-        print self, self.try_list
         """ Return whether specified server has been tried """
         with TRYLIST_LOCK:
             return server in self.try_list
@@ -934,7 +933,6 @@ class NzbObject(TryList):
             # Raise error, so it's not added
             raise TypeError
 
-    @synchronized(NZO_LOCK)
     def update_download_stats(self, bps, serverid, bytes):
         if bps:
             self.avg_bps_total += bps / 1024
