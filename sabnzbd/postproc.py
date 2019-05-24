@@ -910,17 +910,28 @@ def get_last_line(txt):
 
 
 def remove_samples(path):
-    """ Remove all files that match the sample pattern """
+    """ Remove all files that match the sample pattern
+        Skip deleting if it matches all files or there is only 1 file
+    """
+    files_to_delete = []
+    nr_files = 0
     for root, _dirs, files in os.walk(path):
-        for file_ in files:
-            if RE_SAMPLE.search(file_):
-                path = os.path.join(root, file_)
-                try:
-                    logging.info("Removing unwanted sample file %s", path)
-                    remove_file(path)
-                except:
-                    logging.error(T('Removing %s failed'), clip_path(path))
-                    logging.info("Traceback: ", exc_info=True)
+        for file_to_match in files:
+            nr_files += 1
+            if RE_SAMPLE.search(file_to_match):
+                files_to_delete.append(os.path.join(root, file_to_match))
+
+    # Make sure we skip false-positives
+    if 1 < len(files_to_delete) < nr_files:
+        for path in files_to_delete:
+            try:
+                logging.info("Removing unwanted sample file %s", path)
+                remove_file(path)
+            except:
+                logging.error(T('Removing %s failed'), clip_path(path))
+                logging.info("Traceback: ", exc_info=True)
+    else:
+        logging.info("Skipping sample-removal, false-positive")
 
 
 def rename_and_collapse_folder(oldpath, newpath, files):

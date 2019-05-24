@@ -158,6 +158,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
     try:
         my_cat = config.get_categories()[cat]
     except KeyError:
+        cat = '*'
         my_cat = def_cat
 
     if pp is None:

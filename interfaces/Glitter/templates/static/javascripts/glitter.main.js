@@ -96,7 +96,7 @@ function ViewModel() {
 
     // Dynamic speed text function
     self.speedText = ko.pureComputed(function() {
-        return self.speed() + ' ' + (self.speedMetrics[self.speedMetric()] ? self.speedMetrics[self.speedMetric()] : "KB/s");
+        return self.speed() + ' ' + (self.speedMetrics[self.speedMetric()] ? self.speedMetrics[self.speedMetric()] : "B/s");
     });
 
     // Dynamic icon
@@ -852,6 +852,12 @@ function ViewModel() {
     // Download a test-NZB
     self.testDownload = function(data, event) {
         var nzbSize = $(event.target).data('size')
+
+        // Maybe it was a click on the icon?
+        if(nzbSize == undefined) {
+            nzbSize = $(event.target.parentElement).data('size')
+        }
+
         // Build request
         var theCall = {
             mode: "addurl",

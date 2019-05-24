@@ -1406,7 +1406,7 @@ def fast_queue():
     """ Return paused, bytes_left, bpsnow, time_left """
     bytes_left = NzbQueue.do.remaining()
     paused = Downloader.do.paused
-    bpsnow = BPSMeter.do.get_bps()
+    bpsnow = BPSMeter.do.bps
     time_left = calc_timeleft(bytes_left, bpsnow)
     return paused, bytes_left, bpsnow, time_left
 
@@ -1468,9 +1468,9 @@ def rss_qstatus():
     item = Item()
     item.title = 'Total ETA: %s - Queued: %.2f MB - Speed: %.2f kB/s' % \
                  (
-                     calc_timeleft(qnfo.bytes_left, BPSMeter.do.get_bps()),
+                     calc_timeleft(qnfo.bytes_left, BPSMeter.do.bps),
                      qnfo.bytes_left / MEBI,
-                     BPSMeter.do.get_bps() / KIBI
+                     BPSMeter.do.bps / KIBI
                  )
     rss.addItem(item)
 
@@ -1501,7 +1501,7 @@ def rss_qstatus():
         status_line.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
         # ETA
         sum_bytesleft += pnfo.bytes_left
-        status_line.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.get_bps()))
+        status_line.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.bps))
         status_line.append("<dt>Age: %s</dt>" % calc_age(pnfo.avg_date))
         status_line.append("</tr>")
         item.description = ''.join(status_line)
@@ -1695,7 +1695,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
 
     header = build_header(output=output)
 
-    bytespersec = BPSMeter.do.get_bps()
+    bytespersec = BPSMeter.do.bps
     qnfo = NzbQueue.do.queue_info(search=search, start=start, limit=limit)
 
     bytesleft = qnfo.bytes_left
