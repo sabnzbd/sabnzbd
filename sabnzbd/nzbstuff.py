@@ -708,7 +708,6 @@ class NzbObject(TryList):
             # Raise error, so it's not added
             raise TypeError
 
-    @synchronized(NZO_LOCK)
     def update_download_stats(self, bps, serverid, bytes):
         if bps:
             self.avg_bps_total += bps / 1024
@@ -1649,7 +1648,7 @@ class NzbObject(TryList):
 
         # dupe check off nzb contents
         if no_dupes:
-            res = history_db.have_md5sum(self.md5sum)
+            res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
             logging.debug('Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s', self.filename, self.md5sum, res)
             if not res and cfg.backup_for_duplicates():
                 res = sabnzbd.backup_exists(self.filename)

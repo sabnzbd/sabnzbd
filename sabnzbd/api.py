@@ -1353,7 +1353,7 @@ def fast_queue():
     """ Return paused, bytes_left, bpsnow, time_left """
     bytes_left = NzbQueue.do.remaining()
     paused = Downloader.do.paused
-    bpsnow = BPSMeter.do.get_bps()
+    bpsnow = BPSMeter.do.bps
     time_left = calc_timeleft(bytes_left, bpsnow)
     return paused, bytes_left, bpsnow, time_left
 
@@ -1576,7 +1576,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
 
     header = build_header(output=output)
 
-    bytespersec = BPSMeter.do.get_bps()
+    bytespersec = BPSMeter.do.bps
     qnfo = NzbQueue.do.queue_info(search=search, start=start, limit=limit)
 
     bytesleft = qnfo.bytes_left

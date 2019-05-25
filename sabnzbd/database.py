@@ -277,7 +277,7 @@ class HistoryDB:
 
     def add_history_db(self, nzo, storage="", path="", postproc_time=0, script_output="", script_line=""):
         """ Add a new job entry to the database """
-        t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line)
+        t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line, series_info=True)
 
         self.execute(
             """INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
@@ -351,8 +351,8 @@ class HistoryDB:
                     pass
         return total > 0
 
-    def have_md5sum(self, md5sum):
-        """ Check whether this md5sum already in History """
+    def have_name_or_md5sum(self, name, md5sum):
+        """ Check whether this name or md5sum is already in History """
         total = 0
         res = self.execute("select count(*) from History WHERE md5sum = ? AND STATUS != ?", (md5sum, Status.FAILED))
         if res:
@@ -461,7 +461,7 @@ def dict_factory(cursor, row):
 _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 
 
-def build_history_info(nzo, storage="", downpath="", postproc_time=0, script_output="", script_line=""):
+def build_history_info(nzo, storage="", downpath="", postproc_time=0, script_output="", script_line="", series_info=False):
     """ Collects all the information needed for the database """
     completed = int(time.time())
     if not downpath:
@@ -489,7 +489,7 @@ def build_history_info(nzo, storage="", downpath="", postproc_time=0, script_out
 
     # Analyze series info only when job is finished
     series = ""
-    if postproc_time:
+    if series_info:
         seriesname, season, episode, _ = sabnzbd.newsunpack.analyse_show(nzo.final_name)
         if seriesname and season and episode:
             series = "%s/%s/%s" % (seriesname.lower(), season, episode)

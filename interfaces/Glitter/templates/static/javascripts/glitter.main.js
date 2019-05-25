@@ -841,6 +841,12 @@ function ViewModel() {
     // Download a test-NZB
     self.testDownload = function(data, event) {
         var nzbSize = $(event.target).data('size')
+
+        // Maybe it was a click on the icon?
+        if(nzbSize == undefined) {
+            nzbSize = $(event.target.parentElement).data('size')
+        }
+
         // Build request
         var theCall = {
             mode: "addurl",

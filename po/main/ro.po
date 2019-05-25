@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2019-01-04 12:42+0000\n"
+"POT-Creation-Date: 2019-05-07 12:00+0000\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-01-05 05:42+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"X-Launchpad-Export-Date: 2019-05-08 05:49+0000\n"
+"X-Generator: Launchpad (build 18958)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -437,10 +437,6 @@ msgstr "Finalizat"
 #: sabnzbd/directunpacker.py # sabnzbd/newsunpack.py
 msgid "Unpacked %s files/folders in %s"
 msgstr "Dezarhivat %s fişierele/dosarele în %s"
-
-#: sabnzbd/directunpacker.py [Warning message]
-msgid "Unable to stop the unrar process."
-msgstr ""
 
 #: sabnzbd/directunpacker.py [Warning message]
 msgid "Direct Unpack was automatically enabled."
@@ -3529,20 +3525,20 @@ msgid "Comma separated list"
 msgstr "Listă separată prin virgulă"
 
 #: sabnzbd/skintext.py
-msgid "Server load-balancing"
-msgstr "Server de load-balancing"
+msgid "Server IP address selection"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Prevent load-balancing"
-msgstr "Previne load-balancing"
+msgid "First IP address"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Allow load-balancing"
-msgstr "Permite load-balancing"
+msgid "Randomly selected IP address"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Allow load-balancing with optimization for IPv6"
-msgstr "Permite load-balancing cu o optimizare pentru IPv6"
+msgid "Quickest IP address, preferring IPv6"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
@@ -4433,10 +4429,6 @@ msgstr "Încarcă NZB"
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"
 msgstr "Opţional specifică un nume de fişier"
-
-#: sabnzbd/skintext.py
-msgid "Formats: .nzb, .rar, .zip, .gz, .bz2"
-msgstr "Formate: .nzb, .rar, .zip, .gz, .bz2"
 
 #: sabnzbd/skintext.py
 msgid "Submit"
