@@ -401,8 +401,10 @@ class Downloader(Thread):
         # See if there's space left in cache, pause otherwise
         # But do allow some articles to enter queue, in case of full cache
         qsize = self.decoder_queue.qsize()
-        if (not ArticleCache.do.reserve_space(lines) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
+        if (qsize > LIMIT_DECODE_QUEUE) or (lines and qsize > MAX_DECODE_QUEUE and not ArticleCache.do.reserve_space(lines)):
             sabnzbd.downloader.Downloader.do.delay()
+            return 0
+        return LIMIT_DECODE_QUEUE - qsize
 
     def run(self):
         # First check IPv6 connectivity
@@ -420,8 +422,30 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         BPSMeter.do.update()
 
+        # Counts number of iterations with no articles found
+        idle_count = 0
+
+        # Store when each server did last search for articles
+        tested_time = {}
+
+        # Store when each server last downloaded anything or found an article
+        last_busy = {}
+
+        # Keeps track of how long one iteration takes, don't sleep if it takes too long
+        loop_time = time.time()
+
         while 1:
+            idle_count += 1
             for server in self.servers:
+                serverid = server.id
+                if server.busy_threads:
+                    last_busy[serverid] = time.time()
+
+                # Skip this server if idle for 2 seconds and has already been tested less than 2 second ago
+                if last_busy.get(serverid, 0) + 2 < time.time() and tested_time.get(serverid, 0) + 2 > time.time():
+                    continue
+                tested_time[serverid] = time.time()
+
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
                         if nw.nntp and nw.nntp.error_msg:
@@ -472,11 +496,15 @@ class Downloader(Thread):
 
                     if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
                         # Let's get rid of all the articles for this server at once
-                        logging.info('Job %s too old for %s, moving on', article.nzf.nzo.final_name, server.host)
                         while article:
-                            self.decode(article, None, None)
+                            if self.decode(article, None, None) < LIMIT_DECODE_QUEUE * 0.5:
+                                break # Try to avoid delayed mode
                             article = article.nzf.nzo.get_article(server, self.servers)
                         break
+
+                    # Don't count out of retention as busy, no need to fill the decoder queue any faster than it already does
+                    idle_count = 0;
+                    last_busy[serverid] = time.time()
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
@@ -492,6 +520,10 @@ class Downloader(Thread):
                         except:
                             logging.error(T('Failed to initialize %s@%s with reason: %s'), nw.thrdnum, server.host, sys.exc_info()[1])
                             self.__reset_nw(nw, "failed to initialize")
+
+            if idle_count and time.time() - loop_time < 0.0012:
+                time.sleep(0.001)
+            loop_time = time.time()
 
             # Exit-point
             if self.shutdown:
