@@ -691,6 +691,10 @@ def renamer(old, new):
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
         retries = 15
+        if os.path.splitdrive(old)[0] != os.path.splitdrive(new)[0]:
+            logging.debug('Different disks ("%s" != "%s"), skipping rename', os.path.splitdrive(old)[0], os.path.splitdrive(new)[0])
+            retries = 12
+
         while retries > 0:
             # First we try 3 times with os.rename
             if retries > 12:
