@@ -179,6 +179,7 @@ def sig_handler(signum=None, frame=None):
     if signum is not None:
         logging.warning(T("Signal %s caught, saving and exiting..."), signum)
     try:
+        Downloader.do.set_paused_state(True)
         save_state()
         sabnzbd.zconfig.remove_server()
     finally:

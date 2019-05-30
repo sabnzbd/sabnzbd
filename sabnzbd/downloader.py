@@ -84,6 +84,7 @@ class Server:
 
         self.busy_threads = []
         self.idle_threads = []
+        self.article_queue = []
         self.active = True
         self.bad_cons = 0
         self.errormsg = ''
@@ -401,9 +402,11 @@ class Downloader(Thread):
         # See if there's space left in cache, pause otherwise
         # But do allow some articles to enter queue, in case of full cache
         qsize = self.decoder_queue.qsize()
+
         if (qsize > LIMIT_DECODE_QUEUE) or (lines and qsize > MAX_DECODE_QUEUE and not ArticleCache.do.reserve_space(lines)):
             sabnzbd.downloader.Downloader.do.delay()
             return 0
+
         return LIMIT_DECODE_QUEUE - qsize
 
     def run(self):
@@ -441,8 +444,8 @@ class Downloader(Thread):
                 if server.busy_threads:
                     last_busy[serverid] = time.time()
 
-                # Skip this server if idle for 2 seconds and has already been tested less than 2 second ago
-                if last_busy.get(serverid, 0) + 2 < time.time() and tested_time.get(serverid, 0) + 2 > time.time():
+                # Skip this server if idle for 4 seconds and has already been tested less than 1 second ago
+                if not server.article_queue and last_busy.get(serverid, 0) + 2 < time.time() and tested_time.get(serverid, 0) + 2 > time.time():
                     continue
                 tested_time[serverid] = time.time()
 
@@ -469,6 +472,7 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
+
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
@@ -476,6 +480,9 @@ class Downloader(Thread):
                     continue
 
                 for nw in server.idle_threads[:]:
+                    if self.shutdown or self.is_paused():
+                        break
+
                     if nw.timeout:
                         if time.time() < nw.timeout:
                             continue
@@ -489,20 +496,24 @@ class Downloader(Thread):
                             request_server_info(server)
                         break
 
-                    article = sabnzbd.nzbqueue.NzbQueue.do.get_article(server, self.servers)
+                    if not server.article_queue:
+                        fetch_amount = server.threads * 2
+                        if fetch_amount > 50:
+                            fetch_amount = 50
+                        server.article_queue = sabnzbd.nzbqueue.NzbQueue.do.get_articles(server, self.servers, fetch_amount)
+                        #logging.debug('Looked for %d articles, queue %d for %s', fetch_amount, len(server.article_queue), serverid)
+                        if not server.article_queue:
+                            break
 
-                    if not article:
-                        break
+                    article = server.article_queue.pop(0)
 
                     if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
-                        # Let's get rid of all the articles for this server at once
-                        while article:
-                            if self.decode(article, None, None) < LIMIT_DECODE_QUEUE * 0.5:
-                                break # Try to avoid delayed mode
-                            article = article.nzf.nzo.get_article(server, self.servers)
-                        break
+                        if self.decode(article, None, None) < LIMIT_DECODE_QUEUE * 0.5:
+                            break # Try to avoid delayed mode
+                        continue
 
                     # Don't count out of retention as busy, no need to fill the decoder queue any faster than it already does
+                    #logging.debug('idle_count: %d', idle_count)
                     idle_count = 0;
                     last_busy[serverid] = time.time()
 
@@ -521,6 +532,11 @@ class Downloader(Thread):
                             logging.error(T('Failed to initialize %s@%s with reason: %s'), nw.thrdnum, server.host, sys.exc_info()[1])
                             self.__reset_nw(nw, "failed to initialize")
 
+            if self.is_paused():
+                self.purge_article_queue()
+                # Sleep 1 sec to let the other threads run in case it's because of shutdown
+                time.sleep(1)
+
             if idle_count and time.time() - loop_time < 0.0012:
                 time.sleep(0.001)
             loop_time = time.time()
@@ -528,6 +544,7 @@ class Downloader(Thread):
             # Exit-point
             if self.shutdown:
                 empty = True
+                self.purge_article_queue()
                 for server in self.servers:
                     if server.busy_threads:
                         empty = False
@@ -774,7 +791,8 @@ class Downloader(Thread):
                     server.errormsg = server.warning = ''
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s: %s done', nw.thrdnum, server.host, article.article)
-                    self.decode(article, nw.lines, nw.data)
+                    if self.decode(article, nw.lines, nw.data) < LIMIT_DECODE_QUEUE * 0.8:
+                        time.sleep(0.001) # Try to avoid delayed mode
 
                     nw.soft_reset()
                     server.busy_threads.remove(nw)
@@ -943,6 +961,19 @@ class Downloader(Thread):
     def stop(self):
         self.shutdown = True
         notifier.send_notification("SABnzbd", T('Shutting down'), 'startup')
+
+    def purge_article_queue(self):
+        for server in self.servers:
+            if server.article_queue:
+                for article in server.article_queue:
+                    article.fetcher = None
+                    article.reset_try_list()
+                    article.nzf.reset_try_list()
+                    article.nzf.nzo.reset_try_list()
+                    article.tries -= 1
+                server.article_queue = []
+                logging.debug('article_queue wiped for %s', server.id)
+
 
 
 def stop():

@@ -658,24 +658,27 @@ class NzbQueue:
                 return True
         return False
 
-    def get_article(self, server, servers):
+    def get_articles(self, server, servers, article_count):
         """ Get next article for jobs in the queue
             Not locked for performance, since it only reads the queue
         """
         # Pre-calculate propagation delay
         propagtion_delay = float(cfg.propagation_delay() * 60)
+        articles = []
         for nzo in self.__nzo_list:
             # Not when queue paused and not a forced item
             if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == TOP_PRIORITY:
                 # Check if past propagation delay, or forced
                 if not propagtion_delay or nzo.priority == TOP_PRIORITY or (nzo.avg_stamp + propagtion_delay) < time.time():
                     if not nzo.server_in_try_list(server):
-                        article = nzo.get_article(server, servers)
-                        if article:
-                            return article
+                        articles = nzo.get_articles(server, servers, article_count - len(articles))
+                        if articles:
+                            return articles
+
                     # Stop after first job that wasn't paused/propagating/etc
                     if self.__top_only:
-                        return
+                        return articles
+        return articles
 
     def register_article(self, article, found=True):
         """ Register the articles we tried

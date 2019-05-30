@@ -316,13 +316,19 @@ class NzbFile(TryList):
         self.vol = vol
         self.blocks = int_conv(blocks)
 
-    def get_article(self, server, servers):
+    def get_articles(self, server, servers, article_count):
         """ Get next article to be downloaded """
+        #logging.debug('nzbfile: Looking for %d articles', article_count)
+        articles = []
         for article in self.articles:
             article = article.get_article(server, servers)
             if article:
-                return article
-        self.add_to_try_list(server)
+                articles.append(article)
+            if len(articles) == article_count:
+                return articles
+        if not articles:
+            self.add_to_try_list(server)
+        return articles
 
     def reset_all_try_lists(self):
         """ Clear all lists of visited servers """
@@ -1320,19 +1326,22 @@ class NzbObject(TryList):
         self.nzo_info[article_type] += 1
         self.bad_articles += 1
 
-    def get_article(self, server, servers):
-        article = None
+    def get_articles(self, server, servers, article_count):
+        articles = []
         nzf_remove_list = []
+        #logging.debug('object: Looking for %d articles', article_count)
 
         # Did we go through all first-articles?
         if self.first_articles:
             for article_test in self.first_articles:
                 article = article_test.get_article(server, servers)
                 if article:
+                    articles.append(article)
+                if len(articles) == article_count:
                     break
 
         # Move on to next ones
-        if not article:
+        if not articles:
             for nzf in self.files:
                 if nzf.deleted:
                     logging.debug('Skipping existing file %s', nzf.filename or nzf.subject)
@@ -1353,8 +1362,9 @@ class NzbObject(TryList):
                             else:
                                 continue
 
-                        article = nzf.get_article(server, servers)
-                        if article:
+                        articles = nzf.get_articles(server, servers, article_count - len(articles))
+                        #logging.debug('object: Got %d more articles', len(temp_articles))
+                        if articles:
                             break
 
         # Remove all files for which admin could not be read
@@ -1366,10 +1376,11 @@ class NzbObject(TryList):
         if nzf_remove_list and not self.files:
             sabnzbd.NzbQueue.do.end_job(self)
 
-        if not article:
+        if not articles:
             # No articles for this server, block for next time
             self.add_to_try_list(server)
-        return article
+
+        return articles
 
     @synchronized(NZO_LOCK)
     def move_top_bulk(self, nzf_ids):
