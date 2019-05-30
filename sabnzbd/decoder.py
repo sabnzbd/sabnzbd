@@ -155,6 +155,10 @@ class Decoder(Thread):
                         # And look for DMCA clues (while skipping "X-" headers)
                         for line in data_to_check:
                             lline = ubtou(line).lower()
+                            if not isinstance(line, str):
+                                logging.debug('Line is not str for art_id %s', art_id)
+                                sabnzbd.save_data(raw_data, art_id, 'c:/temp/debug/')
+                                break
                             if 'message-id:' in lline:
                                 found = True
                             if not line.startswith('X-') and match_str(lline, ('dmca', 'removed', 'cancel', 'blocked')):
