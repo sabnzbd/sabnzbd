@@ -490,6 +490,8 @@ class Downloader(Thread):
                     if not article:
                         break
 
+                    last_busy[serverid] = time.time()
+
                     if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
                         # Let's get rid of all the articles for this server at once
                         while article:
@@ -498,9 +500,8 @@ class Downloader(Thread):
                             article = article.nzf.nzo.get_article(server, self.servers)
                         break
 
-                    # Don't count out of retention as busy, no need to fill the decoder queue any faster than it already does
+                    # Count out of retention as idle, no need to fill the decoder queue any faster than it already does
                     idle_count = 0;
-                    last_busy[serverid] = time.time()
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
