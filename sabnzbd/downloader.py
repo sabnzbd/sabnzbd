@@ -472,7 +472,6 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
-
                 if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
                     continue
 
@@ -501,11 +500,12 @@ class Downloader(Thread):
                         if fetch_amount > 50:
                             fetch_amount = 50
                         server.article_queue = sabnzbd.nzbqueue.NzbQueue.do.get_articles(server, self.servers, fetch_amount)
-                        #logging.debug('Looked for %d articles, queue %d for %s', fetch_amount, len(server.article_queue), serverid)
                         if not server.article_queue:
                             break
 
                     article = server.article_queue.pop(0)
+
+                    last_busy[serverid] = time.time()
 
                     if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
                         if self.decode(article, None, None) < LIMIT_DECODE_QUEUE * 0.5:
@@ -513,9 +513,7 @@ class Downloader(Thread):
                         continue
 
                     # Don't count out of retention as busy, no need to fill the decoder queue any faster than it already does
-                    #logging.debug('idle_count: %d', idle_count)
-                    idle_count = 0;
-                    last_busy[serverid] = time.time()
+                    idle_count = 0
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
@@ -537,9 +535,8 @@ class Downloader(Thread):
                 # Sleep 1 sec to let the other threads run in case it's because of shutdown
                 time.sleep(1)
 
-            if idle_count and time.time() - loop_time < 0.0012:
+            if idle_count:
                 time.sleep(0.001)
-            loop_time = time.time()
 
             # Exit-point
             if self.shutdown:
@@ -578,24 +575,6 @@ class Downloader(Thread):
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
-
-                # Why check so often when so few things happened?
-                if self.can_be_slowed and len(readkeys) >= 8 and len(read) <= 2:
-                    time.sleep(0.01)
-
-                # Need to initialize the check during first 20 seconds
-                if self.can_be_slowed is None or self.can_be_slowed_timer:
-                    # Wait for stable speed to start testing
-                    if not self.can_be_slowed_timer and BPSMeter.do.get_stable_speed(timespan=10):
-                        self.can_be_slowed_timer = time.time()
-
-                    # Check 10 seconds after enabling slowdown
-                    if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
-                        # Now let's check if it was stable in the last 10 seconds
-                        self.can_be_slowed = BPSMeter.do.get_stable_speed(timespan=10)
-                        self.can_be_slowed_timer = 0
-                        logging.debug('Downloader-slowdown: %r', self.can_be_slowed)
-
             else:
                 read, write, error = ([], [], [])
 
