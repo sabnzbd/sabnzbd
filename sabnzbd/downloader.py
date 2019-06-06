@@ -434,8 +434,7 @@ class Downloader(Thread):
         # Store when each server last downloaded anything or found an article
         last_busy = {}
 
-        # Keeps track of how long one iteration takes, don't sleep if it takes too long
-        loop_time = time.time()
+        logging.debug('Sleep time: %f', cfg.sleep_time() * 0.001)
 
         while 1:
             idle_count += 1
@@ -536,7 +535,7 @@ class Downloader(Thread):
                 time.sleep(1)
 
             if idle_count:
-                time.sleep(0.001)
+                time.sleep(cfg.sleep_time() * 0.001)
 
             # Exit-point
             if self.shutdown:
