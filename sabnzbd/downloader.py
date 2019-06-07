@@ -457,6 +457,7 @@ class Downloader(Thread):
                         server.bad_cons += 1
                         self.maybe_block_server(server)
                 if server.restart:
+                    self.purge_article_queue()
                     if not server.busy_threads:
                         newid = server.newid
                         server.stop(self.read_fds, self.write_fds)
