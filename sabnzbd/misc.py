@@ -1125,21 +1125,13 @@ def renamer(old, new):
     # but do not trim size
     new = os.path.join(path, sanitize_foldername(name, False))
 
+    # Skip if nothing changes
+    if old == new:
+        return
+
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
         retries = 15
-
-        # splitdrive only supports drive letters and splitunc only supports UNC mount points in Python 2
-        old_disk = os.path.splitdrive(old)[0]
-        new_disk = os.path.splitdrive(new)[0]
-        if not old_disk:
-            old_disk = os.path.splitunc(old)[0]
-        if not new_disk:
-            new_disk = os.path.splitunc(new)[0]
-        if old_disk != new_disk:
-            logging.debug('Different disks ("%s" != "%s"), skipping rename', old_disk, new_disk)
-            retries = 12
-
         while retries > 0:
             try:
                 # First we try 3 times with os.rename
@@ -1147,9 +1139,9 @@ def renamer(old, new):
                     os.rename(old, new)
                 else:
                     # Now we try the back-up method
-                    logging.debug('Could not rename, trying move for %s to %s', old, new)
+                    logging.debug("Could not rename, trying move for %s to %s", old, new)
                     shutil.move(old, new)
-                break
+                return
             except WindowsError, err:
                 logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
                 if err[0] == 17:
@@ -1158,7 +1150,7 @@ def renamer(old, new):
                     retries -= 3
                 elif err[0] == 32:
                     # Error 32 - Used by another process
-                    logging.debug('File busy, retrying rename %s to %s', old, new)
+                    logging.debug("File busy, retrying rename %s to %s", old, new)
                     retries -= 1
                     # Wait for the other process to finish
                     time.sleep(2)
