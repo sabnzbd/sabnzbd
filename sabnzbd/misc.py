@@ -1149,6 +1149,7 @@ def renamer(old, new):
                     # Now we try the back-up method
                     logging.debug('Could not rename, trying move for %s to %s', old, new)
                     shutil.move(old, new)
+                break
             except WindowsError, err:
                 logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
                 if err[0] == 17:
@@ -1162,8 +1163,8 @@ def renamer(old, new):
                     # Wait for the other process to finish
                     time.sleep(2)
                 else:
-                    break
-        raise WindowsError(err)
+                    raise
+        raise WindowsError("Failed to rename")
     else:
         shutil.move(old, new)
 
@@ -1183,9 +1184,9 @@ def remove_dir(path):
                     logging.debug('Retry delete %s', path)
                     retries -= 1
                 else:
-                    raise WindowsError(err)
+                    raise
             time.sleep(3)
-        raise WindowsError(err)
+        raise WindowsError("Failed to remove")
     else:
         os.rmdir(path)
 
