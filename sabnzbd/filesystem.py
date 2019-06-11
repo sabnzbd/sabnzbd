@@ -696,30 +696,30 @@ def renamer(old, new):
             retries = 12
 
         while retries > 0:
-            # First we try 3 times with os.rename
-            if retries > 12:
-                try:
-                    os.rename(old, new)
-                    return
-                except:
-                    retries -= 1
-                    time.sleep(3)
-                    continue
-
-            # Now we try the back-up method
-            logging.debug("Could not rename, trying move for %s to %s", old, new)
             try:
-                shutil.move(old, new)
+                # First we try 3 times with os.rename
+                if retries > 12:
+                    os.rename(old, new)
+                else:
+                    # Now we try the back-up method
+                    logging.debug("Could not rename, trying move for %s to %s", old, new)
+                    shutil.move(old, new)
                 return
             except WindowsError as err:
                 logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
-                if err.errno == 32:
-                    logging.debug("Retry rename %s to %s", old, new)
+                if err.errno == 17:
+                    # Error 17 - Rename can't move to different disk
+                    # Jump to moving with shutil.move
+                    retries -= 3
+                elif err.errno == 32:
+                    # Error 32 - Used by another process
+                    logging.debug("File busy, retrying rename %s to %s", old, new)
                     retries -= 1
+                    # Wait for the other process to finish
+                    time.sleep(2)
                 else:
-                    raise WindowsError(err)
-            time.sleep(3)
-        raise WindowsError(err)
+                    raise
+        raise WindowsError("Failed to rename")
     else:
         shutil.move(old, new)
 
@@ -746,9 +746,9 @@ def remove_dir(path):
                     logging.debug("Retry delete %s", path)
                     retries -= 1
                 else:
-                    raise WindowsError(err)
+                    raise
             time.sleep(3)
-        raise WindowsError(err)
+        raise WindowsError("Failed to remove")
     else:
         os.rmdir(path)
 
