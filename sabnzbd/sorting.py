@@ -1136,8 +1136,6 @@ def check_regexs(filename, matchers):
     extras = []
     for expressions in matchers:
         expression, extramatchers = expressions
-        if isinstance(filename, int):
-            filename = str(filename)
         match1 = expression.search(filename)
         if match1:
             for m in extramatchers:
