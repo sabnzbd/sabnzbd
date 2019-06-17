@@ -922,7 +922,7 @@ def remove_samples(path):
                 files_to_delete.append(os.path.join(root, file_to_match))
 
     # Make sure we skip false-positives
-    if 1 < len(files_to_delete) < nr_files:
+    if len(files_to_delete) < nr_files:
         for path in files_to_delete:
             try:
                 logging.info("Removing unwanted sample file %s", path)
