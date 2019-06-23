@@ -735,7 +735,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             fail = 1
 
         elif line.startswith('Cannot create'):
-            line2 = proc.readline()
+            line2 = platform_btou(proc.readline())
             if 'must not exceed 260' in line2:
                 msg = '%s: %s' % (T('Unpacking failed, path is too long'), line[13:])
                 nzo.fail_msg = msg
