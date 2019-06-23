@@ -1319,13 +1319,6 @@ def main():
     sabnzbd.cfg.log_level.callback(guard_loglevel)
 
     try:
-        # Ugly workaround for cherrypy/cherrypy/issues/1618
-        import cheroot.ssl.builtin
-        cheroot.ssl.builtin.IS_BELOW_PY37 = True
-    except:
-        pass
-
-    try:
         cherrypy.engine.start()
     except:
         logging.error(T('Failed to start web-interface: '), exc_info=True)
