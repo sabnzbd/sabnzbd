@@ -157,7 +157,7 @@ class Decoder(Thread):
                             lline = ubtou(line).lower()
                             if 'message-id:' in lline:
                                 found = True
-                            if not line.startswith('X-') and match_str(lline, ('dmca', 'removed', 'cancel', 'blocked')):
+                            if not lline.startswith('X-') and match_str(lline, ('dmca', 'removed', 'cancel', 'blocked')):
                                 killed = True
                                 break
                     if killed:
