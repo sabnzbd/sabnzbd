@@ -524,7 +524,7 @@ class MainPage(object):
         raise Raiser(self.__root)
 
     @secured_expose
-    def robots_txt(self):
+    def robots_txt(self, **kwargs):
         """ Keep web crawlers out """
         cherrypy.response.headers['Content-Type'] = 'text/plain'
         return 'User-agent: *\nDisallow: /\n'
