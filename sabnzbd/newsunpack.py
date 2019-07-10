@@ -974,7 +974,7 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
 
     # Before we start, make sure the 7z binary is defined
     if not SEVEN_COMMAND:
-	msg = T('No 7za binary found, so cannot unpack "%s" (file %s)') % (nzo.final_name, os.path.basename(sevenset))
+        msg = T('No 7za binary found, so cannot unpack "%s" (file %s)') % (nzo.final_name, os.path.basename(sevenset))
         logging.error(msg)
         return 1, [], msg
 
