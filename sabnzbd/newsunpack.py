@@ -2009,6 +2009,15 @@ def build_command(command, flatten_command=False):
     """ Prepare list from running an external program
         On Windows we need to run our own list2cmdline for Unrar
     """
+
+    # command[0] should be filled out, and thus not None
+    if not command[0]:
+        import inspect
+        msg = "The command in build_command is None. Stack:  "
+        for i in inspect.stack():
+            msg = msg + i[3] + "  "
+        logging.error(msg)
+
     if not sabnzbd.WIN32:
         if command[0].endswith('.py'):
             with open(command[0], 'r') as script_file:
