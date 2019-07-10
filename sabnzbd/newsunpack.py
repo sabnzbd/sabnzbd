@@ -971,6 +971,13 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
     """ Unpack single set 'sevenset' to 'extraction_path', with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
+
+    # Before we start, make sure the 7z binary is defined
+    if not SEVEN_COMMAND:
+	msg = T('No 7za binary found, so cannot unpack "%s" (file %s)') % (nzo.final_name, os.path.basename(sevenset))
+        logging.error(msg)
+        return 1, [], msg
+
     fail = 0
     passwords = get_all_passwords(nzo)
 
