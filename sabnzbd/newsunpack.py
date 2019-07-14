@@ -33,7 +33,7 @@ from sabnzbd.encoding import TRANS, unicoder, platform_encode, deunicode
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, make_script_path, int_conv, \
     real_path, globber, globber_full, get_all_passwords, renamer, clip_path, calc_age, \
-    long_path, remove_file, recursive_listdir, is_rarfile, get_filename
+    long_path, remove_file, recursive_listdir, is_rarfile, get_filename, caller_name
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -971,6 +971,12 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
     """ Unpack single set 'sevenset' to 'extraction_path', with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
+    # Before we start, make sure the 7z binary SEVEN_COMMAND is defined
+    if not SEVEN_COMMAND:
+        msg = T('No 7za binary found, cannot unpack "%s"') % os.path.basename(sevenset)
+        logging.error(msg)
+        return 1, [], msg
+
     fail = 0
     passwords = get_all_passwords(nzo)
 
@@ -2002,6 +2008,11 @@ def build_command(command, flatten_command=False):
     """ Prepare list from running an external program
         On Windows we need to run our own list2cmdline for Unrar
     """
+    # command[0] should be set, and thus not None
+    if not command[0]:
+        logging.error(T('[%s] The command in build_command is undefined.'), caller_name())
+        raise IOError
+
     if not sabnzbd.WIN32:
         if command[0].endswith('.py'):
             with open(command[0], 'r') as script_file:
