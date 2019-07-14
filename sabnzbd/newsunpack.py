@@ -971,10 +971,9 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
     """ Unpack single set 'sevenset' to 'extraction_path', with password tries
         Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
-
     # Before we start, make sure the 7z binary SEVEN_COMMAND is defined
     if not SEVEN_COMMAND:
-        msg = T('No 7za binary found, cannot unpack "%s" (file %s)') % (nzo.final_name, os.path.basename(sevenset))
+        msg = T('No 7za binary found, cannot unpack "%s"') % os.path.basename(sevenset)
         logging.error(msg)
         return 1, [], msg
 
@@ -2009,11 +2008,10 @@ def build_command(command, flatten_command=False):
     """ Prepare list from running an external program
         On Windows we need to run our own list2cmdline for Unrar
     """
-
-    # command[0] should be filled out, and thus not None
+    # command[0] should be set, and thus not None
     if not command[0]:
-        msg = "The command in build_command is undefined (None). Called by " + caller_name()
-        logging.error(T('The command in build_command is undefined (None). Called by %s'), caller_name())
+        logging.error(T('[%s] The command in build_command is undefined.'), caller_name())
+        raise IOError
 
     if not sabnzbd.WIN32:
         if command[0].endswith('.py'):
