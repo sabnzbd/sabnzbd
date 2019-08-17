@@ -912,7 +912,11 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
     try:
         with open(path, "rb") as data_file:
             if do_pickle:
-                data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
+                try:
+                    data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
+                except UnicodeDecodeError:
+                    # Could be Python 2 data that we can load using old encoding
+                    data = pickle.load(data_file, encoding="latin1")
             else:
                 data = data_file.read()
 
