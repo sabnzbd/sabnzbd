@@ -48,8 +48,13 @@ def nzbfile_parser(raw_data, nzo):
     # Parse the header
     if nzb_tree.find("head"):
         for meta in nzb_tree.find("head").iter("meta"):
-            if meta.attrib.get("type") and meta.text:
-                nzo.meta[meta.attrib.get("type")] = meta.text
+            meta_type = meta.attrib.get("type")
+            if meta_type and meta.text:
+                # Meta tags can occur multiple times
+                if meta_type not in nzo.meta:
+                    nzo.meta[meta_type] = []
+                nzo.meta[meta_type].append(meta.text)
+    logging.debug("NZB Meta-data = %s", nzo.meta)
 
     # Parse the files
     for file in nzb_tree.iter("file"):
@@ -121,7 +126,6 @@ def nzbfile_parser(raw_data, nzo):
             skipped_files += 1
 
     # Final bookkeeping
-    logging.debug("META-DATA = %s", nzo.meta)
     files = max(1, valid_files)
     nzo.avg_stamp = avg_age_sum / files
     nzo.avg_date = datetime.datetime.fromtimestamp(avg_age_sum / files)
