@@ -20,4 +20,4 @@ install:
   - python -m pip install --upgrade -r tests/requirements.txt
 
 build_script:
-  - python -m pytest -v
+  - python -m pytest

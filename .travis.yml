@@ -42,7 +42,7 @@ install:
   - python3 -m pip install --upgrade -r tests/requirements.txt
 
 script:
-  - python3 -m pytest -v
+  - python3 -m pytest
 
   # Force code-style for folders that we already did, only on 1 job
   - if [[ $TRAVIS_PYTHON_VERSION == "3.7" ]]; then

@@ -123,21 +123,14 @@ def upload_nzb(filename, host=SAB_HOST, port=SAB_PORT):
 class SABnzbdBaseTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # We try Chrome, fallback to Firefox
+        # We only try Chrome for consistent results
+        driver_options = ChromeOptions()
 
-        try:
-            driver_options = ChromeOptions()
-            # Headless on Appveyor/Travis
-            if "CI" in os.environ:
-                driver_options.add_argument("--headless")
-                driver_options.add_argument("--no-sandbox")
-            cls.driver = webdriver.Chrome(options=driver_options)
-        except WebDriverException:
-            driver_options = FirefoxOptions()
-            # Headless on Appveyor/Travis
-            if "CI" in os.environ:
-                driver_options.headless = True
-            cls.driver = webdriver.Firefox(options=driver_options)
+        # Headless on Appveyor/Travis
+        if "CI" in os.environ:
+            driver_options.add_argument("--headless")
+            driver_options.add_argument("--no-sandbox")
+        cls.driver = webdriver.Chrome(options=driver_options)
 
         # Get the newsserver-info, if available
         if "SAB_NEWSSERVER_HOST" in os.environ:
