@@ -272,7 +272,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                     break
                                 except Exception as e:
                                     # Did we start from the right volume?
-                                    if 'need to start extraction from a previous volume' in e:
+                                    if 'need to start extraction from a previous volume' in str(e):
                                         return encrypted, unwanted
                                     # This one failed
                                     pass

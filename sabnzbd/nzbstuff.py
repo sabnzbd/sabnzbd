@@ -397,22 +397,23 @@ class NzbObject(TryList):
         else:
             self.work_name = filename
 
-        # Extract password
-        self.work_name, password = scan_password(self.work_name)
-        if not self.work_name:
-            # In case only /password was entered for nzbname
-            self.work_name = filename
-
-        # Check for password also in filename
-        if not password:
-            _, password = scan_password(os.path.splitext(filename)[0])
-
         # For future-slots we keep the name given by URLGrabber
         if nzb is None:
             self.final_name = self.work_name = filename
         else:
             # Remove trailing .nzb and .par(2)
-            self.final_name = self.work_name = create_work_name(self.work_name)
+            self.work_name = create_work_name(self.work_name)
+
+        # Extract password
+        self.work_name, self.password = scan_password(self.work_name)
+        if not self.work_name:
+            # In case only /password was entered for nzbname
+            self.work_name = filename
+        self.final_name = self.work_name
+
+        # Check for password also in filename
+        if not self.password:
+            _, self.password = scan_password(os.path.splitext(filename)[0])
 
         # Determine category and find pp/script values based on input
         # Later will be re-evaluated based on import steps
@@ -496,7 +497,6 @@ class NzbObject(TryList):
         # Temporary store for custom foldername - needs to be stored because of url fetching
         self.custom_name = nzbname
 
-        self.password = password
         self.next_save = None
         self.save_timeout = None
         self.encrypted = 0
