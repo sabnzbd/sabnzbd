@@ -39,7 +39,6 @@ from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-import sabnzbd.utils.rarvolnum as rarvolnum
 from sabnzbd.rating import Rating
 
 
@@ -135,12 +134,6 @@ class Assembler(Thread):
 
                         # Add to direct unpack
                         nzo.add_to_direct_unpacker(nzf)
-
-                        # Is SJ right?
-                        rarvolnum_vol = rarvolnum.get_rar_volume_number(filepath)
-                        filename_vol = sabnzbd.directunpacker.analyze_rar_filename(nzf.filename)[1]
-                        if rarvolnum_vol != filename_vol:
-                            logging.error("RAR-based volume detection mismatch: %s, %s", rarvolnum_vol, filename_vol)
 
                     elif par2file.is_parfile(filepath):
                         # Parse par2 files, cloaked or not
