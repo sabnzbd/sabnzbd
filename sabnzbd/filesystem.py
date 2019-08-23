@@ -570,12 +570,8 @@ def recursive_listdir(dir):
     for root, dirs, files in os.walk(dir):
         for file in files:
             if ".AppleDouble" not in root and ".DS_Store" not in root:
-                try:
-                    p = os.path.join(root, file)
-                    filelist.append(p)
-                except UnicodeDecodeError:
-                    # Just skip failing names
-                    pass
+                p = os.path.join(root, file)
+                filelist.append(p)
     return filelist
 
 
