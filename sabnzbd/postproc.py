@@ -35,7 +35,8 @@ from sabnzbd.misc import on_cleanup_list
 from sabnzbd.filesystem import real_path, get_unique_path, move_to_path, \
     make_script_path, long_path, clip_path, renamer, remove_dir, globber, \
     globber_full, set_permissions, cleanup_empty_directories, fix_unix_encoding, \
-    sanitize_and_trim_path, sanitize_files_in_folder, remove_file, recursive_listdir, setname_from_path, create_all_dirs
+    sanitize_and_trim_path, sanitize_files_in_folder, remove_file, recursive_listdir, setname_from_path, \
+    create_all_dirs, get_unique_filename
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
@@ -49,6 +50,7 @@ import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
+import sabnzbd.utils.rarvolnum as rarvolnum
 import sabnzbd.utils.checkdir
 
 MAX_FAST_JOB_COUNT = 3
@@ -364,7 +366,7 @@ def process_job(nzo):
             newfiles = []
             # Run Stage 2: Unpack
             if flag_unpack:
-                # set the current nzo status to "Extracting...". Used in History
+                # Set the current nzo status to "Extracting...". Used in History
                 nzo.status = Status.EXTRACTING
                 logging.info("Running unpack_magic on %s", filename)
                 unpack_error, newfiles = unpack_magic(nzo, workdir, tmp_workdir_complete, flag_delete, one_folder, (), (), (), (), ())
@@ -675,10 +677,19 @@ def parring(nzo, workdir):
         if cfg.sfv_check() and not verified.get('', False):
             par_error = not try_sfv_check(nzo, workdir)
             verified[''] = not par_error
-        # If still no success, do RAR-check
+
+        # If still no success, do RAR-check or RAR-rename
         if not par_error and cfg.enable_unrar():
-            par_error = not try_rar_check(nzo, workdir)
-            verified[''] = not par_error
+            _, _, rars, _, _ = build_filelists(workdir)
+            # If there's no RAR's, they might be super-obfuscated
+            if not rars:
+                # Returns number of renamed RAR's
+                if rar_renamer(nzo, workdir):
+                    # Re-parse the files so we can do RAR-check
+                    _, _, rars, _, _ = build_filelists(workdir)
+            if rars:
+                par_error = not try_rar_check(nzo, rars)
+                verified[''] = not par_error
 
     if re_add:
         logging.info('Re-added %s to queue', filename)
@@ -730,14 +741,13 @@ def try_sfv_check(nzo, workdir):
     return True
 
 
-def try_rar_check(nzo, workdir):
+def try_rar_check(nzo, rars):
     """ Attempt to verify set using the RARs
         Return True if verified, False when failed
         When setname is '', all RAR files will be used, otherwise only the matching one
         If no RAR's are found, returns True
     """
-    # Fetch and sort
-    _, _, rars, _, _ = build_filelists(workdir)
+    # Sort for better processing
     rars.sort(key=functools.cmp_to_key(rar_sort))
 
     # Test
@@ -774,6 +784,32 @@ def try_rar_check(nzo, workdir):
     else:
         # No rar-files, so just continue
         return True
+
+
+def rar_renamer(nzo, workdir):
+    """ Try to use the the header information to give RAR-files decent names """
+    nzo.status = Status.VERIFYING
+    nzo.set_unpack_info('Repair', T('Trying RAR-based verification'))
+    nzo.set_action_line(T('Trying RAR-based verification'), '...')
+
+    renamed_files = 0
+    workdir_files = recursive_listdir(workdir)
+    for file_to_check in workdir_files:
+        # The function will check if it's a RAR-file
+        # We do a sanity-check for the returned number
+        rar_vol = rarvolnum.get_rar_volume_number(file_to_check)
+        if 0 < rar_vol < 1000:
+            logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
+            new_rar_name = "%s.part%03d.rar" % (nzo.final_name, rar_vol)
+            new_rar_name = os.path.join(workdir, new_rar_name)
+            # Right now we don't support multiple sets inside the same NZB
+            # So we have to make sure the name is unique
+            new_rar_name = get_unique_filename(new_rar_name)
+            renamer(file_to_check, new_rar_name)
+            renamed_files += 1
+        else:
+            logging.debug("No RAR-volume-number found in %s", file_to_check)
+    return renamed_files
 
 
 def handle_empty_queue():
