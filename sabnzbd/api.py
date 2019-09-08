@@ -1340,13 +1340,13 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['filename'] = converter(pnfo.filename)
         slot['password'] = converter(pnfo.password) if pnfo.password else ''
         slot['cat'] = converter(pnfo.category) if pnfo.category else 'None'
-        slot['mbleft'] = "%.2f" % mbleft
-        slot['mb'] = "%.2f" % mb
+        slot['mbleft'] = round(mbleft, 2)
+        slot['mb'] = round(mb, 2)
         slot['size'] = format_bytes(bytes)
         slot['sizeleft'] = format_bytes(bytesleft)
-        slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else '0'
-        slot['mbmissing'] = "%.2f" % (pnfo.bytes_missing / MEBI)
-        slot['direct_unpack'] = pnfo.direct_unpack
+        slot['percentage'] = int(((mb - mbleft) / mb) * 100) if mb != mbleft else 0
+        slot['mbmissing'] = round(pnfo.bytes_missing / MEBI, 2)
+        slot['direct_unpack'] = pnfo.direct_unpack if direct_unpack != 0 else "0"
         if not output:
             slot['mb_fmt'] = locale.format('%d', int(mb), True)
             slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
