@@ -50,7 +50,7 @@ import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
-import sabnzbd.utils.rarvolnum as rarvolnum
+import sabnzbd.utils.rarvolinfo as rarvolinfo
 import sabnzbd.utils.checkdir
 
 MAX_FAST_JOB_COUNT = 3
@@ -797,7 +797,7 @@ def rar_renamer(nzo, workdir):
     for file_to_check in workdir_files:
         # The function will check if it's a RAR-file
         # We do a sanity-check for the returned number
-        rar_vol = rarvolnum.get_rar_volume_number(file_to_check)
+        rar_vol = rarvolinfo.get_rar_volume_number(file_to_check)
         if 0 < rar_vol < 1000:
             logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
             new_rar_name = "%s.part%03d.rar" % (nzo.final_name, rar_vol)
