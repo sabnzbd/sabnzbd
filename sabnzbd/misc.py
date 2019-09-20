@@ -576,6 +576,7 @@ def get_darwin_memory():
     system_output = sabnzbd.newsunpack.run_simple(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
 
+
 def on_cleanup_list(filename, skip_nzb=False):
     """ Return True if a filename matches the clean-up list """
     lst = cfg.cleanup_list()
