@@ -2264,7 +2264,7 @@ def crc_check(path, target_crc):
         fp = open(path, 'rb')
     except:
         return False
-    crc = binascii.crc32('')
+    crc = 0
     while 1:
         data = fp.read(4096)
         if not data:
