@@ -797,10 +797,10 @@ def rar_renamer(nzo, workdir):
     for file_to_check in workdir_files:
         # The function will check if it's a RAR-file
         # We do a sanity-check for the returned number
-        rar_vol = rarvolinfo.get_rar_volume_number(file_to_check)
+        rar_vol, new_extension = rarvolinfo.get_rar_extension(file_to_check)
         if 0 < rar_vol < 1000:
             logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
-            new_rar_name = "%s.part%03d.rar" % (nzo.final_name, rar_vol)
+            new_rar_name = "%s.%s" % (nzo.final_name, new_extension)
             new_rar_name = os.path.join(workdir, new_rar_name)
             # Right now we don't support multiple sets inside the same NZB
             # So we have to make sure the name is unique
