@@ -11,13 +11,19 @@ matrix:
   - os: linux
     language: python
     python: "3.5"
+    addons:
+      chrome: stable
   - os: linux
     language: python
     python: "3.6"
+    addons:
+      chrome: stable
   - os: linux
     language: python
     dist: "xenial"
     python: "3.7"
+    addons:
+      chrome: stable
   - os: osx
     env:
       - HOMEBREW_NO_AUTO_UPDATE=1

@@ -461,7 +461,9 @@ def dict_factory(cursor, row):
 _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 
 
-def build_history_info(nzo, storage="", downpath="", postproc_time=0, script_output="", script_line="", series_info=False):
+def build_history_info(
+    nzo, storage="", downpath="", postproc_time=0, script_output="", script_line="", series_info=False
+):
     """ Collects all the information needed for the database """
     completed = int(time.time())
     if not downpath:

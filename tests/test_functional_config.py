@@ -19,7 +19,7 @@
 tests.test_functional_config - Basic testing if Config pages work
 """
 
-from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException
+from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
 from tests.testhelper import *
 
 
@@ -58,8 +58,11 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
             try:
                 self.wait_for_ajax()
             except UnexpectedAlertPresentException:
-                # Ignore restart-request due to empty sabnzbd.ini in tests
-                self.driver.switch_to.alert.dismiss()
+                try:
+                    # Ignore restart-request due to empty sabnzbd.ini in tests
+                    self.driver.switch_to.alert.dismiss()
+                except NoAlertPresentException:
+                    pass
 
             # For Specials page we get redirected after save, so check for no crash
             if "special" in test_url:
@@ -89,8 +92,11 @@ class SABnzbdConfigLogin(SABnzbdBaseTest):
         try:
             self.wait_for_ajax()
         except UnexpectedAlertPresentException:
-            # Ignore restart-request
-            self.driver.switch_to.alert.dismiss()
+            try:
+                # Ignore restart-request
+                self.driver.switch_to.alert.dismiss()
+            except NoAlertPresentException:
+                pass
 
         # Open any page and check if we get redirected
         self.open_page("http://%s:%s/sabnzbd/general" % (SAB_HOST, SAB_PORT))
@@ -133,8 +139,11 @@ class SABnzbdConfigLogin(SABnzbdBaseTest):
         try:
             self.wait_for_ajax()
         except UnexpectedAlertPresentException:
-            # Ignore restart-request
-            self.driver.switch_to.alert.dismiss()
+            try:
+                # Ignore restart-request
+                self.driver.switch_to.alert.dismiss()
+            except NoAlertPresentException:
+                pass
 
         # Open any page and check if we get redirected
         self.open_page("http://%s:%s/sabnzbd/general" % (SAB_HOST, SAB_PORT))
