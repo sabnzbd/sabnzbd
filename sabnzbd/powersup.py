@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -165,7 +165,7 @@ def _get_systemproxy(method):
     try:
         bus = dbus.SystemBus()
         return bus.get_object(name, path), interface, pinterface
-    except dbus.exceptions.DBusException, msg:
+    except dbus.exceptions.DBusException as msg:
         logging.info('DBus not reachable (%s)', msg)
         return None, None, None
 
@@ -193,7 +193,7 @@ def linux_shutdown():
                         proxy.Stop(dbus_interface=interface)
                 else:
                     logging.info('DBus does not support Stop (shutdown)')
-    except dbus.exceptions.DBusException, msg:
+    except dbus.exceptions.DBusException as msg:
         logging.error('Received a DBus exception %s', msg)
     os._exit(0)
 
@@ -223,7 +223,7 @@ def linux_hibernate():
                 else:
                     logging.info('DBus does not support Hibernate')
         time.sleep(10)
-    except dbus.exceptions.DBusException, msg:
+    except dbus.exceptions.DBusException as msg:
         logging.error('Received a DBus exception %s', msg)
 
 
@@ -252,5 +252,5 @@ def linux_standby():
                 else:
                     logging.info('DBus does not support Suspend (standby)')
         time.sleep(10)
-    except dbus.exceptions.DBusException, msg:
+    except dbus.exceptions.DBusException as msg:
         logging.error('Received a DBus exception %s', msg)

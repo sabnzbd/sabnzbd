@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -31,22 +31,19 @@ from sabnzbd.misc import int_conv
 
 def test_nntp_server_dict(kwargs):
     # Grab the host/port/user/pass/connections/ssl
-    host = kwargs.get('host', '').strip()
-
+    host = kwargs.get("host", "").strip()
     if not host:
-        return False, T('The hostname is not set.')
-
-    username = kwargs.get('username', '').strip()
-    password = kwargs.get('password', '').strip()
-    server = kwargs.get('server', '').strip()
-    connections = int_conv(kwargs.get('connections', 0))
-    ssl = int_conv(kwargs.get('ssl', 0))
-    ssl_verify = int_conv(kwargs.get('ssl_verify', 1))
-    ssl_ciphers = kwargs.get('ssl_ciphers')
-    port = int_conv(kwargs.get('port', 0))
-
+        return False, T("The hostname is not set.")
+    username = kwargs.get("username", "").strip()
+    password = kwargs.get("password", "").strip()
+    server = kwargs.get("server", "").strip()
+    connections = int_conv(kwargs.get("connections", 0))
     if not connections:
-        return False, T('There are no connections set. Please set at least one connection.')
+        return False, T("There are no connections set. Please set at least one connection.")
+    ssl = int_conv(kwargs.get("ssl", 0))
+    ssl_verify = int_conv(kwargs.get("ssl_verify", 1))
+    ssl_ciphers = kwargs.get("ssl_ciphers")
+    port = int_conv(kwargs.get("port", 0))
 
     if not port:
         if ssl:
@@ -54,14 +51,22 @@ def test_nntp_server_dict(kwargs):
         else:
             port = 119
 
-    return test_nntp_server(host, port, server, username=username, password=password,
-                            ssl=ssl, ssl_verify=ssl_verify, ssl_ciphers=ssl_ciphers)
+    return test_nntp_server(
+        host,
+        port,
+        server,
+        username=username,
+        password=password,
+        ssl=ssl,
+        ssl_verify=ssl_verify,
+        ssl_ciphers=ssl_ciphers,
+    )
 
 
 def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_verify=1, ssl_ciphers=None):
     """ Will connect (blocking) to the nttp server and report back any errors """
     timeout = 4.0
-    if '*' in password and not password.strip('*'):
+    if "*" in password and not password.strip("*"):
         # If the password is masked, try retrieving it from the config
         if not server:
             servers = get_servers()
@@ -77,11 +82,11 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
                 password = srv.password()
                 got_pass = True
         if not got_pass:
-            return False, T('Password masked in ******, please re-enter')
+            return False, T("Password masked in ******, please re-enter")
     try:
-        s = Server(-1, '', host, port, timeout, 0, 0, ssl, ssl_verify, ssl_ciphers, False, username, password)
+        s = Server(-1, "", host, port, timeout, 0, 0, ssl, ssl_verify, ssl_ciphers, False, username, password)
     except:
-        return False, T('Invalid server details')
+        return False, T("Invalid server details")
 
     try:
         nw = NewsWrapper(s, -1, block=True)
@@ -89,7 +94,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
         while not nw.connected:
             nw.clear_data()
             nw.recv_chunk(block=True)
-            #more ssl related: handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
+            # Handle 1/n-1 splitting to prevent Rizzo/Duong-Beast
             read_sockets, _, _ = select.select([nw.nntp.sock], [], [], 0.1)
             if read_sockets:
                 nw.recv_chunk(block=True)
@@ -97,51 +102,50 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
     except socket.timeout:
         if port != 119 and not ssl:
-            return False, T('Timed out: Try enabling SSL or connecting on a different port.')
+            return False, T("Timed out: Try enabling SSL or connecting on a different port.")
         else:
-            return False, T('Timed out')
+            return False, T("Timed out")
 
-    except socket.error, e:
+    except socket.error as e:
         # Trying SSL on non-SSL port?
-        if 'unknown protocol' in str(e).lower():
-            return False, T('Unknown SSL protocol: Try disabling SSL or connecting on a different port.')
+        if "unknown protocol" in str(e).lower():
+            return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
 
-        return False, unicode(e)
+        return False, str(e)
 
     except TypeError:
-        return False, T('Invalid server address.')
+        return False, T("Invalid server address.")
 
     except IndexError:
         # No data was received in recv_chunk() call
-        return False, T('Server quit during login sequence.')
+        return False, T("Server quit during login sequence.")
 
     except:
-        return False, unicode(sys.exc_info()[1])
+        return False, str(sys.exc_info()[1])
 
     if not username or not password:
-        nw.nntp.sock.sendall('ARTICLE <test@home>\r\n')
+        nw.nntp.sock.sendall(b"ARTICLE <test@home>\r\n")
         try:
             nw.clear_data()
             nw.recv_chunk(block=True)
         except:
             # Some internal error, not always safe to close connection
-            return False, unicode(sys.exc_info()[1])
+            return False, str(sys.exc_info()[1])
 
     # Close the connection
     nw.terminate(quit=True)
 
-    if nw.status_code == '480':
-        return False, T('Server requires username and password.')
+    if nw.status_code == 480:
+        return False, T("Server requires username and password.")
 
-    elif nw.status_code == '100' or nw.status_code.startswith(('2', '4')):
-        return True, T('Connection Successful!')
+    elif nw.status_code == 100 or str(nw.status_code).startswith(("2", "4")):
+        return True, T("Connection Successful!")
 
-    elif nw.status_code == '502' or clues_login(nntp_to_msg(nw.data)):
-        return False, T('Authentication failed, check username/password.')
+    elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
+        return False, T("Authentication failed, check username/password.")
 
     elif clues_too_many(nw.lines[0]):
-        return False, T('Too many connections, please pause downloading or try again later')
+        return False, T("Too many connections, please pause downloading or try again later")
 
     else:
-        return False, T('Could not determine connection result (%s)') % nntp_to_msg(nw.data)
-
+        return False, T("Could not determine connection result (%s)") % nntp_to_msg(nw.data)

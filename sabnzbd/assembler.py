@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -20,7 +20,7 @@ sabnzbd.assembler - threaded assembly/decoding of files
 """
 
 import os
-import Queue
+import queue
 import logging
 import re
 from threading import Thread
@@ -28,9 +28,10 @@ from time import sleep
 import hashlib
 
 import sabnzbd
-from sabnzbd.misc import get_filepath, sanitize_filename, set_permissions, \
-    long_path, clip_path, has_win_device, get_all_passwords, diskspace, \
-    get_filename, get_ext, is_rarfile
+from sabnzbd.misc import get_all_passwords
+from sabnzbd.filesystem import get_filepath, sanitize_filename, \
+    set_permissions, long_path, clip_path, has_win_device, diskspace, \
+    get_filename, get_ext
 from sabnzbd.constants import Status, GIGI
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
@@ -38,20 +39,15 @@ from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.encoding import unicoder
 from sabnzbd.rating import Rating
 
 
 class Assembler(Thread):
     do = None  # Link to the instance of this method
 
-    def __init__(self, queue=None):
+    def __init__(self):
         Thread.__init__(self)
-
-        if queue:
-            self.queue = queue
-        else:
-            self.queue = Queue.Queue()
+        self.queue = queue.Queue()
         Assembler.do = self
 
     def stop(self):
@@ -77,7 +73,7 @@ class Assembler(Thread):
                         logging.warning(T('Too little diskspace forcing PAUSE'))
                         # Pause downloader, but don't save, since the disk is almost full!
                         sabnzbd.downloader.Downloader.do.pause()
-                        sabnzbd.emailer.diskfull()
+                        sabnzbd.emailer.diskfull_mail()
                         # Abort all direct unpackers, just to be sure
                         sabnzbd.directunpacker.abort_all()
 
@@ -91,11 +87,11 @@ class Assembler(Thread):
                     logging.info('Decoding %s %s', filepath, nzf.type)
                     try:
                         filepath = self.assemble(nzf, filepath)
-                    except IOError, (errno, strerror):
+                    except IOError as err:
                         # If job was deleted or in active post-processing, ignore error
                         if not nzo.deleted and not nzo.is_gone() and not nzo.pp_active:
                             # 28 == disk full => pause downloader
-                            if errno == 28:
+                            if err.errno == 28:
                                 logging.error(T('Disk full! Forcing Pause'))
                             else:
                                 logging.error(T('Disk error on creating file %s'), clip_path(filepath))
@@ -112,7 +108,7 @@ class Assembler(Thread):
                     nzf.remove_admin()
 
                     # Do rar-related processing
-                    if is_rarfile(filepath):
+                    if rarfile.is_rarfile(filepath):
                         # Encryption and unwanted extension detection
                         rar_encrypted, unwanted_file = check_encrypted_and_unwanted_files(nzo, filepath)
                         if rar_encrypted:
@@ -162,15 +158,13 @@ class Assembler(Thread):
         fout = open(path, 'ab')
         decodetable = nzf.decodetable
 
-        for articlenum in decodetable:
+        for articlenum in sorted(decodetable):
             # Break if deleted during writing
             if nzf.nzo.status is Status.DELETED:
                 break
 
             # Sleep to allow decoder/assembler switching
-            sleep(0.0001)
             article = decodetable[articlenum]
-
             data = ArticleCache.do.load_article(article)
 
             if not data:
@@ -184,8 +178,6 @@ class Assembler(Thread):
         fout.close()
         set_permissions(path)
         nzf.md5sum = md5.digest()
-        del md5
-
         return path
 
 
@@ -208,12 +200,11 @@ RE_SUBS = re.compile(r'\W+sub|subs|subpack|subtitle|subtitles(?![a-z])', re.I)
 SAFE_EXTS = ('.mkv', '.mp4', '.avi', '.wmv', '.mpg', '.webm')
 def is_cloaked(nzo, path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
-    fname = unicoder(get_filename(path)).lower()
-    fname = os.path.splitext(fname)[0]
+    fname = os.path.splitext(get_filename(path.lower()))[0]
     for name in names:
         name = get_filename(name.lower())
-        name, ext = os.path.splitext(unicoder(name))
-        if ext == u'.rar' and fname.startswith(name) and (len(fname) - len(name)) < 8 and len(names) < 3 and not RE_SUBS.search(fname):
+        name, ext = os.path.splitext(name)
+        if ext == '.rar' and fname.startswith(name) and (len(fname) - len(name)) < 8 and len(names) < 3 and not RE_SUBS.search(fname):
             # Only warn once
             if nzo.encrypted == 0:
                 logging.warning(T('Job "%s" is probably encrypted due to RAR with same name inside this RAR'), nzo.final_name)
@@ -241,7 +232,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                 return encrypted, unwanted
 
             # Is it even a rarfile?
-            if is_rarfile(filepath):
+            if rarfile.is_rarfile(filepath):
                 # Open the rar
                 rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
                 zf = rarfile.RarFile(filepath, all_names=True)
@@ -254,13 +245,11 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                     # Cloaked job?
                     if is_cloaked(nzo, filepath, zf.namelist()):
                         encrypted = True
-                    elif not sabnzbd.HAVE_CRYPTOGRAPHY and not passwords:
-                        # if no cryptography installed, only error when no password was set
-                        logging.info(T('%s missing'), 'Python Cryptography')
+                    elif not passwords:
+                        # Only error when no password was set
                         nzo.encrypted = 1
                         encrypted = True
-
-                    elif sabnzbd.HAVE_CRYPTOGRAPHY:
+                    else:
                         # Lets test if any of the password work
                         password_hit = False
 
@@ -269,7 +258,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                 logging.info('Trying password "%s" on job "%s"', password, nzo.final_name)
                                 try:
                                     zf.setpassword(password)
-                                except:
+                                except rarfile.Error:
                                     # On weird passwords the setpassword() will fail
                                     # but the actual rartest() will work
                                     pass
@@ -283,7 +272,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                                     break
                                 except Exception as e:
                                     # Did we start from the right volume?
-                                    if 'need to start extraction from a previous volume' in e[0]:
+                                    if 'need to start extraction from a previous volume' in str(e):
                                         return encrypted, unwanted
                                     # This one failed
                                     pass
@@ -301,10 +290,6 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
                             # Encrypted and none of them worked
                             nzo.encrypted = 1
                             encrypted = True
-                    else:
-                        # Don't check other files
-                        nzo.encrypted = -1
-                        encrypted = False
 
                 # Check for unwanted extensions
                 if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions():

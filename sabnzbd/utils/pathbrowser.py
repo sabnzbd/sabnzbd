@@ -1,4 +1,4 @@
-#------------------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------------------------
 # This file is an excerpt from Sick Beard's browser.py
 # Modified and improved to fit SABnzbd.
 #
@@ -19,8 +19,14 @@
 # along with Sick Beard. If not, see <http://www.gnu.org/licenses/>.
 
 import os
-if os.name == 'nt':
-    import win32api, win32con, win32file
+import sabnzbd
+
+if os.name == "nt":
+    import win32api
+    import win32con
+    import win32file
+    from ctypes import windll
+
     MASK = win32con.FILE_ATTRIBUTE_DIRECTORY | win32con.FILE_ATTRIBUTE_HIDDEN
     TMASK = win32con.FILE_ATTRIBUTE_DIRECTORY
     DRIVES = (2, 3, 4)
@@ -28,85 +34,97 @@ if os.name == 'nt':
 else:
     NT = False
 
-import sabnzbd
-
 _JUNKFOLDERS = (
-        'boot', 'bootmgr', 'cache', 'msocache', 'recovery', '$recycle.bin', 'recycler',
-        'system volume information', 'temporary internet files', # windows specific
-        '.fseventd', '.spotlight', '.trashes', '.vol', 'cachedmessages', 'caches', 'trash' # osx specific
-        )
+    "boot",
+    "bootmgr",
+    "cache",
+    "msocache",
+    "recovery",
+    "$recycle.bin",
+    "recycler",
+    "system volume information",
+    "temporary internet files",
+    "perflogs",  # windows specific
+    ".fseventd",
+    ".spotlight",
+    ".trashes",
+    ".vol",
+    "cachedmessages",
+    "caches",
+    "trash",  # osx specific
+)
 
-# this is for the drive letter code, it only works on windows
-if os.name == 'nt':
-    from ctypes import windll
 
-# adapted from http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
 def get_win_drives():
-    """ Return list of detected drives """
+    """ Return list of detected drives, adapted from:
+        http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
+    """
     assert NT
     drives = []
     bitmask = windll.kernel32.GetLogicalDrives()
-    for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-        if (bitmask & 1) and win32file.GetDriveType('%s:\\' % letter) in DRIVES:
+    for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
+        if (bitmask & 1) and win32file.GetDriveType("%s:\\" % letter) in DRIVES:
             drives.append(letter)
         bitmask >>= 1
     return drives
 
-def folders_at_path(path, include_parent = False, show_hidden = False):
+
+def folders_at_path(path, include_parent=False, show_hidden=False):
     """ Returns a list of dictionaries with the folders contained at the given path
         Give the empty string as the path to list the contents of the root path
         under Unix this means "/", on Windows this will be a list of drive letters)
     """
-    from sabnzbd.encoding import unicoder
-
     if path == "":
         if NT:
-            entries = [{'name': letter + ':\\', 'path': letter + ':\\'} for letter in get_win_drives()]
-            entries.insert(0, {'current_path': 'Root'})
+            entries = [{"name": letter + ":\\", "path": letter + ":\\"} for letter in get_win_drives()]
+            entries.insert(0, {"current_path": "Root"})
             return entries
         else:
-            path = '/'
+            path = "/"
 
-    # walk up the tree until we find a valid path
-    path = sabnzbd.misc.real_path(sabnzbd.DIR_HOME, path)
+    # Walk up the tree until we find a valid path
+    path = sabnzbd.filesystem.real_path(sabnzbd.DIR_HOME, path)
     while path and not os.path.isdir(path):
         if path == os.path.dirname(path):
-            return folders_at_path('', include_parent)
+            return folders_at_path("", include_parent)
         else:
             path = os.path.dirname(path)
 
-    # fix up the path and find the parent
+    # Fix up the path and find the parent
     path = os.path.abspath(os.path.normpath(path))
     parent_path = os.path.dirname(path)
 
-    # if we're at the root then the next step is the meta-node showing our drive letters
-    if path == parent_path and os.name == 'nt':
+    # If we're at the root then the next step is the meta-node showing our drive letters
+    if path == parent_path and NT:
         parent_path = ""
 
+    # List all files and folders
     file_list = []
-    try:
-        for filename in os.listdir(path):
-            fpath = os.path.join(path, filename)
-            try:
-                if NT:
-                    doit = (win32api.GetFileAttributes(fpath) & MASK) == TMASK and filename != 'PerfLogs'
-                elif not show_hidden:
-                    doit = not filename.startswith('.')
-                else:
-                    doit = True
-            except:
-                doit = False
-            if doit:
-                file_list.append({ 'name': unicoder(filename), 'path': unicoder(fpath) })
-        file_list = filter(lambda entry: os.path.isdir(entry['path']), file_list)
-        file_list = filter(lambda entry: entry['name'].lower() not in _JUNKFOLDERS, file_list)
-        file_list = sorted(file_list, lambda x, y: cmp(os.path.basename(x['name']).lower(), os.path.basename(y['path']).lower()))
-    except:
-        # No access, ignore
-        pass
-    file_list.insert(0, {'current_path': path})
+    for filename in os.listdir(path):
+        fpath = os.path.join(path, filename)
+        try:
+            if NT:
+                # Remove hidden folders
+                list_folder = (win32api.GetFileAttributes(fpath) & MASK) == TMASK
+            elif not show_hidden:
+                list_folder = not filename.startswith(".")
+            else:
+                list_folder = True
+        except:
+            list_folder = False
+
+        # Remove junk and sort results
+        if list_folder and os.path.isdir(fpath) and filename.lower() not in _JUNKFOLDERS:
+            file_list.append(
+                {"name": sabnzbd.filesystem.clip_path(filename), "path": sabnzbd.filesystem.clip_path(fpath)}
+            )
+
+    # Sort results
+    file_list = sorted(file_list, key=lambda x: os.path.basename(x["name"]).lower())
+
+    # Add current path
+    file_list.insert(0, {"current_path": sabnzbd.filesystem.clip_path(path)})
     if include_parent and parent_path != path:
-        file_list.insert(1,{ 'name': "..", 'path': parent_path })
+        file_list.insert(1, {"name": "..", "path": sabnzbd.filesystem.clip_path(parent_path)})
 
     return file_list
-

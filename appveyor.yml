@@ -6,9 +6,18 @@ environment:
   SAB_NEWSSERVER_PASSWORD:
     secure: bO3XHtWTleVF9AqRV/V/nA==
 
+  # We only use 64bit to test anyway
+  matrix:
+    - PYTHON: "C:\\Python35-x64"
+    - PYTHON: "C:\\Python36-x64"
+    - PYTHON: "C:\\Python37-x64"
+
 install:
-  - pip install --upgrade -r tests/requirements.txt
-  - pip install pypiwin32 subprocessww
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - python --version
+  - python -m pip install --upgrade pip
+  - python -m pip install --upgrade -r requirements.txt
+  - python -m pip install --upgrade -r tests/requirements.txt
 
 build_script:
-  - python ./tests/test_functional.py
+  - python -m pytest

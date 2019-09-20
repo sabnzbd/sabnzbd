@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -25,29 +25,20 @@ import time
 import threading
 import subprocess
 import logging
+from subprocess import Popen
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, clip_path, long_path, remove_all, \
-    format_time_string, real_path, remove_file
-from sabnzbd.encoding import TRANS, unicoder
+from sabnzbd.misc import int_conv, format_time_string
+from sabnzbd.filesystem import clip_path, long_path, remove_all, real_path, remove_file
+from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 
-if sabnzbd.WIN32:
-    try:
-        # Use patched version of subprocess module for Unicode on Windows
-        import subprocessww
-    except ImportError:
-        pass
-
-# Load the regular POpen (which is now patched on Windows)
-from subprocess import Popen
-
-# Need a lock to make sure start and stop is handled correctlty
+# Need a lock to make sure start and stop is handled correctly
 # Otherwise we could stop while the thread was still starting
 START_STOP_LOCK = threading.RLock()
 
@@ -169,9 +160,8 @@ class DirectUnpacker(threading.Thread):
             if not self.active_instance:
                 break
 
-            char = self.active_instance.stdout.read(1)
+            char = platform_btou(self.active_instance.stdout.read(1))
             linebuf += char
-
             if not char:
                 # End of program
                 break
@@ -187,7 +177,7 @@ class DirectUnpacker(threading.Thread):
             if linebuf.endswith('\n'):
                 # List files we used
                 if linebuf.startswith('Extracting from'):
-                    filename = TRANS((re.search(EXTRACTFROM_RE, linebuf.strip()).group(1)))
+                    filename = (re.search(EXTRACTFROM_RE, linebuf.strip()).group(1))
                     if filename not in rarfiles:
                         rarfiles.append(filename)
 
@@ -195,7 +185,7 @@ class DirectUnpacker(threading.Thread):
                 m = re.search(EXTRACTED_RE, linebuf)
                 if m:
                     # In case of flat-unpack, UnRar still prints the whole path (?!)
-                    unpacked_file = TRANS(m.group(2))
+                    unpacked_file = m.group(2)
                     if cfg.flat_unpack():
                         unpacked_file = os.path.basename(unpacked_file)
                     extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
@@ -215,7 +205,7 @@ class DirectUnpacker(threading.Thread):
                 # List success in history-info
                 msg = T('Unpacked %s files/folders in %s') % (len(extracted), format_time_string(self.unpack_time))
                 msg = '%s - %s' % (T('Direct Unpack'), msg)
-                self.nzo.set_unpack_info('Unpack', '[%s] %s' % (unicoder(self.cur_setname), msg))
+                self.nzo.set_unpack_info('Unpack', msg, self.cur_setname)
 
                 # Write current log and clear
                 unrar_log.append(linebuf.strip())
@@ -257,7 +247,7 @@ class DirectUnpacker(threading.Thread):
                     # If unrar stopped or is killed somehow, writing will cause a crash
                     try:
                         # Give unrar some time to do it's thing
-                        self.active_instance.stdin.write('C\n')
+                        self.active_instance.stdin.write(b'C\n')
                         start_time = time.time()
                         time.sleep(0.1)
                     except IOError:
@@ -373,9 +363,10 @@ class DirectUnpacker(threading.Thread):
         self.cur_volume = 1
         stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
         logging.debug('Running unrar for DirectUnpack %s', command)
+        # Need to disable buffer to have direct feedback
         self.active_instance = Popen(command, shell=False, stdin=subprocess.PIPE,
                                     stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                                    startupinfo=stup, creationflags=creationflags)
+                                    startupinfo=stup, creationflags=creationflags, bufsize=0)
         # Add to runners
         ACTIVE_UNPACKERS.append(self)
 
@@ -396,7 +387,7 @@ class DirectUnpacker(threading.Thread):
             if self.active_instance:
                 # First we try to abort gracefully
                 try:
-                    self.active_instance.stdin.write('Q\n')
+                    self.active_instance.stdin.write(b'Q\n')
                     time.sleep(0.2)
                 except IOError:
                     pass

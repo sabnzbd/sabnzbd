@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -23,6 +23,7 @@ import os
 import logging
 import tempfile
 import ctypes
+
 try:
     import webbrowser
 except ImportError:
@@ -30,7 +31,7 @@ except ImportError:
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import unicoder
+from sabnzbd.encoding import utob
 
 PANIC_PORT = 1
 PANIC_TEMPL = 2
@@ -60,7 +61,7 @@ def MSG_BAD_NEWS():
 
 
 def MSG_BAD_PORT():
-    return Ta(r'''
+    return T(r'''
     SABnzbd needs a free tcp/ip port for its internal web server.<br>
     Port %s on %s was tried , but it is not available.<br>
     Some other software uses the port or SABnzbd is already running.<br>
@@ -71,11 +72,11 @@ def MSG_BAD_PORT():
     %s<br>
       &nbsp;&nbsp;&nbsp;&nbsp;%s --server %s:%s<br>
     <br>''' + \
-        Ta(r'If you get this error message again, please try a different number.<br>')
+        T(r'If you get this error message again, please try a different number.<br>')
 
 
 def MSG_BAD_HOST():
-    return Ta(r'''
+    return T(r'''
     SABnzbd needs a valid host address for its internal web server.<br>
     You have specified an invalid address.<br>
     Safe values are <b>localhost</b> and <b>0.0.0.0</b><br>
@@ -90,7 +91,7 @@ def MSG_BAD_HOST():
 
 
 def MSG_BAD_QUEUE():
-    return Ta(r'''
+    return T(r'''
     SABnzbd detected saved data from an other SABnzbd version<br>
     but cannot re-use the data of the other program.<br><br>
     You may want to finish your queue first with the other program.<br><br>
@@ -106,7 +107,7 @@ def MSG_BAD_QUEUE():
 
 
 def MSG_BAD_TEMPL():
-    return Ta(r'''
+    return T(r'''
     SABnzbd cannot find its web interface files in %s.<br>
     Please install the program again.<br>
     <br>
@@ -118,7 +119,7 @@ def MSG_OTHER():
 
 
 def MSG_SQLITE():
-    return Ta(r'''
+    return T(r'''
     SABnzbd detected that the file sqlite3.dll is missing.<br><br>
     Some poorly designed virus-scanners remove this file.<br>
     Please check your virus-scanner, try to re-install SABnzbd and complain to your virus-scanner vendor.<br>
@@ -126,7 +127,7 @@ def MSG_SQLITE():
 ''')
 
 
-def panic_message(panic, a=None, b=None):
+def panic_message(panic_code, a=None, b=None):
     """ Create the panic message from templates """
     if sabnzbd.WIN32:
         os_str = T('Press Startkey+R and type the line (example):')
@@ -135,17 +136,17 @@ def panic_message(panic, a=None, b=None):
         os_str = T('Open a Terminal window and type the line (example):')
         prog_path = sabnzbd.MY_FULLNAME
 
-    if panic == PANIC_PORT:
+    if panic_code == PANIC_PORT:
         newport = int(b) + 1
         newport = "%s" % newport
         msg = MSG_BAD_PORT() % (b, a, os_str, prog_path, a, newport)
-    elif panic == PANIC_TEMPL:
+    elif panic_code == PANIC_TEMPL:
         msg = MSG_BAD_TEMPL() % a
-    elif panic == PANIC_QUEUE:
+    elif panic_code == PANIC_QUEUE:
         msg = MSG_BAD_QUEUE() % (a, os_str, prog_path)
-    elif panic == PANIC_SQLITE:
+    elif panic_code == PANIC_SQLITE:
         msg = MSG_SQLITE()
-    elif panic == PANIC_HOST:
+    elif panic_code == PANIC_HOST:
         msg = MSG_BAD_HOST() % (os_str, prog_path, 'localhost', b)
     else:
         msg = MSG_OTHER() % (a, b)
@@ -160,7 +161,7 @@ def panic_message(panic, a=None, b=None):
         return
 
     msgfile, url = tempfile.mkstemp(suffix='.html')
-    os.write(msgfile, msg)
+    os.write(msgfile, utob(msg))
     os.close(msgfile)
     return url
 
@@ -180,10 +181,6 @@ def panic_queue(name):
 
 def panic_tmpl(name):
     launch_a_browser(panic_message(PANIC_TEMPL, name, 0))
-
-
-def panic_sqlite(name):
-    launch_a_browser(panic_message(PANIC_SQLITE, name, 0))
 
 
 def panic(reason, remedy=""):
@@ -224,8 +221,8 @@ def show_error_dialog(msg):
         Windows-only, otherwise only print to console
     """
     if sabnzbd.WIN32:
-        ctypes.windll.user32.MessageBoxW(0, unicoder(msg), T('Fatal error'), 0)
-    print msg
+        ctypes.windll.user32.MessageBoxW(0, msg, T('Fatal error'), 0)
+    print(msg)
 
 
 def error_page_401(status, message, traceback, version):

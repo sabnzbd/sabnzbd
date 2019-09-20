@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -31,11 +31,6 @@ import locale
 from threading import Thread
 
 try:
-    locale.setlocale(locale.LC_ALL, "")
-except:
-    # Work-around for Python-ports with bad "locale" support
-    pass
-try:
     import win32api
     import win32file
 except ImportError:
@@ -51,15 +46,14 @@ from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
-from sabnzbd.utils.json import JsonWriter
-
-from sabnzbd.utils.rsslib import RSS, Item
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
-from sabnzbd.misc import loadavg, to_units, diskspace, get_ext, \
-    get_filename, int_conv, globber, globber_full, time_format, remove_all, \
-    starts_with_path, cat_convert, clip_path, create_https_certificates, calc_age
-from sabnzbd.encoding import xml_name, unicoder, special_fixer, platform_encode, html_escape
+from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
+     cat_convert, create_https_certificates, calc_age
+from sabnzbd.filesystem import diskspace, get_ext, get_filename, globber, \
+     globber_full, clip_path, remove_all
+from sabnzbd.filesystem import same_file
+from sabnzbd.encoding import xml_name
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.utils.servertests import test_nntp_server_dict
@@ -91,10 +85,6 @@ if os.name == 'nt':
     PATHEXT = os.environ.get('PATHEXT', '').lower().split(';')
 else:
     PATHEXT = []
-
-# Flag for using the fast json encoder, unless it fails
-FAST_JSON = True
-
 
 def api_handler(kwargs):
     """ API Dispatcher """
@@ -157,7 +147,7 @@ def _api_del_config(name, output, kwargs):
 def _api_qstatus(name, output, kwargs):
     """ API: accepts output """
     info, pnfo_list, bytespersec = build_queue()
-    return report(output, data=remove_callable(info))
+    return report(output, data=info)
 
 
 def _api_queue(name, output, kwargs):
@@ -173,8 +163,8 @@ def _api_queue_delete(output, value, kwargs):
         return report(output, keyword='', data={'status': bool(removed), 'nzo_ids': removed})
     elif value:
         items = value.split(',')
-        del_files = int_conv(kwargs.get('del_files'))
-        removed = NzbQueue.do.remove_multiple(items, del_files)
+        delete_all_data = int_conv(kwargs.get('del_files'))
+        removed = NzbQueue.do.remove_multiple(items, delete_all_data=delete_all_data)
         return report(output, keyword='', data={'status': bool(removed), 'nzo_ids': removed})
     else:
         return report(output, _MSG_NO_VALUE)
@@ -195,7 +185,7 @@ def _api_queue_rename(output, value, kwargs):
     value2 = kwargs.get('value2')
     value3 = kwargs.get('value3')
     if value and value2:
-        ret = NzbQueue.do.change_name(value, special_fixer(value2), special_fixer(value3))
+        ret = NzbQueue.do.change_name(value, value2, value3)
         return report(output, keyword='', data={'status': ret})
     else:
         return report(output, _MSG_NO_VALUE2)
@@ -268,13 +258,8 @@ def _api_queue_default(output, value, kwargs):
     limit = int_conv(kwargs.get('limit'))
     search = kwargs.get('search')
 
-    if output in ('xml', 'json'):
-        info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
-        return report(output, keyword='queue', data=remove_callable(info))
-    elif output == 'rss':
-        return rss_qstatus()
-    else:
-        return report(output, _MSG_NOT_IMPLEMENTED)
+    info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
+    return report(output, keyword='queue', data=info)
 
 
 def _api_queue_rating(output, value, kwargs):
@@ -310,16 +295,13 @@ def _api_options(name, output, kwargs):
 
 def _api_translate(name, output, kwargs):
     """ API: accepts output, value(=acronym) """
-    return report(output, keyword='value', data=Tx(kwargs.get('value', '')))
+    return report(output, keyword='value', data=T(kwargs.get('value', '')))
 
 
 def _api_addfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
-    # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, basestring):
-        name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, basestring):
+    if name is None or isinstance(name, str):
         name = kwargs.get('nzbfile')
     if hasattr(name, 'getvalue'):
         # Side effect of next line is that attribute .value is created
@@ -352,11 +334,8 @@ def _api_addfile(name, output, kwargs):
 def _api_retry(name, output, kwargs):
     """ API: accepts name, output, value(=nzo_id), nzbfile(=optional NZB), password (optional) """
     value = kwargs.get('value')
-    # When uploading via flash it will send the nzb in a kw arg called Filedata
-    if name is None or isinstance(name, basestring):
-        name = kwargs.get('Filedata')
     # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, basestring):
+    if name is None or isinstance(name, str):
         name = kwargs.get('nzbfile')
     password = kwargs.get('password')
     password = password[0] if isinstance(password, list) else password
@@ -398,10 +377,10 @@ def _api_addlocalfile(name, output, kwargs):
                 nzbname = kwargs.get('nzbname')
 
                 if get_ext(name) in VALID_ARCHIVES:
-                    res = sabnzbd.dirscanner.ProcessArchiveFile(
+                    res = sabnzbd.dirscanner.process_nzb_archive_file(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
                 elif get_ext(name) in VALID_NZB_FILES:
-                    res = sabnzbd.dirscanner.ProcessSingleFile(
+                    res = sabnzbd.dirscanner.process_single_nzb(
                         fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname)
             else:
                 logging.info('API-call addlocalfile: "%s" not a proper file name', name)
@@ -422,10 +401,7 @@ def _api_switch(name, output, kwargs):
     if value and value2:
         pos, prio = NzbQueue.do.switch(value, value2)
         # Returns the new position and new priority (if different)
-        if output not in ('xml', 'json'):
-            return report(output, data=(pos, prio))
-        else:
-            return report(output, keyword='result', data={'position': pos, 'priority': prio})
+        return report(output, keyword='result', data={'position': pos, 'priority': prio})
     else:
         return report(output, _MSG_NO_VALUE2)
 
@@ -473,7 +449,7 @@ def _api_change_opts(name, output, kwargs):
 def _api_fullstatus(name, output, kwargs):
     """ API: full history status"""
     status = build_status(skip_dashboard=kwargs.get('skip_dashboard', 1), output=output)
-    return report(output, keyword='status', data=remove_callable(status))
+    return report(output, keyword='status', data=status)
 
 
 def _api_history(name, output, kwargs):
@@ -523,13 +499,13 @@ def _api_history(name, output, kwargs):
         history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
             to_units(grand), to_units(month), to_units(week), to_units(day)
         history['slots'], fetched_items, history['noofslots'] = build_history(start=start,
-                                                                              limit=limit, verbose=True,
+                                                                              limit=limit,
                                                                               search=search, failed_only=failed_only,
                                                                               categories=categories,
                                                                               output=output)
         history['last_history_update'] = sabnzbd.LAST_HISTORY_UPDATE
         history['version'] = sabnzbd.__version__
-        return report(output, keyword='history', data=remove_callable(history))
+        return report(output, keyword='history', data=history)
     else:
         return report(output, _MSG_NOT_IMPLEMENTED)
 
@@ -556,7 +532,7 @@ def _api_addurl(names, output, kwargs):
         nzbnames = [nzbnames]
 
     nzo_ids = []
-    for n in xrange(len(names)):
+    for n in range(len(names)):
         name = names[n]
         if n < len(nzbnames):
             nzbname = nzbnames[n]
@@ -613,8 +589,7 @@ def _api_get_cats(name, output, kwargs):
 
 def _api_get_scripts(name, output, kwargs):
     """ API: accepts output """
-    data = [unicoder(val) for val in list_scripts()]
-    return report(output, keyword="scripts", data=data)
+    return report(output, keyword="scripts", data=list_scripts())
 
 
 def _api_version(name, output, kwargs):
@@ -727,11 +702,11 @@ def _api_test_email(name, output, kwargs):
     """ API: send a test email, return result """
     logging.info("Sending test email")
     pack = {'download': ['action 1', 'action 2'], 'unpack': ['action 1', 'action 2']}
-    res = sabnzbd.emailer.endjob(u'I had a d\xe8ja vu', 'unknown', True,
-                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), u'/unknown/I had a d\xe8ja vu')),
-                                 123 * MEBI, None, pack, 'my_script', u'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
+    res = sabnzbd.emailer.endjob('I had a d\xe8ja vu', 'unknown', True,
+                                 os.path.normpath(os.path.join(cfg.complete_dir.get_path(), '/unknown/I had a d\xe8ja vu')),
+                                 123 * MEBI, None, pack, 'my_script', 'Line 1\nLine 2\nLine 3\nd\xe8ja vu\n', 0,
                                  test=kwargs)
-    if res == 'Email succeeded':
+    if res == T('Email succeeded'):
         res = None
     return report(output, error=res)
 
@@ -802,11 +777,10 @@ def _api_browse(name, output, kwargs):
     compact = kwargs.get('compact')
 
     if compact and compact == '1':
-        name = platform_encode(kwargs.get('term', ''))
+        name = kwargs.get('term', '')
         paths = [entry['path'] for entry in folders_at_path(os.path.dirname(name)) if 'path' in entry]
         return report(output, keyword='', data=paths)
     else:
-        name = platform_encode(name)
         show_hidden = kwargs.get('show_hidden_folders')
         paths = folders_at_path(name, True, show_hidden)
         return report(output, keyword='paths', data=paths)
@@ -1001,7 +975,6 @@ def report(output, error=None, keyword='value', data=None, compat=False):
         Else, a data report is made (optional 'keyword' for outer XML section).
         'compat' is a special case for compatibility for ascii ouput
     """
-    global FAST_JSON
     if output == 'json':
         content = "application/json;charset=UTF-8"
         if error:
@@ -1013,16 +986,7 @@ def report(output, error=None, keyword='value', data=None, compat=False):
                 info = data
             else:
                 info = {keyword: data}
-        if FAST_JSON:
-            # First try the faster standard json encoder
-            try:
-                response = json.dumps(info)
-            except UnicodeDecodeError:
-                FAST_JSON = False
-                logging.info('Switching to slow and safe JSON encoder')
-        if not FAST_JSON:
-            # Use the slower, but safer encoder
-            response = JsonWriter().write(info)
+        response = json.dumps(info).encode('utf-8')
 
     elif output == 'xml':
         if not keyword:
@@ -1045,21 +1009,14 @@ def report(output, error=None, keyword='value', data=None, compat=False):
         elif compat or data is None:
             response = 'ok\n'
         else:
-            if type(data) in (list, tuple):
-                # Special handling for list/tuple (backward compatibility)
-                data = [str(val) for val in data]
-                data = ' '.join(data)
-            if isinstance(data, unicode):
-                response = u'%s\n' % data
-            else:
-                response = '%s\n' % str(data)
+            response = '%s\n' % str(data)
 
     cherrypy.response.headers['Content-Type'] = content
     cherrypy.response.headers['Pragma'] = 'no-cache'
     return response
 
 
-class xml_factory(object):
+class xml_factory:
     """ Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
         Current limitations:
             In Two tiered lists hard-coded name of "item": <cat_list><item> </item></cat_list>
@@ -1094,10 +1051,10 @@ class xml_factory(object):
             elif isinstance(cat, tuple):
                 text.append(self._tuple(plural_to_single(keyw, 'tuple'), cat))
             else:
-                if not isinstance(cat, basestring):
+                if not isinstance(cat, str):
                     cat = str(cat)
                 name = plural_to_single(keyw, 'item')
-                text.append('<%s>%s</%s>\n' % (name, xml_name(cat, encoding='utf-8'), name))
+                text.append('<%s>%s</%s>\n' % (name, xml_name(cat), name))
         if keyw:
             return '<%s>%s</%s>\n' % (keyw, ''.join(text), keyw)
         else:
@@ -1111,7 +1068,7 @@ class xml_factory(object):
         elif isinstance(lst, tuple):
             text = self._tuple(keyw, lst)
         elif keyw:
-            text = '<%s>%s</%s>\n' % (keyw, xml_name(lst, encoding='utf-8'), keyw)
+            text = '<%s>%s</%s>\n' % (keyw, xml_name(lst), keyw)
         else:
             text = ''
         return text
@@ -1187,25 +1144,28 @@ def handle_cat_api(output, kwargs):
 
 def build_status(skip_dashboard=False, output=None):
     # build up header full of basic information
-    info = build_header()
+    info = build_header(trans_functions=not output)
 
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
     info['loglevel'] = str(cfg.log_level())
-    info['folders'] = [xml_name(item) for item in NzbQueue.do.scan_jobs(all=False, action=False)]
-    info['configfn'] = xml_name(config.get_filename())
+    info['folders'] = NzbQueue.do.scan_jobs(all=False, action=False)
+    info['configfn'] = config.get_filename()
 
     # Dashboard: Speed of System
     info['cpumodel'] = getcpu()
     info['pystone'] = sabnzbd.PYSTONE_SCORE
 
     # Dashboard: Speed of Download directory:
-    info['downloaddir'] = sabnzbd.cfg.download_dir.get_path()
+    info['downloaddir'] = cfg.download_dir.get_clipped_path()
     info['downloaddirspeed'] = sabnzbd.DOWNLOAD_DIR_SPEED
 
     # Dashboard: Speed of Complete directory:
-    info['completedir'] = sabnzbd.cfg.complete_dir.get_path()
+    info['completedir'] = cfg.complete_dir.get_clipped_path()
     info['completedirspeed'] = sabnzbd.COMPLETE_DIR_SPEED
+
+    # Dashboard: Measured download-speed
+    info['internetbandwidth'] = sabnzbd.INTERNET_BANDWIDTH
 
     # Dashboard: Connection information
     if not int_conv(skip_dashboard):
@@ -1239,13 +1199,13 @@ def build_status(skip_dashboard=False, output=None):
                 nzf = article.nzf
                 nzo = nzf.nzo
 
-                art_name = xml_name(article.article)
+                art_name = article.article
                 # filename field is not always present
                 try:
-                    nzf_name = xml_name(nzf.filename)
+                    nzf_name = nzf.filename
                 except:  # attribute error
-                    nzf_name = xml_name(nzf.subject)
-                nzo_name = xml_name(nzo.final_name)
+                    nzf_name = nzf.subject
+                nzo_name = nzo.final_name
 
             # For the templates or for JSON
             if output:
@@ -1261,11 +1221,10 @@ def build_status(skip_dashboard=False, output=None):
                 connected += 1
 
         if server.warning and not (connected or server.errormsg):
-            connected = unicoder(server.warning)
+            connected = server.warning
 
         if server.request and not server.info:
             connected = T('&nbsp;Resolving address').replace('&nbsp;', '')
-        serverconnections.sort()
 
         # For the templates or for JSON
         if output:
@@ -1290,11 +1249,6 @@ def build_status(skip_dashboard=False, output=None):
 
 
 def build_queue(start=0, limit=0, trans=False, output=None, search=None):
-    if output:
-        converter = unicoder
-    else:
-        converter = xml_name
-
     # build up header full of basic information
     info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(search=search, start=start, limit=limit, output=output)
 
@@ -1311,13 +1265,6 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     info['start'] = start
     info['limit'] = limit
     info['finish'] = info['start'] + info['limit']
-
-    # SMPL-skin specific stuff
-    if info['finish'] > info['noofslots']:
-        info['finish'] = info['noofslots']
-    info['queue_details'] = '0'
-    if 'queue_details' in cherrypy.request.cookie:
-        info['queue_details'] = str(int_conv(cherrypy.request.cookie['queue_details'].value))
 
     n = start
     running_bytes = bytes_left_previous_page
@@ -1337,9 +1284,9 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['unpackopts'] = str(sabnzbd.opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
         slot['priority'] = priorities[priority] if priority >= LOW_PRIORITY else priorities[NORMAL_PRIORITY]
         slot['script'] = pnfo.script if pnfo.script else 'None'
-        slot['filename'] = converter(pnfo.filename)
-        slot['password'] = converter(pnfo.password) if pnfo.password else ''
-        slot['cat'] = converter(pnfo.category) if pnfo.category else 'None'
+        slot['filename'] = pnfo.filename
+        slot['password'] = pnfo.password if pnfo.password else ''
+        slot['cat'] = pnfo.category if pnfo.category else 'None'
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
         slot['size'] = format_bytes(bytes)
@@ -1348,8 +1295,8 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['mbmissing'] = "%.2f" % (pnfo.bytes_missing / MEBI)
         slot['direct_unpack'] = pnfo.direct_unpack
         if not output:
-            slot['mb_fmt'] = locale.format('%d', int(mb), True)
-            slot['mbdone_fmt'] = locale.format('%d', int(mb - mbleft), True)
+            slot['mb_fmt'] = locale.format_string('%d', int(mb), True)
+            slot['mbdone_fmt'] = locale.format_string('%d', int(mb - mbleft), True)
 
         if not Downloader.do.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if is_propagating:
@@ -1374,7 +1321,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
             try:
                 datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
                 # new eta format: 16:00 Fri 07 Feb
-                slot['eta'] = datestart.strftime(time_format('%H:%M %a %d %b')).decode(codepage)
+                slot['eta'] = datestart.strftime(time_format('%H:%M %a %d %b'))
             except:
                 datestart = datetime.datetime.now()
                 slot['eta'] = 'unknown'
@@ -1424,7 +1371,7 @@ def build_file_list(nzo_id):
         queued_files = pnfo.queued_files
 
         for nzf in finished_files:
-            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+            jobs.append({'filename': nzf.filename if nzf.filename else nzf.subject,
                          'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
@@ -1433,7 +1380,7 @@ def build_file_list(nzo_id):
                          'status': 'finished'})
 
         for nzf in active_files:
-            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+            jobs.append({'filename': nzf.filename if nzf.filename else nzf.subject,
                          'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
@@ -1442,8 +1389,8 @@ def build_file_list(nzo_id):
                          'status': 'active'})
 
         for nzf in queued_files:
-            jobs.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
-                         'set': xml_name(nzf.setname),
+            jobs.append({'filename': nzf.filename if nzf.filename else nzf.subject,
+                         'set': nzf.setname,
                          'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                          'mb': "%.2f" % (nzf.bytes / MEBI),
                          'bytes': "%.2f" % nzf.bytes,
@@ -1453,69 +1400,9 @@ def build_file_list(nzo_id):
 
     return jobs
 
-
-def rss_qstatus():
-    """ Return a RSS feed with the queue status """
-    qnfo = NzbQueue.do.queue_info()
-    pnfo_list = qnfo.list
-
-    rss = RSS()
-    rss.channel.title = "SABnzbd Queue"
-    rss.channel.description = "Overview of current downloads"
-    rss.channel.link = "http://%s:%s%s/queue" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
-    rss.channel.language = "en"
-
-    item = Item()
-    item.title = 'Total ETA: %s - Queued: %.2f MB - Speed: %.2f kB/s' % \
-                 (
-                     calc_timeleft(qnfo.bytes_left, BPSMeter.do.bps),
-                     qnfo.bytes_left / MEBI,
-                     BPSMeter.do.bps / KIBI
-                 )
-    rss.addItem(item)
-
-    sum_bytesleft = 0
-    for pnfo in pnfo_list:
-        filename = pnfo.filename
-        bytesleft = pnfo.bytes_left / MEBI
-        bytes = pnfo.bytes / MEBI
-        mbleft = (bytesleft / MEBI)
-        mb = (bytes / MEBI)
-        nzo_id = pnfo.nzo_id
-
-        if mb == mbleft:
-            percentage = "0%"
-        else:
-            percentage = "%s%%" % (int(((mb - mbleft) / mb) * 100))
-
-        filename = xml_name(filename)
-        name = u'%s (%s)' % (filename, percentage)
-
-        item = Item()
-        item.title = name
-        item.link = "http://%s:%s%s/history" % (cfg.cherryhost(), cfg.cherryport(), cfg.url_base())
-        item.guid = nzo_id
-        status_line = []
-        status_line.append('<tr>')
-        # Total MB/MB left
-        status_line.append('<dt>Remain/Total: %.2f/%.2f MB</dt>' % (bytesleft, bytes))
-        # ETA
-        sum_bytesleft += pnfo.bytes_left
-        status_line.append("<dt>ETA: %s </dt>" % calc_timeleft(sum_bytesleft, BPSMeter.do.bps))
-        status_line.append("<dt>Age: %s</dt>" % calc_age(pnfo.avg_date))
-        status_line.append("</tr>")
-        item.description = ''.join(status_line)
-        rss.addItem(item)
-
-    rss.channel.lastBuildDate = std_time(time.time())
-    rss.channel.pubDate = rss.channel.lastBuildDate
-    rss.channel.ttl = "1"
-    return rss.write()
-
-
 def options_list(output):
     return report(output, keyword='options', data={
-        'yenc': sabnzbd.decoder.HAVE_YENC,
+        'sabyenc': sabnzbd.decoder.SABYENC_ENABLED,
         'par2': sabnzbd.newsunpack.PAR2_COMMAND,
         'multipar': sabnzbd.newsunpack.MULTIPAR_COMMAND,
         'rar': sabnzbd.newsunpack.RAR_COMMAND,
@@ -1532,17 +1419,14 @@ def retry_job(job, new_nzb=None, password=None):
         history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
-            if pp == 'X':
-                pp = None
             nzo_id = sabnzbd.add_url(url, pp, script, cat)
-            history_db.remove_history(job)
-            return nzo_id
         else:
             path = history_db.get_path(job)
-            if path:
-                nzo_id = NzbQueue.do.repair_job(platform_encode(path), new_nzb, password)
-                history_db.remove_history(job)
-                return nzo_id
+            nzo_id = NzbQueue.do.repair_job(path, new_nzb, password)
+        if nzo_id:
+            # Only remove from history if we repaired something
+            history_db.remove_history(job)
+            return nzo_id
     return None
 
 
@@ -1560,7 +1444,7 @@ def retry_all_jobs():
 def del_job_files(job_paths):
     """ Remove files of each path in the list """
     for path in job_paths:
-        if path and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):
+        if path and clip_path(path).lower().startswith(cfg.download_dir.get_clipped_path().lower()):
             remove_all(path, recursive=True)
 
 
@@ -1572,12 +1456,8 @@ def del_hist_job(job, del_files):
             PostProcessor.do.delete(job, del_files=del_files)
         else:
             history_db = sabnzbd.get_db_connection()
-            path = history_db.get_path(job)
+            remove_all(history_db.get_path(job), recursive=True)
             history_db.remove_history(job)
-
-        if path and del_files and clip_path(path).lower().startswith(cfg.download_dir.get_path().lower()):
-            remove_all(path, recursive=True)
-    return True
 
 
 def Tspec(txt):
@@ -1591,17 +1471,18 @@ def Tspec(txt):
 
 
 _SKIN_CACHE = {}  # Stores pre-translated acronyms
-
-
-# This special is to be used in interface.py for template processing
-# to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
 def Ttemplate(txt):
-    """ Translation function for Skin texts """
+    """ Translation function for Skin texts
+        This special is to be used in interface.py for template processing
+        to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
+    """
     global _SKIN_CACHE
     if txt in _SKIN_CACHE:
         return _SKIN_CACHE[txt]
     else:
-        tra = html_escape(Tx(SKIN_TEXT.get(txt, txt)))
+        # We need to remove the " and ' to be JS/JSON-string-safe
+        # Saving it in dictionary is 20x faster on next look-up
+        tra = T(SKIN_TEXT.get(txt, txt)).replace('"', '&quot;').replace("'", '&apos;')
         _SKIN_CACHE[txt] = tra
         return tra
 
@@ -1609,13 +1490,11 @@ def Ttemplate(txt):
 def clear_trans_cache():
     """ Clean cache for skin translations """
     global _SKIN_CACHE
-    dummy = _SKIN_CACHE
     _SKIN_CACHE = {}
-    del dummy
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(webdir='', output=None):
+def build_header(webdir='', output=None, trans_functions=True):
     """ Build the basic header """
     try:
         uptime = calc_age(sabnzbd.START)
@@ -1635,9 +1514,11 @@ def build_header(webdir='', output=None):
 
     # We don't output everything for API
     if not output:
-        header['T'] = Ttemplate
-        header['Tspec'] = Tspec
-        header['Tx'] = Ttemplate
+        # These are functions, and cause problems for JSON
+        if trans_functions:
+            header['T'] = Ttemplate
+            header['Tspec'] = Tspec
+
         header['uptime'] = uptime
         header['color_scheme'] = sabnzbd.WEB_COLOR or ''
         header['helpuri'] = 'https://sabnzbd.org/wiki/'
@@ -1646,8 +1527,8 @@ def build_header(webdir='', output=None):
         header['pid'] = os.getpid()
         header['active_lang'] = cfg.language()
 
-        header['my_lcldata'] = sabnzbd.DIR_LCLDATA
-        header['my_home'] = sabnzbd.DIR_HOME
+        header['my_lcldata'] = clip_path(sabnzbd.DIR_LCLDATA)
+        header['my_home'] = clip_path(sabnzbd.DIR_HOME)
         header['webdir'] = webdir or sabnzbd.WEB_DIR
         header['url_base'] = cfg.url_base()
 
@@ -1702,7 +1583,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     bytes = qnfo.bytes
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
-    header['speed'] = to_units(bytespersec, spaces=1)
+    header['speed'] = to_units(bytespersec)
     header['mbleft'] = "%.2f" % (bytesleft / MEBI)
     header['mb'] = "%.2f" % (bytes / MEBI)
     header['sizeleft'] = format_bytes(bytesleft)
@@ -1721,23 +1602,14 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     try:
         datestart = datetime.datetime.now() + datetime.timedelta(seconds=bytesleft / bytespersec)
         # new eta format: 16:00 Fri 07 Feb
-        header['eta'] = datestart.strftime(time_format('%H:%M %a %d %b')).decode(codepage)
+        header['eta'] = datestart.strftime(time_format('%H:%M %a %d %b'))
     except:
         header['eta'] = T('unknown')
 
     return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
-def build_history(start=None, limit=None, verbose=False, verbose_list=None, search=None, failed_only=0,
-                  categories=None, output=None):
-    if output:
-        converter = unicoder
-    else:
-        converter = xml_name
-
-    if not verbose_list:
-        verbose_list = []
-
+def build_history(start=None, limit=None,search=None, failed_only=0, categories=None, output=None):
     limit = int_conv(limit)
     if not limit:
         limit = 1000000
@@ -1796,21 +1668,6 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     else:
         items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only, categories)
 
-    # Fetch which items should show details from the cookie
-    k = []
-    if verbose:
-        details_show_all = True
-    else:
-        details_show_all = False
-    cookie = cherrypy.request.cookie
-    if 'history_verbosity' in cookie:
-        k = cookie['history_verbosity'].value
-
-        if k == 'all':
-            details_show_all = True
-        k = k.split(',')
-    k.extend(verbose_list)
-
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
 
@@ -1820,40 +1677,18 @@ def build_history(start=None, limit=None, verbose=False, verbose_list=None, sear
     # Unreverse the queue
     items.reverse()
 
-    retry_folders = []
     for item in items:
-        for key in item:
-            value = item[key]
-            if isinstance(value, basestring):
-                item[key] = converter(value)
-
-        if details_show_all:
-            item['show_details'] = 'True'
-        else:
-            if item['nzo_id'] in k:
-                item['show_details'] = 'True'
-            else:
-                item['show_details'] = ''
-
         item['size'] = format_bytes(item['bytes'])
 
         if 'loaded' not in item:
             item['loaded'] = False
 
-        path = platform_encode(item.get('path', ''))
+        path = item.get('path', '')
 
-        item['retry'] = int(bool(item.get('status') == 'Failed' and
-                                 path and
-                                 path not in retry_folders and
-                                 starts_with_path(path, cfg.download_dir.get_path()) and
-                                 os.path.exists(path)) and
-                                 not bool(globber(os.path.join(path, JOB_ADMIN), 'SABnzbd_n*'))
-                            )
+        item['retry'] = int_conv(item.get('status') == Status.FAILED and path and os.path.exists(path))
+        # Retry of failed URL-fetch
         if item['report'] == 'future':
             item['retry'] = True
-
-        if item['retry']:
-            retry_folders.append(path)
 
         if Rating.do:
             rating = Rating.do.get_rating_by_nzo(item['nzo_id'])
@@ -1893,7 +1728,7 @@ def get_active_history(queue=None, items=None):
             item['url'], item['status'], item['nzo_id'], item['storage'], item['path'], item['script_log'], \
             item['script_line'], item['download_time'], item['postproc_time'], item['stage_log'], \
             item['downloaded'], item['completeness'], item['fail_message'], item['url_info'], item['bytes'], \
-            dummy, dummy, item['password'] = history
+            _, _, item['password'] = history
         item['action_line'] = nzo.action_line
         item = unpack_history_info(item)
 
@@ -1902,19 +1737,13 @@ def get_active_history(queue=None, items=None):
             item['size'] = format_bytes(item['bytes'])
         else:
             item['size'] = ''
-
-        # Queue display needs Unicode instead of UTF-8
-        for kw in item:
-            if isinstance(item[kw], str):
-                item[kw] = item[kw].decode('utf-8')
-
         items.append(item)
 
     return items
 
 
-def format_bytes(bytes):
-    b = to_units(bytes)
+def format_bytes(bytes_string):
+    b = to_units(bytes_string)
     if b == '':
         return b
     else:
@@ -1942,13 +1771,6 @@ def calc_timeleft(bytesleft, bps):
             return '%s:%s:%s' % (hours, minutes, seconds)
     except:
         return '0:00:00'
-
-
-def std_time(when):
-    # Fri, 16 Nov 2007 16:42:01 GMT +0100
-    item = time.strftime(time_format('%a, %d %b %Y %H:%M:%S'), time.localtime(when)).decode(codepage)
-    item += " GMT %+05d" % (-time.timezone / 36)
-    return item
 
 
 def list_scripts(default=False, none=True):
@@ -1979,14 +1801,6 @@ def list_cats(default=True):
         lst.remove('*')
         lst.insert(0, 'Default')
     return lst
-
-
-def remove_callable(dic):
-    """ Remove all callable items from dictionary """
-    for key, value in dic.items():
-        if callable(value):
-            del dic[key]
-    return dic
 
 
 _PLURAL_TO_SINGLE = {

@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2012-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -19,18 +19,18 @@
 util.apireg - Registration of API connection info
 """
 
-import _winreg
+import winreg
 
 
 def reg_info(user):
     """ Return the reg key for API """
     if user:
         # Normally use the USER part of the registry
-        section = _winreg.HKEY_CURRENT_USER
+        section = winreg.HKEY_CURRENT_USER
         keypath = r"Software\SABnzbd"
     else:
         # A Windows Service will use the service key instead
-        section = _winreg.HKEY_LOCAL_MACHINE
+        section = winreg.HKEY_LOCAL_MACHINE
         keypath = r"SYSTEM\CurrentControlSet\Services\SABnzbd"
     return section, keypath
 
@@ -43,18 +43,18 @@ def get_connection_info(user=True):
     url = None
 
     try:
-        hive = _winreg.ConnectRegistry(None, section)
-        key = _winreg.OpenKey(hive, keypath + r'\api')
-        for i in range(0, _winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = _winreg.EnumValue(key, i)
-            if name == 'url':
+        hive = winreg.ConnectRegistry(None, section)
+        key = winreg.OpenKey(hive, keypath + r"\api")
+        for i in range(0, winreg.QueryInfoKey(key)[1]):
+            name, value, val_type = winreg.EnumValue(key, i)
+            if name == "url":
                 url = value
 
-        _winreg.CloseKey(key)
+        winreg.CloseKey(key)
     except WindowsError:
         pass
     finally:
-        _winreg.CloseKey(hive)
+        winreg.CloseKey(hive)
 
     # Nothing in user's registry, try system registry
     if user and not url:
@@ -67,82 +67,82 @@ def set_connection_info(url, user=True):
     """ Set API info in register """
     section, keypath = reg_info(user)
     try:
-        hive = _winreg.ConnectRegistry(None, section)
+        hive = winreg.ConnectRegistry(None, section)
         try:
-            _winreg.CreateKey(hive, keypath)
-        except:
+            winreg.CreateKey(hive, keypath)
+        except OSError:
             pass
-        key = _winreg.OpenKey(hive, keypath)
-        mykey = _winreg.CreateKey(key, 'api')
-        _winreg.SetValueEx(mykey, 'url', None, _winreg.REG_SZ, url)
-        _winreg.CloseKey(mykey)
-        _winreg.CloseKey(key)
+        key = winreg.OpenKey(hive, keypath)
+        mykey = winreg.CreateKey(key, "api")
+        winreg.SetValueEx(mykey, "url", None, winreg.REG_SZ, url)
+        winreg.CloseKey(mykey)
+        winreg.CloseKey(key)
     except WindowsError:
         if user:
             set_connection_info(url, user=False)
     finally:
-        _winreg.CloseKey(hive)
+        winreg.CloseKey(hive)
 
 
 def del_connection_info(user=True):
     """ Remove API info from register """
     section, keypath = reg_info(user)
     try:
-        hive = _winreg.ConnectRegistry(None, section)
-        key = _winreg.OpenKey(hive, keypath)
-        _winreg.DeleteKey(key, 'api')
-        _winreg.CloseKey(key)
+        hive = winreg.ConnectRegistry(None, section)
+        key = winreg.OpenKey(hive, keypath)
+        winreg.DeleteKey(key, "api")
+        winreg.CloseKey(key)
     except WindowsError:
         if user:
             del_connection_info(user=False)
     finally:
-        _winreg.CloseKey(hive)
+        winreg.CloseKey(hive)
 
 
 def get_install_lng():
     """ Return language-code used by the installer """
     lng = 0
     try:
-        hive = _winreg.ConnectRegistry(None, _winreg.HKEY_CURRENT_USER)
-        key = _winreg.OpenKey(hive, r"Software\SABnzbd")
-        for i in range(0, _winreg.QueryInfoKey(key)[1]):
-            name, value, val_type = _winreg.EnumValue(key, i)
-            if name == 'Installer Language':
+        hive = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+        key = winreg.OpenKey(hive, r"Software\SABnzbd")
+        for i in range(0, winreg.QueryInfoKey(key)[1]):
+            name, value, val_type = winreg.EnumValue(key, i)
+            if name == "Installer Language":
                 lng = value
-        _winreg.CloseKey(key)
+        winreg.CloseKey(key)
     except WindowsError:
         pass
     finally:
-        _winreg.CloseKey(hive)
+        winreg.CloseKey(hive)
 
     if lng in LanguageMap:
         return LanguageMap[lng]
-    return 'en'
+    return "en"
 
 
 # Map from NSIS-codepage to our language-strings
 LanguageMap = {
-    '1033': 'en',
-    '1036': 'fr',
-    '1031': 'de',
-    '1043': 'nl',
-    '1035': 'fi',
-    '1045': 'pl',
-    '1053': 'sv',
-    '1030': 'da',
-    '2068': 'nb',
-    '1048': 'ro',
-    '1034': 'es',
-    '1046': 'pr_BR',
-    '3098': 'sr',
-    '1037': 'he',
-    '1049': 'ru',
-    '2052': 'zh_CN'
+    "1033": "en",
+    "1036": "fr",
+    "1031": "de",
+    "1043": "nl",
+    "1035": "fi",
+    "1045": "pl",
+    "1053": "sv",
+    "1030": "da",
+    "2068": "nb",
+    "1048": "ro",
+    "1034": "es",
+    "1046": "pr_BR",
+    "3098": "sr",
+    "1037": "he",
+    "1049": "ru",
+    "2052": "zh_CN",
 }
 
 
-if __name__ == '__main__':
-    print 'URL = %s' % get_connection_info()
-    print 'Language = %s' % get_install_lng()
+if __name__ == "__main__":
+    print("URL = %s" % get_connection_info())
+    print("Language = %s" % get_install_lng())
     # del_connection_info()
     # set_connection_info('localhost', '8080', 'blabla', user=False)

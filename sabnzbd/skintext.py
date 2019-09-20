@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # -*- coding: UTF-8 -*-
 # Copyright 2012-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
@@ -147,6 +147,8 @@ SKIN_TEXT = {
 # General template elements
     'signOn' : TT('The automatic usenet download tool'), #: SABnzbd's theme line
     'button-save' : TT('Save'), #: "Save" button
+    'button-saving' : TT('Saving..'),
+    'button-failed' : TT('Failed'),
     'confirm' : TT('Are you sure?'), #: Used in confirmation popups
     'delFiles' : TT('Delete all downloaded files?'),  #: Used in confirmation popups
 
@@ -297,6 +299,7 @@ SKIN_TEXT = {
     'dashboard-completeDirSpeed' : TT('Complete folder speed'),
     'dashboard-writingSpeed' : TT('Writing speed'),
     'dashboard-speedTestFailed' : TT('Could not write. Check that the directory is writable.'),
+    'dashboard-internetBandwidth' : TT('Internet Bandwidth'),
     'dashboard-clickToStart' : TT('Click on Repeat test button below to determine'),
     'dashboard-repeatTest' : TT('Repeat test'),
     'dashboard-testDownload' : TT('Test download'),
@@ -317,7 +320,7 @@ SKIN_TEXT = {
     'opt-enable_unzip' : TT('Enable Unzip'),
     'opt-enable_7zip' : TT('Enable 7zip'),
     'opt-multicore-par2' : TT('Multicore Par2'),
-    'explain-nosslcontext' : TT('Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server\'s identity using its certificates is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-date local CA certificates are required.'),
+    'explain-nosslcontext' : TT('Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will be encrypted, however, validating a server\'s identity using its certificates is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates are required.'),
     'explain-getpar2mt': TT('Speed up repairs by installing multicore Par2, it is available for many platforms.'),
     'version' : TT('Version'),
     'uptime' : TT('Uptime'),
@@ -635,6 +638,7 @@ SKIN_TEXT = {
     'explain-email_account' : TT('For authenticated email, account name.'),
     'opt-email_pwd' : TT('OPTIONAL Account Password'),
     'explain-email_pwd' : TT('For authenticated email, password.'),
+    'notifications-notesent': TT('Notification Sent!'),
     'growlSettings' : TT('Growl'), #: Header Growl section
     'opt-growl_enable' : TT('Enable Growl'), #: Don't translate "Growl"
     'opt-growl_server' : TT('Server address'), #: Address of Growl server
@@ -930,47 +934,6 @@ SKIN_TEXT = {
     'Plush-idle' : TT('IDLE'),
     'Plush-downloads' : TT('Downloads'),
     'Plush-tab-repair' : TT('Queue repair'),
-
-#smpl skin
-    'smpl-purgehist' : TT('Delete Completed'),
-    'smpl-purgefailhistOK?' : TT('Delete the all failed items from the history?'),
-    'smpl-purgefailhist' : TT('Delete Failed'),
-    'smpl-retryAllJobs?' : TT('Retry all failed jobs?'),
-    'smpl-retryAll' : TT('Retry all'), #: Link in SMPL for "Retry all failed jobs"
-    'smpl-links' : TT('Links'),
-    'smpl-size' : TT('Size'),
-    'smpl-path' : TT('Path'),
-    'smpl-numresults@3' : TT('Showing %s to %s out of %s results'),
-    'smpl-noresult' : TT('No results'),
-    'smpl-oneresult' : TT('Showing one result'),
-    'smpl-first' : TT('First'),
-    'smpl-previous' : TT('Prev'),
-    'smpl-next' : TT('Next'),
-    'smpl-last' : TT('Last'),
-    'smpl-pauseForPrompt' : TT('Pause for how many minutes?'),
-    'smpl-paused' : TT('Paused'),
-    'smpl-downloading' : TT('Downloading'),
-    'smpl-idle' : TT('Idle'),
-    'smpl-emailsent' : TT('Email Sent!'),
-    'smpl-notesent' : TT('Notification Sent!'),
-    'smpl-saving' : TT('Saving..'),
-    'smpl-saved' : TT('Saved'),
-    'smpl-failed' : TT('Failed'),
-    'smpl-speed' : TT('Speed'),
-    'smpl-toggleadd' : TT('Toggle Add NZB'),
-    'smpl-dualView1' : TT('DualView1'),
-    'smpl-dualView2' : TT('DualView2'),
-    'smpl-warnings' : TT('Warnings'),
-    'smpl-custom' : TT('Custom'),
-    'smpl-restartOK?' : TT('Are you sure you want to restart SABnzbd?'),
-    'smpl-refreshr' : TT('Refresh rate'),
-    'smpl-purgeQueue' : TT('Delete All'),
-    'smpl-hideEdit' : TT('Hide Edit Options'),
-    'smpl-showEdit' : TT('Show Edit Options'),
-    'smpl-edit' : TT('Edit'),
-    'smpl-progress' : TT('Progress'),
-    'smpl-timeleft' : TT('Timeleft'),
-    'smpl-age' : TT('Age'),
 
 #Wizard
     'wizard-quickstart' :  TT('SABnzbd Quick-Start Wizard'),

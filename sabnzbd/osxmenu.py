@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -26,18 +26,15 @@ from PyObjCTools import AppHelper
 from objc import YES, NO
 
 import os
-
-import cherrypy
 import sys
 import time
-
 import logging
 
 import sabnzbd
 import sabnzbd.cfg
 
+from sabnzbd.filesystem import get_filename, get_ext, diskspace, to_units
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
-from sabnzbd.misc import get_filename, get_ext, diskspace, to_units
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.notifier as notifier
 
@@ -48,7 +45,6 @@ import sabnzbd.scheduler as scheduler
 import sabnzbd.downloader
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import unicoder
 
 status_icons = {'idle': '../Resources/sab_idle.tiff', 'pause': '../Resources/sab_pause.tiff', 'clicked': '../Resources/sab_clicked.tiff'}
 start_time = NSDate.date()
@@ -360,14 +356,13 @@ class SABnzbdDelegate(NSObject):
                 self.menu_queue.addItem_(NSMenuItem.separatorItem())
 
                 for pnfo in pnfo_list:
-                    filename = unicoder(pnfo.filename)
                     bytesleft = pnfo.bytes_left / MEBI
                     bytesleftprogess += pnfo.bytes_left
                     bytes = pnfo.bytes / MEBI
                     nzo_id = pnfo.nzo_id
                     timeleft = self.calc_timeleft_(bytesleftprogess, BPSMeter.do.bps)
 
-                    job = "%s\t(%d/%d MB) %s" % (filename, bytesleft, bytes, timeleft)
+                    job = "%s\t(%d/%d MB) %s" % (pnfo.filename, bytesleft, bytes, timeleft)
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     self.menu_queue.addItem_(menu_queue_item)
 
@@ -708,7 +703,7 @@ class SABnzbdDelegate(NSObject):
 
     def openFolderAction_(self, sender):
         folder2open = sender.representedObject()
-        if isinstance(folder2open, unicode):
+        if isinstance(folder2open, str):
             folder2open = folder2open.encode("utf-8")
         if debug == 1:
             NSLog("[osx] %@", folder2open)
@@ -752,10 +747,10 @@ class SABnzbdDelegate(NSObject):
                 if fn:
                     if get_ext(name) in VALID_ARCHIVES:
                         # logging.info('[osx] archive')
-                        dirscanner.ProcessArchiveFile(fn, name, keep=True)
+                        dirscanner.process_nzb_archive_file(fn, name, keep=True)
                     elif get_ext(name) in VALID_NZB_FILES:
                         # logging.info('[osx] nzb')
-                        dirscanner.ProcessSingleFile(fn, name, keep=True)
+                        dirscanner.process_single_nzb(fn, name, keep=True)
         # logging.info('opening done')
 
     def applicationShouldTerminate_(self, sender):

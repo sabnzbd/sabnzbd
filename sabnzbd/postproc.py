@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -20,25 +20,25 @@ sabnzbd.postproc - threaded post-processing of jobs
 """
 
 import os
-import Queue
 import logging
 import sabnzbd
 import xml.sax.saxutils
+import functools
 import time
 import re
+import queue
 
 from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, \
     sfv_check, build_filelists, rar_sort
 from threading import Thread
-from sabnzbd.misc import real_path, get_unique_path, create_dirs, move_to_path, \
-    make_script_path, long_path, clip_path, recursive_listdir, \
-    on_cleanup_list, renamer, remove_dir, remove_all, globber, globber_full, \
-    set_permissions, cleanup_empty_directories, fix_unix_encoding, \
-    sanitize_and_trim_path, sanitize_files_in_folder, remove_file
+from sabnzbd.misc import on_cleanup_list
+from sabnzbd.filesystem import real_path, get_unique_path, move_to_path, \
+    make_script_path, long_path, clip_path, renamer, remove_dir, globber, \
+    globber_full, set_permissions, cleanup_empty_directories, fix_unix_encoding, \
+    sanitize_and_trim_path, sanitize_files_in_folder, remove_file, recursive_listdir, setname_from_path, create_all_dirs
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import REPAIR_PRIORITY, TOP_PRIORITY, POSTPROC_QUEUE_FILE_NAME, \
     POSTPROC_QUEUE_VERSION, sample_match, JOB_ADMIN, Status, VERIFIED_FILE
-from sabnzbd.encoding import TRANS, unicoder
 from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
 import sabnzbd.dirscanner as dirscanner
@@ -71,10 +71,10 @@ class PostProcessor(Thread):
             self.history_queue = []
 
         # Fast-queue for jobs already finished by DirectUnpack
-        self.fast_queue = Queue.Queue()
+        self.fast_queue = queue.Queue()
 
         # Regular queue for jobs that might need more attention
-        self.slow_queue = Queue.Queue()
+        self.slow_queue = queue.Queue()
 
         # Load all old jobs
         for nzo in self.history_queue:
@@ -119,8 +119,8 @@ class PostProcessor(Thread):
                     nzo.to_be_removed = True
                 elif nzo.status in (Status.DOWNLOADING, Status.QUEUED):
                     self.remove(nzo)
-                    nzo.purge_data(keep_basic=False, del_files=del_files)
-                    logging.info('Removed job %s from postproc queue', nzo.work_name)
+                    nzo.purge_data(delete_all_data=del_files)
+                    logging.info('Removed job %s from postproc queue', nzo.final_name)
                     nzo.work_name = ''  # Mark as deleted job
                 break
 
@@ -186,18 +186,6 @@ class PostProcessor(Thread):
         else:
             logging.info("Completed Download Folder %s is not on FAT", complete_dir)
 
-        # Check on Windows if we have unicode-subprocess
-        if sabnzbd.WIN32:
-            try:
-                import subprocessww
-            except ImportError:
-                logging.warning(T('Module subprocessww missing. Expect problems with Unicoded file and directory names in downloads.'))
-
-        # Do a pruge of the history-items if it was set, just to be sure
-        history_db = database.HistoryDB()
-        history_db.auto_history_purge()
-        history_db.close()
-
         # Start looping
         check_eoq = False
         while not self.__stop:
@@ -212,17 +200,17 @@ class PostProcessor(Thread):
                 # Every few fast-jobs we should check allow a
                 # slow job so that they don't wait forever
                 if self.__fast_job_count >= MAX_FAST_JOB_COUNT and self.slow_queue.qsize():
-                    raise Queue.Empty
+                    raise queue.Empty
 
                 nzo = self.fast_queue.get(timeout=2)
                 self.__fast_job_count += 1
-            except Queue.Empty:
+            except queue.Empty:
                 # Try the slow queue
                 try:
                     nzo = self.slow_queue.get(timeout=2)
                     # Reset fast-counter
                     self.__fast_job_count = 0
-                except Queue.Empty:
+                except queue.Empty:
                     # Check for empty queue
                     if check_eoq:
                         check_eoq = False
@@ -254,7 +242,7 @@ class PostProcessor(Thread):
                 history_db = database.HistoryDB()
                 history_db.remove_history(nzo.nzo_id)
                 history_db.close()
-                nzo.purge_data(keep_basic=False, del_files=True)
+                nzo.purge_data()
 
             # Processing done
             nzo.pp_active = False
@@ -403,7 +391,7 @@ def process_job(nzo):
                             if new_path:
                                 newfiles.append(new_path)
                             if not ok:
-                                nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (unicoder(path), unicoder(new_path)))
+                                nzo.set_unpack_info('Unpack', T('Failed moving %s to %s') % (path, new_path))
                                 all_ok = False
                                 break
 
@@ -425,7 +413,7 @@ def process_job(nzo):
                 else:
                     nzb_list = None
                 if nzb_list:
-                    nzo.set_unpack_info('Download', T('Sent %s to queue') % unicoder(nzb_list))
+                    nzo.set_unpack_info('Download', T('Sent %s to queue') % nzb_list)
                     cleanup_empty_directories(tmp_workdir_complete)
                 else:
                     cleanup_list(tmp_workdir_complete, False)
@@ -471,17 +459,17 @@ def process_job(nzo):
             if (all_ok or not cfg.safe_postproc()) and (not nzb_list) and script_path:
                 # Set the current nzo status to "Ext Script...". Used in History
                 nzo.status = Status.RUNNING
-                nzo.set_action_line(T('Running script'), unicoder(script))
-                nzo.set_unpack_info('Script', T('Running user script %s') % unicoder(script), unique=True)
+                nzo.set_action_line(T('Running script'), script)
+                nzo.set_unpack_info('Script', T('Running user script %s') % script, unique=True)
                 script_log, script_ret = external_processing(script_path, nzo, clip_path(workdir_complete),
                                                              nzo.final_name, job_result)
                 script_line = get_last_line(script_log)
                 if script_log:
                     script_output = nzo.nzo_id
                 if script_line:
-                    nzo.set_unpack_info('Script', unicoder(script_line), unique=True)
+                    nzo.set_unpack_info('Script', script_line, unique=True)
                 else:
-                    nzo.set_unpack_info('Script', T('Ran %s') % unicoder(script), unique=True)
+                    nzo.set_unpack_info('Script', T('Ran %s') % script, unique=True)
             else:
                 script = ""
                 script_line = ""
@@ -499,7 +487,7 @@ def process_job(nzo):
         if (not nzb_list) and cfg.email_endjob():
             if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
                 emailer.endjob(nzo.final_name, nzo.cat, all_ok, workdir_complete, nzo.bytes_downloaded,
-                               nzo.fail_msg, nzo.unpack_info, script, TRANS(script_log), script_ret)
+                               nzo.fail_msg, nzo.unpack_info, script, script_log, script_ret)
 
         if script_output:
             # Can do this only now, otherwise it would show up in the email
@@ -509,11 +497,11 @@ def process_job(nzo):
                 script_ret = ''
             if len(script_log.rstrip().split('\n')) > 1:
                 nzo.set_unpack_info('Script',
-                                    u'%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line,
+                                    '%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line,
                                     xml.sax.saxutils.escape(script_output), T('More')), unique=True)
             else:
                 # No '(more)' button needed
-                nzo.set_unpack_info('Script', u'%s%s ' % (script_ret, script_line), unique=True)
+                nzo.set_unpack_info('Script', '%s%s ' % (script_ret, script_line), unique=True)
 
         # Cleanup again, including NZB files
         if all_ok:
@@ -527,7 +515,7 @@ def process_job(nzo):
             if nzo.encrypted > 0:
                 Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)
             if empty:
-                hosts = map(lambda s: s.host, sabnzbd.downloader.Downloader.do.nzo_servers(nzo))
+                hosts = [s.host for s in sabnzbd.downloader.Downloader.do.nzo_servers(nzo)]
                 if not hosts:
                     hosts = [None]
                 for host in hosts:
@@ -553,23 +541,12 @@ def process_job(nzo):
         workdir_complete = one_file_or_folder(workdir_complete)
         workdir_complete = os.path.normpath(workdir_complete)
 
-    # Clean up the NZO
+    # Clean up the NZO data
     try:
-        logging.info('Cleaning up %s (keep_basic=%s)', filename, str(not all_ok))
-        sabnzbd.nzbqueue.NzbQueue.do.cleanup_nzo(nzo, keep_basic=not all_ok)
+        nzo.purge_data(delete_all_data=all_ok)
     except:
         logging.error(T('Cleanup of %s failed.'), nzo.final_name)
         logging.info("Traceback: ", exc_info=True)
-
-    # Remove download folder
-    if all_ok:
-        try:
-            if os.path.exists(workdir):
-                logging.debug('Removing workdir %s', workdir)
-                remove_all(workdir, recursive=True)
-        except:
-            logging.error(T('Error removing workdir (%s)'), clip_path(workdir))
-            logging.info("Traceback: ", exc_info=True)
 
     # Use automatic retry link on par2 errors and encrypted/bad RARs
     if par_error or unpack_error in (2, 3):
@@ -626,13 +603,13 @@ def prepare_extraction_path(nzo):
     complete_dir = sanitize_and_trim_path(complete_dir)
 
     if one_folder:
-        workdir_complete = create_dirs(complete_dir)
+        workdir_complete = create_all_dirs(complete_dir, umask=True)
     else:
         workdir_complete = get_unique_path(os.path.join(complete_dir, nzo.final_name), create_dir=True)
         marker_file = set_marker(workdir_complete)
 
     if not workdir_complete or not os.path.exists(workdir_complete):
-        logging.error(T('Cannot create final folder %s') % unicoder(os.path.join(complete_dir, nzo.final_name)))
+        logging.error(T('Cannot create final folder %s') % os.path.join(complete_dir, nzo.final_name))
         raise IOError
 
     if cfg.folder_rename() and not one_folder:
@@ -661,7 +638,7 @@ def parring(nzo, workdir):
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
-    repair_sets = nzo.extrapars.keys()
+    repair_sets = list(nzo.extrapars.keys())
 
     re_add = False
     par_error = False
@@ -694,13 +671,13 @@ def parring(nzo, workdir):
     else:
         # We must not have found any par2..
         logging.info("No par2 sets for %s", filename)
-        nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % unicoder(filename))
+        nzo.set_unpack_info('Repair', T('[%s] No par2 sets') % filename)
         if cfg.sfv_check() and not verified.get('', False):
-            par_error = not try_sfv_check(nzo, workdir, '')
+            par_error = not try_sfv_check(nzo, workdir)
             verified[''] = not par_error
         # If still no success, do RAR-check
         if not par_error and cfg.enable_unrar():
-            par_error = not try_rar_check(nzo, workdir, '')
+            par_error = not try_rar_check(nzo, workdir)
             verified[''] = not par_error
 
     if re_add:
@@ -717,61 +694,57 @@ def parring(nzo, workdir):
     return par_error, re_add
 
 
-def try_sfv_check(nzo, workdir, setname):
+def try_sfv_check(nzo, workdir):
     """ Attempt to verify set using SFV file
         Return True if verified, False when failed
-        When setname is '', all SFV files will be used, otherwise only the matching one
-        When setname is '' and no SFV files are found, True is returned
     """
     # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
     sfvs = globber_full(workdir, '*.sfv')
-    sfvs.sort(lambda x, y: len(x) - len(y))
+    sfvs.sort(key=lambda x: len(x))
     par_error = False
     found = False
     for sfv in sfvs:
-        if setname.lower() in os.path.basename(sfv).lower():
-            found = True
-            nzo.status = Status.VERIFYING
-            nzo.set_unpack_info('Repair', T('Trying SFV verification'))
-            nzo.set_action_line(T('Trying SFV verification'), '...')
+        found = True
+        setname = setname_from_path(sfv)
+        nzo.status = Status.VERIFYING
+        nzo.set_unpack_info('Repair', T('Trying SFV verification'), setname)
+        nzo.set_action_line(T('Trying SFV verification'), '...')
 
-            failed = sfv_check(sfv)
-            if failed:
-                fail_msg = T('Some files failed to verify against "%s"') % unicoder(os.path.basename(sfv))
-                msg = fail_msg + '; '
-                msg += '; '.join(failed)
-                nzo.set_unpack_info('Repair', msg)
-                par_error = True
-            else:
-                nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'))
-            if setname:
-                break
+        failed = sfv_check(sfv)
+        if failed:
+            fail_msg = T('Some files failed to verify against "%s"') % setname
+            msg = fail_msg + '; '
+            msg += '; '.join(failed)
+            nzo.set_unpack_info('Repair', msg, setname)
+            par_error = True
+        else:
+            nzo.set_unpack_info('Repair', T('Verified successfully using SFV files'), setname)
+
     # Show error in GUI
     if found and par_error:
         nzo.status = Status.FAILED
         nzo.fail_msg = fail_msg
-    return (found or not setname) and not par_error
+        return False
+
+    # Success or just no SFV's
+    return True
 
 
-def try_rar_check(nzo, workdir, setname):
+def try_rar_check(nzo, workdir):
     """ Attempt to verify set using the RARs
         Return True if verified, False when failed
         When setname is '', all RAR files will be used, otherwise only the matching one
         If no RAR's are found, returns True
     """
+    # Fetch and sort
     _, _, rars, _, _ = build_filelists(workdir)
-
-    if setname:
-        # Filter based on set
-        rars = [rar for rar in rars if os.path.basename(rar).startswith(setname)]
-
-    # Sort
-    rars.sort(rar_sort)
+    rars.sort(key=functools.cmp_to_key(rar_sort))
 
     # Test
     if rars:
+        setname = setname_from_path(rars[0])
         nzo.status = Status.VERIFYING
-        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'))
+        nzo.set_unpack_info('Repair', T('Trying RAR-based verification'), setname)
         nzo.set_action_line(T('Trying RAR-based verification'), '...')
         try:
             # Set path to unrar and open the file
@@ -781,7 +754,7 @@ def try_rar_check(nzo, workdir, setname):
 
             # Skip if it's encrypted
             if zf.needs_password():
-                msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), T('Passworded'))
+                msg = T('[%s] RAR-based verification failed: %s') % (setname, T('Passworded'))
                 nzo.set_unpack_info('Repair', msg)
                 return True
 
@@ -789,13 +762,13 @@ def try_rar_check(nzo, workdir, setname):
             zf.testrar()
             # Success!
             msg = T('RAR files verified successfully')
-            nzo.set_unpack_info('Repair', msg)
+            nzo.set_unpack_info('Repair', msg, setname)
             logging.info(msg)
             return True
         except rarfile.Error as e:
             nzo.fail_msg = T('RAR files failed to verify')
-            msg = T('[%s] RAR-based verification failed: %s') % (unicoder(os.path.basename(rars[0])), unicoder(e.message.replace('\r\n', ' ')))
-            nzo.set_unpack_info('Repair', msg)
+            msg = T('[%s] RAR-based verification failed: %s') % (setname, e)
+            nzo.set_unpack_info('Repair', msg, setname)
             logging.info(msg)
             return False
     else:
@@ -857,7 +830,7 @@ def prefix(path, pre):
 
 def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
     """ Check if this job contains only NZB files,
-        if so send to queue and remove if on CleanList
+        if so send to queue and remove if on clean-up list
         Returns list of processed NZB's
     """
     files = recursive_listdir(wdir)
@@ -871,9 +844,9 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
         nzbname = None
 
     # Process all NZB files
-    for file_ in files:
-        dirscanner.ProcessSingleFile(os.path.split(file_)[1], file_, pp, script, cat,
-                                     priority=priority, keep=False, dup_check=False, nzbname=nzbname)
+    for nzb_file in files:
+        dirscanner.process_single_nzb(os.path.split(nzb_file)[1], file_, pp, script, cat,
+                                      priority=priority, keep=False, dup_check=False, nzbname=nzbname)
     return files
 
 
@@ -989,7 +962,7 @@ def del_marker(path):
 
 def remove_from_list(name, lst):
     if name:
-        for n in xrange(len(lst)):
+        for n in range(len(lst)):
             if lst[n].endswith(name):
                 logging.debug('Popping %s', lst[n])
                 lst.pop(n)

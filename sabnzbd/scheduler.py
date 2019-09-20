@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -92,7 +92,7 @@ def init():
         if d.isdigit():
             d = [int(i) for i in d]
         else:
-            d = range(1, 8)
+            d = list(range(1, 8))
 
         if action_name == 'resume':
             action = scheduled_resume
@@ -196,16 +196,16 @@ def init():
     action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
     if action:
         logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
-        __SCHED.add_daytime_task(action, 'quota_reset', range(1, 8), None, (hour, minute),
+        __SCHED.add_daytime_task(action, 'quota_reset', list(range(1, 8)), None, (hour, minute),
                                  kronos.method.sequential, [], None)
 
     if sabnzbd.misc.int_conv(cfg.history_retention()) > 0:
         logging.info('Setting schedule for midnight auto history-purge')
-        __SCHED.add_daytime_task(sabnzbd.database.midnight_history_purge, 'midnight_history_purge', range(1, 8), None, (0, 0),
+        __SCHED.add_daytime_task(sabnzbd.database.midnight_history_purge, 'midnight_history_purge', list(range(1, 8)), None, (0, 0),
                                 kronos.method.sequential, [], None)
 
     logging.info('Setting schedule for midnight BPS reset')
-    __SCHED.add_daytime_task(sabnzbd.bpsmeter.midnight_action, 'midnight_bps', range(1, 8), None, (0, 0),
+    __SCHED.add_daytime_task(sabnzbd.bpsmeter.midnight_action, 'midnight_bps', list(range(1, 8)), None, (0, 0),
                              kronos.method.sequential, [], None)
 
     # Subscribe to special schedule changes
@@ -299,7 +299,7 @@ def sort_schedules(all_events, now=None):
             if not all_events:
                 break
 
-    events.sort(lambda x, y: x[0] - y[0])
+    events.sort(key=lambda x: x[0])
     return events
 
 
@@ -458,7 +458,7 @@ def pause_int():
             val = abs(val)
         else:
             sign = ''
-        min = int(val / 60L)
+        min = int(val / 60)
         sec = int(val - min * 60)
         return "%s%d:%02d" % (sign, min, sec)
 

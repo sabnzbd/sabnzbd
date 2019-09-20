@@ -1,4 +1,4 @@
-#!/usr/bin/python -OO
+#!/usr/bin/python3 -OO
 # Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ import os
 import time
 import cherrypy
 import logging
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import json
 import re
 import hashlib
@@ -34,19 +34,18 @@ from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
 
-from sabnzbd.utils.rsslib import RSS, Item
 import sabnzbd
 import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
-from sabnzbd.misc import real_path, to_units, from_units, time_format, \
-    long_path, calc_age, same_file, probablyipv4, probablyipv6, \
-    int_conv, globber, globber_full, remove_all, get_base_url
+from sabnzbd.misc import to_units, from_units, time_format, calc_age, \
+    int_conv, get_base_url, probablyipv4, probablyipv6
+from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, \
+    clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import TRANS, xml_name, LatinFilter, unicoder, special_fixer, \
-    platform_encode
+from sabnzbd.encoding import xml_name, utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
@@ -54,31 +53,26 @@ import sabnzbd.newsunpack
 from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.decoder import HAVE_YENC, SABYENC_ENABLED
+from sabnzbd.decoder import SABYENC_ENABLED
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
+from sabnzbd.utils.internetspeed import internetspeed
 
 from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, \
-    DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY
+    DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
 
 from sabnzbd.lang import list_languages
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-    api_handler, build_queue, remove_callable, build_status, \
+    api_handler, build_queue, build_status, \
     retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
-    format_bytes, std_time, report, del_hist_job, Ttemplate, build_queue_header, \
+    format_bytes, report, del_hist_job, Ttemplate, build_queue_header, \
     _api_test_email, _api_test_notif
 
 
 ##############################################################################
 # Global constants
 ##############################################################################
-DIRECTIVES = {
-    'directiveStartToken': '<!--#',
-    'directiveEndToken': '#-->',
-    'prioritizeSearchListOverSelf': True
-}
-FILTER = LatinFilter
 
 
 ##############################################################################
@@ -192,8 +186,9 @@ def set_login_cookie(remove=False, remember_me=False):
         current process ID of the SAB instance and a random
         number, so cookies cannot be re-used
     """
-    salt = randint(1,1000)
-    cherrypy.response.cookie['login_cookie'] = hashlib.sha1(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
+    salt = randint(1, 1000)
+    cookie_str = utob(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET)
+    cherrypy.response.cookie['login_cookie'] = hashlib.sha1(cookie_str).hexdigest()
     cherrypy.response.cookie['login_cookie']['path'] = '/'
     cherrypy.response.cookie['login_cookie']['httponly'] = 1
     cherrypy.response.cookie['login_salt'] = salt
@@ -219,7 +214,8 @@ def check_login_cookie():
     if 'login_cookie' not in cherrypy.request.cookie or 'login_salt' not in cherrypy.request.cookie:
         return False
 
-    return cherrypy.request.cookie['login_cookie'].value == hashlib.sha1(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET).hexdigest()
+    cookie_str = utob(str(cherrypy.request.cookie['login_salt'].value) + cherrypy.request.remote.ip + COOKIE_SECRET)
+    return cherrypy.request.cookie['login_cookie'].value == hashlib.sha1(cookie_str).hexdigest()
 
 
 def check_login():
@@ -247,19 +243,19 @@ def encrypt_pwd(pwd):
 def set_auth(conf):
     """ Set the authentication for CherryPy """
     if cfg.username() and cfg.password() and not cfg.html_login():
-        conf.update({'tools.basic_auth.on': True, 'tools.basic_auth.realm': 'SABnzbd',
-                     'tools.basic_auth.users': get_users, 'tools.basic_auth.encrypt': encrypt_pwd})
-        conf.update({'/api': {'tools.basic_auth.on': False},
-                     '%s/api' % cfg.url_base(): {'tools.basic_auth.on': False},
+        conf.update({'tools.auth_basic.on': True, 'tools.auth_basic.realm': 'SABnzbd',
+                     'tools.auth_basic.users': get_users, 'tools.auth_basic.encrypt': encrypt_pwd})
+        conf.update({'/api': {'tools.auth_basic.on': False},
+                     '%s/api' % cfg.url_base(): {'tools.auth_basic.on': False},
                      })
     else:
-        conf.update({'tools.basic_auth.on': False})
+        conf.update({'tools.auth_basic.on': False})
 
 
 def check_session(kwargs):
     """ Check session key """
     if not check_access():
-        return u'Access denied'
+        return 'Access denied'
     key = kwargs.get('session')
     if not key:
         key = kwargs.get('apikey')
@@ -340,7 +336,7 @@ def Raiser(root='', **kwargs):
             args[key] = val
     # Add extras
     if args:
-        root = '%s?%s' % (root, urllib.urlencode(args))
+        root = '%s?%s' % (root, urllib.parse.urlencode(args))
     # Optionally add the leading /sabnzbd/ (or what the user set)
     if not root.startswith(cfg.url_base()):
         root = cherrypy.request.script_name + root
@@ -361,7 +357,7 @@ def rssRaiser(root, kwargs):
 ##############################################################################
 # Page definitions
 ##############################################################################
-class MainPage(object):
+class MainPage:
 
     def __init__(self):
         self.__root = '/'
@@ -400,42 +396,12 @@ class MainPage(object):
             bytespersec_list = BPSMeter.do.get_bps_list()
             info['bytespersec_list'] = ','.join([str(bps) for bps in bytespersec_list])
 
-            # For Glitter we pre-load the JSON output
-            if 'Glitter' in sabnzbd.WEB_DIR:
-                # Queue
-                queue = build_queue(limit=cfg.queue_limit(), output='json')[0]
-
-                # History
-                history = {}
-                grand, month, week, day = BPSMeter.do.get_sums()
-                history['total_size'], history['month_size'], history['week_size'], history['day_size'] = \
-                       to_units(grand), to_units(month), to_units(week), to_units(day)
-                history['slots'], fetched_items, history['noofslots'] = build_history(limit=cfg.history_limit(), output='json')
-
-                # Make sure the JSON works, otherwise leave empty
-                try:
-                    info['preload_queue'] = json.dumps({'queue': remove_callable(queue)})
-                    info['preload_history'] = json.dumps({'history': history})
-                except UnicodeDecodeError:
-                    # We use the javascript recognized 'false'
-                    info['preload_queue'] = 'false'
-                    info['preload_history'] = 'false'
-
             template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'main.tmpl'),
-                                filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
+                                searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
             return template.respond()
         else:
             # Redirect to the setup wizard
             raise cherrypy.HTTPRedirect('%s/wizard/' % cfg.url_base())
-
-    @secured_expose(check_session_key=True)
-    def addFile(self, **kwargs):
-        nzbfile = kwargs.get('nzbfile')
-        if nzbfile is not None and nzbfile.filename:
-            if nzbfile.value or nzbfile.file:
-                sabnzbd.add_nzbfile(nzbfile, kwargs.get('pp'), kwargs.get('script'),
-                                    kwargs.get('cat'), kwargs.get('priority', NORMAL_PRIORITY))
-        raise Raiser(self.__root)
 
     @secured_expose(check_session_key=True)
     def shutdown(self, **kwargs):
@@ -530,7 +496,7 @@ class MainPage(object):
         return 'User-agent: *\nDisallow: /\n'
 
 ##############################################################################
-class Wizard(object):
+class Wizard:
 
     def __init__(self, root):
         self.__root = root
@@ -546,7 +512,7 @@ class Wizard(object):
         info = build_header(sabnzbd.WIZARD_DIR)
         info['languages'] = list_languages()
         template = Template(file=os.path.join(sabnzbd.WIZARD_DIR, 'index.html'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_configlock=True)
@@ -559,7 +525,7 @@ class Wizard(object):
         change_web_dir('Glitter - Default')
 
         info = build_header(sabnzbd.WIZARD_DIR)
-        info['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        info['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
 
         # Just in case, add server
         servers = config.get_servers()
@@ -587,7 +553,7 @@ class Wizard(object):
                 if s.enable():
                     break
         template = Template(file=os.path.join(sabnzbd.WIZARD_DIR, 'one.html'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_configlock=True)
@@ -604,11 +570,11 @@ class Wizard(object):
         info = build_header(sabnzbd.WIZARD_DIR)
 
         info['access_url'], info['urls'] = get_access_info()
-        info['download_dir'] = cfg.download_dir.get_path()
-        info['complete_dir'] = cfg.complete_dir.get_path()
+        info['download_dir'] = cfg.download_dir.get_clipped_path()
+        info['complete_dir'] = cfg.complete_dir.get_clipped_path()
 
         template = Template(file=os.path.join(sabnzbd.WIZARD_DIR, 'two.html'),
-                            searchList=[info], compilerSettings=DIRECTIVES)
+                            searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose
@@ -693,7 +659,7 @@ def get_access_info():
     return access_url, urls
 
 ##############################################################################
-class LoginPage(object):
+class LoginPage:
 
     @cherrypy.expose
     def index(self, **kwargs):
@@ -734,12 +700,12 @@ class LoginPage(object):
 
         # Show login
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'login', 'main.tmpl'),
-                                filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
+                                searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
 
 ##############################################################################
-class NzoPage(object):
+class NzoPage:
 
     def __init__(self, root):
         self.__root = root
@@ -786,7 +752,7 @@ class NzoPage(object):
                 info = self.nzo_files(info, nzo_id)
 
             template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'nzo.tmpl'),
-                                filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
+                                searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
             return template.respond()
         else:
             # Job no longer exists, go to main page
@@ -808,19 +774,15 @@ class NzoPage(object):
                 cat = pnfo.category
                 if not cat:
                     cat = 'None'
-                filename_pw = xml_name(nzo.final_name_pw_clean)
-                filename = xml_name(nzo.final_name)
-                if nzo.password:
-                    password = xml_name(nzo.password).replace('"', '&quot;')
-                else:
-                    password = ''
+                filename_pw = nzo.final_name_pw_clean
+                filename = nzo.final_name
                 priority = pnfo.priority
 
                 slot['nzo_id'] = str(nzo_id)
                 slot['cat'] = cat
                 slot['filename'] = filename_pw
                 slot['filename_clean'] = filename
-                slot['password'] = password or ''
+                slot['password'] = nzo.password or ''
                 slot['script'] = script
                 slot['priority'] = str(priority)
                 slot['unpackopts'] = str(unpackopts)
@@ -841,14 +803,14 @@ class NzoPage(object):
         if nzo:
             pnfo = nzo.gather_info(full=True)
             info['nzo_id'] = pnfo.nzo_id
-            info['filename'] = xml_name(pnfo.filename)
+            info['filename'] = pnfo.filename
 
             for nzf in pnfo.active_files:
                 checked = False
                 if nzf.nzf_id in self.__cached_selection and \
                    self.__cached_selection[nzf.nzf_id] == 'on':
                     checked = True
-                active.append({'filename': xml_name(nzf.filename if nzf.filename else nzf.subject),
+                active.append({'filename': nzf.filename if nzf.filename else nzf.subject,
                                'mbleft': "%.2f" % (nzf.bytes_left / MEBI),
                                'mb': "%.2f" % (nzf.bytes / MEBI),
                                'size': format_bytes(nzf.bytes),
@@ -875,7 +837,7 @@ class NzoPage(object):
         if index is not None:
             NzbQueue.do.switch(nzo_id, index)
         if name is not None:
-            NzbQueue.do.change_name(nzo_id, special_fixer(name), password)
+            NzbQueue.do.change_name(nzo_id, name, password)
 
         if cat is not None and nzo.cat is not cat and not (nzo.cat == '*' and cat == 'Default'):
             NzbQueue.do.change_cat(nzo_id, cat, priority)
@@ -928,7 +890,7 @@ class NzoPage(object):
 
 
 ##############################################################################
-class QueuePage(object):
+class QueuePage:
 
     def __init__(self, root):
         self.__root = root
@@ -941,7 +903,7 @@ class QueuePage(object):
         info, _pnfo_list, _bytespersec = build_queue(start=start, limit=limit, trans=True, search=search)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'queue.tmpl'),
-                            filter=FILTER, searchList=[info], compilerSettings=DIRECTIVES)
+                            searchList=[info], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True)
@@ -949,7 +911,7 @@ class QueuePage(object):
         uid = kwargs.get('uid')
         del_files = int_conv(kwargs.get('del_files'))
         if uid:
-            NzbQueue.do.remove(uid, False, keep_basic=not del_files, del_files=del_files)
+            NzbQueue.do.remove(uid, add_to_history=False, delete_all_data=del_files)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_session_key=True)
@@ -1054,12 +1016,10 @@ class QueuePage(object):
 
 
 ##############################################################################
-class HistoryPage(object):
+class HistoryPage:
 
     def __init__(self, root):
         self.__root = root
-        self.__verbose = False
-        self.__verbose_list = []
         self.__failed_only = False
 
     @secured_expose
@@ -1072,10 +1032,7 @@ class HistoryPage(object):
             failed_only = self.__failed_only
 
         history = build_header()
-
-        history['isverbose'] = self.__verbose
         history['failed_only'] = failed_only
-
         history['rating_enable'] = bool(cfg.rating_enable())
 
         postfix = T('B')  # : Abbreviation for bytes, as in GB
@@ -1084,7 +1041,7 @@ class HistoryPage(object):
                to_units(grand, postfix=postfix), to_units(month, postfix=postfix), \
                to_units(week, postfix=postfix), to_units(day, postfix=postfix)
 
-        history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, verbose=self.__verbose, verbose_list=self.__verbose_list, search=search, failed_only=failed_only)
+        history['lines'], history['fetched'], history['noofslots'] = build_history(limit=limit, start=start, search=search, failed_only=failed_only)
 
         if search:
             history['search'] = escape(search)
@@ -1101,7 +1058,7 @@ class HistoryPage(object):
         history['time_format'] = time_format
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'history.tmpl'),
-                            filter=FILTER, searchList=[history], compilerSettings=DIRECTIVES)
+                            searchList=[history], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True)
@@ -1131,40 +1088,8 @@ class HistoryPage(object):
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_session_key=True)
-    def purge_failed(self, **kwargs):
-        del_files = bool(int_conv(kwargs.get('del_files')))
-        history_db = sabnzbd.get_db_connection()
-        if del_files:
-            del_job_files(history_db.get_failed_paths())
-        history_db.remove_failed()
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_session_key=True)
     def reset(self, **kwargs):
         # sabnzbd.reset_byte_counter()
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_session_key=True)
-    def tog_verbose(self, **kwargs):
-        jobs = kwargs.get('jobs')
-        if not jobs:
-            self.__verbose = not self.__verbose
-            self.__verbose_list = []
-        else:
-            if self.__verbose:
-                self.__verbose = False
-            else:
-                jobs = jobs.split(',')
-                for job in jobs:
-                    if job in self.__verbose_list:
-                        self.__verbose_list.remove(job)
-                    else:
-                        self.__verbose_list.append(job)
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_session_key=True)
-    def tog_failed_only(self, **kwargs):
-        self.__failed_only = not self.__failed_only
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose
@@ -1192,7 +1117,7 @@ class HistoryPage(object):
 
 
 ##############################################################################
-class ConfigPage(object):
+class ConfigPage:
 
     def __init__(self, root):
         self.__root = root
@@ -1210,18 +1135,16 @@ class ConfigPage(object):
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf['configfn'] = config.get_filename()
+        conf['configfn'] = clip_path(config.get_filename())
         conf['cmdline'] = sabnzbd.CMDLINE
         conf['build'] = sabnzbd.version.__baseline__[:7]
 
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
-        conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
-        conf['have_yenc'] = HAVE_YENC
         conf['have_sabyenc'] = SABYENC_ENABLED
         conf['have_mt_par2'] = sabnzbd.newsunpack.PAR2_MT
 
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
         conf['ssl_version'] = ssl.OPENSSL_VERSION
 
         new = {}
@@ -1232,7 +1155,7 @@ class ConfigPage(object):
         conf['folders'] = NzbQueue.do.scan_jobs(all=False, action=False)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True)
@@ -1259,7 +1182,7 @@ LIST_DIRPAGE = (
 )
 
 
-class ConfigFolders(object):
+class ConfigFolders:
 
     def __init__(self, root):
         self.__root = root
@@ -1272,7 +1195,7 @@ class ConfigFolders(object):
             conf[kw] = config.get_config('misc', kw)()
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_folders.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1280,7 +1203,6 @@ class ConfigFolders(object):
         for kw in LIST_DIRPAGE:
             value = kwargs.get(kw)
             if value is not None:
-                value = platform_encode(value)
                 if kw in ('complete_dir', 'dirscan_dir'):
                     msg = config.get_config('misc', kw).set(value, create=True)
                 else:
@@ -1318,7 +1240,7 @@ SWITCH_LIST = \
      )
 
 
-class ConfigSwitches(object):
+class ConfigSwitches:
 
     def __init__(self, root):
         self.__root = root
@@ -1327,7 +1249,7 @@ class ConfigSwitches(object):
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
         conf['have_nice'] = bool(sabnzbd.newsunpack.NICE_COMMAND)
         conf['have_ionice'] = bool(sabnzbd.newsunpack.IONICE_COMMAND)
         conf['cleanup_list'] = cfg.cleanup_list.get_string()
@@ -1339,14 +1261,14 @@ class ConfigSwitches(object):
         conf['scripts'] = list_scripts() or ['None']
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_switches.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
     def saveSwitches(self, **kwargs):
         for kw in SWITCH_LIST:
             item = config.get_config('misc', kw)
-            value = platform_encode(kwargs.get(kw))
+            value = kwargs.get(kw)
             if kw == 'unwanted_extensions' and value:
                 value = value.lower().replace('.', '')
             msg = item.set(value)
@@ -1367,21 +1289,20 @@ SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'fast_fail', 'ignore_wrong_unrar', 'overwrite_files', 'enable_par_cleanup',
               'queue_complete_pers', 'api_warnings', 'ampm', 'enable_unrar', 'enable_unzip', 'enable_7zip',
               'enable_filejoin', 'enable_tsjoin', 'ignore_unrar_dates', 'debug_log_decoding',
-              'multipar', 'osx_menu', 'osx_speed', 'win_menu', 'use_pickle', 'allow_incomplete_nzb',
+              'multipar', 'osx_menu', 'osx_speed', 'win_menu', 'allow_incomplete_nzb',
               'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
               'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'reject_duplicate_files', 'warn_dupl_jobs',
               'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging',
               'ignore_empty_files', 'x_frame_options', 'require_modern_tls'
      )
 SPECIAL_VALUE_LIST = \
-    ('size_limit', 'folder_max_length', 'fsys_type', 'movie_rename_limit', 'nomedia_marker',
-              'max_url_retries', 'req_completion_rate', 'wait_ext_drive', 'show_sysload', 'url_base',
-              'direct_unpack_threads', 'ipv6_servers', 'selftest_host', 'rating_host'
+    ('size_limit', 'movie_rename_limit', 'nomedia_marker', 'max_url_retries', 'req_completion_rate', 'wait_ext_drive',
+        'show_sysload', 'url_base', 'direct_unpack_threads', 'ipv6_servers', 'selftest_host', 'rating_host'
      )
 SPECIAL_LIST_LIST = ('rss_odd_titles', 'quick_check_ext_ignore', 'host_whitelist')
 
 
-class ConfigSpecial(object):
+class ConfigSpecial:
 
     def __init__(self, root):
         self.__root = root
@@ -1394,7 +1315,7 @@ class ConfigSpecial(object):
         conf['entries'].extend([(kw, config.get_config('misc', kw).get_string(), config.get_config('misc', kw).default_string()) for kw in SPECIAL_LIST_LIST])
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_special.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1419,7 +1340,7 @@ GENERAL_LIST = (
 )
 
 
-class ConfigGeneral(object):
+class ConfigGeneral:
 
     def __init__(self, root):
         self.__root = root
@@ -1451,8 +1372,7 @@ class ConfigGeneral(object):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf['configfn'] = config.get_filename()
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
-        conf['have_cryptography'] = bool(sabnzbd.HAVE_CRYPTOGRAPHY)
+        conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
 
         wlist = []
         interfaces = globber_full(sabnzbd.DIR_INTERFACES)
@@ -1461,14 +1381,9 @@ class ConfigGeneral(object):
                 interfaces.remove(k)
                 continue
 
-            # TEMPORARY: Remove when smpl is really depricated
-            # Do not show smpl unless it's selected one
-            if k.endswith('smpl') and 'smpl' not in cfg.web_dir():
-                interfaces.remove(k)
-
         for web in interfaces:
             rweb = os.path.basename(web)
-            if os.access(web + '/' + DEF_MAIN_TMPL, os.R_OK):
+            if os.access(os.path.join(web, DEF_MAIN_TMPL), os.R_OK):
                 cols = ListColors(rweb)
                 if cols:
                     for col in cols:
@@ -1492,11 +1407,11 @@ class ConfigGeneral(object):
         conf['bandwidth_perc'] = cfg.bandwidth_perc()
         conf['nzb_key'] = cfg.nzb_key()
         conf['local_ranges'] = cfg.local_ranges.get_string()
-        conf['my_lcldata'] = cfg.admin_dir.get_path()
+        conf['my_lcldata'] = cfg.admin_dir.get_clipped_path()
         conf['caller_url'] = cherrypy.request.base + cfg.url_base()
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_general.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1504,7 +1419,7 @@ class ConfigGeneral(object):
         # Handle general options
         for kw in GENERAL_LIST:
             item = config.get_config('misc', kw)
-            value = platform_encode(kwargs.get(kw))
+            value = kwargs.get(kw)
             msg = item.set(value)
             if msg:
                 return badParameterResponse(msg)
@@ -1547,14 +1462,14 @@ def change_web_dir(web_dir):
     web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 
     if not os.path.exists(web_dir_path):
-        return badParameterResponse('Cannot find web template: %s' % unicoder(web_dir_path))
+        return badParameterResponse('Cannot find web template: %s' % web_dir_path)
     else:
         cfg.web_dir.set(web_dir)
         cfg.web_color.set(web_color)
 
 
 ##############################################################################
-class ConfigServer(object):
+class ConfigServer:
 
     def __init__(self, root):
         self.__root = root
@@ -1564,7 +1479,7 @@ class ConfigServer(object):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         new = []
         servers = config.get_servers()
-        server_names = sorted(servers.keys(), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
+        server_names = sorted(list(servers.keys()), key=lambda svr: '%d%02d%s' % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()))
         for svr in server_names:
             new.append(servers[svr].get_dict(safe=True))
             t, m, w, d, timeline = BPSMeter.do.amounts(svr)
@@ -1572,10 +1487,10 @@ class ConfigServer(object):
                 new[-1]['amounts'] = to_units(t), to_units(m), to_units(w), to_units(d), timeline
         conf['servers'] = new
         conf['cats'] = list_cats(default=True)
-        conf['have_ssl_context'] = sabnzbd.HAVE_SSL_CONTEXT
+        conf['certificate_validation'] = sabnzbd.CERTIFICATE_VALIDATION
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_server.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1704,7 +1619,7 @@ def handle_server_test(kwargs, root):
 
 
 ##############################################################################
-class ConfigRss(object):
+class ConfigRss:
 
     def __init__(self, root):
         self.__root = root
@@ -1739,14 +1654,14 @@ class ConfigRss(object):
 
             rss[feed]['pick_cat'] = pick_cat
             rss[feed]['pick_script'] = pick_script
-            rss[feed]['link'] = urllib.quote_plus(feed.encode('utf-8'))
+            rss[feed]['link'] = urllib.parse.quote_plus(feed.encode('utf-8'))
             rss[feed]['baselink'] = [get_base_url(uri) for uri in rss[feed]['uri']]
             rss[feed]['uris'] = feeds[feed].uri.get_string()
 
         active_feed = kwargs.get('feed', '')
         conf['active_feed'] = active_feed
         conf['rss'] = rss
-        conf['rss_next'] = time.strftime(time_format('%H:%M'), time.localtime(sabnzbd.rss.next_run())).decode(codepage)
+        conf['rss_next'] = time.strftime(time_format('%H:%M'), time.localtime(sabnzbd.rss.next_run()))
 
         if active_feed:
             readout = bool(self.__refresh_readout)
@@ -1782,7 +1697,7 @@ class ConfigRss(object):
         conf['feed'] = txt + str(unum)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_rss.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -1898,7 +1813,7 @@ class ConfigRss(object):
 
         if filt:
             feed_cfg.filters.update(int(kwargs.get('index', 0)), (cat, pp, script, kwargs.get('filter_type'),
-                                                             platform_encode(filt), prio, enabled))
+                                                             filt, prio, enabled))
 
             # Move filter if requested
             index = int_conv(kwargs.get('index', ''))
@@ -2039,7 +1954,7 @@ _SCHED_ACTIONS = ('resume', 'pause', 'pause_all', 'shutdown', 'restart', 'speedl
                   )
 
 
-class ConfigScheduling(object):
+class ConfigScheduling:
 
     def __init__(self, root):
         self.__root = root
@@ -2126,7 +2041,7 @@ class ConfigScheduling(object):
         conf['categories'] = categories
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_scheduling.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -2207,7 +2122,7 @@ class ConfigScheduling(object):
 
 
 ##############################################################################
-class ConfigCats(object):
+class ConfigCats:
 
     def __init__(self, root):
         self.__root = root
@@ -2217,7 +2132,7 @@ class ConfigCats(object):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf['scripts'] = list_scripts(default=True)
-        conf['defdir'] = cfg.complete_dir.get_path()
+        conf['defdir'] = cfg.complete_dir.get_clipped_path()
 
         categories = config.get_ordered_categories()
         conf['have_cats'] = len(categories) > 1
@@ -2233,7 +2148,7 @@ class ConfigCats(object):
         conf['slotinfo'] = slotinfo
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_cat.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -2251,9 +2166,6 @@ class ConfigCats(object):
         else:
             newname = re.sub('"', '', kwargs.get('newname', ''))
         if newname:
-            if kwargs.get('dir'):
-                kwargs['dir'] = platform_encode(kwargs['dir'])
-
             # Check if this cat-dir is not sub-folder of incomplete
             if same_file(cfg.download_dir.get_path(), real_path(cfg.complete_dir.get_path(), kwargs['dir'])):
                 return T('Category folder cannot be a subfolder of the Temporary Download Folder.')
@@ -2275,7 +2187,7 @@ SORT_LIST = (
 )
 
 
-class ConfigSorting(object):
+class ConfigSorting:
 
     def __init__(self, root):
         self.__root = root
@@ -2283,14 +2195,14 @@ class ConfigSorting(object):
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-        conf['complete_dir'] = cfg.complete_dir.get_path()
+        conf['complete_dir'] = cfg.complete_dir.get_clipped_path()
 
         for kw in SORT_LIST:
             conf[kw] = config.get_config('misc', kw)()
         conf['categories'] = list_cats(False)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_sorting.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -2320,14 +2232,14 @@ class ConfigSorting(object):
 
 
 ##############################################################################
-LOG_API_RE = re.compile(r"(apikey|api)(=|:)[\w]+", re.I)
-LOG_API_JSON_RE = re.compile(r"u'(apikey|api)': u'[\w]+'", re.I)
-LOG_USER_RE = re.compile(r"(user|username)\s?=\s?[\S]+", re.I)
-LOG_PASS_RE = re.compile(r"(password)\s?=\s?[\S]+", re.I)
-LOG_INI_HIDE_RE = re.compile(r"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+", re.I)
-LOG_HASH_RE = re.compile(r"([a-fA-F\d]{25})", re.I)
+LOG_API_RE = re.compile(b"(apikey|api)(=|:)[\w]+", re.I)
+LOG_API_JSON_RE = re.compile(b"'(apikey|api)': '[\w]+'", re.I)
+LOG_USER_RE = re.compile(b"(user|username)\s?=\s?[\S]+", re.I)
+LOG_PASS_RE = re.compile(b"(password)\s?=\s?[\S]+", re.I)
+LOG_INI_HIDE_RE = re.compile(b"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+", re.I)
+LOG_HASH_RE = re.compile(b"([a-fA-F\d]{25})", re.I)
 
-class Status(object):
+class Status:
 
     def __init__(self, root):
         self.__root = root
@@ -2336,7 +2248,7 @@ class Status(object):
     def index(self, **kwargs):
         header = build_status(skip_dashboard=kwargs.get('skip_dashboard'))
         template = Template(file=os.path.join(sabnzbd.WEB_DIR, 'status.tmpl'),
-                            filter=FILTER, searchList=[header], compilerSettings=DIRECTIVES)
+                            searchList=[header], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True)
@@ -2362,26 +2274,26 @@ class Status(object):
             pass
 
         # Fetch the INI and the log-data and add a message at the top
-        log_data  = '--------------------------------\n\n'
-        log_data += 'The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed.'
-        log_data += '\n\n--------------------------------\n'
-        log_data += open(sabnzbd.LOGFILE, "r").read()
-        log_data += open(config.get_filename(), 'r').read()
+        log_data  = b'--------------------------------\n\n'
+        log_data += b'The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed.'
+        log_data += b'\n\n--------------------------------\n'
+        log_data += open(sabnzbd.LOGFILE, "rb").read()
+        log_data += open(config.get_filename(), 'rb').read()
 
         # We need to remove all passwords/usernames/api-keys
-        log_data = LOG_API_RE.sub("apikey=<APIKEY>", log_data)
-        log_data = LOG_API_JSON_RE.sub("'apikey':<APIKEY>'", log_data)
-        log_data = LOG_USER_RE.sub(r'\g<1>=<USER>', log_data)
-        log_data = LOG_PASS_RE.sub("password=<PASSWORD>", log_data)
-        log_data = LOG_INI_HIDE_RE.sub(r"\1 = <REMOVED>", log_data)
-        log_data = LOG_HASH_RE.sub("<HASH>", log_data)
+        log_data = LOG_API_RE.sub(b"apikey=<APIKEY>", log_data)
+        log_data = LOG_API_JSON_RE.sub(b"'apikey':<APIKEY>'", log_data)
+        log_data = LOG_USER_RE.sub(b'\g<1>=<USER>', log_data)
+        log_data = LOG_PASS_RE.sub(b"password=<PASSWORD>", log_data)
+        log_data = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", log_data)
+        log_data = LOG_HASH_RE.sub(b"<HASH>", log_data)
 
         # Try to replace the username
         try:
             import getpass
             cur_user = getpass.getuser()
             if cur_user:
-                log_data = log_data.replace(cur_user, '<USERNAME>')
+                log_data = log_data.replace(utob(cur_user), b'<USERNAME>')
         except:
             pass
         # Set headers
@@ -2436,10 +2348,23 @@ class Status(object):
         # PyStone
         sabnzbd.PYSTONE_SCORE = getpystone()
 
-        # Diskspeed
-        sabnzbd.DOWNLOAD_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
+        # Diskspeed of download (aka incomplete) directory:
+        dir_speed = diskspeedmeasure(sabnzbd.cfg.download_dir.get_path())
+        if dir_speed:
+            sabnzbd.DOWNLOAD_DIR_SPEED = round(dir_speed, 1)
+        else:
+            sabnzbd.DOWNLOAD_DIR_SPEED = 0
+
         time.sleep(1.0)
-        sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
+        # Diskspeed of complete directory:
+        dir_speed = diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path())
+        if dir_speed:
+            sabnzbd.COMPLETE_DIR_SPEED = round(dir_speed, 1)
+        else:
+            sabnzbd.COMPLETE_DIR_SPEED = 0
+
+        # Internet bandwidth
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
 
         raise Raiser(self.__root)  # Refresh screen
 
@@ -2447,7 +2372,6 @@ class Status(object):
 def orphan_delete(kwargs):
     path = kwargs.get('name')
     if path:
-        path = platform_encode(path)
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         logging.info('Removing orphaned job %s', path)
         remove_all(path, recursive=True)
@@ -2463,7 +2387,6 @@ def orphan_delete_all():
 def orphan_add(kwargs):
     path = kwargs.get('name')
     if path:
-        path = platform_encode(path)
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         logging.info('Re-adding orphaned job %s', path)
         NzbQueue.do.repair_job(path, None, None)
@@ -2494,16 +2417,11 @@ def badParameterResponse(msg, ajax=None):
 <FORM><INPUT TYPE="BUTTON" VALUE="%s" ONCLICK="history.go(-1)"></FORM>
 </body>
 </html>
-''' % (sabnzbd.__version__, T('ERROR:'), T('Incorrect parameter'), unicoder(msg), T('Back'))
+''' % (sabnzbd.__version__, T('ERROR:'), T('Incorrect parameter'), msg, T('Back'))
 
 
-def ShowString(name, string):
+def ShowString(name, msg):
     """ Return a html page listing a file and a 'back' button """
-    try:
-        msg = TRANS(string)
-    except:
-        msg = "Encoding Error\n"
-
     return '''
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>
@@ -2516,7 +2434,7 @@ def ShowString(name, string):
            <code><pre>%s</pre></code>
 </body>
 </html>
-''' % (xml_name(name), T('Back'), xml_name(name), escape(unicoder(msg)))
+''' % (xml_name(name), T('Back'), xml_name(name), escape(msg))
 
 
 def GetRssLog(feed):
@@ -2525,7 +2443,7 @@ def GetRssLog(feed):
         job = job.copy()
 
         # Now we apply some formatting
-        job['title'] = xml_name(job['title'])
+        job['title'] = job['title']
         job['skip'] = '*' * int(job.get('status', '').endswith('*'))
         # These fields could be empty
         job['cat'] = job.get('cat', '')
@@ -2538,10 +2456,10 @@ def GetRssLog(feed):
             if sabnzbd.rss.special_rss_site(job.get('url')):
                 job['nzbname'] = ''
             else:
-                job['nzbname'] = xml_name(job['title'])
+                job['nzbname'] = job['title']
         else:
             job['baselink'] = ''
-            job['nzbname'] = xml_name(job['title'])
+            job['nzbname'] = job['title']
 
         if job.get('size', 0):
             job['size_units'] = to_units(job['size'])
@@ -2558,14 +2476,14 @@ def GetRssLog(feed):
 
         if job.get('time_downloaded'):
             job['time_downloaded_ms'] = time.mktime(job['time_downloaded'])
-            job['time_downloaded'] = time.strftime(time_format('%H:%M %a %d %b'), job['time_downloaded']).decode(codepage)
+            job['time_downloaded'] = time.strftime(time_format('%H:%M %a %d %b'), job['time_downloaded'])
         else:
             job['time_downloaded_ms'] = ''
             job['time_downloaded'] = ''
 
         return job
 
-    jobs = sabnzbd.rss.show_result(feed).values()
+    jobs = list(sabnzbd.rss.show_result(feed).values())
     good, bad, done = ([], [], [])
     for job in jobs:
         if job['status'][0] == 'G':
@@ -2627,7 +2545,7 @@ LIST_NSCRIPT = ('nscript_enable', 'nscript_cats', 'nscript_script', 'nscript_par
                 'nscript_prio_new_login')
 
 
-class ConfigNotify(object):
+class ConfigNotify:
 
     def __init__(self, root):
         self.__root = root
@@ -2669,7 +2587,7 @@ class ConfigNotify(object):
         conf['notify_texts'] = sabnzbd.notifier.NOTIFICATION
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config_notify.tmpl'),
-                            filter=FILTER, searchList=[conf], compilerSettings=DIRECTIVES)
+                            searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_session_key=True, check_configlock=True)
@@ -2677,41 +2595,41 @@ class ConfigNotify(object):
         ajax = kwargs.get('ajax')
 
         for kw in LIST_EMAIL:
-            msg = config.get_config('misc', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('misc', kw).set(kwargs.get(kw))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_GROWL:
-            msg = config.get_config('growl', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('growl', kw).set(kwargs.get(kw))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NCENTER:
-            msg = config.get_config('ncenter', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('ncenter', kw).set(kwargs.get(kw))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_ACENTER:
-            msg = config.get_config('acenter', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('acenter', kw).set(kwargs.get(kw))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NTFOSD:
-            msg = config.get_config('ntfosd', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('ntfosd', kw).set(kwargs.get(kw))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PROWL:
-            msg = config.get_config('prowl', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('prowl', kw).set(kwargs.get(kw))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PUSHOVER:
-            msg = config.get_config('pushover', kw).set(platform_encode(kwargs.get(kw)))
+            msg = config.get_config('pushover', kw).set(kwargs.get(kw))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_PUSHBULLET:
-            msg = config.get_config('pushbullet', kw).set(platform_encode(kwargs.get(kw, 0)))
+            msg = config.get_config('pushbullet', kw).set(kwargs.get(kw, 0))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NSCRIPT:
-            msg = config.get_config('nscript', kw).set(platform_encode(kwargs.get(kw, 0)))
+            msg = config.get_config('nscript', kw).set(kwargs.get(kw, 0))
             if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, unicoder(msg)), ajax)
+                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
 
         config.save_config()
         self.__lastmail = None
@@ -2719,82 +2637,4 @@ class ConfigNotify(object):
             return sabnzbd.api.report('json')
         else:
             raise Raiser(self.__root)
-
-    @secured_expose(check_session_key=True, check_configlock=True)
-    def testmail(self, **kwargs):
-        self.__lastmail = _api_test_email(name=None, output=None, kwargs=None)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_session_key=True, check_configlock=True)
-    def testnotification(self, **kwargs):
-        _api_test_notif(name=None, output=None, kwargs=None)
-        raise Raiser(self.__root)
-
-
-def rss_history(url, limit=50, search=None):
-    url = url.replace('rss', '')
-
-    youngest = None
-
-    rss = RSS()
-    rss.channel.title = "SABnzbd History"
-    rss.channel.description = "Overview of completed downloads"
-    rss.channel.link = "https://sabnzbd.org/"
-    rss.channel.language = "en"
-
-    items, _fetched_items, _max_items = build_history(limit=limit, search=search)
-
-    for history in items:
-        item = Item()
-
-        item.pubDate = std_time(history['completed'])
-        item.title = history['name']
-
-        if not youngest:
-            youngest = history['completed']
-        elif history['completed'] < youngest:
-            youngest = history['completed']
-
-        if history['url_info']:
-            item.link = history['url_info']
-        else:
-            item.link = url
-            item.guid = history['nzo_id']
-
-        stageLine = []
-        for stage in history['stage_log']:
-            stageLine.append("<tr><dt>Stage %s</dt>" % stage['name'])
-            actions = []
-            for action in stage['actions']:
-                actions.append("<dd>%s</dd>" % action)
-            actions.sort()
-            actions.reverse()
-            for act in actions:
-                stageLine.append(act)
-            stageLine.append("</tr>")
-        item.description = ''.join(stageLine)
-        rss.addItem(item)
-
-    rss.channel.lastBuildDate = std_time(youngest)
-    rss.channel.pubDate = std_time(time.time())
-
-    return rss.write()
-
-
-def rss_warnings():
-    """ Return an RSS feed with last warnings/errors """
-    rss = RSS()
-    rss.channel.title = "SABnzbd Warnings"
-    rss.channel.description = "Overview of warnings/errors"
-    rss.channel.link = "https://sabnzbd.org/"
-    rss.channel.language = "en"
-
-    for warn in sabnzbd.GUIHANDLER.content():
-        item = Item()
-        item.title = warn
-        rss.addItem(item)
-
-    rss.channel.lastBuildDate = std_time(time.time())
-    rss.channel.pubDate = rss.channel.lastBuildDate
-    return rss.write()
 

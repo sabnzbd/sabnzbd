@@ -41,7 +41,7 @@
                 <input type="hidden" name="session" value="$session" />
                 <table id="subscriptions">
                     <tbody>
-                        <!--#set $feeds = sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#-->
+                        <!--#set $feeds = sorted($rss.keys(), key=lambda x: x.lower())#-->
                         <!--#set $odd = False#-->
                         <!--#for $feed_item in $feeds#-->
                             <!--#set $odd = not $odd#-->

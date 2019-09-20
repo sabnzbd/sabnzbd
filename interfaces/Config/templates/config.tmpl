@@ -2,7 +2,7 @@
 <!--#set global $help_uri="configuration/2.3/configure"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
-<!--#from locale import getpreferredencoding#-->
+<!--#from sabnzbd.encoding import CODEPAGE#-->
 <div class="colmask">
     <div class="section padTable">
         <table class="table table-striped">
@@ -25,7 +25,7 @@
                 </tr>
                 <tr>
                     <th scope="row">$T('pythonVersion'): </th>
-                    <td>$sys.version[:120] [$getpreferredencoding()]</td>
+                    <td>$sys.version[:120] [$CODEPAGE]</td>
                 </tr>
                 <tr>
                     <th scope="row">OpenSSL:</th>
@@ -33,7 +33,7 @@
                         $ssl_version
                     </td>
                 </tr>
-                <!--#if not $have_ssl_context#-->
+                <!--#if not $certificate_validation#-->
                 <tr>
                     <th scope="row"></th>
                     <td>
@@ -51,24 +51,6 @@
                         <span class="label label-warning">$T('notAvailable')</span> $T('explain-getpar2mt')
                         <a href="${helpuri}installation/multicore-par2" target="_blank">${helpuri}installation/multicore-par2</a>
                         <!--#end if#-->
-                    </td>
-                </tr>
-                <!--#end if#-->
-                <!--#if not $have_cryptography #-->
-                <tr>
-                    <th scope="row">Python Cryptography:</th>
-                    <td>
-                        <span class="label label-warning">$T('notAvailable')</span>
-                        <a href="$helpuri$help_uri#no_cryptography" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
-                    </td>
-                </tr>
-                <!--#end if#-->
-                <!--#if not $have_yenc and not $have_sabyenc#-->
-                <tr>
-                    <th scope="row">yEnc:</th>
-                    <td>
-                        <span class="label label-danger">$T('notAvailable')</span>
-                        <a href="$helpuri$help_uri#no_yenc" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
                     </td>
                 </tr>
                 <!--#end if#-->

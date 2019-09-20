@@ -73,7 +73,7 @@
                 <div class="field-pair advanced-settings">
                     <label class="config" for="https_cert">$T('opt-https_cert')</label>
                     <input type="text" name="https_cert" id="https_cert" value="$https_cert" />
-                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')" <!--#if int($have_cryptography) == 0 then "disabled" else ""#-->>
+                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')">
                         <span class="glyphicon glyphicon-repeat"></span>
                     </button>
                     <span class="desc">$T('explain-https_cert')</span>
@@ -81,7 +81,7 @@
                 <div class="field-pair advanced-settings">
                     <label class="config" for="https_key">$T('opt-https_key')</label>
                     <input type="text" name="https_key" id="https_key" value="$https_key" />
-                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')" <!--#if int($have_cryptography) == 0 then "disabled" else ""#-->>
+                    <button class="btn btn-default generate_cert" title="$T('explain-new-cert')">
                         <span class="glyphicon glyphicon-repeat"></span>
                     </button>
                     <span class="desc">$T('explain-https_key')</span>
@@ -177,9 +177,9 @@
                     </select>
                     <span class="desc">$T('explain-check_new_rel')</span>
                 </div>
-                <div class="field-pair advanced-settings <!--#if int($have_ssl_context) == 0 then "disabled" else ""#-->">
+                <div class="field-pair advanced-settings <!--#if int($certificate_validation) == 0 then "disabled" else ""#-->">
                     <label class="config" for="enable_https_verification">$T('opt-enable_https_verification')</label>
-                    <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($have_ssl_context) == 0 then "disabled=\"disabled\"" else ""#--> />
+                    <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($certificate_validation) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('explain-enable_https_verification')</span>
                 </div>
                 <div class="field-pair">
