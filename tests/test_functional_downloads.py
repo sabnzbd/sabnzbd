@@ -136,6 +136,10 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.is_server_configured()
         self.add_nzb_from_url("https://sabnzbd.org/tests/test_zip.nzb", "testfile.bin")
 
+    def test_download_sfv_check(self):
+        self.is_server_configured()
+        self.add_nzb_from_url("https://sabnzbd.org/tests/test_sfv_check.nzb", "blabla.bin")
+
     @pytest.mark.skip(reason="Fails due to wrong par2-renaming. Needs fixing.")
     def test_download_win_unicode(self):
         self.is_server_configured()
