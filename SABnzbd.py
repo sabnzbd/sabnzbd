@@ -49,8 +49,9 @@ except ValueError:
     print("Sorry, requires Python module Cheetah 3 or higher.")
     sys.exit(1)
 except ImportError:
-    print("Not all required Python modules are available, please check requirements.txt.")
+    print("Not all required Python modules are available, please check requirements.txt")
     print("You can read more at: https://sabnzbd.org/python3")
+    print("If you still experience problems, remove all .pyc files in this folder and subfolders")
     sys.exit(1)
 
 import sabnzbd
