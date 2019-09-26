@@ -36,9 +36,9 @@ def diskspeedmeasure(dirname):
             # Have to use low-level close
             os.close(fp)
             os.remove(filename)
-        except:
+        except OSError:
             pass
-    except:
+    except OSError:
         # No succesful measurement, so ... report None
         return None
 
@@ -50,22 +50,22 @@ if __name__ == "__main__":
     print("Let's go")
 
     if len(sys.argv) >= 2:
-        dirname = sys.argv[1]
-        if not os.path.isdir(dirname):
+        directoryname = sys.argv[1]
+        if not os.path.isdir(directoryname):
             print("Specified argument is not a directory. Bailing out")
             sys.exit(1)
     else:
         # no argument, so use current working directory
-        dirname = os.getcwd()
+        directoryname = os.getcwd()
         print("Using current working directory")
 
     try:
-        speed = diskspeedmeasure(dirname)
+        speed = diskspeedmeasure(directoryname)
         if speed:
             print("Disk writing speed: %.2f Mbytes per second" % speed)
         else:
             print("No measurement possible. Check that directory is writable.")
-    except:
+    except OSError:
         print("Something went wrong. I don't know what")
         raise
 
