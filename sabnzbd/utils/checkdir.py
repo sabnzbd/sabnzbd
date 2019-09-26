@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """
 Functions to check if the path filesystem uses FAT
@@ -9,13 +9,16 @@ import os
 
 debug = False
 
+# TODO: Rename function isFAT and variable FAT to PEP8-compliant 'is_fat32' and 'fat32. Check for any API impacts first'
 
-def isFAT(check_dir):
+
+def isFAT(check_dir):  # PEP8 would rename isFAT to is_fat. However, don't want to break API so leaving for now.
     """ Check if "check_dir" is on FAT. FAT considered harmful (for big files)
         Works for Linux, Windows, MacOS
         NB: On Windows, full path with drive letter is needed!
     """
 
+    # PEP8 would have FAT be renamed 'fat' . However, this may break API elsewhere so leaving for now.
     FAT = False  # default: not FAT
     # We're dealing with OS calls, so put everything in a try/except, just in case:
     try:
@@ -54,7 +57,7 @@ def isFAT(check_dir):
                     print(result)
                 if result[4].startswith("FAT"):
                     FAT = True
-            except:
+            except (OSError, SystemError, IndexError, win32api.error):                  # Eliminate broad exception
                 pass
         elif "darwin" in sys.platform:
             # MacOS formerly known as OSX
@@ -87,20 +90,20 @@ def isFAT(check_dir):
                         FAT = True
                     break
 
-    except:
+    except (OSError, SystemError):                                                      # Eliminate broad exception
         pass
     return FAT
 
 
 if __name__ == "__main__":
     if debug:
-        print((sys.platform))
+        print(sys.platform)
     try:
         dir_to_check = sys.argv[1]
-    except:
+    except (OSError, SystemError):                                                      # Eliminate broad exception
         print("Specify dir on the command line")
         sys.exit(0)
     if isFAT(dir_to_check):
-        print((dir_to_check, "is on FAT"))
+        print(dir_to_check, "is on FAT")
     else:
-        print((dir_to_check, "is not on FAT"))
+        print(dir_to_check, "is not on FAT")
