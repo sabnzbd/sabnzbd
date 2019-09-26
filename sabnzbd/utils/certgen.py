@@ -9,6 +9,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography import x509
+import cryptography.exceptions as crypto_exceptions
 from cryptography.x509.oid import NameOID
 import datetime
 import socket
@@ -57,9 +58,9 @@ def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", L
 
     # Then the host IP addresses, add with x509.IPAddress()
     # Inside a try-except, just to be sure
-    try:
-        import ipaddress
+    import ipaddress
 
+    try:
         san_list.append(x509.IPAddress(ipaddress.IPv4Address("127.0.0.1")))
         san_list.append(x509.IPAddress(ipaddress.IPv6Address("::1")))
 
@@ -67,7 +68,7 @@ def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", L
         mylocalipv4 = localipv4()
         if mylocalipv4:
             san_list.append(x509.IPAddress(ipaddress.IPv4Address(str(mylocalipv4))))
-    except:
+    except (crypto_exceptions.InternalError, ipaddress.AddressValueError, ipaddress.NetmaskValueError):
         pass
 
     cert = (
@@ -91,6 +92,6 @@ def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", L
 
 if __name__ == "__main__":
     print("Making key")
-    private_key = generate_key()
+    private_key_main = generate_key()
     print("Making cert")
-    cert = generate_local_cert(private_key)
+    cert_main = generate_local_cert(private_key_main)
