@@ -795,7 +795,6 @@ if sabnzbd.WIN32:
         import win32api as w32
     except ImportError:
         w32 = None
-        pass
 
 
     def diskspace_base(_dir):
@@ -830,8 +829,7 @@ else:
             except OSError:
                 return 0.0, 0.0
 
-    except OSError:
-
+    except ImportError:
         def diskspace_base(_dir):
             return 20.0, 10.0
 
