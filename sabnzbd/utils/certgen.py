@@ -22,9 +22,9 @@ def generate_key(key_size=2048, output_file="key.pem"):
         Ported from cryptography docs/x509/tutorial.rst (set with no encryption)
     """
     # Generate our key
-    private_key = rsa.generate_private_key(public_exponent=65537,
-                                           key_size=key_size,
-                                           backend=default_backend())
+    private_key = rsa.generate_private_key(
+        public_exponent=65537, key_size=key_size, backend=default_backend()
+    )
 
     # Write our key to disk for safe keeping
     with open(output_file, "wb") as f:
@@ -40,11 +40,9 @@ def generate_key(key_size=2048, output_file="key.pem"):
     return private_key
 
 
-def generate_local_cert(private_key,
-                        days_valid=3560,
-                        output_file="cert.cert",
-                        LN="SABnzbd",
-                        ON="SABnzbd"):
+def generate_local_cert(
+    private_key, days_valid=3560, output_file="cert.cert", LN="SABnzbd", ON="SABnzbd"
+):
     """ Generate a certificate, using basic information.
         Ported from cryptography docs/x509/tutorial.rst
     """
@@ -74,25 +72,28 @@ def generate_local_cert(private_key,
         mylocalipv4 = localipv4()
         if mylocalipv4:
             san_list.append(x509.IPAddress(ipaddress.IPv4Address(str(mylocalipv4))))
-    except (crypto_exceptions.InternalError,
-            crypto_exceptions.InvalidKey,
-            crypto_exceptions.UnsupportedAlgorithm,
-            ipaddress.AddressValueError,
-            ipaddress.NetmaskValueError):
+    except (
+        crypto_exceptions.InternalError,
+        crypto_exceptions.InvalidKey,
+        crypto_exceptions.UnsupportedAlgorithm,
+        ipaddress.AddressValueError,
+        ipaddress.NetmaskValueError,
+    ):
         pass
 
     cert = (
-            x509.CertificateBuilder()
-            .subject_name(subject)
-            .issuer_name(issuer)
-            .public_key(private_key.public_key())
-            .not_valid_before(datetime.datetime.utcnow())
-            .not_valid_after(
-                datetime.datetime.utcnow() + datetime.timedelta(days=days_valid))
-            .serial_number(x509.random_serial_number())
-            .add_extension(x509.SubjectAlternativeName(san_list), critical=True)
-            .sign(private_key, hashes.SHA256(), default_backend())
-            )
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(issuer)
+        .public_key(private_key.public_key())
+        .not_valid_before(datetime.datetime.utcnow())
+        .not_valid_after(
+            datetime.datetime.utcnow() + datetime.timedelta(days=days_valid)
+        )
+        .serial_number(x509.random_serial_number())
+        .add_extension(x509.SubjectAlternativeName(san_list), critical=True)
+        .sign(private_key, hashes.SHA256(), default_backend())
+    )
 
     # Write our certificate out to disk.
     with open(output_file, "wb") as f:

@@ -50,8 +50,9 @@ def isFAT(check_dir):
 
             if "?" in check_dir:
                 #  Remove \\?\ or \\?\UNC\ prefix from Windows path
-                check_dir = check_dir.replace(
-                    "\\\\?\\UNC\\", "\\\\", 1).replace("\\\\?\\", "", 1)
+                check_dir = check_dir.replace("\\\\?\\UNC\\", "\\\\", 1).replace(
+                    "\\\\?\\", "", 1
+                )
             try:
                 result = win32api.GetVolumeInformation(os.path.splitdrive(check_dir)[0])
                 if debug:

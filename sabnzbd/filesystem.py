@@ -299,8 +299,9 @@ def create_real_path(name, loc, path, umask=False, writable=True):
     if path:
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
-            logging.info("%s directory: %s does not exist, try to create it", name,
-                         my_dir)
+            logging.info(
+                "%s directory: %s does not exist, try to create it", name, my_dir
+            )
             if not create_all_dirs(my_dir, umask):
                 logging.error(T("Cannot create directory %s"), clip_path(my_dir))
                 return False, my_dir
@@ -309,8 +310,9 @@ def create_real_path(name, loc, path, umask=False, writable=True):
         if os.access(my_dir, checks):
             return True, my_dir
         else:
-            logging.error(T("%s directory: %s error accessing"),
-                          name, clip_path(my_dir))
+            logging.error(
+                T("%s directory: %s error accessing"), name, clip_path(my_dir)
+            )
             return False, my_dir
     else:
         return False, ""
@@ -387,8 +389,9 @@ def globber_full(path, pattern="*"):
     """ Return matching full file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
-        return [os.path.join(path, f) for f in os.listdir(
-            path) if safe_fnmatch(f, pattern)]
+        return [
+            os.path.join(path, f) for f in os.listdir(path) if safe_fnmatch(f, pattern)
+        ]
     return []
 
 
@@ -416,8 +419,9 @@ def fix_unix_encoding(folder):
                     try:
                         renamer(os.path.join(root, name), os.path.join(root, new_name))
                     except OSError:
-                        logging.info("Cannot correct name of %s",
-                                     os.path.join(root, name))
+                        logging.info(
+                            "Cannot correct name of %s", os.path.join(root, name)
+                        )
 
 
 def make_script_path(script):
@@ -439,8 +443,9 @@ def get_admin_path(name, future):
     if future:
         return os.path.join(sabnzbd.cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
-        return os.path.join(os.path.join(sabnzbd.cfg.download_dir.get_path(), name),
-                            JOB_ADMIN)
+        return os.path.join(
+            os.path.join(sabnzbd.cfg.download_dir.get_path(), name), JOB_ADMIN
+        )
 
 
 def set_chmod(path, permissions, report):
@@ -612,11 +617,14 @@ def move_to_path(path, new_path):
                 if not os.path.exists(path):
                     logging.debug("File not moved, original path gone: %s", path)
                     return True, None
-                if not (sabnzbd.cfg.marker_file() and
-                        sabnzbd.cfg.marker_file() in path):
-                    logging.error(T("Failed moving %s to %s"),
-                                  clip_path(path),
-                                  clip_path(new_path))
+                if not (
+                    sabnzbd.cfg.marker_file() and sabnzbd.cfg.marker_file() in path
+                ):
+                    logging.error(
+                        T("Failed moving %s to %s"),
+                        clip_path(path),
+                        clip_path(new_path),
+                    )
                     logging.info("Traceback: ", exc_info=True)
                 ok = False
     return ok, new_path
@@ -701,8 +709,9 @@ def renamer(old, new):
                     os.rename(old, new)
                 else:
                     # Now we try the back-up method
-                    logging.debug("Could not rename, trying move for %s to %s",
-                                  old, new)
+                    logging.debug(
+                        "Could not rename, trying move for %s to %s", old, new
+                    )
                     shutil.move(old, new)
                 return
             except WindowsError as err:
@@ -854,8 +863,10 @@ def diskspace(force=False):
     global __DIRS_CHECKED, __DISKS_SAME, __LAST_DISK_RESULT, __LAST_DISK_CALL
 
     # Reset everything when folders changed
-    dirs_to_check = [sabnzbd.cfg.download_dir.get_path(),
-                     sabnzbd.cfg.complete_dir.get_path()]
+    dirs_to_check = [
+        sabnzbd.cfg.download_dir.get_path(),
+        sabnzbd.cfg.complete_dir.get_path(),
+    ]
     if __DIRS_CHECKED != dirs_to_check:
         __DIRS_CHECKED = dirs_to_check
         __DISKS_SAME = None
@@ -870,15 +881,19 @@ def diskspace(force=False):
     if time.time() > __LAST_DISK_CALL + 10.0:
         # Same disk? Then copy-paste
         __LAST_DISK_RESULT["download_dir"] = diskspace_base(
-            sabnzbd.cfg.download_dir.get_path())
+            sabnzbd.cfg.download_dir.get_path()
+        )
         __LAST_DISK_RESULT["complete_dir"] = (
-            __LAST_DISK_RESULT["download_dir"] if __DISKS_SAME else diskspace_base(
-                sabnzbd.cfg.complete_dir.get_path()))
+            __LAST_DISK_RESULT["download_dir"]
+            if __DISKS_SAME
+            else diskspace_base(sabnzbd.cfg.complete_dir.get_path())
+        )
         __LAST_DISK_CALL = time.time()
 
     # Do we know if it's same disk?
     if __DISKS_SAME is None:
-        __DISKS_SAME = __LAST_DISK_RESULT["download_dir"
-                       ] == __LAST_DISK_RESULT["complete_dir"]
+        __DISKS_SAME = (
+            __LAST_DISK_RESULT["download_dir"] == __LAST_DISK_RESULT["complete_dir"]
+        )
 
     return __LAST_DISK_RESULT

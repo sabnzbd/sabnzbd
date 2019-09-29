@@ -166,14 +166,16 @@ def process_nzb_archive_file(
                 if data:
                     nzo = None
                     try:
-                        nzo = nzbstuff.NzbObject(name,
-                                                 pp,
-                                                 script,
-                                                 data,
-                                                 cat=cat,
-                                                 url=url,
-                                                 priority=priority,
-                                                 nzbname=nzbname)
+                        nzo = nzbstuff.NzbObject(
+                            name,
+                            pp,
+                            script,
+                            data,
+                            cat=cat,
+                            url=url,
+                            priority=priority,
+                            nzbname=nzbname,
+                        )
                         if not nzo.password:
                             nzo.password = password
                     except (TypeError, ValueError):
@@ -181,16 +183,17 @@ def process_nzb_archive_file(
                         pass
                     except:
                         # Something else is wrong, show error
-                        logging.error(T("Error while adding %s, removing"),
-                                      name, exc_info=True)
+                        logging.error(
+                            T("Error while adding %s, removing"), name, exc_info=True
+                        )
 
                     if nzo:
                         if nzo_id:
                             # Re-use existing nzo_id, when a "future" job
                             # gets it payload
-                            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id,
-                                                                add_to_history=False,
-                                                                delete_all_data=False)
+                            sabnzbd.nzbqueue.NzbQueue.do.remove(
+                                nzo_id, add_to_history=False, delete_all_data=False
+                            )
                             nzo.nzo_id = nzo_id
                             nzo_id = None
                         nzo_ids.append(sabnzbd.nzbqueue.NzbQueue.do.add(nzo))
@@ -306,9 +309,9 @@ def process_single_nzb(
     if nzo:
         if nzo_id:
             # Re-use existing nzo_id, when a "future" job gets it payload
-            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id,
-                                                add_to_history=False,
-                                                delete_all_data=False)
+            sabnzbd.nzbqueue.NzbQueue.do.remove(
+                nzo_id, add_to_history=False, delete_all_data=False
+            )
             nzo.nzo_id = nzo_id
         nzo_ids.append(sabnzbd.nzbqueue.NzbQueue.do.add(nzo, quiet=reuse))
         nzo.update_rating()
@@ -338,7 +341,8 @@ class DirScanner(threading.Thread):
         self.newdir()
         try:
             dirscan_dir, self.ignored, self.suspected = sabnzbd.load_admin(
-                SCAN_FILE_NAME)
+                SCAN_FILE_NAME
+            )
             if dirscan_dir != self.dirscan_dir:
                 self.ignored = {}
                 self.suspected = {}
@@ -376,9 +380,9 @@ class DirScanner(threading.Thread):
 
     def save(self):
         """ Save dir scanner bookkeeping """
-        sabnzbd.save_admin((self.dirscan_dir,
-                            self.ignored,
-                            self.suspected), SCAN_FILE_NAME)
+        sabnzbd.save_admin(
+            (self.dirscan_dir, self.ignored, self.suspected), SCAN_FILE_NAME
+        )
 
     def run(self):
         """ Start the scanner """
@@ -404,8 +408,9 @@ class DirScanner(threading.Thread):
                 files = os.listdir(folder)
             except OSError:
                 if not self.error_reported and not catdir:
-                    logging.error(T("Cannot read Watched Folder %s"),
-                                  filesystem.clip_path(folder))
+                    logging.error(
+                        T("Cannot read Watched Folder %s"), filesystem.clip_path(folder)
+                    )
                     self.error_reported = True
                 files = []
 
@@ -454,7 +459,9 @@ class DirScanner(threading.Thread):
 
                     # Handle archive files, but only when containing just NZB files
                     if ext in VALID_ARCHIVES:
-                        res, nzo_ids = process_nzb_archive_file(filename, path, catdir=catdir, url=path)
+                        res, nzo_ids = process_nzb_archive_file(
+                            filename, path, catdir=catdir, url=path
+                        )
                         if res == -1:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
@@ -463,8 +470,14 @@ class DirScanner(threading.Thread):
                             self.ignored[path] = 1
 
                     # Handle .nzb, .nzb.gz or gzip-disguised-as-nzb or .bz2
-                    elif ext == ".nzb" or filename.lower().endswith(".nzb.gz") or filename.lower().endswith(".nzb.bz2"):
-                        res, nzo_id = process_single_nzb(filename, path, catdir=catdir, url=path)
+                    elif (
+                        ext == ".nzb"
+                        or filename.lower().endswith(".nzb.gz")
+                        or filename.lower().endswith(".nzb.bz2")
+                    ):
+                        res, nzo_id = process_single_nzb(
+                            filename, path, catdir=catdir, url=path
+                        )
                         if res < 0:
                             self.suspected[path] = stat_tuple
                         elif res == 0:
@@ -488,7 +501,10 @@ class DirScanner(threading.Thread):
                     dirscan_list = os.listdir(dirscan_dir)
                 except OSError:
                     if not self.error_reported:
-                        logging.error(T("Cannot read Watched Folder %s"), filesystem.clip_path(dirscan_dir))
+                        logging.error(
+                            T("Cannot read Watched Folder %s"),
+                            filesystem.clip_path(dirscan_dir),
+                        )
                         self.error_reported = True
                     dirscan_list = []
 
