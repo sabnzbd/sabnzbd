@@ -337,9 +337,7 @@ class DNSRecordRef(ctypes.c_void_p):
     @classmethod
     def from_param(cls, obj):
         if type(obj) is not cls:
-            raise TypeError(
-                "expected '%s', got '%s'" % (cls.__name__, type(obj).__name__)
-            )
+            raise TypeError("expected '%s', got '%s'" % (cls.__name__, type(obj).__name__))
         if obj.value is None:
             raise ValueError("invalid %s instance" % cls.__name__)
         return obj
@@ -580,24 +578,9 @@ def _create_function_bindings():
         #         param_n_type,
         #    )
         # ),
-        "DNSServiceRefSockFD": (
-            ctypes.c_int,
-            NO_ERRCHECK,
-            NO_OUTPARAM,
-            (DNSServiceRef,),  # sdRef
-        ),
-        "DNSServiceProcessResult": (
-            _DNSServiceErrorType,
-            ERRCHECK,
-            NO_OUTPARAM,
-            (DNSServiceRef,),  # sdRef
-        ),
-        "DNSServiceRefDeallocate": (
-            None,
-            NO_ERRCHECK,
-            NO_OUTPARAM,
-            (DNSServiceRef,),  # sdRef
-        ),
+        "DNSServiceRefSockFD": (ctypes.c_int, NO_ERRCHECK, NO_OUTPARAM, (DNSServiceRef,)),  # sdRef
+        "DNSServiceProcessResult": (_DNSServiceErrorType, ERRCHECK, NO_OUTPARAM, (DNSServiceRef,)),  # sdRef
+        "DNSServiceRefDeallocate": (None, NO_ERRCHECK, NO_OUTPARAM, (DNSServiceRef,)),  # sdRef
         "DNSServiceEnumerateDomains": (
             _DNSServiceErrorType,
             ERRCHECK,
@@ -660,11 +643,7 @@ def _create_function_bindings():
             _DNSServiceErrorType,
             ERRCHECK,
             NO_OUTPARAM,
-            (
-                DNSServiceRef,  # sdRef
-                DNSRecordRef,  # RecordRef
-                _DNSServiceFlags,  # flags
-            ),
+            (DNSServiceRef, DNSRecordRef, _DNSServiceFlags),  # sdRef  # RecordRef  # flags
         ),
         "DNSServiceBrowse": (
             _DNSServiceErrorType,
@@ -860,9 +839,7 @@ def DNSServiceProcessResult(sdRef):
         _global_lock.release()
 
 
-def DNSServiceEnumerateDomains(
-    flags, interfaceIndex=kDNSServiceInterfaceIndexAny, callBack=None
-):
+def DNSServiceEnumerateDomains(flags, interfaceIndex=kDNSServiceInterfaceIndexAny, callBack=None):
 
     """
 
@@ -924,9 +901,7 @@ def DNSServiceEnumerateDomains(
 
     _global_lock.acquire()
     try:
-        sdRef = _DNSServiceEnumerateDomains(
-            flags, interfaceIndex, _callback, None  # noqa F821
-        )
+        sdRef = _DNSServiceEnumerateDomains(flags, interfaceIndex, _callback, None)  # noqa F821
     finally:
         _global_lock.release()
 
@@ -1070,9 +1045,7 @@ def DNSServiceRegister(
     elif type(txtRecord) == str:
         txtRecord = txtRecord.encode("utf-8")
     else:
-        raise TypeError(
-            "txtRecord is unhandlable type: {type}".format(type=type(txtRecord))
-        )
+        raise TypeError("txtRecord is unhandlable type: {type}".format(type=type(txtRecord)))
 
     if not txtRecord:
         txtLen, txtRecord = 1, "\0".encode("utf-8")
@@ -1082,29 +1055,12 @@ def DNSServiceRegister(
     @_DNSServiceRegisterReply
     def _callback(sdRef, flags, errorCode, name, regtype, domain, context):
         if callBack is not None:
-            callBack(
-                sdRef,
-                flags,
-                errorCode,
-                name.decode(),
-                regtype.decode(),
-                domain.decode(),
-            )
+            callBack(sdRef, flags, errorCode, name.decode(), regtype.decode(), domain.decode())
 
     _global_lock.acquire()
     try:
         sdRef = _DNSServiceRegister(
-            flags,  # noqa F821
-            interfaceIndex,
-            name,
-            regtype,
-            domain,
-            host,
-            port,
-            txtLen,
-            txtRecord,
-            _callback,
-            None,
+            flags, interfaceIndex, name, regtype, domain, host, port, txtLen, txtRecord, _callback, None  # noqa F821
         )
     finally:
         _global_lock.release()
@@ -1164,9 +1120,7 @@ def DNSServiceAddRecord(sdRef, flags=0, rrtype=_NO_DEFAULT, rdata=_NO_DEFAULT, t
 
     _global_lock.acquire()
     try:
-        RecordRef = _DNSServiceAddRecord(
-            sdRef, flags, rrtype, rdlen, rdata, ttl  # noqa F821
-        )
+        RecordRef = _DNSServiceAddRecord(sdRef, flags, rrtype, rdlen, rdata, ttl)  # noqa F821
     finally:
         _global_lock.release()
 
@@ -1250,11 +1204,7 @@ def DNSServiceRemoveRecord(sdRef, RecordRef, flags=0):
 
 
 def DNSServiceBrowse(
-    flags=0,
-    interfaceIndex=kDNSServiceInterfaceIndexAny,
-    regtype=_NO_DEFAULT,
-    domain=None,
-    callBack=None,
+    flags=0, interfaceIndex=kDNSServiceInterfaceIndexAny, regtype=_NO_DEFAULT, domain=None, callBack=None
 ):
 
     """
@@ -1342,32 +1292,15 @@ def DNSServiceBrowse(
     _NO_DEFAULT.check(regtype)
 
     @_DNSServiceBrowseReply
-    def _callback(
-        sdRef,
-        flags,
-        interfaceIndex,
-        errorCode,
-        serviceName,
-        regtype,
-        replyDomain,
-        context,
-    ):
+    def _callback(sdRef, flags, interfaceIndex, errorCode, serviceName, regtype, replyDomain, context):
         if callBack is not None:
             callBack(
-                sdRef,
-                flags,
-                interfaceIndex,
-                errorCode,
-                serviceName.decode(),
-                regtype.decode(),
-                replyDomain.decode(),
+                sdRef, flags, interfaceIndex, errorCode, serviceName.decode(), regtype.decode(), replyDomain.decode()
             )
 
     _global_lock.acquire()
     try:
-        sdRef = _DNSServiceBrowse(
-            flags, interfaceIndex, regtype, domain, _callback, None  # noqa F821
-        )
+        sdRef = _DNSServiceBrowse(flags, interfaceIndex, regtype, domain, _callback, None)  # noqa F821
     finally:
         _global_lock.release()
 
@@ -1377,12 +1310,7 @@ def DNSServiceBrowse(
 
 
 def DNSServiceResolve(
-    flags=0,
-    interfaceIndex=_NO_DEFAULT,
-    name=_NO_DEFAULT,
-    regtype=_NO_DEFAULT,
-    domain=_NO_DEFAULT,
-    callBack=None,
+    flags=0, interfaceIndex=_NO_DEFAULT, name=_NO_DEFAULT, regtype=_NO_DEFAULT, domain=_NO_DEFAULT, callBack=None
 ):
 
     """
@@ -1477,37 +1405,15 @@ def DNSServiceResolve(
     _NO_DEFAULT.check(domain)
 
     @_DNSServiceResolveReply
-    def _callback(
-        sdRef,
-        flags,
-        interfaceIndex,
-        errorCode,
-        fullname,
-        hosttarget,
-        port,
-        txtLen,
-        txtRecord,
-        context,
-    ):
+    def _callback(sdRef, flags, interfaceIndex, errorCode, fullname, hosttarget, port, txtLen, txtRecord, context):
         if callBack is not None:
             port = socket.ntohs(port)
             txtRecord = _length_and_void_p_to_string(txtLen, txtRecord)
-            callBack(
-                sdRef,
-                flags,
-                interfaceIndex,
-                errorCode,
-                fullname.decode(),
-                hosttarget.decode(),
-                port,
-                txtRecord,
-            )
+            callBack(sdRef, flags, interfaceIndex, errorCode, fullname.decode(), hosttarget.decode(), port, txtRecord)
 
     _global_lock.acquire()
     try:
-        sdRef = _DNSServiceResolve(
-            flags, interfaceIndex, name, regtype, domain, _callback, None  # noqa F821
-        )
+        sdRef = _DNSServiceResolve(flags, interfaceIndex, name, regtype, domain, _callback, None)  # noqa F821
     finally:
         _global_lock.release()
 
@@ -1635,17 +1541,7 @@ def DNSServiceRegisterRecord(
     _global_lock.acquire()
     try:
         RecordRef = _DNSServiceRegisterRecord(
-            sdRef,  # noqa F821
-            flags,
-            interfaceIndex,
-            fullname,
-            rrtype,
-            rrclass,
-            rdlen,
-            rdata,
-            ttl,
-            _callback,
-            None,
+            sdRef, flags, interfaceIndex, fullname, rrtype, rrclass, rdlen, rdata, ttl, _callback, None  # noqa F821
         )
     finally:
         _global_lock.release()
@@ -1747,45 +1643,15 @@ def DNSServiceQueryRecord(
     _NO_DEFAULT.check(rrtype)
 
     @_DNSServiceQueryRecordReply
-    def _callback(
-        sdRef,
-        flags,
-        interfaceIndex,
-        errorCode,
-        fullname,
-        rrtype,
-        rrclass,
-        rdlen,
-        rdata,
-        ttl,
-        context,
-    ):
+    def _callback(sdRef, flags, interfaceIndex, errorCode, fullname, rrtype, rrclass, rdlen, rdata, ttl, context):
         if callBack is not None:
             rdata = _length_and_void_p_to_bytes(rdlen, rdata)
 
-            callBack(
-                sdRef,
-                flags,
-                interfaceIndex,
-                errorCode,
-                fullname.decode(),
-                rrtype,
-                rrclass,
-                rdata,
-                ttl,
-            )
+            callBack(sdRef, flags, interfaceIndex, errorCode, fullname.decode(), rrtype, rrclass, rdata, ttl)
 
     _global_lock.acquire()
     try:
-        sdRef = _DNSServiceQueryRecord(
-            flags,  # noqa F821
-            interfaceIndex,
-            fullname,
-            rrtype,
-            rrclass,
-            _callback,
-            None,
-        )
+        sdRef = _DNSServiceQueryRecord(flags, interfaceIndex, fullname, rrtype, rrclass, _callback, None)  # noqa F821
     finally:
         _global_lock.release()
 
@@ -1843,9 +1709,7 @@ def DNSServiceReconfirmRecord(
 
     _global_lock.acquire()
     try:
-        _DNSServiceReconfirmRecord(
-            flags, interfaceIndex, fullname, rrtype, rrclass, rdlen, rdata  # noqa F821
-        )
+        _DNSServiceReconfirmRecord(flags, interfaceIndex, fullname, rrtype, rrclass, rdlen, rdata)  # noqa F821
     finally:
         _global_lock.release()
 
