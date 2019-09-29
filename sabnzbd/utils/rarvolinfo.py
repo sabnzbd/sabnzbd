@@ -17,7 +17,8 @@
 
 
 """
-sabnzbd.utils.rarvolinfo - Find out volume number and/or original extension of a rar file. Useful with obfuscated files
+sabnzbd.utils.rarvolinfo - Find out volume number and/or original extension of a rar
+file. Useful with obfuscated files
 """
 
 
@@ -43,10 +44,11 @@ def get_rar_extension(myrarfile):
         rar_ver = rarfile.is_rarfile(myrarfile)
         with open(myrarfile, "rb") as fh:
             if rar_ver.endswith("3"):
-                # As it's rar3, let's first find the numbering scheme: old (rNNN) or new (partNNN.rar)
+                # As it's rar3, let's first find the numbering scheme:
+                # old (rNNN) or new (partNNN.rar)
                 mybuf = fh.read(100)  # first 100 bytes is enough
-                HEAD_FLAGS_LSB = mybuf[10]  # LSB = Least Significant Byte
-                newnumbering = HEAD_FLAGS_LSB & 0x10
+                head_flags_lsb = mybuf[10]  # LSB = Least Significant Byte
+                newnumbering = head_flags_lsb & 0x10
 
                 # For the volume number, At the end of the file, we need about 20 bytes
                 fh.seek(-20, os.SEEK_END)
@@ -54,13 +56,13 @@ def get_rar_extension(myrarfile):
                 volumenumber = 1 + mybuf[-9] + 256 * mybuf[-8]
 
                 if newnumbering:
-                    org_extension = "part%03d.rar" % volumenumber
+                    org_extension = "part{:03d}.rar".format(volumenumber)
                 else:
                     # 1, 2, 3, 4 resp refers to .rar, .r00, .r01, .r02 ...
                     if volumenumber == 1:
                         org_extension = "rar"
                     else:
-                        org_extension = "r%03d" % (volumenumber - 2)
+                        org_extension = "r{:03d}".format(volumenumber - 2)
 
             elif rar_ver.endswith("5"):
                 mybuf = fh.read(100)  # first 100 bytes is enough
@@ -85,8 +87,8 @@ def get_rar_extension(myrarfile):
                     volumenumber = 1
 
                 # Combine into the extension
-                org_extension = "part%03d.rar" % volumenumber
-    except:
+                org_extension = "part{:03d}.rar".format(volumenumber)
+    except (rarfile.Error, OSError):
         pass
 
     return volumenumber, org_extension
@@ -100,5 +102,5 @@ if __name__ == "__main__":
         myfile = sys.argv[1]
         print("File:", myfile)
         print("Volume and extension:", get_rar_extension(myfile))
-    except:
+    except IndexError:
         print("Please specify rar file as parameter")

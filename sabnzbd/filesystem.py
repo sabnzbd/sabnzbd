@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2008-2017 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2008-2019 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,7 +28,6 @@ import threading
 import time
 import fnmatch
 import stat
-
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
@@ -143,7 +142,7 @@ def sanitize_filename(name):
 
     if ":" in name and sabnzbd.DARWIN:
         # Compensate for the foolish way par2 on OSX handles a colon character
-        name = name[name.rfind(":") + 1:]
+        name = name[name.rfind(":") + 1 :]
 
     lst = []
     for ch in name.strip():
@@ -243,7 +242,7 @@ def sanitize_files_in_folder(folder):
                     os.rename(path, new_path)
                     path = new_path
                 except OSError:
-                    logging.debug("Cannot rename {} to {}".format(path, new_path))
+                    logging.debug("Cannot rename %s to %s", path, new_path)
             lst.append(path)
     return lst
 
@@ -300,16 +299,18 @@ def create_real_path(name, loc, path, umask=False, writable=True):
     if path:
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
-            logging.info("{} directory: {} does not exist, try to create it".format(name, my_dir))
+            logging.info("%s directory: %s does not exist, try to create it", name,
+                         my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error("Cannot create directory {}".format(clip_path(my_dir)))
+                logging.error(T("Cannot create directory %s"), clip_path(my_dir))
                 return False, my_dir
 
         checks = (os.W_OK + os.R_OK) if writable else os.R_OK
         if os.access(my_dir, checks):
             return True, my_dir
         else:
-            logging.error("{} directory: {} error accessing".format(name, clip_path(my_dir)))
+            logging.error(T("%s directory: %s error accessing"),
+                          name, clip_path(my_dir))
             return False, my_dir
     else:
         return False, ""
@@ -359,7 +360,7 @@ def check_mount(path):
         for n in range(sabnzbd.cfg.wait_ext_drive() or 1):
             if os.path.exists(m.group(1)):
                 return True
-            logging.debug("Waiting for {} to come online".format(m.group(1)))
+            logging.debug("Waiting for %s to come online", m.group(1))
             time.sleep(1)
     return not m
 
@@ -386,7 +387,8 @@ def globber_full(path, pattern="*"):
     """ Return matching full file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
-        return [os.path.join(path, f) for f in os.listdir(path) if safe_fnmatch(f, pattern)]
+        return [os.path.join(path, f) for f in os.listdir(
+            path) if safe_fnmatch(f, pattern)]
     return []
 
 
@@ -414,7 +416,8 @@ def fix_unix_encoding(folder):
                     try:
                         renamer(os.path.join(root, name), os.path.join(root, new_name))
                     except OSError:
-                        logging.info("Cannot correct name of {}".format(os.path.join(root, name)))
+                        logging.info("Cannot correct name of %s",
+                                     os.path.join(root, name))
 
 
 def make_script_path(script):
@@ -436,18 +439,19 @@ def get_admin_path(name, future):
     if future:
         return os.path.join(sabnzbd.cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
     else:
-        return os.path.join(os.path.join(sabnzbd.cfg.download_dir.get_path(), name), JOB_ADMIN)
+        return os.path.join(os.path.join(sabnzbd.cfg.download_dir.get_path(), name),
+                            JOB_ADMIN)
 
 
 def set_chmod(path, permissions, report):
     """ Set 'permissions' on 'path', report any errors when 'report' is True """
     try:
-        logging.debug("Applying permissions {} (octal) to {}".format(oct(permissions), path))
+        logging.debug("Applying permissions %s (octal) to %s", oct(permissions), path)
         os.chmod(path, permissions)
     except OSError:
         lpath = path.lower()
         if report and ".appledouble" not in lpath and ".ds_store" not in lpath:
-            logging.error("Cannot change permissions of {}".format(clip_path(path)))
+            logging.error(T("Cannot change permissions of %s"), clip_path(path))
             logging.info("Traceback: ", exc_info=True)
 
 
@@ -520,11 +524,11 @@ def create_all_dirs(path, umask=False):
             mask = int(sabnzbd.cfg.umask(), 8)
 
         # Use python functions to create the directory
-        logging.info("Creating directories: {} (mask={})".format(path, mask))
+        logging.info("Creating directories: %s (mask=%s)", (path, mask))
         os.makedirs(path, mode=mask, exist_ok=True)
         return path
     except OSError:
-        logging.error("Failed making ({})".format(clip_path(path)), exc_info=True)
+        logging.error(T("Failed making (%s)"), clip_path(path), exc_info=True)
         return False
 
 
@@ -564,7 +568,7 @@ def get_unique_filename(path):
 
 
 @synchronized(DIR_LOCK)
-def recursive_listdir(target_dir):   # renamed to avoid shadowing out of scope variable
+def recursive_listdir(target_dir):  # renamed to avoid shadowing out of scope variable
     """ List all files in dirs and sub-dirs """
     filelist = []
     for root, dirs, files in os.walk(target_dir):
@@ -592,13 +596,13 @@ def move_to_path(path, new_path):
         new_path = get_unique_filename(new_path)
 
     if new_path:
-        logging.debug("Moving (overwrite: {}) {} => {}".format(overwrite, path, new_path))
+        logging.debug("Moving (overwrite: %s) %s => %s", overwrite, path, new_path)
         try:
             # First try cheap rename
             renamer(path, new_path)
         except OSError:
             # Cannot rename, try copying
-            logging.debug("File could not be renamed, trying copying: {}".format(path))
+            logging.debug("File could not be renamed, trying copying: %s", path)
             try:
                 create_all_dirs(os.path.dirname(new_path), umask=True)
                 shutil.copyfile(path, new_path)
@@ -606,10 +610,13 @@ def move_to_path(path, new_path):
             except OSError:
                 # Check if the old-file actually exists (possible delete-delays)
                 if not os.path.exists(path):
-                    logging.debug("File not moved, original path gone: {}".format(path))
+                    logging.debug("File not moved, original path gone: %s", path)
                     return True, None
-                if not (sabnzbd.cfg.marker_file() and sabnzbd.cfg.marker_file() in path):
-                    logging.error("Failed moving {} to {}".format(clip_path(path), clip_path(new_path)))
+                if not (sabnzbd.cfg.marker_file() and
+                        sabnzbd.cfg.marker_file() in path):
+                    logging.error(T("Failed moving %s to %s"),
+                                  clip_path(path),
+                                  clip_path(new_path))
                     logging.info("Traceback: ", exc_info=True)
                 ok = False
     return ok, new_path
@@ -684,7 +691,7 @@ def renamer(old, new):
     if old == new:
         return
 
-    logging.debug('Renaming "{}" to "{}"'.format(old, new))
+    logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
@@ -694,18 +701,19 @@ def renamer(old, new):
                     os.rename(old, new)
                 else:
                     # Now we try the back-up method
-                    logging.debug("Could not rename, trying move for {} to {}".format(old, new))
+                    logging.debug("Could not rename, trying move for %s to %s",
+                                  old, new)
                     shutil.move(old, new)
                 return
             except WindowsError as err:
-                logging.debug('Error renaming "{}" to "{}" <{}>'.format(old, new, err))
+                logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
                 if err.errno == 17:
                     # Error 17 - Rename can't move to different disk
                     # Jump to moving with shutil.move
                     retries -= 3
                 elif err.errno == 32:
                     # Error 32 - Used by another process
-                    logging.debug("File busy, retrying rename {} to {}".format(old, new))
+                    logging.debug("File busy, retrying rename %s to %s", old, new)
                     retries -= 1
                     # Wait for the other process to finish
                     time.sleep(2)
@@ -718,14 +726,14 @@ def renamer(old, new):
 
 def remove_file(path):
     """ Wrapper function so any file removal is logged """
-    logging.debug("[{}] Deleting file {}".format(sabnzbd.misc.caller_name(), path))
+    logging.debug("[%s] Deleting file %s", sabnzbd.misc.caller_name(), path)
     os.remove(path)
 
 
 @synchronized(DIR_LOCK)
 def remove_dir(path):
     """ Remove directory with retries for Win32 """
-    logging.debug("[{}] Removing dir {}".format(sabnzbd.misc.caller_name(), path))
+    logging.debug("[%s] Removing dir %s", sabnzbd.misc.caller_name(), path)
     if sabnzbd.WIN32:
         retries = 15
         while retries > 0:
@@ -735,7 +743,7 @@ def remove_dir(path):
             except WindowsError as err:
                 # In use by another process
                 if err.errno == 32:
-                    logging.debug("Retry delete {}".format(path))
+                    logging.debug("Retry delete %s", path)
                     retries -= 1
                 else:
                     raise
@@ -751,11 +759,11 @@ def remove_all(path, pattern="*", keep_folder=False, recursive=False):
     if path and os.path.exists(path):
         # Fast-remove the whole tree if recursive
         if pattern == "*" and not keep_folder and recursive:
-            logging.debug("Removing dir recursively {}".format(path))
+            logging.debug("Removing dir recursively %s", path)
             try:
                 shutil.rmtree(path)
             except OSError:
-                logging.info("Cannot remove folder {}".format(path), exc_info=True)
+                logging.info("Cannot remove folder %s", path, exc_info=True)
         else:
             # Get files based on pattern
             files = globber_full(path, pattern)
@@ -767,14 +775,14 @@ def remove_all(path, pattern="*", keep_folder=False, recursive=False):
                     try:
                         remove_file(f)
                     except OSError:
-                        logging.info("Cannot remove file {}".format(f), exc_info=True)
+                        logging.info("Cannot remove file %s", f, exc_info=True)
                 elif recursive:
                     remove_all(f, pattern, False, True)
             if not keep_folder:
                 try:
                     remove_dir(path)
                 except OSError:
-                    logging.info("Cannot remove folder {}".format(path), exc_info=True)
+                    logging.info("Cannot remove folder %s", path, exc_info=True)
 
 
 ##############################################################################
@@ -796,7 +804,6 @@ if sabnzbd.WIN32:
     except ImportError:
         w32 = None
 
-
     def diskspace_base(_dir):
         """ Return amount of free and used diskspace in GBytes """
         _dir = find_dir(_dir)
@@ -809,9 +816,9 @@ if sabnzbd.WIN32:
 
 else:
     try:
-        # os.statvfs                # commented this because it does not appear to do anything.
-
+        os.statvfs(os.getcwd())  # changed to function call to ensure exception trigger
         # posix diskfree
+
         def diskspace_base(_dir):
             """ Return amount of free and used diskspace in GBytes """
             _dir = find_dir(_dir)
@@ -829,9 +836,11 @@ else:
             except OSError:
                 return 0.0, 0.0
 
-    except ImportError:
+    except (ImportError, OSError):
+
         def diskspace_base(_dir):
             return 20.0, 10.0
+
 
 # Store all results to speed things up
 __DIRS_CHECKED = []
@@ -845,7 +854,8 @@ def diskspace(force=False):
     global __DIRS_CHECKED, __DISKS_SAME, __LAST_DISK_RESULT, __LAST_DISK_CALL
 
     # Reset everything when folders changed
-    dirs_to_check = [sabnzbd.cfg.download_dir.get_path(), sabnzbd.cfg.complete_dir.get_path()]
+    dirs_to_check = [sabnzbd.cfg.download_dir.get_path(),
+                     sabnzbd.cfg.complete_dir.get_path()]
     if __DIRS_CHECKED != dirs_to_check:
         __DIRS_CHECKED = dirs_to_check
         __DISKS_SAME = None
@@ -859,14 +869,16 @@ def diskspace(force=False):
     # Check against cache
     if time.time() > __LAST_DISK_CALL + 10.0:
         # Same disk? Then copy-paste
-        __LAST_DISK_RESULT["download_dir"] = diskspace_base(sabnzbd.cfg.download_dir.get_path())
+        __LAST_DISK_RESULT["download_dir"] = diskspace_base(
+            sabnzbd.cfg.download_dir.get_path())
         __LAST_DISK_RESULT["complete_dir"] = (
-            __LAST_DISK_RESULT["download_dir"] if __DISKS_SAME else diskspace_base(sabnzbd.cfg.complete_dir.get_path())
-        )
+            __LAST_DISK_RESULT["download_dir"] if __DISKS_SAME else diskspace_base(
+                sabnzbd.cfg.complete_dir.get_path()))
         __LAST_DISK_CALL = time.time()
 
     # Do we know if it's same disk?
     if __DISKS_SAME is None:
-        __DISKS_SAME = __LAST_DISK_RESULT["download_dir"] == __LAST_DISK_RESULT["complete_dir"]
+        __DISKS_SAME = __LAST_DISK_RESULT["download_dir"
+                       ] == __LAST_DISK_RESULT["complete_dir"]
 
     return __LAST_DISK_RESULT

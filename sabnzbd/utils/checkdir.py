@@ -9,16 +9,16 @@ import os
 
 debug = False
 
-# TODO: Rename function isFAT and variable FAT to PEP8-compliant 'is_fat32' and 'fat32. Check for any API impacts first'
+# TODO: Rename function isFAT and variable FAT to PEP8-compliant 'is_fat32' and 'fat32.
+#  However, important that we check for any API impacts first
 
 
-def isFAT(check_dir):  # PEP8 would rename isFAT to is_fat. However, don't want to break API so leaving for now.
+def isFAT(check_dir):
     """ Check if "check_dir" is on FAT. FAT considered harmful (for big files)
         Works for Linux, Windows, MacOS
         NB: On Windows, full path with drive letter is needed!
     """
 
-    # PEP8 would have FAT be renamed 'fat' . However, this may break API elsewhere so leaving for now.
     FAT = False  # default: not FAT
     # We're dealing with OS calls, so put everything in a try/except, just in case:
     try:
@@ -50,14 +50,15 @@ def isFAT(check_dir):  # PEP8 would rename isFAT to is_fat. However, don't want 
 
             if "?" in check_dir:
                 #  Remove \\?\ or \\?\UNC\ prefix from Windows path
-                check_dir = check_dir.replace("\\\\?\\UNC\\", "\\\\", 1).replace("\\\\?\\", "", 1)
+                check_dir = check_dir.replace(
+                    "\\\\?\\UNC\\", "\\\\", 1).replace("\\\\?\\", "", 1)
             try:
                 result = win32api.GetVolumeInformation(os.path.splitdrive(check_dir)[0])
                 if debug:
                     print(result)
                 if result[4].startswith("FAT"):
                     FAT = True
-            except (OSError, SystemError, IndexError, win32api.error):                  # Eliminate broad exception
+            except (OSError, SystemError, IndexError, win32api.error):
                 pass
         elif "darwin" in sys.platform:
             # MacOS formerly known as OSX
@@ -72,8 +73,6 @@ def isFAT(check_dir):  # PEP8 would rename isFAT to is_fat. However, don't want 
             # Then: device => filesystem type
             server:~ sander$ mount | grep /dev/disk9s1
             /dev/disk9s1 on /Volumes/CARTUNES (msdos, local, nodev, nosuid, noowners)
-
-
             """
             dfcmd = "df " + check_dir
             for thisline in os.popen(dfcmd).readlines():
@@ -90,7 +89,7 @@ def isFAT(check_dir):  # PEP8 would rename isFAT to is_fat. However, don't want 
                         FAT = True
                     break
 
-    except (OSError, SystemError):                                                      # Eliminate broad exception
+    except (OSError, SystemError):
         pass
     return FAT
 
@@ -100,7 +99,7 @@ if __name__ == "__main__":
         print(sys.platform)
     try:
         dir_to_check = sys.argv[1]
-    except (OSError, SystemError):                                                      # Eliminate broad exception
+    except IndexError:
         print("Specify dir on the command line")
         sys.exit(0)
     if isFAT(dir_to_check):
