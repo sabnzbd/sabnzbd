@@ -1,7 +1,7 @@
 import platform
 import subprocess
 import locale
-from .pystone import pystones
+from sabnzbd.utils.pystone import pystones
 
 
 def getcpu():
@@ -14,9 +14,9 @@ def getcpu():
         if platform.system() == "Windows":
             import winreg
 
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Hardware\Description\System\CentralProcessor\0")
-            cputype = winreg.QueryValueEx(key, "ProcessorNameString")[0]
-            winreg.CloseKey(key)
+            # converted to context manager
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"Hardware\Description\System\CentralProcessor\0") as key:
+                cputype = winreg.QueryValueEx(key, "ProcessorNameString")[0]
 
         elif platform.system() == "Darwin":
             cputype = subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"]).strip()
@@ -29,7 +29,7 @@ def getcpu():
                     cputype = myline.split(":", 1)[1]  # get everything after the first ":"
                     break  # we're done
         cputype = cputype.decode(locale.getpreferredencoding())
-    except:
+    except (OSError, IndexError, UnicodeDecodeError):
         # An exception, maybe due to a subprocess call gone wrong
         pass
 
