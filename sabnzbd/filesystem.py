@@ -801,11 +801,13 @@ if sabnzbd.WIN32:
                 return disk_size / GIGI, available / GIGI
             except (win32api.error, AttributeError):
                 return 0.0, 0.0
+
     except ImportError:
         win32api = None  # code inspector wants this declared if the exception is an ImportError.
 
         def diskspace_base(_dir):
             return 0.0, 0.0
+
 
 else:
     try:

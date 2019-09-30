@@ -74,6 +74,8 @@ def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", L
         crypto_exceptions.UnsupportedAlgorithm,
         ipaddress.AddressValueError,
         ipaddress.NetmaskValueError,
+        LookupError,
+        BufferError,
     ):
         pass
 
