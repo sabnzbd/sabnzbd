@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import time
 import os
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     try:
         speed = diskspeedmeasure(directoryname)
         if speed:
-            print("Disk writing speed: %.2f Mbytes per second" % speed)
+            print("Disk writing speed: {:.2f} Mbytes per second".format(speed))
         else:
             print("No measurement possible. Check that directory is writable.")
     except OSError:
