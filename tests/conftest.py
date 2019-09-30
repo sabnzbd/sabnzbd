@@ -39,7 +39,7 @@ def start_sabnzbd():
     # Check if we have language files
     if not os.path.exists(os.path.join(SAB_BASE_DIR, "..", "locale")):
         # Compile and wait to complete
-        lang_command = "%s %s/../tools/make_mo.py" % (sys.executable, SAB_BASE_DIR)
+        lang_command = "{} {}/../tools/make_mo.py".format(sys.executable, SAB_BASE_DIR)
         subprocess.Popen(lang_command.split()).communicate(timeout=30)
 
         # Check if it exists now, fail otherwise
@@ -47,12 +47,8 @@ def start_sabnzbd():
             raise FileNotFoundError("Failed to compile language files")
 
     # Start SABnzbd and continue
-    sab_command = "%s %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s" % (
-        sys.executable,
-        SAB_BASE_DIR,
-        SAB_HOST,
-        SAB_PORT,
-        SAB_CACHE_DIR,
+    sab_command = "{} {}/../SABnzbd.py --new -l2 -s {}:{} -b0 -f {}".format(
+        sys.executable, SAB_BASE_DIR, SAB_HOST, SAB_PORT, SAB_CACHE_DIR
     )
     subprocess.Popen(sab_command.split())
 
@@ -89,5 +85,5 @@ def shutdown_sabnzbd():
             shutil.rmtree(SAB_CACHE_DIR)
             break
         except OSError:
-            print("Unable to remove cache dir (try %d)" % x)
+            print("Unable to remove cache dir (try {:d})".format(x))
             time.sleep(1)

@@ -115,17 +115,17 @@ def decode_par2(parfile):
 
             # file already exists, skip it
             if os.path.exists(target_path):
-                print("File already exists: %s" % target_name)
+                print("File already exists: {}".format(target_name))
                 continue
 
             # find and rename file
             src_path = find_file(dirname, filelength, hash16k)
             if src_path is not None:
                 os.rename(src_path, target_path)
-                print("Renamed file from %s to %s" % (os.path.basename(src_path), target_name))
+                print("Renamed file from {} to {}".format(os.path.basename(src_path), target_name))
                 result = True
             else:
-                print("No match found for: %s" % target_name)
+                print("No match found for: {}".format(target_name))
     return result
 
 
@@ -204,11 +204,11 @@ if run_renamer:
     if largest_file:
         # We don't need to do any cleaning of dir-names
         # since SABnzbd already did that!
-        new_name = "%s%s" % (
+        new_name = "{}{}".format(
             os.path.join(os.environ["SAB_COMPLETE_DIR"], os.environ["SAB_FINAL_NAME"]),
             os.path.splitext(largest_file)[1].lower(),
         )
-        print("Renaming %s to %s" % (largest_file, new_name))
+        print("Renaming {} to {}".format(largest_file, new_name))
 
         # With retries for Windows
         for r in range(3):
@@ -216,7 +216,7 @@ if run_renamer:
                 os.rename(largest_file, new_name)
                 print("Renaming done!")
                 break
-            except:
+            except OSError:
                 time.sleep(1)
     else:
         print("No par2 files or large files found")

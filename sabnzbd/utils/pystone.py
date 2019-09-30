@@ -32,11 +32,11 @@ Version History:
 
 """
 
-LOOPS = 50000
-
 from time import perf_counter
 
 __version__ = "1.1"
+
+LOOPS = 50000
 
 [Ident1, Ident2, Ident3, Ident4, Ident5] = range(1, 6)
 

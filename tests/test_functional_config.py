@@ -29,7 +29,7 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
         test_urls = ["config", "config/server", "config/categories", "config/scheduling", "config/rss"]
 
         for test_url in test_urls:
-            self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
+            self.open_page("http://{}:{}/{}".format(SAB_HOST, SAB_PORT, test_url))
 
     def test_base_submit_pages(self):
         test_urls_with_submit = [
@@ -42,7 +42,7 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
         ]
 
         for test_url in test_urls_with_submit:
-            self.open_page("http://%s:%s/%s" % (SAB_HOST, SAB_PORT, test_url))
+            self.open_page("http://{}:{}/{}".format(SAB_HOST, SAB_PORT, test_url))
 
             # Can only click the visible buttons
             submit_btns = self.driver.find_elements_by_class_name("saveButton")
@@ -76,7 +76,7 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
 class SABnzbdConfigLogin(SABnzbdBaseTest):
     def test_login(self):
         # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/general" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://{}:{}/sabnzbd/config/general".format(SAB_HOST, SAB_PORT))
 
         # Set the username and password
         username_imp = self.driver.find_element_by_css_selector("input[data-hide='username']")
@@ -99,7 +99,7 @@ class SABnzbdConfigLogin(SABnzbdBaseTest):
                 pass
 
         # Open any page and check if we get redirected
-        self.open_page("http://%s:%s/sabnzbd/general" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://{}:{}/sabnzbd/general".format(SAB_HOST, SAB_PORT))
         assert "/login/" in self.driver.current_url
 
         # Fill nonsense and submit
@@ -124,7 +124,7 @@ class SABnzbdConfigLogin(SABnzbdBaseTest):
         self.driver.find_element_by_tag_name("button").click()
 
         # Can we now go to the page and empty the settings again?
-        self.open_page("http://%s:%s/sabnzbd/config/general" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://{}:{}/sabnzbd/config/general".format(SAB_HOST, SAB_PORT))
         assert "/login/" not in self.driver.current_url
 
         # Set the username and password
@@ -146,7 +146,7 @@ class SABnzbdConfigLogin(SABnzbdBaseTest):
                 pass
 
         # Open any page and check if we get redirected
-        self.open_page("http://%s:%s/sabnzbd/general" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://{}:{}/sabnzbd/general".format(SAB_HOST, SAB_PORT))
         assert "/login/" not in self.driver.current_url
 
 
@@ -156,7 +156,7 @@ class SABnzbdConfigCategories(SABnzbdBaseTest):
 
     def test_page(self):
         # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/categories" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://{}:{}/sabnzbd/config/categories".format(SAB_HOST, SAB_PORT))
 
         # Add new category
         self.driver.find_elements_by_name("newname")[1].send_keys("testCat")
@@ -172,7 +172,7 @@ class SABnzbdConfigRSS(SABnzbdBaseTest):
 
     def test_rss_basic_flow(self):
         # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/rss" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://{}:{}/sabnzbd/config/rss".format(SAB_HOST, SAB_PORT))
 
         # Uncheck enabled-checkbox for new feeds
         self.driver.find_element_by_xpath('//form[@action="add_rss_feed"]//input[@name="enable"]').click()
@@ -221,7 +221,7 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
 
     def open_config_servers(self):
         # Test if base page works
-        self.open_page("http://%s:%s/sabnzbd/config/server" % (SAB_HOST, SAB_PORT))
+        self.open_page("http://{}:{}/sabnzbd/config/server".format(SAB_HOST, SAB_PORT))
         self.scroll_to_top()
 
         # Show advanced options

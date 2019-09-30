@@ -28,7 +28,11 @@ def getcpu():
                     # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
                     cputype = myline.split(":", 1)[1]  # get everything after the first ":"
                     break  # we're done
-        cputype = cputype.decode(locale.getpreferredencoding())
+        try:
+            cputype = cputype.decode(locale.getpreferredencoding())
+        except AttributeError:
+            if not isinstance(cputype, str):
+                raise
     except (OSError, IndexError, UnicodeDecodeError):
         # An exception, maybe due to a subprocess call gone wrong
         pass

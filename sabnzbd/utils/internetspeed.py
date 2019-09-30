@@ -28,7 +28,7 @@ def measurespeed(url):
         try:
             req = urllib.request.Request(url, data=None, headers={"User-Agent": "Mozilla/5.0 (Macintosh)"})
             downloadedbytes = len(urllib.request.urlopen(req, timeout=4).read())
-        except OSError:
+        except (OSError, ValueError):
             # No connection at all?
             pass
     else:

@@ -101,14 +101,16 @@ def set_platform(platform):
 def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
     """ Do basic request to web page """
     arguments = {"session": "apikey"}
-    return requests.get("http://%s:%s/%s/" % (host, port, url), params=arguments).text
+    return requests.get("http://{}:{}/{}/".format(host, port, url), params=arguments).text
 
 
-def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
+def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=None):
     """ Build JSON request to SABnzbd """
+    if extra_arguments is None:
+        extra_arguments = dict()
     arguments = {"apikey": "apikey", "output": "json", "mode": mode}
     arguments.update(extra_arguments)
-    r = requests.get("http://%s:%s/api" % (host, port), params=arguments)
+    r = requests.get("http://{}:{}/api".format(host, port), params=arguments)
     return r.json()
 
 
@@ -116,7 +118,7 @@ def upload_nzb(filename, host=SAB_HOST, port=SAB_PORT):
     """ Upload file and return nzo_id reponse """
     files = {"name": open(filename, "rb")}
     arguments = {"apikey": "apikey", "mode": "addfile", "output": "json"}
-    return requests.post("http://%s:%s/api" % (host, port), files=files, data=arguments).json()
+    return requests.post("http://{}:{}/api".format(host, port), files=files, data=arguments).json()
 
 
 @pytest.mark.usefixtures("start_sabnzbd")
