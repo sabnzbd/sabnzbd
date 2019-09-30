@@ -791,19 +791,21 @@ if sabnzbd.WIN32:
     # windows diskfree
     try:
         # Careful here, because win32api test hasn't been done yet!
-        import win32api as w32
+        import win32api
+
+        def diskspace_base(_dir):
+            """ Return amount of free and used diskspace in GBytes """
+            _dir = find_dir(_dir)
+            try:
+                available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
+                return disk_size / GIGI, available / GIGI
+            except (win32api.error, AttributeError):
+                return 0.0, 0.0
     except ImportError:
-        w32 = None
+        win32api = None  # code inspector wants this declared if the exception is an ImportError.
 
-    def diskspace_base(_dir):
-        """ Return amount of free and used diskspace in GBytes """
-        _dir = find_dir(_dir)
-        try:
-            available, disk_size, total_free = w32.GetDiskFreeSpaceEx(_dir)
-            return disk_size / GIGI, available / GIGI
-        except (w32.error, ModuleNotFoundError, AttributeError):
+        def diskspace_base(_dir):
             return 0.0, 0.0
-
 
 else:
     try:
