@@ -108,16 +108,16 @@ def happyeyeballs(host, **kwargs):
         timecached = happyeyeballs.happylist[hostkey][1]
         if timecurrent - timecached <= retentionseconds:
             if DEBUG:
-                logging.debug("existing cached result recent enough")
+                logging.debug("Existing cached result recent enough for %s", host)
             return happyeyeballs.happylist[hostkey][0]
         else:
             if DEBUG:
-                logging.debug("existing cached result too old. Find a new one")
+                logging.debug("Existing cached result too old. Find a new one for %s", host)
             # Continue a few lines down
     except (AttributeError, IndexError, KeyError):
         # Exception, so entry not there, so we have to fill it out
         if DEBUG:
-            logging.debug("Host not yet in the cache. Find entry")
+            logging.debug("Host not yet in the cache. Find entry for %s", host)
         pass
         # we only arrive here if the entry has to be determined. So let's do that:
 
@@ -157,7 +157,7 @@ def happyeyeballs(host, **kwargs):
             address = info[4][0]
         except LookupError:
             if DEBUG:
-                logging.debug("Index/Attribute/Key lookup error in the happyeyeballs threading try block")
+                logging.debug("Index/Attribute/Key lookup error in the happyeyeballs threading try block for %s", host)
             continue
 
         try:
@@ -167,7 +167,7 @@ def happyeyeballs(host, **kwargs):
             thisthread.start()
         except threading.ThreadError:
             if DEBUG:
-                logging.debug("happyeyeballs ThreadError in the queue processing try block")
+                logging.debug("happyeyeballs ThreadError in the queue processing try block for %s", host)
             pass
 
     # start reading from the Queue for message from the threads:
