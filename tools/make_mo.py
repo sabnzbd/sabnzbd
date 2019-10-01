@@ -225,7 +225,7 @@ def make_templates():
 
 def patch_nsis():
     """ Patch translation into the NSIS script """
-    RE_NSIS = re.compile(r'^(\s*LangString\s+)(\w+)(\s+\$\{LANG_)(\w+)\}\s+(".*)', re.I)
+    RE_NSIS = re.compile(r'^(\s*LangString\s+)(\w+)(\s+\${LANG_)(\w+)\}\s+(".*)', re.I)
     languages = [os.path.split(path)[1] for path in glob.glob(os.path.join(MO_DIR, "*"))]
 
     src = open(NSIS, "r")

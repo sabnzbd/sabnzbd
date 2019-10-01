@@ -24,28 +24,30 @@ import sys
 import re
 
 # Import version.py without the sabnzbd overhead
-with open("sabnzbd/version.py") as version_file:
-    exec(version_file.read())
+try:
+    with open("sabnzbd/version.py") as version_file:
+        exec(version_file.read())
+except FileNotFoundError:
+    with open("../sabnzbd/version.py") as version_file:
+        exec(version_file.read())
 
 # Fixed information for the POT header
-HEADER = (
-    r"""#
-# SABnzbd Translation Template file __TYPE__
-# Copyright 2011-2019 The SABnzbd-Team
-#   team@sabnzbd.org
-#
-msgid ""
-msgstr ""
-"Project-Id-Version: SABnzbd-%s\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: shypike@sabnzbd.org\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
-"Content-Transfer-Encoding: 7bit\n"
-"""
-    % __version__
-)
+HEADER = r"""#
+    # SABnzbd Translation Template file __TYPE__
+    # Copyright 2011-2019 The SABnzbd-Team
+    #   team@sabnzbd.org
+    #
+    msgid ""
+    msgstr ""
+    "Project-Id-Version: SABnzbd-{}\n"
+    "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+    "Last-Translator: shypike@sabnzbd.org\n"
+    "Language-Team: LANGUAGE <LL@li.org>\n"
+    "MIME-Version: 1.0\n"
+    "Content-Type: text/plain; charset=ASCII\n"
+    "Content-Transfer-Encoding: 7bit\n"
+    """
+HEADER = HEADER.format(__version__)
 
 PO_DIR = "po/main"
 POE_DIR = "po/email"
@@ -54,7 +56,7 @@ EMAIL_DIR = "email"
 DOMAIN = "SABnzbd"
 DOMAIN_EMAIL = "SABemail"
 DOMAIN_NSIS = "SABnsis"
-PARMS = "-d %s -p %s -w500 -k T -k TT -o %s.pot.tmp" % (DOMAIN, PO_DIR, DOMAIN)
+PARMS = r"-d {} -p {} -w500 -k T -k TT -o {}.pot.tmp".format(DOMAIN, PO_DIR, DOMAIN)
 FILES = "SABnzbd.py SABHelper.py SABnzbdDelegate.py sabnzbd/*.py sabnzbd/utils/*.py"
 
 FILE_CACHE = {}
@@ -72,7 +74,7 @@ def get_a_line(line_src, number):
             FILE_CACHE[line_src].append(file_line)
     try:
         return FILE_CACHE[line_src][number - 1]
-    except:
+    except (OSError, IndexError):
         return ""
 
 
@@ -86,19 +88,19 @@ def get_context(ctx_line):
 
     newlines = []
     for item in ctx_line[2:].strip("\r\n").split():
-        m = RE_LINE.search(item)
-        if m:
-            line_src = m.group(1)
-            number = m.group(2)
+        cm = RE_LINE.search(item)
+        if cm:
+            line_src = cm.group(1)
+            number = cm.group(2)
         else:
             newlines.append(item)
             continue
 
         srcline = get_a_line(line_src, int(number)).strip("\r\n")
         context = ""
-        m = RE_CONTEXT.search(srcline)
-        if m:
-            context = m.group(1)
+        cm = RE_CONTEXT.search(srcline)  # avoid shadowing out of scope variable 'm'
+        if cm:
+            context = cm.group(1)
         else:
             if "logging.error(" in srcline:
                 context = "Error message"
@@ -109,7 +111,7 @@ def get_context(ctx_line):
 
         if context:
             # Format context
-            item = "%s [%s]" % (item, context)
+            item = "{} [{}]".format(item, context)
 
         # Only add new texts
         if item not in newlines:
@@ -120,11 +122,12 @@ def get_context(ctx_line):
 
 def add_tmpl_to_pot(prefix, dst_file):
     """ Append english template to open POT file 'dst' """
-    with open(EMAIL_DIR + "/%s-en.tmpl" % prefix, "r") as tmpl_src:
-        dst_file.write("#: email/%s.tmpl:1\n" % prefix)
+    tmpl_abs_path = os.path.normpath(os.path.join(project_path, "{}/{}-en.tmpl".format(EMAIL_DIR, prefix)))
+    with open(tmpl_abs_path, "r") as tmpl_src:
+        dst_file.write("#: email/{}.tmpl:1\n".format(prefix))
         dst_file.write('msgid ""\n')
         for tmpl_line in tmpl_src:
-            dst_file.write('"%s"\n' % tmpl_line.replace("\n", "\\n").replace('"', '\\"'))
+            dst_file.write('"{}"\n'.format(tmpl_line.replace("\n", "\\n").replace('"', '\\"')))
         dst_file.write('msgstr ""\n\n')
 
 
@@ -134,39 +137,48 @@ if not os.path.exists(PO_DIR):
 
 # Determine location of PyGetText tool
 path, py = os.path.split(sys.argv[0])
+project_path = os.path.split(path)[0]
 PYGETTEXT = os.path.abspath(os.path.normpath(os.path.join(path, "pygettext.py")))
-cmd = "%s %s %s %s" % (sys.executable, PYGETTEXT, PARMS, FILES)
+FILES = [os.path.normpath(os.path.join(project_path, f)) for f in FILES.split(" ")]
+FILES = r" ".join(FILES)
+cmd = r"{} {} {} {}".format(sys.executable, PYGETTEXT, PARMS, FILES)
 os.system(cmd)
 print("Finished creating POT file")
 
+# TODO: Appears to still be a bug in generated POT files. Many nested '#: D # D' appear to be missing a colon.
 print("Post-process POT file")
-src = open("%s/%s.pot.tmp" % (PO_DIR, DOMAIN), "r")
-dst = open("%s/%s.pot" % (PO_DIR, DOMAIN), "w")
-dst.write(HEADER.replace("__TYPE__", "MAIN"))
-header = True
+with open("{}/{}.pot.tmp".format(PO_DIR, DOMAIN), "r") as src:
+    with open("{}/{}.pot".format(PO_DIR, DOMAIN), "w") as dst:
+        dst.write(HEADER.replace("__TYPE__", "MAIN"))
+        header = True
 
-for line in src:
-    if line.startswith("#:"):
-        line = line.replace("\\", "/")
-        if header:
-            dst.write("\n\n")
-        header = False
-    if header:
-        if not ('"POT-Creation-Date:' in line or '"Generated-By:' in line):
-            continue
-    elif line.startswith("#:"):
-        line = get_context(line)
-    dst.write(line)
+        for line in src:
+            if line.startswith("#:"):
+                line = line.replace("\\", "/")
+                if header:
+                    dst.write("\n\n")
+                header = False
+            if header:
+                if not ('"POT-Creation-Date:' in line or '"Generated-By:' in line):
+                    continue
+            elif line.startswith("#:"):
+                line = get_context(line)
+            dst.write(line)
 
-src.close()
-dst.close()
-os.remove("%s/%s.pot.tmp" % (PO_DIR, DOMAIN))
+
+try:
+    os.remove("sabnzbd/{}/{}.pot.tmp".format(PO_DIR, DOMAIN))
+except OSError:
+    try:
+        os.remove("../sabnzbd/{}/{}.pot.tmp".format(PO_DIR, DOMAIN))
+    except OSError:
+        pass
 print("Finished post-process POT file")
 
 print("Creating email POT file")
 if not os.path.exists(POE_DIR):
     os.makedirs(POE_DIR)
-with open(os.path.join(POE_DIR, DOMAIN_EMAIL + ".pot"), "w") as dst_email:
+with open(os.path.join(POE_DIR, "{}.pot".format(DOMAIN_EMAIL)), "w") as dst_email:
     dst_email.write(HEADER.replace("__TYPE__", "EMAIL"))
     add_tmpl_to_pot("email", dst_email)
     add_tmpl_to_pot("rss", dst_email)
@@ -176,22 +188,22 @@ print("Finished creating email POT file")
 
 # Create the NSIS POT file
 NSIS = "NSIS_Installer.nsi"
-RE_NSIS = re.compile(r'LangString\s+\w+\s+\$\{LANG_ENGLISH\}\s+(".*)', re.I)
+RE_NSIS = re.compile(r'LangString\s+\w+\s+\${LANG_ENGLISH\}\s+(".*)', re.I)
 
 if os.path.exists(NSIS):
     print("Creating NSIS POT file")
     if not os.path.exists(PON_DIR):
         os.makedirs(PON_DIR)
     src = open(NSIS, "r")
-    dst = open(os.path.join(PON_DIR, DOMAIN_NSIS + ".pot"), "w")
+    dst = open(os.path.join(PON_DIR, "{}.pot".format(DOMAIN_NSIS)), "w")
     dst.write(HEADER.replace("__TYPE__", "NSIS"))
     dst.write("\n")
     for line in src:
         m = RE_NSIS.search(line)
         if m and "MsgLangCode" not in line:
-            dst.write("#: %s\n" % NSIS)
+            dst.write("#: {}\n".format(NSIS))
             text = m.group(1).replace('$\\"', '\\"').replace("$\\", "\\\\")
-            dst.write("msgid %s\n" % text)
+            dst.write("msgid {}\n".format(text))
             dst.write('msgstr ""\n\n')
     dst.close()
     src.close()

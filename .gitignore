@@ -44,3 +44,6 @@ tests/cache
 
 .DS_Store
 /venv
+/tools/po/main/SABnzbd.pot
+/tools/po/main/SABnzbd.pot.tmp
+/tools/po/email/SABemail.pot

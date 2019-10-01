@@ -51,7 +51,6 @@ def do_socket_connect(socket_queue, ip, port, socket_ssl, ipv4delay):
         socket_queue.put((ip, False))
         if DEBUG:
             logging.debug("Socket connection to %s not OK", ip)
-        pass
     if s is None:  # No working socket connections available for host.
         return
     try:
@@ -168,7 +167,6 @@ def happyeyeballs(host, **kwargs):
         except threading.ThreadError:
             if DEBUG:
                 logging.debug("happyeyeballs ThreadError in the queue processing try block for %s", host)
-            pass
 
     # start reading from the Queue for message from the threads:
     if isinstance(allinfo, list):
@@ -181,7 +179,6 @@ def happyeyeballs(host, **kwargs):
             except queue.Empty:
                 if DEBUG:
                     logging.debug("happyeyeballs requesting item %s from empty queue for %s", i, host)
-                pass
         logging.info(
             "Quickest IP address for %s (port %s, ssl %s, preferipv6 %s) is %s",
             host,

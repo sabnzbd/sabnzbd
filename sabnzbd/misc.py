@@ -638,8 +638,8 @@ def format_time_string(seconds):
         if single == "minute" or (single == "second" and n == 1):
             single = single[:3]
         if n == 1:
-            return T(single)
-        return T(single + "s")
+            return T("%s") % single
+        return T("%ss") % single
 
     # Format the string, size by size
     seconds = int_conv(seconds)

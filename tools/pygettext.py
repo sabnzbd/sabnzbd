@@ -186,21 +186,21 @@ pot_header = _(
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\\n"
-"POT-Creation-Date: %(time)s\\n"
+"POT-Creation-Date: {time}\\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n"
 "Language-Team: LANGUAGE <LL@li.org>\\n"
 "MIME-Version: 1.0\\n"
-"Content-Type: text/plain; charset=%(charset)s\\n"
-"Content-Transfer-Encoding: %(encoding)s\\n"
-"Generated-By: pygettext.py %(version)s\\n"
+"Content-Type: text/plain; charset={charset}s\\n"
+"Content-Transfer-Encoding: {encoding}\\n"
+"Generated-By: pygettext.py {version}\\n"
 
 """
 )
 
 
 def usage(code, msg=""):
-    print(__doc__ % globals(), file=sys.stderr)
+    print(__doc__.format(globals(), file=sys.stderr))
     if msg:
         print(msg, file=sys.stderr)
     sys.exit(code)
@@ -217,7 +217,7 @@ def make_escapes(pass_nonascii):
     else:
         mod = 256
         escape = escape_nonascii
-    escapes = [r"\%03o" % i for i in range(mod)]
+    escapes = [r"\{:03o}".format(i) for i in range(mod)]
     for i in range(32, 127):
         escapes[i] = chr(i)
     escapes[ord("\\")] = r"\\"
@@ -249,7 +249,7 @@ def normalize(s, encoding):
     # appropriate for .po files, namely much closer to C style.
     lines = s.split("\n")
     if len(lines) == 1:
-        s = '"' + escape(s, encoding) + '"'
+        s = '"{}"'.format(escape(s, encoding))
     else:
         if not lines[-1]:
             del lines[-1]
@@ -257,7 +257,7 @@ def normalize(s, encoding):
         for i in range(len(lines)):
             lines[i] = escape(lines[i], encoding)
         lineterm = '\\n"\n"'
-        s = '""\n"' + lineterm.join(lines) + '"'
+        s = '""\n"{}"'.format(lineterm.join(lines))
     return s
 
 
@@ -274,10 +274,10 @@ def getFilesForName(name):
         # check for glob chars
         if containsAny(name, "*?[]"):
             files = glob.glob(name)
-            list = []
+            file_list = list()  # avoid shadowing built-in function 'list' with same variable name
             for file in files:
-                list.extend(getFilesForName(file))
-            return list
+                file_list.extend(getFilesForName(file))
+            return file_list
 
         # try to find module or package
         try:
@@ -290,7 +290,7 @@ def getFilesForName(name):
 
     if os.path.isdir(name):
         # find all python files in directory
-        list = []
+        file_list = list()
         # get extension for python source files
         _py_ext = importlib.machinery.SOURCE_SUFFIXES[0]
         for root, dirs, files in os.walk(name):
@@ -298,13 +298,13 @@ def getFilesForName(name):
             if "CVS" in dirs:
                 dirs.remove("CVS")
             # add all *.py files to list
-            list.extend([os.path.join(root, file) for file in files if os.path.splitext(file)[1] == _py_ext])
-        return list
+            file_list.extend([os.path.join(root, file) for file in files if os.path.splitext(file)[1] == _py_ext])
+        return file_list
     elif os.path.exists(name):
         # a single file
         return [name]
 
-    return []
+    return list()
 
 
 class TokenEater:
@@ -320,9 +320,9 @@ class TokenEater:
 
     def __call__(self, ttype, tstring, stup, etup, line):
         # dispatch
-        ##        import token
-        ##        print('ttype:', token.tok_name[ttype], 'tstring:', tstring,
-        ##              file=sys.stderr)
+        # import token
+        # print('ttype:', token.tok_name[ttype], 'tstring:', tstring,
+        #     file=sys.stderr)
         self.__state(ttype, tstring, stup[0])
 
     def __waiting(self, ttype, tstring, lineno):
@@ -386,8 +386,9 @@ class TokenEater:
         elif ttype not in [tokenize.COMMENT, token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL]:
             # warn if we see anything else than STRING or whitespace
             print(
-                _('*** %(file)s:%(lineno)s: Seen unexpected token "%(token)s"')
-                % {"token": tstring, "file": self.__curfile, "lineno": self.__lineno},
+                _('*** {file}:{lineno}: Seen unexpected token "{token}"').format(
+                    token=tstring, file=self.__curfile, lineno=self.__lineno
+                ),
                 file=sys.stderr,
             )
             self.__state = self.__waiting
@@ -407,9 +408,7 @@ class TokenEater:
         options = self.__options
         timestamp = time.strftime("%Y-%m-%d %H:%M%z")
         encoding = fp.encoding if fp.encoding else "UTF-8"
-        print(
-            pot_header % {"time": timestamp, "version": __version__, "charset": encoding, "encoding": "8bit"}, file=fp
-        )
+        print(pot_header.format(time=timestamp, version=__version__, charset=encoding, encoding="8bit"), file=fp)
         # Sort the entries.  First sort each particular entry's keys, then
         # sort all the entries by their first item.
         reverse = {}
@@ -435,19 +434,19 @@ class TokenEater:
                 elif options.locationstyle == options.SOLARIS:
                     for filename, lineno in v:
                         d = {"filename": filename, "lineno": lineno}
-                        print(_("# File: %(filename)s, line: %(lineno)d") % d, file=fp)
+                        print(_("# File: {filename}, line: {lineno:d}").format(**d), file=fp)
                 elif options.locationstyle == options.GNU:
                     # fit as many locations on one line, as long as the
                     # resulting line length doesn't exceed 'options.width'
                     locline = "#:"
                     for filename, lineno in v:
                         d = {"filename": filename, "lineno": lineno}
-                        s = _(" %(filename)s:%(lineno)d") % d
+                        s = _(" {filename}:{lineno:d}").format(**d)
                         if len(locline) + len(s) <= options.width:
                             locline = locline + s
                         else:
                             print(locline, file=fp)
-                            locline = "#:" + s
+                            locline = "#:{}".format(s)
                     if len(locline) > 2:
                         print(locline, file=fp)
                 if isdocstring:
@@ -484,6 +483,7 @@ def main():
         )
     except getopt.error as msg:
         usage(1, msg)
+        opts = args = list()
 
     # for holding option values
     class Options:
@@ -530,7 +530,7 @@ def main():
         elif opt in ("-S", "--style"):
             options.locationstyle = locations.get(arg.lower())
             if options.locationstyle is None:
-                usage(1, _("Invalid value for --style: %s") % arg)
+                usage(1, _("Invalid value for --style: {}".format(arg)))
         elif opt in ("-o", "--output"):
             options.outfile = arg
         elif opt in ("-p", "--output-dir"):
@@ -538,13 +538,13 @@ def main():
         elif opt in ("-v", "--verbose"):
             options.verbose = 1
         elif opt in ("-V", "--version"):
-            print(_("pygettext.py (xgettext for Python) %s") % __version__)
+            print(_("pygettext.py (xgettext for Python) %s".format(__version__)))
             sys.exit(0)
         elif opt in ("-w", "--width"):
             try:
                 options.width = int(arg)
             except ValueError:
-                usage(1, _("--width argument must be an integer: %s") % arg)
+                usage(1, _("--width argument must be an integer: {}".format(arg)))
         elif opt in ("-x", "--exclude-file"):
             options.excludefilename = arg
         elif opt in ("-X", "--no-docstrings"):
@@ -595,7 +595,7 @@ def main():
             closep = 0
         else:
             if options.verbose:
-                print(_("Working on %s") % filename)
+                print(_("Working on {}".format(filename)))
             fp = open(filename, "rb")
             closep = 1
         try:
@@ -605,7 +605,10 @@ def main():
                 for _token in tokens:
                     eater(*_token)
             except tokenize.TokenError as e:
-                print("%s: %s, line %d, column %d" % (e.args[0], filename, e.args[1][0], e.args[1][1]), file=sys.stderr)
+                print(
+                    "{}: {}, line {:d}, column {:d}".format(e.args[0], filename, e.args[1][0], e.args[1][1]),
+                    file=sys.stderr,
+                )
         finally:
             if closep:
                 fp.close()
@@ -630,5 +633,5 @@ if __name__ == "__main__":
     main()
     # some more test strings
     # this one creates a warning
-    _('*** Seen unexpected token "%(token)s"') % {"token": "test"}
+    _('*** Seen unexpected token "{token}"'.format(token="test"))
     _("more" "than" "one" "string")
