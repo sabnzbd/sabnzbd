@@ -43,6 +43,7 @@ def isFAT(check_dir):
                             print("FAT found")
                         break
         elif "win32" in sys.platform:
+            import pywintypes
             import win32api
 
             if "?" in check_dir:

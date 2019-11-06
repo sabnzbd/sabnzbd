@@ -29,6 +29,7 @@ import time
 # Power management for Windows
 ##############################################################################
 try:
+    import pywintypes
     import win32security
     import win32api
     import ntsecuritycon

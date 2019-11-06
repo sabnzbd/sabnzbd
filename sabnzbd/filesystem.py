@@ -792,6 +792,7 @@ if sabnzbd.WIN32:
     # windows diskfree
     try:
         # Careful here, because win32api test hasn't been done yet!
+        import pywintypes
         import win32api
     except:
         pass

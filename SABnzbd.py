@@ -72,12 +72,12 @@ import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 
 try:
+    import pywintypes
     import win32api
     import win32serviceutil
     import win32evtlogutil
     import win32event
     import win32service
-    import pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
     from util.mailslot import MailSlot
     from util.apireg import get_connection_info, set_connection_info, del_connection_info

@@ -25,13 +25,13 @@ import subprocess
 
 
 try:
+    import pywintypes
     import win32api
     import win32file
     import win32serviceutil
     import win32evtlogutil
     import win32event
     import win32service
-    import pywintypes
 except ImportError:
     print("Sorry, requires Python module PyWin32.")
     sys.exit(1)

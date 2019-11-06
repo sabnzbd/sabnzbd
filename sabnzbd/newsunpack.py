@@ -43,6 +43,7 @@ from sabnzbd.constants import Status
 
 if sabnzbd.WIN32:
     try:
+        import pywintypes
         import win32api
         import win32con
         import win32process

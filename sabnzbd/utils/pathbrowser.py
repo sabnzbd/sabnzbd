@@ -22,6 +22,7 @@ import os
 import sabnzbd
 
 if os.name == "nt":
+    import pywintypes
     import win32api
     import win32con
     import win32file

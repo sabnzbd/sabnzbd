@@ -31,6 +31,7 @@ import locale
 from threading import Thread
 
 try:
+    import pywintypes
     import win32api
     import win32file
 except ImportError:

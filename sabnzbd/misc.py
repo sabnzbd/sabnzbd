@@ -219,6 +219,7 @@ def windows_variant():
     """ Determine Windows variant
         Return vista_plus, x64
     """
+    import pywintypes
     from win32api import GetVersionEx
     from win32con import VER_PLATFORM_WIN32_NT
     import winreg
