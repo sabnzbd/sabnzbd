@@ -19,9 +19,10 @@
 tests.test_misc - Testing mailslot communiction on Windows
 """
 
-import sys
 import subprocess
+import sys
 import time
+
 import pytest
 
 if not sys.platform.startswith("win"):

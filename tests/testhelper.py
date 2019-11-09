@@ -22,15 +22,15 @@ tests.testhelper - Basic helper functions
 import os
 import time
 import unittest
+from http.client import RemoteDisconnected
+
 import pytest
 import requests
-
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options as ChromeOptions
-from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from urllib3.exceptions import ProtocolError
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -140,8 +140,12 @@ class SABnzbdBaseTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls.driver.close()
-        cls.driver.quit()
+        try:
+            cls.driver.close()
+            cls.driver.quit()
+        except:
+            # If something else fails, this can cause very non-informative long tracebacks
+            pass
 
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test
@@ -157,6 +161,10 @@ class SABnzbdBaseTest(unittest.TestCase):
         time.sleep(2)
 
     def wait_for_ajax(self):
-        wait = WebDriverWait(self.driver, 15)
-        wait.until(lambda driver_wait: self.driver.execute_script("return jQuery.active") == 0)
-        wait.until(lambda driver_wait: self.driver.execute_script("return document.readyState") == "complete")
+        # We catch common nonsense errors from Selenium
+        try:
+            wait = WebDriverWait(self.driver, 15)
+            wait.until(lambda driver_wait: self.driver.execute_script("return jQuery.active") == 0)
+            wait.until(lambda driver_wait: self.driver.execute_script("return document.readyState") == "complete")
+        except (RemoteDisconnected, ProtocolError):
+            pass

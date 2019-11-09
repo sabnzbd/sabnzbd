@@ -117,9 +117,7 @@ def happyeyeballs(HOST, **kwargs):
         if DEBUG:
             logging.debug("IPv6 address found for %s", HOST)
         if preferipv6:
-            ipv4delay = (
-                0.1
-            )  # preferipv6, AND at least one IPv6 found, so give IPv4 (!) a delay so that IPv6 has a head start and is preferred
+            ipv4delay = 0.1  # preferipv6, AND at least one IPv6 found, so give IPv4 (!) a delay so that IPv6 has a head start and is preferred
     except:
         if DEBUG:
             logging.debug("No IPv6 address found for %s", HOST)

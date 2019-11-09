@@ -19,8 +19,8 @@
 tests.test_utils.test_diskspeed - Testing SABnzbd diskspeed
 """
 
-from tests.testhelper import *
 from sabnzbd.utils.diskspeed import diskspeedmeasure
+from tests.testhelper import *
 
 
 class TestDiskSpeed:

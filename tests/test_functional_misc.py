@@ -18,11 +18,11 @@
 """
 tests.test_functional_misc - Functional tests of various functions
 """
-import sys
-import subprocess
 import shutil
-import sabnzbd.encoding
+import subprocess
+import sys
 
+import sabnzbd.encoding
 from tests.testhelper import *
 
 
