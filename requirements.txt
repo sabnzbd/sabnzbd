@@ -10,4 +10,4 @@ chardet
 gntp
 
 # Only on Windows
-pypiwin32; sys_platform == 'win32'
+pywin32>=227; sys_platform == 'win32'
