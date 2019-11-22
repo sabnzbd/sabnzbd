@@ -426,6 +426,9 @@ def make_script_path(script):
             s_path = os.path.join(path, script)
             if not os.path.exists(s_path):
                 s_path = None
+            else:
+                # Paths to scripts should not be long-path notation
+                s_path = clip_path(s_path)
     return s_path
 
 

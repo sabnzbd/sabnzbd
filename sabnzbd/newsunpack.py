@@ -34,7 +34,7 @@ import sabnzbd
 from sabnzbd.encoding import platform_btou
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
-    get_all_passwords, calc_age, cmp
+    get_all_passwords, calc_age, cmp, caller_name
 from sabnzbd.filesystem import make_script_path, real_path, globber, globber_full, \
     renamer, clip_path, long_path, remove_file, recursive_listdir, setname_from_path
 from sabnzbd.sorting import SeriesSorter
@@ -144,6 +144,7 @@ ENV_NZO_FIELDS = ['bytes', 'bytes_downloaded', 'bytes_tried', 'cat', 'duplicate'
 def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     """ Run a user postproc script, return console output and exit value """
     failure_url = nzo.nzo_info.get('failure', '')
+    # Items can be bool or null, causing POpen to fail
     command = [str(extern_proc), str(complete_dir), str(nzo.filename), str(nicename), '',
                str(nzo.cat), str(nzo.group), str(status), str(failure_url)]
 
@@ -2036,11 +2037,6 @@ def build_command(command, flatten_command=False):
         stup.dwFlags = win32process.STARTF_USESHOWWINDOW
         stup.wShowWindow = win32con.SW_HIDE
         creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
-
-        # Work-around for bug in Python's Popen function,
-        # scripts with spaces in the path don't work.
-        if need_shell and ' ' in command[0]:
-            command[0] = win32api.GetShortPathName(command[0])
 
         if need_shell or flatten_command:
             command = list2cmdline(command)
