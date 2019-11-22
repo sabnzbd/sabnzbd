@@ -816,6 +816,7 @@ def handle_empty_queue():
     """ Check if empty queue calls for action """
     if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
         sabnzbd.save_state()
+        notifier.send_notification("SABnzbd", T('Queue finished'), 'queue_done')
 
         # Perform end-of-queue action when one is set
         if sabnzbd.QUEUECOMPLETEACTION:
