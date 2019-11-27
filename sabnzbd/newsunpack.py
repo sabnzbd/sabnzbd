@@ -2302,9 +2302,10 @@ def pre_queue(nzo, pp, cat):
         pp and cat are supplied seperate since they can change.
     """
     def fix(p):
+        # If added via API, some items can still be "None" (as a string)
         if not p or str(p).lower() == 'none':
             return ''
-        return p
+        return str(p)
 
     values = [1, nzo.final_name_pw_clean, pp, cat, nzo.script, nzo.priority, None]
     script_path = make_script_path(cfg.pre_script())
