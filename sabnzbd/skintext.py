@@ -750,11 +750,171 @@ SKIN_TEXT = {
     'sortResult' : TT('Processed Result'),
 
 # Config->Special
-    'explain-special' : TT('Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>'
-                           'Don\'t change these without checking the Wiki first, as some have serious side-effects.<br>'
+    'explain-special' : TT('Rarely used options.<br>'
+                           'Some of these options have serious side-effects, so change them with caution.<br>'
                            'The default values are between parentheses.'),
+
+# Config->Special->Switches
     'sptag-boolean' : TT('Switches'),
-    'sptag-entries' : TT('Values'),
+
+    'explain-start_paused' :  TT('If checked SABnzbd will always start up in "Paused" mode'),
+    'explain-no_penalties' :  TT('Some Usenet servers have intermittent login (or other) problems. '
+                                 'For these the server blocking method is not very favorable.<br>'
+                                 'Setting this option will limit blocks to 1 minute.'),
+    'explain-fast_fail' :  TT('When starting a download, the first article of each file is downloaded. '
+                              'If Abort jobs that cannot be completed is turned on, there are more than 10 files '
+                              'and more than 80% of the first articles is missing the job will be failed.<br>'
+                              'If turned off, it will only be failed if availability is below req_completion_rate.'),
+    'explain-ignore_wrong_unrar' :  TT('On Linux, SABnzbd checks whether the installed unrar or rar program is supported and issues a warning if not.<br>Set this option if you think you know better.'),
+    'explain-overwrite_files' :  TT('When unpacking, this will overwrite existing files instead of creating an alternative name.'),
+    'explain-enable_par_cleanup':  TT('Normally SABnzbd will clean up par2 files after verify/repair. '
+                                      'You can disable this by using 0.<br>'
+                                       'Disabling this will also force all par2 files to be downloaded'),
+    'explain-queue_complete_pers':  TT('Set this to 1 if you want end-of-queue actions Shutdown/Standby/Hibernate '
+                                       'to be persistent (remembered) after restarts'),
+    'explain-api_warnings' :  TT('When the API is accessed by external tools without proper authentication, '
+                                 'SABnzbd will show a warning.<br>'
+                                 'This is a security warning that you should take seriously.<br>'
+                                 'However, it seems that there are some security tools that try to access anything '
+                                 'that looks like a webserver. If you cannot disable the cause of the warnings, '
+                                 'you can choose to disable the warning.'),
+    'explain-ampm' :  TT('Display ETA in AM/PM notation, only applicable to some locations in older skins.'),
+    'explain-enable_unrar':  TT('Enable or disable the UnRar tool. If disabled, '
+                                'the archive/split files will not be unpacked.'),
+    'explain-enable_unzip' :  TT('Enable or disable the UnZip tool. If disabled, '
+                                 'the archive/split files will not be unpacked.'),
+    'explain-enable_7zip':  TT('Enable or disable the 7zip tool. If disabled, '
+                               'the archive/split files will not be unpacked.'),
+    'explain-enable_filejoin':  TT('Enable or disable the filejoin tool. If disabled, '
+                                   'the archive/split files will not be unpacked.'),
+    'explain-enable_tsjoin':  TT('Enable or disable the TSJoin tool. If disabled, '
+                                 'the archive/split files will not be unpacked.'),
+    'explain-ignore_unrar_dates':  TT('Normally unpacked files will get the date/time stamp they have in the archive. '
+                                      'If you set this option, the files will get the date/time of unpacking.'),
+    'explain-debug_log_decoding':  TT('Log the decoding of each article in +Debug logging mode. Disabled by default '
+                                      'to make debug logs more readable. Requires restart of SABnzbd.'),
+    'explain-multipar':  TT('Windows only. Disable Multipar and use par2tbb instead. '
+                            'This is still supported, but special workarounds for Windows have '
+                            'been removed so can fail on special cases.'),
+    'explain-osx_menu' :  TT('Uncheck this to remove the SABnzbd icon in the macOS menu bar'),
+    'explain-osx_speed':  TT('Uncheck this to prevent the display of download speed adjacent to SABnzbd\'s icon '
+                             'in the macOS menu bar'),
+    'explain-win_menu' :  TT('Uncheck this to remove the SABnzbd icon from the Windows systray'),
+    'explain-allow_incomplete_nzb':  TT('Sometimes you get an incomplete NZB file (partial content, '
+                                        'incorrect syntax etc.) You can enable this option to allow SABnzbd to '
+                                        'salvage as much as possible from the NZB. The job will enter the queue '
+                                        'in paused mode.'),
+    'explain-rss_filenames':  TT('Normally the RSS titles are used to name jobs. If you prefer the (usually) '
+                                 'more compact NZB file names that are generated by index sites, check this. '
+                                 'The RSS matching still occurs on titles only!'),
+    'explain-ipv6_hosting':  TT('Some systems have problems dealing with the IPv6 equivalent of "localhost" '
+                                'for SABnzbd host. Therefore SABnzbd will not try to bind to the IPv6 localhost '
+                                'by default when the SABnzbd host is set to "localhost". Enabling this will binding '
+                                'to all addresses of localhost. Alternatively you can also set the SABnzbd host to '
+                                '::1 to only bind to the IPv6 localhost.'),
+    'explain-keep_awake':  TT('Disable to stop SABnzbd\'s attempts to keep the system awake while the queue '
+                              'isn\'t empty.'),
+    'explain-empty_postproc':  TT('Do post-processing and run the user script even if nothing has been downloaded. '
+                                  'This is useful in combination with tools like SickBeard, for which running the '
+                                  'script on an empty or failed download is a trigger to try an alternative NZB. Note '
+                                  'that the "Status" parameter for the script will be -1.'),
+    'explain-html_login':  TT('HTML based login form, uncheck for basic authentication. Both offer similar security '
+                              'but password managers might not be able to fill basic authentication automatically.'),
+    'explain-wait_for_dfolder':  TT('Some people use external or network drives for the "temporary download folder". '
+                                    'It can happen that such a drive isn\'t mounted yet when SABnzbd starts up, '
+                                    'causing it to create a new folder at the default location. '
+                                    'To prevent this, set the option to 1. This will make SABnzbd wait '
+                                    'until the drive is available. Note that SABnzbd will hang until the '
+                                    'drive is available! Also, the folder must already exist otherwise '
+                                    'SABnzbd will hang until terminated.'),
+    'explain-max_art_opt':  TT('You can choose to use limited retries only for your "optional" servers. '
+                               'This will prevent "Out of retention" failures when your main server '
+                               'is inadvertently off-line'),
+    'explain-warn_empty_nzb' :  TT('Will enable warnings about empty NZB files, uncheck to supress warnings.'),
+    'explain-enable_bonjour':  TT('Will announce itself on Apple\'s Bonjour protocol. '
+                                  '<a href="https://sabnzbd.org/wiki/extra/bonjour-support" target="_blank">Read more here</a>'),
+    'explain-reject_duplicate_files':  TT('Some NZB\'s have the same file listed twice, SABnzbd will only '
+                                          'add the largest of the files with the same name if this is enabled.'),
+    'explain-warn_dupl_jobs':  TT('If checked, will issue a warning when a duplicate job is detected and '
+                                  'subsequently paused or deleted. Uncheck if you find the warnings a nuisance'),
+    'explain-replace_illegal':  TT('Replace illegal characters in folder names by equivalents. '
+                                   'If you switch this off, illegal characters will be just removed.'),
+    'explain-backup_for_duplicates' :  TT('Check to backup duplicate NZB\'s.'),
+    'explain-disable_api_key' :  TT('If checked API calls don\'t require the API key.'),
+    'explain-api_logging' :  TT('Check to log all API calls.'),
+    'explain-ignore_empty_files':  TT('Do not show a warning when the added NZB defines files to download that have '
+                                      'no articles. This is usually a problem of the NZB-source.'),
+    'explain-x_frame_options':  TT('Includes HTTP header with every request that prevents SABnzbd to be included '
+                                   'in another site within the browser. Disable when trying to use SABnzbd with '
+                                   'tools that let you control your HTPC from a single interface.'),
+    'explain-require_modern_tls':  TT('Enforce TLSv1.2+ for SSL-connections to Usenet servers. Older protocol '
+                                      'versions (SSLv2, SSLv3, and TLS <= 1.1) will be disallowed.'),
+
+# Config->Special->Values
+    'sptag-entries': TT('Values'),
+
+    'explain-size_limit': TT('Any download that exceeds this value will be paused and get priority "low".<br>'
+                             'You can use the K/M/G notation, so e.g. 4.7G'),
+    'explain-movie_rename_limit': TT('On Windows, the total path is limited to 255 characters.<br>'
+                                     'A combination of long folder names and long file names may lead to problems. '
+                                     'Set this option to limit each element of the total path. '
+                                     'Each element will be truncated to the specified number. 64 is a safe value.<br>'
+                                     'The option will also work for other operating systems but is only usefull on Windows.'),
+    'explain-nomedia_marker': TT('Just before unpacking of files into the final folder, SABnzbd will put a '
+                                 'special marker file (e.g. ".nomedia") in the folder. '
+                                 'Afterwards it will be deleted.<br>'
+                                 'This prevents some media player software from trying to index the folder '
+                                 'while still incomplete. You can disable the feature by clearing the field, '
+                                 'or you can set an alternative name. Check your media software\'s manual.'),
+    'explain-max_url_retries': TT('How many times failed NZB fetches will be retried. '
+                                  'Each retry increases the waiting interval (60, 120, 180, etc seconds).<br>'
+                                  'Only applies to errors that might be resolved when trying again later, '
+                                  'like a server being temporarily unresponsive.'),
+    'explain-req_completion_rate': TT('Minimum percentage to allow pre-check to continue downloading. '
+                                      'A perfect download (with the usual 10% par2 files) would have 110%.<br>'
+                                      '100% means that the rar files and the par2-files combined are the same amount '
+                                      'of bytes as only the rar-set, if it was fully complete.<br>'
+                                      'Anything less than 100%\ is by definition not repairable.'),
+    'explain-wait_ext_drive': TT('When SABnzbd wants to store files on the final destination, this destination '
+                                 'might be an external drive. Especially USB drives can take considerable time '
+                                 'to wake up after going into standby. SABnzbd will try 5 times with '
+                                 'intervals of one second. You can increase this value if needed.'),
+    'explain-show_sysload': TT('When working on a Linux/Unix system you can have SABnzbd display no system '
+                               'information(0), Only the CPU load indicators(1) and also the memory usage(2).<br>'
+                               'Linux memory usage "V" is total memory usage of SABnzbd, "R" is actually '
+                               'used physical memory'),
+    'explain-url_base': TT('When using a reverse proxy (or just if you feel like it), you can change the base-URL '
+                           'of SABnzbd that is used during redirects. Requires restart of SABnzbd.'),
+    'explain-direct_unpack_threads': TT('When Direct Unpack is enabled we only allow this number of unpackers to '
+                                        'be active at the same time. This is to limit strain on the system\'s '
+                                        'disks.<br>Note that there can be an additional unpack active if a job is '
+                                        'also being post-processed.'),
+    'explain-ipv6_servers': TT('Control the use of IPv6 Usenet server addresses. Only useful when you have an '
+                               'IPv6 capable ISP and connect to servers that (also) have IPv6 addresses. '
+                               'Meaning: 0 = don\'t use, 1=use when available and reachable, '
+                               '2=force usage(when SABnzbd\'s detection fails)'),
+    'explain-selftest_host':  TT('In order to check proper IPv6 connectivity and your external IPv4 address, '
+                                 'SABnzbd needs to connect to a known external IPv6 address and a server that '
+                                 'returns the external IP address. By default we use our own server for this '
+                                 '(we don\'t send any data). You can choose to use another known IPv6 host, '
+                                 'e.g. http: // ipv6.google.com. However, this will cause the external IPv4 '
+                                 'address detection to fail in the status window, this does not affect the '
+                                 'functioning of SABnzbd.'),
+    'explain-rating_host' : TT('You can switch the host to connect to for rating. The indexer needs to support this!'),
+    'explain-rss_odd_titles': TT('Some RSS feeds produce very awkward titles which are fine for filtering, '
+                                 'but not as job titles. For all indexers that are listed here, '
+                                 'the actual NZB file name will be used instead of the title. '),
+    'explain-quick_check_ext_ignore': TT('A list of file name extensions that will be ignored during QuickCheck. '
+                                         'If they are missing but all other files are correct, '
+                                         'QuickCheck will still pass.'),
+    'explain-host_whitelist' : TT('See <a href="https://sabnzbd.org/wiki/extra/hostname-check.html" target="_blank">Hostname verification</a>.'),
+
+# Config->Special->Very special option
+    'title-config_lock': TT('Config lock'),
+    'lead-config_lock': TT('The Only option that cannot be set from the Web UI, because it would defeat its '
+                           'security purpose.<br>You can only access it by directly editing the sabnzbd.ini '
+                           'file, while SABnzbd is not running.'),
+    'explain-config_lock': TT('If 1, forbids all access to the Config pages.'),
 
 # NZO
     'nzoDetails' : TT('Edit NZB Details'), #: Job details page

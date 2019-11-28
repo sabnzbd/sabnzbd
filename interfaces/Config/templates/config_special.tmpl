@@ -21,7 +21,7 @@
                                 <!--#if $option[1] != $option[2] then '<span class="glyphicon glyphicon-asterisk"></span>' else ''#-->
                             </label>
                             <input type="checkbox" name="$option[0]" id="$option[0]" value="1" <!--#if int($option[1]) > 0 then 'checked="checked"' else ""#--> />
-                            <span class="desc"></span>
+                            <span class="desc">$T('explain-' + $option[0])</span>
                         </div>
                     <!--#end for#-->
                     <div class="field-pair">
@@ -42,6 +42,7 @@
                             <label class="config narrow" for="$option[0]">$option[0] (&nbsp;<span class="path">$option[2]</span>&nbsp;)</label>
                             <input type="text" name="$option[0]" id="$option[0]" value="$option[1]" />
                             <!--#if ($option[1] != $option[2]) and ($option[2] != "") then '<span class="glyphicon glyphicon-asterisk"></span>' else ''#-->
+                            <span class="desc">$T('explain-' + $option[0])</span>
                         </div>
                     <!--#end for#-->
                     <div class="field-pair">
@@ -51,7 +52,25 @@
                 </fieldset>
             </div><!-- /col1 -->
         </div><!-- /section -->
+
+        <div class="section">
+            <div class="col2">
+                <h3>$T('title-config_lock') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                <p>$T('lead-config_lock')</p>
+            </div><!-- /col2 -->
+            <div class="col1">
+                <fieldset>
+                    <div class="field-pair">
+                        <label class="config wide" for="config_lock">
+                            config_lock ( <span class="path">off</span> )
+                        </label>
+                        <span class="desc">$T('explain-config_lock')</span>
+                    </div>
+                </fieldset>
+            </div><!-- /col1 -->
+        </div><!-- /section -->
     </form>
+
 </div><!-- /colmask -->
 
 <!--#include $webdir + "/_inc_footer_uc.tmpl"#-->
