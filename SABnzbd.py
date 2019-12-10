@@ -1193,11 +1193,13 @@ def main():
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
         elif sabnzbd.LINUX_POWER and os.environ.get('DISPLAY'):
             try:
-                import gtk
+                import gi
+                gi.require_version('Gtk', '3.0')
+                from gi.repository import Gtk
                 import sabnzbd.sabtraylinux
                 sabnzbd.LINUXTRAY = sabnzbd.sabtraylinux.StatusIcon()
             except:
-                logging.info("pygtk2 not found. No SysTray.")
+                logging.info("python3-gi not found, no SysTray.")
 
     # Find external programs
     sabnzbd.newsunpack.find_programs(sabnzbd.DIR_PROG)
