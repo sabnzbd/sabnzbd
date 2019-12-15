@@ -8,7 +8,9 @@ cherrypy
 portend
 chardet
 gntp
-pygobject
+
+# Not on Windows
+pygobject>=3.10.2; sys_platform != 'win32'
 
 # Only on Windows
 pywin32>=227; sys_platform == 'win32'
