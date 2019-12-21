@@ -9,8 +9,10 @@ portend
 chardet
 gntp
 
-# Not on Windows
-pygobject>=3.10.2; sys_platform != 'win32'
+# Optional support for *nix tray icon.
+# Note that pygobject depends on pycairo, which requires pkg-config and cairo headers.
+# See https://pycairo.readthedocs.io/en/latest/getting_started.html
+#pygobject>=3.10.2; sys_platform != 'win32'
 
 # Only on Windows
 pywin32>=227; sys_platform == 'win32'
