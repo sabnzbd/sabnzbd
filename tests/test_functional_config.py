@@ -20,6 +20,7 @@ tests.test_functional_config - Basic testing if Config pages work
 """
 
 from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
+
 from tests.testhelper import *
 
 

@@ -1,5 +1,6 @@
 # Compiled python
 *.py[cod]
+__pycache__
 
 # Working folders for Win build
 build/

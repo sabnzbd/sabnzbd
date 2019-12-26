@@ -21,8 +21,8 @@ tests.test_misc - Testing functions in misc.py
 
 import datetime
 
-from sabnzbd import misc
 from sabnzbd import lang
+from sabnzbd import misc
 from sabnzbd.config import ConfigCat
 from tests.testhelper import *
 
