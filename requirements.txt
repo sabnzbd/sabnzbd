@@ -11,3 +11,6 @@ gntp
 
 # Only on Windows
 pywin32>=227; sys_platform == 'win32'
+
+# Only on macOS
+pyobjc; sys_platform == 'darwin'
