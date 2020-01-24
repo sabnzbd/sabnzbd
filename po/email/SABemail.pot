@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-2.2.0-develop\n"
+"Project-Id-Version: SABnzbd-3.0.0-develop\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: shypike@sabnzbd.org\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
