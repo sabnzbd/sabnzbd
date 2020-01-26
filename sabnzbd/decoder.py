@@ -172,6 +172,14 @@ class Decoder(Thread):
                     elif not killed and not found:
                         logme = T('Badly formed yEnc article in %s') % art_id
                         logging.info(logme)
+                        # bad yEnc article, so ... let's check if it's uuencode, to inform user and stop download
+                        for line in data_to_check:
+                            lline = ubtou(line).lower()
+                            if lline.find('\nbegin ') >= 0:
+                                logme = T('UUencode detected, only yEnc encoding is supported [%s]') % nzo.final_name
+                                logging.error(logme)
+                                sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+                                break
 
                     if not found or killed:
                         new_server_found = self.search_new_server(article)
