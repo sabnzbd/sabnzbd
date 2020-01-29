@@ -86,7 +86,7 @@ class Decoder(Thread):
             if not art_tup:
                 break
 
-            article, lines, raw_data = art_tup
+            article, raw_data = art_tup
             nzf = article.nzf
             nzo = nzf.nzo
             art_id = article.article
@@ -94,7 +94,7 @@ class Decoder(Thread):
 
             # Check if the space that's now free can let us continue the queue?
             qsize = self.queue.qsize()
-            if (sabnzbd.articlecache.ArticleCache.do.free_reserve_space(lines) or qsize < MAX_DECODE_QUEUE) and \
+            if (sabnzbd.articlecache.ArticleCache.do.free_reserve_space(article.bytes) or qsize < MAX_DECODE_QUEUE) and \
                (qsize < LIMIT_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
                 sabnzbd.downloader.Downloader.do.undelay()
 
@@ -103,7 +103,7 @@ class Decoder(Thread):
             found = False    # Proper article found
             logme = None
 
-            if lines or raw_data:
+            if raw_data:
                 try:
                     if nzo.precheck:
                         raise BadYenc
@@ -112,7 +112,7 @@ class Decoder(Thread):
                     if self.__log_decoding:
                         logging.debug("Decoding %s", art_id)
 
-                    data = self.decode(article, lines, raw_data)
+                    data = self.decode(article, raw_data)
                     nzf.article_count += 1
                     found = True
 
@@ -146,14 +146,13 @@ class Decoder(Thread):
                     # Handles precheck and badly formed articles
                     killed = False
                     found = False
-                    data_to_check = lines or raw_data
-                    if nzo.precheck and data_to_check and data_to_check[0].startswith(b'223 '):
+                    if nzo.precheck and raw_data and raw_data.startswith(b'223 '):
                         # STAT was used, so we only get a status code
                         found = True
                     else:
                         # Examine headers (for precheck) or body (for download)
                         # And look for DMCA clues (while skipping "X-" headers)
-                        for line in data_to_check:
+                        for line in raw_data:
                             lline = ubtou(line).lower()
                             if 'message-id:' in lline:
                                 found = True
@@ -207,7 +206,7 @@ class Decoder(Thread):
             if register:
                 sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found)
 
-    def decode(self, article, data, raw_data):
+    def decode(self, article, raw_data):
         # Let SABYenc do all the heavy lifting
         decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc3.decode_usenet_chunks(raw_data, article.bytes)
 

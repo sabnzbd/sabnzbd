@@ -144,7 +144,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
     elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
         return False, T("Authentication failed, check username/password.")
 
-    elif clues_too_many(nw.lines[0]):
+    elif clues_too_many(nntp_to_msg(nw.data)):
         return False, T("Too many connections, please pause downloading or try again later")
 
     else:

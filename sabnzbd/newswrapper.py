@@ -254,7 +254,7 @@ class NNTP:
 
 class NewsWrapper:
     # Pre-define attributes to save memory
-    __slots__ = ('server', 'thrdnum', 'blocking', 'timeout', 'article', 'data', 'lines', 'last_line',  'nntp',
+    __slots__ = ('server', 'thrdnum', 'blocking', 'timeout', 'article', 'data', 'last_line',  'nntp',
                  'recv', 'connected', 'user_sent', 'pass_sent', 'group', 'user_ok', 'pass_ok', 'force_login')
 
     def __init__(self, server, thrdnum, block=False):
@@ -265,7 +265,6 @@ class NewsWrapper:
         self.timeout = None
         self.article = None
         self.data = []
-        self.lines = []
         self.last_line = ''
 
         self.nntp = None
@@ -423,7 +422,6 @@ class NewsWrapper:
 
     def clear_data(self):
         self.data = []
-        self.lines = []
         self.last_line = ''
 
     def hard_reset(self, wait=True, quit=True):

@@ -111,12 +111,12 @@ class Article(TryList):
     # Pre-define attributes to save memory
     __slots__ = ArticleSaver + ('fetcher', 'fetcher_priority', 'tries')
 
-    def __init__(self, article, bytes, partnum, nzf):
+    def __init__(self, article, article_bytes, partnum, nzf):
         TryList.__init__(self)
         self.fetcher = None
         self.article = article
         self.art_id = None
-        self.bytes = bytes
+        self.bytes = article_bytes
         self.partnum = partnum
         self.lowest_partnum = False
         self.tries = 0  # Try count
@@ -226,7 +226,7 @@ class NzbFile(TryList):
      # Pre-define attributes to save memory
     __slots__ = NzbFileSaver
 
-    def __init__(self, date, subject, article_db, bytes, nzo):
+    def __init__(self, date, subject, article_db, file_bytes, nzo):
         """ Setup object """
         TryList.__init__(self)
 
@@ -244,8 +244,8 @@ class NzbFile(TryList):
         self.articles = []
         self.decodetable = {}
 
-        self.bytes = bytes
-        self.bytes_left = bytes
+        self.bytes = file_bytes
+        self.bytes_left = file_bytes
         self.article_count = 0
 
         self.nzo = nzo

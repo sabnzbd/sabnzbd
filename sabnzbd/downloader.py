@@ -396,12 +396,13 @@ class Downloader(Thread):
 
             sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
 
-    def decode(self, article, lines, raw_data):
-        self.decoder_queue.put((article, lines, raw_data))
+    def decode(self, article, raw_data):
+        self.decoder_queue.put((article, raw_data))
         # See if there's space left in cache, pause otherwise
+        # We use reported article-size, just like sabyenc does
         # But do allow some articles to enter queue, in case of full cache
         qsize = self.decoder_queue.qsize()
-        if (not ArticleCache.do.reserve_space(lines) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
+        if (not ArticleCache.do.reserve_space(article.bytes) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
             sabnzbd.downloader.Downloader.do.delay()
 
     def run(self):
@@ -474,7 +475,7 @@ class Downloader(Thread):
                         # Let's get rid of all the articles for this server at once
                         logging.info('Job %s too old for %s, moving on', article.nzf.nzo.final_name, server.host)
                         while article:
-                            self.decode(article, None, None)
+                            self.decode(article, None)
                             article = article.nzf.nzo.get_article(server, self.servers)
                         break
 
@@ -742,7 +743,7 @@ class Downloader(Thread):
                     server.errormsg = server.warning = ''
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s: %s done', nw.thrdnum, server.host, article.article)
-                    self.decode(article, nw.lines, nw.data)
+                    self.decode(article, nw.data)
 
                     nw.soft_reset()
                     server.busy_threads.remove(nw)
@@ -790,7 +791,7 @@ class Downloader(Thread):
         if article:
             if article.tries > cfg.max_art_tries() and (article.fetcher.optional or not cfg.max_art_opt()):
                 # Too many tries on this server, consider article missing
-                self.decode(article, None, None)
+                self.decode(article, None)
             else:
                 # Allow all servers to iterate over each nzo/nzf again
                 sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)

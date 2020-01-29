@@ -64,9 +64,8 @@ class ArticleCache:
             self.__cache_limit = min(limit, self.__cache_upper_limit)
 
     @synchronized(ARTICLE_LOCK)
-    def reserve_space(self, data):
+    def reserve_space(self, data_size):
         """ Is there space left in the set limit? """
-        data_size = sys.getsizeof(data) * 64
         self.__cache_size += data_size
         if self.__cache_size + data_size > self.__cache_limit:
             return False
@@ -74,9 +73,8 @@ class ArticleCache:
             return True
 
     @synchronized(ARTICLE_LOCK)
-    def free_reserve_space(self, data):
+    def free_reserve_space(self, data_size):
         """ Remove previously reserved space """
-        data_size = sys.getsizeof(data) * 64
         self.__cache_size -= data_size
         return self.__cache_size + data_size < self.__cache_limit
 
