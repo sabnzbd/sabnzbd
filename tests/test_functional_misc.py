@@ -101,6 +101,7 @@ class TestExtractPot:
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Skipping on Windows")
+@pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Fails for now due to PyObjC problem")
 class TestDaemonizing(SABnzbdBaseTest):
     def test_daemonizing(self):
         """ Simple test to see if daemon-mode still works.
