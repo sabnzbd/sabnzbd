@@ -228,44 +228,45 @@ def patch_nsis():
     RE_NSIS = re.compile(r'^(\s*LangString\s+)(\w+)(\s+\$\{LANG_)(\w+)\}\s+(".*)', re.I)
     languages = [os.path.split(path)[1] for path in glob.glob(os.path.join(MO_DIR, "*"))]
 
-    src = open(NSIS, "r")
-    new = []
-    for line in src:
-        m = RE_NSIS.search(line)
-        if m:
-            leader = m.group(1)
-            item = m.group(2)
-            rest = m.group(3)
-            langname = m.group(4).upper()
-            text = m.group(5).strip('"\n')
-            if langname == "ENGLISH":
-                # Write back old content
+    with open(NSIS, "r") as src:
+        new = []
+        for line in src:
+            m = RE_NSIS.search(line)
+            if m:
+                leader = m.group(1)
+                item = m.group(2)
+                rest = m.group(3)
+                langname = m.group(4).upper()
+                text = m.group(5).strip('"\n')
+                if langname == "ENGLISH":
+                    # Write back old content
+                    new.append(line)
+                    # Replace silly $\ construction with just a \
+                    text = text.replace('$\\"', '"').replace("$\\", "\\")
+                    for lcode in languages:
+                        lng = LanguageTable.get(lcode)
+                        if lng and lcode != "en":
+                            lng = lng[0].upper()
+                            if item == "MsgLangCode":
+                                # The language code will be stored in the registry
+                                text_trans = lcode
+                            else:
+                                trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset="cp1252")
+                                trans.install(names=["lgettext"])
+                                text_trans = _(text)
+                                text_trans = text_trans.replace("\r", "").replace("\n", "\\r\\n")
+                                text_trans = text_trans.replace("\\", "$\\").replace('"', '$\\"')
+                            line = '%s%s%s%s} "%s"\n' % (leader, item, rest, lng, text_trans)
+                            new.append(line)
+                        elif lng is None:
+                            print("Warning: unsupported language %s (%s)! Add it to the table." % (langname, lcode))
+            else:
                 new.append(line)
-                # Replace silly $\ construction with just a \
-                text = text.replace('$\\"', '"').replace("$\\", "\\")
-                for lcode in languages:
-                    lng = LanguageTable.get(lcode)
-                    if lng and lcode != "en":
-                        lng = lng[0].decode("utf-8").encode("latin-1").upper()
-                        if item == "MsgLangCode":
-                            trans = lcode
-                        else:
-                            trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset="latin-1")
-                            trans.install(names=["lgettext"])
-                            trans = trans.replace("\r", "").replace("\n", "\\r\\n")
-                            trans = trans.replace("\\", "$\\").replace('"', '$\\"')
-                        line = '%s%s%s%s} "%s"\n' % (leader, item, rest, lng, trans)
-                        new.append(line)
-                    elif lng is None:
-                        print("Warning: unsupported language %s (%s), add to table in this script" % (langname, lcode))
-        else:
-            new.append(line)
-    src.close()
 
-    dst = open(NSIS + ".tmp", "w")
-    for line in new:
-        dst.write(line)
-    dst.close()
+    # Force writing of unicode to process Chinese and Hebrew
+    with open(NSIS + ".tmp", "w", encoding="utf-8") as dst:
+        for line in new:
+            dst.write(line)
 
 
 # ----------------------------------------------------------------------------
