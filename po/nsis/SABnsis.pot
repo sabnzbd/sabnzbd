@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-2.2.0-develop\n"
+"Project-Id-Version: SABnzbd-3.0.0-develop\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: shypike@sabnzbd.org\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,10 +15,6 @@ msgstr ""
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
-msgstr ""
-
-#: NSIS_Installer.nsi
-msgid "Start SABnzbd"
 msgstr ""
 
 #: NSIS_Installer.nsi
@@ -55,22 +51,6 @@ msgstr ""
 
 #: NSIS_Installer.nsi
 msgid "Delete Settings"
-msgstr ""
-
-#: NSIS_Installer.nsi
-msgid "This system requires the Microsoft runtime library VC90 to be installed first. Do you want to do that now?"
-msgstr ""
-
-#: NSIS_Installer.nsi
-msgid "Downloading Microsoft runtime installer..."
-msgstr ""
-
-#: NSIS_Installer.nsi
-msgid "Download error, retry?"
-msgstr ""
-
-#: NSIS_Installer.nsi
-msgid "Cannot install without runtime library, retry?"
 msgstr ""
 
 #: NSIS_Installer.nsi
