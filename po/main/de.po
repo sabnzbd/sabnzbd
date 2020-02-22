@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2019-05-07 12:00+0000\n"
+"POT-Creation-Date: 2020-01-24 15:29+0100\n"
 "PO-Revision-Date: 2020-01-13 14:32+0000\n"
 "Last-Translator: TBSniller <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-01-14 05:59+0000\n"
-"X-Generator: Launchpad (build bceb5ef013b87ef7aafe0755545ceb689ca7ac60)\n"
+"X-Launchpad-Export-Date: 2020-02-22 06:02+0000\n"
+"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -27,43 +27,35 @@ msgstr ""
 "Konnte Web-Vorlage nicht finden: %s Versuche die Standard-Vorlage zu "
 "verwenden."
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 "SABYenc deaktiviert: Keine korrekte Version gefunden! (Gefunden v%s, "
 "Erwartet v%s)"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
 "SABYenc Modul... Nicht gefunden! Erwarte v%s - https://sabnzbd.org/sabyenc"
 
 #: SABnzbd.py [Error message]
-msgid "_yenc module... NOT found!"
-msgstr "_yenc-Modul nicht gefunden!"
-
-#: SABnzbd.py [Error message]
 msgid "par2 binary... NOT found!"
 msgstr "par2-Programmdatei nicht gefunden!"
 
-#: SABnzbd.py [Error message]
-msgid "Verification and repair will not be possible."
-msgstr "Überprüfung und Reparatur sind nicht möglich."
-
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "MultiPar binary... NOT found!"
 msgstr "MultiPar binary... NICHT gefunden!"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
+msgid "Verification and repair will not be possible."
+msgstr "Überprüfung und Reparatur sind nicht möglich."
+
+#: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Deine UNRAR-Version ist %s, Wir empfehlen Version %s oder höher.<br />"
-
-#: SABnzbd.py [Error message]
-msgid "Downloads will not unpacked."
-msgstr "Downloads werden nicht entpackt."
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -77,6 +69,10 @@ msgstr "unzip-Programmdatei nicht gefunden!"
 msgid "7za binary... NOT found!"
 msgstr "7za-Programmdatei nicht gefunden"
 
+#: SABnzbd.py [Error message]
+msgid "Essential modules are missing, downloading cannot start."
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -89,7 +85,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP und HTTPS Ports dürfen nicht Identisch sein!"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -221,9 +217,9 @@ msgstr "Fehler in tempfile.mkstemp"
 msgid "Loading %s failed"
 msgstr "Fehler beim Laden von %s"
 
-#: sabnzbd/__init__.py [Error message]
-msgid "Loading %s failed with error %s"
-msgstr "Laden von %s ist mit Fehler %s fehlgeschlagen"
+#: sabnzbd/api.py # sabnzbd/emailer.py
+msgid "Email succeeded"
+msgstr "E-Mail erfolgreich versendet"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py
 msgid "Test Notification"
@@ -312,7 +308,7 @@ msgstr "Warnung: Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Abbruch, Bewertungsfilter stimmt überein (%s)"
 
-#: sabnzbd/assembler.py # sabnzbd/misc.py [Error message]
+#: sabnzbd/assembler.py
 msgid "%s missing"
 msgstr "%s fehlt"
 
@@ -438,10 +434,6 @@ msgid "Unknown Error while decoding %s"
 msgstr "Unbekannter Fehler %s beim Dekodieren"
 
 #: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode gefunden, nur yEnc Codierung wir unterstützt [%s]"
-
-#: sabnzbd/decoder.py
 msgid "%s => missing from all servers, discarding"
 msgstr "%s wurde auf keinem Server gefunden und daher übersprungen"
 
@@ -490,7 +482,7 @@ msgstr "Überwachter Ordner %s kann nicht gelesen werden"
 msgid "Resuming"
 msgstr "Fortgesetzt"
 
-#: sabnzbd/downloader.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [PP status] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
+#: sabnzbd/downloader.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [PP status] # sabnzbd/skintext.py [Priority pick list]
 msgid "Paused"
 msgstr "Angehalten"
 
@@ -576,10 +568,6 @@ msgstr "Senden des E-Mails fehlgeschlagen"
 msgid "Failed to close mail connection"
 msgstr "Schliessen der Mail-Verbindung fehlgeschlagen"
 
-#: sabnzbd/emailer.py
-msgid "Email succeeded"
-msgstr "E-Mail erfolgreich versendet"
-
 #: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "Absenden nicht möglich, benötigte Daten fehlen"
@@ -591,14 +579,6 @@ msgstr "In %s konnten keine E-Mail-Vorlagen gefunden werden"
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "Keine E-Mail gesendet da keine Empfänger angegeben"
-
-#: sabnzbd/emailer.py
-msgid "Invalid encoding of email template %s"
-msgstr "Ungültige Kodierung der E-Mail-Vorlage %s"
-
-#: sabnzbd/emailer.py
-msgid "No email templates found"
-msgstr "Keine E-Mail-Vorlagen gefunden"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -625,6 +605,26 @@ msgstr ""
 "Bitte geben Sie manuell Speicherplatz frei und setzen Sie die Downloads \"\n"
 "danach fort.\n"
 "\n"
+
+#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+msgid "Cannot create directory %s"
+msgstr "Verzeichnis %s konnte nicht angelegt werden"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "%s directory: %s error accessing"
+msgstr "Zugriff auf das Verzeichnis %s fehlgeschlagen: %s"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "Cannot change permissions of %s"
+msgstr "Rechte von %s konnten nicht geändert werden"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "Failed making (%s)"
+msgstr "Erstellen von %s fehlgeschlagen"
+
+#: sabnzbd/filesystem.py [Error message] # sabnzbd/postproc.py
+msgid "Failed moving %s to %s"
+msgstr "Verschieben von %s nach %s fehlgeschlagen"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
@@ -788,27 +788,11 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
-msgid "Cannot create directory %s"
-msgstr "Verzeichnis %s konnte nicht angelegt werden"
-
-#: sabnzbd/misc.py [Error message]
-msgid "%s directory: %s error accessing"
-msgstr "Zugriff auf das Verzeichnis %s fehlgeschlagen: %s"
-
-#: sabnzbd/misc.py [Error message]
-msgid "Failed making (%s)"
-msgstr "Erstellen von %s fehlgeschlagen"
-
-#: sabnzbd/misc.py [Error message] # sabnzbd/postproc.py
-msgid "Failed moving %s to %s"
-msgstr "Verschieben von %s nach %s fehlgeschlagen"
-
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Fehler beim Anlegen des SSL-Schlüssels und -Zertifikats."
 
-#: sabnzbd/misc.py [Warning message]
+#: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
@@ -816,10 +800,6 @@ msgstr ""
 "Ihre Passwort-Datei enthält mehr als 30 Passwörter, das Testen aller "
 "Passwörter dauert sehr lange. Versuchen Sie, nur nützliche Passwörter "
 "aufzulisten."
-
-#: sabnzbd/misc.py [Error message]
-msgid "Cannot change permissions of %s"
-msgstr "Rechte von %s konnten nicht geändert werden"
 
 #: sabnzbd/newsunpack.py # sabnzbd/postproc.py
 msgid "Running script"
@@ -905,7 +885,7 @@ msgstr "FEHLER: »%s« kann nicht gefunden werden."
 msgid "Unpacking failed, CRC error"
 msgstr "Entpacken fehlgeschlagen. CRC-Fehler"
 
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py [Warning message]
+#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py
 msgid "ERROR: CRC failed in \"%s\""
 msgstr "FEHLER: CRC in »%s« fehlgeschlagen."
 
@@ -936,14 +916,6 @@ msgid "ERROR: path too long (%s)"
 msgstr "FEHLER: Pfad ist zu lang (%s)"
 
 #: sabnzbd/newsunpack.py
-msgid "Unpacking failed, see log"
-msgstr "Entpacken fehlgeschlagen. Beachten Sie das Protokoll."
-
-#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "FEHLER: %s"
-
-#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr "RAR-Datei beschädigt"
 
@@ -958,6 +930,10 @@ msgstr "%s Dateien in %s"
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
 msgstr "Fehler \"%s\" beim Ausführen von unzip auf %s"
+
+#: sabnzbd/newsunpack.py
+msgid "No 7za binary found, cannot unpack \"%s\""
+msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -1064,6 +1040,10 @@ msgid "Checking"
 msgstr "Wird überprüft"
 
 #: sabnzbd/newsunpack.py [Error message]
+msgid "[%s] The command in build_command is undefined."
+msgstr ""
+
+#: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Dem Pythonskript \"%s\" fehlen die Ausführungsrechte (+x)"
 
@@ -1112,7 +1092,7 @@ msgstr "Auftrag ausgeführt"
 msgid "Job failed"
 msgstr "Auftrag fehlgeschlagen"
 
-#: sabnzbd/notifier.py [Notification]
+#: sabnzbd/notifier.py [Notification] # sabnzbd/postproc.py
 msgid "Queue finished"
 msgstr "Warteschlange abgearbeitet"
 
@@ -1156,11 +1136,9 @@ msgstr "Benachrichtigungsskript \"%s\" existiert nicht"
 msgid "Failed to send Windows notification"
 msgstr "Windows Benachrichtigung konnte nicht gesendet werden"
 
-#: sabnzbd/nzbqueue.py [Warning message] # sabnzbd/postproc.py [Warning message]
-msgid "Old queue detected, use Status->Repair to convert the queue"
-msgstr ""
-"Alte Warteschlangen-Version erkannt, über Status->Reparieren ins neue Format "
-"konvertieren"
+#: sabnzbd/nzbparser.py [Warning message]
+msgid "Failed to import %s files from %s"
+msgstr "Importieren von %s Dateien von %s fehlgeschlagen"
 
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
@@ -1171,10 +1149,6 @@ msgstr ""
 msgid "Error loading %s, corrupt file detected"
 msgstr "Fehler beim Laden von %s. Beschädigte Datei gefunden."
 
-#: sabnzbd/nzbqueue.py [Error message]
-msgid "Failed to restart NZB after pre-check (%s)"
-msgstr "NZB konnte nach Vorab-Check nicht neugestartet werden (%s)"
-
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB zur Warteschlange hinzugefügt"
@@ -1182,14 +1156,6 @@ msgstr "NZB zur Warteschlange hinzugefügt"
 #: sabnzbd/nzbqueue.py [Warning message]
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Unbekannte Kodierung"
-
-#: sabnzbd/nzbstuff.py
-msgid "File %s is empty, skipping"
-msgstr "Die Datei %s ist leer und wird daher übersprungen"
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Failed to import %s files from %s"
-msgstr "Importieren von %s Dateien von %s fehlgeschlagen"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Incomplete NZB file %s"
@@ -1266,7 +1232,7 @@ msgid "Downloaded in %s at an average of %sB/s"
 msgstr ""
 "Heruntergeladen in %s mit einer Durchschnittsgeschwindigkeit von %sB/s"
 
-#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py [Job details page, file age column header] # sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py [Job details page, file age column header]
 msgid "Age"
 msgstr "Alter"
 
@@ -1290,7 +1256,7 @@ msgstr "%s Artikel wurden entfernt"
 msgid "Error importing %s"
 msgstr "Fehler beim Importieren von %s"
 
-#: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings] # sabnzbd/skintext.py
+#: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
 msgstr "Warnungen"
 
@@ -1528,20 +1494,18 @@ msgstr ""
 "Fehler %s: Sie müssen einen gültigen Benutzername und ein Passwort angeben."
 
 #: sabnzbd/postproc.py [Warning message]
+msgid "Old queue detected, use Status->Repair to convert the queue"
+msgstr ""
+"Alte Warteschlangen-Version erkannt, über Status->Reparieren ins neue Format "
+"konvertieren"
+
+#: sabnzbd/postproc.py [Warning message]
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
 msgstr ""
 "Download-Ordner %s für abgeschlossene Downloads auf  FAT Dateisystem, ist "
 "auf maximale Dateigröße von 4GB begrenzt."
-
-#: sabnzbd/postproc.py [Warning message]
-msgid ""
-"Module subprocessww missing. Expect problems with Unicoded file and "
-"directory names in downloads."
-msgstr ""
-"Modul subprocessww fehlt. Fehler mit Unikodierter Datei und Verzeichnisnamen "
-"in den Downloads sind zu erwarten."
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
@@ -1599,10 +1563,6 @@ msgstr "Download Fehlgeschlagen"
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Aufräumen von %s fehlgeschlagen"
-
-#: sabnzbd/postproc.py [Error message]
-msgid "Error removing workdir (%s)"
-msgstr "Fehler beim Entfernen des Arbeitsverzeichnisses %s."
 
 #: sabnzbd/postproc.py
 msgid "Download Completed"
@@ -1728,6 +1688,34 @@ msgstr "Interface anzeigen"
 msgid "Open complete folder"
 msgstr "Öffne Zielverzeichnis"
 
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py [Queue page button or entry box]
+msgid "Pause for"
+msgstr "Anhalten für"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "5 Minuten anhalten"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "15 Minuten anhalten"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "30 Minuten anhalten"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "Eine Stunde anhalten"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "3 Stunden anhalten"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "6 Stunden anhalten"
+
 #: sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [Shutdown SABnzbd] # sabnzbd/skintext.py [Config->Scheduling]
 msgid "Shutdown"
 msgstr "Beenden"
@@ -1808,7 +1796,7 @@ msgstr "Schnelle Überprüfung …"
 msgid "Verifying..."
 msgstr "Überprüfung läuft …"
 
-#: sabnzbd/skintext.py [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Pseudo-PP status, in reality used for Queue-status]
 msgid "Downloading"
 msgstr "Am herunterladen"
 
@@ -2124,6 +2112,10 @@ msgstr "Automatisiertes Programm für Usenet-Downloads"
 msgid "Save"
 msgstr "Speichern"
 
+#: sabnzbd/skintext.py
+msgid "Saving.."
+msgstr "Speichervorgang …"
+
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py
 msgid "Are you sure?"
 msgstr "Sind Sie sicher?"
@@ -2312,10 +2304,6 @@ msgstr "SABnzbd beenden"
 msgid "Speed Limit"
 msgstr "Geschwindigkeitsbegrenzung"
 
-#: sabnzbd/skintext.py [Queue page button or entry box]
-msgid "Pause for"
-msgstr "Anhalten für"
-
 #: sabnzbd/skintext.py [Queue page table column header] # sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Order"
 msgstr "Reihenfolge"
@@ -2412,7 +2400,7 @@ msgstr "Nur Fehlgeschlagene"
 msgid "Show All"
 msgstr "Alle anzeigen"
 
-#: sabnzbd/skintext.py [History table header] # sabnzbd/skintext.py [Size of the download quota] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [History table header] # sabnzbd/skintext.py [Size of the download quota]
 msgid "Size"
 msgstr "Grösse"
 
@@ -2436,7 +2424,7 @@ msgstr "Lösche NZBs auf der aktuellen Seite"
 msgid "Optional Supplemental NZB"
 msgstr "Optionale ergänzende NZB-Datei"
 
-#: sabnzbd/skintext.py [Path as displayed in History details] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Path as displayed in History details]
 msgid "Path"
 msgstr "Pfad"
 
@@ -2586,6 +2574,10 @@ msgid "Could not write. Check that the directory is writable."
 msgstr "Konnte nicht schreiben. Überprüfe, ob der Ordner beschreibbar ist."
 
 #: sabnzbd/skintext.py
+msgid "Internet Bandwidth"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Click on Repeat test button below to determine"
 msgstr "Klick auf \"Test wiederholen\" um es festzustellen"
 
@@ -2678,14 +2670,9 @@ msgstr "Multicore Par2"
 msgid ""
 "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will "
 "be encrypted, however, validating a server's identity using its certificates "
-"is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-"
-"date local CA certificates are required."
+"is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates "
+"are required."
 msgstr ""
-"Sichere (SSL) Verbindungen von SABnzbd zu den Newsservern und HTTPS-"
-"Webseiten werden verschlüsselt, allerdings ist es nicht möglich die "
-"Identität eines Servers mittels Zertifikat zu bestätigen. Python 2.7.9 oder "
-"höher, OpenSSL 1.0.2 oder höher und aktuelle lokale CA certificate werden "
-"benötigt."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3941,6 +3928,10 @@ msgstr "Optionales Konto-Passwort"
 msgid "For authenticated email, password."
 msgstr "Für authentifizierte E-Mails wird das Passwort benötigt."
 
+#: sabnzbd/skintext.py
+msgid "Notification Sent!"
+msgstr "Benachrichtigung gesendet!"
+
 #: sabnzbd/skintext.py [Header Growl section]
 msgid "Growl"
 msgstr "Growl"
@@ -4404,30 +4395,6 @@ msgid "Selection"
 msgstr "Auswahl"
 
 #: sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "5 Minuten anhalten"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "15 Minuten anhalten"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "30 Minuten anhalten"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "Eine Stunde anhalten"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "3 Stunden anhalten"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "6 Stunden anhalten"
-
-#: sabnzbd/skintext.py
 msgid "left"
 msgstr "rest"
 
@@ -4544,7 +4511,7 @@ msgstr "Zurück in die Warteschlange schicken"
 msgid "Delete All"
 msgstr "Alle löschen"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Link in SMPL for "Retry all failed jobs"]
+#: sabnzbd/skintext.py
 msgid "Retry all"
 msgstr "Alle wiederholen"
 
@@ -4829,95 +4796,6 @@ msgid "Downloads"
 msgstr "Downloads"
 
 #: sabnzbd/skintext.py
-msgid "Delete Completed"
-msgstr "Fertige entfernen"
-
-#: sabnzbd/skintext.py
-msgid "Delete the all failed items from the history?"
-msgstr ""
-"Möchten Sie alle fehlergeschlagenen Downloads aus dem Verlauf löschen?"
-
-#: sabnzbd/skintext.py
-msgid "Delete Failed"
-msgstr "Fehlgeschlagene entfernen"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs?"
-msgstr "Alle fehlgeschlagenen Aufträge wiederholen?"
-
-#: sabnzbd/skintext.py
-msgid "Links"
-msgstr "Links"
-
-#: sabnzbd/skintext.py
-msgid "Showing %s to %s out of %s results"
-msgstr "Einträge %s bis %s von insgesamt %s werden angezeigt"
-
-#: sabnzbd/skintext.py
-msgid "No results"
-msgstr "Keine Ergebnisse"
-
-#: sabnzbd/skintext.py
-msgid "Showing one result"
-msgstr "Ein Resultat wird angezeigt"
-
-#: sabnzbd/skintext.py
-msgid "First"
-msgstr "Anfang"
-
-#: sabnzbd/skintext.py
-msgid "Last"
-msgstr "Ende"
-
-#: sabnzbd/skintext.py
-msgid "Email Sent!"
-msgstr "E-Mail gesendet!"
-
-#: sabnzbd/skintext.py
-msgid "Notification Sent!"
-msgstr "Benachrichtigung gesendet!"
-
-#: sabnzbd/skintext.py
-msgid "Saving.."
-msgstr "Speichervorgang …"
-
-#: sabnzbd/skintext.py
-msgid "Saved"
-msgstr "Gespeichert"
-
-#: sabnzbd/skintext.py
-msgid "Toggle Add NZB"
-msgstr "NZB hinzufügen"
-
-#: sabnzbd/skintext.py
-msgid "DualView1"
-msgstr "DualView 1"
-
-#: sabnzbd/skintext.py
-msgid "DualView2"
-msgstr "DualView 2"
-
-#: sabnzbd/skintext.py
-msgid "Are you sure you want to restart SABnzbd?"
-msgstr "Möchten Sie SABnzbd wirklich neu starten?"
-
-#: sabnzbd/skintext.py
-msgid "Hide Edit Options"
-msgstr "Bearbeitungs-Einstellungen verbergen"
-
-#: sabnzbd/skintext.py
-msgid "Show Edit Options"
-msgstr "Bearbeitungs-Einstellungen anzeigen"
-
-#: sabnzbd/skintext.py
-msgid "Edit"
-msgstr "Bearbeiten"
-
-#: sabnzbd/skintext.py
-msgid "Timeleft"
-msgstr "Verbleibend"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd-Einrichtungsassistent"
 
@@ -5059,6 +4937,9 @@ msgstr "Ungültige NZB-Datei."
 msgid "URL Fetching failed; %s"
 msgstr "Abrufen der URL fehlgeschlagen; %s"
 
+#~ msgid "_yenc module... NOT found!"
+#~ msgstr "_yenc-Modul nicht gefunden!"
+
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "WARNING: Paused job \"%s\" because of encrypted RAR file"
 
@@ -5123,6 +5004,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "pyopenssl module missing, please install for https access"
 #~ msgstr "pyopenssl-Modul fehlt. Bitte installieren für SSL-Unterstützung."
 
+#~ msgid "Unpacking failed, see log"
+#~ msgstr "Entpacken fehlgeschlagen. Beachten Sie das Protokoll."
+
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Erwartete Datei %s nicht gefunden. Unrar-Fehler?"
 
@@ -5132,6 +5016,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr ""
 #~ "Fehler beim Importieren des OpenSSL-Moduls. Stelle Verbindung ohne SSL her."
+
+#~ msgid "File %s is empty, skipping"
+#~ msgstr "Die Datei %s ist leer und wird daher übersprungen"
 
 #~ msgid "Failed to remove nzo from postproc queue (id)"
 #~ msgstr ""
@@ -5143,6 +5030,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "View script output"
 #~ msgstr "Skript-Ausgabe anzeigen"
+
+#~ msgid "Error removing workdir (%s)"
+#~ msgstr "Fehler beim Entfernen des Arbeitsverzeichnisses %s."
 
 #~ msgid "Queued"
 #~ msgstr "In der Warteschlange"
@@ -5379,6 +5269,12 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Page"
 #~ msgstr "Seite"
 
+#~ msgid "First"
+#~ msgstr "Anfang"
+
+#~ msgid "Last"
+#~ msgstr "Ende"
+
 #~ msgid "Close"
 #~ msgstr "Schliessen"
 
@@ -5411,6 +5307,43 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "Hour:Min"
 #~ msgstr "Stunde:Min"
+
+#~ msgid "Delete the all failed items from the history?"
+#~ msgstr ""
+#~ "Möchten Sie alle fehlergeschlagenen Downloads aus dem Verlauf löschen?"
+
+#~ msgid "Showing %s to %s out of %s results"
+#~ msgstr "Einträge %s bis %s von insgesamt %s werden angezeigt"
+
+#~ msgid "Email Sent!"
+#~ msgstr "E-Mail gesendet!"
+
+#~ msgid "Saved"
+#~ msgstr "Gespeichert"
+
+#~ msgid "Toggle Add NZB"
+#~ msgstr "NZB hinzufügen"
+
+#~ msgid "DualView1"
+#~ msgstr "DualView 1"
+
+#~ msgid "DualView2"
+#~ msgstr "DualView 2"
+
+#~ msgid "Are you sure you want to restart SABnzbd?"
+#~ msgstr "Möchten Sie SABnzbd wirklich neu starten?"
+
+#~ msgid "Hide Edit Options"
+#~ msgstr "Bearbeitungs-Einstellungen verbergen"
+
+#~ msgid "Show Edit Options"
+#~ msgstr "Bearbeitungs-Einstellungen anzeigen"
+
+#~ msgid "Edit"
+#~ msgstr "Bearbeiten"
+
+#~ msgid "Timeleft"
+#~ msgstr "Verbleibend"
 
 #~ msgid "Access"
 #~ msgstr "Zugriff"
@@ -5464,6 +5397,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Skip"
 #~ msgstr "Überspringen"
 
+#~ msgid "Links"
+#~ msgstr "Links"
+
 #~ msgid ""
 #~ "\n"
 #~ "    SABnzbd is not compatible with some software firewalls.<br>\n"
@@ -5499,6 +5435,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ "    <br>\n"
 #~ "    Starten Sie SABnzbd bitte mit einer anderen Portnummer neu."
 
+#~ msgid "No email templates found"
+#~ msgstr "Keine E-Mail-Vorlagen gefunden"
+
 #~ msgid "It is likely that you are using ZoneAlarm on Vista.<br>"
 #~ msgstr "Sie verwenden wahrscheinlich ZoneAlarm auf Vista.<br>"
 
@@ -5511,8 +5450,14 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Use 12 hour clock (AM/PM)"
 #~ msgstr "12-Stunden-Uhr verwenden (AM/PM)"
 
+#~ msgid "Showing one result"
+#~ msgstr "Ein Resultat wird angezeigt"
+
 #~ msgid "Show times in AM/PM notation (does not affect scheduler)."
 #~ msgstr "Zeiten in der AM/PM-Notation anzeigen (betrifft die Regeln nicht)."
+
+#~ msgid "No results"
+#~ msgstr "Keine Ergebnisse"
 
 #~ msgid "folder"
 #~ msgstr "Ordner"
@@ -5523,8 +5468,17 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "Gruppen/Indexer-Tags"
 
+#~ msgid "Invalid encoding of email template %s"
+#~ msgstr "Ungültige Kodierung der E-Mail-Vorlage %s"
+
 #~ msgid "Server definition"
 #~ msgstr "Server-Definition"
+
+#~ msgid "Delete Completed"
+#~ msgstr "Fertige entfernen"
+
+#~ msgid "Delete Failed"
+#~ msgstr "Fehlgeschlagene entfernen"
 
 #~ msgid "Delete all failed items from History?"
 #~ msgstr "Alle fehlgeschlagenen Downloads aus dem Verlauf entfernen?"
@@ -5619,6 +5573,9 @@ msgstr "Abrufen der URL fehlgeschlagen; %s"
 
 #~ msgid "Initiating restart...<br />"
 #~ msgstr "Neustart wird durchgeführt …<br />"
+
+#~ msgid "ERROR: %s"
+#~ msgstr "FEHLER: %s"
 
 #~ msgid ""
 #~ "Send automatically calculated validation results for downloads to indexer."

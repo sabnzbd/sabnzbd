@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2019-05-07 12:00+0000\n"
+"POT-Creation-Date: 2020-01-24 15:29+0100\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-05-08 05:49+0000\n"
-"X-Generator: Launchpad (build 18958)\n"
+"X-Launchpad-Export-Date: 2020-02-22 06:03+0000\n"
+"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,41 +25,33 @@ msgstr "Pornirea interfeţei-web nereuşită"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Nu se poate găsi şablon web:%s, se încearcă şablon standard"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
 
 #: SABnzbd.py [Error message]
-msgid "_yenc module... NOT found!"
-msgstr "modulul _yenc ... Negăsit!"
-
-#: SABnzbd.py [Error message]
 msgid "par2 binary... NOT found!"
 msgstr "binar par2 ... Negăsit!"
 
-#: SABnzbd.py [Error message]
-msgid "Verification and repair will not be possible."
-msgstr ""
-
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Versiunea ta de UNRAR este %s,  noi recomandăm versiunea %s sau mai mare.<br "
 "/>"
-
-#: SABnzbd.py [Error message]
-msgid "Downloads will not unpacked."
-msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -73,6 +65,10 @@ msgstr "binar unzip... Negăsit!"
 msgid "7za binary... NOT found!"
 msgstr "Fişier executabil 7za ... Indisponibil!"
 
+#: SABnzbd.py [Error message]
+msgid "Essential modules are missing, downloading cannot start."
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -85,7 +81,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Porturile HTTP și HTTPS nu pot fi aceleași"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -213,9 +209,9 @@ msgstr "Eroare în tempfile.mkstemp"
 msgid "Loading %s failed"
 msgstr "Încărcarea %s nereuşită"
 
-#: sabnzbd/__init__.py [Error message]
-msgid "Loading %s failed with error %s"
-msgstr "Încărcarea lui %s a eșuat cu eroarea %s"
+#: sabnzbd/api.py # sabnzbd/emailer.py
+msgid "Email succeeded"
+msgstr "Email reuşit"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py
 msgid "Test Notification"
@@ -300,7 +296,7 @@ msgstr "ATENȚIE: Sarcina \"%s\" anulată datorită ratingului (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Abandonat, filtru de rating potrivit (%s)"
 
-#: sabnzbd/assembler.py # sabnzbd/misc.py [Error message]
+#: sabnzbd/assembler.py
 msgid "%s missing"
 msgstr "%s lipsă"
 
@@ -419,10 +415,6 @@ msgid "Unknown Error while decoding %s"
 msgstr "Eroare Necunoscută în timpul decodării %s"
 
 #: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
-
-#: sabnzbd/decoder.py
 msgid "%s => missing from all servers, discarding"
 msgstr "%s => lipsă de pe toate serverele, ignorare"
 
@@ -468,7 +460,7 @@ msgstr "Nu pot citi Dosar Urnărire %s"
 msgid "Resuming"
 msgstr "Reluare"
 
-#: sabnzbd/downloader.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [PP status] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
+#: sabnzbd/downloader.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [PP status] # sabnzbd/skintext.py [Priority pick list]
 msgid "Paused"
 msgstr "Întrerupt"
 
@@ -554,10 +546,6 @@ msgstr "Trimitere email nereuşiă"
 msgid "Failed to close mail connection"
 msgstr "Închidere conexiune mail nereuşită"
 
-#: sabnzbd/emailer.py
-msgid "Email succeeded"
-msgstr "Email reuşit"
-
 #: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "Nu pot trimite, informații necesare lipsă"
@@ -569,14 +557,6 @@ msgstr "Nu pot gasi şabloane email în %s"
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "Destinatar necunoscut, niciun email trimis"
-
-#: sabnzbd/emailer.py
-msgid "Invalid encoding of email template %s"
-msgstr "Codificare invalidă a şablonului email %s"
-
-#: sabnzbd/emailer.py
-msgid "No email templates found"
-msgstr "Şabloane email negăsite"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -601,6 +581,26 @@ msgstr ""
 "SABnzbd sa oprit din descarcare, deoarece discul este aproape plin.\n"
 "Va rugam sa faceti loc si reluati SABnzbd manual.\n"
 "\n"
+
+#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+msgid "Cannot create directory %s"
+msgstr "Nu pot crea dosarul %s"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "%s directory: %s error accessing"
+msgstr "dosarul %s: eroare accesare %s"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "Cannot change permissions of %s"
+msgstr "Nu pot schimba permisiunile lui %s"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "Failed making (%s)"
+msgstr "Facere nereuşită (%s)"
+
+#: sabnzbd/filesystem.py [Error message] # sabnzbd/postproc.py
+msgid "Failed moving %s to %s"
+msgstr "Mutare %s în %s nereuşită"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
@@ -762,35 +762,15 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
-msgid "Cannot create directory %s"
-msgstr "Nu pot crea dosarul %s"
-
-#: sabnzbd/misc.py [Error message]
-msgid "%s directory: %s error accessing"
-msgstr "dosarul %s: eroare accesare %s"
-
-#: sabnzbd/misc.py [Error message]
-msgid "Failed making (%s)"
-msgstr "Facere nereuşită (%s)"
-
-#: sabnzbd/misc.py [Error message] # sabnzbd/postproc.py
-msgid "Failed moving %s to %s"
-msgstr "Mutare %s în %s nereuşită"
-
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "Eroare la crearea cheiei şi certificatlui SSL"
 
-#: sabnzbd/misc.py [Warning message]
+#: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
 msgstr ""
-
-#: sabnzbd/misc.py [Error message]
-msgid "Cannot change permissions of %s"
-msgstr "Nu pot schimba permisiunile lui %s"
 
 #: sabnzbd/newsunpack.py # sabnzbd/postproc.py
 msgid "Running script"
@@ -876,7 +856,7 @@ msgstr "EROARE: nu pot găsi \"%s\""
 msgid "Unpacking failed, CRC error"
 msgstr "Dezarhivare nereuşită, eroare CRC"
 
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py [Warning message]
+#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py
 msgid "ERROR: CRC failed in \"%s\""
 msgstr "EROARE: CRC nereuşit în \"%s\""
 
@@ -905,14 +885,6 @@ msgid "ERROR: path too long (%s)"
 msgstr "EROARE: calea este prea lungă (%s)"
 
 #: sabnzbd/newsunpack.py
-msgid "Unpacking failed, see log"
-msgstr "Dezarhivare nereuşită, vezi jurnal"
-
-#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "EROARE: %s"
-
-#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr "Fișier RAR ce poate fi folosit"
 
@@ -927,6 +899,10 @@ msgstr "%s fişiere în %s"
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
 msgstr "Eroare \"%s\"  în timpul rulării unzip() pe  %s"
+
+#: sabnzbd/newsunpack.py
+msgid "No 7za binary found, cannot unpack \"%s\""
+msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -1029,6 +1005,10 @@ msgid "Checking"
 msgstr "Se verifică"
 
 #: sabnzbd/newsunpack.py [Error message]
+msgid "[%s] The command in build_command is undefined."
+msgstr ""
+
+#: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
@@ -1074,7 +1054,7 @@ msgstr "Sarcină terminată"
 msgid "Job failed"
 msgstr "Sarcină eșuată"
 
-#: sabnzbd/notifier.py [Notification]
+#: sabnzbd/notifier.py [Notification] # sabnzbd/postproc.py
 msgid "Queue finished"
 msgstr "Coadă finalizată"
 
@@ -1119,11 +1099,9 @@ msgstr "Scriptul de notificare \"%s\" nu există"
 msgid "Failed to send Windows notification"
 msgstr "Nu am putut trimite notificări în Fereastră"
 
-#: sabnzbd/nzbqueue.py [Warning message] # sabnzbd/postproc.py [Warning message]
-msgid "Old queue detected, use Status->Repair to convert the queue"
-msgstr ""
-"Coadă de descărcare veche detectată, utilizează Stare->Reparare pentru a "
-"converti coada"
+#: sabnzbd/nzbparser.py [Warning message]
+msgid "Failed to import %s files from %s"
+msgstr "Importare %s a fişierelor de la %s nereuşită"
 
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
@@ -1133,10 +1111,6 @@ msgstr "Fişier coadă găsit incompatibil, nu pot înainta"
 msgid "Error loading %s, corrupt file detected"
 msgstr "Eroare încărcare %s, fişier corupt detectat"
 
-#: sabnzbd/nzbqueue.py [Error message]
-msgid "Failed to restart NZB after pre-check (%s)"
-msgstr "Nu am putut reporni NZB după pre-verificare (%s)"
-
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB adăugat în coadă"
@@ -1144,14 +1118,6 @@ msgstr "NZB adăugat în coadă"
 #: sabnzbd/nzbqueue.py [Warning message]
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Codificare Necunoscută"
-
-#: sabnzbd/nzbstuff.py
-msgid "File %s is empty, skipping"
-msgstr "Fişierul %s este gol , ignorăm"
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Failed to import %s files from %s"
-msgstr "Importare %s a fişierelor de la %s nereuşită"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Incomplete NZB file %s"
@@ -1225,7 +1191,7 @@ msgstr "SE PROPAGHEAZĂ %s min"
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "Descărcat în %s cu o medie de %sB/s"
 
-#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py [Job details page, file age column header] # sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py [Job details page, file age column header]
 msgid "Age"
 msgstr "Vârsta"
 
@@ -1249,7 +1215,7 @@ msgstr "Articolele %s au fost eliminate"
 msgid "Error importing %s"
 msgstr "Eroare importare %s"
 
-#: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings] # sabnzbd/skintext.py
+#: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
 msgstr "Atenționări"
 
@@ -1481,15 +1447,15 @@ msgid "Error %s: You need to provide a valid username and password."
 msgstr "Eroare %s: Trebuie să furnizaţi un nume utilizator şi parolă valid"
 
 #: sabnzbd/postproc.py [Warning message]
-msgid ""
-"Completed Download Folder %s is on FAT file system, limiting maximum file "
-"size to 4GB"
+msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
+"Coadă de descărcare veche detectată, utilizează Stare->Reparare pentru a "
+"converti coada"
 
 #: sabnzbd/postproc.py [Warning message]
 msgid ""
-"Module subprocessww missing. Expect problems with Unicoded file and "
-"directory names in downloads."
+"Completed Download Folder %s is on FAT file system, limiting maximum file "
+"size to 4GB"
 msgstr ""
 
 #: sabnzbd/postproc.py
@@ -1547,10 +1513,6 @@ msgstr "Descărcarea a eșuat"
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "Ştergerea lui %s nereuşită."
-
-#: sabnzbd/postproc.py [Error message]
-msgid "Error removing workdir (%s)"
-msgstr "Eroare ştergere dosar curent (%s)"
 
 #: sabnzbd/postproc.py
 msgid "Download Completed"
@@ -1674,6 +1636,34 @@ msgstr "Arată interfața"
 msgid "Open complete folder"
 msgstr "Deschide dosar descărcări complete"
 
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py [Queue page button or entry box]
+msgid "Pause for"
+msgstr "Pauză timp de"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "Pauză timp de 5 minute"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "Pauză timp de 15 minute"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "Pauză timp de 30 minute"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "Pauză timp de o oră"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "Pauză timp de 3 ore"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "Pauză timp de 6 ore"
+
 #: sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [Shutdown SABnzbd] # sabnzbd/skintext.py [Config->Scheduling]
 msgid "Shutdown"
 msgstr "Închidere"
@@ -1754,7 +1744,7 @@ msgstr "Verificare Rapidă..."
 msgid "Verifying..."
 msgstr "Verificare..."
 
-#: sabnzbd/skintext.py [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Pseudo-PP status, in reality used for Queue-status]
 msgid "Downloading"
 msgstr "Descărcare"
 
@@ -2070,6 +2060,10 @@ msgstr "Instrumentul de descărcare automată usenet"
 msgid "Save"
 msgstr "Salvează"
 
+#: sabnzbd/skintext.py
+msgid "Saving.."
+msgstr "Salvăm.."
+
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py
 msgid "Are you sure?"
 msgstr "Sunteţi sigur?"
@@ -2258,10 +2252,6 @@ msgstr "Închide SABnzbd"
 msgid "Speed Limit"
 msgstr "Limită de Viteză"
 
-#: sabnzbd/skintext.py [Queue page button or entry box]
-msgid "Pause for"
-msgstr "Pauză timp de"
-
 #: sabnzbd/skintext.py [Queue page table column header] # sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Order"
 msgstr "Ordine"
@@ -2358,7 +2348,7 @@ msgstr "Arată Nereuşite"
 msgid "Show All"
 msgstr "Arată toate"
 
-#: sabnzbd/skintext.py [History table header] # sabnzbd/skintext.py [Size of the download quota] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [History table header] # sabnzbd/skintext.py [Size of the download quota]
 msgid "Size"
 msgstr "Mărime"
 
@@ -2382,7 +2372,7 @@ msgstr ""
 msgid "Optional Supplemental NZB"
 msgstr "NZB Suplimentar Opţional"
 
-#: sabnzbd/skintext.py [Path as displayed in History details] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Path as displayed in History details]
 msgid "Path"
 msgstr "Cale"
 
@@ -2529,6 +2519,10 @@ msgid "Could not write. Check that the directory is writable."
 msgstr "Nu am putut scrie. Verifică dacă director poate fi modificat."
 
 #: sabnzbd/skintext.py
+msgid "Internet Bandwidth"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Click on Repeat test button below to determine"
 msgstr "Click pe butonul de Repetare test pentru a determina"
 
@@ -2618,8 +2612,8 @@ msgstr ""
 msgid ""
 "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will "
 "be encrypted, however, validating a server's identity using its certificates "
-"is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-"
-"date local CA certificates are required."
+"is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates "
+"are required."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3819,6 +3813,10 @@ msgstr "Parolă Cont OPŢIONAL"
 msgid "For authenticated email, password."
 msgstr "Pentru email autentificat, parola."
 
+#: sabnzbd/skintext.py
+msgid "Notification Sent!"
+msgstr "Notificare Trimisă!"
+
 #: sabnzbd/skintext.py [Header Growl section]
 msgid "Growl"
 msgstr "Growl"
@@ -4275,30 +4273,6 @@ msgid "Selection"
 msgstr "Selecţie"
 
 #: sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "Pauză timp de 5 minute"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "Pauză timp de 15 minute"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "Pauză timp de 30 minute"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "Pauză timp de o oră"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "Pauză timp de 3 ore"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "Pauză timp de 6 ore"
-
-#: sabnzbd/skintext.py
 msgid "left"
 msgstr "rămas"
 
@@ -4414,7 +4388,7 @@ msgstr "Trimite înapoi la coadă"
 msgid "Delete All"
 msgstr "Șterge tot"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Link in SMPL for "Retry all failed jobs"]
+#: sabnzbd/skintext.py
 msgid "Retry all"
 msgstr "Reîncearcă toate"
 
@@ -4697,94 +4671,6 @@ msgid "Downloads"
 msgstr "Descărcări"
 
 #: sabnzbd/skintext.py
-msgid "Delete Completed"
-msgstr "Ştergere Finalizată"
-
-#: sabnzbd/skintext.py
-msgid "Delete the all failed items from the history?"
-msgstr "Ştergeţi toate fişierele nereuşite din istoric?"
-
-#: sabnzbd/skintext.py
-msgid "Delete Failed"
-msgstr "Şterge Nereuşite"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs?"
-msgstr "Reîncearcă toate sarcinile eșuate?"
-
-#: sabnzbd/skintext.py
-msgid "Links"
-msgstr "Legături"
-
-#: sabnzbd/skintext.py
-msgid "Showing %s to %s out of %s results"
-msgstr "Afişare %s până la %s din totalul %s rezultate"
-
-#: sabnzbd/skintext.py
-msgid "No results"
-msgstr "Fără rezultate"
-
-#: sabnzbd/skintext.py
-msgid "Showing one result"
-msgstr "Afişăm un rezultat"
-
-#: sabnzbd/skintext.py
-msgid "First"
-msgstr "Primul"
-
-#: sabnzbd/skintext.py
-msgid "Last"
-msgstr "Ultimul"
-
-#: sabnzbd/skintext.py
-msgid "Email Sent!"
-msgstr "Email Trimis!"
-
-#: sabnzbd/skintext.py
-msgid "Notification Sent!"
-msgstr "Notificare Trimisă!"
-
-#: sabnzbd/skintext.py
-msgid "Saving.."
-msgstr "Salvăm.."
-
-#: sabnzbd/skintext.py
-msgid "Saved"
-msgstr "Salvat"
-
-#: sabnzbd/skintext.py
-msgid "Toggle Add NZB"
-msgstr "Comută Adaugă NZB"
-
-#: sabnzbd/skintext.py
-msgid "DualView1"
-msgstr "VedereDuală1"
-
-#: sabnzbd/skintext.py
-msgid "DualView2"
-msgstr "VedereDuală2"
-
-#: sabnzbd/skintext.py
-msgid "Are you sure you want to restart SABnzbd?"
-msgstr "Sunteţi sigur că doriţi să reporniţi SABnzbd?"
-
-#: sabnzbd/skintext.py
-msgid "Hide Edit Options"
-msgstr "Ascunde Opţiuni Editare"
-
-#: sabnzbd/skintext.py
-msgid "Show Edit Options"
-msgstr "Arată Opţiuni Editare"
-
-#: sabnzbd/skintext.py
-msgid "Edit"
-msgstr "Editează"
-
-#: sabnzbd/skintext.py
-msgid "Timeleft"
-msgstr "Timp rămas"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "Vrăjitor Pornire-Rapidă SABnzbd"
 
@@ -4925,6 +4811,9 @@ msgstr "Fişier NZB Inutilizabil"
 msgid "URL Fetching failed; %s"
 msgstr "Descărcare URL nereuşită; %s"
 
+#~ msgid "_yenc module... NOT found!"
+#~ msgstr "modulul _yenc ... Negăsit!"
+
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr ""
 #~ "ATENŢIE: Sarcina \"%s\" întreruptă din cauza fişierelor RAR encriptate"
@@ -4937,6 +4826,12 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "SQL Commit Failed, see log"
 #~ msgstr "Modificare SQL Nereuşită, vedeţi jurnal"
+
+#~ msgid "No email templates found"
+#~ msgstr "Şabloane email negăsite"
+
+#~ msgid "Invalid encoding of email template %s"
+#~ msgstr "Codificare invalidă a şablonului email %s"
 
 #~ msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
 #~ msgstr ""
@@ -5010,8 +4905,14 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "pyopenssl module missing, please install for https access"
 #~ msgstr "modul pyopenssl  lipsă, instalaţi-l pentru acces https"
 
+#~ msgid "Unpacking failed, see log"
+#~ msgstr "Dezarhivare nereuşită, vezi jurnal"
+
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "Dezarhivare nereuşită, acest(e) fişier(e) sunt lipsă:"
+
+#~ msgid "ERROR: %s"
+#~ msgstr "EROARE: %s"
 
 #~ msgid "Unpacking failed, an expected file was not unpacked"
 #~ msgstr "Dezarhivare nereuşită, un fişier aşteptat nu a fost dezarhivat"
@@ -5033,6 +4934,9 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "View script output"
 #~ msgstr "Vezi rezultat script"
+
+#~ msgid "Error removing workdir (%s)"
+#~ msgstr "Eroare ştergere dosar curent (%s)"
 
 #~ msgid "Get NZB"
 #~ msgstr "Descarcă NZB"
@@ -5306,6 +5210,12 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "Page"
 #~ msgstr "Pagină"
 
+#~ msgid "Last"
+#~ msgstr "Ultimul"
+
+#~ msgid "First"
+#~ msgstr "Primul"
+
 #~ msgid "Close"
 #~ msgstr "Închide"
 
@@ -5339,6 +5249,15 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "Hour:Min"
 #~ msgstr "Ore:Min"
 
+#~ msgid "Delete the all failed items from the history?"
+#~ msgstr "Ştergeţi toate fişierele nereuşite din istoric?"
+
+#~ msgid "Delete Completed"
+#~ msgstr "Ştergere Finalizată"
+
+#~ msgid "Links"
+#~ msgstr "Legături"
+
 #~ msgid ""
 #~ "<strong>Read Feed</strong> will get the current feed content. <strong>Force "
 #~ "Download</strong> will download all matching NZBs now."
@@ -5346,6 +5265,48 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ "<strong>Citeşte Flux</strong> va descărca conţinutul fluxului curent. "
 #~ "<strong>Descărcare Forţată</strong> va descărca toate NZB-urile "
 #~ "corespunzătoare acum."
+
+#~ msgid "Delete Failed"
+#~ msgstr "Şterge Nereuşite"
+
+#~ msgid "Showing %s to %s out of %s results"
+#~ msgstr "Afişare %s până la %s din totalul %s rezultate"
+
+#~ msgid "Email Sent!"
+#~ msgstr "Email Trimis!"
+
+#~ msgid "DualView2"
+#~ msgstr "VedereDuală2"
+
+#~ msgid "DualView1"
+#~ msgstr "VedereDuală1"
+
+#~ msgid "Toggle Add NZB"
+#~ msgstr "Comută Adaugă NZB"
+
+#~ msgid "Saved"
+#~ msgstr "Salvat"
+
+#~ msgid "Showing one result"
+#~ msgstr "Afişăm un rezultat"
+
+#~ msgid "No results"
+#~ msgstr "Fără rezultate"
+
+#~ msgid "Show Edit Options"
+#~ msgstr "Arată Opţiuni Editare"
+
+#~ msgid "Timeleft"
+#~ msgstr "Timp rămas"
+
+#~ msgid "Are you sure you want to restart SABnzbd?"
+#~ msgstr "Sunteţi sigur că doriţi să reporniţi SABnzbd?"
+
+#~ msgid "Hide Edit Options"
+#~ msgstr "Ascunde Opţiuni Editare"
+
+#~ msgid "Edit"
+#~ msgstr "Editează"
 
 #~ msgid "Access"
 #~ msgstr "Acces"
@@ -5415,6 +5376,9 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ "porturi peste 1023.<br>\n"
 #~ "    <br>\n"
 #~ "    Vă rugăm să reporniţi SABnzbd cu un număr de port diferit."
+
+#~ msgid "File %s is empty, skipping"
+#~ msgstr "Fişierul %s este gol , ignorăm"
 
 #~ msgid "Add new downloads"
 #~ msgstr "Adaugă descărcări noi"

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2019-05-07 12:00+0000\n"
+"POT-Creation-Date: 2020-01-24 15:29+0100\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2019-05-08 05:50+0000\n"
-"X-Generator: Launchpad (build 18958)\n"
+"X-Launchpad-Export-Date: 2020-02-22 06:03+0000\n"
+"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,39 +25,31 @@ msgstr "web 界面启动失败"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "无法找到 web 模板: %s，正在尝试标准模板"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr "SABYenc 已禁用：未找到正确的版本！（找到 v%s，要求 v%s）"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr "SABYenc 模块... 未找到！要求  v%s - https://sabnzbd.org/sabyenc"
 
 #: SABnzbd.py [Error message]
-msgid "_yenc module... NOT found!"
-msgstr "_yenc 模块... *未* 找到!"
-
-#: SABnzbd.py [Error message]
 msgid "par2 binary... NOT found!"
 msgstr "par2 可执行程序... *未* 找到!"
 
-#: SABnzbd.py [Error message]
-msgid "Verification and repair will not be possible."
-msgstr ""
-
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
+msgid "Verification and repair will not be possible."
+msgstr ""
+
+#: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "您的 UNRAR 程序版本为 %s，我们建议使用 %s 或更高版本。<br />"
-
-#: SABnzbd.py [Error message]
-msgid "Downloads will not unpacked."
-msgstr ""
 
 #: SABnzbd.py [Error message]
 msgid "unrar binary... NOT found"
@@ -71,6 +63,10 @@ msgstr "unzip 可执行程序... *未* 找到!"
 msgid "7za binary... NOT found!"
 msgstr "7za 可执行程序... *未*找到!"
 
+#: SABnzbd.py [Error message]
+msgid "Essential modules are missing, downloading cannot start."
+msgstr ""
+
 #: SABnzbd.py [Warning message]
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -81,7 +77,7 @@ msgstr "请注意 0.0.0.0 主机名需要 IPv6 地址才能从外部访问"
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP 与 HTTPS 端口不能相同"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -204,9 +200,9 @@ msgstr "tempfile.mkstemp 出错"
 msgid "Loading %s failed"
 msgstr "加载 %s 失败"
 
-#: sabnzbd/__init__.py [Error message]
-msgid "Loading %s failed with error %s"
-msgstr "加载 %s 失败，错误 %s"
+#: sabnzbd/api.py # sabnzbd/emailer.py
+msgid "Email succeeded"
+msgstr "成功发送电子邮件"
 
 #: sabnzbd/api.py # sabnzbd/skintext.py
 msgid "Test Notification"
@@ -289,7 +285,7 @@ msgstr "*警告*: 任务“%s”已中止，由于评分过低 (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "已中止，评分筛选器已命中 (%s)"
 
-#: sabnzbd/assembler.py # sabnzbd/misc.py [Error message]
+#: sabnzbd/assembler.py
 msgid "%s missing"
 msgstr "缺少 %s"
 
@@ -407,10 +403,6 @@ msgid "Unknown Error while decoding %s"
 msgstr "解码 %s 时发生未知错误"
 
 #: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "检测到 UUencode，但是仅有 yEnc 编码受支持 [%s]"
-
-#: sabnzbd/decoder.py
 msgid "%s => missing from all servers, discarding"
 msgstr "%s => 所有服务器均缺失，正在舍弃"
 
@@ -456,7 +448,7 @@ msgstr "无法读取监视文件夹 %s"
 msgid "Resuming"
 msgstr "恢复中"
 
-#: sabnzbd/downloader.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [PP status] # sabnzbd/skintext.py [Priority pick list] # sabnzbd/skintext.py
+#: sabnzbd/downloader.py # sabnzbd/osxmenu.py # sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [PP status] # sabnzbd/skintext.py [Priority pick list]
 msgid "Paused"
 msgstr "已暂停"
 
@@ -540,10 +532,6 @@ msgstr "无法发送 e-mail"
 msgid "Failed to close mail connection"
 msgstr "无法关闭邮件连接"
 
-#: sabnzbd/emailer.py
-msgid "Email succeeded"
-msgstr "成功发送电子邮件"
-
 #: sabnzbd/emailer.py # sabnzbd/notifier.py # sabnzbd/rating.py
 msgid "Cannot send, missing required data"
 msgstr "无法发送，缺少必要的数据"
@@ -555,14 +543,6 @@ msgstr "无法找到 email 模板：%s"
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "未给定收件人，电子邮件未发出"
-
-#: sabnzbd/emailer.py
-msgid "Invalid encoding of email template %s"
-msgstr "email 模板 %s 编码无效"
-
-#: sabnzbd/emailer.py
-msgid "No email templates found"
-msgstr "未找到 email 模板"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -587,6 +567,26 @@ msgstr ""
 "由于磁盘几乎已满，SABnzbd 已停止下载。\n"
 "请腾出空间再手动让 SABnzbd 续传。\n"
 "\n"
+
+#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+msgid "Cannot create directory %s"
+msgstr "无法创建目录 %s"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "%s directory: %s error accessing"
+msgstr "%s 目录: %s 访问出错"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "Cannot change permissions of %s"
+msgstr "无法更改 %s 的权限"
+
+#: sabnzbd/filesystem.py [Error message]
+msgid "Failed making (%s)"
+msgstr "创建失败 (%s)"
+
+#: sabnzbd/filesystem.py [Error message] # sabnzbd/postproc.py
+msgid "Failed moving %s to %s"
+msgstr "将 %s 移动到 %s 失败"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
@@ -738,35 +738,15 @@ msgstr "小时"
 msgid "m"
 msgstr "分钟"
 
-#: sabnzbd/misc.py [Error message] # sabnzbd/sorting.py [Error message]
-msgid "Cannot create directory %s"
-msgstr "无法创建目录 %s"
-
-#: sabnzbd/misc.py [Error message]
-msgid "%s directory: %s error accessing"
-msgstr "%s 目录: %s 访问出错"
-
-#: sabnzbd/misc.py [Error message]
-msgid "Failed making (%s)"
-msgstr "创建失败 (%s)"
-
-#: sabnzbd/misc.py [Error message] # sabnzbd/postproc.py
-msgid "Failed moving %s to %s"
-msgstr "将 %s 移动到 %s 失败"
-
 #: sabnzbd/misc.py [Error message]
 msgid "Error creating SSL key and certificate"
 msgstr "创建 SSL key 及证书出错"
 
-#: sabnzbd/misc.py [Warning message]
+#: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
 msgstr ""
-
-#: sabnzbd/misc.py [Error message]
-msgid "Cannot change permissions of %s"
-msgstr "无法更改 %s 的权限"
 
 #: sabnzbd/newsunpack.py # sabnzbd/postproc.py
 msgid "Running script"
@@ -852,7 +832,7 @@ msgstr "错误: 无法找到 \"%s\""
 msgid "Unpacking failed, CRC error"
 msgstr "解压失败，CRC 错误"
 
-#: sabnzbd/newsunpack.py # sabnzbd/newsunpack.py [Warning message]
+#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py
 msgid "ERROR: CRC failed in \"%s\""
 msgstr "错误: \"%s\" CRC 失败"
 
@@ -881,14 +861,6 @@ msgid "ERROR: path too long (%s)"
 msgstr "*错误*: 路径过长 (%s)"
 
 #: sabnzbd/newsunpack.py
-msgid "Unpacking failed, see log"
-msgstr "解压失败，参见日志"
-
-#: sabnzbd/newsunpack.py [Warning message] # sabnzbd/newsunpack.py
-msgid "ERROR: %s"
-msgstr "错误: %s"
-
-#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr "无法使用的 RAR 文件"
 
@@ -903,6 +875,10 @@ msgstr "%s 个文件，耗时 %s"
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Error \"%s\" while running unzip() on %s"
 msgstr "\"%s\" 对 %s 执行 unzip() 时出错"
+
+#: sabnzbd/newsunpack.py
+msgid "No 7za binary found, cannot unpack \"%s\""
+msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -1003,6 +979,10 @@ msgid "Checking"
 msgstr "正在检查"
 
 #: sabnzbd/newsunpack.py [Error message]
+msgid "[%s] The command in build_command is undefined."
+msgstr ""
+
+#: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Python 脚本 \"%s\" 不具有执行 (+x) 权限"
 
@@ -1048,7 +1028,7 @@ msgstr "任务已完成"
 msgid "Job failed"
 msgstr "任务失败"
 
-#: sabnzbd/notifier.py [Notification]
+#: sabnzbd/notifier.py [Notification] # sabnzbd/postproc.py
 msgid "Queue finished"
 msgstr "队列已完成"
 
@@ -1092,9 +1072,9 @@ msgstr "通知脚本 \"%s\" 不存在"
 msgid "Failed to send Windows notification"
 msgstr "无法发送 Windows 通知"
 
-#: sabnzbd/nzbqueue.py [Warning message] # sabnzbd/postproc.py [Warning message]
-msgid "Old queue detected, use Status->Repair to convert the queue"
-msgstr "侦测到旧版队列，请使用“状态”→“修复”转换队列"
+#: sabnzbd/nzbparser.py [Warning message]
+msgid "Failed to import %s files from %s"
+msgstr "导入 %s 文件失败，来自 %s"
 
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
@@ -1104,10 +1084,6 @@ msgstr "发现不兼容的队列文件，无法继续处理"
 msgid "Error loading %s, corrupt file detected"
 msgstr "无法加载 %s，侦测到损坏文件"
 
-#: sabnzbd/nzbqueue.py [Error message]
-msgid "Failed to restart NZB after pre-check (%s)"
-msgstr "预先检查后无法重新开始下载 NZB (%s)"
-
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB 已添加到队列"
@@ -1115,14 +1091,6 @@ msgstr "NZB 已添加到队列"
 #: sabnzbd/nzbqueue.py [Warning message]
 msgid "%s -> Unknown encoding"
 msgstr "%s -> 未知编码"
-
-#: sabnzbd/nzbstuff.py
-msgid "File %s is empty, skipping"
-msgstr "文件 %s 为空，正在跳过"
-
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Failed to import %s files from %s"
-msgstr "导入 %s 文件失败，来自 %s"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Incomplete NZB file %s"
@@ -1196,7 +1164,7 @@ msgstr "传播延迟生效，等待 %s 分钟"
 msgid "Downloaded in %s at an average of %sB/s"
 msgstr "已下载，耗时 %s，平均速度 %sB/s"
 
-#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py [Job details page, file age column header] # sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py [Job details page, file age column header]
 msgid "Age"
 msgstr "发布时间"
 
@@ -1220,7 +1188,7 @@ msgstr "已移除 %s 篇文章"
 msgid "Error importing %s"
 msgstr "导入 %s 出错"
 
-#: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings] # sabnzbd/skintext.py
+#: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
 msgstr "警告信息"
 
@@ -1445,16 +1413,14 @@ msgid "Error %s: You need to provide a valid username and password."
 msgstr "错误 %s: 您需要提供有效的用户名与密码。"
 
 #: sabnzbd/postproc.py [Warning message]
+msgid "Old queue detected, use Status->Repair to convert the queue"
+msgstr "侦测到旧版队列，请使用“状态”→“修复”转换队列"
+
+#: sabnzbd/postproc.py [Warning message]
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
 msgstr "已完成文件夹 %s 位于 FAT 文件系统上，这样会有最大文件为 4GB 的限制。"
-
-#: sabnzbd/postproc.py [Warning message]
-msgid ""
-"Module subprocessww missing. Expect problems with Unicoded file and "
-"directory names in downloads."
-msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
@@ -1511,10 +1477,6 @@ msgstr "下载失败"
 #: sabnzbd/postproc.py [Error message]
 msgid "Cleanup of %s failed."
 msgstr "%s 清理失败。"
-
-#: sabnzbd/postproc.py [Error message]
-msgid "Error removing workdir (%s)"
-msgstr "移除工作目录出错 (%s)"
 
 #: sabnzbd/postproc.py
 msgid "Download Completed"
@@ -1638,6 +1600,34 @@ msgstr "显示界面"
 msgid "Open complete folder"
 msgstr "打开完成文件夹"
 
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py [Queue page button or entry box]
+msgid "Pause for"
+msgstr "暂停"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 5 minutes"
+msgstr "暂停 5 分钟"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 15 minutes"
+msgstr "暂停 15 分钟"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 30 minutes"
+msgstr "暂停 30 分钟"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 1 hour"
+msgstr "暂停 1 小时"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 3 hours"
+msgstr "暂停 3 小时"
+
+#: sabnzbd/sabtray.py # sabnzbd/skintext.py
+msgid "Pause for 6 hours"
+msgstr "暂停 6 小时"
+
 #: sabnzbd/sabtray.py # sabnzbd/sabtraylinux.py # sabnzbd/skintext.py [Shutdown SABnzbd] # sabnzbd/skintext.py [Config->Scheduling]
 msgid "Shutdown"
 msgstr "关闭"
@@ -1718,7 +1708,7 @@ msgstr "快速检查..."
 msgid "Verifying..."
 msgstr "正在验证..."
 
-#: sabnzbd/skintext.py [Pseudo-PP status, in reality used for Queue-status] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Pseudo-PP status, in reality used for Queue-status]
 msgid "Downloading"
 msgstr "正在下载"
 
@@ -2034,6 +2024,10 @@ msgstr "usenet 自动下载工具"
 msgid "Save"
 msgstr "保存"
 
+#: sabnzbd/skintext.py
+msgid "Saving.."
+msgstr "正在保存.."
+
 #: sabnzbd/skintext.py [Used in confirmation popups] # sabnzbd/skintext.py
 msgid "Are you sure?"
 msgstr "是否确定?"
@@ -2222,10 +2216,6 @@ msgstr "关闭 SABnzbd"
 msgid "Speed Limit"
 msgstr "限速"
 
-#: sabnzbd/skintext.py [Queue page button or entry box]
-msgid "Pause for"
-msgstr "暂停"
-
 #: sabnzbd/skintext.py [Queue page table column header] # sabnzbd/skintext.py [Config->RSS table column header]
 msgid "Order"
 msgstr "序号"
@@ -2322,7 +2312,7 @@ msgstr "只显示失败项"
 msgid "Show All"
 msgstr "显示全部项"
 
-#: sabnzbd/skintext.py [History table header] # sabnzbd/skintext.py [Size of the download quota] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [History table header] # sabnzbd/skintext.py [Size of the download quota]
 msgid "Size"
 msgstr "尺寸"
 
@@ -2346,7 +2336,7 @@ msgstr "清理本页的 NZB 文件"
 msgid "Optional Supplemental NZB"
 msgstr "可选补充 NZB"
 
-#: sabnzbd/skintext.py [Path as displayed in History details] # sabnzbd/skintext.py
+#: sabnzbd/skintext.py [Path as displayed in History details]
 msgid "Path"
 msgstr "路径"
 
@@ -2493,6 +2483,10 @@ msgid "Could not write. Check that the directory is writable."
 msgstr "无法写入。请确保该目录有写入权限。"
 
 #: sabnzbd/skintext.py
+msgid "Internet Bandwidth"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Click on Repeat test button below to determine"
 msgstr "点击下面的“重复”按钮可开始测试"
 
@@ -2571,11 +2565,9 @@ msgstr ""
 msgid ""
 "Secure (SSL) connections from SABnzbd to newsservers and HTTPS websites will "
 "be encrypted, however, validating a server's identity using its certificates "
-"is not possible. Python 2.7.9 or above, OpenSSL 1.0.2 or above and up-to-"
-"date local CA certificates are required."
+"is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates "
+"are required."
 msgstr ""
-"SABnzbd 与新闻组服务器之间的安全连接 (SSL) 以及 HTTPS 网站将会被加密，只不过，使用证书来验证服务器的身份却无法实现。要求 "
-"Python 2.7.9 或以上，OpenSSL 1.0.2 或以上，以及最新的本地 CA 证书存储。"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3728,6 +3720,10 @@ msgstr "*可选* 账号密码"
 msgid "For authenticated email, password."
 msgstr "email 身份认证所用的密码。"
 
+#: sabnzbd/skintext.py
+msgid "Notification Sent!"
+msgstr "通知已发送!"
+
 #: sabnzbd/skintext.py [Header Growl section]
 msgid "Growl"
 msgstr "Growl"
@@ -4183,30 +4179,6 @@ msgid "Selection"
 msgstr "选择"
 
 #: sabnzbd/skintext.py
-msgid "Pause for 5 minutes"
-msgstr "暂停 5 分钟"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 15 minutes"
-msgstr "暂停 15 分钟"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 30 minutes"
-msgstr "暂停 30 分钟"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 1 hour"
-msgstr "暂停 1 小时"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 3 hours"
-msgstr "暂停 3 小时"
-
-#: sabnzbd/skintext.py
-msgid "Pause for 6 hours"
-msgstr "暂停 6 小时"
-
-#: sabnzbd/skintext.py
 msgid "left"
 msgstr "剩余"
 
@@ -4322,7 +4294,7 @@ msgstr "发回队列"
 msgid "Delete All"
 msgstr "全部删除"
 
-#: sabnzbd/skintext.py # sabnzbd/skintext.py [Link in SMPL for "Retry all failed jobs"]
+#: sabnzbd/skintext.py
 msgid "Retry all"
 msgstr "全部重试"
 
@@ -4601,94 +4573,6 @@ msgid "Downloads"
 msgstr "下载列表"
 
 #: sabnzbd/skintext.py
-msgid "Delete Completed"
-msgstr "删除完成项"
-
-#: sabnzbd/skintext.py
-msgid "Delete the all failed items from the history?"
-msgstr "从历史中删除所有失败项?"
-
-#: sabnzbd/skintext.py
-msgid "Delete Failed"
-msgstr "删除失败项"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs?"
-msgstr "重试所有已失败任务?"
-
-#: sabnzbd/skintext.py
-msgid "Links"
-msgstr "链接"
-
-#: sabnzbd/skintext.py
-msgid "Showing %s to %s out of %s results"
-msgstr "正显示第 %s ~ %s 项结果，共 %s 项"
-
-#: sabnzbd/skintext.py
-msgid "No results"
-msgstr "无结果"
-
-#: sabnzbd/skintext.py
-msgid "Showing one result"
-msgstr "正显示一项结果"
-
-#: sabnzbd/skintext.py
-msgid "First"
-msgstr "首"
-
-#: sabnzbd/skintext.py
-msgid "Last"
-msgstr "末"
-
-#: sabnzbd/skintext.py
-msgid "Email Sent!"
-msgstr "邮件已发送!"
-
-#: sabnzbd/skintext.py
-msgid "Notification Sent!"
-msgstr "通知已发送!"
-
-#: sabnzbd/skintext.py
-msgid "Saving.."
-msgstr "正在保存.."
-
-#: sabnzbd/skintext.py
-msgid "Saved"
-msgstr "已保存"
-
-#: sabnzbd/skintext.py
-msgid "Toggle Add NZB"
-msgstr "切换新增 NZB"
-
-#: sabnzbd/skintext.py
-msgid "DualView1"
-msgstr "双视图1"
-
-#: sabnzbd/skintext.py
-msgid "DualView2"
-msgstr "双视图2"
-
-#: sabnzbd/skintext.py
-msgid "Are you sure you want to restart SABnzbd?"
-msgstr "是否确定要重新启动 SABnzbd?"
-
-#: sabnzbd/skintext.py
-msgid "Hide Edit Options"
-msgstr "隐藏编辑选项"
-
-#: sabnzbd/skintext.py
-msgid "Show Edit Options"
-msgstr "显示编辑选项"
-
-#: sabnzbd/skintext.py
-msgid "Edit"
-msgstr "编辑"
-
-#: sabnzbd/skintext.py
-msgid "Timeleft"
-msgstr "剩余时间"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd 快速上手向导"
 
@@ -4822,6 +4706,9 @@ msgstr "不可用的 NZB 文件"
 msgid "URL Fetching failed; %s"
 msgstr "URL 装取失败; %s"
 
+#~ msgid "_yenc module... NOT found!"
+#~ msgstr "_yenc 模块... *未* 找到!"
+
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "警告: 由于检测到加密的 RAR 文件，任务 \"%s\" 已暂停"
 
@@ -4833,6 +4720,12 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "CRC 错误：%s (%s -> %s)"
+
+#~ msgid "Invalid encoding of email template %s"
+#~ msgstr "email 模板 %s 编码无效"
+
+#~ msgid "No email templates found"
+#~ msgstr "未找到 email 模板"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "错误: 未定义第二界面。"
@@ -4878,6 +4771,12 @@ msgstr "URL 装取失败; %s"
 #~ msgid "pyopenssl module missing, please install for https access"
 #~ msgstr "缺 pyopenssl 模块，请安装该模块方可通过 https 访问"
 
+#~ msgid "Unpacking failed, see log"
+#~ msgstr "解压失败，参见日志"
+
+#~ msgid "ERROR: %s"
+#~ msgstr "错误: %s"
+
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "缺预期文件: %s => unrar 错误?"
 
@@ -4895,6 +4794,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Error importing OpenSSL module. Connecting with NON-SSL"
 #~ msgstr "导入 OpenSSL 模块出错。正在通过非 SSL 连接"
+
+#~ msgid "File %s is empty, skipping"
+#~ msgstr "文件 %s 为空，正在跳过"
 
 #~ msgid ""
 #~ "\n"
@@ -4944,6 +4846,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "View script output"
 #~ msgstr "查看脚本输出"
+
+#~ msgid "Error removing workdir (%s)"
+#~ msgstr "移除工作目录出错 (%s)"
 
 #~ msgid "Get NZB"
 #~ msgstr "获取 NZB"
@@ -5243,6 +5148,12 @@ msgstr "URL 装取失败; %s"
 #~ msgid "Page"
 #~ msgstr "页面"
 
+#~ msgid "First"
+#~ msgstr "首"
+
+#~ msgid "Last"
+#~ msgstr "末"
+
 #~ msgid "Close"
 #~ msgstr "关闭"
 
@@ -5281,6 +5192,57 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Hour:Min"
 #~ msgstr "小时:分钟"
+
+#~ msgid "Delete Completed"
+#~ msgstr "删除完成项"
+
+#~ msgid "Delete the all failed items from the history?"
+#~ msgstr "从历史中删除所有失败项?"
+
+#~ msgid "Delete Failed"
+#~ msgstr "删除失败项"
+
+#~ msgid "Links"
+#~ msgstr "链接"
+
+#~ msgid "Showing %s to %s out of %s results"
+#~ msgstr "正显示第 %s ~ %s 项结果，共 %s 项"
+
+#~ msgid "No results"
+#~ msgstr "无结果"
+
+#~ msgid "Showing one result"
+#~ msgstr "正显示一项结果"
+
+#~ msgid "Email Sent!"
+#~ msgstr "邮件已发送!"
+
+#~ msgid "Saved"
+#~ msgstr "已保存"
+
+#~ msgid "Toggle Add NZB"
+#~ msgstr "切换新增 NZB"
+
+#~ msgid "DualView1"
+#~ msgstr "双视图1"
+
+#~ msgid "DualView2"
+#~ msgstr "双视图2"
+
+#~ msgid "Are you sure you want to restart SABnzbd?"
+#~ msgstr "是否确定要重新启动 SABnzbd?"
+
+#~ msgid "Hide Edit Options"
+#~ msgstr "隐藏编辑选项"
+
+#~ msgid "Show Edit Options"
+#~ msgstr "显示编辑选项"
+
+#~ msgid "Edit"
+#~ msgstr "编辑"
+
+#~ msgid "Timeleft"
+#~ msgstr "剩余时间"
 
 #~ msgid "Access"
 #~ msgstr "访问"
