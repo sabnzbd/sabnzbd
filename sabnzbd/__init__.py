@@ -833,14 +833,15 @@ def keep_awake():
     if KERNEL32 or sleepless:
         if sabnzbd.cfg.keep_awake():
             awake = False
-            if not sabnzbd.downloader.Downloader.do.paused:
-                if (not PostProcessor.do.empty()) or not NzbQueue.do.is_empty():
-                    awake = True
-                    if KERNEL32:
-                        # set ES_SYSTEM_REQUIRED
-                        KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
-                    else:
-                        sleepless.keep_awake("SABnzbd is busy downloading and/or post-processing")
+            if (not Downloader.do.is_paused() and not NzbQueue.do.is_empty()) or (
+                not PostProcessor.do.paused and not PostProcessor.do.empty()
+            ):
+                awake = True
+                if KERNEL32:
+                    # set ES_SYSTEM_REQUIRED
+                    KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
+                else:
+                    sleepless.keep_awake("SABnzbd is busy downloading and/or post-processing")
             if not awake and sleepless:
                 sleepless.allow_sleep()
 
