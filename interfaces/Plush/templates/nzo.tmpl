@@ -11,7 +11,7 @@
 
   <div>
   <select name="index"><optgroup label="$T('order')">
-  <!--#for $i in xrange($noofslots)#-->
+  <!--#for $i in range($noofslots)#-->
     <option value=$i <!--#if $i == $index then "selected" else ""#-->>$i</option>
   <!--#end for#-->
   </select>
