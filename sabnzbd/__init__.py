@@ -61,6 +61,7 @@ elif os.name == "posix":
         try:
             import Foundation
             import sabnzbd.utils.sleepless as sleepless
+
             FOUNDATION = True
         except:
             pass

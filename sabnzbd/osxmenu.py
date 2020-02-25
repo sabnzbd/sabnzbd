@@ -33,7 +33,8 @@ import logging
 import sabnzbd
 import sabnzbd.cfg
 
-from sabnzbd.filesystem import get_filename, get_ext, diskspace, to_units
+from sabnzbd.filesystem import get_filename, get_ext, diskspace
+from sabnzbd.misc import to_units
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.notifier as notifier
