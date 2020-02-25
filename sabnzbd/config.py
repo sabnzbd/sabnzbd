@@ -239,7 +239,7 @@ class OptionDir(Option):
             if self.__validation:
                 error, value = self.__validation(self.__root, value, super().default())
             if not error:
-                if value and (self.__create or create):
+                if value and (self.__create or create) and not os.path.exists(value):
                     res, path = create_real_path(
                         self.ident()[1], self.__root, value, self.__apply_umask, self.__writable
                     )
