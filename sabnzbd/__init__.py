@@ -33,11 +33,6 @@ import re
 import ssl
 from threading import Lock, Thread
 
-try:
-    import sleepless
-except ImportError:
-    sleepless = None
-
 ##############################################################################
 # Determine platform flags
 ##############################################################################
@@ -65,7 +60,7 @@ elif os.name == "posix":
         DARWIN_VERSION = int(platform.mac_ver()[0].split(".")[1])
         try:
             import Foundation
-
+            import sabnzbd.utils.sleepless as sleepless
             FOUNDATION = True
         except:
             pass
@@ -830,7 +825,7 @@ def empty_queues():
 
 def keep_awake():
     """ If we still have work to do, keep Windows/OSX system awake """
-    if KERNEL32 or sleepless:
+    if KERNEL32 or FOUNDATION:
         if sabnzbd.cfg.keep_awake():
             awake = False
             if (not Downloader.do.is_paused() and not NzbQueue.do.is_empty()) or (
@@ -842,7 +837,7 @@ def keep_awake():
                     KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
                 else:
                     sleepless.keep_awake("SABnzbd is busy downloading and/or post-processing")
-            if not awake and sleepless:
+            if not awake and FOUNDATION:
                 sleepless.allow_sleep()
 
 

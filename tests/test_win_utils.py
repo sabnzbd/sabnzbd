@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_misc - Testing mailslot communiction on Windows
+tests.test_win_utils - Testing mailslot communiction on Windows
 """
 
 import subprocess
