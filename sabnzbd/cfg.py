@@ -360,23 +360,6 @@ ntfosd_prio_error = OptionBool("ntfosd", "ntfosd_prio_error", False)
 ntfosd_prio_queue_done = OptionBool("ntfosd", "ntfosd_prio_queue_done", True)
 ntfosd_prio_other = OptionBool("ntfosd", "ntfosd_prio_other", False)
 
-# [growl]
-growl_enable = OptionBool("growl", "growl_enable", False)
-growl_cats = OptionList("growl", "growl_cats", ["*"])
-growl_server = OptionStr("growl", "growl_server")
-growl_password = OptionPassword("growl", "growl_password")
-growl_prio_startup = OptionBool("growl", "growl_prio_startup", True)
-growl_prio_download = OptionBool("growl", "growl_prio_download", False)
-growl_prio_pp = OptionBool("growl", "growl_prio_pp", False)
-growl_prio_complete = OptionBool("growl", "growl_prio_complete", True)
-growl_prio_failed = OptionBool("growl", "growl_prio_failed", True)
-growl_prio_disk_full = OptionBool("growl", "growl_prio_disk_full", True)
-growl_prio_new_login = OptionBool("growl", "growl_prio_new_login", False)
-growl_prio_warning = OptionBool("growl", "growl_prio_warning", False)
-growl_prio_error = OptionBool("growl", "growl_prio_error", False)
-growl_prio_queue_done = OptionBool("growl", "growl_prio_queue_done", True)
-growl_prio_other = OptionBool("growl", "growl_prio_other", False)
-
 # [prowl]
 prowl_enable = OptionBool("prowl", "prowl_enable", False)
 prowl_cats = OptionList("prowl", "prowl_cats", ["*"])

@@ -255,8 +255,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.enable_https.callback(guard_restart)
     cfg.top_only.callback(guard_top_only)
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
-    cfg.growl_server.callback(sabnzbd.notifier.change_value)
-    cfg.growl_password.callback(sabnzbd.notifier.change_value)
     cfg.quota_size.callback(guard_quota_size)
     cfg.quota_day.callback(guard_quota_dp)
     cfg.quota_period.callback(guard_quota_dp)
@@ -503,7 +501,6 @@ def guard_quota_dp():
 
 def guard_language():
     """ Callback for change of the interface language """
-    sabnzbd.notifier.reset_growl()
     sabnzbd.lang.set_language(cfg.language())
     sabnzbd.api.clear_trans_cache()
 

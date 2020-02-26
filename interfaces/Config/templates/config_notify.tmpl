@@ -212,40 +212,6 @@
             </fieldset>
         </div>
     </div>
-    <div class="section" id="growl">
-        <div class="col2">
-            <h3>$T('growlSettings') <a href="$helpuri$help_uri#toc3" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
-            <table>
-                <tr>
-                    <td><input type="checkbox" name="growl_enable" id="growl_enable" value="1" <!--#if int($growl_enable) > 0 then 'checked="checked"' else ""#--> /></td>
-                    <td><label for="growl_enable"> $T('opt-growl_enable')</label></td>
-                </tr>
-            </table>
-            $show_cat_box('growl')
-        </div>
-        <div class="col1" <!--#if int($growl_enable) > 0 then '' else 'style="display:none"'#-->>
-            <fieldset>
-                <div class="field-pair">
-                    <label class="config" for="growl_server">$T('opt-growl_server')</label>
-                    <input type="text" name="growl_server" id="growl_server" value="$growl_server" />
-                    <span class="desc">$T('explain-growl_server')</span>
-                </div>
-                <div class="field-pair">
-                    <label class="config" for="growl_password">$T('opt-growl_password')</label>
-                    <input type="text" name="growl_password" id="growl_password" value="$growl_password" />
-                    <span class="desc">$T('explain-growl_password')</span>
-                </div>
-                $show_notify_checkboxes('growl')
-                <div class="field-pair no-field-pair-bg">
-                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
-                    <button class="btn btn-default" type="button" id="test_growl"><span class="glyphicon glyphicon-comment"></span> $T('testNotify')</button>
-                </div>
-                <div class="field-pair result-box">
-                    <div class="alert"></div>
-                </div>
-           </fieldset>
-       </div>
-    </div>
     <div class="section" id="prowl">
         <div class="col2">
             <h3>$T('section-Prowl')</h3>
@@ -457,7 +423,7 @@
             }
         })
     }
-    \$('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_growl, #test_osd, #test_nscript').click(function () {
+    \$('#test_email, #test_notif, #test_windows, #test_pushbullet, #test_pushover, #test_prowl, #test_osd, #test_nscript').click(function () {
         testNotification(this)
     })
 });

@@ -37,17 +37,6 @@ from sabnzbd.misc import split_host
 from sabnzbd.filesystem import make_script_path
 from sabnzbd.newsunpack import external_script
 
-from gntp.core import GNTPRegister
-from gntp.notifier import GrowlNotifier
-import gntp.errors
-
-try:
-    import Growl
-    # Detect classic Growl (older than 1.3)
-    _HAVE_CLASSIC_GROWL = os.path.isfile('/Library/PreferencePanes/Growl.prefPane/Contents/MacOS/Growl')
-except ImportError:
-    _HAVE_CLASSIC_GROWL = False
-
 try:
     import warnings
     # Make any warnings exceptions, so that pynotify is ignored
@@ -82,13 +71,6 @@ NOTIFICATION = {
     'other': TT('Other Messages')           #: Notification
 }
 
-##############################################################################
-# Setup platform dependent Growl support
-##############################################################################
-_GROWL = None       # Instance of the Notifier after registration
-_GROWL_REG = False  # Succesful registration
-_GROWL_DATA = (None, None)    # Address and password
-
 
 def get_icon():
     icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, 'icons'), 'sabnzbd.ico')
@@ -101,12 +83,6 @@ def get_icon():
     else:
         icon = None
     return icon
-
-
-def change_value():
-    """ Signal that we should register with a new Growl server """
-    global _GROWL_REG
-    _GROWL_REG = False
 
 
 def have_ntfosd():
@@ -160,13 +136,6 @@ def send_notification(title, msg, gtype, job_cat=None):
         if check_classes(gtype, 'acenter') and check_cat('acenter', job_cat):
             send_windows(title, msg, gtype)
 
-    # Growl
-    if sabnzbd.cfg.growl_enable() and check_classes(gtype, 'growl') and check_cat('growl', job_cat):
-        if _HAVE_CLASSIC_GROWL and not sabnzbd.cfg.growl_server():
-            return send_local_growl(title, msg, gtype)
-        else:
-            Thread(target=send_growl, args=(title, msg, gtype)).start()
-
     # Prowl
     if sabnzbd.cfg.prowl_enable() and check_cat('prowl', job_cat):
         if sabnzbd.cfg.prowl_apikey():
@@ -191,138 +160,6 @@ def send_notification(title, msg, gtype, job_cat=None):
     if have_ntfosd() and sabnzbd.cfg.ntfosd_enable():
         if check_classes(gtype, 'ntfosd') and check_cat('ntfosd', job_cat):
             send_notify_osd(title, msg)
-
-
-def reset_growl():
-    """ Reset Growl (after changing language) """
-    global _GROWL, _GROWL_REG
-    _GROWL = None
-    _GROWL_REG = False
-
-
-def register_growl(growl_server, growl_password):
-    """ Register this app with Growl """
-    error = None
-    host, port = split_host(growl_server or '')
-
-    sys_name = hostname(host)
-
-    # Reduce logging of Growl in Debug/Info mode
-    logging.getLogger('gntp').setLevel(logging.WARNING)
-
-    # Clean up persistent data in GNTP to make re-registration work
-    GNTPRegister.notifications = []
-    GNTPRegister.headers = {}
-
-    growler = GrowlNotifier(
-        applicationName='SABnzbd%s' % sys_name,
-        applicationIcon=get_icon(),
-        notifications=[T(NOTIFICATION[key]) for key in NOTIFY_KEYS],
-        hostname=host or 'localhost',
-        port=port or 23053,
-        password=growl_password or None
-    )
-
-    try:
-        ret = growler.register()
-        if ret is None or isinstance(ret, bool):
-            logging.info('Registered with Growl')
-            ret = growler
-        else:
-            error = 'Cannot register with Growl %s' % str(ret)
-            logging.debug(error)
-            del growler
-            ret = None
-    except (gntp.errors.NetworkError, gntp.errors.AuthError) as err:
-        error = 'Cannot register with Growl %s' % str(err)
-        logging.debug(error)
-        del growler
-        ret = None
-    except:
-        error = 'Unknown Growl registration error'
-        logging.debug(error)
-        logging.info("Traceback: ", exc_info=True)
-        del growler
-        ret = None
-
-    return ret, error
-
-
-def send_growl(title, msg, gtype, test=None):
-    """ Send Growl message """
-    global _GROWL, _GROWL_REG, _GROWL_DATA
-
-    # support testing values from UI
-    if test:
-        growl_server = test.get('growl_server') or None
-        growl_password = test.get('growl_password') or None
-    else:
-        growl_server = sabnzbd.cfg.growl_server()
-        growl_password = sabnzbd.cfg.growl_password()
-
-    for n in (0, 1):
-        if not _GROWL_REG:
-            _GROWL = None
-        if (growl_server, growl_password) != _GROWL_DATA:
-            reset_growl()
-        if not _GROWL:
-            _GROWL, error = register_growl(growl_server, growl_password)
-        if _GROWL:
-            _GROWL_REG = True
-            if not isinstance(msg, str):
-                msg = str(msg)
-            logging.debug('Send to Growl: %s %s %s', gtype, title, msg)
-            try:
-                ret = _GROWL.notify(
-                    noteType=T(NOTIFICATION.get(gtype, 'other')),
-                    title=title,
-                    description=msg,
-                )
-                if ret is None or isinstance(ret, bool):
-                    return None
-                elif ret[0] == '401':
-                    _GROWL = False
-                else:
-                    logging.debug('Growl error %s', ret)
-                    return 'Growl error %s', ret
-            except (gntp.errors.NetworkError, gntp.errors.AuthError) as err:
-                error = 'Growl error %s' % err
-                logging.debug(error)
-                return error
-            except:
-                error = 'Growl error (unknown)'
-                logging.debug(error)
-                return error
-        else:
-            return error
-    return None
-
-##############################################################################
-# Local OSX Growl support
-##############################################################################
-if _HAVE_CLASSIC_GROWL:
-    _local_growl = None
-    if os.path.isfile('sabnzbdplus.icns'):
-        _OSX_ICON = Growl.Image.imageFromPath('sabnzbdplus.icns')
-    elif os.path.isfile('osx/resources/sabnzbdplus.icns'):
-        _OSX_ICON = Growl.Image.imageFromPath('osx/resources/sabnzbdplus.icns')
-    else:
-        _OSX_ICON = Growl.Image.imageWithIconForApplication('Terminal')
-
-    def send_local_growl(title, msg, gtype):
-        """ Send to local Growl server, OSX-only """
-        global _local_growl
-        if not _local_growl:
-            notes = [T(NOTIFICATION[key]) for key in NOTIFY_KEYS]
-            _local_growl = Growl.GrowlNotifier(
-                applicationName='SABnzbd',
-                applicationIcon=_OSX_ICON,
-                notifications=notes,
-                defaultNotifications=notes
-            )
-            _local_growl.register()
-        _local_growl.notify(T(NOTIFICATION.get(gtype, 'other')), title, msg)
-        return None
 
 
 ##############################################################################

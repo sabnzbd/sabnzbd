@@ -725,13 +725,6 @@ def _api_test_notif(name, output, kwargs):
     return report(output, error=res)
 
 
-def _api_test_growl(name, output, kwargs):
-    """ API: send a test Growl notification, return result """
-    logging.info("Sending Growl notification")
-    res = sabnzbd.notifier.send_growl('SABnzbd', T('Test Notification'), 'other', test=kwargs)
-    return report(output, error=res)
-
-
 def _api_test_osd(name, output, kwargs):
     """ API: send a test OSD notification, return result """
     logging.info("Sending OSD notification")
@@ -923,7 +916,6 @@ _api_table = {
     'test_email': (_api_test_email, 2),
     'test_windows': (_api_test_windows, 2),
     'test_notif': (_api_test_notif, 2),
-    'test_growl': (_api_test_growl, 2),
     'test_osd': (_api_test_osd, 2),
     'test_pushover': (_api_test_pushover, 2),
     'test_pushbullet': (_api_test_pushbullet, 2),

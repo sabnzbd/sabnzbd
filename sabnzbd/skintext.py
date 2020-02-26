@@ -639,12 +639,6 @@ SKIN_TEXT = {
     'opt-email_pwd' : TT('OPTIONAL Account Password'),
     'explain-email_pwd' : TT('For authenticated email, password.'),
     'notifications-notesent': TT('Notification Sent!'),
-    'growlSettings' : TT('Growl'), #: Header Growl section
-    'opt-growl_enable' : TT('Enable Growl'), #: Don't translate "Growl"
-    'opt-growl_server' : TT('Server address'), #: Address of Growl server
-    'explain-growl_server' : TT('Only use for remote Growl server (host:port)'), #: Don't translate "Growl"
-    'opt-growl_password' : TT('Server password'), #: Growl server password
-    'explain-growl_password' : TT('Optional password for Growl server'), #: Don't translate "Growl"
     'opt-ntfosd_enable' : TT('Enable NotifyOSD'), #: Don't translate "NotifyOSD"
     'opt-ncenter_enable' : TT('Notification Center'),
     'opt-acenter_enable' : TT('Enable Windows Notifications'),

@@ -2511,10 +2511,6 @@ LIST_EMAIL = (
     'email_server', 'email_to', 'email_from',
     'email_account', 'email_pwd', 'email_rss'
 )
-LIST_GROWL = ('growl_enable', 'growl_cats', 'growl_server', 'growl_password',
-              'growl_prio_startup', 'growl_prio_download', 'growl_prio_pp', 'growl_prio_complete', 'growl_prio_failed',
-              'growl_prio_disk_full', 'growl_prio_warning', 'growl_prio_error', 'growl_prio_queue_done', 'growl_prio_other',
-              'growl_prio_new_login')
 LIST_NCENTER = ('ncenter_enable', 'ncenter_cats',
                 'ncenter_prio_startup', 'ncenter_prio_download', 'ncenter_prio_pp', 'ncenter_prio_complete', 'ncenter_prio_failed',
                 'ncenter_prio_disk_full', 'ncenter_prio_warning', 'ncenter_prio_error', 'ncenter_prio_queue_done', 'ncenter_prio_other',
@@ -2557,18 +2553,12 @@ class ConfigNotify:
 
         conf['categories'] = list_cats(False)
         conf['lastmail'] = self.__lastmail
-        conf['have_growl'] = True
         conf['have_ntfosd'] = sabnzbd.notifier.have_ntfosd()
         conf['have_ncenter'] = sabnzbd.DARWIN and bool(sabnzbd.notifier.ncenter_path())
         conf['scripts'] = list_scripts(default=False, none=True)
 
         for kw in LIST_EMAIL:
             conf[kw] = config.get_config('misc', kw).get_string()
-        for kw in LIST_GROWL:
-            try:
-                conf[kw] = config.get_config('growl', kw)()
-            except:
-                logging.debug('MISSING KW=%s', kw)
         for kw in LIST_PROWL:
             conf[kw] = config.get_config('prowl', kw)()
         for kw in LIST_PUSHOVER:
@@ -2596,10 +2586,6 @@ class ConfigNotify:
 
         for kw in LIST_EMAIL:
             msg = config.get_config('misc', kw).set(kwargs.get(kw))
-            if msg:
-                return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
-        for kw in LIST_GROWL:
-            msg = config.get_config('growl', kw).set(kwargs.get(kw))
             if msg:
                 return badParameterResponse(T('Incorrect value for %s: %s') % (kw, msg), ajax)
         for kw in LIST_NCENTER:
