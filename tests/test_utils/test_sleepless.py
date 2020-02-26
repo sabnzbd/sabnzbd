@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_osx_utils - Testing OSX specific utils
+tests.test_sleepless - Test sleepless for macOS
 """
 
 import sys
