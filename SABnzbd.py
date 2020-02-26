@@ -1384,8 +1384,7 @@ def main():
         if sabnzbd.FOUNDATION:
             import sabnzbd.osxmenu
             sabnzbd.osxmenu.notify("SAB_Launched", None)
-        notifier.send_notification('SABnzbd%s' % notifier.hostname(),
-                                  T('SABnzbd %s started') % sabnzbd.__version__, 'startup')
+        notifier.send_notification('SABnzbd', T('SABnzbd %s started') % sabnzbd.__version__, 'startup')
         # Now's the time to check for a new version
         check_latest_version()
     autorestarted = False

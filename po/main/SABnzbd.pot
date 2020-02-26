@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2020-02-22 10:13+0100\n"
+"POT-Creation-Date: 2020-02-26 13:46+0100\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -102,62 +102,6 @@ msgstr ""
 
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
-msgid "Authentication failed, check username/password."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
 msgstr ""
 
 #: sabnzbd/__init__.py [Warning message]
@@ -606,6 +550,10 @@ msgstr ""
 msgid "Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin."
 msgstr ""
 
+#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
+msgid "Authentication failed, check username/password."
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr ""
@@ -996,6 +944,10 @@ msgstr ""
 
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
+msgstr ""
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
 msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
@@ -1470,7 +1422,7 @@ msgstr ""
 msgid "Indexer id (%s) not found for ratings file"
 msgstr ""
 
-#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+#: sabnzbd/rating.py
 msgid "Server address"
 msgstr ""
 
@@ -3558,26 +3510,6 @@ msgstr ""
 msgid "Notification Sent!"
 msgstr ""
 
-#: sabnzbd/skintext.py [Header Growl section]
-msgid "Growl"
-msgstr ""
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Enable Growl"
-msgstr ""
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Only use for remote Growl server (host:port)"
-msgstr ""
-
-#: sabnzbd/skintext.py [Growl server password]
-msgid "Server password"
-msgstr ""
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Optional password for Growl server"
-msgstr ""
-
 #: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr ""
@@ -4508,5 +4440,57 @@ msgstr ""
 
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
 msgstr ""
 

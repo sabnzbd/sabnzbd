@@ -68,6 +68,7 @@ script:
         sabnzbd/misc.py
         sabnzbd/lang.py
         sabnzbd/nzbparser.py
+        sabnzbd/notifier.py
         sabnzbd/rss.py
         sabnzbd/par2file.py
         sabnzbd/version.py
