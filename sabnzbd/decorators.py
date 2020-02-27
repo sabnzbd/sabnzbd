@@ -32,12 +32,8 @@ DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 def synchronized(lock):
     def wrap(f):
         def call_func(*args, **kw):
-            lock.acquire()
-            try:
+            with lock:
                 return f(*args, **kw)
-            finally:
-                lock.release()
-
         return call_func
 
     return wrap
