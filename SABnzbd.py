@@ -1466,7 +1466,7 @@ def main():
 
             os.chdir(org_dir)
             # If OSX frozen restart of app instead of embedded python
-            if getattr(sys, 'frozen', None) and sabnzbd.DARWIN:
+            if hasattr(sys, "frozen") and sabnzbd.DARWIN:
                 # [[NSProcessInfo processInfo] processIdentifier]]
                 # logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
                 my_pid = os.getpid()
@@ -1501,7 +1501,7 @@ def main():
     sys.stdout.flush()
     sabnzbd.pid_file()
 
-    if getattr(sys, 'frozen', None) and sabnzbd.DARWIN:
+    if hasattr(sys, "frozen") and sabnzbd.DARWIN:
         try:
             AppHelper.stopEventLoop()
         except:

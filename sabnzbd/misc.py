@@ -461,7 +461,7 @@ def caller_name(skip=2):
     function_name = parentframe.f_code.co_name
 
     # Modulename not available in the binaries, we can use the filename instead
-    if getattr(sys, "frozen", None):
+    if hasattr(sys, "frozen"):
         module_name = inspect.getfile(parentframe)
     else:
         module_name = inspect.getmodule(parentframe).__name__
@@ -477,7 +477,7 @@ def exit_sab(value):
     """ Leave the program after flushing stderr/stdout """
     sys.stderr.flush()
     sys.stdout.flush()
-    if getattr(sys, "frozen", None) and sabnzbd.DARWIN:
+    if hasattr(sys, "frozen") and sabnzbd.DARWIN:
         sabnzbd.SABSTOP = True
         from PyObjCTools import AppHelper
         AppHelper.stopEventLoop()

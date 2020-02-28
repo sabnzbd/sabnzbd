@@ -84,7 +84,7 @@ class SABnzbdDelegate(NSObject):
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
         for icon in status_icons:
             icon_path = status_icons[icon]
-            if getattr(sys, 'frozen', None):
+            if hasattr(sys, "frozen"):
                 # Path is modified for the binary
                 icon_path = os.path.join(os.path.dirname(sys.executable), '..', 'Resources', status_icons[icon])
             self.icons[icon] = NSImage.alloc().initByReferencingFile_(icon_path)
