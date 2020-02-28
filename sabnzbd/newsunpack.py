@@ -757,12 +757,13 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             nzo.set_unpack_info('Unpack', msg, setname)
             fail = 1
 
-        elif 'The specified password is incorrect' in line or \
+        elif 'The specified password is incorrect' in line or 'Incorrect password' in line or \
              ('ncrypted file' in line and (('CRC failed' in line) or ('Checksum error' in line))):
             # unrar 3.x: "Encrypted file: CRC failed in oLKQfrcNVivzdzSG22a2xo7t001.part1.rar (password incorrect ?)"
             # unrar 4.x: "CRC failed in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
             # unrar 5.x: "Checksum error in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
             # unrar 5.01: "The specified password is incorrect."
+            # unrar 5.80: "Incorrect password for oLKQfrcNVivzdzSG22a2xo7t001.part1.rar"
             m = re.search(r'encrypted file (.+)\. Corrupt file', line)
             if not m:
                 # unrar 3.x syntax
