@@ -211,7 +211,7 @@ def make_templates():
         lng = os.path.split(path)[1]
         if lng != "en" and os.path.exists(os.path.join(POE_DIR, lng + ".po")):
             print(("Create email template for %s" % lng))
-            trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False, codeset="latin-1")
+            trans = gettext.translation(DOMAIN_E, MO_DIR, [lng], fallback=False)
             trans.install(names=["lgettext"])
 
             translate_tmpl("email", lng)
@@ -251,7 +251,7 @@ def patch_nsis():
                                 # The language code will be stored in the registry
                                 text_trans = lcode
                             else:
-                                trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False, codeset="cp1252")
+                                trans = gettext.translation(DOMAIN_N, MO_DIR, [lcode], fallback=False)
                                 trans.install(names=["lgettext"])
                                 text_trans = _(text)
                                 text_trans = text_trans.replace("\r", "").replace("\n", "\\r\\n")

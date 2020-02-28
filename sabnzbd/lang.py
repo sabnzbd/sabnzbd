@@ -56,7 +56,6 @@ def set_language(language=None):
     if not language:
         language = ""
 
-    # 'codeset' will determine the output of lgettext
     lng = gettext.translation(_DOMAIN, _LOCALEDIR, [language], fallback=True)
     builtins.__dict__["T"] = lng.gettext
     builtins.__dict__["TT"] = lambda x: str(x)  # Use in text tables
