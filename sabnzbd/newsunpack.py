@@ -713,7 +713,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             fail = 1
 
         elif line.endswith('- CRC failed'):
-            filename = line[:-12].strip()
             msg = T('Unpacking failed, CRC error')
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg, setname)
@@ -764,14 +763,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             # unrar 5.x: "Checksum error in the encrypted file oLKQfrcNVivzdzSG22a2xo7t001.part1.rar. Corrupt file or wrong password."
             # unrar 5.01: "The specified password is incorrect."
             # unrar 5.80: "Incorrect password for oLKQfrcNVivzdzSG22a2xo7t001.part1.rar"
-            m = re.search(r'encrypted file (.+)\. Corrupt file', line)
-            if not m:
-                # unrar 3.x syntax
-                m = re.search(r'Encrypted file:  CRC failed in (.+) \(password', line)
-            if m:
-                filename = m.group(1).strip()
-            else:
-                filename = os.path.split(rarfile_path)[1]
             msg = T('Unpacking failed, archive requires a password')
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg, setname)
@@ -779,11 +770,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 
         elif 'is not RAR archive' in line:
             # Unrecognizable RAR file
-            m = re.search('(.+) is not RAR archive', line)
-            if m:
-                filename = m.group(1).strip()
-            else:
-                filename = '???'
             msg = T('Unusable RAR file')
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg, setname)
@@ -792,11 +778,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         elif 'checksum error' in line or 'Unexpected end of archive' in line:
             # Corrupt archive or passworded, we can't know
             # packed data checksum error in volume FILE
-            m = re.search(r'error in volume (.+)', line)
-            if m:
-                filename = m.group(1).strip()
-            else:
-                filename = '???'
             msg = T('Corrupt RAR file')
             nzo.fail_msg = msg
             nzo.set_unpack_info('Unpack', msg, setname)
