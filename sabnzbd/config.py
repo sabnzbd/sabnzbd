@@ -208,7 +208,7 @@ class OptionDir(Option):
         if value:
             path = real_path(self.__root, value)
             if self.__create and not os.path.exists(path):
-                res, path = create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
+                _, path, _ = create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
         return path
 
     def get_clipped_path(self):
@@ -234,17 +234,15 @@ class OptionDir(Option):
             'create' means try to create (but don't set permanent create flag)
         """
         error = None
-        if value is not None and (create or value != self.get()):
+        if value and (value != self.get() or create):
             value = value.strip()
             if self.__validation:
                 error, value = self.__validation(self.__root, value, super().default())
             if not error:
                 if value and (self.__create or create):
-                    res, path = create_real_path(
+                    res, path, error = create_real_path(
                         self.ident()[1], self.__root, value, self.__apply_umask, self.__writable
                     )
-                    if not res:
-                        error = T("Cannot create %s folder %s") % (self.ident()[1], path)
             if not error:
                 super().set(value)
         return error

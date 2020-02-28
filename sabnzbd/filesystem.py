@@ -295,24 +295,26 @@ def create_real_path(name, loc, path, umask=False, writable=True):
         'name' is used for logging.
         Optional 'umask' will be applied.
         'writable' means that an existing folder should be writable
-        Returns ('success', 'full path')
+        Returns ('success', 'full path', 'error_msg')
     """
     if path:
         my_dir = real_path(loc, path)
         if not os.path.exists(my_dir):
             logging.info("%s directory: %s does not exist, try to create it", name, my_dir)
             if not create_all_dirs(my_dir, umask):
-                logging.error(T("Cannot create directory %s"), clip_path(my_dir))
-                return False, my_dir
+                msg = T("Cannot create directory %s") % clip_path(my_dir)
+                logging.error(msg)
+                return False, my_dir, msg
 
         checks = (os.W_OK + os.R_OK) if writable else os.R_OK
         if os.access(my_dir, checks):
-            return True, my_dir
+            return True, my_dir, None
         else:
-            logging.error(T("%s directory: %s error accessing"), name, clip_path(my_dir))
-            return False, my_dir
+            msg = T("%s directory: %s error accessing") % (name, clip_path(my_dir))
+            logging.error(msg)
+            return False, my_dir, msg
     else:
-        return False, ""
+        return False, path, None
 
 
 def same_file(a, b):
