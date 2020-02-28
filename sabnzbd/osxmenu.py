@@ -30,6 +30,7 @@ import sys
 import time
 import logging
 
+import cherrypy
 import sabnzbd
 import sabnzbd.cfg
 
@@ -47,7 +48,11 @@ import sabnzbd.downloader
 import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
 
-status_icons = {'idle': '../Resources/sab_idle.tiff', 'pause': '../Resources/sab_pause.tiff', 'clicked': '../Resources/sab_clicked.tiff'}
+status_icons = {
+    'idle': 'icons/sabnzbd_osx_idle.tiff',
+    'pause': 'icons/sabnzbd_osx_pause.tiff',
+    'clicked': 'icons/sabnzbd_osx_clicked.tiff'
+}
 start_time = NSDate.date()
 debug = 0
 
@@ -77,11 +82,15 @@ class SABnzbdDelegate(NSObject):
         # logging.info("building menu")
         status_bar = NSStatusBar.systemStatusBar()
         self.status_item = status_bar.statusItemWithLength_(NSVariableStatusItemLength)
-        for i in status_icons.keys():
-            self.icons[i] = NSImage.alloc().initByReferencingFile_(status_icons[i])
+        for icon in status_icons:
+            icon_path = status_icons[icon]
+            if getattr(sys, 'frozen', None):
+                # Path is modified for the binary
+                icon_path = os.path.join(os.path.dirname(sys.executable), '..', 'Resources', status_icons[icon])
+            self.icons[icon] = NSImage.alloc().initByReferencingFile_(icon_path)
             if sabnzbd.DARWIN_VERSION > 9:
                 # Support for Yosemite Dark Mode
-                self.icons[i].setTemplate_(YES)
+                self.icons[icon].setTemplate_(YES)
         self.status_item.setImage_(self.icons['idle'])
         self.status_item.setAlternateImage_(self.icons['clicked'])
         self.status_item.setHighlightMode_(1)
@@ -92,7 +101,7 @@ class SABnzbdDelegate(NSObject):
             NSLog("[osx] menu 1 building")
 
         # Wait for SABnzbd Initialization
-        # cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
+        cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
         # Wait for translated texts to be loaded
         while not sabnzbd.WEBUI_READY and not sabnzbd.SABSTOP:
@@ -704,8 +713,6 @@ class SABnzbdDelegate(NSObject):
 
     def openFolderAction_(self, sender):
         folder2open = sender.representedObject()
-        if isinstance(folder2open, str):
-            folder2open = folder2open.encode("utf-8")
         if debug == 1:
             NSLog("[osx] %@", folder2open)
         os.system('open "%s"' % folder2open)
@@ -760,21 +767,4 @@ class SABnzbdDelegate(NSObject):
         self.status_item.setHighlightMode_(NO)
         self.osx_icon = False
         sabnzbd.shutdown_program()
-        try:
-            notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), notifier.NOTIFICATION['other'])
-        except AttributeError:
-            # Fails for the OSX binary
-            pass
-        logging.info('Leaving SABnzbd')
-        sys.stderr.flush()
-        sys.stdout.flush()
         return NSTerminateNow
-
-
-def notify(notificationName, message):
-    """ Send a notification to the OS (OSX-only) """
-    if sabnzbd.FOUNDATION:
-        pool = Foundation.NSAutoreleasePool.alloc().init()
-        nc = Foundation.NSDistributedNotificationCenter.defaultCenter()
-        nc.postNotificationName_object_(notificationName, message)
-        del pool

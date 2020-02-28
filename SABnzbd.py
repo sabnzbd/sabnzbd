@@ -24,7 +24,6 @@ if sys.hexversion < 0x03050000:
 import logging
 import logging.handlers
 import traceback
-import os
 import getopt
 import signal
 import socket
@@ -889,10 +888,6 @@ def main():
     sabnzbd.DIR_LANGUAGE = real_path(sabnzbd.DIR_PROG, DEF_LANGUAGE)
     org_dir = os.getcwd()
 
-    if getattr(sys, 'frozen', None) == 'macosx_app':
-        # Correct path if frozen with py2app (OSX)
-        sabnzbd.MY_FULLNAME = sabnzbd.MY_FULLNAME.replace("/Resources/SABnzbd.py", "/MacOS/SABnzbd")
-
     # Need console logging for SABnzbd.py and SABnzbd-console.exe
     console_logging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find('-console') > 0)
     console_logging = console_logging and not sabnzbd.DAEMON
@@ -1172,10 +1167,6 @@ def main():
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
 
-    if not sabnzbd.WIN_SERVICE and not getattr(sys, 'frozen', None) == 'macosx_app':
-        signal.signal(signal.SIGINT, sabnzbd.sig_handler)
-        signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
-
     sabnzbd.initialize(pause, clean_up, evalSched=True, repair=repair)
 
     os.chdir(sabnzbd.DIR_PROG)
@@ -1396,9 +1387,6 @@ def main():
 
     if not autorestarted:
         launch_a_browser(browser_url)
-        if sabnzbd.FOUNDATION:
-            import sabnzbd.osxmenu
-            sabnzbd.osxmenu.notify("SAB_Launched", None)
         notifier.send_notification('SABnzbd', T('SABnzbd %s started') % sabnzbd.__version__, 'startup')
         # Now's the time to check for a new version
         check_latest_version()
@@ -1478,7 +1466,7 @@ def main():
 
             os.chdir(org_dir)
             # If OSX frozen restart of app instead of embedded python
-            if getattr(sys, 'frozen', None) == 'macosx_app':
+            if getattr(sys, 'frozen', None) and sabnzbd.DARWIN:
                 # [[NSProcessInfo processInfo] processIdentifier]]
                 # logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
                 my_pid = os.getpid()
@@ -1505,20 +1493,21 @@ def main():
         mail.send('stop')
     if sabnzbd.WIN32:
         del_connection_info()
-    if sabnzbd.FOUNDATION:
-        sabnzbd.osxmenu.notify("SAB_Shutdown", None)
+
+    # Send our final goodbyes!
+    notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), 'startup')
     logging.info('Leaving SABnzbd')
     sys.stderr.flush()
     sys.stdout.flush()
     sabnzbd.pid_file()
-    if getattr(sys, 'frozen', None) == 'macosx_app':
+
+    if getattr(sys, 'frozen', None) and sabnzbd.DARWIN:
         try:
             AppHelper.stopEventLoop()
         except:
             # Failing AppHelper libary!
             os._exit(0)
     else:
-        notifier.send_notification('SABnzbd', T('SABnzbd shutdown finished'), 'startup')
         os._exit(0)
 
 
@@ -1649,37 +1638,43 @@ if __name__ == '__main__':
         args.append(txt)
     sabnzbd.CMDLINE = ' '.join(args)
 
+    # We can only register these in the main thread
+    signal.signal(signal.SIGINT, sabnzbd.sig_handler)
+    signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
+
     if sabnzbd.WIN32:
         if not HandleCommandLine(allow_service=not hasattr(sys, "frozen")):
             main()
 
-    elif getattr(sys, 'frozen', None) == 'macosx_app':
-        try:
-            # OSX binary runner
-            from threading import Thread
-            from PyObjCTools import AppHelper
-            from sabnzbd.osxmenu import SABnzbdDelegate
+    elif sabnzbd.DARWIN and sabnzbd.FOUNDATION:
 
-            class startApp(Thread):
+        # OSX binary runner
+        from threading import Thread
+        from PyObjCTools import AppHelper
+        from AppKit import NSApplication
+        from sabnzbd.osxmenu import SABnzbdDelegate
 
-                def __init__(self):
-                    logging.info('[osx] sabApp Starting - starting main thread')
-                    Thread.__init__(self)
+        # Need to run the main application in separate thread because the eventLoop
+        # has to be in the main thread. The eventLoop is required for the menu.
+        # This code is made with trial-and-error, please improve!
+        class startApp(Thread):
+            def run(self):
+                logging.info('[osx] sabApp Starting - starting main thread')
+                main()
+                logging.info('[osx] sabApp Stopping - main thread quit ')
+                AppHelper.stopEventLoop()
 
-                def run(self):
-                    main()
-                    logging.info('[osx] sabApp Stopping - main thread quit ')
-                    AppHelper.stopEventLoop()
 
-                def stop(self):
-                    logging.info('[osx] sabApp Quit - stopping main thread ')
-                    sabnzbd.shutdown_program()
-                    logging.info('[osx] sabApp Quit - main thread stopped')
+        sabApp = startApp()
+        sabApp.start()
 
-            sabApp = startApp()
-            sabApp.start()
-            AppHelper.runEventLoop()
-        except:
-            main()
+        # Initialize the menu
+        shared_app = NSApplication.sharedApplication()
+        sabnzbd_menu = SABnzbdDelegate.alloc().init()
+        shared_app.setDelegate_(sabnzbd_menu)
+        # Build the menu
+        sabnzbd_menu.awakeFromNib()
+        # Run the main eventloop
+        AppHelper.runEventLoop()
     else:
         main()

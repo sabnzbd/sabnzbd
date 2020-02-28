@@ -477,10 +477,9 @@ def exit_sab(value):
     """ Leave the program after flushing stderr/stdout """
     sys.stderr.flush()
     sys.stdout.flush()
-    if getattr(sys, "frozen", None) == "macosx_app":
+    if getattr(sys, "frozen", None) and sabnzbd.DARWIN:
         sabnzbd.SABSTOP = True
         from PyObjCTools import AppHelper
-
         AppHelper.stopEventLoop()
     sys.exit(value)
 
