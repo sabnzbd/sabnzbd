@@ -8,6 +8,7 @@ cherrypy
 portend
 chardet
 gntp
+notify2
 
 # Optional support for *nix tray icon.
 # Note that pygobject depends on pycairo, which requires pkg-config and cairo headers.

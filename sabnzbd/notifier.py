@@ -40,17 +40,11 @@ if sabnzbd.FOUNDATION:
     import objc
 
 try:
-    import warnings
-
-    # Make any warnings exceptions, so that pynotify is ignored
-    # PyNotify will not work with Python 2.5 (due to next three lines)
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        import pynotify
+    import notify2
     _HAVE_NTFOSD = True
 
     # Check for working version, not all pynotify are the same
-    if not hasattr(pynotify, "init"):
+    if not hasattr(notify2, "init"):
         _HAVE_NTFOSD = False
 except:
     _HAVE_NTFOSD = False
@@ -89,7 +83,7 @@ def get_icon():
 
 
 def have_ntfosd():
-    """ Return if any PyNotify support is present """
+    """ Return if any PyNotify (notify2) support is present """
     return bool(_HAVE_NTFOSD)
 
 
@@ -178,12 +172,12 @@ def send_notify_osd(title, message):
         return T("Not available")  # : Function is not available on this OS
 
     error = "NotifyOSD not working"
-    icon = os.path.join(sabnzbd.DIR_PROG, "sabnzbd.ico")
-    _NTFOSD = _NTFOSD or pynotify.init("icon-summary-body")
+    icon = os.path.join(sabnzbd.DIR_PROG, 'icons', 'sabnzbd.ico')
+    _NTFOSD = _NTFOSD or notify2.init("icon-summary-body")
     if _NTFOSD:
         logging.info("Send to NotifyOSD: %s / %s", title, message)
         try:
-            note = pynotify.Notification(title, message, icon)
+            note = notify2.Notification(title, message, icon)
             note.show()
         except:
             # Apparently not implemented on this system
