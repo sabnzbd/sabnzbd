@@ -44,7 +44,6 @@ try:
     import portend
     import cryptography
     import chardet
-    import gntp
 except ValueError:
     print("Sorry, requires Python module Cheetah 3 or higher.")
     sys.exit(1)

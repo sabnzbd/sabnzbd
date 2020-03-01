@@ -7,7 +7,6 @@ configobj
 cherrypy
 portend
 chardet
-gntp
 notify2
 
 # Optional support for *nix tray icon.
