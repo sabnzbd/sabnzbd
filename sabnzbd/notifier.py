@@ -44,7 +44,8 @@ try:
     _HAVE_NTFOSD = True
 
     # Check for working version, not all pynotify are the same
-    if not hasattr(notify2, "init"):
+    # Without DISPLAY, notify2 cannot autolaunch a dbus-daemon
+    if not hasattr(notify2, "init") or "DISPLAY" not in os.environ:
         _HAVE_NTFOSD = False
 except:
     _HAVE_NTFOSD = False
