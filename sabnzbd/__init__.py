@@ -825,18 +825,22 @@ def keep_awake():
     """ If we still have work to do, keep Windows/OSX system awake """
     if KERNEL32 or FOUNDATION:
         if sabnzbd.cfg.keep_awake():
-            awake = False
+            ES_CONTINUOUS = 0x80000000
+            ES_SYSTEM_REQUIRED = 0x00000001
             if (not Downloader.do.is_paused() and not NzbQueue.do.is_empty()) or (
                 not PostProcessor.do.paused and not PostProcessor.do.empty()
             ):
-                awake = True
                 if KERNEL32:
-                    # set ES_SYSTEM_REQUIRED
-                    KERNEL32.SetThreadExecutionState(ctypes.c_int(0x00000001))
+                    # Set ES_SYSTEM_REQUIRED until the next call
+                    KERNEL32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
                 else:
                     sleepless.keep_awake("SABnzbd is busy downloading and/or post-processing")
-            if not awake and FOUNDATION:
-                sleepless.allow_sleep()
+            else:
+                if KERNEL32:
+                    # Allow the regular state again
+                    KERNEL32.SetThreadExecutionState(ES_CONTINUOUS)
+                else:
+                    sleepless.allow_sleep()
 
 
 ################################################################################
