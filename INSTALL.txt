@@ -77,7 +77,7 @@ Optional modules
                             Enables certificate generation and detection of encrypted RAR-files
 
 Optional modules Linux
-    pynotify                Should be part of GTK for Python support on Debian/Ubuntu
+    notify2                 Should be part of GTK for Python support on Debian/Ubuntu
                             If not, you cannot use the NotifyOSD feature.
     python-dbus             Enable option to Shutdown/Restart/Standby PC on queue finish.
 
