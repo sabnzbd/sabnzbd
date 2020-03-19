@@ -108,6 +108,8 @@ LINUX_POWER = powersup.HAVE_DBUS
 
 START = datetime.datetime.now()
 
+IN_DOCKER = None
+
 MY_NAME = None
 MY_FULLNAME = None
 RESTART_ARGS = []
@@ -1154,3 +1156,14 @@ def history_updated():
     # Never go over the limit
     if sabnzbd.LAST_HISTORY_UPDATE + 1 >= sys.maxsize:
         sabnzbd.LAST_HISTORY_UPDATE = 1
+
+
+def in_docker():
+    """ Returns: True if running in a Docker container, else False """
+    try:
+        with open('/proc/1/cgroup', 'rt') as ifh:
+            return ':/docker/' in ifh.read()
+    except:
+        # probably not on Linux at all, so not Docker
+        return False
+
