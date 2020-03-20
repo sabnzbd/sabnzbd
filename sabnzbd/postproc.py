@@ -891,9 +891,8 @@ def rar_renamer(nzo, workdir):
         if 0 < rar_vol < 1000:
             logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
             volnrext[file_to_check] = (rar_vol, new_extension)
-            rar_contents = rarfile.RarFile(
-                os.path.join(workdir, file_to_check), all_names=True
-            ).filelist()  # the files inside rar file
+            # The files inside rar file
+            rar_contents = rarfile.RarFile(os.path.join(workdir, file_to_check), all_names=True).filelist()
             try:
                 rarvolnr[rar_vol]
             except:
@@ -905,6 +904,10 @@ def rar_renamer(nzo, workdir):
 
     logging.debug("Deobfuscate: rarvolnr is: %s", rarvolnr)
     logging.debug("Deobfuscate: volnrext is: %s", volnrext)
+
+    # Could be that there are no rar-files, we stop
+    if not len(rarvolnr):
+        return renamed_files
 
     # Check number of different obfuscated rar sets:
     numberofrarsets = len(rarvolnr[1])
@@ -918,7 +921,6 @@ def rar_renamer(nzo, workdir):
             logging.debug("Deobfuscate: Renaming %s to %s" % (filename, new_rar_name))
             renamer(filename, new_rar_name)
             renamed_files += 1
-
     else:
         # More than one obfuscated rarset, so we must do matching based of files inside the rar files
         logging.debug("Number of obfuscated rarsets: %s", numberofrarsets)
@@ -936,7 +938,6 @@ def rar_renamer(nzo, workdir):
         # So, all rar files with rarvolnr 1, find the contents (files inside the rar),
         # and match with rarfiles with rarvolnr 2, and put them in the correct rarset.
         # And so on, until the highest rarvolnr minus 1 matched against highest rarvolnr
-
         for n in range(1, len(rarvolnr.keys())):
             logging.debug("Deobfuscate: Finding matches between rar sets %s and %s" % (n, n + 1))
             for base_obfuscated_filename in rarvolnr[n]:
