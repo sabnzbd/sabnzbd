@@ -65,6 +65,7 @@ script:
         sabnzbd/getipaddress.py
         sabnzbd/filesystem.py
         sabnzbd/dirscanner.py
+        sabnzbd/postproc.py
         sabnzbd/misc.py
         sabnzbd/lang.py
         sabnzbd/nzbparser.py
