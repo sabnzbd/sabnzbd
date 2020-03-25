@@ -36,7 +36,7 @@ from threading import Lock, Thread
 ##############################################################################
 # Determine platform flags
 ##############################################################################
-WIN32 = DARWIN = FOUNDATION = WIN64 = False
+WIN32 = DARWIN = FOUNDATION = WIN64 = DOCKER = False
 KERNEL32 = None
 
 if os.name == "nt":
@@ -52,8 +52,15 @@ if os.name == "nt":
 elif os.name == "posix":
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
-    import platform
 
+    # Check if running in a Docker container
+    try:
+        with open('/proc/1/cgroup', 'rt') as ifh:
+            DOCKER = ':/docker/' in ifh.read()
+    except:
+        pass
+
+    import platform
     if platform.system().lower() == "darwin":
         DARWIN = True
         # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
@@ -1154,13 +1161,4 @@ def history_updated():
     # Never go over the limit
     if sabnzbd.LAST_HISTORY_UPDATE + 1 >= sys.maxsize:
         sabnzbd.LAST_HISTORY_UPDATE = 1
-
-def in_docker():
-    """ Returns: True if running in a Docker container, else False """
-    try:
-        with open('/proc/1/cgroup', 'rt') as ifh:
-            return ':/docker/' in ifh.read()
-    except:
-        # probably not on Linux at all, so not Docker
-        return False
 
