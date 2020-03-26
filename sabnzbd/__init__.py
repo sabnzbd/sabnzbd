@@ -55,12 +55,13 @@ elif os.name == "posix":
 
     # Check if running in a Docker container
     try:
-        with open('/proc/1/cgroup', 'rt') as ifh:
-            DOCKER = ':/docker/' in ifh.read()
+        with open("/proc/1/cgroup", "rt") as ifh:
+            DOCKER = ":/docker/" in ifh.read()
     except:
         pass
 
     import platform
+
     if platform.system().lower() == "darwin":
         DARWIN = True
         # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
@@ -1161,4 +1162,3 @@ def history_updated():
     # Never go over the limit
     if sabnzbd.LAST_HISTORY_UPDATE + 1 >= sys.maxsize:
         sabnzbd.LAST_HISTORY_UPDATE = 1
-
