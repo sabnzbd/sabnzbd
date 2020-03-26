@@ -36,7 +36,7 @@ from threading import Lock, Thread
 ##############################################################################
 # Determine platform flags
 ##############################################################################
-WIN32 = DARWIN = FOUNDATION = WIN64 = False
+WIN32 = DARWIN = FOUNDATION = WIN64 = DOCKER = False
 KERNEL32 = None
 
 if os.name == "nt":
@@ -52,6 +52,14 @@ if os.name == "nt":
 elif os.name == "posix":
     ORG_UMASK = os.umask(18)
     os.umask(ORG_UMASK)
+
+    # Check if running in a Docker container
+    try:
+        with open("/proc/1/cgroup", "rt") as ifh:
+            DOCKER = ":/docker/" in ifh.read()
+    except:
+        pass
+
     import platform
 
     if platform.system().lower() == "darwin":

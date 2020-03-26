@@ -1107,6 +1107,10 @@ def main():
         logging.info('Platform = %s', os.name)
     logging.info('Python-version = %s', sys.version)
     logging.info('Arguments = %s', sabnzbd.CMDLINE)
+    if sabnzbd.DOCKER:
+        logging.info("Running inside a docker container")
+    else:
+        logging.info("Not inside a docker container")
 
     # Find encoding; relevant for external processing activities
     logging.info('Preferred encoding = %s', sabnzbd.encoding.CODEPAGE)
