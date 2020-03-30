@@ -37,7 +37,8 @@ def isFAT(check_dir):
                     fstype = thisline.split()[1]
                     if debug:
                         print(("File system type:", fstype))
-                    if fstype.lower().find("fat") >= 0:
+                    if fstype.lower().find("fat") >= 0 and fstype.lower().find("exfat") < 0:
+                        # FAT, but not EXFAT
                         FAT = True
                         if debug:
                             print("FAT found")
