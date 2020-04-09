@@ -146,7 +146,7 @@ class Decoder(Thread):
                     # Handles precheck and badly formed articles
                     killed = False
                     found = False
-                    if nzo.precheck and raw_data and raw_data.startswith(b'223 '):
+                    if nzo.precheck and raw_data and raw_data[0].startswith(b'223 '):
                         # STAT was used, so we only get a status code
                         found = True
                     else:
