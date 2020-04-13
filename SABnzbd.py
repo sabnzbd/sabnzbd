@@ -1230,7 +1230,7 @@ def main():
             trialcontext.load_cert_chain(https_cert, https_key)
             logging.info("HTTPS keys are OK")
         except:
-            logging.warning(T('Disabled HTTPS because of invalid CERT and KEY files'))
+            logging.warning(T('Disabled HTTPS because of invalid CERT and KEY files: %s'), sys.exc_info()[0:2])
             enable_https = False
 
     # Starting of the webserver
