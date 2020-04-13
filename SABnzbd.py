@@ -1223,6 +1223,18 @@ def main():
         if not (os.path.exists(https_cert) and os.path.exists(https_key)):
             logging.warning(T('Disabled HTTPS because of missing CERT and KEY files'))
             enable_https = False
+            sabnzbd.cfg.enable_https.set(False)
+
+        # So the cert and key files do exist, now let's check if they are valid:
+        trialcontext = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        try:
+            trialcontext.load_cert_chain(https_cert, https_key)
+            logging.info("HTTPS keys are OK")
+        except:
+            logging.warning(T('Disabled HTTPS because of invalid CERT and KEY files'))
+            logging.info("Traceback: ", exc_info=True)
+            enable_https = False
+            sabnzbd.cfg.enable_https.set(False)
 
     # Starting of the webserver
     # Determine if this system has multiple definitions for 'localhost'
