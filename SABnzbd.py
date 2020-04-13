@@ -1224,6 +1224,15 @@ def main():
             logging.warning(T('Disabled HTTPS because of missing CERT and KEY files'))
             enable_https = False
 
+        # So the cert and key files do exist, now let's check if they are valid:
+        trialcontext = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        try:
+            trialcontext.load_cert_chain(https_cert, https_key)
+            logging.info("HTTPS keys are OK")
+        except:
+            logging.warning(T('Disabled HTTPS because of invalid CERT and KEY files'))
+            enable_https = False
+
     # Starting of the webserver
     # Determine if this system has multiple definitions for 'localhost'
     hosts = all_localhosts()
