@@ -17,7 +17,7 @@ If you want to know more you can head over to our website: https://sabnzbd.org.
 
 SABnzbd has a good deal of dependencies you'll need before you can get running. If you've previously run SABnzbd from one of the various Linux packages, then you likely already have all the needed dependencies. If not, here's what you're looking for:
 
-- `python` (only 2.7.x and higher, but not 3.x.x)
+- `python` (SABnzbd version 2: only python 2.7.x. SABnzbd version 3: python 3.5.x and higher, often called python3)
 - `python-cheetah`
 - `par2` (Multi-threaded par2 installation guide can be found [here](https://sabnzbd.org/wiki/installation/multicore-par2))
 - `unrar` (Make sure you get the "official" non-free version of unrar)
