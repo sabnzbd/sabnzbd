@@ -50,7 +50,7 @@ def do_socket_connect(queue, ip, PORT, SSL, ipv4delay):
             s.close()
         else:
             # WRAP SOCKET
-            wrappedSocket = ssl.wrap_socket(s, ssl_version=ssl.PROTOCOL_TLSv1)
+            wrappedSocket = ssl.wrap_socket(s)
             # CONNECT
             wrappedSocket.connect((ip, PORT))
             # CLOSE SOCKET CONNECTION
