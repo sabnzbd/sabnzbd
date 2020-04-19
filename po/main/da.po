@@ -6,15 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-01-24 15:29+0100\n"
+"POT-Creation-Date: 2020-02-26 13:46+0100\n"
 "PO-Revision-Date: 2019-01-26 09:26+0000\n"
 "Last-Translator: B.E. <Unknown>\n"
 "Language-Team: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-22 06:02+0000\n"
-"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:21+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 "Language: da\n"
 
 #: SABnzbd.py [Error message]
@@ -25,14 +25,14 @@ msgstr "Kunne ikke starte web-interface"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Kan ikke finde webskabeloner: %s, forsøger med standardskabelon"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 "SABYenc deaktiveret: Der blev ikke fundet nogen korrekt version (Fandt v%s, "
 "forventede v%s)"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -42,15 +42,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 binær... IKKE fundet!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr "MultiPar binær... IKKE fundet!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr "Verificering og reparation er ikke muligt."
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Din Unrar version er %s, vi anbefaler version %s eller højere.<br />"
 
@@ -82,7 +82,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP og HTTPS porte kan ikke være de samme"
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -117,65 +117,6 @@ msgstr "Fejl"
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd lukning udført"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Værtsnavnet er ikke indstillet."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Der er ingen forbindelser angivet. Angiv mindst én forbindelse."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Adgangskode maskeret med ******, forsøg igen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ugyldige serverdetaljer"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Timeout: Forsøg at aktivere SSL eller tilslut via en anden port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Timeout"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Ukendt SSL protokol: Prøv at deaktivere SSL eller forbinder på en anden port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ugyldig server adresse."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Server afslut under login-sekvens."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Serveren kræver brugernavn og adgangskode."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Tilslutning lykkedes!"
-
-#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
-msgid "Authentication failed, check username/password."
-msgstr "Godkendelse mislykkedes, kontrollere brugernavn/adgangskode."
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Alt for mange forbindelser, pause en download eller forsøg igen senere"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Det lykkedes ikke at tilslutte (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -412,6 +353,10 @@ msgstr "Dekoder fejl: Ikke mere hukommelse"
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
 msgstr "Forkert udformet yEnc artikel i %s"
+
+#: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr ""
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -661,6 +606,10 @@ msgstr ""
 "Prøv vores nye hud Glitter! Frisk nyt design, der er optimeret til "
 "stationære og mobile enheder. Gå til Konfiguration -> Generelt for at ændre "
 "din hud."
+
+#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
+msgid "Authentication failed, check username/password."
+msgstr "Godkendelse mislykkedes, kontrollere brugernavn/adgangskode."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1070,6 +1019,10 @@ msgstr "Andre beskeder"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ikke tilgængelig"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
+msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1579,7 +1532,7 @@ msgstr "Fejl ved lukning af system"
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Indexer id (%s) ikke fundet for ratings fil"
 
-#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+#: sabnzbd/rating.py
 msgid "Server address"
 msgstr "Serveradresse"
 
@@ -3825,26 +3778,6 @@ msgstr "Adgangskode for e-mail som kræver godkendelse."
 msgid "Notification Sent!"
 msgstr "Notifikation sendt!"
 
-#: sabnzbd/skintext.py [Header Growl section]
-msgid "Growl"
-msgstr "Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Enable Growl"
-msgstr "Aktiver Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Only use for remote Growl server (host:port)"
-msgstr "Bruges kun ved Growl fjern server (vært: port)"
-
-#: sabnzbd/skintext.py [Growl server password]
-msgid "Server password"
-msgstr "Serveradgangskode"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Optional password for Growl server"
-msgstr "Valgfri adgangskode til Growl server"
-
 #: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "Aktiver NotifyOSD"
@@ -4823,6 +4756,61 @@ msgstr "Fejl, Ubrugelig arkivfil"
 msgid "URL Fetching failed; %s"
 msgstr "URL hentning mislykkedes; %s"
 
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Værtsnavnet er ikke indstillet."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Der er ingen forbindelser angivet. Angiv mindst én forbindelse."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Adgangskode maskeret med ******, forsøg igen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Ugyldige serverdetaljer"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Timeout: Forsøg at aktivere SSL eller tilslut via en anden port."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Timeout"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Ukendt SSL protokol: Prøv at deaktivere SSL eller forbinder på en anden port."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ugyldig server adresse."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Server afslut under login-sekvens."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Serveren kræver brugernavn og adgangskode."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Tilslutning lykkedes!"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Alt for mange forbindelser, pause en download eller forsøg igen senere"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Det lykkedes ikke at tilslutte (%s)"
+
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "_yenc modul... IKKE fundet!"
 
@@ -5370,8 +5358,17 @@ msgstr "URL hentning mislykkedes; %s"
 #~ msgid "Join files ending in .001.ts, .002.ts etc. into one file."
 #~ msgstr "Sammenføjer filer, der ender med, 001.ts, .002.ts osv. til en fil."
 
+#~ msgid "Only use for remote Growl server (host:port)"
+#~ msgstr "Bruges kun ved Growl fjern server (vært: port)"
+
 #~ msgid "Send notifications to Growl"
 #~ msgstr "Send meddelelser til Growl"
+
+#~ msgid "Enable Growl"
+#~ msgstr "Aktiver Growl"
+
+#~ msgid "Optional password for Growl server"
+#~ msgstr "Valgfri adgangskode til Growl server"
 
 #~ msgid "Send notifications to NotifyOSD"
 #~ msgstr "Send meddelelser til NotifyOSD"
@@ -5472,3 +5469,6 @@ msgstr "URL hentning mislykkedes; %s"
 
 #~ msgid "Unpacking failed, see log"
 #~ msgstr "Udpakning mislykkedes, se log"
+
+#~ msgid "Server password"
+#~ msgstr "Serveradgangskode"

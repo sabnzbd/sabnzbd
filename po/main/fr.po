@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-01-24 15:29+0100\n"
-"PO-Revision-Date: 2020-02-21 19:51+0000\n"
+"POT-Creation-Date: 2020-02-26 13:46+0100\n"
+"PO-Revision-Date: 2020-03-10 10:40+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-22 06:02+0000\n"
-"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
+"X-Launchpad-Export-Date: 2020-03-11 06:02+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -27,14 +27,14 @@ msgstr ""
 "Impossible de trouver le template de l'interface web : %s, nouvelle "
 "tentative avec le template standard"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 "SABYenc désactivé: aucune version correcte n'a été trouvée ! (v%s trouvée, "
 "v%s attendue)"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -44,15 +44,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "binaire par2... Introuvable!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr "Fichier binaire MultiPar... NON trouvé !"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr "La vérification et la réparation ne seront pas possibles."
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Votre version de UNRAR est %s, nous recommandons la version %s ou plus.<br />"
@@ -86,7 +86,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Les ports HTTP et HTTPS ne peuvent pas être identiques"
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -122,70 +122,6 @@ msgstr "Erreur"
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "Arrêt de SABnzbd terminé"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Le nom d'hôte n'est pas défini."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Aucune connexion n'est configurée. Veuillez définir au moins une connexion."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Mot de passe masqué en ******, veuillez le ressaisir."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Paramètres serveur incorrects"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Délai dépassé : essayez d'activer SSL ou de vous connecter sur un port "
-"différent."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Délai dépassé"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Protocole SSL inconnu: essayez de désactiver SSL ou de vous connecter sur un "
-"autre port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Adresse du serveur erronée"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Le serveur a interrompu l'ouverture de session."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Le serveur requiert un identifiant et un mot de passe."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Connexion réussie!"
-
-#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
-msgid "Authentication failed, check username/password."
-msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Trop de connexions, veuillez mettre en pause le téléchargement ou essayer "
-"plus tard"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Impossible de déterminer le résultat de la connexion (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -431,6 +367,10 @@ msgstr "Échec du décodeur : mémoire insuffisante"
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
 msgstr "Article yEnc mal construit dans %s"
+
+#: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr "UUencode détecté, seul l'encodage yEnc est pris en charge [%s]"
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -686,6 +626,10 @@ msgstr ""
 "Essayez notre nouveau thème Glitter ! Nouveau design optimisé pour les "
 "ordinateurs et les appareils mobiles. Aller dans Config - > Général pour "
 "changer le thème."
+
+#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
+msgid "Authentication failed, check username/password."
+msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1111,6 +1055,10 @@ msgstr "Autres messages"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Non disponible"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
+msgstr "Échec de l'envoi de la notification macOS"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1637,7 +1585,7 @@ msgstr "Erreur lors de l'arrêt du système"
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "id de l'Indexer (%s) non trouvé pour le fichier des classements"
 
-#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+#: sabnzbd/rating.py
 msgid "Server address"
 msgstr "Adresse du serveur"
 
@@ -3948,26 +3896,6 @@ msgstr "Mot de passe du compte pour les envois authentifiés."
 msgid "Notification Sent!"
 msgstr "Notification envoyée !"
 
-#: sabnzbd/skintext.py [Header Growl section]
-msgid "Growl"
-msgstr "Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Enable Growl"
-msgstr "Activer Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Only use for remote Growl server (host:port)"
-msgstr "Utiliser seulement pour le serveur Growl à distance (hôte:port)"
-
-#: sabnzbd/skintext.py [Growl server password]
-msgid "Server password"
-msgstr "Mot de passe du serveur"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Optional password for Growl server"
-msgstr "Mot de passe optionnel pour le serveur Growl"
-
 #: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "Activer NotifyOSD"
@@ -4959,6 +4887,66 @@ msgstr "Fichier NZB inutilisable"
 msgid "URL Fetching failed; %s"
 msgstr "Échec de récupération de l'URL ; %s"
 
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Le nom d'hôte n'est pas défini."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Aucune connexion n'est configurée. Veuillez définir au moins une connexion."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Mot de passe masqué en ******, veuillez le ressaisir."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Paramètres serveur incorrects"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Délai dépassé : essayez d'activer SSL ou de vous connecter sur un port "
+"différent."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Délai dépassé"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Protocole SSL inconnu: essayez de désactiver SSL ou de vous connecter sur un "
+"autre port."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Adresse du serveur erronée"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Le serveur a interrompu l'ouverture de session."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Le serveur requiert un identifiant et un mot de passe."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Connexion réussie!"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Trop de connexions, veuillez mettre en pause le téléchargement ou essayer "
+"plus tard"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Impossible de déterminer le résultat de la connexion (%s)"
+
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "Erreur CRC dans %s (%s -> %s)"
 
@@ -5371,6 +5359,12 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "Check result of unpacking"
 #~ msgstr "Vérifier le résultat de l'extraction"
 
+#~ msgid "Enable Growl"
+#~ msgstr "Activer Growl"
+
+#~ msgid "Server password"
+#~ msgstr "Mot de passe du serveur"
+
 #~ msgid "Only for optional servers"
 #~ msgstr "Uniquement pour les serveurs optionnels"
 
@@ -5593,8 +5587,14 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "Skip"
 #~ msgstr "Ignorer"
 
+#~ msgid "Only use for remote Growl server (host:port)"
+#~ msgstr "Utiliser seulement pour le serveur Growl à distance (hôte:port)"
+
 #~ msgid "Send notifications to Growl"
 #~ msgstr "Envoie les notifications à Growl"
+
+#~ msgid "Optional password for Growl server"
+#~ msgstr "Mot de passe optionnel pour le serveur Growl"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "balises Groupes / Indexeur"

@@ -7,23 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:01+0000\n"
+"POT-Creation-Date: 2020-02-28 15:30+0000\n"
 "PO-Revision-Date: 2017-03-21 08:58+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:49+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Afficher les notes de version"
-
-#: NSIS_Installer.nsi
-msgid "Start SABnzbd"
-msgstr "Démarrer SABnzbd"
 
 #: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
@@ -68,26 +64,6 @@ msgstr "Supprimer les paramètres"
 
 #: NSIS_Installer.nsi
 msgid ""
-"This system requires the Microsoft runtime library VC90 to be installed "
-"first. Do you want to do that now?"
-msgstr ""
-"Ce système nécessite que la bibliothèque d'exécution Microsoft vc90 soit "
-"installée en premier. Voulez-vous le faire maintenant?"
-
-#: NSIS_Installer.nsi
-msgid "Downloading Microsoft runtime installer..."
-msgstr "Téléchargement de Microsoft runtime installer..."
-
-#: NSIS_Installer.nsi
-msgid "Download error, retry?"
-msgstr "Erreur de téléchargement, réessayer ?"
-
-#: NSIS_Installer.nsi
-msgid "Cannot install without runtime library, retry?"
-msgstr "Impossible d'installer sans moteur d'exécution, réessayer?"
-
-#: NSIS_Installer.nsi
-msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
@@ -100,6 +76,13 @@ msgid "Your settings and data will be preserved."
 msgstr "Vos paramètres et données seront conservés."
 
 #~ msgid ""
+#~ "This system requires the Microsoft runtime library VC90 to be installed "
+#~ "first. Do you want to do that now?"
+#~ msgstr ""
+#~ "Ce système nécessite que la bibliothèque d'exécution Microsoft vc90 soit "
+#~ "installée en premier. Voulez-vous le faire maintenant?"
+
+#~ msgid ""
 #~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
 #~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
 #~ msgstr ""
@@ -109,3 +92,12 @@ msgstr "Vos paramètres et données seront conservés."
 
 #~ msgid "Go to the SABnzbd Wiki"
 #~ msgstr "Aller sur le Wiki de SABnzbd"
+
+#~ msgid "Download error, retry?"
+#~ msgstr "Erreur de téléchargement, réessayer ?"
+
+#~ msgid "Cannot install without runtime library, retry?"
+#~ msgstr "Impossible d'installer sans moteur d'exécution, réessayer?"
+
+#~ msgid "Downloading Microsoft runtime installer..."
+#~ msgstr "Téléchargement de Microsoft runtime installer..."

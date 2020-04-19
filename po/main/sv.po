@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-01-24 15:29+0100\n"
+"POT-Creation-Date: 2020-02-26 13:46+0100\n"
 "PO-Revision-Date: 2018-02-14 14:19+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-22 06:03+0000\n"
-"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,12 +25,12 @@ msgstr "Det gick inte att starta webbgränssnittet"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Hittar inte webbmall: %s, försöker med standardmall"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -39,15 +39,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 binär... EJ funnen!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Din UNRAR version är %s, vi rekommenderar version %s eller högre.<br />"
@@ -79,7 +79,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP och HTTPS portar kan inte vara likadana"
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -112,65 +112,6 @@ msgstr "Fel"
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd nedstängning utförd."
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Adressen är inte angiven."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Inga anslutningar är aktiverade. Var vänlig aktivera minst en anslutning."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Lösenordet är dolt med ******, försök igen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ogiltiga serverdetaljer"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Timeout: Försök aktivera SSL eller anslut via en annan port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Timeout"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ogiltig serveradress"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Servern avslutades under inloggning"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Servern kräver användarnamn och lösenord."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Anslutning lyckades!"
-
-#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
-msgid "Authentication failed, check username/password."
-msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"För många anslutningar, pausa en nedladdning eller försök igen senare"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Det gick inte att ansluta (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -403,6 +344,10 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
 msgstr "Felaktigt utformad yEnc artikel i %s"
+
+#: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr ""
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -651,6 +596,10 @@ msgstr ""
 "Testa vårat nya tema Glitter! Ny fräsch design som är optimerad för "
 "stationära och mobila enheter. Gå till Inställningar -> Allmänt för att byta "
 "tema."
+
+#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
+msgid "Authentication failed, check username/password."
+msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1059,6 +1008,10 @@ msgstr "Andra meddelanden"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ej tillgänglig"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
+msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1573,7 +1526,7 @@ msgstr "Fel uppstod då systemet skulle stängas"
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Index id (%s) inte hittad för betygsfil"
 
-#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+#: sabnzbd/rating.py
 msgid "Server address"
 msgstr "Serveradress"
 
@@ -3799,26 +3752,6 @@ msgstr "Lösenord för e-post som kräver autentisering."
 msgid "Notification Sent!"
 msgstr "Notis skickad!"
 
-#: sabnzbd/skintext.py [Header Growl section]
-msgid "Growl"
-msgstr "Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Enable Growl"
-msgstr "Aktivera Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Only use for remote Growl server (host:port)"
-msgstr "Använd endast för extern Growl.server (host:port)"
-
-#: sabnzbd/skintext.py [Growl server password]
-msgid "Server password"
-msgstr "Serverlösenord"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Optional password for Growl server"
-msgstr "Valfritt lösenord för Growl-server"
-
 #: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "Aktivera NotifyOSD"
@@ -4793,6 +4726,61 @@ msgstr "Oanvändbar NZB fil"
 msgid "URL Fetching failed; %s"
 msgstr "URL hämtning misslyckades; %s"
 
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Adressen är inte angiven."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Inga anslutningar är aktiverade. Var vänlig aktivera minst en anslutning."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Lösenordet är dolt med ******, försök igen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Ogiltiga serverdetaljer"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Timeout: Försök aktivera SSL eller anslut via en annan port."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Timeout"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ogiltig serveradress"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Servern avslutades under inloggning"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Servern kräver användarnamn och lösenord."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Anslutning lyckades!"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"För många anslutningar, pausa en nedladdning eller försök igen senare"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Det gick inte att ansluta (%s)"
+
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "_yenc modul... EJ funnen!"
 
@@ -5363,11 +5351,23 @@ msgstr "URL hämtning misslyckades; %s"
 #~ msgid "Send notifications to Growl"
 #~ msgstr "Skicka notis till Growl"
 
+#~ msgid "Enable Growl"
+#~ msgstr "Aktivera Growl"
+
+#~ msgid "Optional password for Growl server"
+#~ msgstr "Valfritt lösenord för Growl-server"
+
 #~ msgid "Send notifications to NotifyOSD"
 #~ msgstr "Skicka notiser till NotifyOSD"
 
 #~ msgid "Send notifications to Notification Center"
 #~ msgstr "Skicka notiser till Meddelandecenter"
+
+#~ msgid "Only use for remote Growl server (host:port)"
+#~ msgstr "Använd endast för extern Growl.server (host:port)"
+
+#~ msgid "Server password"
+#~ msgstr "Serverlösenord"
 
 #~ msgid "Groups / Indexer tags"
 #~ msgstr "Grupper/Indexering-tagg"

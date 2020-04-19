@@ -7,23 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:01+0000\n"
+"POT-Creation-Date: 2020-02-28 15:30+0000\n"
 "PO-Revision-Date: 2018-11-27 23:30+0000\n"
 "Last-Translator: scootergrisen <scootergrisen@gmail.com>\n"
 "Language-Team: Danish <da@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:49+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Vis udgivelsesbemærkninger"
-
-#: NSIS_Installer.nsi
-msgid "Start SABnzbd"
-msgstr "Start SABnzbd"
 
 #: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
@@ -67,26 +63,6 @@ msgstr "Slet indstillinger"
 
 #: NSIS_Installer.nsi
 msgid ""
-"This system requires the Microsoft runtime library VC90 to be installed "
-"first. Do you want to do that now?"
-msgstr ""
-"Systemet kræver at Microsoft runtime-biblioteket VC90 skal installeres "
-"først. Vil du gøre det nu?"
-
-#: NSIS_Installer.nsi
-msgid "Downloading Microsoft runtime installer..."
-msgstr "Downloader Microsoft runtime-installationsfil..."
-
-#: NSIS_Installer.nsi
-msgid "Download error, retry?"
-msgstr "Fejl ved download, prøv igen?"
-
-#: NSIS_Installer.nsi
-msgid "Cannot install without runtime library, retry?"
-msgstr "Kan ikke installere uden runtime-bibliotek, prøv igen?"
-
-#: NSIS_Installer.nsi
-msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
@@ -107,3 +83,19 @@ msgstr "Dine indstillinger og data vil blive bevaret."
 #~ "                  >>>> ADVARSEL <<<<\\r\\n\\r\\nVenligst, se først "
 #~ "produktbemærkningerne eller gå til http://wiki.sabnzbd.org/introducing-0-7-0 "
 #~ "!"
+
+#~ msgid ""
+#~ "This system requires the Microsoft runtime library VC90 to be installed "
+#~ "first. Do you want to do that now?"
+#~ msgstr ""
+#~ "Systemet kræver at Microsoft runtime-biblioteket VC90 skal installeres "
+#~ "først. Vil du gøre det nu?"
+
+#~ msgid "Cannot install without runtime library, retry?"
+#~ msgstr "Kan ikke installere uden runtime-bibliotek, prøv igen?"
+
+#~ msgid "Download error, retry?"
+#~ msgstr "Fejl ved download, prøv igen?"
+
+#~ msgid "Downloading Microsoft runtime installer..."
+#~ msgstr "Downloader Microsoft runtime-installationsfil..."

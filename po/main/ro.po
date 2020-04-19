@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-01-24 15:29+0100\n"
+"POT-Creation-Date: 2020-02-26 13:46+0100\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-22 06:03+0000\n"
-"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,12 +25,12 @@ msgstr "Pornirea interfeţei-web nereuşită"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Nu se poate găsi şablon web:%s, se încearcă şablon standard"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -39,15 +39,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "binar par2 ... Negăsit!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Versiunea ta de UNRAR este %s,  noi recomandăm versiunea %s sau mai mare.<br "
@@ -81,7 +81,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Porturile HTTP și HTTPS nu pot fi aceleași"
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -114,68 +114,6 @@ msgstr "Eroare"
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "Închidere SABnzbd terminată"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Numele gazdei nu este setat."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Nu sunt conexiuni stabilite. Vă rugăm să stabiliţi cel puţin o conexiune."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Parolă ascunsă în ******, Vă rugăm să re-introduceţi"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Detalii server invalide"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"A depăşit timpul alocat : Încercaţi să activaţi SSL sau conectarea pe un "
-"port diferit."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "A depăşit timpul alocat"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Adresă server invalidă"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Serverul a renunţat în timpul logării."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Serverul necesită nume utilizator şi parolă"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Conexiune Reuşită!"
-
-#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
-msgid "Authentication failed, check username/password."
-msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
-"din nou mai târziu"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nu pot determina reultatul conexiunii (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -409,6 +347,10 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
 msgstr "Articoul yEnc invalid în %s"
+
+#: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr ""
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -658,6 +600,10 @@ msgstr ""
 "Încearcă noua noastră interfață Glitter! Un design nou și optimizat pentru "
 "modul desktop  și  dispozitive mobile . Dute în Configurare -> General și "
 "modifică tipul de interfață."
+
+#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
+msgid "Authentication failed, check username/password."
+msgstr "Autentificare nereuşită, verifică nume utilizator/parolă."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1065,6 +1011,10 @@ msgstr "Alte Mesaje"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Indisponibil"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
+msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1582,7 +1532,7 @@ msgstr "Eroare la oprirea sistemului"
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Id-ul indexului (%s) nu a fost găsit pentru fișierul de rating"
 
-#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+#: sabnzbd/rating.py
 msgid "Server address"
 msgstr "Adresă server"
 
@@ -3817,26 +3767,6 @@ msgstr "Pentru email autentificat, parola."
 msgid "Notification Sent!"
 msgstr "Notificare Trimisă!"
 
-#: sabnzbd/skintext.py [Header Growl section]
-msgid "Growl"
-msgstr "Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Enable Growl"
-msgstr "Activează Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Only use for remote Growl server (host:port)"
-msgstr "Foloseşte doar pentru server Growl de la distanţă (gazdă:port)"
-
-#: sabnzbd/skintext.py [Growl server password]
-msgid "Server password"
-msgstr "Parolă server"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Optional password for Growl server"
-msgstr "Parolă opţională server Growl"
-
 #: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "Activează NotifyOSD"
@@ -4811,6 +4741,64 @@ msgstr "Fişier NZB Inutilizabil"
 msgid "URL Fetching failed; %s"
 msgstr "Descărcare URL nereuşită; %s"
 
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Numele gazdei nu este setat."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Nu sunt conexiuni stabilite. Vă rugăm să stabiliţi cel puţin o conexiune."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Parolă ascunsă în ******, Vă rugăm să re-introduceţi"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Detalii server invalide"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"A depăşit timpul alocat : Încercaţi să activaţi SSL sau conectarea pe un "
+"port diferit."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "A depăşit timpul alocat"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Adresă server invalidă"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Serverul a renunţat în timpul logării."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Serverul necesită nume utilizator şi parolă"
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Conexiune Reuşită!"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Prea multe conexiuni, vă rugăm să întrerupeţi descărcarea sau să încercaţi "
+"din nou mai târziu"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nu pot determina reultatul conexiunii (%s)"
+
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "modulul _yenc ... Negăsit!"
 
@@ -5406,11 +5394,23 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ "Verifică rezultatul dezarhivării ( trebuie să fie dezactivat pentru unele "
 #~ "sisteme de fișiere )"
 
+#~ msgid "Only use for remote Growl server (host:port)"
+#~ msgstr "Foloseşte doar pentru server Growl de la distanţă (gazdă:port)"
+
 #~ msgid "Send notifications to Growl"
 #~ msgstr "Trimite notificări Growl"
 
+#~ msgid "Enable Growl"
+#~ msgstr "Activează Growl"
+
+#~ msgid "Optional password for Growl server"
+#~ msgstr "Parolă opţională server Growl"
+
 #~ msgid "Send notifications to NotifyOSD"
 #~ msgstr "Trimite notificări către NotifyOSD"
+
+#~ msgid "Server password"
+#~ msgstr "Parolă server"
 
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "Fișier par2 invalid, nu pot verifica sau repara"

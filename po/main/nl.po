@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-01-24 15:29+0100\n"
+"POT-Creation-Date: 2020-02-26 13:46+0100\n"
 "PO-Revision-Date: 2019-05-15 19:07+0000\n"
 "Last-Translator: Dennis Versteegen <Unknown>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-22 06:02+0000\n"
-"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:21+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,14 +25,14 @@ msgstr "Webinterface kan niet gestart worden"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 "SABYenc uitgeschakeld, geen bruikbare versie gevonden! (V%s gevonden, V%s "
 "verwacht)"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -42,15 +42,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2-programma niet gevonden."
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr "MultiPar niet gevonden!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr "Verificatie en reparatie zal niet mogelijk zijn."
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "De UNRAR-versie is %s, we adviseren versie %s of hoger te gebruiken.<br />"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP- en HTTPS-poort kunnen niet hetzelfde zijn"
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -119,67 +119,6 @@ msgstr "Fout"
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd is afgesloten"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Geen hostnaam opgegeven."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Er zijn geen verbindingen opgegeven. Er is minimaal één verbinding nodig."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Wachtwoord gemaskeerd met ******, voer opnieuw in"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ongeldige servergegevens"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Tijdslimiet overschreden. Probeer met SSL aan of gebruik een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Tijdslimiet overschreden"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ongeldige servernaam"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "De server stopte tijdens de login"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Succesvol verbonden!"
-
-#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
-msgid "Authentication failed, check username/password."
-msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -423,6 +362,10 @@ msgstr "Decoder fout: onvoldoende geheugen"
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
 msgstr "Slecht opgemaakt yEnc-artikel in %s"
+
+#: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr ""
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -675,6 +618,10 @@ msgstr ""
 "Probeer onze nieuwe skin Glitter. Compleet nieuw design, geoptimaliseerd "
 "voor desktops en mobiele apparaten. Ga naar Configuratie => Algemeen om de "
 "huidige skin te vervangen."
+
+#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
+msgid "Authentication failed, check username/password."
+msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1091,6 +1038,10 @@ msgstr "Andere berichten"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Niet beschikbaar"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
+msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1607,7 +1558,7 @@ msgstr "Fout bij het afsluiten van het systeem"
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Indexer id (%s) niet gevonden in het bestand met beoordelingen"
 
-#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+#: sabnzbd/rating.py
 msgid "Server address"
 msgstr "Server adres"
 
@@ -3890,27 +3841,6 @@ msgstr "Wanneer authenticatie nodig is, het wachtwoord."
 msgid "Notification Sent!"
 msgstr "Melding verzonden"
 
-#: sabnzbd/skintext.py [Header Growl section]
-msgid "Growl"
-msgstr "Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Enable Growl"
-msgstr "Growl meldingen activeren"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Only use for remote Growl server (host:port)"
-msgstr ""
-"Alleen gebruiken voor een Growl server op een ander systeem (server:poort)"
-
-#: sabnzbd/skintext.py [Growl server password]
-msgid "Server password"
-msgstr "Server wachtwoord"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Optional password for Growl server"
-msgstr "Optioneel wachtwoord voor de Growl server"
-
 #: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "NotifyOSD activeren"
@@ -4891,6 +4821,63 @@ msgstr "Onbruikbaar NZB-bestand"
 msgid "URL Fetching failed; %s"
 msgstr "URL ophalen mislukt; %s"
 
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Geen hostnaam opgegeven."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Er zijn geen verbindingen opgegeven. Er is minimaal één verbinding nodig."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Wachtwoord gemaskeerd met ******, voer opnieuw in"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Ongeldige servergegevens"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Tijdslimiet overschreden. Probeer met SSL aan of gebruik een andere poort."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Tijdslimiet overschreden"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ongeldige servernaam"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "De server stopte tijdens de login"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Succesvol verbonden!"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Kan verbindingsresultaat niet bepalen (%s)"
+
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Map \"%s\" bestaat niet."
 
@@ -5375,8 +5362,18 @@ msgstr "URL ophalen mislukt; %s"
 #~ "Controleer resultaat van uitpakken (moet \"uit\" staan voor sommige "
 #~ "bestandssystemen)."
 
+#~ msgid "Optional password for Growl server"
+#~ msgstr "Optioneel wachtwoord voor de Growl server"
+
 #~ msgid "Send notifications to NotifyOSD"
 #~ msgstr "Zend meldingen naar NotifyOSD"
+
+#~ msgid "Only use for remote Growl server (host:port)"
+#~ msgstr ""
+#~ "Alleen gebruiken voor een Growl server op een ander systeem (server:poort)"
+
+#~ msgid "Server password"
+#~ msgstr "Server wachtwoord"
 
 #~ msgid "Send notifications to Growl"
 #~ msgstr "Zend meldingen naar Growl"
@@ -5487,6 +5484,9 @@ msgstr "URL ophalen mislukt; %s"
 
 #~ msgid "Cleanup par files (if verifiying/repairing succeded)."
 #~ msgstr "Ruim PAR-bestanden op (na succesvolle verificatie/reparatie)."
+
+#~ msgid "Enable Growl"
+#~ msgstr "Growl meldingen activeren"
 
 #~ msgid "Do not require the API key."
 #~ msgstr "Gebruik van de API-sleutel niet afdwingen."

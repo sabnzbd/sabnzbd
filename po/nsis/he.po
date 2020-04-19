@@ -7,23 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:01+0000\n"
+"POT-Creation-Date: 2020-02-28 15:30+0000\n"
 "PO-Revision-Date: 2017-05-06 09:07+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:49+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "הראה הערות שחרור"
-
-#: NSIS_Installer.nsi
-msgid "Start SABnzbd"
-msgstr "התחל את SABnzbd"
 
 #: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
@@ -67,26 +63,6 @@ msgstr "מחק הגדרות"
 
 #: NSIS_Installer.nsi
 msgid ""
-"This system requires the Microsoft runtime library VC90 to be installed "
-"first. Do you want to do that now?"
-msgstr ""
-"מערכת זו דורשת את ספרית זמן-אמת VC90 של Microsoft שתהיה מותקנת תחילה. האם "
-"ברצונך להתקין אותה כעת?"
-
-#: NSIS_Installer.nsi
-msgid "Downloading Microsoft runtime installer..."
-msgstr "מוריד מתקין זמן-אמת של Microsoft..."
-
-#: NSIS_Installer.nsi
-msgid "Download error, retry?"
-msgstr "שגיאת הורדה, לנסות שוב?"
-
-#: NSIS_Installer.nsi
-msgid "Cannot install without runtime library, retry?"
-msgstr "לא ניתן להתקין ללא ספרית זמן-אמת, לנסות שוב?"
-
-#: NSIS_Installer.nsi
-msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
@@ -96,6 +72,22 @@ msgstr ""
 #: NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "ההגדרות והנתונים שלך יישמרו."
+
+#~ msgid "Download error, retry?"
+#~ msgstr "שגיאת הורדה, לנסות שוב?"
+
+#~ msgid "Cannot install without runtime library, retry?"
+#~ msgstr "לא ניתן להתקין ללא ספרית זמן-אמת, לנסות שוב?"
+
+#~ msgid "Downloading Microsoft runtime installer..."
+#~ msgstr "מוריד מתקין זמן-אמת של Microsoft..."
+
+#~ msgid ""
+#~ "This system requires the Microsoft runtime library VC90 to be installed "
+#~ "first. Do you want to do that now?"
+#~ msgstr ""
+#~ "מערכת זו דורשת את ספרית זמן-אמת VC90 של Microsoft שתהיה מותקנת תחילה. האם "
+#~ "ברצונך להתקין אותה כעת?"
 
 #~ msgid ""
 #~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-01-24 15:29+0100\n"
+"POT-Creation-Date: 2020-02-26 13:46+0100\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-22 06:02+0000\n"
-"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:21+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,12 +25,12 @@ msgstr "Nie udało się uruchomić interfejsu WWW"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Nie znaleziono szablonu: %s, próbuję użyć standardowego szablonu"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -39,15 +39,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "Program par2 ... NIE znaleziono!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Twoja wersja unrar to %s, zalecana jest wersja %s lub wyższa.<br />"
 
@@ -77,7 +77,7 @@ msgstr "Nazwa hosta 0.0.0.0 wymaga adresu IPv6 do dostępu z zewnątrz"
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Porty dla HTTP i HTTPS nie mogą być takie same"
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -110,69 +110,6 @@ msgstr "Błąd"
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd został wyłączony"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Nie ustawiono nazwy hosta."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Nie ustawiono maksymalnej liczby połączeń. Proszę umożliwić przynajmniej "
-"jedno połączenie."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Hasło ukryte za ******, proszę wprowadzić je ponownie"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Niewłaściwe dane serwera"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Upłynął limit czasu odpowiedzi: spróbuj włączyć SSL lub połącz się z innym "
-"portem."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Upłynął limit czasu odpowiedzi."
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Nieprawidłowy adres serwera."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Serwer przerwał połączenie w trakcie logowania."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Serwer wymaga podania nazwy użytkownika i hasła."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Połączenie udane!"
-
-#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
-msgid "Authentication failed, check username/password."
-msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Zbyt wiele połączeń, proszę wstrzymać pobieranie lub spróbować ponownie "
-"później"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nie można określić wyniku połączenia (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -405,6 +342,10 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
 msgstr "Źle zbudowany artykuł yEnc w %s"
+
+#: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr ""
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -655,6 +596,10 @@ msgstr ""
 "Wypróbuj naszą nową skórkę, Glitter! Zupełnie nowy, świeży projekt "
 "zoptymalizowany dla komputerów stacjonarnych i urządzeń przenośnych. Skórkę "
 "możesz zmienić w sekcji Konfiguracja->Ogólne."
+
+#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
+msgid "Authentication failed, check username/password."
+msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1064,6 +1009,10 @@ msgstr "Inne komunikaty"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Niedostępne"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
+msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1577,7 +1526,7 @@ msgstr "Wyłączenie systemu nie powiodło się"
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Identyfikator indeksera (%s) nie został znaleziony w pliku ocen"
 
-#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+#: sabnzbd/rating.py
 msgid "Server address"
 msgstr "Adres serwera"
 
@@ -3816,26 +3765,6 @@ msgstr "Hasło dla kont z uwierzytelnieniem"
 msgid "Notification Sent!"
 msgstr "Wysłano powiadomienie!"
 
-#: sabnzbd/skintext.py [Header Growl section]
-msgid "Growl"
-msgstr "Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Enable Growl"
-msgstr "Włącz Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Only use for remote Growl server (host:port)"
-msgstr "Tylko dla zdalnych serwerów Growl (host:port)"
-
-#: sabnzbd/skintext.py [Growl server password]
-msgid "Server password"
-msgstr "Hasło serwera"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Optional password for Growl server"
-msgstr "Opcjonalne hasło dla serwera Growl"
-
 #: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "Włącz NotifyOSD"
@@ -4807,6 +4736,65 @@ msgstr "Bezużyteczny plik NZB"
 msgid "URL Fetching failed; %s"
 msgstr "Pobieranie URL nie powiodło się; %s"
 
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Nie ustawiono nazwy hosta."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Nie ustawiono maksymalnej liczby połączeń. Proszę umożliwić przynajmniej "
+"jedno połączenie."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Hasło ukryte za ******, proszę wprowadzić je ponownie"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Niewłaściwe dane serwera"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Upłynął limit czasu odpowiedzi: spróbuj włączyć SSL lub połącz się z innym "
+"portem."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Upłynął limit czasu odpowiedzi."
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Nieprawidłowy adres serwera."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Serwer przerwał połączenie w trakcie logowania."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Serwer wymaga podania nazwy użytkownika i hasła."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Połączenie udane!"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Zbyt wiele połączeń, proszę wstrzymać pobieranie lub spróbować ponownie "
+"później"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nie można określić wyniku połączenia (%s)"
+
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "Błąd CRC w %s (%s -> %s)"
 
@@ -5025,8 +5013,20 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 #~ msgid "Send notifications to Growl"
 #~ msgstr "Wysyłaj powiadomienia Growl"
 
+#~ msgid "Enable Growl"
+#~ msgstr "Włącz Growl"
+
+#~ msgid "Optional password for Growl server"
+#~ msgstr "Opcjonalne hasło dla serwera Growl"
+
 #~ msgid "Send notifications to NotifyOSD"
 #~ msgstr "Wysyłaj powiadomienia do NotifyOSD"
+
+#~ msgid "Server password"
+#~ msgstr "Hasło serwera"
+
+#~ msgid "Only use for remote Growl server (host:port)"
+#~ msgstr "Tylko dla zdalnych serwerów Growl (host:port)"
 
 #~ msgid "Enable sorting and renaming of episodes."
 #~ msgstr "Włącz sortowanie i zmianę nazw odcinków"

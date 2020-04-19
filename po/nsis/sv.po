@@ -7,23 +7,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:01+0000\n"
+"POT-Creation-Date: 2020-02-28 15:30+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Andreas Lindberg <andypandyswe@gmail.com>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:49+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Visa releasenoteringar"
-
-#: NSIS_Installer.nsi
-msgid "Start SABnzbd"
-msgstr ""
 
 #: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
@@ -65,26 +61,6 @@ msgstr "Radera inställningar"
 
 #: NSIS_Installer.nsi
 msgid ""
-"This system requires the Microsoft runtime library VC90 to be installed "
-"first. Do you want to do that now?"
-msgstr ""
-"Detta system kräver att Microsofts runtimebibliotek VC90 är installerat. "
-"Vill du göra detta nu?"
-
-#: NSIS_Installer.nsi
-msgid "Downloading Microsoft runtime installer..."
-msgstr "Laddar ned Microsofts runtimeinstaller..."
-
-#: NSIS_Installer.nsi
-msgid "Download error, retry?"
-msgstr "Misslyckat nedladdningsförsök, försök igen?"
-
-#: NSIS_Installer.nsi
-msgid "Cannot install without runtime library, retry?"
-msgstr "Kan inte installera utan runtimebibliotek, försök igen?"
-
-#: NSIS_Installer.nsi
-msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
@@ -105,3 +81,19 @@ msgstr "Dina inställningar och ditt data kommer att bevaras."
 #~ msgstr ""
 #~ "                  >>>> VARNING <<<<\\r\\n\\r\\nVänligen läs först "
 #~ "releasenoteringarna eller gå till http://wiki.sabnzbd.org/introducing-0-7-0 !"
+
+#~ msgid ""
+#~ "This system requires the Microsoft runtime library VC90 to be installed "
+#~ "first. Do you want to do that now?"
+#~ msgstr ""
+#~ "Detta system kräver att Microsofts runtimebibliotek VC90 är installerat. "
+#~ "Vill du göra detta nu?"
+
+#~ msgid "Download error, retry?"
+#~ msgstr "Misslyckat nedladdningsförsök, försök igen?"
+
+#~ msgid "Cannot install without runtime library, retry?"
+#~ msgstr "Kan inte installera utan runtimebibliotek, försök igen?"
+
+#~ msgid "Downloading Microsoft runtime installer..."
+#~ msgstr "Laddar ned Microsofts runtimeinstaller..."

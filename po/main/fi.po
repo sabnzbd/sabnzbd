@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-01-24 15:29+0100\n"
+"POT-Creation-Date: 2020-02-26 13:46+0100\n"
 "PO-Revision-Date: 2020-02-10 09:27+0000\n"
 "Last-Translator: tuomass <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-22 06:02+0000\n"
-"X-Generator: Launchpad (build 19413b719a8df7423ab1390528edadce9e0e4aca)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:21+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,12 +25,12 @@ msgstr "Web-käyttöliittymän käynnistys epäonnistui"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Web-mallia %s ei löydy, yritetään käyttää oletusmallia"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -39,15 +39,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 ohjelmaa... EI löydy!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr "MultiPar-ohjelmaa... EI löydy!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "UNRAR-versiosi on %s, suosittelemme käyttämään versiota %s tai uudempaa.<br "
@@ -81,7 +81,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP- ja HTTPS-portit eivät voi olla samoja"
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -118,65 +118,6 @@ msgstr "Virhe"
 #: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd sammutus valmis"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Isäntänimeä ei ole asetettu."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Yhteyksiä ei ole asetettu. Aktivoi ainakin yksi yhteys."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Salasana on piilotettu ******, syötä uudelleen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Virheelliset palvelimen tiedot"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Aikakatkaistu: Yritä laittaa SSL päälle tai yhdistä toiseen porttiin."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Aikakatkaistiin"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Virheellinen palvelimen osoite."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Palvelin lopetettiin kesken kirjautumisen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Yhdistäminen onnistui!"
-
-#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
-msgid "Authentication failed, check username/password."
-msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -410,6 +351,10 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Badly formed yEnc article in %s"
 msgstr "Huonosti muotoiltu yEnc artikkeli %s"
+
+#: sabnzbd/decoder.py
+msgid "UUencode detected, only yEnc encoding is supported [%s]"
+msgstr ""
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -657,6 +602,10 @@ msgid ""
 msgstr ""
 "Kokeile uutta Glitter teemaa! Uusittu design on optimoitu työpöytä- ja "
 "mobiilikäyttäjille. Mene Asetukset -> Yleiset muuttaaksesi teemaa."
+
+#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
+msgid "Authentication failed, check username/password."
+msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1063,6 +1012,10 @@ msgstr "Muut viestit"
 #: sabnzbd/notifier.py # sabnzbd/skintext.py
 msgid "Not available"
 msgstr "Ei saatavilla"
+
+#: sabnzbd/notifier.py
+msgid "Failed to send macOS notification"
+msgstr ""
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1577,7 +1530,7 @@ msgstr "Virhe sammutettaessa järjestelmää"
 msgid "Indexer id (%s) not found for ratings file"
 msgstr "Indeksoijan id:tä (%s) ei löydetty arviointitiedostolle"
 
-#: sabnzbd/rating.py # sabnzbd/skintext.py [Address of Growl server]
+#: sabnzbd/rating.py
 msgid "Server address"
 msgstr "Palvelimen osoite"
 
@@ -3831,26 +3784,6 @@ msgstr "Kirjautumisen vaativalle sähköpostille, tilin salasana."
 msgid "Notification Sent!"
 msgstr "Ilmoitus lähetetty!"
 
-#: sabnzbd/skintext.py [Header Growl section]
-msgid "Growl"
-msgstr "Growl"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Enable Growl"
-msgstr "Growl käytössä"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Only use for remote Growl server (host:port)"
-msgstr "Käytä vain Growl etäpalvelimelle (isäntä:portti)"
-
-#: sabnzbd/skintext.py [Growl server password]
-msgid "Server password"
-msgstr "Palvelimen salasana"
-
-#: sabnzbd/skintext.py [Don't translate "Growl"]
-msgid "Optional password for Growl server"
-msgstr "Vaihtoehtoinen salasana Growl palvelimelle"
-
 #: sabnzbd/skintext.py [Don't translate "NotifyOSD"]
 msgid "Enable NotifyOSD"
 msgstr "NotifyOSD käytössä"
@@ -4832,6 +4765,61 @@ msgstr "NZB tiedostoa ei voida käyttää"
 msgid "URL Fetching failed; %s"
 msgstr "Osoitteen nouto epäonnistui; %s"
 
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Isäntänimeä ei ole asetettu."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Yhteyksiä ei ole asetettu. Aktivoi ainakin yksi yhteys."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Salasana on piilotettu ******, syötä uudelleen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Virheelliset palvelimen tiedot"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Aikakatkaistu: Yritä laittaa SSL päälle tai yhdistä toiseen porttiin."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Aikakatkaistiin"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Virheellinen palvelimen osoite."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Palvelin lopetettiin kesken kirjautumisen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Yhdistäminen onnistui!"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
+
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "_yenc moduulia... EI löydy!"
 
@@ -5221,6 +5209,9 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ msgid "Email Account Settings"
 #~ msgstr "Sähköpostitilin asetukset"
 
+#~ msgid "Server password"
+#~ msgstr "Palvelimen salasana"
+
 #~ msgid "Thread"
 #~ msgstr "Ketju"
 
@@ -5318,6 +5309,9 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ msgid "Send notifications to NotifyOSD"
 #~ msgstr "Lähetä ilmoitukset NotifyOSD:hen"
 
+#~ msgid "Only use for remote Growl server (host:port)"
+#~ msgstr "Käytä vain Growl etäpalvelimelle (isäntä:portti)"
+
 #~ msgid "Send notifications to Growl"
 #~ msgstr "Lähetä ilmoitukset Growliin"
 
@@ -5409,6 +5403,9 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ msgid "Enable Par Cleanup"
 #~ msgstr "Par puhdistus käytössä"
 
+#~ msgid "Enable Growl"
+#~ msgstr "Growl käytössä"
+
 #~ msgid "Used when no user script is defined by the category."
 #~ msgstr ""
 #~ "Käytetään kun mitään käyttäjän skriptiä ei ole määritettynä kategorialle."
@@ -5498,3 +5495,6 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 
 #~ msgid "Skip par2 checking when files are 100% valid."
 #~ msgstr "Ohita par2 tarkistus kun tiedostot ovat 100% ladattuja."
+
+#~ msgid "Optional password for Growl server"
+#~ msgstr "Vaihtoehtoinen salasana Growl palvelimelle"

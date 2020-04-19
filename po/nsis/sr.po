@@ -7,24 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:01+0000\n"
+"POT-Creation-Date: 2020-02-28 15:30+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Ozzii <Unknown>\n"
 "Language-Team: Launchpad Serbian Translators\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:49+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
+"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
 "Language: sr\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Прикажи белешке о издању"
-
-#: NSIS_Installer.nsi
-msgid "Start SABnzbd"
-msgstr ""
 
 #: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
@@ -66,26 +62,6 @@ msgstr "Обриши подешавања"
 
 #: NSIS_Installer.nsi
 msgid ""
-"This system requires the Microsoft runtime library VC90 to be installed "
-"first. Do you want to do that now?"
-msgstr ""
-"Овај систем захтева да буде прво инсталирана Мајкрософтова извршна "
-"библиотека „VC90“. Да ли желите то да урадите?"
-
-#: NSIS_Installer.nsi
-msgid "Downloading Microsoft runtime installer..."
-msgstr "Преузимам Мајкрософтов извршни програм за инсталацију..."
-
-#: NSIS_Installer.nsi
-msgid "Download error, retry?"
-msgstr "Грешка у преузимању, да поновим?"
-
-#: NSIS_Installer.nsi
-msgid "Cannot install without runtime library, retry?"
-msgstr "Не могу да инсталирам без извршне библиотеке, да поновим?"
-
-#: NSIS_Installer.nsi
-msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
@@ -96,6 +72,9 @@ msgstr ""
 msgid "Your settings and data will be preserved."
 msgstr "Ваша подешавања и подаци биће сачувани."
 
+#~ msgid "Download error, retry?"
+#~ msgstr "Грешка у преузимању, да поновим?"
+
 #~ msgid "Go to the SABnzbd Wiki"
 #~ msgstr "Иди на вики САБнзбд-а"
 
@@ -105,3 +84,16 @@ msgstr "Ваша подешавања и подаци биће сачувани.
 #~ msgstr ""
 #~ "                  >>>> ПАЖЊА <<<<\\r\\n\\r\\nПрво проверите белешке о издању "
 #~ "или идите на „http://wiki.sabnzbd.org/introducing-0-7-0“ !"
+
+#~ msgid ""
+#~ "This system requires the Microsoft runtime library VC90 to be installed "
+#~ "first. Do you want to do that now?"
+#~ msgstr ""
+#~ "Овај систем захтева да буде прво инсталирана Мајкрософтова извршна "
+#~ "библиотека „VC90“. Да ли желите то да урадите?"
+
+#~ msgid "Downloading Microsoft runtime installer..."
+#~ msgstr "Преузимам Мајкрософтов извршни програм за инсталацију..."
+
+#~ msgid "Cannot install without runtime library, retry?"
+#~ msgstr "Не могу да инсталирам без извршне библиотеке, да поновим?"
