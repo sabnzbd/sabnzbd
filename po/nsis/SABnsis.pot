@@ -26,7 +26,7 @@ msgid "Please close \"SABnzbd.exe\" first"
 msgstr ""
 
 #: NSIS_Installer.nsi
-msgid "The installation directory has changed (now in \"Program Files\"). \\nIf you run SABnzbd as a service, you need to update the service settings."
+msgid "The installer only supports 64-bit Windows, use the standalone version to run on 32-bit Windows."
 msgstr ""
 
 #: NSIS_Installer.nsi
