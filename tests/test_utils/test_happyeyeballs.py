@@ -21,11 +21,13 @@ tests.test_utils.test_happyeyeballs - Testing SABnzbd happyeyeballs
 
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
-# happyeyeballs() returns the quickest IP address (IPv4, or IPv6 if available end-to-end), or None (if not resolvable, or not reachable)
-
 
 class TestHappyEyeballs:
-    """ Tests of happyeyeballs() against various websites/servers """
+    """ Tests of happyeyeballs() against various websites/servers
+        happyeyeballs() returns the quickest IP address (IPv4, or IPv6 if available end-to-end),
+        or None (if not resolvable, or not reachable)
+    """
+
     def test_google_http(self):
         ip = happyeyeballs("www.google.com")
         assert "." in ip or ":" in ip
@@ -35,7 +37,7 @@ class TestHappyEyeballs:
         assert "." in ip or ":" in ip
 
     def test_not_resolvable(self):
-        ip = happyeyeballs("not.resolvable.at.all")
+        ip = happyeyeballs("not.resolvable.invalid")
         assert ip is None
 
     def test_ipv6_only(self):
