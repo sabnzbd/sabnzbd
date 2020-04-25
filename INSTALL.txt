@@ -1,4 +1,4 @@
-                            SABnzbd 2.3.8
+                            SABnzbd 3.0.0
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -52,38 +52,11 @@ Specific guides to install from source are available for Windows and macOS:
     https://sabnzbd.org/wiki/installation/install-macos
     https://sabnzbd.org/wiki/installation/install-from-source-windows
 
-You need to have Python installed plus some non-standard Python modules
-and a few tools.
+Only Python 3.5 and above is supported. All comands below asume
+Python 3 is the only installed version of Python.
 
-All platforms
-    Python-2.7.latest       http://www.python.org (2.7.9+ recommended)
-
-Windows
-    PyWin32                 use "pip install pypiwin32"
-
-Essential modules
-    cheetah-2.0.1+          use "pip install cheetah"
-    par2cmdline >= 0.4      https://github.com/Parchive/par2cmdline/releases
-                            See also: https://sabnzbd.org/wiki/installation/multicore-par2
-    unrar >= 5.00+          http://www.rarlab.com/rar_add.htm
-    openssl >= 1.0.0        http://www.openssl.org/
-
-Optional modules
-    unzip >= 6.00           http://www.info-zip.org/
-    7zip >= 9.20            http://www.7zip.org/
-    sabyenc == 3.3.1        use "pip install sabyenc"
-                            More information: https://sabnzbd.org/sabyenc
-    cryptography >= 1.0     use "pip install cryptography"
-                            Enables certificate generation and detection of encrypted RAR-files
-
-Optional modules Linux
-    notify2                 Should be part of GTK for Python support on Debian/Ubuntu
-                            If not, you cannot use the NotifyOSD feature.
-    python-dbus             Enable option to Shutdown/Restart/Standby PC on queue finish.
-
-Embedded modules (preferably use the included version)
-    CherryPy-8.1.2 with patches http://www.cherrypy.org
-
+Install all required packages by running:
+    pip install -r requirements.txt
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
 
