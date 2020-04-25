@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2009-2019 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2009-2020 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License

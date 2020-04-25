@@ -36,4 +36,4 @@ Release Notes - SABnzbd 2.3.8
   that automatically verify, repair, extract and clean up posts downloaded
   from Usenet.
 
-  (c) Copyright 2007-2019 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2020 by "The SABnzbd-team" \<team@sabnzbd.org\>
