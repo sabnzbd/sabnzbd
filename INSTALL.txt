@@ -52,20 +52,20 @@ Specific guides to install from source are available for Windows and macOS:
     https://sabnzbd.org/wiki/installation/install-macos
     https://sabnzbd.org/wiki/installation/install-from-source-windows
 
-Only Python 3.5 and above is supported. All comands below asume
-Python 3 is the only installed version of Python.
+Only Python 3.5 and above is supported. Replace python3 with python in the commands
+below if Python 3 is the only version of Python on your system.
 
 Install all required packages by running:
-    pip install -r requirements.txt
+    python3 -m pip install -r requirements.txt
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
 
 If you want multiple languages, you need to compile the translations.
 Start this from a shell terminal (or command prompt):
-    python tools/make_mo.py
+    python3 tools/make_mo.py
 
 Start this from a shell terminal (or command prompt):
-    python -OO SABnzbd.py
+    python3 -OO SABnzbd.py
 
 Within a few seconds your web browser will start and show the user interface.
 Use the "Help" button in the web-interface to be directed to the Help Wiki.
@@ -80,7 +80,7 @@ This means that SABnzbd cannot use the default port 8080 to run its web-server o
 Try to use another port, you'll need to use the a command window:
     SABnzbd.exe -s localhost:7777
 or
-    python SABnzbd.py -s localhost:7777
+    python3 SABnzbd.py -s localhost:7777
 
 You may of course try other port numbers too.
 
