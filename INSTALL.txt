@@ -55,7 +55,7 @@ Specific guides to install from source are available for Windows and macOS:
 Only Python 3.5 and above is supported. Replace python3 with python in the commands
 below if Python 3 is the only version of Python on your system.
 
-Install all required packages by running:
+Install all required Python packages by running:
     python3 -m pip install -r requirements.txt
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
