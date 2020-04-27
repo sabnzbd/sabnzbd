@@ -22,12 +22,13 @@ def getcpu():
             cputype = subprocess.check_output(["sysctl", "-n", "machdep.cpu.brand_string"]).strip()
 
         elif platform.system() == "Linux":
-            for myline in open("/proc/cpuinfo"):
-                if myline.startswith("model name"):
-                    # Typical line:
-                    # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
-                    cputype = myline.split(":", 1)[1]  # get everything after the first ":"
-                    break  # we're done
+            with open("/proc/cpuinfo") as fp:
+                for myline in fp.readlines():
+                    if myline.startswith("model name"):
+                        # Typical line:
+                        # model name      : Intel(R) Xeon(R) CPU           E5335  @ 2.00GHz
+                        cputype = myline.split(":", 1)[1]  # get everything after the first ":"
+                        break  # we're done
         cputype = cputype.decode(locale.getpreferredencoding())
     except:
         # An exception, maybe due to a subprocess call gone wrong
