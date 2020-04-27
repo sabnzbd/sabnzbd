@@ -32,7 +32,9 @@ matrix:
 
 install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
-      brew cask install chromedriver;
+      LATEST_CHROMEDRIVER=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE) &&
+      wget --no-verbose -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/$LATEST_CHROMEDRIVER/chromedriver_mac64.zip &&
+      sudo unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/;
     else
       sudo add-apt-repository ppa:jcfp -y;
       sudo apt-get update -q;
