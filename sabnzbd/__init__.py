@@ -1016,13 +1016,13 @@ def check_all_tasks():
         return True
 
     # Non-restartable threads, require program restart
-    if not sabnzbd.PostProcessor.do.isAlive():
+    if not sabnzbd.PostProcessor.do.is_alive():
         logging.info("Restarting because of crashed postprocessor")
         return False
-    if not Downloader.do.isAlive():
+    if not Downloader.do.is_alive():
         logging.info("Restarting because of crashed downloader")
         return False
-    if not Assembler.do.isAlive():
+    if not Assembler.do.is_alive():
         logging.info("Restarting because of crashed assembler")
         return False
 
@@ -1033,13 +1033,13 @@ def check_all_tasks():
     Downloader.do.check_timers()
 
     # Restartable threads
-    if not DirScanner.do.isAlive():
+    if not DirScanner.do.is_alive():
         logging.info("Restarting crashed dirscanner")
         DirScanner.do.__init__()
-    if not URLGrabber.do.isAlive():
+    if not URLGrabber.do.is_alive():
         logging.info("Restarting crashed urlgrabber")
         URLGrabber.do.__init__()
-    if not Rating.do.isAlive():
+    if not Rating.do.is_alive():
         logging.info("Restarting crashed rating")
         Rating.do.__init__()
     if not sabnzbd.scheduler.sched_check():
