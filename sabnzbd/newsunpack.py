@@ -2406,7 +2406,7 @@ class SevenZip:
 
 def run_simple(cmd):
     """ Run simple external command and return output """
-    p = Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    txt = platform_btou(p.stdout.read())
-    p.wait()
+    with Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
+        txt = platform_btou(p.stdout.read())
+        p.wait()
     return txt
