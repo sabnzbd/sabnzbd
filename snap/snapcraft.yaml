@@ -1,18 +1,17 @@
 name: sabnzbd
-version: git
 summary: SABnzbd
 description: The automated Usenet download tool
 confinement: strict
+base: core18
 grade: stable
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
-version-script: |
-  grep -oP '(?<=^Version: ).*' PKG-INFO
+adopt-info: sabnzbd
 
 apps:
   sabnzbd:
     environment:
       LC_CTYPE: C.UTF-8
-    command: python $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
+    command: python3 $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
     daemon: simple
     plugs: [network, network-bind, removable-media]
 
@@ -20,14 +19,14 @@ parts:
   sabnzbd:
     plugin: python
     source: .
-    python-version: python2
-    python-packages: [cheetah3, cryptography, sabyenc]
-    build-attributes: [no-system-libraries]
-    stage-packages: [unrar, p7zip-full, par2]
-    build-packages: [libffi-dev, python-dev, libssl-dev]
+    python-version: python3
+    requirements: requirements.txt
+    stage-packages: [python3-dev, libdb5.3, unrar, p7zip-full, par2]
+    build-packages: [libffi-dev, python3-dev, libssl-dev]
     override-build: |
+      snapcraftctl set-version $(grep -oP '(?<=^Version: ).*' PKG-INFO)
       snapcraftctl build
-      python tools/make_mo.py
+      python3 tools/make_mo.py
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt
       cp -R $SNAPCRAFT_PART_BUILD $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
     organize:
