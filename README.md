@@ -9,45 +9,44 @@ SABnzbd - The automated Usenet download tool
 
 SABnzbd is an Open Source Binary Newsreader written in Python.
 
-It's totally free, incredibly easy to use, and works practically everywhere.
+It's totally free, easy to use, and works practically everywhere.
 SABnzbd makes Usenet as simple and streamlined as possible by automating everything we can. All you have to do is add an `.nzb`. SABnzbd takes over from there, where it will be automatically downloaded, verified, repaired, extracted and filed away with zero human interaction.
+SABnzbd offers an easy setup wizard and has self-analysis tools to verify your setup.
+
 If you want to know more you can head over to our website: https://sabnzbd.org.
 
 ## Resolving Dependencies
 
-SABnzbd has a good deal of dependencies you'll need before you can get running. If you've previously run SABnzbd from one of the various Linux packages, then you likely already have all the needed dependencies. If not, here's what you're looking for:
+SABnzbd has a few dependencies you'll need before you can get running. If you've previously run SABnzbd from one of the various Linux packages, then you likely already have all the needed dependencies. If not, here's what you're looking for:
 
-- `python` (SABnzbd version 2: only python 2.7.x. SABnzbd version 3: python 3.5.x and higher, often called python3)
-- `python-cheetah`
+- `python` (Python 3.5 and higher, often called `python3`)
+- Python modules listed in `requirements.txt`
 - `par2` (Multi-threaded par2 installation guide can be found [here](https://sabnzbd.org/wiki/installation/multicore-par2))
-- `unrar` (Make sure you get the "official" non-free version of unrar)
-- `sabyenc` (installation guide can be found [here](https://sabnzbd.org/sabyenc))
+- `unrar` (make sure you get the "official" non-free version of unrar)
 
 Optional:
-- `python-cryptography` (enables certificate generation and detection of encrypted RAR-files during download)
-- `python-dbus` (enable option to Shutdown/Restart/Standby PC on queue finish)
-- `7zip`
+- See `requirements.txt`
 
-Your package manager should supply these. If not, we've got links in our more in-depth [installation guide](https://github.com/sabnzbd/sabnzbd/blob/master/INSTALL.txt).
+Your package manager should supply these. If not, we've got links in our [installation guide](https://github.com/sabnzbd/sabnzbd/blob/master/INSTALL.txt).
 
 ## Running SABnzbd from source
 
 Once you've sorted out all the dependencies, simply run:
 
 ```
-python -OO SABnzbd.py
+python3 -OO SABnzbd.py
 ```
 
 Or, if you want to run in the background:
 
 ```
-python -OO SABnzbd.py -d -f /path/to/sabnzbd.ini
+python3 -OO SABnzbd.py -d -f /path/to/sabnzbd.ini
 ```
 
 If you want multi-language support, run:
 
 ```
-python tools/make_mo.py
+python3 tools/make_mo.py
 ```
 
 Our many other command line options are explained in depth [here](https://sabnzbd.org/wiki/advanced/command-line-parameters).

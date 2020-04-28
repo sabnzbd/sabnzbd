@@ -4,21 +4,23 @@
 The SABnzbd-team is:
 
 Active team:
-    ShyPike <shypike@sabnzbd.org>
-    inpheaux <inpheaux@sabnzbd.org>
-    zoggy <zoggy@sabnzbd.org>
-    Safihre <safihre@sabnzbd.org>
-Sleeping members
-    sw1tch <switch@sabnzbd.org>
-    pairofdimes <pairofdimes@sabnzbd.org>
-    rAf <rAf@sabnzbd.org>
-Honorary member (and original author)
-    Gregor Kaufmann <tdian@users.sourceforge.net>
+    Safihre
+    sanderjo
+    jcfp
+    inpheaux
+    zoggy
+Sleeping members:
+    ShyPike
+    sw1tch
+    pairofdimes
+    rAf
+Honorary member (and original author):
+    Gregor Kaufmann
 
-The main contributors and moderators of the translations
+The main contributors and moderators of the translations:
     Danish: Rene (nordjyden6), Scott
     Dutch: ShyPike, Safihre
-    French : rAf, Fox Ace, Fred, Morback, Jih
+    French: rAf, Fox Ace, Fred, Morback, Jih
     German: Severin Heiniger, Tim Hartmann, DonPizza, Alex
     Norwegian: Protx, mjelva, TomP, John
     Romanian: nicusor

@@ -1,30 +1,37 @@
-Release Notes - SABnzbd 2.3.8
+Release Notes - SABnzbd 3.0.0 Alpha 1
 =========================================================
 
-## Improvements and bug fixes since 2.3.7
-- Changes to newsserver configuration could be delayed
-- Filenames would not be sanitized when using "Make Windows compatible"
-- Sorting could fail on root-folders
-- 7z-files were not listed as supported NZB archives
-- SSL cipher settings were ignored during server test
-- Windows: update 7zip to 19.00
-- Windows: update MultiPar to v1.3.0.4
-- Windows and macOS: update Python to 2.7.16
-- Windows and macOS: update UnRar to 5.70
+## About this new version
+We have been working for months to upgrade the SABnzbd code from Python 2 to Python 3.
+Although it might not sound like a big change, we had to rewrite almost every part of
+the code. This also means that we might have introduced new bugs. We therefore encourage
+you to let us know of any errors or strange behavior your might notice!
+Unfortunately, this also means that we could not spend much time adding new features.
+But we still managed to add a few, like extracting fully obfuscated RAR-sets.
 
-## Upgrading from 2.2.x and older
-- Finish queue
-- Stop SABnzbd
-- Install new version
-- Start SABnzbd
+## What doesn't work yet?
+- Work is still in progress on Windows Service support.
+
+## Big changes
+- Python 3.5 and above are the only supported versions of Python.
+- Fully obfuscated RAR-sets with no verification files are detected and extracted.
+- SABYenc, par2 and unrar are now required to start downloading.
+- The Windows installer is 64-bit only, for 32-bit use the standalone package.
+- Growl-support was removed.
+- macOS features such as the menu and notifications now use native code.
+- Built-in internet bandwith test.
+
+## Bugfixes since 2.3.9
+- Sample removal did not work if only 1 sample file was present.
+- Crash on badly formatted RSS-feeds.
+- Windows systems could go into standby.
+- Some errors thrown by unrar were not caught.
 
 ## Upgrade notices
-- When upgrading from 2.2.0 or older the queue will be converted. Job order,
-  settings and data will be preserved, but all jobs will be unpaused and
-  URL's that did not finish fetching before the upgrade will be lost.
-- The organization of the download queue is different from 0.7.x releases.
-  This version will not see the 0.7.x queue, but you can restore the jobs
-  by going to Status page and using Queue Repair.
+- When upgrading from 2.x.x or older the queue will be converted. Job order,
+  settings and data will be preserved, but if you decide to go back to 2.x.x
+  your queue cannot be downgraded again. But you can restore the jobs by going
+  to the Status page and running Queue Repair.
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
