@@ -9,6 +9,11 @@ import os
 
 debug = False
 
+def getcmdoutput(cmd):
+    """ execectue cmd, and give back output lines as array """
+    with os.popen(cmd) as p:
+        outputlines = p.readlines()
+    return outputlines
 
 def isFAT(check_dir):
     """ Check if "check_dir" is on FAT. FAT considered harmful (for big files)
@@ -30,8 +35,8 @@ def isFAT(check_dir):
             /dev/sda1      vfat 488263616 163545248 324718368  34% /media/sander/INTENSO
             """
 
-            cmd = "df -T " + check_dir + " 2>&1"
-            for thisline in os.popen(cmd).readlines():
+            dfcmd = "df -T " + check_dir + " 2>&1"
+            for thisline in getcmdoutput(dfcmd):
                 if thisline.find("/") == 0:
                     # Starts with /, so a real, local device
                     fstype = thisline.split()[1]
@@ -74,7 +79,7 @@ def isFAT(check_dir):
 
             """
             dfcmd = "df " + check_dir
-            for thisline in os.popen(dfcmd).readlines():
+            for thisline in getcmdoutput(dfcmd):
                 if thisline.find("/") == 0:
                     if debug:
                         print(thisline)
