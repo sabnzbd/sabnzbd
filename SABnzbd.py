@@ -634,7 +634,7 @@ def is_sabnzbd_running(url):
         prev = sabnzbd.set_https_verification(False)
         ver = get_from_url(url)
         sabnzbd.set_https_verification(prev)
-        return ver and (re.search(b'\d+\.\d+\.', ver) or ver.strip() == sabnzbd.__version__)
+        return ver and (re.search(r'\d+\.\d+\.', ver) or ver.strip() == sabnzbd.__version__)
     except:
         return False
 

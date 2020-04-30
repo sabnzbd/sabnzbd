@@ -286,7 +286,7 @@ def get_from_url(url):
     """ Retrieve URL and return content """
     try:
         with urllib.request.urlopen(url) as response:
-            return response.read()
+            return ubtou(response.read())
     except:
         return None
 
@@ -348,28 +348,26 @@ def check_latest_version():
         logging.debug("Traceback: ", exc_info=True)
         return
 
+    version_data = data.split()
     try:
-        latest_label = data.split()[0]
+        latest_label = version_data[0]
+        url = version_data[1]
     except:
         latest_label = ""
-    try:
-        url = ubtou(data.split()[1])
-    except:
         url = ""
+
     try:
-        latest_testlabel = data.split()[2]
+        latest_testlabel = version_data[2]
+        url_beta = version_data[3]
     except:
         latest_testlabel = ""
-    try:
-        url_beta = ubtou(data.split()[3])
-    except:
-        url_beta = url
+        url_beta = ""
 
     latest = convert_version(latest_label)[0]
     latest_test = convert_version(latest_testlabel)[0]
 
     logging.debug(
-        "Checked for a new release, cur= %s, latest= %s (on %s), latest_test= %s (on %s)",
+        "Checked for a new release, cur=%s, latest=%s (on %s), latest_test=%s (on %s)",
         current,
         latest,
         url,
