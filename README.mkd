@@ -19,7 +19,8 @@ But we still managed to add a few, like extracting fully obfuscated RAR-sets.
 - The Windows installer is 64-bit only, for 32-bit use the standalone package.
 - Growl-support was removed.
 - macOS features such as the menu and notifications now use native code.
-- Built-in internet bandwith test.
+- Built-in internet bandwidth test.
+- TLS1.3 support for newsserver connections.
 
 ## Bugfixes since 2.3.9
 - Sample removal did not work if only 1 sample file was present.
