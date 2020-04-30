@@ -2278,8 +2278,12 @@ class Status:
         log_data  = b'--------------------------------\n\n'
         log_data += b'The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed.'
         log_data += b'\n\n--------------------------------\n'
-        log_data += open(sabnzbd.LOGFILE, "rb").read()
-        log_data += open(config.get_filename(), 'rb').read()
+
+        with open(sabnzbd.LOGFILE, "rb") as f:
+            log_data += f.read()
+
+        with open(config.get_filename(), 'rb') as f:
+            log_data += f.read()
 
         # We need to remove all passwords/usernames/api-keys
         log_data = LOG_API_RE.sub(b"apikey=<APIKEY>", log_data)

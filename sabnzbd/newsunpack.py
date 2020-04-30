@@ -409,30 +409,27 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
             if workdir_complete:
                 filename = filename.replace(workdir, workdir_complete)
             logging.debug("file_join(): Assembling %s", filename)
-            joined_file = open(filename, 'ab')
 
             # Join the segments
-            n = get_seq_number(current[0])
-            seq_error = n > 1
-            for joinable in current:
-                if get_seq_number(joinable) != n:
-                    seq_error = True
-                perc = (100.0 / size) * n
-                logging.debug("Processing %s", joinable)
-                nzo.set_action_line(T('Joining'), '%.0f%%' % perc)
-                f = open(joinable, 'rb')
-                shutil.copyfileobj(f, joined_file, bufsize)
-                f.close()
-                if delete:
-                    remove_file(joinable)
-                n += 1
+            with open(filename, 'ab') as joined_file:
+                n = get_seq_number(current[0])
+                seq_error = n > 1
+                for joinable in current:
+                    if get_seq_number(joinable) != n:
+                        seq_error = True
+                    perc = (100.0 / size) * n
+                    logging.debug("Processing %s", joinable)
+                    nzo.set_action_line(T('Joining'), '%.0f%%' % perc)
+                    with open(joinable, 'rb') as f:
+                        shutil.copyfileobj(f, joined_file, bufsize)
+                    if delete:
+                        remove_file(joinable)
+                    n += 1
 
             # Remove any remaining .1 files
             clean_up_joinables(current)
 
             # Finish up
-            joined_file.flush()
-            joined_file.close()
             newfiles.append(filename)
 
             setname = setname_from_path(joinable_set)
@@ -2386,17 +2383,10 @@ class SevenZip:
         stup, need_shell, command, creationflags = build_command(command)
 
         # Ignore diagnostic output, otherwise it will be appended to content
-        if sabnzbd.WIN32:
-            stderr = open('nul', 'w')
-        else:
-            stderr = open('/dev/null', 'w')
-
-        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stderr,
+        p = Popen(command, shell=need_shell, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
                   startupinfo=stup, creationflags=creationflags)
-
         output = platform_btou(p.stdout.read())
         _ = p.wait()
-        stderr.close()
         return output
 
     def close(self):

@@ -735,9 +735,8 @@ def _read_config(path, try_backup=False):
         try:
             if not sabnzbd.WIN32:
                 prev = os.umask(0o77)
-            fp = open(path, "w")
-            fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
-            fp.close()
+            with open(path, "w") as fp:
+                fp.write("__version__=%s\n[misc]\n[logging]\n" % CONFIG_VERSION)
             if not sabnzbd.WIN32:
                 os.umask(prev)
         except IOError:

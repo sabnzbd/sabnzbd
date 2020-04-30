@@ -593,9 +593,8 @@ def on_cleanup_list(filename, skip_nzb=False):
 def memory_usage():
     try:
         # Probably only works on Linux because it uses /proc/<pid>/statm
-        t = open("/proc/%d/statm" % os.getpid())
-        v = t.read().split()
-        t.close()
+        with open("/proc/%d/statm" % os.getpid()) as t:
+            v = t.read().split()
         virt = int(_PAGE_SIZE * int(v[0]) / MEBI)
         res = int(_PAGE_SIZE * int(v[1]) / MEBI)
         return "V=%sM R=%sM" % (virt, res)

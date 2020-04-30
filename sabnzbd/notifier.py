@@ -72,16 +72,9 @@ NOTIFICATION = {
 
 
 def get_icon():
-    icon = os.path.join(os.path.join(sabnzbd.DIR_PROG, "icons"), "sabnzbd.ico")
-    if not os.path.isfile(icon):
-        icon = os.path.join(sabnzbd.DIR_PROG, "sabnzbd.ico")
-    if os.path.isfile(icon):
-        fp = open(icon, "rb")
-        icon = fp.read()
-        fp.close()
-    else:
-        icon = None
-    return icon
+    icon = os.path.join(sabnzbd.DIR_PROG, "icons", "sabnzbd.ico")
+    with open(icon, "rb") as fp:
+        return fp.read()
 
 
 def have_ntfosd():

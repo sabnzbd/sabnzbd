@@ -112,13 +112,6 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.json()
 
 
-def upload_nzb(filename, host=SAB_HOST, port=SAB_PORT):
-    """ Upload file and return nzo_id reponse """
-    files = {"name": open(filename, "rb")}
-    arguments = {"apikey": "apikey", "mode": "addfile", "output": "json"}
-    return requests.post("http://%s:%s/api" % (host, port), files=files, data=arguments).json()
-
-
 @pytest.mark.usefixtures("start_sabnzbd")
 class SABnzbdBaseTest(unittest.TestCase):
     @classmethod

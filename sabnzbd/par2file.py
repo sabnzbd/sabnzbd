@@ -86,34 +86,29 @@ def parse_par2_file(nzf, fname):
     duplicates16k = []
 
     try:
-        f = open(fname, "rb")
-    except:
-        return table
-
-    try:
-        header = f.read(8)
-        while header:
-            name, filehash, hash16k = parse_par2_file_packet(f, header)
-            if name:
-                table[name] = filehash
-                if hash16k not in nzf.nzo.md5of16k:
-                    nzf.nzo.md5of16k[hash16k] = name
-                elif nzf.nzo.md5of16k[hash16k] != name:
-                    # Not unique and not already linked to this file
-                    # Remove to avoid false-renames
-                    duplicates16k.append(hash16k)
-
+        with open(fname, "rb") as f:
             header = f.read(8)
+            while header:
+                name, filehash, hash16k = parse_par2_file_packet(f, header)
+                if name:
+                    table[name] = filehash
+                    if hash16k not in nzf.nzo.md5of16k:
+                        nzf.nzo.md5of16k[hash16k] = name
+                    elif nzf.nzo.md5of16k[hash16k] != name:
+                        # Not unique and not already linked to this file
+                        # Remove to avoid false-renames
+                        duplicates16k.append(hash16k)
+
+                header = f.read(8)
 
     except (struct.error, IndexError):
         logging.info('Cannot use corrupt par2 file for QuickCheck, "%s"', fname)
-        logging.info("Traceback: ", exc_info=True)
+        logging.debug("Traceback: ", exc_info=True)
         table = {}
     except:
-        logging.debug("QuickCheck parser crashed in file %s", fname)
-        logging.info("Traceback: ", exc_info=True)
+        logging.info("QuickCheck parser crashed in file %s", fname)
+        logging.debug("Traceback: ", exc_info=True)
         table = {}
-    f.close()
 
     # Have to remove duplicates at the end to make sure
     # no trace is left in case of multi-duplicates

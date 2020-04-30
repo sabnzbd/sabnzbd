@@ -989,9 +989,8 @@ def request_repair():
     """ Request a full repair on next restart """
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     try:
-        f = open(path, "w")
-        f.write("\n")
-        f.close()
+        with open(path, "w") as f:
+            f.write("\n")
     except:
         pass
 
@@ -1068,9 +1067,8 @@ def pid_file(pid_path=None, pid_file=None, port=0):
     if DIR_PID:
         try:
             if port:
-                f = open(DIR_PID, "w")
-                f.write("%d\n" % os.getpid())
-                f.close()
+                with open(DIR_PID, "w") as f:
+                    f.write("%d\n" % os.getpid())
             else:
                 filesystem.remove_file(DIR_PID)
         except:

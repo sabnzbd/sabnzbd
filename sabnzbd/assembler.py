@@ -154,28 +154,26 @@ class Assembler(Thread):
 
     def assemble(self, nzf, path):
         """ Assemble a NZF from its table of articles """
-        md5 = hashlib.md5()
-        fout = open(path, 'ab')
-        decodetable = nzf.decodetable
+        with open(path, 'ab') as fout:
+            md5 = hashlib.md5()
+            decodetable = nzf.decodetable
 
-        for articlenum in sorted(decodetable):
-            # Break if deleted during writing
-            if nzf.nzo.status is Status.DELETED:
-                break
+            for articlenum in sorted(decodetable):
+                # Break if deleted during writing
+                if nzf.nzo.status is Status.DELETED:
+                    break
 
-            # Sleep to allow decoder/assembler switching
-            article = decodetable[articlenum]
-            data = ArticleCache.do.load_article(article)
+                # Sleep to allow decoder/assembler switching
+                article = decodetable[articlenum]
+                data = ArticleCache.do.load_article(article)
 
-            if not data:
-                logging.info(T('%s missing'), article)
-            else:
-                # yenc data already decoded, flush it out
-                fout.write(data)
-                md5.update(data)
+                if not data:
+                    logging.info(T('%s missing'), article)
+                else:
+                    # yenc data already decoded, flush it out
+                    fout.write(data)
+                    md5.update(data)
 
-        fout.flush()
-        fout.close()
         set_permissions(path)
         nzf.md5sum = md5.digest()
         return path
