@@ -20,7 +20,7 @@ parts:
     plugin: python
     source: .
     python-version: python3
-    requirements: requirements.txt
+    requirements: [requirements.txt]
     stage-packages: [python3-dev, libdb5.3, unrar, p7zip-full, par2]
     build-packages: [libffi-dev, python3-dev, libssl-dev]
     override-build: |
