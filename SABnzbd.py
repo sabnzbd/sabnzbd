@@ -36,7 +36,6 @@ try:
     import Cheetah
     if Cheetah.Version[0] != '3':
         raise ValueError
-    import six
     import feedparser
     import configobj
     import cherrypy

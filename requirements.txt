@@ -1,4 +1,3 @@
-six
 sabyenc3
 cheetah3
 cryptography
