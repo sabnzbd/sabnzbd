@@ -66,11 +66,10 @@ def addresslookup6(myhost):
 
 def localipv4():
     try:
-        s_ipv4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
-        s_ipv4.connect(("1.2.3.4", 80))
-        ipv4 = s_ipv4.getsockname()[0]
-        s_ipv4.close()
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
+            # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
+            s_ipv4.connect(("1.2.3.4", 80))
+            ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
     return ipv4
@@ -121,11 +120,10 @@ def publicipv4():
 
 def ipv6():
     try:
-        s_ipv6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
-        # IPv6 prefix for documentation purpose
-        s_ipv6.connect(("2001:db8::8080", 80))
-        ipv6_address = s_ipv6.getsockname()[0]
-        s_ipv6.close()
+        with socket.socket(socket.AF_INET6, socket.SOCK_DGRAM) as s_ipv6:
+            # IPv6 prefix for documentation purpose
+            s_ipv6.connect(("2001:db8::8080", 80))
+            ipv6_address = s_ipv6.getsockname()[0]
     except socket.error:
         ipv6_address = None
     return ipv6_address
