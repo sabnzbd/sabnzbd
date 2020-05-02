@@ -167,7 +167,7 @@ def send_notify_osd(title, message):
         return T("Not available")  # : Function is not available on this OS
 
     error = "NotifyOSD not working"
-    icon = os.path.join(sabnzbd.DIR_PROG, "icons", "sabnzbd.ico")
+    icon = os.path.join(sabnzbd.DIR_PROG, "interfaces/Config/templates/staticcfg/images/logo-arrow.svg")
     _NTFOSD = _NTFOSD or notify2.init("icon-summary-body")
     if _NTFOSD:
         logging.info("Send to NotifyOSD: %s / %s", title, message)
