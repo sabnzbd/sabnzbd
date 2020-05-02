@@ -146,7 +146,7 @@ def _api_del_config(name, output, kwargs):
 
 def _api_qstatus(name, output, kwargs):
     """ API: accepts output """
-    info, pnfo_list, bytespersec = build_queue()
+    info, pnfo_list, bytespersec = build_queue(output=output)
     return report(output, data=info)
 
 

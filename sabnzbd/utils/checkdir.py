@@ -9,11 +9,13 @@ import os
 
 debug = False
 
+
 def getcmdoutput(cmd):
     """ execectue cmd, and give back output lines as array """
     with os.popen(cmd) as p:
         outputlines = p.readlines()
     return outputlines
+
 
 def isFAT(check_dir):
     """ Check if "check_dir" is on FAT. FAT considered harmful (for big files)
