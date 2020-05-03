@@ -142,7 +142,6 @@ LOG_ALL = False
 AMBI_LOCALHOST = False
 WIN_SERVICE = None  # Instance of our Win32 Service Class
 BROWSER_URL = None
-CMDLINE = ""  # Rendering of original command line arguments
 
 CERTIFICATE_VALIDATION = True
 NO_DOWNLOADING = False  # When essentials are missing (SABYenc/par2/unrar)
@@ -167,6 +166,9 @@ PYSTONE_SCORE = 0
 DOWNLOAD_DIR_SPEED = 0
 COMPLETE_DIR_SPEED = 0
 INTERNET_BANDWIDTH = 0
+
+# Rendering of original command line arguments in Config
+CMDLINE = " ".join(["\"%s\"" % arg for arg in sys.argv])
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False

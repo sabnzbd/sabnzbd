@@ -1630,14 +1630,6 @@ def HandleCommandLine(allow_service=True):
 
 
 if __name__ == '__main__':
-
-    args = []
-    for txt in sys.argv:
-        if ' ' in txt:
-            txt = '"%s"' % txt
-        args.append(txt)
-    sabnzbd.CMDLINE = ' '.join(args)
-
     # We can only register these in the main thread
     signal.signal(signal.SIGINT, sabnzbd.sig_handler)
     signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
