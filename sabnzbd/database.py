@@ -33,7 +33,7 @@ from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status
 from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
-from sabnzbd.misc import int_conv, caller_name
+from sabnzbd.misc import int_conv, caller_name, opts_to_pp
 from sabnzbd.filesystem import remove_file
 
 DB_LOCK = threading.RLock()
@@ -468,7 +468,7 @@ def build_history_info(
     completed = int(time.time())
     if not downpath:
         downpath = nzo.downpath
-    pp = _PP_LOOKUP.get(sabnzbd.opts_to_pp(*nzo.repair_opts), "X")
+    pp = _PP_LOOKUP.get(opts_to_pp(*nzo.repair_opts), "X")
 
     if script_output:
         # Compress the output of the script

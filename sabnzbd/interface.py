@@ -41,7 +41,7 @@ import sabnzbd.scheduler as scheduler
 
 from Cheetah.Template import Template
 from sabnzbd.misc import to_units, from_units, time_format, calc_age, \
-    int_conv, get_base_url, probablyipv4, probablyipv6
+    int_conv, get_base_url, probablyipv4, probablyipv6, opts_to_pp
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, \
     clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
@@ -768,7 +768,7 @@ class NzoPage:
                 repair = pnfo.repair
                 unpack = pnfo.unpack
                 delete = pnfo.delete
-                unpackopts = sabnzbd.opts_to_pp(repair, unpack, delete)
+                unpackopts = opts_to_pp(repair, unpack, delete)
                 script = pnfo.script
                 if script is None:
                     script = 'None'

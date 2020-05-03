@@ -960,33 +960,6 @@ def load_admin(data_id, remove=False, silent=False):
     return load_data(data_id, cfg.admin_dir.get_path(), remove=remove, silent=silent)
 
 
-def pp_to_opts(pp):
-    """ Convert numeric processing options to (repair, unpack, delete) """
-    # Convert the pp to an int
-    pp = sabnzbd.interface.int_conv(pp)
-    if pp == 0:
-        return False, False, False
-    if pp == 1:
-        return True, False, False
-    if pp == 2:
-        return True, True, False
-    return True, True, True
-
-
-def opts_to_pp(repair, unpack, delete):
-    """ Convert (repair, unpack, delete) to numeric process options """
-    if repair is None:
-        return None
-    pp = 0
-    if repair:
-        pp = 1
-    if unpack:
-        pp = 2
-    if delete:
-        pp = 3
-    return pp
-
-
 def request_repair():
     """ Request a full repair on next restart """
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)

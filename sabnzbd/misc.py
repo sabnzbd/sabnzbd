@@ -152,6 +152,33 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
     return cat, pp, script, priority
 
 
+def pp_to_opts(pp):
+    """ Convert numeric processing options to (repair, unpack, delete) """
+    # Convert the pp to an int
+    pp = sabnzbd.interface.int_conv(pp)
+    if pp == 0:
+        return False, False, False
+    if pp == 1:
+        return True, False, False
+    if pp == 2:
+        return True, True, False
+    return True, True, True
+
+
+def opts_to_pp(repair, unpack, delete):
+    """ Convert (repair, unpack, delete) to numeric process options """
+    if repair is None:
+        return None
+    pp = 0
+    if repair:
+        pp = 1
+    if unpack:
+        pp = 2
+    if delete:
+        pp = 3
+    return pp
+
+
 _wildcard_to_regex = {
     "\\": r"\\",
     "^": r"\^",

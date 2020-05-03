@@ -39,7 +39,7 @@ except ImportError:
 import sabnzbd
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, Status, \
     TOP_PRIORITY, REPAIR_PRIORITY, HIGH_PRIORITY, NORMAL_PRIORITY, LOW_PRIORITY, \
-    KIBI, MEBI, GIGI, JOB_ADMIN
+    KIBI, MEBI, GIGI
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Downloader
@@ -49,10 +49,9 @@ from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
 from sabnzbd.misc import loadavg, to_units, int_conv, time_format,  \
-     cat_convert, create_https_certificates, calc_age
-from sabnzbd.filesystem import diskspace, get_ext, get_filename, globber, \
+     cat_convert, create_https_certificates, calc_age, opts_to_pp
+from sabnzbd.filesystem import diskspace, get_ext, get_filename, \
      globber_full, clip_path, remove_all
-from sabnzbd.filesystem import same_file
 from sabnzbd.encoding import xml_name
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -1275,7 +1274,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         mb = (bytes / MEBI)
 
         slot = {'index': n, 'nzo_id': str(nzo_id)}
-        slot['unpackopts'] = str(sabnzbd.opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
+        slot['unpackopts'] = str(opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
         slot['priority'] = priorities[priority] if priority >= LOW_PRIORITY else priorities[NORMAL_PRIORITY]
         slot['script'] = pnfo.script if pnfo.script else 'None'
         slot['filename'] = pnfo.filename
