@@ -146,6 +146,8 @@ def _api_del_config(name, output, kwargs):
 
 def _api_qstatus(name, output, kwargs):
     """ API: accepts output """
+    # TODO: Remove method after final version
+    logging.warning("The API-method 'qstatus' is deprecated and will be removed in the final version of 3.0.0.")
     info, pnfo_list, bytespersec = build_queue(output=output)
     return report(output, data=info)
 
