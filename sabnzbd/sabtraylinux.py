@@ -19,12 +19,21 @@
 sabnzbd.sabtraylinux - System tray icon for Linux, inspired from the Windows one
 """
 
-from gi.repository import Gtk
-from gi.repository import GObject
+import gi
+from gi.repository import Gtk, GLib
+import logging
+try:
+    gi.require_version('XApp', '1.0')
+    from gi.repository import XApp
+    HAVE_XAPP = True
+    logging.debug("XApp found: %s" % XApp)
+except:
+    HAVE_XAPP = False
+    logging.debug("XApp not available, falling back to Gtk.StatusIcon")
 from time import sleep
 import subprocess
 from threading import Thread
-import logging
+from os.path import abspath
 
 import sabnzbd
 from sabnzbd.panic import launch_a_browser
@@ -38,9 +47,9 @@ from sabnzbd.utils.upload import add_local
 
 class StatusIcon(Thread):
     sabicons = {
-        'default': 'icons/sabnzbd16_32.ico',
-        'green': 'icons/sabnzbd16_32green.ico',
-        'pause': 'icons/sabnzbd16_32paused.ico'
+        'default': abspath('icons/sabnzbd16_32.ico'),
+        'green': abspath('icons/sabnzbd16_32green.ico'),
+        'pause': abspath('icons/sabnzbd16_32paused.ico')
     }
 
     updatefreq = 1000  # ms
@@ -56,18 +65,30 @@ class StatusIcon(Thread):
             logging.debug('language file not loaded, waiting')
 
         self.sabpaused = False
-        self.statusicon = Gtk.StatusIcon()
+        if HAVE_XAPP:
+            self.statusicon = XApp.StatusIcon()
+        else:
+            self.statusicon = Gtk.StatusIcon()
+        self.statusicon.set_name("SABnzbd")
+        self.statusicon.set_visible(True)
         self.icon = self.sabicons['default']
         self.refresh_icon()
         self.tooltip = "SABnzbd"
         self.refresh_tooltip()
-        self.statusicon.connect("popup-menu", self.right_click_event)
+        if HAVE_XAPP:
+            self.statusicon.connect("activate", self.right_click_event)
+        else:
+            self.statusicon.connect("popup-menu", self.right_click_event)
 
-        GObject.timeout_add(self.updatefreq, self.run)
+        GLib.timeout_add(self.updatefreq, self.run)
         Gtk.main()
 
     def refresh_icon(self):
-        self.statusicon.set_from_file(self.icon)
+        if HAVE_XAPP:
+            # icon path must be absolute in XApp
+            self.statusicon.set_icon_name(self.icon)
+        else:
+            self.statusicon.set_from_file(self.icon)
 
     def refresh_tooltip(self):
         self.statusicon.set_tooltip_text(self.tooltip)
@@ -96,17 +117,17 @@ class StatusIcon(Thread):
         """ menu """
         menu = Gtk.Menu()
 
-        maddnzb = Gtk.MenuItem(T("Add NZB"))
-        mshowinterface = Gtk.MenuItem(T("Show interface"))
-        mopencomplete = Gtk.MenuItem(T("Open complete folder"))
-        mrss = Gtk.MenuItem(T("Read all RSS feeds"))
+        maddnzb = Gtk.MenuItem(label=T("Add NZB"))
+        mshowinterface = Gtk.MenuItem(label=T("Show interface"))
+        mopencomplete = Gtk.MenuItem(label=T("Open complete folder"))
+        mrss = Gtk.MenuItem(label=T("Read all RSS feeds"))
 
         if self.sabpaused:
-            mpauseresume = Gtk.MenuItem(T("Resume"))
+            mpauseresume = Gtk.MenuItem(label=T("Resume"))
         else:
-            mpauseresume = Gtk.MenuItem(T("Pause"))
-        mrestart = Gtk.MenuItem(T("Restart"))
-        mshutdown = Gtk.MenuItem(T("Shutdown"))
+            mpauseresume = Gtk.MenuItem(label=T("Pause"))
+        mrestart = Gtk.MenuItem(label=T("Restart"))
+        mshutdown = Gtk.MenuItem(label=T("Shutdown"))
 
         maddnzb.connect("activate", self.addnzb)
         mshowinterface.connect("activate", self.browse)
@@ -125,12 +146,12 @@ class StatusIcon(Thread):
         menu.append(mshutdown)
 
         menu.show_all()
-        menu.popup(None, None, self.statusicon.position_menu, self.statusicon, button, time)
+        menu.popup(None, None, None, self.statusicon, button, time)
 
     def addnzb(self, icon):
         """ menu handlers """
-        dialog = Gtk.FileChooserDialog(title=None, action=Gtk.FileChooserAction.OPEN,
-                                       buttons=(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK))
+        dialog = Gtk.FileChooserDialog(title="SABnzbd - " + T("Add NZB"), action=Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_select_multiple(True)
 
         filter = Gtk.FileFilter()
