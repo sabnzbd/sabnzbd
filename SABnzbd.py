@@ -79,7 +79,7 @@ try:
     import win32ts
     import pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
-    from util.apireg import get_connection_info, set_connection_info, del_connection_info
+    from sabnzbd.utils.apireg import get_connection_info, set_connection_info, del_connection_info
 except ImportError:
     if sabnzbd.WIN32:
         print("Sorry, requires Python module PyWin32.")

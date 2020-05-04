@@ -25,7 +25,7 @@ import pytest
 if not sys.platform.startswith("win"):
     pytest.skip("Skipping Windows-only tests", allow_module_level=True)
 
-import util.apireg as ar
+import sabnzbd.utils.apireg as ar
 
 
 class TestAPIReg:

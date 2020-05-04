@@ -41,7 +41,7 @@ KERNEL32 = None
 
 if os.name == "nt":
     WIN32 = True
-    from util.apireg import del_connection_info
+    from sabnzbd.utils.apireg import del_connection_info
 
     try:
         import ctypes
@@ -168,7 +168,7 @@ COMPLETE_DIR_SPEED = 0
 INTERNET_BANDWIDTH = 0
 
 # Rendering of original command line arguments in Config
-CMDLINE = " ".join(["\"%s\"" % arg for arg in sys.argv])
+CMDLINE = " ".join(['"%s"' % arg for arg in sys.argv])
 
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
@@ -189,8 +189,6 @@ def sig_handler(signum=None, frame=None):
         sabnzbd.zconfig.remove_server()
     finally:
         if sabnzbd.WIN32:
-            from util.apireg import del_connection_info
-
             del_connection_info()
             if sabnzbd.WINTRAY:
                 sabnzbd.WINTRAY.terminate = True

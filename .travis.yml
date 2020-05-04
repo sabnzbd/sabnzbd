@@ -43,6 +43,7 @@ install:
     fi;
   - python3 --version
   - python3 -m pip install --upgrade pip
+  - python3 -m pip install --upgrade wheel
   - python3 -m pip install --upgrade -r requirements.txt
   - python3 -m pip install --upgrade -r tests/requirements.txt
 
@@ -55,7 +56,6 @@ script:
         scripts
         tools
         tests
-        util
         sabnzbd/utils
         sabnzbd/__init__.py
         sabnzbd/cfg.py

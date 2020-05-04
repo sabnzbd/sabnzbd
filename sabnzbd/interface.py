@@ -25,7 +25,6 @@ from datetime import datetime
 import cherrypy
 import logging
 import urllib.request, urllib.parse, urllib.error
-import json
 import re
 import hashlib
 import socket
@@ -59,17 +58,15 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
 
-from sabnzbd.constants import NORMAL_PRIORITY, MEBI, DEF_SKIN_COLORS, \
+from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, \
     DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
 
 from sabnzbd.lang import list_languages
 
 from sabnzbd.api import list_scripts, list_cats, del_from_section, \
-    api_handler, build_queue, build_status, \
-    retry_job, retry_all_jobs, build_header, build_history, del_job_files, \
-    format_bytes, report, del_hist_job, Ttemplate, build_queue_header, \
-    _api_test_email, _api_test_notif
-
+    api_handler, build_queue, build_status, retry_job, retry_all_jobs, \
+    build_header, build_history, format_bytes, report, del_hist_job, Ttemplate, \
+    build_queue_header
 
 ##############################################################################
 # Global constants
@@ -506,8 +503,8 @@ class Wizard:
     def index(self, **kwargs):
         """ Show the language selection page """
         if sabnzbd.WIN32:
-            import util.apireg
-            cfg.language.set(util.apireg.get_install_lng())
+            from sabnzbd.utils.apireg import get_install_lng
+            cfg.language.set(get_install_lng())
             logging.debug('Installer language code "%s"', cfg.language())
 
         info = build_header(sabnzbd.WIZARD_DIR)
