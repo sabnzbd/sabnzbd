@@ -168,7 +168,14 @@ def send_notify_osd(title, message):
 
     error = "NotifyOSD not working"
     icon = os.path.join(sabnzbd.DIR_PROG, "interfaces/Config/templates/staticcfg/images/logo-arrow.svg")
-    _NTFOSD = _NTFOSD or notify2.init("icon-summary-body")
+
+    # Wrap notify2.init to prevent blocking in dbus
+    # when there's no active notification daemon
+    try:
+        _NTFOSD = _NTFOSD or notify2.init("icon-summary-body")
+    except:
+        _NTFOSD = False
+
     if _NTFOSD:
         logging.info("Send to NotifyOSD: %s / %s", title, message)
         try:
