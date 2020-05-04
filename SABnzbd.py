@@ -28,6 +28,7 @@ import getopt
 import signal
 import socket
 import platform
+import subprocess
 import ssl
 import time
 import re
@@ -75,13 +76,11 @@ try:
     import win32evtlogutil
     import win32event
     import win32service
+    import win32ts
     import pywintypes
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
-    from util.mailslot import MailSlot
     from util.apireg import get_connection_info, set_connection_info, del_connection_info
 except ImportError:
-    class MailSlot:
-        pass
     if sabnzbd.WIN32:
         print("Sorry, requires Python module PyWin32.")
         sys.exit(1)
@@ -1336,8 +1335,7 @@ def main():
     # Wait for server to become ready
     cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
-    # Window Service support
-    mail = None
+
     if sabnzbd.WIN32:
         if enable_https:
             mode = 's'
@@ -1345,17 +1343,8 @@ def main():
             mode = ''
         api_url = 'http%s://%s:%s%s/api?apikey=%s' % (mode, browserhost, cherryport, sabnzbd.cfg.url_base(), sabnzbd.cfg.api_key())
 
-        if sabnzbd.WIN_SERVICE:
-            mail = MailSlot()
-            if mail.connect():
-                logging.info('Connected to the SABHelper service')
-                mail.send('api %s' % api_url)
-            else:
-                logging.error(T('Cannot reach the SABHelper service'))
-                mail = None
-        else:
-            # Write URL directly to registry
-            set_connection_info(api_url)
+        # Write URL directly to registry
+        set_connection_info(api_url)
 
     if pid_path or pid_file:
         sabnzbd.pid_file(pid_path, pid_file, cherryport)
@@ -1411,18 +1400,7 @@ def main():
             sabnzbd.LAST_ERROR = None
             sabnzbd.notifier.send_notification(T('Error'), msg, 'error')
 
-        if sabnzbd.WIN_SERVICE:
-            rc = win32event.WaitForMultipleObjects((sabnzbd.WIN_SERVICE.hWaitStop,
-                                                    sabnzbd.WIN_SERVICE.overlapped.hEvent), 0, 3000)
-            if rc == win32event.WAIT_OBJECT_0:
-                if mail:
-                    mail.send('stop')
-                sabnzbd.save_state()
-                logging.info('Leaving SABnzbd')
-                sabnzbd.SABSTOP = True
-                return
-        else:
-            time.sleep(3)
+        time.sleep(3)
 
         # Check for loglevel changes
         if LOG_FLAG:
@@ -1445,9 +1423,6 @@ def main():
             if not sabnzbd.check_all_tasks():
                 autorestarted = True
                 sabnzbd.TRIGGER_RESTART = True
-            # Notify guardian
-            if sabnzbd.WIN_SERVICE and mail:
-                mail.send('active')
         else:
             timer += 1
 
@@ -1475,12 +1450,10 @@ def main():
                 cmd = 'kill -9 %s && open "%s" --args %s' % (my_pid, my_name, my_args)
                 logging.info('Launching: ', cmd)
                 os.system(cmd)
-
-            elif sabnzbd.WIN_SERVICE and mail:
-                logging.info('Asking the SABHelper service for a restart')
-                mail.send('restart')
-                mail.disconnect()
-                return
+            elif sabnzbd.WIN_SERVICE:
+                # Use external service handler to do the restart
+                # Wait 5 seconds to clean up
+                subprocess.Popen('timeout 5 & sc start SABnzbd', shell=True)
             else:
                 cherrypy.engine._do_execv()
 
@@ -1488,9 +1461,6 @@ def main():
 
     if sabnzbd.WINTRAY:
         sabnzbd.WINTRAY.terminate = True
-
-    if sabnzbd.WIN_SERVICE and mail:
-        mail.send('stop')
     if sabnzbd.WIN32:
         del_connection_info()
 
@@ -1507,6 +1477,9 @@ def main():
         except:
             # Failing AppHelper libary!
             os._exit(0)
+    elif sabnzbd.WIN_SERVICE:
+        # Do nothing, let service handle it
+        pass
     else:
         os._exit(0)
 
@@ -1521,21 +1494,23 @@ if sabnzbd.WIN32:
 
     class SABnzbd(win32serviceutil.ServiceFramework):
         """ Win32 Service Handler """
-
         _svc_name_ = 'SABnzbd'
         _svc_display_name_ = 'SABnzbd Binary Newsreader'
-        _svc_deps_ = ["EventLog", "Tcpip", "SABHelper"]
+        _svc_deps_ = ["EventLog", "Tcpip"]
         _svc_description_ = 'Automated downloading from Usenet. ' \
                           'Set to "automatic" to start the service at system startup. ' \
                           'You may need to login with a real user account when you need ' \
                           'access to network shares.'
 
+        # Only SABnzbd-console.exe can print to the console, so the service is installed
+        # from there. But we run SABnzbd.exe so nothing is logged. Logging can cause the
+        # Windows Service to stop because the output buffers are full.
+        if hasattr(sys, "frozen"):
+            _exe_name_ = "SABnzbd.exe"
+
         def __init__(self, args):
             win32serviceutil.ServiceFramework.__init__(self, args)
-
             self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-            self.overlapped = pywintypes.OVERLAPPED()
-            self.overlapped.hEvent = win32event.CreateEvent(None, 0, 0, None)
             sabnzbd.WIN_SERVICE = self
 
         def SvcDoRun(self):
@@ -1546,6 +1521,7 @@ if sabnzbd.WIN32:
             self.Logger(servicemanager.PYS_SERVICE_STOPPED, msg + ' has stopped')
 
         def SvcStop(self):
+            sabnzbd.shutdown_program()
             self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
             win32event.SetEvent(self.hWaitStop)
 
@@ -1562,44 +1538,31 @@ if sabnzbd.WIN32:
                                         (self._svc_name_, msg), text)
 
 
-def prep_service_parms(args):
-    """ Prepare parameter list for service """
-
-    # Must store our original path, because the Python Service launcher
-    # won't give it to us.
-    serv = [os.path.normpath(os.path.abspath(sys.argv[0]))]
-
-    # Convert the tuples to list
-    for arg in args:
-        serv.append(arg[0])
-        if arg[1]:
-            serv.append(arg[1])
-
-    # Make sure we run in daemon mode
-    serv.append('-d')
-    return serv
-
-
 SERVICE_MSG = """
-You may need to set additional Service parameters.
-Run services.msc from a command prompt.
+You may need to set additional Service parameters!
+Verify the settings in Windows Services (services.msc).
 
-Don't forget to install the Service SABnzbd-helper.exe too!
+https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
 """
 
 
-def HandleCommandLine(allow_service=True):
-    """ Handle command line for a Windows Service
-        Prescribed name that will be called by Py2Exe.
-        You MUST set 'cmdline_style':'custom' in the package.py!
-        Returns True when any service commands were detected.
+def handle_windows_service():
+    """ Handle everything for Windows Service
+        Returns True when any service commands were detected or
+        when we have started as a service.
     """
-    service, sab_opts, serv_opts, _upload_nzbs = commandline_handler()
-    if service and not allow_service:
-        # The other frozen apps don't support Services
-        print("For service support, use SABnzbd-service.exe")
+    # Detect if running as Windows Service (only Vista and above!)
+    # Adapted from https://stackoverflow.com/a/55248281/5235502
+    if win32ts.ProcessIdToSessionId(win32api.GetCurrentProcessId()) == 0:
+        servicemanager.Initialize()
+        servicemanager.PrepareToHostSingle(SABnzbd)
+        servicemanager.StartServiceCtrlDispatcher()
         return True
-    elif service:
+
+    # Handle installation and other options
+    service, sab_opts, serv_opts, _upload_nzbs = commandline_handler()
+
+    if service:
         if service in ('install', 'update'):
             # In this case check for required parameters
             path = get_f_option(sab_opts)
@@ -1613,14 +1576,14 @@ def HandleCommandLine(allow_service=True):
             win32serviceutil.HandleCommandLine(SABnzbd, argv=serv_opts)
 
             # Add our own parameter to the Registry
-            sab_opts = prep_service_parms(sab_opts)
             if set_serv_parms(SABnzbd._svc_name_, sab_opts):
                 print(SERVICE_MSG)
             else:
-                print('Cannot set required Registry info.')
+                print('ERROR: Cannot set required registry info.')
         else:
-            # Other service commands need no manipulation
+            # Pass the other commands directly
             win32serviceutil.HandleCommandLine(SABnzbd)
+
     return bool(service)
 
 
@@ -1635,7 +1598,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
 
     if sabnzbd.WIN32:
-        if not HandleCommandLine(allow_service=not hasattr(sys, "frozen")):
+        if not handle_windows_service():
             main()
 
     elif sabnzbd.DARWIN and sabnzbd.FOUNDATION:

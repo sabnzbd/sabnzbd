@@ -16,42 +16,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_win_utils - Testing mailslot communiction on Windows
+tests.test_win_utils - Testing Windows utils
 """
 
-import subprocess
 import sys
-import time
-
 import pytest
 
 if not sys.platform.startswith("win"):
     pytest.skip("Skipping Windows-only tests", allow_module_level=True)
 
 import util.apireg as ar
-
-
-class TestMailslot:
-    def test_mailslot_basic(self):
-        """ Do the basic testing provided by the module """
-        # Start async both processes
-        server_p = subprocess.Popen([sys.executable, "util/mailslot.py", "server"], stdout=subprocess.PIPE)
-        # Need to pause to give server time to listen
-        time.sleep(0.5)
-        client_p = subprocess.Popen([sys.executable, "util/mailslot.py", "client"], stdout=subprocess.PIPE)
-
-        # Server outputs basic response
-        assert server_p.stdout.readlines() == [
-            b"restart\r\n",
-            b"restart\r\n",
-            b"restart\r\n",
-            b"restart\r\n",
-            b"restart\r\n",
-            b"stop\r\n",
-        ]
-
-        # Client outputs nothing
-        assert not client_p.stdout.readlines()
 
 
 class TestAPIReg:

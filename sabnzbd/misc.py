@@ -281,28 +281,36 @@ def get_serv_parms(service):
     """ Get the service command line parameters from Registry """
     import winreg
 
-    value = []
+    service_parms = []
     try:
         key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
         for n in range(winreg.QueryInfoKey(key)[1]):
-            name, value, _val_type = winreg.EnumValue(key, n)
+            name, service_parms, _val_type = winreg.EnumValue(key, n)
             if name == _SERVICE_PARM:
                 break
         winreg.CloseKey(key)
     except WindowsError:
         pass
-    for n in range(len(value)):
-        value[n] = value[n]
-    return value
+
+    # Always add the base program
+    service_parms.insert(0, os.path.normpath(os.path.abspath(sys.argv[0])))
+
+    return service_parms
 
 
 def set_serv_parms(service, args):
     """ Set the service command line parameters in Registry """
     import winreg
 
+    serv = []
+    for arg in args:
+        serv.append(arg[0])
+        if arg[1]:
+            serv.append(arg[1])
+
     try:
         key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
-        winreg.SetValueEx(key, _SERVICE_PARM, None, winreg.REG_MULTI_SZ, args)
+        winreg.SetValueEx(key, _SERVICE_PARM, None, winreg.REG_MULTI_SZ, serv)
         winreg.CloseKey(key)
     except WindowsError:
         return False

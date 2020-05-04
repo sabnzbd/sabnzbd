@@ -55,7 +55,7 @@ DOMAIN = "SABnzbd"
 DOMAIN_EMAIL = "SABemail"
 DOMAIN_NSIS = "SABnsis"
 PARMS = "-d %s -p %s -w500 -k T -k TT -o %s.pot.tmp" % (DOMAIN, PO_DIR, DOMAIN)
-FILES = "SABnzbd.py SABHelper.py SABnzbdDelegate.py sabnzbd/*.py sabnzbd/utils/*.py"
+FILES = "SABnzbd.py sabnzbd/*.py sabnzbd/utils/*.py"
 
 FILE_CACHE = {}
 

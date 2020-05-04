@@ -754,10 +754,11 @@ def system_standby():
 
 def shutdown_program():
     """ Stop program after halting and saving """
-    logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
-    sabnzbd.halt()
-    cherrypy.engine.exit()
-    sabnzbd.SABSTOP = True
+    if not sabnzbd.SABSTOP:
+        logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
+        sabnzbd.halt()
+        cherrypy.engine.exit()
+        sabnzbd.SABSTOP = True
 
 
 def restart_program():
