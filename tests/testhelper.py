@@ -20,6 +20,7 @@ tests.testhelper - Basic helper functions
 """
 
 import os
+import sys
 import time
 import unittest
 from http.client import RemoteDisconnected
@@ -123,6 +124,9 @@ class SABnzbdBaseTest(unittest.TestCase):
         if "CI" in os.environ:
             driver_options.add_argument("--headless")
             driver_options.add_argument("--no-sandbox")
+            # Needed for stability on Linux, doesn't work on Windows
+            if not sys.platform.startswith("win"):
+                driver_options.add_argument("--single-process")
         cls.driver = webdriver.Chrome(options=driver_options)
 
         # Get the newsserver-info, if available
