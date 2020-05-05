@@ -39,47 +39,49 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
     def start_wizard(self):
         # Language-selection
         self.open_page("http://%s:%s/sabnzbd/wizard/" % (SAB_HOST, SAB_PORT))
-        self.driver.find_element_by_id("en").click()
-        self.driver.find_element_by_css_selector(".btn.btn-default").click()
+        self.selenium_wrapper(self.driver.find_element_by_id, "en").click()
+        self.selenium_wrapper(self.driver.find_element_by_css_selector, ".btn.btn-default").click()
 
         # Fill server-info
         self.no_page_crash()
-        host_inp = self.driver.find_element_by_name("host")
+        host_inp = self.selenium_wrapper(self.driver.find_element_by_name, "host")
         host_inp.clear()
         host_inp.send_keys(self.newsserver_host)
-        username_imp = self.driver.find_element_by_name("username")
+        username_imp = self.selenium_wrapper(self.driver.find_element_by_name, "username")
         username_imp.clear()
         username_imp.send_keys(self.newsserver_user)
-        pass_inp = self.driver.find_element_by_name("password")
+        pass_inp = self.selenium_wrapper(self.driver.find_element_by_name, "password")
         pass_inp.clear()
         pass_inp.send_keys(self.newsserver_password)
 
         # With SSL
-        ssl_imp = self.driver.find_element_by_name("ssl")
+        ssl_imp = self.selenium_wrapper(self.driver.find_element_by_name, "ssl")
         if not ssl_imp.get_attribute("checked"):
             ssl_imp.click()
 
         # This will fail if the translations failed to compile!
-        self.driver.find_element_by_partial_link_text("Advanced Settings").click()
+        self.selenium_wrapper(self.driver.find_element_by_partial_link_text, "Advanced Settings").click()
 
         # Lower number of connections to prevent testing errors
-        pass_inp = self.driver.find_element_by_name("connections")
+        pass_inp = self.selenium_wrapper(self.driver.find_element_by_name, "connections")
         pass_inp.clear()
         pass_inp.send_keys(2)
 
         # Test server-check
-        self.driver.find_element_by_id("serverTest").click()
+        self.selenium_wrapper(self.driver.find_element_by_id, "serverTest").click()
         self.wait_for_ajax()
-        self.assertIn("Connection Successful", self.driver.find_element_by_id("serverResponse").text)
+        self.assertIn(
+            "Connection Successful", self.selenium_wrapper(self.driver.find_element_by_id, "serverResponse").text
+        )
 
         # Final page done
-        self.driver.find_element_by_id("next-button").click()
+        self.selenium_wrapper(self.driver.find_element_by_id, "next-button").click()
         self.no_page_crash()
-        check_result = self.driver.find_element_by_class_name("quoteBlock").text
+        check_result = self.selenium_wrapper(self.driver.find_element_by_class_name, "quoteBlock").text
         assert "http://%s:%s/sabnzbd" % (SAB_HOST, SAB_PORT) in check_result
 
         # Go to SAB!
-        self.driver.find_element_by_css_selector(".btn.btn-success").click()
+        self.selenium_wrapper(self.driver.find_element_by_css_selector, ".btn.btn-success").click()
         self.no_page_crash()
 
     def add_nzb_from_url(self, file_url, file_output):
@@ -88,11 +90,13 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
 
         # Wait for modal to open, add URL
-        self.driver.find_element_by_css_selector('a[href="#modal-add-nzb"]').click()
+        self.selenium_wrapper(self.driver.find_element_by_css_selector, 'a[href="#modal-add-nzb"]').click()
         time.sleep(1)
-        self.driver.find_element_by_name("nzbURL").send_keys(file_url)
-        self.driver.find_element_by_name("nzbname").send_keys(test_job_name)
-        self.driver.find_element_by_css_selector('form[data-bind="submit: addNZBFromURL"] input[type="submit"]').click()
+        self.selenium_wrapper(self.driver.find_element_by_name, "nzbURL").send_keys(file_url)
+        self.selenium_wrapper(self.driver.find_element_by_name, "nzbname").send_keys(test_job_name)
+        self.selenium_wrapper(
+            self.driver.find_element_by_css_selector, 'form[data-bind="submit: addNZBFromURL"] input[type="submit"]'
+        ).click()
 
         # We wait for 30 seconds to let it complete
         for _ in range(120):

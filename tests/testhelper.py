@@ -31,6 +31,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import WebDriverException
 from urllib3.exceptions import ProtocolError
 
 import sabnzbd
@@ -165,3 +166,15 @@ class SABnzbdBaseTest(unittest.TestCase):
             wait.until(lambda driver_wait: self.driver.execute_script("return document.readyState") == "complete")
         except (RemoteDisconnected, ProtocolError):
             pass
+
+    def selenium_wrapper(self, func, *args):
+        """ Wrapper with retries for more stable Selenium """
+        for i in range(3):
+            try:
+                return func(*args)
+            except WebDriverException as e:
+                # Try again in 2 seconds!
+                time.sleep(2)
+                pass
+        else:
+            raise e
