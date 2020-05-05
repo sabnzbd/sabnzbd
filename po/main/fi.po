@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-02-26 13:46+0100\n"
+"POT-Creation-Date: 2020-04-20 23:38+0200\n"
 "PO-Revision-Date: 2020-02-10 09:27+0000\n"
 "Last-Translator: tuomass <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-29 06:21+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-04-29 06:36+0000\n"
+"X-Generator: Launchpad (build d1105341713c5be348effe2a5142c4a210ce4cde)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -95,6 +95,10 @@ msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr ""
 "HTTPS on poistettu käytöstä puuttuvien CERT- ja KEY-tiedostojen vuoksi"
 
+#: SABnzbd.py [Warning message]
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr ""
+
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Web-käyttöliittymän käynnistys epäonnistui : "
@@ -115,9 +119,68 @@ msgstr "Varoitus"
 msgid "Error"
 msgstr "Virhe"
 
-#: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
+#: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd sammutus valmis"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Isäntänimeä ei ole asetettu."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Yhteyksiä ei ole asetettu. Aktivoi ainakin yksi yhteys."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Salasana on piilotettu ******, syötä uudelleen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Virheelliset palvelimen tiedot"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Aikakatkaistu: Yritä laittaa SSL päälle tai yhdistä toiseen porttiin."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Aikakatkaistiin"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Virheellinen palvelimen osoite."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Palvelin lopetettiin kesken kirjautumisen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Yhdistäminen onnistui!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -286,10 +349,6 @@ msgstr "%s ei ole kelvollinen sähköpostiosoite"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Palvelimen osoite vaaditaan"
-
-#: sabnzbd/config.py
-msgid "Cannot create %s folder %s"
-msgstr "Ei voitu luoda %s kansiota %s"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -527,11 +586,11 @@ msgstr ""
 "Ole hyvä ja tee lisää tilaa ja jatka SABnzbd käsin.\n"
 "\n"
 
-#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/filesystem.py # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Ei voi luoda kansiota %s"
 
-#: sabnzbd/filesystem.py [Error message]
+#: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
 msgstr "%s kansio: %s virhe käytettäessä"
 
@@ -602,10 +661,6 @@ msgid ""
 msgstr ""
 "Kokeile uutta Glitter teemaa! Uusittu design on optimoitu työpöytä- ja "
 "mobiilikäyttäjille. Mene Asetukset -> Yleiset muuttaaksesi teemaa."
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1400,7 +1455,7 @@ msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 "Vanhan version jono havaittiin, käytä Tila->Korjaa muuntaaksesi jonon"
 
-#: sabnzbd/postproc.py [Warning message]
+#: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
@@ -1422,7 +1477,7 @@ msgstr "Siirretään"
 msgid "Sent %s to queue"
 msgstr "Lähetettiin %s jonoon"
 
-#: sabnzbd/postproc.py [Error message]
+#: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Virhe uudelleennimettäessä \"%s\" nimelle \"%s\""
 
@@ -4765,61 +4820,6 @@ msgstr "NZB tiedostoa ei voida käyttää"
 msgid "URL Fetching failed; %s"
 msgstr "Osoitteen nouto epäonnistui; %s"
 
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Isäntänimeä ei ole asetettu."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Yhteyksiä ei ole asetettu. Aktivoi ainakin yksi yhteys."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Salasana on piilotettu ******, syötä uudelleen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Virheelliset palvelimen tiedot"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Aikakatkaistu: Yritä laittaa SSL päälle tai yhdistä toiseen porttiin."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Aikakatkaistiin"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Tuntematon SSL protokolla: Kokeile ottaa SSL käytöstä tai vaihda porttia."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Virheellinen palvelimen osoite."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Palvelin lopetettiin kesken kirjautumisen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Palvelin vaatii käyttäjänimen ja salasanan."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Yhdistäminen onnistui!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "Liikaa yhteyksiä, keskeytä lataaminen tai yritä myöhemmin uudelleen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
-
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "_yenc moduulia... EI löydy!"
 
@@ -5423,6 +5423,9 @@ msgstr "Yhteystestin lopputulosta ei voitu määrittää (%s)"
 
 #~ msgid "Send notifications to Notification Center"
 #~ msgstr "Lähetä ilmoitukset ilmoituskeskukseen"
+
+#~ msgid "Cannot create %s folder %s"
+#~ msgstr "Ei voitu luoda %s kansiota %s"
 
 #~ msgid "Show Edit Options"
 #~ msgstr "Näytä muokkausvalinnat"

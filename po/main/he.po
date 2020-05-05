@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-02-26 13:46+0100\n"
-"PO-Revision-Date: 2020-03-04 08:36+0000\n"
+"POT-Creation-Date: 2020-04-20 23:38+0200\n"
+"PO-Revision-Date: 2020-05-02 22:50+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-03-05 06:32+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-05-03 06:23+0000\n"
+"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -89,6 +89,10 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "KEY-ו CERT בגלל קבצים חסרים של HTTPS השבית את"
 
+#: SABnzbd.py [Warning message]
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr "בלתי תקפים KEY וקבצי CERT מושבת בגלל קבצי HTTPS"
+
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr "נכשל בהתחלת ממשק-רשת: "
@@ -109,9 +113,66 @@ msgstr "אזהרה"
 msgid "Error"
 msgstr "שגיאה"
 
-#: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
+#: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "הסתיים SABnzbd כיבוי"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr ".שם המארח לא נקבע"
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ".אין חיבורים שנקבעו. אנא קבע לפחות חיבור אחד"
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "סיסמאות מוסוות ב-******, אנא הכנס מחדש"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "פרטי שרת בלתי תקפים"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ".או להתחבר על פתחה שונה SSL אזל הזמן: נסה לאפשר"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "אזל הזמן"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ".או להתחבר על פתחה שונה SSL בלתי ידוע: נסה להשבית SSL פרוטוקול"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr ".כתובת שרת בלתי תקפה"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr ".שרת יצא במהלך רצף כניסות"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr ".השרת דורש שם משתמש וסיסמה"
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "!חיבור מוצלח"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr ".אימות נכשל, בדוק שם משתמש/סיסמה"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "יותר מדי חיבורים, אנא השהה הורדה או נסה שוב מאוחר יותר"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -282,10 +343,6 @@ msgstr "אינה כתובת דוא״ל תקפה %s"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "כתובת שרת דרושה"
-
-#: sabnzbd/config.py
-msgid "Cannot create %s folder %s"
-msgstr "%s תיקייה %s לא יכול ליצור"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -523,11 +580,11 @@ msgstr ""
 ".באופן ידני SABnzbd אנא פנה מקום והמשך את\n"
 "\n"
 
-#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/filesystem.py # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "%s לא יכול ליצור את הספרייה"
 
-#: sabnzbd/filesystem.py [Error message]
+#: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
 msgstr "%s שגיאת גישה :%s ספרייה"
 
@@ -596,10 +653,6 @@ msgid ""
 msgstr ""
 "עיצוב חדש רענן המיועל עבור שולחן עבודה והתקנים ניידים. לך אל תצורה -> כללי "
 "כדי לשנות את עורך !Glitter נסה את העור החדש שלנו"
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr ".אימות נכשל, בדוק שם משתמש/סיסמה"
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1393,7 +1446,7 @@ msgstr ".שגיאה %s: אתה צריך לספק שם משתמש וסיסמה ת
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "תור ישן התגלה, השתמש במעמד->תיקון כדי להמיר את התור"
 
-#: sabnzbd/postproc.py [Warning message]
+#: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
@@ -1417,7 +1470,7 @@ msgstr "מעביר"
 msgid "Sent %s to queue"
 msgstr "לתור %s שלח את"
 
-#: sabnzbd/postproc.py [Error message]
+#: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "\"%s\" אל \"%s\" שגיאה בשינוי שם"
 
@@ -4682,8 +4735,8 @@ msgid ""
 msgstr ""
 "\n"
 ".גרסה 2 או (לבחירתך) כל גרסה שהיא מאוחרת יותר GNU מגיע בהחלט ללא אחריות. זו "
-"תוכנה חינמית, ואתה מוזמן להפיצה מחדש תחת תנאים מסוימים. היא ברשיון תחת רשיון "
-"ציבורי כללי של SABnzbd\n"
+"תוכנה חינמית, ואתה מוזמן להפיצה מחדש תחת תנאים מסוימים. היא ברישיון תחת "
+"רשיון ציבורי כללי של SABnzbd\n"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4732,59 +4785,6 @@ msgstr "בלתי שמיש NZB קובץ"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "%s ;משיכת כתובת נכשלה"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr ".שם המארח לא נקבע"
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ".אין חיבורים שנקבעו. אנא קבע לפחות חיבור אחד"
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "סיסמאות מוסוות ב-******, אנא הכנס מחדש"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "פרטי שרת בלתי תקפים"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ".או להתחבר על פתחה שונה SSL אזל הזמן: נסה לאפשר"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "אזל הזמן"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ".או להתחבר על פתחה שונה SSL בלתי ידוע: נסה להשבית SSL פרוטוקול"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr ".כתובת שרת בלתי תקפה"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr ".שרת יצא במהלך רצף כניסות"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr ".השרת דורש שם משתמש וסיסמה"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "!חיבור מוצלח"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "יותר מדי חיבורים, אנא השהה הורדה או נסה שוב מאוחר יותר"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"
 
 #~ msgid "WARNINGS"
 #~ msgstr "אזהרות"
@@ -4930,6 +4930,9 @@ msgstr "(%s) לא היה ניתן לקבוע תוצאת חיבור"
 
 #~ msgid "Error removing workdir (%s)"
 #~ msgstr "(%s) שגיאה בהסרת תיקיית עבודה"
+
+#~ msgid "Cannot create %s folder %s"
+#~ msgstr "%s תיקייה %s לא יכול ליצור"
 
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "%s (%s -> %s)-ב CRC שגיאת"

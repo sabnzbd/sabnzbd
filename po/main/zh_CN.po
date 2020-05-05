@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-02-26 13:46+0100\n"
+"POT-Creation-Date: 2020-04-20 23:38+0200\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-04-29 06:38+0000\n"
+"X-Generator: Launchpad (build d1105341713c5be348effe2a5142c4a210ce4cde)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -87,6 +87,10 @@ msgstr "SABnzbd 以 %s 编码启动了，正常应该是 UTF-8。会导致下载
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "由于缺少 CERT 及 KEY 文件，已禁用 HTTPS"
 
+#: SABnzbd.py [Warning message]
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr ""
+
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr "无法启动 web 界面: "
@@ -107,9 +111,66 @@ msgstr "警告"
 msgid "Error"
 msgstr "错误"
 
-#: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
+#: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd 关闭完成"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "主机名未设置。"
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "未设置连接。请设置至少一个连接。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "密码会以 ****** 显示，请重新输入"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "服务器信息无效"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "超时: 请尝试启用 SSL 或连接其他端口。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "超时"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "服务器地址无效。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "登录过程中服务器退出。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "服务器需要用户名与密码。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "连接成功!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "身份认证失败，请检查用户名/密码。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "连接数过多，请先暂停下载或稍后再试"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "无法判断连接结果 (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -276,10 +337,6 @@ msgstr "%s 不是有效的电子邮箱地址"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "服务器地址必填"
-
-#: sabnzbd/config.py
-msgid "Cannot create %s folder %s"
-msgstr "无法创建 %s 文件夹 %s"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -515,11 +572,11 @@ msgstr ""
 "请腾出空间再手动让 SABnzbd 续传。\n"
 "\n"
 
-#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/filesystem.py # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "无法创建目录 %s"
 
-#: sabnzbd/filesystem.py [Error message]
+#: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
 msgstr "%s 目录: %s 访问出错"
 
@@ -582,10 +639,6 @@ msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
 msgstr "请尝试我们的新皮肤“Glitter”! 为桌面及移动设备优化的全新设计。请到“配置”->“常规”更改皮肤。"
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "身份认证失败，请检查用户名/密码。"
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1371,7 +1424,7 @@ msgstr "错误 %s: 您需要提供有效的用户名与密码。"
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "侦测到旧版队列，请使用“状态”→“修复”转换队列"
 
-#: sabnzbd/postproc.py [Warning message]
+#: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
@@ -1393,7 +1446,7 @@ msgstr "正在移动"
 msgid "Sent %s to queue"
 msgstr "已将 %s 发送到队列"
 
-#: sabnzbd/postproc.py [Error message]
+#: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "将 \"%s\" 重命名为 \"%s\" 出错"
 
@@ -4641,64 +4694,14 @@ msgstr "不可用的 NZB 文件"
 msgid "URL Fetching failed; %s"
 msgstr "URL 装取失败; %s"
 
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "主机名未设置。"
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "未设置连接。请设置至少一个连接。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "密码会以 ****** 显示，请重新输入"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "服务器信息无效"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "超时: 请尝试启用 SSL 或连接其他端口。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "超时"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "服务器地址无效。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "登录过程中服务器退出。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "服务器需要用户名与密码。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "连接成功!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "连接数过多，请先暂停下载或稍后再试"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "无法判断连接结果 (%s)"
-
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "_yenc 模块... *未* 找到!"
 
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "警告: 由于检测到加密的 RAR 文件，任务 \"%s\" 已暂停"
+
+#~ msgid "Cannot create %s folder %s"
+#~ msgstr "无法创建 %s 文件夹 %s"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "文件夹 \"%s\" 不存在"

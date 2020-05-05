@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-02-26 13:46+0100\n"
-"PO-Revision-Date: 2019-05-15 19:07+0000\n"
-"Last-Translator: Dennis Versteegen <Unknown>\n"
+"POT-Creation-Date: 2020-04-20 23:38+0200\n"
+"PO-Revision-Date: 2020-05-03 15:07+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-29 06:21+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-05-04 04:52+0000\n"
+"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -69,7 +69,7 @@ msgstr "7za-programma niet gevonden."
 
 #: SABnzbd.py [Error message]
 msgid "Essential modules are missing, downloading cannot start."
-msgstr ""
+msgstr "Essentiële onderdelen ontbreken, er kan niet gedownload worden."
 
 #: SABnzbd.py [Warning message]
 msgid ""
@@ -96,6 +96,10 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS is uitgeschakeld vanwege ontbrekende CERT- en KEY-bestanden"
 
+#: SABnzbd.py [Warning message]
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr "HTTPS uitgeschakeld omdat de CERT en KEY-bestanden niet geldig zijn"
+
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Webinterface kon niet gestart worden: "
@@ -116,9 +120,70 @@ msgstr "Waarschuwing"
 msgid "Error"
 msgstr "Fout"
 
-#: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
+#: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd is afgesloten"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Geen hostnaam opgegeven."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Er zijn geen verbindingen opgegeven. Er is minimaal één verbinding nodig."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Wachtwoord gemaskeerd met ******, voer opnieuw in"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Ongeldige servergegevens"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Tijdslimiet overschreden. Probeer met SSL aan of gebruik een andere poort."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Tijdslimiet overschreden"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ongeldige servernaam"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "De server stopte tijdens de login"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Succesvol verbonden!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -296,10 +361,6 @@ msgstr "%s is geen geldig e-mailadres"
 msgid "Server address required"
 msgstr "Serveradres verplicht"
 
-#: sabnzbd/config.py
-msgid "Cannot create %s folder %s"
-msgstr "Niet mogelijk %s map %s aan te maken"
-
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
 msgstr "Schrijven naar het INI-bestand %s lukt niet"
@@ -365,7 +426,7 @@ msgstr "Slecht opgemaakt yEnc-artikel in %s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
+msgstr "UUencode gevonden, alleen yEnc codering wordt ondersteund [%s]"
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -542,11 +603,11 @@ msgstr ""
 "Maak ruimte vrij en laat SABnzbd weer doorgaan.\n"
 "\n"
 
-#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/filesystem.py # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Niet mogelijk directory %s aan te maken"
 
-#: sabnzbd/filesystem.py [Error message]
+#: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
 msgstr "%s directory: fout %s bij toegang"
 
@@ -618,10 +679,6 @@ msgstr ""
 "Probeer onze nieuwe skin Glitter. Compleet nieuw design, geoptimaliseerd "
 "voor desktops en mobiele apparaten. Ga naar Configuratie => Algemeen om de "
 "huidige skin te vervangen."
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -871,7 +928,7 @@ msgstr "Fout '%s' bij uitvoeren van unzip() op %s"
 
 #: sabnzbd/newsunpack.py
 msgid "No 7za binary found, cannot unpack \"%s\""
-msgstr ""
+msgstr "Geen 7za-programma gevonden, kan \"%s\" niet uitpakken"
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -976,7 +1033,7 @@ msgstr "Controleren"
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "[%s] The command in build_command is undefined."
-msgstr ""
+msgstr "[%s] Het commando in build_command is ongedefinieerd"
 
 #: sabnzbd/newsunpack.py [Error message]
 msgid "Python script \"%s\" does not have execute (+x) permission set"
@@ -1041,7 +1098,7 @@ msgstr "Niet beschikbaar"
 
 #: sabnzbd/notifier.py
 msgid "Failed to send macOS notification"
-msgstr ""
+msgstr "Kon macOS notificatie niet verzenden"
 
 #: sabnzbd/notifier.py [Warning message] # sabnzbd/notifier.py
 msgid "Failed to send Prowl message"
@@ -1425,7 +1482,7 @@ msgstr "Fout %s: Je moet een geldige gebruikersnaam en wachtwoord invullen."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Oude wachtrij gevonden, gebruik Status->Reparatie om te converteren"
 
-#: sabnzbd/postproc.py [Warning message]
+#: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
@@ -1450,7 +1507,7 @@ msgstr "Verplaatsen"
 msgid "Sent %s to queue"
 msgstr "%s naar de wachtrij gestuurd"
 
-#: sabnzbd/postproc.py [Error message]
+#: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Fout bij hernoemen van \"%s\" tot \"%s\""
 
@@ -2500,7 +2557,7 @@ msgstr "Kan niet schrijven. Controleer of de map beschrijfbaar is."
 
 #: sabnzbd/skintext.py
 msgid "Internet Bandwidth"
-msgstr ""
+msgstr "Internet Bandbreedte"
 
 #: sabnzbd/skintext.py
 msgid "Click on Repeat test button below to determine"
@@ -2598,6 +2655,10 @@ msgid ""
 "is not possible. OpenSSL 1.0.2 or above and up-to-date local CA certificates "
 "are required."
 msgstr ""
+"Beveiligde (SSL) verbindingen van SABnzbd naar nieuwsservers en HTTPS "
+"websites worden versleuteld, maar het is niet mogelijk de identiteit van de "
+"servers te verifiëren. Voor correcte identificatie zijn OpenSSL 1.0.2 of "
+"hoger en bijgewerkte CA-certificaten benodigd."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4821,63 +4882,6 @@ msgstr "Onbruikbaar NZB-bestand"
 msgid "URL Fetching failed; %s"
 msgstr "URL ophalen mislukt; %s"
 
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Geen hostnaam opgegeven."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Er zijn geen verbindingen opgegeven. Er is minimaal één verbinding nodig."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Wachtwoord gemaskeerd met ******, voer opnieuw in"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ongeldige servergegevens"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Tijdslimiet overschreden. Probeer met SSL aan of gebruik een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Tijdslimiet overschreden"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Onbekend SSL protocol: probeer het zonder SSL of probeer een andere poort."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ongeldige servernaam"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "De server stopte tijdens de login"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Server heeft een gebruikersnaam en een wachtwoord nodig."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Succesvol verbonden!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Te veel verbindingen, onderbreek het downloaden of probeer later nog eens."
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Kan verbindingsresultaat niet bepalen (%s)"
-
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Map \"%s\" bestaat niet."
 
@@ -5519,6 +5523,9 @@ msgstr "Kan verbindingsresultaat niet bepalen (%s)"
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr ""
 #~ "WAARSCHUWING: Taak '%s' is afgebroken vanwege een versleuteld RAR-bestand"
+
+#~ msgid "Cannot create %s folder %s"
+#~ msgstr "Niet mogelijk %s map %s aan te maken"
 
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "CRC-fout in %s (%s -> %s)"

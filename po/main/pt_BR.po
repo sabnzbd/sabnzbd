@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-02-26 13:46+0100\n"
+"POT-Creation-Date: 2020-04-20 23:38+0200\n"
 "PO-Revision-Date: 2018-02-14 14:16+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-04-29 06:37+0000\n"
+"X-Generator: Launchpad (build d1105341713c5be348effe2a5142c4a210ce4cde)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -91,6 +91,10 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS desabilitado pela falta de arquivos CERT e KEY"
 
+#: SABnzbd.py [Warning message]
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr ""
+
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Falha ao iniciar a interface web "
@@ -111,9 +115,68 @@ msgstr "Alerta"
 msgid "Error"
 msgstr "Erro"
 
-#: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
+#: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "Encerramento do SABnzbd concluído"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "O nome do host não foi definido."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Não há conexões definidas. Por favor, defina pelo menos uma conexão."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Senha mascarada em ******, digite novamente"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Detalhes inválidos do servidor"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Tempo esgotado: Tente habilitar o SSL ou conectar em uma porta diferente."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Tempo esgotado"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Endereço do servidor inválido."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Servidor parou durante a sequência de login."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Servidor requer usuário e senha."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Conexão com Sucesso!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "Falha de autenticação, verifique usuário / senha."
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Excesso de conexões, por favor pause o download ou tente novamente mais tarde"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Não foi possível determinar o resultado da conexão (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -282,10 +345,6 @@ msgstr "%s não é um endereço de e-mail válido"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Endereço do servidor necessário"
-
-#: sabnzbd/config.py
-msgid "Cannot create %s folder %s"
-msgstr "Não foi possível criar %s pasta %s"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -525,11 +584,11 @@ msgstr ""
 "Por favor, arrume espaço e continue SABnzbd manualmente.\n"
 "\n"
 
-#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/filesystem.py # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Não é possível criar a pasta %s"
 
-#: sabnzbd/filesystem.py [Error message]
+#: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
 msgstr "pasta %s: %s erro de acesso"
 
@@ -600,10 +659,6 @@ msgid ""
 msgstr ""
 "Teste a nossa nova skin Glitter! Novo design otimizado para desktop e "
 "aparelhos móveis. Vá em Configurações -> Geral para mudar a sua skin"
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Falha de autenticação, verifique usuário / senha."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1398,7 +1453,7 @@ msgstr ""
 "Fila antiga detectada, use \"Situação -> Reparação da fila\" para converter "
 "a fila"
 
-#: sabnzbd/postproc.py [Warning message]
+#: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
@@ -1421,7 +1476,7 @@ msgstr "Movendo"
 msgid "Sent %s to queue"
 msgstr "Enviados %s para a fila"
 
-#: sabnzbd/postproc.py [Error message]
+#: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Erro ao renomear \"%s\" para \"%s\""
 
@@ -4742,61 +4797,6 @@ msgstr "Arquivo NZB inutilizável"
 msgid "URL Fetching failed; %s"
 msgstr "A busca da URL falhou; %s"
 
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "O nome do host não foi definido."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Não há conexões definidas. Por favor, defina pelo menos uma conexão."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Senha mascarada em ******, digite novamente"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Detalhes inválidos do servidor"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Tempo esgotado: Tente habilitar o SSL ou conectar em uma porta diferente."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Tempo esgotado"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Endereço do servidor inválido."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Servidor parou durante a sequência de login."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Servidor requer usuário e senha."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Conexão com Sucesso!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Excesso de conexões, por favor pause o download ou tente novamente mais tarde"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Não foi possível determinar o resultado da conexão (%s)"
-
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "módulo _yenc... NÃO encontrado!"
 
@@ -5100,6 +5100,9 @@ msgstr "Não foi possível determinar o resultado da conexão (%s)"
 #~ msgid "Used when no post-processing is defined by the category."
 #~ msgstr ""
 #~ "Usado quando nenhum pós-processamento estiver definido pela categoria."
+
+#~ msgid "Cannot create %s folder %s"
+#~ msgstr "Não foi possível criar %s pasta %s"
 
 #~ msgid "Used when no user script is defined by the category."
 #~ msgstr "Usado quando nenhum script de usuário é definido pela categoria."

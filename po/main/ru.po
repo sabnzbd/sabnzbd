@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-26 13:46+0100\n"
+"POT-Creation-Date: 2020-04-20 23:38+0200\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-04-29 06:37+0000\n"
+"X-Generator: Launchpad (build d1105341713c5be348effe2a5142c4a210ce4cde)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 #: SABnzbd.py [Error message]
@@ -87,6 +87,10 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS отключён, поскольку отсутствуют файлы CERT и KEY"
 
+#: SABnzbd.py [Warning message]
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr ""
+
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr ""
@@ -107,9 +111,67 @@ msgstr "Предупреждение"
 msgid "Error"
 msgstr ""
 
-#: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
+#: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "Завершение работы SABnzbd закончено"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Не задано имя компьютера."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Подключения не настроены. Добавьте хотя бы одно подключение."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Пароль скрыт под ******. Повторите пароль."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Недопустимые данные сервера"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Тайм-аут. Попробуйте включить SSL или использовать другой порт."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Время ожидания истекло"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Недопустимый адрес сервера."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Во время входа на сервер был выполнен выход."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Для сервера требуется имя пользователя и пароль."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Подключение установлено!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "Ошибка проверки подлинности. Проверьте имя и пароль."
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Слишком много подключений. Приостановите загрузку или повторите попытку позже"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Не удалось определить результат подключения (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -276,10 +338,6 @@ msgstr "%s не является допустимым адресом элект�
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Требуется адрес сервера"
-
-#: sabnzbd/config.py
-msgid "Cannot create %s folder %s"
-msgstr "Не удаётся создать %s папку %s"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -516,11 +574,11 @@ msgstr ""
 "Освободите место на диске и возобновите работу SABnzbd вручную.\n"
 "\n"
 
-#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/filesystem.py # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Не удаётся создать каталог %s"
 
-#: sabnzbd/filesystem.py [Error message]
+#: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
 msgstr "Каталог %s: ошибка доступа %s"
 
@@ -589,10 +647,6 @@ msgid ""
 "Try our new skin Glitter! Fresh new design that is optimized for desktop and "
 "mobile devices. Go to Config -> General to change your skin."
 msgstr ""
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Ошибка проверки подлинности. Проверьте имя и пароль."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1392,7 +1446,7 @@ msgstr "Ошибка %s: укажите действительное имя по
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 
-#: sabnzbd/postproc.py [Warning message]
+#: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
@@ -1414,7 +1468,7 @@ msgstr "Перемещение"
 msgid "Sent %s to queue"
 msgstr "%s отправлено в очередь"
 
-#: sabnzbd/postproc.py [Error message]
+#: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Ошибка переименования «%s» и «%s»"
 
@@ -4727,65 +4781,14 @@ msgstr "Пустой NZB-файл"
 msgid "URL Fetching failed; %s"
 msgstr "Не удалось загрузить URL: %s"
 
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Не задано имя компьютера."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Подключения не настроены. Добавьте хотя бы одно подключение."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Пароль скрыт под ******. Повторите пароль."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Недопустимые данные сервера"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Тайм-аут. Попробуйте включить SSL или использовать другой порт."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Время ожидания истекло"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Недопустимый адрес сервера."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Во время входа на сервер был выполнен выход."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Для сервера требуется имя пользователя и пароль."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Подключение установлено!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Слишком много подключений. Приостановите загрузку или повторите попытку позже"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Не удалось определить результат подключения (%s)"
-
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "Модуль _yenc... НЕ найден"
 
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "ВНИМАНИЕ! Задание «%s» приостановлено из-за зашифрованного RAR-файла"
+
+#~ msgid "Cannot create %s folder %s"
+#~ msgstr "Не удаётся создать %s папку %s"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Папка «%s» не существует"

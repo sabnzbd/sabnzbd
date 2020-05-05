@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-02-26 13:46+0100\n"
+"POT-Creation-Date: 2020-04-20 23:38+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-29 06:21+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-04-29 06:37+0000\n"
+"X-Generator: Launchpad (build d1105341713c5be348effe2a5142c4a210ce4cde)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -93,6 +93,10 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "Deaktiverte HTTPS på grunn av manglende CERT- og KEY-filer."
 
+#: SABnzbd.py [Warning message]
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr ""
+
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Kunne ikke starte webgrensesnittet: "
@@ -113,9 +117,68 @@ msgstr "Advarsel"
 msgid "Error"
 msgstr "Feil"
 
-#: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
+#: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd er nå avsluttet"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Du har ikke stilt inn vertsnavn."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Ingen tilkoblinger er aktivert. Du må aktivere minst en tilkobling."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Passordet er skjult med ******, prøv igjen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Ugyldige server-innstillinger"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Tidsavbrudd: Prøv å aktivere SSL eller bruk en annen port."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Tidsavbrudd"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Ukjent SSL-protokoll: Prøv å deaktivere SSL eller koble til på en annen port."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ugyldig server-adresse."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Server avbrøt undet innloggingssekvens"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Server krever brukernavn og passord."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Tilkobling lyktes!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "Godkjenning mislyktes, kontroller brukernavn og passord."
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"For mange tilkoblinger, sett nedlasting på pause eller prøv igjen senere"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Kunne ikke koble til (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -282,10 +345,6 @@ msgstr "%s er ikke en godkjent e-post-adresse"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Krever server-adresse"
-
-#: sabnzbd/config.py
-msgid "Cannot create %s folder %s"
-msgstr "Kan ikke opprette %s mappe %s"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -522,11 +581,11 @@ msgstr ""
 "Frigjør mer diskplass og gjenoppta nedlasting manuelt.\n"
 "\n"
 
-#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/filesystem.py # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Kan ikke opprette mappe %s"
 
-#: sabnzbd/filesystem.py [Error message]
+#: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
 msgstr "%s mappe: %s tilgang mislyktes"
 
@@ -597,10 +656,6 @@ msgid ""
 msgstr ""
 "Prøv vår nye skin Glitter! Nytt og friskt design som er optimalisert for "
 "stasjonære og mobile enheter. Gå til Konfig -> Generelt for å endre ditt skin"
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Godkjenning mislyktes, kontroller brukernavn og passord."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1393,7 +1448,7 @@ msgstr "Feil %s: Du må oppgi et gyldig brukernavn og passord."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Gammel kø oppdaget. Bruk Status -> Reparer for å konvertere køen"
 
-#: sabnzbd/postproc.py [Warning message]
+#: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
@@ -1415,7 +1470,7 @@ msgstr "Flytter"
 msgid "Sent %s to queue"
 msgstr "Sendte %s til køen"
 
-#: sabnzbd/postproc.py [Error message]
+#: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Kunne ikke endre navn fra \"%s\" til \"%s\""
 
@@ -4725,61 +4780,6 @@ msgstr "Feil, Ubrukelig akrivfil"
 msgid "URL Fetching failed; %s"
 msgstr "URL henting mislyktes; %s"
 
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Du har ikke stilt inn vertsnavn."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Ingen tilkoblinger er aktivert. Du må aktivere minst en tilkobling."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Passordet er skjult med ******, prøv igjen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ugyldige server-innstillinger"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Tidsavbrudd: Prøv å aktivere SSL eller bruk en annen port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Tidsavbrudd"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Ukjent SSL-protokoll: Prøv å deaktivere SSL eller koble til på en annen port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ugyldig server-adresse."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Server avbrøt undet innloggingssekvens"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Server krever brukernavn og passord."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Tilkobling lyktes!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"For mange tilkoblinger, sett nedlasting på pause eller prøv igjen senere"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Kunne ikke koble til (%s)"
-
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Mappen \"%s\" finnes ikke"
 
@@ -5224,6 +5224,9 @@ msgstr "Kunne ikke koble til (%s)"
 
 #~ msgid "KB/s"
 #~ msgstr "KB/s"
+
+#~ msgid "Cannot create %s folder %s"
+#~ msgstr "Kan ikke opprette %s mappe %s"
 
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "ADVARSEL: Jobb \"%s\" satt på pause pga. kryptert RAR-fil"

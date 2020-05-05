@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-02-28 15:30+0000\n"
+"POT-Creation-Date: 2020-04-28 21:31+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-04-29 06:38+0000\n"
+"X-Generator: Launchpad (build d1105341713c5be348effe2a5142c4a210ce4cde)\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
@@ -31,8 +31,8 @@ msgstr "Vennligst lukk \"SABnzbd.exe\" først"
 
 #: NSIS_Installer.nsi
 msgid ""
-"The installation directory has changed (now in \"Program Files\"). \\nIf you "
-"run SABnzbd as a service, you need to update the service settings."
+"The installer only supports 64-bit Windows, use the standalone version to "
+"run on 32-bit Windows."
 msgstr ""
 
 #: NSIS_Installer.nsi

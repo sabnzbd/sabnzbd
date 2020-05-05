@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2020-02-26 13:46+0100\n"
+"POT-Creation-Date: 2020-04-20 23:38+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-02-29 06:22+0000\n"
-"X-Generator: Launchpad (build e0878392dc799b267dea80578fa65500a5d74155)\n"
+"X-Launchpad-Export-Date: 2020-04-29 06:37+0000\n"
+"X-Generator: Launchpad (build d1105341713c5be348effe2a5142c4a210ce4cde)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -89,6 +89,10 @@ msgstr ""
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS onemogućen zbog nedostajućih CERT i KEY datoteka"
 
+#: SABnzbd.py [Warning message]
+msgid "Disabled HTTPS because of invalid CERT and KEY files"
+msgstr ""
+
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr "Neuspešno pokretanje web interfejsa: "
@@ -109,9 +113,67 @@ msgstr "Упозорење"
 msgid "Error"
 msgstr "Грeшкa"
 
-#: SABnzbd.py # sabnzbd/interface.py # sabnzbd/osxmenu.py
+#: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "Гашење SABnzbd је завршено"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Име хоста није унето."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Везе нису подешене. Подесити макар једну везу."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Лозинка сакривена испод ******, поновите унос"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Погрешни детаљи сервера"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Истекло време: Покушајте да упалите SSL или да се привежете на други порт."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Време је истекло"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Погрешна адреса сервера."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Сервер се затворио при пријављивање"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Серверу су потребни име и лозинка."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Успешно привезивање!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "Аутентификација погрешна, проверити име/лозинку."
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "Превише конекција, паузирајте преузимање или поновите касније"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nemoguće odrediti rezultate konekcije (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -280,10 +342,6 @@ msgstr "%s nije ispravna email adresa"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Потребна је адреса сервера"
-
-#: sabnzbd/config.py
-msgid "Cannot create %s folder %s"
-msgstr "Не могу да креирам %s фасциклу %s"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -520,11 +578,11 @@ msgstr ""
 "Molimo Vas napravite mesta i pokrenite download u  SABnzbd ručno.\n"
 "\n"
 
-#: sabnzbd/filesystem.py [Error message] # sabnzbd/sorting.py [Error message]
+#: sabnzbd/filesystem.py # sabnzbd/sorting.py [Error message]
 msgid "Cannot create directory %s"
 msgstr "Немогуће креирати фасциклу %s"
 
-#: sabnzbd/filesystem.py [Error message]
+#: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
 msgstr "Фасцикла %s: %s грешка приступа"
 
@@ -593,10 +651,6 @@ msgid ""
 msgstr ""
 "Isprobajte naš novi izgled Glitter! Svež, nov dizajn koji je optimizovan za "
 "desktop i mobilne uređaje. Idite na Podešavanja->Opšta da promenite izgled."
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Аутентификација погрешна, проверити име/лозинку."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1386,7 +1440,7 @@ msgstr "Грешка %s: Требате да унесете важеће име/
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Стари ред је нађен, употребити Статус->Поправи за претварање реда"
 
-#: sabnzbd/postproc.py [Warning message]
+#: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
@@ -1408,7 +1462,7 @@ msgstr "Премештање"
 msgid "Sent %s to queue"
 msgstr "%s послат у ред"
 
-#: sabnzbd/postproc.py [Error message]
+#: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
 msgstr "Грешка преименовања \"%s\" у \"%s\""
 
@@ -4708,60 +4762,6 @@ msgstr "NZB датотека неупотребљива"
 msgid "URL Fetching failed; %s"
 msgstr "Погрешно учитавање УРЛ-а; %s"
 
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Име хоста није унето."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Везе нису подешене. Подесити макар једну везу."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Лозинка сакривена испод ******, поновите унос"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Погрешни детаљи сервера"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Истекло време: Покушајте да упалите SSL или да се привежете на други порт."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Време је истекло"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Погрешна адреса сервера."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Сервер се затворио при пријављивање"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Серверу су потребни име и лозинка."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Успешно привезивање!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "Превише конекција, паузирајте преузимање или поновите касније"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nemoguće odrediti rezultate konekcije (%s)"
-
 #~ msgid "Step One"
 #~ msgstr "Корак 1"
 
@@ -5222,6 +5222,9 @@ msgstr "Nemoguće odrediti rezultate konekcije (%s)"
 
 #~ msgid "Apply maximum retries only to optional servers"
 #~ msgstr "Примени макс покушаје само на опционе сервере"
+
+#~ msgid "Cannot create %s folder %s"
+#~ msgstr "Не могу да креирам %s фасциклу %s"
 
 #~ msgid "QR Code"
 #~ msgstr "QR Код"
