@@ -1090,7 +1090,6 @@ def test_ipv6():
         with socket.socket(af, socktype, proto) as sock:
             sock.settimeout(2)  # 2 second timeout
             sock.connect(sa[0:2])
-            sock.close()
         logging.debug("Test IPv6: IPv6 test successful. Enabling IPv6")
         return True
     except socket.error:
