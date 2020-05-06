@@ -85,7 +85,7 @@ class DirectUnpacker(threading.Thread):
             self.active_instance.stdin.close()
             self.active_instance.wait(timeout=2)
         except:
-            logging.debug("Exception in reset_active()")
+            logging.debug("Exception in reset_active()", exc_info=True)
             pass
         self.active_instance = None
         self.cur_setname = None
