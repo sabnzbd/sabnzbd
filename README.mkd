@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 3.0.0 Alpha 1
+Release Notes - SABnzbd 3.0.0 Alpha 2
 =========================================================
 
 ## About this new version
@@ -9,10 +9,14 @@ you to let us know of any errors or strange behavior your might notice!
 Unfortunately, this also means that we could not spend much time adding new features.
 But we still managed to add a few, like extracting fully obfuscated RAR-sets.
 
-## What doesn't work yet?
-- Work is still in progress on Windows Service support.
+## Changes since 3.0.0 Alpha 1
+- Files and sockets were not always closed correctly.
+- Windows Service support was restored. It does require you to reinstall the service!
+  Documentation: https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
+- On Windows the Universal C Runtime DLL's are no longer included, all versions of 
+  Windows supported by Microsoft already have these DLL's.
 
-## Big changes
+## Big changes in 3.0.0
 - Python 3.5 and above are the only supported versions of Python.
 - Fully obfuscated RAR-sets with no verification files are detected and extracted.
 - SABYenc, par2 and unrar are now required to start downloading.
