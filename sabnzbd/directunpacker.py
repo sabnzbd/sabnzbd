@@ -81,9 +81,10 @@ class DirectUnpacker(threading.Thread):
         # make sure the process and filehandles are closed nicely:
         try:
             # Creation was done via "self.active_instance = Popen()", so:
-            self.active_instance.stdout.close()
-            self.active_instance.stdin.close()
-            self.active_instance.wait(timeout=2)
+            if self.active_instance:
+                self.active_instance.stdout.close()
+                self.active_instance.stdin.close()
+                self.active_instance.wait(timeout=2)
         except:
             logging.debug("Exception in reset_active()", exc_info=True)
             pass
