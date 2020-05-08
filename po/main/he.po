@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-04-20 23:38+0200\n"
+"POT-Creation-Date: 2020-05-05 14:08+0200\n"
 "PO-Revision-Date: 2020-05-02 22:50+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-03 06:23+0000\n"
+"X-Launchpad-Export-Date: 2020-05-08 04:50+0000\n"
 "X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
 
 #: SABnzbd.py [Error message]
@@ -96,10 +96,6 @@ msgstr "בלתי תקפים KEY וקבצי CERT מושבת בגלל קבצי HTT
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface: "
 msgstr "נכשל בהתחלת ממשק-רשת: "
-
-#: SABnzbd.py [Error message]
-msgid "Cannot reach the SABHelper service"
-msgstr "SABHelper לא ניתן לגשת אל השירות"
 
 #: SABnzbd.py
 msgid "SABnzbd %s started"

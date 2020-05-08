@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-04-28 21:31+0000\n"
+"POT-Creation-Date: 2020-05-07 19:13+0000\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: lrrosa <Unknown>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-04-29 06:38+0000\n"
-"X-Generator: Launchpad (build d1105341713c5be348effe2a5142c4a210ce4cde)\n"
+"X-Launchpad-Export-Date: 2020-05-08 04:51+0000\n"
+"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
@@ -28,6 +28,13 @@ msgstr "Apoie o projeto. Faça uma doação!"
 #: NSIS_Installer.nsi
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Por favor, feche \"SABnzbd.exe\" primeiro"
+
+#: NSIS_Installer.nsi
+msgid ""
+"The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
+"reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
+"services or `Cancel` to cancel this upgrade."
+msgstr ""
 
 #: NSIS_Installer.nsi
 msgid ""
