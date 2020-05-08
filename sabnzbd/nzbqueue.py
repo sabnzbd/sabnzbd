@@ -35,10 +35,9 @@ from sabnzbd.decorators import NzbQueueLocker
 from sabnzbd.constants import QUEUE_FILE_NAME, QUEUE_VERSION, FUTURE_Q_FOLDER, \
     JOB_ADMIN, LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, TOP_PRIORITY, \
     REPAIR_PRIORITY, STOP_PRIORITY, VERIFIED_FILE, \
-    Status, IGNORED_FOLDERS, QNFO
+    Status, IGNORED_FOLDERS, QNFO, DIRECT_WRITE_TRIGGER
 
 import sabnzbd.cfg as cfg
-from sabnzbd.articlecache import ArticleCache
 import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.notifier as notifier
@@ -688,34 +687,35 @@ class NzbQueue:
             logging.debug("Discarding article %s, no longer in queue", article.article)
             return
 
-        file_done, post_done = nzo.remove_article(article, found)
-
-        filename = nzf.filename
+        articles_left, file_done, post_done = nzo.remove_article(article, found)
 
         if nzo.is_gone():
-            logging.debug('Discarding article %s for deleted job', filename)
+            logging.debug('Discarding article %s for deleted job', nzf.filename)
         else:
-            if file_done:
-                if nzo.next_save is None or time.time() > nzo.next_save:
-                    nzo.save_to_disk()
-                    BPSMeter.do.save()
-                    if nzo.save_timeout is None:
-                        nzo.next_save = None
-                    else:
-                        nzo.next_save = time.time() + nzo.save_timeout
-
+            # Write data if file is done or at trigger time
+            if file_done or (articles_left and (articles_left % DIRECT_WRITE_TRIGGER) == 0):
                 if not nzo.precheck:
-                    _type = nzf.type
-
                     # Only start decoding if we have a filename and type
-                    if filename and _type:
-                        Assembler.do.process((nzo, nzf))
-                    elif filename.lower().endswith('.par2'):
+                    # The type is only set if sabyenc could decode the article
+                    if nzf.filename and nzf.type:
+                        Assembler.do.process((nzo, nzf, file_done))
+                    elif nzf.filename.lower().endswith('.par2'):
                         # Broken par2 file, try to get another one
                         nzo.promote_par2(nzf)
                     else:
                         if file_has_articles(nzf):
-                            logging.warning(T('%s -> Unknown encoding'), filename)
+                            logging.warning(T('%s -> Unknown encoding'), nzf.filename)
+
+            # Save bookkeeping in case of crash
+            if file_done and (nzo.next_save is None or time.time() > nzo.next_save):
+                nzo.save_to_disk()
+                BPSMeter.do.save()
+                if nzo.save_timeout is None:
+                    nzo.next_save = None
+                else:
+                    nzo.next_save = time.time() + nzo.save_timeout
+
+            # Remove post from Queue
             if post_done:
                 self.end_job(nzo)
 
@@ -737,7 +737,7 @@ class NzbQueue:
                 else:
                     # Not enough data, let postprocessor show it as failed
                     pass
-            Assembler.do.process((nzo, None))
+            Assembler.do.process((nzo, None, None))
 
     def actives(self, grabs=True):
         """ Return amount of non-paused jobs, optionally with 'grabbing' items
