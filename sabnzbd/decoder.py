@@ -214,6 +214,9 @@ class Decoder(Thread):
         # Let SABYenc do all the heavy lifting
         decoded_data, output_filename, crc, crc_expected, crc_correct = sabyenc3.decode_usenet_chunks(raw_data, article.bytes)
 
+        # Mark as decoded
+        article.decoded = True
+
         # Assume it is yenc
         article.nzf.type = 'yenc'
 

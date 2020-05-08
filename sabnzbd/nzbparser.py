@@ -77,7 +77,7 @@ def nzbfile_parser(raw_data, nzo):
                 nzo.groups.append(group.text)
 
         # Get segments
-        article_db = {}
+        raw_article_db = {}
         file_bytes = 0
         if file.find("segments"):
             for segment in file.find("segments").iter("segment"):
@@ -90,12 +90,12 @@ def nzbfile_parser(raw_data, nzo):
                     md5sum.update(utob(article_id))
 
                     # Duplicate parts?
-                    if partnum in article_db:
-                        if article_id != article_db[partnum][0]:
+                    if partnum in raw_article_db:
+                        if article_id != raw_article_db[partnum][0]:
                             logging.info(
                                 "Duplicate part %s, but different ID-s (%s // %s)",
                                 partnum,
-                                article_db[partnum][0],
+                                raw_article_db[partnum][0],
                                 article_id,
                             )
                             nzo.increase_bad_articles_counter("duplicate_articles")
@@ -107,14 +107,17 @@ def nzbfile_parser(raw_data, nzo):
                         logging.info("Skipping article %s due to strange size (%s)", article_id, segment_size)
                         nzo.increase_bad_articles_counter("bad_articles")
                     else:
-                        article_db[partnum] = (article_id, segment_size)
+                        raw_article_db[partnum] = (article_id, segment_size)
                         file_bytes += segment_size
                 except:
                     # In case of missing attributes
                     pass
 
+        # Sort the articles by part number, compatible with Python 3.5
+        raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db.keys())]
+
         # Create NZF
-        nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, article_db, file_bytes, nzo)
+        nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
 
         # Add valid NZF's
         if file_name and nzf.valid and nzf.nzf_id:

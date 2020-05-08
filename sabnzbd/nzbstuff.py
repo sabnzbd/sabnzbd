@@ -39,7 +39,7 @@ from sabnzbd.misc import to_units, cat_to_opts, cat_convert, int_conv, \
 from sabnzbd.filesystem import sanitize_foldername, get_unique_path, get_admin_path, \
     remove_all, sanitize_filename, globber_full, set_permissions, long_path, \
     trim_win_path, fix_unix_encoding, is_obfuscated_filename, get_ext, get_filename, \
-    get_unique_filename, renamer, remove_file
+    get_unique_filename, renamer, remove_file, get_filepath
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -102,7 +102,7 @@ class TryList:
 # Article
 ##############################################################################
 ArticleSaver = (
-    'article', 'art_id', 'bytes', 'partnum', 'lowest_partnum', 'nzf'
+    'article', 'art_id', 'bytes', 'lowest_partnum', 'decoded', 'on_disk', 'nzf'
 )
 
 
@@ -111,15 +111,16 @@ class Article(TryList):
     # Pre-define attributes to save memory
     __slots__ = ArticleSaver + ('fetcher', 'fetcher_priority', 'tries')
 
-    def __init__(self, article, article_bytes, partnum, nzf):
+    def __init__(self, article, article_bytes, nzf):
         TryList.__init__(self)
         self.fetcher = None
         self.article = article
         self.art_id = None
         self.bytes = article_bytes
-        self.partnum = partnum
         self.lowest_partnum = False
         self.tries = 0  # Try count
+        self.decoded = False
+        self.on_disk = False
         self.nzf = nzf
 
     def get_article(self, server, servers):
@@ -206,27 +207,27 @@ class Article(TryList):
         self.tries = 0
 
     def __repr__(self):
-        return "<Article: article=%s, bytes=%s, partnum=%s, art_id=%s>" % \
-               (self.article, self.bytes, self.partnum, self.art_id)
+        return "<Article: article=%s, bytes=%s, art_id=%s>" % \
+               (self.article, self.bytes, self.art_id)
 
 
 ##############################################################################
 # NzbFile
 ##############################################################################
 NzbFileSaver = (
-    'date', 'subject', 'filename', 'filename_checked', 'type', 'is_par2', 'vol',
-    'blocks', 'setname', 'articles', 'decodetable', 'bytes', 'bytes_left',
-    'article_count', 'nzo', 'nzf_id', 'deleted', 'valid', 'import_finished',
-    'md5sum', 'md5of16k'
+    'date', 'subject', 'filename', 'filename_checked', 'filepath', 'type',
+    'is_par2', 'vol', 'blocks', 'setname', 'articles', 'decodetable', 'bytes',
+    'bytes_left', 'article_count', 'nzo', 'nzf_id', 'deleted', 'valid',
+    'import_finished', 'md5sum', 'md5of16k'
 )
 
 
 class NzbFile(TryList):
     """ Representation of one file consisting of multiple articles """
      # Pre-define attributes to save memory
-    __slots__ = NzbFileSaver
+    __slots__ = NzbFileSaver + ('md5',)
 
-    def __init__(self, date, subject, article_db, file_bytes, nzo):
+    def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """ Setup object """
         TryList.__init__(self)
 
@@ -235,14 +236,16 @@ class NzbFile(TryList):
         self.type = None
         self.filename = name_extractor(subject)
         self.filename_checked = False
+        self.filepath = None
 
         self.is_par2 = False
         self.vol = None
         self.blocks = None
         self.setname = None
 
+        # Articles are removed from "articles" after being fetched
         self.articles = []
-        self.decodetable = {}
+        self.decodetable = []
 
         self.bytes = file_bytes
         self.bytes_left = file_bytes
@@ -254,26 +257,26 @@ class NzbFile(TryList):
         self.valid = False
         self.import_finished = False
 
+        self.md5 = None
         self.md5sum = None
         self.md5of16k = None
 
-        self.valid = bool(article_db)
+        self.valid = bool(raw_article_db)
 
         if self.valid and self.nzf_id:
-            # Save first article seperate, but not for all but first par2 file
+            # Save first article separate, but not for all but first par2 file
             # Non-par2 files and the first par2 will have no volume and block number
             setname, vol, block = sabnzbd.par2file.analyse_par2(self.filename)
             if not vol and not block:
-                first_num = min(article_db.keys())
-                first_article = self.add_article(article_db.pop(first_num), first_num)
+                first_article = self.add_article(raw_article_db.pop(0))
                 first_article.lowest_partnum = True
                 self.nzo.first_articles.append(first_article)
                 self.nzo.first_articles_count += 1
 
             # Any articles left?
-            if article_db:
+            if raw_article_db:
                 # Save the rest
-                sabnzbd.save_data(article_db, self.nzf_id, nzo.workpath)
+                sabnzbd.save_data(raw_article_db, self.nzf_id, nzo.workpath)
             else:
                 # All imported
                 self.import_finished = True
@@ -281,23 +284,23 @@ class NzbFile(TryList):
     def finish_import(self):
         """ Load the article objects from disk """
         logging.debug("Finishing import on %s", self.filename)
-        article_db = sabnzbd.load_data(self.nzf_id, self.nzo.workpath, remove=False)
-        if article_db:
-            for partnum in article_db:
-                self.add_article(article_db[partnum], partnum)
+        raw_article_db = sabnzbd.load_data(self.nzf_id, self.nzo.workpath, remove=False)
+        if raw_article_db:
+            for raw_article in raw_article_db:
+                self.add_article(raw_article)
 
             # Make sure we have labeled the lowest part number
             # Also when DirectUnpack is disabled we need to know
-            self.decodetable[min(self.decodetable)].lowest_partnum = True
+            self.decodetable[0].lowest_partnum = True
 
             # Mark safe to continue
             self.import_finished = True
 
-    def add_article(self, article_info, partnum):
+    def add_article(self, article_info):
         """ Add article to object database and return article object """
-        article = Article(article_info[0], article_info[1], partnum, self)
+        article = Article(article_info[0], article_info[1], self)
         self.articles.append(article)
-        self.decodetable[partnum] = article
+        self.decodetable.append(article)
         return article
 
     def remove_article(self, article, found):
@@ -306,8 +309,7 @@ class NzbFile(TryList):
             self.articles.remove(article)
             if found:
                 self.bytes_left -= article.bytes
-
-        return not self.articles
+        return len(self.articles)
 
     def set_par2(self, setname, vol, blocks):
         """ Designate this this file as a par2 file """
@@ -329,6 +331,15 @@ class NzbFile(TryList):
         for art in self.articles:
             art.reset_try_list()
         self.reset_try_list()
+
+    def prepare_filepath(self):
+        """ Do all checks before making the final path """
+        if not self.filepath:
+            self.nzo.verify_nzf_filename(self)
+            filename = sanitize_filename(self.filename)
+            self.filepath = get_filepath(long_path(cfg.download_dir.get_path()), self.nzo, filename)
+            self.filename = get_filename(self.filepath)
+        return self.filepath
 
     @property
     def completed(self):
@@ -360,6 +371,9 @@ class NzbFile(TryList):
                 # Handle new attributes
                 setattr(self, item, None)
         TryList.__setstate__(self, dict_.get('try_list', []))
+
+        # Set non-transferable values
+        self.md5 = None
 
     def __repr__(self):
         return "<NzbFile: filename=%s, type=%s>" % (self.filename, self.type)
@@ -931,7 +945,8 @@ class NzbObject(TryList):
                     job_can_succeed = self.check_first_article_availability()
 
         # Remove from file-tracking
-        file_done = nzf.remove_article(article, found)
+        articles_left = nzf.remove_article(article, found)
+        file_done = not articles_left
 
         # Only on fully loaded files we can say if it's really done
         if not nzf.import_finished:
@@ -977,7 +992,7 @@ class NzbObject(TryList):
             self.status = Status.QUEUED
             self.set_download_report()
 
-        return file_done, post_done
+        return articles_left, file_done, post_done
 
     @synchronized(NZO_LOCK)
     def remove_saved_article(self, article):
@@ -1443,6 +1458,10 @@ class NzbObject(TryList):
         """ Get filename from par2-info or from yenc """
         # Already done?
         if nzf.filename_checked:
+            return
+
+        # If writing already started, we can't rename anymore
+        if nzf.filepath:
             return
 
         # If we have the md5, use it to rename
