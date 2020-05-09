@@ -6,9 +6,9 @@ Method: get one or more files, and measure how long it takes
 Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
 """
 
-import sys
 import time
 import logging
+import urllib.request
 
 SizeUrlList = [
     [5, "https://sabnzbd.org/tests/internetspeed/5MB.bin"],
@@ -23,18 +23,8 @@ def measurespeed(url):
     start = time.time()
     downloadedbytes = 0  # default
     try:
-        if sys.version_info[0] == 2:
-            import urllib2  # python2
-
-            req = urllib2.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-            downloadedbytes = len(urllib2.urlopen(req, timeout=4).read())
-        elif sys.version_info[0] == 3:
-            import urllib.request  # python3
-
-            req = urllib.request.Request(url, data=None, headers={"User-Agent": "Mozilla/5.0 (Macintosh)"})
-            downloadedbytes = len(urllib.request.urlopen(req, timeout=4).read())
-        else:
-            logging.error("ERROR: no python version?!")
+        req = urllib.request.Request(url, data=None, headers={"User-Agent": "Mozilla/5.0 (Macintosh)"})
+        downloadedbytes = len(urllib.request.urlopen(req, timeout=4).read())
     except:
         # No connection at all?
         pass
