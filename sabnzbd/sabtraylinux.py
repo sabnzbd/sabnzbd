@@ -25,9 +25,11 @@ import logging
 try:
     gi.require_version('XApp', '1.0')
     from gi.repository import XApp
+    if not hasattr(XApp, 'StatusIcon'):
+        raise ImportError
     HAVE_XAPP = True
     logging.debug("XApp found: %s" % XApp)
-except:
+except Exception:
     HAVE_XAPP = False
     logging.debug("XApp not available, falling back to Gtk.StatusIcon")
 from time import sleep
