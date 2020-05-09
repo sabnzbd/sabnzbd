@@ -759,7 +759,7 @@ class Downloader(Thread):
                 return f
         return None
 
-    def __reset_nw(self, nw, errormsg, warn=True, wait=True, destroy=False, quit=False):
+    def __reset_nw(self, nw, reset_msg, warn=True, wait=True, destroy=False, quit=False):
         server = nw.server
         article = nw.article
         fileno = None
@@ -772,11 +772,11 @@ class Downloader(Thread):
                 destroy = True
             nw.nntp.error_msg = None
 
-        if warn and errormsg:
-            server.warning = errormsg
-            logging.info('Thread %s@%s: ' + errormsg, nw.thrdnum, server.host)
-        elif errormsg:
-            logging.info('Thread %s@%s: ' + errormsg, nw.thrdnum, server.host)
+        if warn and reset_msg:
+            server.warning = reset_msg
+            logging.info('Thread %s@%s: %s', nw.thrdnum, server.host, reset_msg)
+        elif reset_msg:
+            logging.debug('Thread %s@%s: %s', nw.thrdnum, server.host, reset_msg)
 
         if nw in server.busy_threads:
             server.busy_threads.remove(nw)
