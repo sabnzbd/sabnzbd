@@ -167,7 +167,7 @@ class DirectUnpacker(threading.Thread):
 
         # Need to read char-by-char because there's no newline after new-disk message
         while 1:
-            if not self.active_instance:
+            if not self.active_instance or not self.active_instance.stdout:
                 break
 
             char = platform_btou(self.active_instance.stdout.read(1))
