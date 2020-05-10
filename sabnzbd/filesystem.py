@@ -122,8 +122,8 @@ def has_win_device(p):
 
 CH_ILLEGAL = "/"
 CH_LEGAL = "+"
-CH_ILLEGAL_WIN = '\/<>?*|"\t:'
-CH_LEGAL_WIN = "++{}!@#'+-"
+CH_ILLEGAL_WIN = r'\/<>?*|"\t:'
+CH_LEGAL_WIN = r"++{}!@#'+-"
 
 
 def sanitize_filename(name):
