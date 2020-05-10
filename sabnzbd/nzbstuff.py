@@ -286,6 +286,10 @@ class NzbFile(TryList):
         logging.debug("Finishing import on %s", self.filename)
         raw_article_db = sabnzbd.load_data(self.nzf_id, self.nzo.workpath, remove=False)
         if raw_article_db:
+            # Convert 2.x.x jobs
+            if isinstance(raw_article_db, dict):
+                raw_article_db = [raw_article_db[partnum] for partnum in sorted(raw_article_db.keys())]
+
             for raw_article in raw_article_db:
                 self.add_article(raw_article)
 
@@ -371,6 +375,10 @@ class NzbFile(TryList):
                 # Handle new attributes
                 setattr(self, item, None)
         TryList.__setstate__(self, dict_.get('try_list', []))
+
+        # Convert 2.x.x jobs
+        if isinstance(self.decodetable, dict):
+            self.decodetable = [self.decodetable[partnum] for partnum in sorted(self.decodetable.keys())]
 
         # Set non-transferable values
         self.md5 = None
