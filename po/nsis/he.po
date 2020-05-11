@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2020-05-07 19:13+0000\n"
-"PO-Revision-Date: 2020-05-02 22:48+0000\n"
+"PO-Revision-Date: 2020-05-10 13:54+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:51+0000\n"
+"X-Launchpad-Export-Date: 2020-05-11 06:01+0000\n"
 "X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
 
 #: NSIS_Installer.nsi
@@ -35,6 +35,9 @@ msgid ""
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
 msgstr ""
+"שירות SABnzbd Windows השתנה בגרסה SABnzbd 3.0.0. \\nתצטרך להתקין מחדש את "
+"השירות SABnzbd. \\n\\nלחץ `אשר` כדי להסיר את השירותים הקיימים או `בטל` כדי "
+"לבטל שדרוג זה."
 
 #: NSIS_Installer.nsi
 msgid ""
@@ -50,7 +53,7 @@ msgstr "זה יסיר את SABnzbd ממערכתך"
 
 #: NSIS_Installer.nsi
 msgid "Run at startup"
-msgstr "הפעל בהזנק"
+msgstr "הפעלה בהזנק"
 
 #: NSIS_Installer.nsi
 msgid "Desktop Icon"
@@ -58,7 +61,7 @@ msgstr "צלמית שולחן עבודה"
 
 #: NSIS_Installer.nsi
 msgid "NZB File association"
-msgstr "שיוך קבצי NZB"
+msgstr "NZB שיוך קבצי"
 
 #: NSIS_Installer.nsi
 msgid "Delete Program"

@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2020-05-05 14:08+0200\n"
-"PO-Revision-Date: 2020-05-02 22:50+0000\n"
+"PO-Revision-Date: 2020-05-10 14:15+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:50+0000\n"
+"X-Launchpad-Export-Date: 2020-05-11 06:01+0000\n"
 "X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
 
 #: SABnzbd.py [Error message]
@@ -914,7 +914,7 @@ msgstr "בדיקה זריזה"
 
 #: sabnzbd/newsunpack.py # sabnzbd/skintext.py [PP phase "repair"] # sabnzbd/skintext.py
 msgid "Repair"
-msgstr "תיקון"
+msgstr "תקן"
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Quick Check OK"
@@ -2406,7 +2406,7 @@ msgstr ".זה ישלח דוא״ל בדיקה לחשבונך"
 
 #: sabnzbd/skintext.py [Status page button]
 msgid "Show Logging"
-msgstr "הראה יומן אירועים"
+msgstr "הראה יומן"
 
 #: sabnzbd/skintext.py [Status page button]
 msgid "Test Email"
@@ -2575,8 +2575,8 @@ msgid ""
 "/>reconstruction of the queue content, preserving already downloaded "
 "files.<br />This will modify the queue order."
 msgstr ""
-"ויעשה בניה מחדש מלאה של SABnzbd כפתור התיקון יפעיל מחדש את<br>.תוכן התור, "
-"תוך שימור קבצים שהורדו כבר. זה ישנה את סדר התור"
+"ויעשה בנייה מחדש SABnzbd הכפתור \"תקן\" יפעיל מחדש את<br />.מלאה של תוכן "
+"התור, תוך שימור קבצים שהורדו כבר<br />.זה ישנה את סדר התור"
 
 #: sabnzbd/skintext.py
 msgid "Changes have not been saved, and will be lost."
@@ -4344,7 +4344,7 @@ msgstr "שנה שם"
 
 #: sabnzbd/skintext.py
 msgid "Queue repair"
-msgstr "תיקון תור"
+msgstr "תקן תור"
 
 #: sabnzbd/skintext.py
 msgid "Show active connections"
@@ -4428,7 +4428,7 @@ msgstr "מותאם"
 
 #: sabnzbd/skintext.py
 msgid "Compact layout"
-msgstr "פריסה צמומה"
+msgstr "פריסה צפופה"
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
@@ -4467,8 +4467,8 @@ msgid ""
 "All usernames, passwords and API-keys are automatically removed from the log "
 "and the included copy of your settings."
 msgstr ""
-".מוסרים באופן אוטומטי מהיומן ומהעותק הכלול של ההגדרות שלך API-כל שמות "
-"המשתמש, הסיסמאות ומפתחות ה"
+"כל שמות המשתמש, הסיסמאות ומפתחות האיי־פי־היי מוסרים באופן אוטומטי מהיומן "
+"ומהעותק הכלול של ההגדרות שלך"
 
 #: sabnzbd/skintext.py
 msgid "Sort by Age <small>Oldest&rarr;Newest</small>"
