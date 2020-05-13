@@ -122,7 +122,7 @@ def has_win_device(p):
 
 CH_ILLEGAL = "/"
 CH_LEGAL = "+"
-CH_ILLEGAL_WIN = '\/<>?*|"\t:'
+CH_ILLEGAL_WIN = '\\/<>?*|"\t:'
 CH_LEGAL_WIN = "++{}!@#'+-"
 
 

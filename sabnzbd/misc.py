@@ -803,7 +803,7 @@ def probablyipv4(ip):
 def probablyipv6(ip):
     # Returns True if the given input is probably an IPv6 address
     # Square Brackets like '[2001::1]' are OK
-    if ip.count(":") >= 2 and re.sub("[0123456789abcdefABCDEF:\[\]]", "", ip) == "":
+    if ip.count(":") >= 2 and re.sub(r"[0123456789abcdefABCDEF:\[\]]", "", ip) == "":
         return True
     else:
         return False

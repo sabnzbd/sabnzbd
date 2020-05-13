@@ -775,8 +775,8 @@ def _get_link(entry):
 
     # Maybe the newznab also provided SxxExx info
     try:
-        season = re.findall("\d+", entry["newznab"]["season"])[0]
-        episode = re.findall("\d+", entry["newznab"]["episode"])[0]
+        season = re.findall(r"\d+", entry["newznab"]["season"])[0]
+        episode = re.findall(r"\d+", entry["newznab"]["episode"])[0]
     except (KeyError, IndexError):
         season = episode = 0
 

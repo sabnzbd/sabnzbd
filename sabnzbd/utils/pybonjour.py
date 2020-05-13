@@ -1707,7 +1707,7 @@ def DNSServiceReconfirmRecord(
 
 def DNSServiceConstructFullName(service=None, regtype=_NO_DEFAULT, domain=_NO_DEFAULT):
 
-    """
+    r"""
 
     Concatenate a three-part domain name (as returned by a callback
     function) into a properly-escaped full domain name.  Note that
