@@ -61,9 +61,6 @@ class BadYenc(Exception):
         Exception.__init__(self)
 
 
-YDEC_TRANS = ''.join([chr((i + 256 - 42) % 256) for i in range(256)])
-
-
 class Decoder(Thread):
 
     def __init__(self, servers, queue):

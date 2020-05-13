@@ -201,10 +201,9 @@ class Downloader(Thread):
 
         self.decoder_queue = queue.Queue()
 
-        # Initialize decoders, only 1 for non-SABYenc
+        # Initialize decoders
         self.decoder_workers = []
-        nr_decoders = 2 if sabnzbd.decoder.SABYENC_ENABLED else 1
-        for i in range(nr_decoders):
+        for i in range(2):
             self.decoder_workers.append(Decoder(self.servers, self.decoder_queue))
 
         Downloader.do = self
