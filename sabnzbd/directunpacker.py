@@ -425,7 +425,7 @@ class DirectUnpacker(threading.Thread):
                 if one_folder:
                     # RarFile can fail for mysterious reasons
                     try:
-                        rar_contents = RarFile(os.path.join(self.nzo.downpath, rarfile_nzf.filename), all_names=True).filelist()
+                        rar_contents = RarFile(os.path.join(self.nzo.downpath, rarfile_nzf.filename), single_file_check=True).filelist()
                         for rm_file in rar_contents:
                             # Flat-unpack, so remove foldername from RarFile output
                             f = os.path.join(extraction_path, os.path.basename(rm_file))
