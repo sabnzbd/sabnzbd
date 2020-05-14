@@ -22,6 +22,9 @@ def isFAT(check_dir):
         Works for Linux, Windows, MacOS
         NB: On Windows, full path with drive letter is needed!
     """
+    if not (os.path.isdir(check_dir) or os.path.isfile(check_dir)):
+        # Not a dir, not a file ... so not FAT:
+        return False
 
     FAT = False  # default: not FAT
     # We're dealing with OS calls, so put everything in a try/except, just in case:
