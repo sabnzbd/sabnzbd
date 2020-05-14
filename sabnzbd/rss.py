@@ -330,7 +330,7 @@ class RSSQueue:
             if not entries:
                 return msg
         else:
-            entries = list(jobs.keys())
+            entries = jobs
 
         # Filter out valid new links
         for entry in entries:
@@ -552,8 +552,8 @@ class RSSQueue:
             if self.next_run < time.time():
                 self.next_run = time.time() + cfg.rss_rate.get() * 60
             feeds = config.get_rss()
-            for feed in feeds.keys():
-                try:
+            try:
+                for feed in feeds:
                     if feeds[feed].enable.get():
                         logging.info('Starting scheduled RSS read-out for "%s"', feed)
                         active = True
@@ -564,9 +564,11 @@ class RSSQueue:
                                 return
                             else:
                                 time.sleep(1.0)
-                except KeyError:
-                    # Feed must have been deleted
-                    pass
+            except (KeyError, RuntimeError):
+                # Feed must have been deleted
+                logging.info("RSS read-out crashed, feed must have been deleted or edited")
+                logging.debug("Traceback: ", exc_info=True)
+                pass
             if active:
                 self.save()
                 logging.info("Finished scheduled RSS read-outs")
