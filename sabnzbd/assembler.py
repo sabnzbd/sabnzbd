@@ -246,7 +246,7 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
             if rarfile.is_rarfile(filepath):
                 # Open the rar
                 rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
-                zf = rarfile.RarFile(filepath, all_names=True)
+                zf = rarfile.RarFile(filepath, single_file_check=True)
 
                 # Check for encryption
                 if nzo.encrypted == 0 and cfg.pause_on_pwrar() and (zf.needs_password() or is_cloaked(nzo, filepath, zf.namelist())):

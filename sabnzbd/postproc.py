@@ -892,7 +892,7 @@ def rar_renamer(nzo, workdir):
             logging.debug("Detected volume-number %s from RAR-header: %s ", rar_vol, file_to_check)
             volnrext[file_to_check] = (rar_vol, new_extension)
             # The files inside rar file
-            rar_contents = rarfile.RarFile(os.path.join(workdir, file_to_check), all_names=True).filelist()
+            rar_contents = rarfile.RarFile(os.path.join(workdir, file_to_check), single_file_check=True).filelist()
             try:
                 rarvolnr[rar_vol]
             except:

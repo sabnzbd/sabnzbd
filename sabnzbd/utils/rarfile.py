@@ -663,7 +663,14 @@ class RarFile(object):
     comment = None
 
     def __init__(
-        self, rarfile, mode="r", charset=None, info_callback=None, crc_check=True, errors="stop", all_names=False
+        self,
+        rarfile,
+        mode="r",
+        charset=None,
+        info_callback=None,
+        crc_check=True,
+        errors="stop",
+        single_file_check=False,
     ):
         """Open and parse a RAR archive.
 
@@ -689,7 +696,7 @@ class RarFile(object):
         self._crc_check = crc_check
         self._password = None
         self._file_parser = None
-        self._all_names = all_names
+        self._single_file_check = single_file_check
 
         if errors == "stop":
             self._strict = False
@@ -895,7 +902,7 @@ class RarFile(object):
                 self._charset,
                 self._strict,
                 self._info_callback,
-                self._all_names,
+                self._single_file_check,
             )
             self._file_parser = p3  # noqa
         elif ver == 5:
@@ -906,7 +913,7 @@ class RarFile(object):
                 self._charset,
                 self._strict,
                 self._info_callback,
-                self._all_names,
+                self._single_file_check,
             )
             self._file_parser = p5  # noqa
         else:
@@ -961,13 +968,13 @@ class CommonParser(object):
     _password = None
     comment = None
 
-    def __init__(self, rarfile, password, crc_check, charset, strict, info_cb, all_names):
+    def __init__(self, rarfile, password, crc_check, charset, strict, info_cb, single_file_check):
         self._rarfile = rarfile
         self._password = password
         self._crc_check = crc_check
         self._charset = charset
         self._strict = strict
-        self._all_names = all_names
+        self._single_file_check = single_file_check
         self._info_callback = info_cb
         self._info_list = []
         self._info_map = {}
@@ -1052,7 +1059,7 @@ class CommonParser(object):
             else:
                 h = self._parse_header(fd)
             if not h:
-                if more_vols:
+                if more_vols and not self._single_file_check:
                     volume += 1
                     fd.close()
                     try:
@@ -1079,7 +1086,7 @@ class CommonParser(object):
                 if h.flags & RAR_MAIN_NEWNUMBERING:
                     # RAR 2.x does not set FIRSTVOLUME,
                     # so check it only if NEWNUMBERING is used
-                    if not self._all_names and (h.flags & RAR_MAIN_FIRSTVOLUME) == 0:
+                    if not self._single_file_check and (h.flags & RAR_MAIN_FIRSTVOLUME) == 0:
                         raise NeedFirstVolume("Need to start from first volume")
                 if h.flags & RAR_MAIN_PASSWORD:
                     self._needs_password = True
@@ -1093,7 +1100,7 @@ class CommonParser(object):
                 if h.flags & RAR_FILE_SPLIT_AFTER:
                     more_vols = True
                 # RAR 2.x does not set RAR_MAIN_FIRSTVOLUME
-                if not self._all_names and volume == 0 and h.flags & RAR_FILE_SPLIT_BEFORE:
+                if not self._single_file_check and volume == 0 and h.flags & RAR_FILE_SPLIT_BEFORE:
                     raise NeedFirstVolume("Need to start from first volume")
 
             if h.needs_password():
@@ -1499,7 +1506,7 @@ class RAR3Parser(CommonParser):
             if (item.flags & RAR_FILE_SPLIT_BEFORE) == 0:
                 self._info_map[item.filename] = item
                 self._info_list.append(item)
-            elif self._all_names:
+            elif self._single_file_check:
                 # Broken rar-files would lead to double file-listings
                 if item.filename not in self._info_map:
                     self._info_map[item.filename] = item
@@ -1921,7 +1928,7 @@ class RAR5Parser(CommonParser):
             if (item.block_flags & RAR5_BLOCK_FLAG_SPLIT_BEFORE) == 0:
                 self._info_map[item.filename] = item
                 self._info_list.append(item)
-            elif self._all_names:
+            elif self._single_file_check:
                 # Broken rar-files would lead to double file-listings
                 if item.filename not in self._info_map:
                     self._info_map[item.filename] = item
