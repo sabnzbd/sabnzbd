@@ -176,9 +176,13 @@ class Assembler(Thread):
                 # Write all decoded articles
                 if article.decoded:
                     data = ArticleCache.do.load_article(article)
-                    fout.write(data)
-                    nzf.md5.update(data)
-                    article.on_disk = True
+                    # Could be empty in case nzo was deleted
+                    if data:
+                        fout.write(data)
+                        nzf.md5.update(data)
+                        article.on_disk = True
+                    else:
+                        logging.info("No data found when trying to write %s", article)
                 else:
                     # If the article was not decoded but the file
                     # is done, it is just a missing piece, so keep writing
