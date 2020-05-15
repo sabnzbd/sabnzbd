@@ -45,6 +45,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbparser
 from sabnzbd.database import HistoryDB
+from sabnzbd.articlecache import ArticleCache
 from sabnzbd.rating import Rating
 
 # Name patterns
@@ -1565,6 +1566,9 @@ class NzbObject(TryList):
 
         # Abort DirectUnpack and let it remove files
         self.abort_direct_unpacker()
+
+        # Remove all cached files
+        ArticleCache.do.purge_articles(self.saved_articles)
 
         # Delete all, or just basic?
         if delete_all_data:
