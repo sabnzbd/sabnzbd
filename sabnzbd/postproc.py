@@ -882,9 +882,13 @@ def rar_renamer(nzo, workdir):
     # Not really needed, but handy to avoid a second lookup at the renaming
     volnrext = {}
 
-    # Scan rar files in workdir
-    workdir_files = recursive_listdir(workdir)
+    # Scan rar files in workdir, but not subdirs
+    workdir_files = os.listdir(workdir)
     for file_to_check in workdir_files:
+        file_to_check = os.path.join(workdir, file_to_check)
+        # We only want files:
+        if not (os.path.isfile(file_to_check)):
+            continue
         # The function will check if it's a RAR-file
         # We do a sanity-check for the returned number
         rar_vol, new_extension = rarvolinfo.get_rar_extension(file_to_check)
