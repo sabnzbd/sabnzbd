@@ -974,7 +974,7 @@ class NzbObject(TryList):
             self.fail_msg = T('Aborted, cannot be completed') + ' - https://sabnzbd.org/not-complete'
             self.set_unpack_info('Download', self.fail_msg, unique=False)
             logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
-            return True, True
+            return True, True, True
 
         if not found:
             # Add extra parfiles when there was a damaged article and not pre-checking
