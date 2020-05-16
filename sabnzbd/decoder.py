@@ -26,7 +26,7 @@ from time import sleep
 from threading import Thread
 
 import sabnzbd
-from sabnzbd.constants import MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION_REQUIRED
+from sabnzbd.constants import SABYENC_VERSION_REQUIRED
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
@@ -102,7 +102,13 @@ class Decoder:
                 pass
 
     def proccess(self, article, raw_data):
+        # We use reported article-size, just like sabyenc does
+        ArticleCache.do.reserve_space(article.bytes)
         self.decoder_queue.put((article, raw_data))
+
+    def queue_full(self):
+        # Check if the queue size exceeds the limits
+        return self.decoder_queue.qsize() > ArticleCache.do.decoder_cache_article_limit
 
 
 class DecoderWorker(Thread):
@@ -135,12 +141,8 @@ class DecoderWorker(Thread):
             art_id = article.article
             killed = False
 
-            # Check if the space that's now free can let us continue the queue?
-            # Always allow at least some articles in the queue, so we don't stall
-            qsize = self.decoder_queue.qsize()
-            if (ArticleCache.do.free_reserved_space(article.bytes) or qsize < MAX_DECODE_QUEUE) and \
-               (qsize < LIMIT_DECODE_QUEUE) and Downloader.do.delayed:
-                Downloader.do.undelay()
+            # Free space in the article-queue
+            ArticleCache.do.free_reserved_space(article.bytes)
 
             data = None
             register = True  # Finish article

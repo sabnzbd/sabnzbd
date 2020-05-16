@@ -30,9 +30,7 @@ import sys
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
-from sabnzbd.constants import MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
-from sabnzbd.articlecache import ArticleCache
 import sabnzbd.notifier as notifier
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -165,7 +163,6 @@ class Downloader(Thread):
         self.paused = paused
 
         # Used for reducing speed
-        self.delayed = False
         self.bandwidth_limit = 0
         self.bandwidth_perc = 0
         cfg.bandwidth_perc.callback(self.speed_set)
@@ -273,15 +270,6 @@ class Downloader(Thread):
             if cfg.autodisconnect():
                 self.disconnect()
 
-    def delay(self):
-        logging.debug("Delaying")
-        self.delayed = True
-
-    @NzbQueueLocker
-    def undelay(self):
-        logging.debug("Undelaying")
-        self.delayed = False
-
     def wait_for_postproc(self):
         logging.info("Waiting for post-processing to finish")
         self.postproc = True
@@ -387,13 +375,15 @@ class Downloader(Thread):
             sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
 
     def decode(self, article, raw_data):
+        """ Decode article and check the status of
+            the decoder and the assembler
+        """
         sabnzbd.decoder.Decoder.do.proccess(article, raw_data)
-        # See if there's space left in cache, pause otherwise
-        # We use reported article-size, just like sabyenc does
-        # But do allow some articles to enter queue, in case of full cache
-        qsize = sabnzbd.decoder.Decoder.do.decoder_queue.qsize()
-        if (not ArticleCache.do.reserve_space(article.bytes) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
-            sabnzbd.downloader.Downloader.do.delay()
+        # Skip queue limit checks if this was a missing article
+        if raw_data:
+            # See if we need to delay because the queues are full
+            while not self.shutdown and (sabnzbd.decoder.Decoder.do.queue_full() or sabnzbd.assembler.Assembler.do.queue_full()):
+                time.sleep(0.05)
 
     def run(self):
         # First check IPv6 connectivity
@@ -432,7 +422,7 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
-                if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.delayed or self.postproc:
+                if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.postproc:
                     continue
 
                 if not server.active:
@@ -505,7 +495,7 @@ class Downloader(Thread):
 
                 self.force_disconnect = False
 
-            # => Select
+            # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
             writekeys = self.write_fds.keys()
 
@@ -537,7 +527,7 @@ class Downloader(Thread):
                 time.sleep(1.0)
 
                 DOWNLOADER_CV.acquire()
-                while (sabnzbd.nzbqueue.NzbQueue.do.is_empty() or self.is_paused() or self.delayed or self.postproc) and not \
+                while (sabnzbd.nzbqueue.NzbQueue.do.is_empty() or self.is_paused() or self.postproc) and not \
                        self.shutdown and not self.__restart:
                     DOWNLOADER_CV.wait()
                 DOWNLOADER_CV.release()
