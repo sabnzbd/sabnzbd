@@ -31,7 +31,7 @@ import sabnzbd
 from sabnzbd.misc import get_all_passwords
 from sabnzbd.filesystem import set_permissions, clip_path, has_win_device, \
     diskspace, get_filename, get_ext
-from sabnzbd.constants import Status, GIGI
+from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
@@ -54,6 +54,9 @@ class Assembler(Thread):
 
     def process(self, job):
         self.queue.put(job)
+
+    def queue_full(self):
+        return self.queue.qsize() > MAX_ASSEMBLER_QUEUE
 
     def run(self):
         while 1:

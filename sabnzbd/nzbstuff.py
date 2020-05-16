@@ -1004,8 +1004,17 @@ class NzbObject(TryList):
         return articles_left, file_done, post_done
 
     @synchronized(NZO_LOCK)
+    def add_saved_article(self, article):
+        self.saved_articles.append(article)
+
+    @synchronized(NZO_LOCK)
     def remove_saved_article(self, article):
-        self.saved_articles.remove(article)
+        try:
+            self.saved_articles.remove(article)
+        except ValueError:
+            # It's not there if the job is fully missing
+            # and this function is called from file_has_articles
+            pass
 
     def check_existing_files(self, wdir):
         """ Check if downloaded files already exits, for these set NZF to complete """
