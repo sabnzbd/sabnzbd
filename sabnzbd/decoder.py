@@ -21,14 +21,15 @@ sabnzbd.decoder - article decoder
 
 import logging
 import hashlib
+import queue
 from time import sleep
 from threading import Thread
 
 import sabnzbd
 from sabnzbd.constants import MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE, SABYENC_VERSION_REQUIRED
-import sabnzbd.articlecache
-import sabnzbd.downloader
-import sabnzbd.nzbqueue
+from sabnzbd.articlecache import ArticleCache
+from sabnzbd.downloader import Downloader
+from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou
 from sabnzbd.misc import match_str
@@ -61,26 +62,71 @@ class BadYenc(Exception):
         Exception.__init__(self)
 
 
-class Decoder(Thread):
+class Decoder:
+    """ Implement thread-like coordinator for the decoders """
+    do = None
 
-    def __init__(self, servers, queue):
+    def __init__(self):
+        logging.debug("Initializing decoders")
+        # Initialize queue
+        self.decoder_queue = queue.Queue()
+
+        # Initialize decoders
+        self.decoder_workers = []
+        for i in range(cfg.num_decoders()):
+            self.decoder_workers.append(DecoderWorker(Downloader.do.servers, self.decoder_queue))
+        Decoder.do = self
+
+    def start(self):
+        for decoder_worker in self.decoder_workers:
+            decoder_worker.start()
+
+    def is_alive(self):
+        # Check all workers
+        for decoder_worker in self.decoder_workers:
+            if not decoder_worker.is_alive():
+                return False
+        return True
+
+    def stop(self):
+        # Put multiple to stop all decoders
+        for _ in self.decoder_workers:
+            self.decoder_queue.put(None)
+
+    def join(self):
+        # Wait for all decoders to finish
+        for decoder_worker in self.decoder_workers:
+            try:
+                decoder_worker.join()
+            except:
+                pass
+
+    def proccess(self, article, raw_data):
+        self.decoder_queue.put((article, raw_data))
+
+
+class DecoderWorker(Thread):
+
+    def __init__(self, servers, decoder_queue):
         Thread.__init__(self)
+        logging.debug("Initializing decoder %s", self.name)
 
-        self.queue = queue
+        self.decoder_queue = decoder_queue
         self.servers = servers
         self.__log_decoding = cfg.debug_log_decoding()
 
     def stop(self):
         # Put multiple to stop all decoders
-        self.queue.put(None)
-        self.queue.put(None)
+        self.decoder_queue.put(None)
+        self.decoder_queue.put(None)
 
     def run(self):
         while 1:
             # Sleep to allow decoder/assembler switching
             sleep(0.0001)
-            art_tup = self.queue.get()
+            art_tup = self.decoder_queue.get()
             if not art_tup:
+                logging.info("Shutting down decoder %s", self.name)
                 break
 
             article, raw_data = art_tup
@@ -90,10 +136,11 @@ class Decoder(Thread):
             killed = False
 
             # Check if the space that's now free can let us continue the queue?
-            qsize = self.queue.qsize()
-            if (sabnzbd.articlecache.ArticleCache.do.free_reserve_space(article.bytes) or qsize < MAX_DECODE_QUEUE) and \
-               (qsize < LIMIT_DECODE_QUEUE) and sabnzbd.downloader.Downloader.do.delayed:
-                sabnzbd.downloader.Downloader.do.undelay()
+            # Always allow at least some articles in the queue, so we don't stall
+            qsize = self.decoder_queue.qsize()
+            if (ArticleCache.do.free_reserved_space(article.bytes) or qsize < MAX_DECODE_QUEUE) and \
+               (qsize < LIMIT_DECODE_QUEUE) and Downloader.do.delayed:
+                Downloader.do.undelay()
 
             data = None
             register = True  # Finish article
@@ -118,19 +165,19 @@ class Decoder(Thread):
                     logging.warning(logme)
                     logging.info("Traceback: ", exc_info=True)
 
-                    sabnzbd.downloader.Downloader.do.pause()
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
+                    Downloader.do.pause()
+                    NzbQueue.do.reset_try_lists(article)
                     register = False
 
                 except MemoryError:
                     logme = T('Decoder failure: Out of memory')
                     logging.warning(logme)
-                    anfo = sabnzbd.articlecache.ArticleCache.do.cache_info()
-                    logging.info("Decoder-Queue: %d, Cache: %d, %d, %d", self.queue.qsize(), anfo.article_sum, anfo.cache_size, anfo.cache_limit)
+                    anfo = ArticleCache.do.cache_info()
+                    logging.info("Decoder-Queue: %d, Cache: %d, %d, %d", self.decoder_queue.qsize(), anfo.article_sum, anfo.cache_size, anfo.cache_limit)
                     logging.info("Traceback: ", exc_info=True)
 
-                    sabnzbd.downloader.Downloader.do.pause()
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
+                    Downloader.do.pause()
+                    NzbQueue.do.reset_try_lists(article)
                     register = False
 
                 except CrcError as e:
@@ -173,7 +220,7 @@ class Decoder(Thread):
                             logme = T('UUencode detected, only yEnc encoding is supported [%s]') % nzo.final_name
                             logging.error(logme)
                             nzo.fail_msg = logme
-                            sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+                            NzbQueue.do.end_job(nzo)
                             break
 
                     if not found or killed:
@@ -205,10 +252,12 @@ class Decoder(Thread):
                     found = False
 
             if data:
-                sabnzbd.articlecache.ArticleCache.do.save_article(article, data)
+                # If the data needs to be written to disk, this will be slow
+                # Causing the decoder-queue to fill up and delay the downloader
+                ArticleCache.do.save_article(article, data)
 
             if register:
-                sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found)
+                NzbQueue.do.register_article(article, found)
 
     def decode(self, article, raw_data):
         # Let SABYenc do all the heavy lifting
@@ -238,7 +287,7 @@ class Decoder(Thread):
 
                     article.tries = 0
                     # Allow all servers for this nzo and nzf again (but not for this article)
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article, article_reset=False)
+                    NzbQueue.do.reset_try_lists(article, article_reset=False)
                     return True
 
         msg = T('%s => missing from all servers, discarding') % article

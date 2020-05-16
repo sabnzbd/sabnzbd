@@ -27,12 +27,10 @@ from nntplib import NNTPPermanentError
 import socket
 import random
 import sys
-import queue
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.constants import MAX_DECODE_QUEUE, LIMIT_DECODE_QUEUE
-from sabnzbd.decoder import Decoder
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
 from sabnzbd.articlecache import ArticleCache
 import sabnzbd.notifier as notifier
@@ -161,7 +159,7 @@ class Downloader(Thread):
     def __init__(self, paused=False):
         Thread.__init__(self)
 
-        logging.debug("Initializing downloader/decoder")
+        logging.debug("Initializing downloader")
 
         # Used for scheduled pausing
         self.paused = paused
@@ -198,13 +196,6 @@ class Downloader(Thread):
 
         for server in config.get_servers():
             self.init_server(None, server)
-
-        self.decoder_queue = queue.Queue()
-
-        # Initialize decoders
-        self.decoder_workers = []
-        for i in range(2):
-            self.decoder_workers.append(Decoder(self.servers, self.decoder_queue))
 
         Downloader.do = self
 
@@ -396,11 +387,11 @@ class Downloader(Thread):
             sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
 
     def decode(self, article, raw_data):
-        self.decoder_queue.put((article, raw_data))
+        sabnzbd.decoder.Decoder.do.proccess(article, raw_data)
         # See if there's space left in cache, pause otherwise
         # We use reported article-size, just like sabyenc does
         # But do allow some articles to enter queue, in case of full cache
-        qsize = self.decoder_queue.qsize()
+        qsize = sabnzbd.decoder.Decoder.do.decoder_queue.qsize()
         if (not ArticleCache.do.reserve_space(article.bytes) and qsize > MAX_DECODE_QUEUE) or (qsize > LIMIT_DECODE_QUEUE):
             sabnzbd.downloader.Downloader.do.delay()
 
@@ -412,10 +403,6 @@ class Downloader(Thread):
         # Then we check SSL certificate checking
         sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.test_cert_checking()
         logging.debug('SSL verification test: %s', sabnzbd.CERTIFICATE_VALIDATION)
-
-        # Start decoders
-        for decoder in self.decoder_workers:
-            decoder.start()
 
         # Kick BPS-Meter to check quota
         BPSMeter.do.update()
@@ -502,11 +489,6 @@ class Downloader(Thread):
                         break
 
                 if empty:
-                    # Start decoders
-                    for decoder in self.decoder_workers:
-                        decoder.stop()
-                        decoder.join()
-
                     for server in self.servers:
                         server.stop(self.read_fds, self.write_fds)
 
