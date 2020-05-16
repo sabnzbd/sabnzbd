@@ -78,6 +78,7 @@ elif os.name == "posix":
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.downloader import Downloader
+from sabnzbd.decoder import Decoder
 from sabnzbd.assembler import Assembler
 from sabnzbd.rating import Rating
 import sabnzbd.misc as misc
@@ -320,6 +321,8 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
 
     Downloader(pause_downloader or paused)
 
+    Decoder()
+
     Assembler()
 
     PostProcessor()
@@ -356,6 +359,9 @@ def start():
 
         logging.debug("Starting downloader")
         Downloader.do.start()
+
+        logging.debug("Starting decoders")
+        Decoder.do.start()
 
         scheduler.start()
 
@@ -410,6 +416,11 @@ def halt():
         # Stop Required Objects
         logging.debug("Stopping downloader")
         sabnzbd.downloader.stop()
+
+        # Decoder handles join gracefully
+        logging.debug("Stopping decoders")
+        Decoder.do.stop()
+        Decoder.do.join()
 
         logging.debug("Stopping assembler")
         Assembler.do.stop()
@@ -994,6 +1005,9 @@ def check_all_tasks():
         return False
     if not Downloader.do.is_alive():
         logging.info("Restarting because of crashed downloader")
+        return False
+    if not Decoder.do.is_alive():
+        logging.info("Restarting because of crashed decoder")
         return False
     if not Assembler.do.is_alive():
         logging.info("Restarting because of crashed assembler")
