@@ -22,13 +22,19 @@ sabnzbd.postproc - threaded post-processing of jobs
 import os
 import logging
 import sabnzbd
-import xml.sax.saxutils
 import functools
 import time
 import re
 import queue
 
-from sabnzbd.newsunpack import unpack_magic, par2_repair, external_processing, sfv_check, build_filelists, rar_sort
+from sabnzbd.newsunpack import (
+    unpack_magic,
+    par2_repair,
+    external_processing,
+    sfv_check,
+    build_filelists,
+    rar_sort,
+)
 from threading import Thread
 from sabnzbd.misc import on_cleanup_list
 from sabnzbd.filesystem import (
@@ -710,22 +716,22 @@ def prepare_extraction_path(nzo):
 
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
-    filename = nzo.final_name
-    notifier.send_notification(T("Post-processing"), filename, "pp", nzo.cat)
-    logging.info("Starting verification and repair of %s", filename)
+    job_name = nzo.final_name
+    notifier.send_notification(T("Post-processing"), job_name, "pp", nzo.cat)
+    logging.info("Starting verification and repair of %s", job_name)
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
-    repair_sets = list(nzo.extrapars.keys())
 
     re_add = False
     par_error = False
-    single = len(repair_sets) == 1
+    single = len(nzo.extrapars) == 1
 
-    if repair_sets:
-        for setname in repair_sets:
+    if nzo.extrapars:
+        for setname in nzo.extrapars:
             if cfg.ignore_samples() and RE_SAMPLE.search(setname.lower()):
                 continue
+            # Skip sets that were already tried
             if not verified.get(setname, False):
                 logging.info("Running verification and repair on set %s", setname)
                 parfile_nzf = nzo.partable[setname]
@@ -746,16 +752,19 @@ def parring(nzo, workdir):
                     continue
                 par_error = par_error or not res
 
-    else:
-        # We must not have found any par2..
-        logging.info("No par2 sets for %s", filename)
-        nzo.set_unpack_info("Repair", T("[%s] No par2 sets") % filename)
-        if cfg.sfv_check() and not verified.get("", False):
-            par_error = not try_sfv_check(nzo, workdir)
-            verified[""] = not par_error
+    elif not verified.get("", False):
+        # No par2-sets found, skipped if already tried before
+        logging.info("No par2 sets for %s", job_name)
+        nzo.set_unpack_info("Repair", T("[%s] No par2 sets") % job_name)
 
-        # If still no success, do RAR-check or RAR-rename
-        if not par_error and cfg.enable_unrar():
+        # Try SFV-based verification and rename
+        sfv_check_result = None
+        if cfg.sfv_check() and not verified.get("", False):
+            sfv_check_result = try_sfv_check(nzo, workdir)
+            par_error = sfv_check_result is False
+
+        # If no luck with SFV, do RAR-check or RAR-rename
+        if sfv_check_result is None and cfg.enable_unrar():
             _, _, rars, _, _ = build_filelists(workdir)
             # If there's no RAR's, they might be super-obfuscated
             if not rars:
@@ -765,10 +774,12 @@ def parring(nzo, workdir):
                     _, _, rars, _, _ = build_filelists(workdir)
             if rars:
                 par_error = not try_rar_check(nzo, rars)
-                verified[""] = not par_error
+
+        # Save that we already tried SFV/RAR-verification
+        verified[""] = not par_error
 
     if re_add:
-        logging.info("Re-added %s to queue", filename)
+        logging.info("Re-added %s to queue", job_name)
         if nzo.priority != TOP_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
         nzo.status = Status.FETCHING
@@ -777,43 +788,32 @@ def parring(nzo, workdir):
 
     sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
-    logging.info("Verification and repair finished for %s", filename)
+    logging.info("Verification and repair finished for %s", job_name)
     return par_error, re_add
 
 
 def try_sfv_check(nzo, workdir):
     """ Attempt to verify set using SFV file
-        Return True if verified, False when failed
+        Return None if no SFV-sets, True/False based on verification
     """
-    # Get list of SFV names; shortest name first, minimizes the chance on a mismatch
+    # Get list of SFV names
     sfvs = globber_full(workdir, "*.sfv")
-    sfvs.sort(key=lambda x: len(x))
-    par_error = False
-    found = False
-    for sfv in sfvs:
-        found = True
-        setname = setname_from_path(sfv)
-        nzo.status = Status.VERIFYING
-        nzo.set_unpack_info("Repair", T("Trying SFV verification"), setname)
-        nzo.set_action_line(T("Trying SFV verification"), "...")
 
-        failed = sfv_check(sfv)
-        if failed:
-            fail_msg = T('Some files failed to verify against "%s"') % setname
-            msg = fail_msg + "; "
-            msg += "; ".join(failed)
-            nzo.set_unpack_info("Repair", msg, setname)
-            par_error = True
-        else:
-            nzo.set_unpack_info("Repair", T("Verified successfully using SFV files"), setname)
+    # Skip if there's no SFV's
+    if not sfvs:
+        return None
 
-    # Show error in GUI
-    if found and par_error:
+    result = sfv_check(sfvs, nzo, workdir)
+    if not result:
+        print_sfv = [os.path.basename(sfv) for sfv in sfvs]
+        fail_msg = T('Some files failed to verify against "%s"') % "; ".join(print_sfv)
+        nzo.set_unpack_info("Repair", fail_msg)
         nzo.status = Status.FAILED
         nzo.fail_msg = fail_msg
         return False
 
-    # Success or just no SFV's
+    # Success
+    nzo.set_unpack_info("Repair", T("Verified successfully using SFV files"))
     return True
 
 

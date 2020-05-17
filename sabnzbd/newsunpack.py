@@ -25,18 +25,18 @@ import re
 import subprocess
 import logging
 import time
-import binascii
+import zlib
 import shutil
 import functools
 from subprocess import Popen
 
 import sabnzbd
-from sabnzbd.encoding import platform_btou
+from sabnzbd.encoding import platform_btou, correct_unknown_encoding
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
     get_all_passwords, calc_age, cmp, caller_name
 from sabnzbd.filesystem import make_script_path, real_path, globber, globber_full, \
-    renamer, clip_path, long_path, remove_file, recursive_listdir, setname_from_path
+    renamer, clip_path, long_path, remove_file, recursive_listdir, setname_from_path, get_ext
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -2130,7 +2130,7 @@ def QuickCheck(set, nzo):
 
     for file in md5pack:
         found = False
-        file_to_ignore = os.path.splitext(file)[1].lower().replace('.', '') in ignore_ext
+        file_to_ignore = get_ext(file).replace('.', '') in ignore_ext
         for nzf in nzf_list:
             # Do a simple filename based check
             if file == nzf.filename:
@@ -2210,55 +2210,115 @@ def par2_mt_check(par2_path):
     return False
 
 
-def sfv_check(sfv_path):
-    """ Verify files using SFV file,
-        input: full path of sfv, file are assumed to be relative to sfv
-        returns: List of failing files or [] when all is OK
-    """
-    failed = []
-    try:
-        fp = open(sfv_path, 'r')
-    except:
-        logging.info('Cannot open SFV file %s', sfv_path)
-        failed.append(sfv_path)
-        return failed
-    root = os.path.split(sfv_path)[0]
-    for line in fp:
-        line = line.strip('\n\r ')
-        if line and line[0] != ';':
-            x = line.rfind(' ')
-            if x > 0:
-                filename = line[:x].strip()
-                checksum = line[x:].strip()
-                path = os.path.join(root, filename)
-                if os.path.exists(path):
-                    if crc_check(path, checksum):
-                        logging.debug('File %s passed SFV check', path)
-                    else:
-                        logging.info('File %s did not pass SFV check', path)
-                        failed.append(filename)
+def sfv_check(sfvs, nzo, workdir):
+    """ Verify files using SFV files """
+    # Update status
+    nzo.status = Status.VERIFYING
+    nzo.set_action_line(T("Trying SFV verification"), "...")
+
+    # We use bitwise assigment (&=) so False always wins in case of failure
+    # This way the renames always get saved!
+    result = True
+    nzf_list = nzo.finished_files
+    renames = {}
+
+    # Files to ignore
+    ignore_ext = cfg.quick_check_ext_ignore()
+
+    # We need the crc32 of all files
+    calculated_crc32 = {}
+    verifytotal = len(nzo.finished_files)
+    verifynum = 0
+    for nzf in nzf_list:
+        verifynum += 1
+        nzo.set_action_line(T('Verifying'), '%02d/%02d' % (verifynum, verifytotal))
+        calculated_crc32[nzf.filename] = crc_calculate(os.path.join(workdir, nzf.filename))
+
+    sfv_parse_results = {}
+    nzo.set_action_line(T("Trying SFV verification"), "...")
+    for sfv in sfvs:
+        setname = setname_from_path(sfv)
+        nzo.set_unpack_info("Repair", T("Trying SFV verification"), setname)
+
+        # Parse the sfv and add to the already found results
+        # Duplicates will be replaced
+        sfv_parse_results.update(parse_sfv(sfv))
+
+    for file in sfv_parse_results:
+        found = False
+        file_to_ignore = get_ext(file).replace('.', '') in ignore_ext
+        for nzf in nzf_list:
+            # Do a simple filename based check
+            if file == nzf.filename:
+                found = True
+                if nzf.filename in calculated_crc32 and calculated_crc32[nzf.filename] == sfv_parse_results[file]:
+                    logging.debug('SFV-check of file %s OK', file)
+                    result &= True
+                elif file_to_ignore:
+                    # We don't care about these files
+                    logging.debug('SFV-check ignoring file %s', file)
+                    result &= True
                 else:
-                    logging.info('File %s missing in SFV check', path)
-                    failed.append(filename)
-    fp.close()
-    return failed
+                    logging.info('SFV-check of file %s failed!', file)
+                    result = False
+                break
+
+            # Now lets do obfuscation check
+            if nzf.filename in calculated_crc32 and calculated_crc32[nzf.filename] == sfv_parse_results[file]:
+                try:
+                    logging.debug('SFV-check will rename %s to %s', nzf.filename, file)
+                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file))
+                    renames[file] = nzf.filename
+                    nzf.filename = file
+                    result &= True
+                    found = True
+                    break
+                except IOError:
+                    # Renamed failed for some reason, probably already done
+                    break
+
+        if not found:
+            if file_to_ignore:
+                # We don't care about these files
+                logging.debug('SVF-check ignoring missing file %s', file)
+                continue
+
+            logging.info('Cannot SFV-check missing file %s!', file)
+            result = False
+
+    # Save renames
+    if renames:
+        nzo.renamed_file(renames)
+
+    return result
 
 
-def crc_check(path, target_crc):
-    """ Return True if file matches CRC """
-    try:
-        fp = open(path, 'rb')
-    except:
-        return False
+def parse_sfv(sfv_filename):
+    """ Parse SFV file and return dictonary of crc32's and filenames """
+    results = {}
+    with open(sfv_filename, mode="rb") as sfv_list:
+        for sfv_item in sfv_list:
+            sfv_item = sfv_item.strip()
+            # Ignore comment-lines
+            if sfv_item.startswith(b";"):
+                continue
+            # Parse out the filename and crc32
+            filename, expected_crc32 = sfv_item.strip().rsplit(maxsplit=1)
+            # We don't know what encoding is used when it was created
+            results[correct_unknown_encoding(filename)] = expected_crc32.lower()
+    return results
+
+
+def crc_calculate(path):
+    """ Calculate crc32 of the given file """
     crc = 0
-    while 1:
-        data = fp.read(4096)
-        if not data:
-            break
-        crc = binascii.crc32(data, crc)
-    fp.close()
-    crc = '%08x' % (crc & 0xffffffff,)
-    return crc.lower() == target_crc.lower()
+    with open(path, "rb") as fp:
+        while 1:
+            data = fp.read(4096)
+            if not data:
+                break
+            crc = zlib.crc32(data, crc)
+    return b"%08x" % (crc & 0xffffffff)
 
 
 def analyse_show(name):
