@@ -412,10 +412,11 @@ $(document).ready(function () {
 
     $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')
+    }).each(function() {
+        if(!$(this).is(':checked')) {
+            $(this).parent().nextAll().addClass('disabled')
+        }
     })
-    if(!$(checkDisabled).is(':checked')) {
-        $(checkDisabled).parent().nextAll().addClass('disabled')
-    }
 
     // Advanced or not?
     $('.advanced-button').on('change', function(event){
