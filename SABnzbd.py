@@ -1183,8 +1183,6 @@ def main():
 
     sabnzbd.initialize(pause, clean_up, evalSched=True, repair=repair)
 
-    os.chdir(sabnzbd.DIR_PROG)
-
     sabnzbd.WEB_DIR = identify_web_template(sabnzbd.cfg.web_dir, DEF_STDINTF, fix_webname(web_dir))
     sabnzbd.WEB_DIR_CONFIG = identify_web_template(None, DEF_STDCONFIG, '')
     sabnzbd.WIZARD_DIR = os.path.join(sabnzbd.DIR_INTERFACES, 'wizard')
