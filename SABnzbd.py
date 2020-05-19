@@ -1089,14 +1089,14 @@ def main():
     os.chdir(sabnzbd.DIR_PROG)
 
     logging.info('--------------------------------')
-    # If git, find and give info on branch and commit
+    # If running from git repo, find and give info on branch and commit
     try:
-        mygitcmd = 'git log --oneline --decorate -1  --no-color'
-        with os.popen(mygitcmd) as p:
-            gitinfo = p.readline().rstrip()
-        # Todo: which way is the correct way:
-        sabnzbd.__baseline__ = gitinfo
-        sabnzbd.version.__baseline__ = gitinfo
+        mygitcmd = 'git log -1 --oneline --decorate'.split(' ')
+        gitinfo = sabnzbd.newsunpack.run_simple(mygitcmd).split('\n')[0]
+        if len(gitinfo) >= 5:
+            # We found git info, so store it:
+            sabnzbd.__baseline__ = gitinfo
+            sabnzbd.version.__baseline__ = gitinfo
     except:
         # No git info
         pass
