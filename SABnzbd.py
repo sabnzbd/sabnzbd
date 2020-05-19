@@ -1086,9 +1086,24 @@ def main():
         if no_file_log:
             logging.info('Console logging only')
 
+    os.chdir(sabnzbd.DIR_PROG)
+
     logging.info('--------------------------------')
+    # If git, find and give info on branch and commit
+    try:
+        mygitcmd = 'git log --oneline --decorate -1  --no-color'
+        with os.popen(mygitcmd) as p:
+            gitinfo = p.readline().rstrip()
+        # Todo: which way is the correct way:
+        sabnzbd.__baseline__ = gitinfo
+        sabnzbd.version.__baseline__ = gitinfo
+    except:
+        # No git info
+        pass
+
     logging.info('%s-%s (rev=%s)', sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
     logging.info('Full executable path = %s', sabnzbd.MY_FULLNAME)
+
     if sabnzbd.WIN32:
         suffix = ''
         if win64:

@@ -1135,7 +1135,7 @@ class ConfigPage:
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
         conf['configfn'] = clip_path(config.get_filename())
         conf['cmdline'] = sabnzbd.CMDLINE
-        conf['build'] = sabnzbd.version.__baseline__[:7]
+        conf['build'] = sabnzbd.version.__baseline__
 
         conf['have_unzip'] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf['have_7zip'] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
