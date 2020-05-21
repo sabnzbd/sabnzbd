@@ -136,7 +136,7 @@ class DirectUnpacker(threading.Thread):
         nzf.setname, nzf.vol = analyze_rar_filename(nzf.filename)
 
         # Are we doing this set?
-        if self.cur_setname == nzf.setname:
+        if self.cur_setname and self.cur_setname == nzf.setname:
             logging.debug('DirectUnpack queued %s for %s', nzf.filename, self.cur_setname)
             # Is this the first one of the first set?
             if not self.active_instance and not self.is_alive() and self.have_next_volume():
