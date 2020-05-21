@@ -108,7 +108,7 @@ class Decoder:
 
     def queue_full(self):
         # Check if the queue size exceeds the limits
-        return self.decoder_queue.qsize() > ArticleCache.do.decoder_cache_article_limit
+        return self.decoder_queue.qsize() >= ArticleCache.do.decoder_cache_article_limit
 
 
 class DecoderWorker(Thread):
@@ -254,7 +254,7 @@ class DecoderWorker(Thread):
                     found = False
 
             if data:
-                # If the data needs to be written to disk, this will be slow
+                # If the data needs to be written to disk due to full cache, this will be slow
                 # Causing the decoder-queue to fill up and delay the downloader
                 ArticleCache.do.save_article(article, data)
 
