@@ -222,6 +222,9 @@ class Article(TryList):
         self.fetcher = None
         self.tries = 0
 
+    def __eq__(self, other):
+        return self.article == other.article
+
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, art_id=%s>" % \
                (self.article, self.bytes, self.art_id)
@@ -233,8 +236,8 @@ class Article(TryList):
 NzbFileSaver = (
     'date', 'subject', 'filename', 'filename_checked', 'filepath', 'type',
     'is_par2', 'vol', 'blocks', 'setname', 'articles', 'decodetable', 'bytes',
-    'bytes_left', 'article_count', 'nzo', 'nzf_id', 'deleted', 'valid',
-    'import_finished', 'md5sum', 'md5of16k'
+    'bytes_left', 'nzo', 'nzf_id', 'deleted', 'valid', 'import_finished', 'md5sum',
+    'md5of16k'
 )
 
 
@@ -254,6 +257,7 @@ class NzbFile(TryList):
         self.filename_checked = False
         self.filepath = None
 
+        # Identifiers for par2 files
         self.is_par2 = False
         self.vol = None
         self.blocks = None
@@ -397,6 +401,10 @@ class NzbFile(TryList):
 
         # Set non-transferable values
         self.md5 = None
+
+    def __eq__(self, other):
+        """ Assume it's the same file if the bytes and first article are the same """
+        return self.bytes == other.bytes and self.decodetable[0] == other.decodetable[0]
 
     def __repr__(self):
         return "<NzbFile: filename=%s, type=%s>" % (self.filename, self.type)

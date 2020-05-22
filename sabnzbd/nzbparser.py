@@ -119,6 +119,11 @@ def nzbfile_parser(raw_data, nzo):
         # Create NZF
         nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
 
+        # Check if we already have this exact NZF (see custom eq-checks)
+        if nzf in nzo.files:
+            logging.info('File %s occured twice in NZB, skipping', nzf.filename)
+            continue
+
         # Add valid NZF's
         if file_name and nzf.valid and nzf.nzf_id:
             logging.info("File %s added to queue", nzf.filename)
@@ -134,9 +139,9 @@ def nzbfile_parser(raw_data, nzo):
             skipped_files += 1
 
     # Final bookkeeping
-    files = max(1, valid_files)
-    nzo.avg_stamp = avg_age_sum / files
-    nzo.avg_date = datetime.datetime.fromtimestamp(avg_age_sum / files)
+    nr_files = max(1, valid_files)
+    nzo.avg_stamp = avg_age_sum / nr_files
+    nzo.avg_date = datetime.datetime.fromtimestamp(avg_age_sum / nr_files)
     nzo.md5sum = md5sum.hexdigest()
 
     if skipped_files:
