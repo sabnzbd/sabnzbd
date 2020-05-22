@@ -964,7 +964,8 @@ class NzbObject(TryList):
         # File completed, remove and do checks
         if file_done:
             self.remove_nzf(nzf)
-            if not self.reuse and cfg.fail_hopeless_jobs():
+            # Skip check if retry or first articles already deemed it hopeless
+            if job_can_succeed and not self.reuse and cfg.fail_hopeless_jobs():
                 job_can_succeed, _ratio = self.check_availability_ratio(99)
 
         # Abort the job due to failure
