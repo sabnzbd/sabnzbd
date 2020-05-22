@@ -265,7 +265,6 @@ class NzbFile(TryList):
 
         self.bytes = file_bytes
         self.bytes_left = file_bytes
-        self.article_count = 0
 
         self.nzo = nzo
         self.nzf_id = sabnzbd.get_new_id("nzf", nzo.workpath)

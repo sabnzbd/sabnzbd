@@ -157,7 +157,6 @@ class DecoderWorker(Thread):
                     logging.debug("Decoding %s", art_id)
 
                 data = decode(article, raw_data)
-                nzf.article_count += 1
                 found = True
 
             except IOError:
