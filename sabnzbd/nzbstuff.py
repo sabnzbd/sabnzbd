@@ -186,6 +186,21 @@ class Article(TryList):
             self.art_id = sabnzbd.get_new_id("article", self.nzf.nzo.workpath)
         return self.art_id
 
+    def search_new_server(self):
+        # Search new server
+        self.add_to_try_list(self.fetcher)
+        for server in sabnzbd.downloader.Downloader.do.servers:
+            if server.active and not self.server_in_try_list(server):
+                if server.priority >= self.fetcher.priority:
+                    self.tries = 0
+                    # Allow all servers for this nzo and nzf again (but not for this article)
+                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(self, article_reset=False)
+                    return True
+
+        logging.info(T("%s => missing from all servers, discarding") % self)
+        self.nzf.nzo.increase_bad_articles_counter("missing_articles")
+        return False
+
     def __getstate__(self):
         """ Save to pickle file, selecting attributes """
         dict_ = {}

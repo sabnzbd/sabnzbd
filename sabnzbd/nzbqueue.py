@@ -690,7 +690,7 @@ class NzbQueue:
         articles_left, file_done, post_done = nzo.remove_article(article, found)
 
         if nzo.is_gone():
-            logging.debug('Discarding article %s for deleted job', nzf.filename)
+            logging.debug('Discarding article for file %s, no longer in queue', nzf.filename)
         else:
             # Write data if file is done or at trigger time
             if file_done or (articles_left and (articles_left % DIRECT_WRITE_TRIGGER) == 0):

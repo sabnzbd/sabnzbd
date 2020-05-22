@@ -378,19 +378,25 @@ class Downloader(Thread):
         """ Decode article and check the status of
             the decoder and the assembler
         """
-        sabnzbd.decoder.Decoder.do.proccess(article, raw_data)
-        # Skip queue limit checks if this was a missing article
-        if raw_data:
-            # See if we need to delay because the queues are full
-            logged = False
-            while not self.shutdown and (sabnzbd.decoder.Decoder.do.queue_full() or sabnzbd.assembler.Assembler.do.queue_full()):
-                if not logged:
-                    # Only log once, to not waste any CPU-cycles
-                    logging.debug("Delaying - Decoder queue: %s - Assembler queue: %s",
-                                  sabnzbd.decoder.Decoder.do.decoder_queue.qsize(),
-                                  sabnzbd.assembler.Assembler.do.queue.qsize())
-                    logged = True
-                time.sleep(0.05)
+        # Handle broken articles directly
+        if not raw_data:
+            if not article.search_new_server():
+                sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found=False)
+            return
+
+        # Send to decoder-queue
+        sabnzbd.decoder.Decoder.do.process(article, raw_data)
+
+        # See if we need to delay because the queues are full
+        logged = False
+        while not self.shutdown and (sabnzbd.decoder.Decoder.do.queue_full() or sabnzbd.assembler.Assembler.do.queue_full()):
+            if not logged:
+                # Only log once, to not waste any CPU-cycles
+                logging.debug("Delaying - Decoder queue: %s - Assembler queue: %s",
+                              sabnzbd.decoder.Decoder.do.decoder_queue.qsize(),
+                              sabnzbd.assembler.Assembler.do.queue.qsize())
+                logged = True
+            time.sleep(0.05)
 
     def run(self):
         # First check IPv6 connectivity
@@ -717,7 +723,7 @@ class Downloader(Thread):
                         self.__request_article(nw)
 
                 if done:
-                    server.bad_cons = 0  # Succesful data, clear "bad" counter
+                    server.bad_cons = 0  # Successful data, clear "bad" counter
                     server.errormsg = server.warning = ''
                     if sabnzbd.LOG_ALL:
                         logging.debug('Thread %s@%s: %s done', nw.thrdnum, server.host, article.article)
