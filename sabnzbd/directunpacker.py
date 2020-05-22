@@ -167,14 +167,16 @@ class DirectUnpacker(threading.Thread):
 
         # Need to read char-by-char because there's no newline after new-disk message
         while 1:
-            if not self.active_instance or not self.active_instance.stdout:
-                break
+            # We need to lock, so we don't crash if unpacker is deleted while we read
+            with START_STOP_LOCK:
+                if not self.active_instance or not self.active_instance.stdout:
+                    break
+                char = platform_btou(self.active_instance.stdout.read(1))
 
-            char = platform_btou(self.active_instance.stdout.read(1))
-            linebuf += char
             if not char:
                 # End of program
                 break
+            linebuf += char
 
             # Error? Let PP-handle it
             if linebuf.endswith(('ERROR: ', 'Cannot create', 'in the encrypted file', 'CRC failed', 'checksum failed',
