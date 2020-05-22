@@ -2210,6 +2210,47 @@ def par2_mt_check(par2_path):
     return False
 
 
+def isSFVfile(myfile):
+    """ Checks if given file is a SFV file, and returns result as boolean """
+
+    textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
+    is_ascii_string = lambda bytes: not bool(bytes.translate(None, textchars))
+
+    # first check if it's ASCII, or non-ASCII
+    with open(myfile, "rb") as f:
+        # get first 10000 bytes to check
+        myblock = f.read(10000)
+        if is_ascii_string(myblock):
+            # ASCII, so store lines for further inspection
+            try:
+                lines = myblock.decode("utf-8").split("\n")
+            except:
+                return False
+        else:
+            # non-ASCII, so not SFV
+            return False
+
+    hexcounter = 0
+
+    for line in lines:
+        # handle non-comment, non-empty lines:
+        if not line.startswith(";") and len(line) > 0:
+            lastword = line.rstrip().split(" ")[-1]
+            try:
+                # check if it's a hexadecimal, and 8-digit:
+                if int(lastword, 16) and len(lastword) == 8:
+                    hexcounter += 1
+                    # with 4 valid 8-digit hexadecimals, we're confident enough it's a valid SFV
+                    if hexcounter >= 4:
+                        break
+            except ValueError:
+                # not a hex number, so non-SFV, so we're done
+                hexcounter = 0
+                break
+
+    return hexcounter > 0
+
+
 def sfv_check(sfvs, nzo, workdir):
     """ Verify files using SFV files """
     # Update status
