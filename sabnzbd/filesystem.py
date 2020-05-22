@@ -351,11 +351,11 @@ def check_mount(path):
         Retry 6 times with an interval of 1 sec.
     """
     if sabnzbd.DARWIN:
-        m = re.search(r"^(/Volumes/[^/]+)/", path, re.I)
+        m = re.search(r"^(/Volumes/[^/]+)", path, re.I)
     elif sabnzbd.WIN32:
         m = re.search(r"^([a-z]:\\)", path, re.I)
     else:
-        m = re.search(r"^(/(?:mnt|media)/[^/]+)/", path)
+        m = re.search(r"^(/(?:mnt|media)/[^/]+)", path)
 
     if m:
         for n in range(sabnzbd.cfg.wait_ext_drive() or 1):
