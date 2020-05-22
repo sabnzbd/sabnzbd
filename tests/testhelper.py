@@ -125,9 +125,16 @@ class SABnzbdBaseTest(unittest.TestCase):
         if "CI" in os.environ:
             driver_options.add_argument("--headless")
             driver_options.add_argument("--no-sandbox")
-            # Needed for stability on Linux, doesn't work on Windows
+
+            # Useful for stability on Linux/macOS, doesn't work on Windows
             if not sys.platform.startswith("win"):
                 driver_options.add_argument("--single-process")
+
+            # On Linux we want to use the PPA Chrome
+            # This makes sure we always match Chrome and chromedriver
+            if not sys.platform.startswith(("win", "darwin")):
+                driver_options.binary_location = "/usr/bin/chromium-browser"
+
         cls.driver = webdriver.Chrome(options=driver_options)
 
         # Get the newsserver-info, if available
