@@ -416,8 +416,8 @@ class NzbFile(TryList):
 
     def __hash__(self):
         """ Required because we implement eq. The same file can be spread
-        over multiple NZO's so we make every NZF unique. Even though
-        it's considered bad pratice.
+            over multiple NZO's so we make every NZF unique. Even though
+            it's considered bad pratice.
         """
         return id(self)
 
@@ -606,12 +606,10 @@ class NzbObject(TryList):
                 sabnzbd.nzbparser.nzbfile_parser(nzb, self)
             except Exception as err:
                 self.incomplete = True
-                if '</nzb>' not in nzb:
-                    logging.warning(T('Incomplete NZB file %s'), filename)
-                else:
-                    logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'),
-                                    filename, err, '1')
-            if self.incomplete:
+                logging.warning(T('Invalid NZB file %s, skipping (reason=%s, line=%s)'), filename, err, '1')
+                logging.info("Traceback: ", exc_info=True)
+
+                # Some people want to keep the broken files
                 if cfg.allow_incomplete_nzb():
                     self.pause()
                 else:

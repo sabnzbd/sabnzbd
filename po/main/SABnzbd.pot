@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-23 10:11+0200\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -272,10 +272,6 @@ msgstr ""
 msgid "Aborted, rating filter matched (%s)"
 msgstr ""
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr ""
-
 #: sabnzbd/assembler.py [Warning message]
 msgid "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
 msgstr ""
@@ -386,10 +382,6 @@ msgstr ""
 
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
-msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
 msgstr ""
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
@@ -942,6 +934,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr ""
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr ""
@@ -1050,8 +1046,8 @@ msgstr ""
 msgid "%s -> Unknown encoding"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
 msgstr ""
 
 #: sabnzbd/nzbstuff.py [Warning message]
@@ -1416,10 +1412,6 @@ msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
-msgstr ""
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
 msgstr ""
 
 #: sabnzbd/postproc.py

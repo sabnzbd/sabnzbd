@@ -1291,7 +1291,7 @@ SPECIAL_BOOL_LIST = \
               'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
               'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'warn_dupl_jobs',
               'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging',
-              'ignore_empty_files', 'x_frame_options', 'require_modern_tls'
+              'x_frame_options', 'require_modern_tls'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'movie_rename_limit', 'nomedia_marker', 'max_url_retries', 'req_completion_rate', 'wait_ext_drive',
