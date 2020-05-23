@@ -2210,7 +2210,7 @@ def par2_mt_check(par2_path):
     return False
 
 
-def isSFVfile(myfile):
+def is_sfv_file(myfile):
     """ Checks if given file is a SFV file, and returns result as boolean """
 
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
