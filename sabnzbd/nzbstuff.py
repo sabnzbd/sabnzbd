@@ -223,7 +223,15 @@ class Article(TryList):
         self.tries = 0
 
     def __eq__(self, other):
+        """ Articles with the same usenet address are the same """
         return self.article == other.article
+
+    def __hash__(self):
+        """ Required because we implement eq. Articles with the same
+            usenet address can appear in different NZF's. So we make every
+            article object unique, even though it is bad pratice.
+        """
+        return id(self)
 
     def __repr__(self):
         return "<Article: article=%s, bytes=%s, art_id=%s>" % \
@@ -405,6 +413,13 @@ class NzbFile(TryList):
     def __eq__(self, other):
         """ Assume it's the same file if the bytes and first article are the same """
         return self.bytes == other.bytes and self.decodetable[0] == other.decodetable[0]
+
+    def __hash__(self):
+        """ Required because we implement eq. The same file can be spread
+        over multiple NZO's so we make every NZF unique. Even though
+        it's considered bad pratice.
+        """
+        return id(self)
 
     def __repr__(self):
         return "<NzbFile: filename=%s, type=%s>" % (self.filename, self.type)
