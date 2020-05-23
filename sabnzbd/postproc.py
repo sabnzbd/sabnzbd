@@ -34,6 +34,7 @@ from sabnzbd.newsunpack import (
     sfv_check,
     build_filelists,
     rar_sort,
+    isSFVfile,
 )
 from threading import Thread
 from sabnzbd.misc import on_cleanup_list
@@ -799,9 +800,16 @@ def try_sfv_check(nzo, workdir):
     # Get list of SFV names
     sfvs = globber_full(workdir, "*.sfv")
 
-    # Skip if there's no SFV's
+    # If no files named *.sfv, let's search for obfuscated SFV files
     if not sfvs:
-        return None
+        files = globber_full(workdir, "*")
+        for file in files:
+            if sabnzbd.newsunpack.isSFVfile(file):
+                logging.debug("Found and will use obfuscated SFV file: %s", file)
+                sfvs.append(file)
+        if not sfvs:
+            # still no SFV, so:
+            return None
 
     result = sfv_check(sfvs, nzo, workdir)
     if not result:

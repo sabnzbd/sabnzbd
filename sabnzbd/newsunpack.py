@@ -2217,18 +2217,22 @@ def isSFVfile(myfile):
     is_ascii_string = lambda bytes: not bool(bytes.translate(None, textchars))
 
     # first check if it's ASCII, or non-ASCII
-    with open(myfile, "rb") as f:
-        # get first 10000 bytes to check
-        myblock = f.read(10000)
-        if is_ascii_string(myblock):
-            # ASCII, so store lines for further inspection
-            try:
-                lines = myblock.decode("utf-8").split("\n")
-            except:
+    try:
+        with open(myfile, "rb") as f:
+            # get first 10000 bytes to check
+            myblock = f.read(10000)
+            if is_ascii_string(myblock):
+                # ASCII, so store lines for further inspection
+                try:
+                    lines = myblock.decode("utf-8").split("\n")
+                except:
+                    return False
+            else:
+                # non-ASCII, so not SFV
                 return False
-        else:
-            # non-ASCII, so not SFV
-            return False
+    except:
+        # with open went wrong, so not an existing file
+        return False
 
     hexcounter = 0
 
