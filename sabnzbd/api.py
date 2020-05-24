@@ -77,6 +77,7 @@ _MSG_NO_FILE = 'no file given'
 _MSG_NO_PATH = 'file does not exist'
 _MSG_OUTPUT_FORMAT = 'Format not supported'
 _MSG_NO_SUCH_CONFIG = 'Config item does not exist'
+_MSG_CONFIG_LOCKED = 'Configuration locked'
 _MSG_BAD_SERVER_PARMS = 'Incorrect server settings'
 
 # For Windows: determine executable extensions
@@ -126,6 +127,8 @@ def _api_get_config(name, output, kwargs):
 
 def _api_set_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
+    if cfg.configlock():
+        return report(output, _MSG_CONFIG_LOCKED)
     if kwargs.get('section') == 'servers':
         kwargs['keyword'] = handle_server_api(output, kwargs)
     elif kwargs.get('section') == 'rss':
@@ -143,6 +146,8 @@ def _api_set_config(name, output, kwargs):
 
 def _api_set_config_default(name, output, kwargs):
     """ API: Reset requested config variables back to defaults. Currently only for misc-section """
+    if cfg.configlock():
+        return report(output, _MSG_CONFIG_LOCKED)
     keywords = kwargs.get('keyword', [])
     if not isinstance(keywords, list):
         keywords = [keywords]
@@ -156,6 +161,8 @@ def _api_set_config_default(name, output, kwargs):
 
 def _api_del_config(name, output, kwargs):
     """ API: accepts output, keyword, section """
+    if cfg.configlock():
+        return report(output, _MSG_CONFIG_LOCKED)
     if del_from_section(kwargs):
         return report(output)
     else:
@@ -793,6 +800,8 @@ def _api_browse(name, output, kwargs):
 
 def _api_config(name, output, kwargs):
     """ API: Dispatcher for "config" """
+    if cfg.configlock():
+        return report(output, _MSG_CONFIG_LOCKED)
     return _api_config_table.get(name, (_api_config_undefined, 2))[0](output, kwargs)
 
 
