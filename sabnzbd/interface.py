@@ -253,7 +253,6 @@ def check_apikey(kwargs):
     """ Check API-key or NZB-key
         Return None when OK, otherwise an error message
     """
-    output = kwargs.get('output')
     mode = kwargs.get('mode', '')
     name = kwargs.get('name', '')
 

@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2020-05-24 10:06+0200\n"
+"POT-Creation-Date: 2020-05-24 10:47+0200\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -314,6 +314,10 @@ msgstr ""
 
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
+msgstr ""
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
 msgstr ""
 
 #: sabnzbd/config.py [Error message]
