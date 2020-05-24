@@ -34,9 +34,9 @@
 
   <div id="plush_options_modal">
 
-  <p><a href="status/disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a></p>
-  <p><a href="config/restart?session=$session" class="juiButton" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#">$T('sch-restart')</a>
-    <a href="shutdown?session=$session&amp;pid=$pid" class="juiButton" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></p>
+  <p><a href="status/disconnect?apikey=$apikey" class="juiButton">$T('link-forceDisc')</a></p>
+  <p><a href="config/restart?apikey=$apikey" class="juiButton" id="sabnzbd_restart" rel="#echo $T('explain-Restart').replace("<br />","\n")#">$T('sch-restart')</a>
+    <a href="shutdown?apikey=$apikey&amp;pid=$pid" class="juiButton" id="sabnzbd_shutdown" rel="$T('shutdownOK?')">$T('sch-shutdown')</a></p>
   <br/>
 
   $T('Plush-refreshRate'):
@@ -75,7 +75,7 @@ $T('Plush-containerWidth'):
     <input type="submit" id="addID" value="$T('Plush-fetch')" class="juiButton" />
     <div id="add_nzb_hr"><hr></div>
     <form action="api" id="uploadNZBForm" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="apikey" value="$session" />
+      <input type="hidden" name="apikey" value="$apikey" />
         <input type="hidden" name="mode" value="addfile" />
         <input type="file" id="uploadNZBFile" name="name" size="12" style="width:180px;" />
       <input type="submit" value="$T('Plush-upload')" class="juiButton" />
@@ -150,7 +150,7 @@ $T('Plush-containerWidth'):
   <div id="retry_modal">
     <form action="history/retry_pp" method="post" enctype="multipart/form-data">
       <input type="hidden" id="retry_modal_job" name="job" />
-      <input type="hidden" name="session" value="$session" />
+      <input type="hidden" name="apikey" value="$apikey" />
       <br/><p><strong id="retry_modal_title">title</strong></p>
       <br/><p>$T('opt-extra-NZB'):<br/><input type="file" name="nzbfile" /></p>
       <br/><p>$T('srv-password'):<br/><input type="text" name="password" /></p>

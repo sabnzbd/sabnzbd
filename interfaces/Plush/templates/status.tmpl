@@ -12,8 +12,8 @@
 
   <div id="tabs-warnings">
     <p>
-      <a href="clearwarnings?session=$session" class="juiButton">$T('clearWarnings').capitalize()</a>
-      <a href="showlog?session=$session" class="juiButton">$T('link-showLog')</a>
+      <a href="clearwarnings?apikey=$apikey" class="juiButton">$T('clearWarnings').capitalize()</a>
+      <a href="showlog?apikey=$apikey" class="juiButton">$T('link-showLog')</a>
       <strong>$T('logging'):</strong> <select class="xsmall" id="logging_level">
         <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
         <option value="1" <!--#if $loglevel == "1" then "selected" else ""#-->>$T('log-info')</option>
@@ -49,12 +49,12 @@
     <table>
       <tr><td>
         <form action="saveGeneral" method="post">
-          <input type="submit" class="juiButton" onclick="this.form.action='../config/repair?session=$session'; this.form.submit(); return false;" value="$T('button-repair')"/>
+          <input type="submit" class="juiButton" onclick="this.form.action='../config/repair?apikey=$apikey'; this.form.submit(); return false;" value="$T('button-repair')"/>
         </form>
         </td><td style="padding-left:20px;"><p>$T('explain-Repair')</p></td></tr>
       <tr><td>
         <form action="saveGeneral" method="post">
-          <input type="submit" class="juiButton" onclick="this.form.action='../config/restart?session=$session'; this.form.submit(); return false;" value="$T('button-restart')"/>
+          <input type="submit" class="juiButton" onclick="this.form.action='../config/restart?apikey=$apikey'; this.form.submit(); return false;" value="$T('button-restart')"/>
         </form>
         </td><td style="padding-left:20px;"><p>$T('explain-Restart')</p></td></tr>
     </table>
@@ -73,12 +73,12 @@
       <tr class="<!--#if $odd then "odd" else "even"#-->">
         <td><form action="delete" method="get">
           <input type="hidden" value="$folder" name="name">
-          <input type="hidden" value="$session" name="session">
+          <input type="hidden" value="$apikey" name="apikey">
           <input type="submit" class="juiButton" value="$T('button-delCat')">
         </form></td>
         <td><form action="add" method="get">
           <input type="hidden" value="$folder" name="name">
-          <input type="hidden" value="$session" name="session">
+          <input type="hidden" value="$apikey" name="apikey">
           <input type="submit" class="juiButton" value="$T('button-add')">
         </form></td>
         <td>$folder</td>
@@ -91,8 +91,8 @@
 
 
   <div id="tabs-connections">
-  <a href="refresh_conn?session=$session" class="juiButton">$T('Plush-button-refresh')</a>
-  <a href="disconnect?session=$session" class="juiButton">$T('link-forceDisc')</a>
+  <a href="refresh_conn?apikey=$apikey" class="juiButton">$T('Plush-button-refresh')</a>
+  <a href="disconnect?apikey=$apikey" class="juiButton">$T('link-forceDisc')</a>
   <hr>
   <!--#if $servers#-->
     <!--#set $count=0#-->
@@ -102,7 +102,7 @@
       <p>$T('Priority') = $server[7]&nbsp;&nbsp;<!--#if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#--></p>
       <p># $T('connections'): $server[2]</p>
       <!--#if not $server[5]#-->
-        <a href="./unblock_server?server=$server[0]&session=$session" class="juiButton">$T('server-blocked')</a>
+        <a href="./unblock_server?server=$server[0]&apikey=$apikey" class="juiButton">$T('server-blocked')</a>
         &nbsp;&nbsp;$server[6]
       <!--#end if#-->
       <!--#if $server[3]#-->
@@ -238,7 +238,7 @@
         </tr>
     </table>
     <br/>
-    <a href="dashrefresh?session=$session" class="juiButton">$T('dashboard-repeatTest')</a>
+    <a href="dashrefresh?apikey=$apikey" class="juiButton">$T('dashboard-repeatTest')</a>
   </div>
 </div>
 

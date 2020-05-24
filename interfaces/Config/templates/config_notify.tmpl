@@ -27,7 +27,7 @@
 
 <div class="colmask">
     <form action="saveEmail" method="post" name="fullform" class="fullform" autocomplete="off">
-    <input type="hidden" id="session" name="session" value="$session" />
+    <input type="hidden" id="apikey" name="apikey" value="$apikey" />
     <input type="hidden" id="ajax" name="ajax" value="1" />
     <div class="section" id="email">
         <div class="col2">
@@ -396,7 +396,7 @@
         // Disable button and get the data
         \$(buttonObj).attr("disabled", "disabled")
         \$(buttonObj).find('span').toggleClass('glyphicon-comment glyphicon-refresh spin-glyphicon')
-        var data = { mode: buttonObj.id, apikey: '$session', output: 'json' };
+        var data = { mode: buttonObj.id, apikey: '$apikey', output: 'json' };
         \$(buttonObj).parents('.section').extractFormDataTo(data);
 
         // Clear up the box
