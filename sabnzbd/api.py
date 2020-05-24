@@ -162,14 +162,6 @@ def _api_del_config(name, output, kwargs):
         return report(output, _MSG_NOT_IMPLEMENTED)
 
 
-def _api_qstatus(name, output, kwargs):
-    """ API: accepts output """
-    # TODO: Remove method after final version
-    logging.warning("The API-method 'qstatus' is deprecated and will be removed in the final version of 3.0.0.")
-    info, pnfo_list, bytespersec = build_queue(output=output)
-    return report(output, data=info)
-
-
 def _api_queue(name, output, kwargs):
     """ API: Dispatcher for mode=queue """
     value = kwargs.get('value', '')
@@ -894,7 +886,6 @@ _api_table = {
     'set_config': (_api_set_config, 3),
     'set_config_default': (_api_set_config_default, 3),
     'del_config': (_api_del_config, 3),
-    'qstatus': (_api_qstatus, 2),
     'queue': (_api_queue, 2),
     'options': (_api_options, 2),
     'translate': (_api_translate, 2),
