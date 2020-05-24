@@ -102,7 +102,7 @@ def set_platform(platform):
 
 def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
     """ Do basic request to web page """
-    arguments = {"session": "apikey"}
+    arguments = {"apikey": "apikey"}
     return requests.get("http://%s:%s/%s/" % (host, port, url), params=arguments).text
 
 

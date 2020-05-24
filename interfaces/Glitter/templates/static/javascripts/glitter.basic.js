@@ -30,7 +30,7 @@ function callAPI(data) {
     data.output = "json";
     data.apikey = apiKey;
     var ajaxQuery = $.ajax({
-        url: "./tapi",
+        url: "./api",
         type: "GET",
         cache: false,
         data: data,

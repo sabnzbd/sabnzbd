@@ -491,7 +491,7 @@
             theButton.find('span').toggleClass('glyphicon-sort glyphicon-refresh spin-glyphicon')
             \$.ajax({
                 type: "POST",
-                url: "../../tapi",
+                url: "../../api",
                 data: "mode=config&output=json&name=test_server&" + \$(this).parents('form:first').serialize()
             }).then(function(data) {
                 // Let's replace the link

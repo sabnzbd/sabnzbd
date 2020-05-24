@@ -289,7 +289,7 @@
       if (confirm("$T('Plush-confirm')")) {
         $.ajax({
           type: "POST",
-          url: "../../tapi",
+          url: "../../api",
           data: {mode:'config', name:'set_apikey', apikey: \$('#apikey').val()},
           success: function(msg){
             \$('#apikey').val(msg);
@@ -302,7 +302,7 @@
       if (confirm("$T('Plush-confirm')")) {
         $.ajax({
           type: "POST",
-          url: "../../tapi",
+          url: "../../api",
           data: { mode:'config', name:'set_nzbkey', apikey: \$('#apikey').val() },
           success: function(msg){
             \$('#nzbkey').val(msg);
@@ -334,7 +334,7 @@
         // Submit request and then restart
         $.ajax({
             type: "POST",
-            url: "../../tapi",
+            url: "../../api",
             data: { mode: 'config', name: 'regenerate_certs', apikey: \$('#apikey').val() },
             success: function(msg) {
                 do_restart()

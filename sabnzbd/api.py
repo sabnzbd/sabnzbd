@@ -85,16 +85,35 @@ if os.name == 'nt':
 else:
     PATHEXT = []
 
+
 def api_handler(kwargs):
     """ API Dispatcher """
-    mode = kwargs.get('mode', '')
-    output = kwargs.get('output')
-    name = kwargs.get('name', '')
+    if cfg.api_logging():
+        # Was it proxy forwarded?
+        xff = cherrypy.request.headers.get('X-Forwarded-For')
+        if xff:
+            logging.debug('API-call from %s (X-Forwarded-For: %s) [%s] %s', cherrypy.request.remote.ip,
+                          xff, cherrypy.request.headers.get('User-Agent', '??'), kwargs)
+        else:
+            logging.debug('API-call from %s [%s] %s', cherrypy.request.remote.ip,
+                          cherrypy.request.headers.get('User-Agent', '??'), kwargs)
 
+    # Clean-up the arguments
+    mode = kwargs.get('mode', '')
+    name = kwargs.get('name', '')
+    output = kwargs.get('output')
     if isinstance(mode, list):
         mode = mode[0]
+    if isinstance(name, list):
+        name = name[0]
     if isinstance(output, list):
         output = output[0]
+
+    if mode not in ('version', 'auth'):
+        msg = sabnzbd.interface.check_apikey(kwargs)
+        if msg:
+            return report(output, msg)
+
     response = _api_table.get(mode, (_api_undefined, 2))[0](name, output, kwargs)
     return response
 
@@ -1531,7 +1550,7 @@ def build_header(webdir='', output=None, trans_functions=True):
         header['power_options'] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
         header['pp_pause_event'] = sabnzbd.scheduler.pp_pause_event()
 
-        header['session'] = cfg.api_key()
+        header['apikey'] = cfg.api_key()
         header['new_release'], header['new_rel_url'] = sabnzbd.NEW_VERSION
 
     header['version'] = sabnzbd.__version__

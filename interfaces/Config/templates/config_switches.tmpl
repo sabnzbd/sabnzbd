@@ -535,7 +535,7 @@
         // Send request
         \$.ajax({
             type: "GET",
-            url: "../../tapi",
+            url: "../../api",
             data: "mode=set_config_default&session=${session}&output=json&keyword=" + key_container.join('&keyword=')
         }).then(function(data) {
             // Reload page
