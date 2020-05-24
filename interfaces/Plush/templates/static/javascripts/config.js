@@ -134,7 +134,7 @@ jQuery(document).ready(function($){
       if (confirm($(this).attr('rel'))) {
         $.ajax({
           type: "POST",
-          url: "../../tapi",
+          url: "../../api",
           data: {mode:'config', name:'set_apikey', apikey: $('#apikey').val()},
           success: function(msg){
             $('#apikey,#session').val(msg);
@@ -147,7 +147,7 @@ jQuery(document).ready(function($){
       if (confirm($(this).attr('rel'))) {
         $.ajax({
           type: "POST",
-          url: "../../tapi",
+          url: "../../api",
           data: {mode:'config', name:'set_nzbkey', apikey: $('#apikey').val()},
           success: function(msg){
             $('#nzbkey,#session').val(msg);
@@ -166,7 +166,7 @@ jQuery(document).ready(function($){
       $(event.target).next('span').addClass('loading');
       $.ajax({
         type: "POST",
-        url: "../../tapi",
+        url: "../../api",
         data: "mode=config&name=test_server&"+ $(event.target).parents('form:first').serialize() +"&apikey="+$('#apikey').val(),
         success: function(msg){
           alert(msg);

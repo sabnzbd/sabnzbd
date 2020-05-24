@@ -717,7 +717,7 @@ function ViewModel() {
 
         // Add this one
         $.ajax({
-            url: "./tapi",
+            url: "./api",
             type: "POST",
             cache: false,
             processData: false,
