@@ -75,7 +75,7 @@
         </div>
         <div class="col1">
             <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
-                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" name="apikey" value="$apikey" />
                 <fieldset>
                     <div class="field-pair">
                         <label class="config" for="enable">$T('srv-enable')</label>
@@ -170,7 +170,7 @@
     <!--#set $last_prio = -1 #-->
     <!--#for $cur, $server in enumerate($servers) #-->
         <form action="saveServer" method="post" class="fullform" autocomplete="off">
-            <input type="hidden" name="session" value="$session" />
+            <input type="hidden" name="apikey" value="$apikey" />
             <input type="hidden" name="server" value="$server['name']" />
             <input type="hidden" id="ajax" name="ajax" value=1 />
 
@@ -541,7 +541,7 @@
             \$.ajax({
                 type: "POST",
                 url: "toggleServer",
-                data: {server: whichServer, session: "$session" }
+                data: {server: whichServer, apikey: "$apikey" }
             }).done(function() {
                 // Let us leave!
                 formWasSubmitted = true;

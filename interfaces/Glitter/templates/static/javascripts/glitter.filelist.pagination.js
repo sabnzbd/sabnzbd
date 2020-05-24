@@ -129,7 +129,7 @@ function Fileslisting(parent) {
         // We have to create the data-structure before, to be able to use the name as a key
         var dataToSend = {};
         dataToSend[event.item.nzf_id()] = 'on';
-        dataToSend['session'] = apiKey;
+        dataToSend['apikey'] = apiKey;
         dataToSend['action_key'] = direction;
         dataToSend['action_size'] = Math.abs(nrMoves);
 
@@ -141,7 +141,7 @@ function Fileslisting(parent) {
     self.removeSelectedFiles = function() {
         // We have to create the data-structure before, to be able to use the name as a key
         var dataToSend = {};
-        dataToSend['session'] = apiKey;
+        dataToSend['apikey'] = apiKey;
         dataToSend['action_key'] = 'Delete';
 
         // Get all selected ones

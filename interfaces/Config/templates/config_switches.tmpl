@@ -9,7 +9,7 @@
         </label>
     </div>
     <form action="saveSwitches" method="post" name="fullform" class="fullform" autocomplete="off">
-        <input type="hidden" id="session" name="session" value="$session" />
+        <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <div class="section advanced-settings">
             <div class="col2">
                 <h3>$T('swtag-server') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
@@ -536,7 +536,7 @@
         \$.ajax({
             type: "GET",
             url: "../../api",
-            data: "mode=set_config_default&session=${session}&output=json&keyword=" + key_container.join('&keyword=')
+            data: "mode=set_config_default&apikey=${apikey}&output=json&keyword=" + key_container.join('&keyword=')
         }).then(function(data) {
             // Reload page
             document.location = document.location

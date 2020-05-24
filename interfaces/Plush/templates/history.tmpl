@@ -89,7 +89,7 @@
     <!--#if $line.retry#-->
       <form action="history/retry_pp" method="post" enctype="multipart/form-data">
         <input type="hidden" value="$line.nzo_id" name="job" />
-        <input type="hidden" name="session" value="$session" />
+        <input type="hidden" name="apikey" value="$apikey" />
         &nbsp;<a href="#" class="retry-nzbfile">$T('button-retry')</a>
       </form>
     <!--#end if#-->

@@ -261,7 +261,7 @@ function do_restart() {
     $('.main-restarting .restarting-url').text(urlTotal)
 
     // Initiate restart
-    $.ajax({ url: '../../config/restart?session=' + sabSession,
+    $.ajax({ url: '../../config/restart?apikey=' + sabSession,
         complete: function() {
             // Keep counter of failures
             var failureCounter = 0;

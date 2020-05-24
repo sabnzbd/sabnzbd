@@ -97,7 +97,7 @@
                     <!--#if $have_watched_dir#--><li><a href="#" data-bind="click: doQueueAction" data-mode="watched_now">$T('sch-scan_folder')</a></li><!--#end if#-->
                     <!--#if $pp_pause_event#--><li><a href="#" data-bind="click: doQueueAction" data-mode="resume_pp">$T('sch-resume_post')</a></li><!--#end if#-->
                     <li class="divider"></li>
-                    <li><a href="./shutdown/?session=$session&amp;pid=$pid" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
+                    <li><a href="./shutdown/?apikey=$apikey&amp;pid=$pid" data-bind="click: shutdownSAB">$T('shutdownSab')</a></li>
                     <li><a href="#" data-bind="click: restartSAB">$T('Glitter-restartSab')</a></li>
                     <li class="divider"></li>
                     <li class="dropdown-header"><span class="glyphicon glyphicon-off"></span> $T('Glitter-onFinish'):</li>

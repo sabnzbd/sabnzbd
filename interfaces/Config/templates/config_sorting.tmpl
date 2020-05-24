@@ -4,7 +4,7 @@
 
 <div class="colmask">
     <form action="saveSorting" method="post" name="fullform" class="fullform" autocomplete="off">
-        <input type="hidden" id="session" name="session" value="$session" />
+        <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <input id="complete_dir" type="hidden" value="$complete_dir" />
         <div class="section">
             <div class="col2">
@@ -476,7 +476,7 @@
                 \$.ajax({
                   type: "GET",
                   url: "../../api",
-                  data: {mode:'eval_sort', value: 'series', name: \$('#tvsamplename').val(), title: \$tvsortstring, apikey: '$session', output: 'json' },
+                  data: {mode:'eval_sort', value: 'series', name: \$('#tvsamplename').val(), title: \$tvsortstring, apikey: '$apikey', output: 'json' },
                   success: function(data){
                     \$('#previewtv-result').removeClass("loading failure").html(data.result);
                   },
@@ -497,7 +497,7 @@
                 \$.ajax({
                   type: "GET",
                   url: "../../api",
-                  data: {mode:'eval_sort', value: 'movie', name: \$('#moviesamplename').val(), title: \$moviesortstring, movieextra:  \$('#movieextra').val(), apikey: '$session', output: 'json' },
+                  data: {mode:'eval_sort', value: 'movie', name: \$('#moviesamplename').val(), title: \$moviesortstring, movieextra:  \$('#movieextra').val(), apikey: '$apikey', output: 'json' },
                   success: function(data){
                     \$('#previewmovie-result').removeClass("loading failure").html(data.result);
                   },
@@ -518,7 +518,7 @@
                 \$.ajax({
                   type: "GET",
                   url: "../../api",
-                  data: {mode:'eval_sort', value: 'date', name: \$('#datesamplename').val(), title: \$datesortstring, apikey: '$session', output: 'json' },
+                  data: {mode:'eval_sort', value: 'date', name: \$('#datesamplename').val(), title: \$datesortstring, apikey: '$apikey', output: 'json' },
                   success: function(data){
                     \$('#previewdate-result').removeClass("loading failure").html(data.result);
                   },
