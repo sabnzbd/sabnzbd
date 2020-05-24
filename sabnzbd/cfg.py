@@ -95,7 +95,6 @@ configlock = OptionBool("misc", "config_lock", 0)
 ##############################################################################
 # One time trackers
 ##############################################################################
-warned_old_queue = OptionNumber("misc", "warned_old_queue", QUEUE_VERSION)
 sched_converted = OptionBool("misc", "sched_converted", False)
 notified_new_skin = OptionNumber("misc", "notified_new_skin", 0)
 direct_unpack_tested = OptionBool("misc", "direct_unpack_tested", False)

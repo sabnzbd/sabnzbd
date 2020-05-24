@@ -1177,9 +1177,7 @@ def main():
     sabnzbd.WEB_COLOR = check_template_scheme(sabnzbd.cfg.web_color(), sabnzbd.WEB_DIR)
     sabnzbd.cfg.web_color.set(sabnzbd.WEB_COLOR)
 
-    # Save the INI file
-    config.save_config(force=True)
-
+    # Handle the several tray icons
     if sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON:
         if sabnzbd.WIN32:
             import sabnzbd.sabtray
