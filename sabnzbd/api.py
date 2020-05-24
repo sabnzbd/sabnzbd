@@ -100,15 +100,13 @@ def api_handler(kwargs):
                           cherrypy.request.headers.get('User-Agent', '??'), kwargs)
 
     # Clean-up the arguments
+    for vr in ('mode', 'output', 'name'):
+        if isinstance(kwargs.get(vr, None), list):
+            kwargs.set(vr, vr[0])
+
     mode = kwargs.get('mode', '')
+    output = kwargs.get('output', '')
     name = kwargs.get('name', '')
-    output = kwargs.get('output')
-    if isinstance(mode, list):
-        mode = mode[0]
-    if isinstance(name, list):
-        name = name[0]
-    if isinstance(output, list):
-        output = output[0]
 
     if mode not in ('version', 'auth'):
         msg = sabnzbd.interface.check_apikey(kwargs)

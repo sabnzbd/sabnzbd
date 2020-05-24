@@ -793,7 +793,7 @@ def save_config(force=False):
         return True
 
     if sabnzbd.cfg.configlock():
-        logging.warning(T('Configuration locked, cannot save settings'))
+        logging.warning(T("Configuration locked, cannot save settings"))
         return False
 
     for section in database:
