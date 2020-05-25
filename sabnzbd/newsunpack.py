@@ -28,7 +28,9 @@ import time
 import zlib
 import shutil
 import functools
+import re
 from subprocess import Popen
+from sabnzbd.encoding import ubtou
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding
@@ -2213,10 +2215,11 @@ def par2_mt_check(par2_path):
 def is_sfv_file(myfile):
     """ Checks if given file is a SFV file, and returns result as boolean """
 
+    # based on https://stackoverflow.com/a/7392391/5235502
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
     is_ascii_string = lambda bytes: not bool(bytes.translate(None, textchars))
 
-    # first check if it's ASCII, or non-ASCII
+    # first check if it's plain text (ASCII or Unicode)
     try:
         with open(myfile, "rb") as f:
             # get first 10000 bytes to check
@@ -2224,36 +2227,33 @@ def is_sfv_file(myfile):
             if is_ascii_string(myblock):
                 # ASCII, so store lines for further inspection
                 try:
-                    lines = myblock.decode("utf-8").split("\n")
-                except:
+                    lines = ubtou(myblock).split("\n")
+                except UnicodeDecodeError:
                     return False
             else:
                 # non-ASCII, so not SFV
                 return False
     except:
-        # with open went wrong, so not an existing file
+        # the with-open() went wrong, so not an existing file, so certainly not a SFV file
         return False
 
-    hexcounter = 0
-
+    sfv_info_line_counter = 0
     for line in lines:
-        # handle non-comment, non-empty lines:
-        if not line.startswith(";") and len(line) > 0:
-            lastword = line.rstrip().split(" ")[-1]
-            try:
-                # check if it's a hexadecimal, and 8-digit:
-                if int(lastword, 16) and len(lastword) == 8:
-                    hexcounter += 1
-                    # with 4 valid 8-digit hexadecimals, we're confident enough it's a valid SFV
-                    if hexcounter >= 4:
-                        break
-            except ValueError:
-                # not a hex number, so non-SFV, so we're done
-                hexcounter = 0
+        if re.search("^[^;].*\ +[A-Fa-f0-9]{8}$", line):
+            # valid, useful SFV line: some text, then one or more space, and a 8-digit hex number
+            sfv_info_line_counter += 1
+            if sfv_info_line_counter >= 10:
+                # with 10 valid, useful lines we're confident enough
+                # (note: if we find less lines (even just 1 line), with no negatives, it is OK. See below)
                 break
-
-    return hexcounter > 0
-
+        elif re.search("^;", line) or re.search("^\ *$", line):
+            # comment line or just spaces, so continue to next line
+            continue
+        else:
+            # not a valid SFV line, so not a SFV file:
+            return False
+    # if we get here, no negatives were found, and at least 1 valid line is OK
+    return sfv_info_line_counter >= 1
 
 def sfv_check(sfvs, nzo, workdir):
     """ Verify files using SFV files """
