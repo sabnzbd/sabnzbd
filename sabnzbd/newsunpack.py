@@ -28,7 +28,9 @@ import time
 import zlib
 import shutil
 import functools
+import re
 from subprocess import Popen
+from sabnzbd.encoding import ubtou
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding
@@ -2209,6 +2211,49 @@ def par2_mt_check(par2_path):
         pass
     return False
 
+
+def is_sfv_file(myfile):
+    """ Checks if given file is a SFV file, and returns result as boolean """
+
+    # based on https://stackoverflow.com/a/7392391/5235502
+    textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
+    is_ascii_string = lambda bytes: not bool(bytes.translate(None, textchars))
+
+    # first check if it's plain text (ASCII or Unicode)
+    try:
+        with open(myfile, "rb") as f:
+            # get first 10000 bytes to check
+            myblock = f.read(10000)
+            if is_ascii_string(myblock):
+                # ASCII, so store lines for further inspection
+                try:
+                    lines = ubtou(myblock).split("\n")
+                except UnicodeDecodeError:
+                    return False
+            else:
+                # non-ASCII, so not SFV
+                return False
+    except:
+        # the with-open() went wrong, so not an existing file, so certainly not a SFV file
+        return False
+
+    sfv_info_line_counter = 0
+    for line in lines:
+        if re.search("^[^;].*\ +[A-Fa-f0-9]{8}$", line):
+            # valid, useful SFV line: some text, then one or more space, and a 8-digit hex number
+            sfv_info_line_counter += 1
+            if sfv_info_line_counter >= 10:
+                # with 10 valid, useful lines we're confident enough
+                # (note: if we find less lines (even just 1 line), with no negatives, it is OK. See below)
+                break
+        elif re.search("^;", line) or re.search("^\ *$", line):
+            # comment line or just spaces, so continue to next line
+            continue
+        else:
+            # not a valid SFV line, so not a SFV file:
+            return False
+    # if we get here, no negatives were found, and at least 1 valid line is OK
+    return sfv_info_line_counter >= 1
 
 def sfv_check(sfvs, nzo, workdir):
     """ Verify files using SFV files """
