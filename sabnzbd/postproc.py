@@ -960,8 +960,11 @@ def rar_renamer(nzo, workdir):
                     # set() method with intersection (less strict): set(rarvolnr[n][base_obfuscated_filename]).intersection(set(rarvolnr[n+1][next_obfuscated_filename]))
                     # check if the last filename inside the existing rar matches with the first filename in the following rar
                     if rarvolnr[n][base_obfuscated_filename][-1] == rarvolnr[n + 1][next_obfuscated_filename][0]:
-                        rarsetname[next_obfuscated_filename] = rarsetname[base_obfuscated_filename]
-                        matchcounter += 1
+                        try:
+                            rarsetname[next_obfuscated_filename] = rarsetname[base_obfuscated_filename]
+                            matchcounter += 1
+                        except KeyError:
+                            logging.warning("No matching earlier rar file for %s", next_obfuscated_filename)
                 if matchcounter > 1:
                     logging.info("Deobfuscate: more than one match, so risk on false positive matching.")
 
