@@ -63,7 +63,7 @@ def internetspeed():
     """
 
     # Calculate:
-    maxtime = 8  # seconds
+    maxtime = 4  # seconds
     URLtoDO = None
     for size, sizeurl in SizeUrlList:
         expectedtime = size / baseMBps
@@ -72,13 +72,13 @@ def internetspeed():
             URLtoDO = sizeurl
 
     maxMBps = baseMBps
-    # Execute:
-    if URLtoDO:
-        logging.debug(URLtoDO)
-        MBps = measurespeed(URLtoDO)
-        logging.debug("Speed in MB/s: %.2f" % MBps)
-        if MBps > maxMBps:
-            maxMBps = MBps
+    # Execute it twice, and get the best result
+    for i in range(2):
+        if URLtoDO:
+            logging.debug(URLtoDO)
+            MBps = measurespeed(URLtoDO)
+            logging.debug("Speed in MB/s: %.2f" % MBps)
+            maxMBps = max(maxMBps, MBps)
 
     return maxMBps
 
