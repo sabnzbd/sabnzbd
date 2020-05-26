@@ -1,36 +1,44 @@
-Release Notes - SABnzbd 3.0.0 Alpha 2
+Release Notes - SABnzbd 3.0.0 Beta 1
 =========================================================
 
 ## About this new version
 We have been working for months to upgrade the SABnzbd code from Python 2 to Python 3.
 Although it might not sound like a big change, we had to rewrite almost every part of
 the code. This also means that we might have introduced new bugs. We therefore encourage
-you to let us know of any errors or strange behavior your might notice!
-Unfortunately, this also means that we could not spend much time adding new features.
-But we still managed to add a few, like extracting fully obfuscated RAR-sets.
-
-## Changes since 3.0.0 Alpha 1
-- Files and sockets were not always closed correctly.
-- Windows Service support was restored. It does require you to reinstall the service!
-  Documentation: https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
-- On Windows the Universal C Runtime DLL's are no longer included, all versions of 
-  Windows supported by Microsoft already have these DLL's.
+you to let us know of any errors or strange behavior you might notice!
 
 ## Big changes in 3.0.0
 - Python 3.5 and above are the only supported versions of Python.
+- Cache handling is greatly improved, resulting in more stable speeds on some systems.
+- SFV files, even obfuscated, will be used for renaming when there are no par2 files.
 - Fully obfuscated RAR-sets with no verification files are detected and extracted.
-- SABYenc, par2 and unrar are now required to start downloading.
-- The Windows installer is 64-bit only, for 32-bit use the standalone package.
-- Growl-support was removed.
-- macOS features such as the menu and notifications now use native code.
 - Built-in internet bandwidth test.
+- Windows Service support was changed. The service will need to be reinstalled!
+  Documentation: https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
+- The Windows installer is 64-bit only, for 32-bit use the standalone package.
+
+## Other changes since 2.3.9
+- Files that are fully identical are now skipped automatically.
+- Linux tray icon support was improved.
+- macOS features such as the menu and notifications now use native code.
+- In Python 3 OpenSSL 1.1.1 is used for Windows and macOS, as a result 
+  newsservers manually set to "RC4-MD5" cipher can no longer connect. 
+  Documentation: https://sabnzbd.org/wiki/advanced/ssl-ciphers
 - TLS1.3 support for newsserver connections.
+- SABYenc, par2 and unrar are now required to start downloading.
+- Growl-support was removed.
+- API-calls "tapi" and "qstatus" were removed.
+- The "smpl" skin was removed.
 
 ## Bugfixes since 2.3.9
+- Resolved potential security issue in FAT-filesystem check.
 - Sample removal did not work if only 1 sample file was present.
-- Crash on badly formatted RSS-feeds.
-- Windows systems could go into standby.
+- Crash on badly formatted RSS-feeds or readout during editing.
+- Aborting jobs that can't be completed would sometimes not trigger.
+- Windows systems could enter standby state during downloading.
 - Some errors thrown by unrar were not caught.
+- Files and sockets were not always closed correctly.
+- Unwanted extension check was overly aggressively deleting folders
 
 ## Upgrade notices
 - When upgrading from 2.x.x or older the queue will be converted. Job order,
