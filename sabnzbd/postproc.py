@@ -730,7 +730,8 @@ def parring(nzo, workdir):
     single = len(nzo.extrapars) == 1
 
     if nzo.extrapars:
-        for setname in nzo.extrapars:
+        # Need to make a copy because it can change during iteration
+        for setname in list(nzo.extrapars):
             if cfg.ignore_samples() and RE_SAMPLE.search(setname.lower()):
                 continue
             # Skip sets that were already tried

@@ -22,7 +22,6 @@ sabnzbd.decoder - article decoder
 import logging
 import hashlib
 import queue
-from time import sleep
 from threading import Thread
 
 import sabnzbd
@@ -31,7 +30,6 @@ from sabnzbd.articlecache import ArticleCache
 from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
-from sabnzbd.encoding import ubtou
 from sabnzbd.misc import match_str
 
 # Check for correct SABYenc version
@@ -202,10 +200,12 @@ class DecoderWorker(Thread):
                     # Examine headers (for precheck) or body (for download)
                     # And look for DMCA clues (while skipping "X-" headers)
                     for line in raw_data:
-                        lline = ubtou(line).lower()
-                        if "message-id:" in lline:
+                        lline = line.lower()
+                        if b"message-id:" in lline:
                             found = True
-                        if not lline.startswith("X-") and match_str(lline, ("dmca", "removed", "cancel", "blocked")):
+                        if not lline.startswith(b"X-") and match_str(
+                            lline, (b"dmca", b"removed", b"cancel", b"blocked")
+                        ):
                             killed = True
                             break
                 if killed:
