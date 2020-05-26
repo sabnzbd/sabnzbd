@@ -459,7 +459,7 @@ def process_job(nzo):
 
             if all_ok:
                 # Remove files matching the cleanup list
-                cleanup_list(tmp_workdir_complete, True)
+                cleanup_list(tmp_workdir_complete, skip_nzb=True)
 
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
@@ -473,7 +473,8 @@ def process_job(nzo):
                     nzo.set_unpack_info("Download", T("Sent %s to queue") % nzb_list)
                     cleanup_empty_directories(tmp_workdir_complete)
                 else:
-                    cleanup_list(tmp_workdir_complete, False)
+                    # Full cleanup including nzb's
+                    cleanup_list(tmp_workdir_complete, skip_nzb=False)
 
         script_output = ""
         script_ret = 0
@@ -1016,10 +1017,8 @@ def cleanup_list(wdir, skip_nzb):
                         logging.error(T("Removing %s failed"), clip_path(path))
                         logging.info("Traceback: ", exc_info=True)
         if files:
-            try:
-                remove_dir(wdir)
-            except:
-                pass
+            # If directories only contained unwanted files, remove them
+            cleanup_empty_directories(wdir)
 
 
 def prefix(path, pre):
