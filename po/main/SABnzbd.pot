@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2020-05-24 10:47+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -468,10 +468,6 @@ msgstr ""
 msgid "Connecting %s@%s failed, message=%s"
 msgstr ""
 
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr ""
-
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
 msgstr ""
@@ -580,10 +576,6 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
-msgstr ""
-
-#: sabnzbd/interface.py [Warning message]
-msgid "Try our new skin Glitter! Fresh new design that is optimized for desktop and mobile devices. Go to Config -> General to change your skin."
 msgstr ""
 
 #: sabnzbd/interface.py

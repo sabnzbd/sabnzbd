@@ -701,15 +701,6 @@ class Downloader(Thread):
                                         nw.thrdnum, nw.server.host, article.article, nw.status_code)
                         nw.clear_data()
 
-                    elif nw.status_code == 480:
-                        if server.active:
-                            server.active = False
-                            server.errormsg = T('Server %s requires user/password') % ''
-                            self.plan_server(server, 0)
-                            sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
-                        msg = T('Server %s requires user/password') % nw.server.host
-                        self.__reset_nw(nw, msg, quit=True)
-
                     elif nw.status_code == 500:
                         if nzo.precheck:
                             # Assume "STAT" command is not supported
