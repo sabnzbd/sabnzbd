@@ -40,3 +40,9 @@ class TestNewsUnpack:
         res = list2cmdline(test_input)
         # Make sure the output is cmd.exe-compatible
         assert res == expected_output
+
+    def test_is_sfv_file(self):
+        assert is_sfv_file("tests/data/good_sfv_unicode.sfv")
+        assert is_sfv_file("tests/data/one_line.sfv")
+        assert not is_sfv_file("tests/data/only_comments.sfv")
+        assert not is_sfv_file("tests/data/random.bin")

@@ -28,12 +28,10 @@ import time
 import zlib
 import shutil
 import functools
-import re
 from subprocess import Popen
-from sabnzbd.encoding import ubtou
 
 import sabnzbd
-from sabnzbd.encoding import platform_btou, correct_unknown_encoding
+from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
 import sabnzbd.utils.rarfile as rarfile
 from sabnzbd.misc import format_time_string, find_on_path, int_conv, \
     get_all_passwords, calc_age, cmp, caller_name
@@ -2214,10 +2212,9 @@ def par2_mt_check(par2_path):
 
 def is_sfv_file(myfile):
     """ Checks if given file is a SFV file, and returns result as boolean """
-
     # based on https://stackoverflow.com/a/7392391/5235502
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
-    is_ascii_string = lambda bytes: not bool(bytes.translate(None, textchars))
+    is_ascii_string = lambda input_bytes: not bool(input_bytes.translate(None, textchars))
 
     # first check if it's plain text (ASCII or Unicode)
     try:
@@ -2239,6 +2236,7 @@ def is_sfv_file(myfile):
 
     sfv_info_line_counter = 0
     for line in lines:
+        line = line.strip()
         if re.search("^[^;].*\ +[A-Fa-f0-9]{8}$", line):
             # valid, useful SFV line: some text, then one or more space, and a 8-digit hex number
             sfv_info_line_counter += 1
@@ -2246,7 +2244,7 @@ def is_sfv_file(myfile):
                 # with 10 valid, useful lines we're confident enough
                 # (note: if we find less lines (even just 1 line), with no negatives, it is OK. See below)
                 break
-        elif re.search("^;", line) or re.search("^\ *$", line):
+        elif not line or line.startswith(";"):
             # comment line or just spaces, so continue to next line
             continue
         else:
@@ -2254,6 +2252,7 @@ def is_sfv_file(myfile):
             return False
     # if we get here, no negatives were found, and at least 1 valid line is OK
     return sfv_info_line_counter >= 1
+
 
 def sfv_check(sfvs, nzo, workdir):
     """ Verify files using SFV files """

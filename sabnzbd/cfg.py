@@ -30,7 +30,6 @@ from sabnzbd.constants import (
     DEF_NZBBACK_DIR,
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
-    QUEUE_VERSION,
 )
 
 from sabnzbd.config import (

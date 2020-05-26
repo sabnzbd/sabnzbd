@@ -802,11 +802,11 @@ def try_sfv_check(nzo, workdir):
     # Get list of SFV names
     sfvs = globber_full(workdir, "*.sfv")
 
-    # If no files named *.sfv, let's search for obfuscated SFV files
+    # If no files named *.sfv, lets search for obfuscated SFV files
     if not sfvs:
         files = globber_full(workdir, "*")
         for file in files:
-            if sabnzbd.newsunpack.is_sfv_file(file):
+            if is_sfv_file(file):
                 logging.debug("Found and will use obfuscated SFV file: %s", file)
                 sfvs.append(file)
         if not sfvs:
