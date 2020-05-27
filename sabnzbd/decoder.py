@@ -117,7 +117,6 @@ class DecoderWorker(Thread):
         logging.debug("Initializing decoder %s", self.name)
 
         self.decoder_queue = decoder_queue
-        self.__log_decoding = cfg.debug_log_decoding()
 
     def stop(self):
         # Put multiple to stop all decoders
@@ -147,7 +146,7 @@ class DecoderWorker(Thread):
                 if nzo.precheck:
                     raise BadYenc
 
-                if self.__log_decoding:
+                if sabnzbd.LOG_ALL:
                     logging.debug("Decoding %s", art_id)
 
                 decoded_data = decode(article, raw_data)

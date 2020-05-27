@@ -1198,12 +1198,11 @@ class ConfigSwitches:
 SPECIAL_BOOL_LIST = \
     ('start_paused', 'no_penalties', 'fast_fail', 'ignore_wrong_unrar', 'overwrite_files', 'enable_par_cleanup',
               'queue_complete_pers', 'api_warnings', 'ampm', 'enable_unrar', 'enable_unzip', 'enable_7zip',
-              'enable_filejoin', 'enable_tsjoin', 'ignore_unrar_dates', 'debug_log_decoding', 'multipar',
-              'osx_menu', 'osx_speed', 'win_menu', 'allow_incomplete_nzb', 'rss_filenames', 'ipv6_hosting',
-              'keep_awake', 'empty_postproc', 'html_login', 'wait_for_dfolder',
-              'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'warn_dupl_jobs',
-              'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging',
-              'x_frame_options', 'require_modern_tls'
+              'enable_filejoin', 'enable_tsjoin', 'ignore_unrar_dates', 'multipar', 'osx_menu', 'osx_speed', 'win_menu',
+              'allow_incomplete_nzb', 'rss_filenames', 'ipv6_hosting', 'keep_awake', 'empty_postproc', 'html_login',
+              'wait_for_dfolder', 'max_art_opt', 'warn_empty_nzb', 'enable_bonjour', 'warn_dupl_jobs',
+              'replace_illegal', 'backup_for_duplicates', 'disable_api_key', 'api_logging', 'x_frame_options',
+              'require_modern_tls'
      )
 SPECIAL_VALUE_LIST = \
     ('size_limit', 'movie_rename_limit', 'nomedia_marker', 'max_url_retries', 'req_completion_rate', 'wait_ext_drive',
