@@ -1365,7 +1365,6 @@ class NzbObject(TryList):
 
         bad = self.nzo_info.get('bad_articles', 0)
         miss = self.nzo_info.get('missing_articles', 0)
-        killed = self.nzo_info.get('killed_articles', 0)
         dups = self.nzo_info.get('duplicate_articles', 0)
 
         if bad:
@@ -1374,8 +1373,6 @@ class NzbObject(TryList):
             download_msgs.append(T('%s articles were missing') % miss)
         if dups:
             download_msgs.append(T('%s articles had non-matching duplicates') % dups)
-        if killed:
-            download_msgs.append(T('%s articles were removed') % killed)
         self.set_unpack_info('Download', u'<br/>'.join(download_msgs), unique=True)
 
         if self.url:
