@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -368,23 +368,15 @@ msgstr ""
 msgid "Invalid stage logging in history for %s"
 msgstr ""
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr ""
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
-msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
 msgstr ""
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr ""
 
@@ -1116,10 +1108,6 @@ msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
 msgstr ""
 
 #: sabnzbd/nzbstuff.py [Error message]

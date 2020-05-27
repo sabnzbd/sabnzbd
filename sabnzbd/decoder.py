@@ -133,129 +133,96 @@ class DecoderWorker(Thread):
                 break
 
             article, raw_data = art_tup
-            nzf = article.nzf
-            nzo = nzf.nzo
+            nzo = article.nzf.nzo
             art_id = article.article
-            killed = False
 
-            # Free space in the article-queue
+            # Free space in the decoder-queue
             ArticleCache.do.free_reserved_space(article.bytes)
 
-            data = None
-            register = True  # Finish article
-            found = False  # Proper article found
-            logme = None
+            # Keeping track
+            decoded_data = None
+            article_found = False
 
             try:
                 if nzo.precheck:
                     raise BadYenc
-                register = True
 
                 if self.__log_decoding:
                     logging.debug("Decoding %s", art_id)
 
-                data = decode(article, raw_data)
-                found = True
-
-            except IOError:
-                logme = T("Decoding %s failed") % art_id
-                logging.warning(logme)
-                logging.info("Traceback: ", exc_info=True)
-
-                Downloader.do.pause()
-                NzbQueue.do.reset_try_lists(article)
-                register = False
+                decoded_data = decode(article, raw_data)
+                article_found = True
 
             except MemoryError:
-                logme = T("Decoder failure: Out of memory")
-                logging.warning(logme)
-                anfo = ArticleCache.do.cache_info()
-                logging.info(
-                    "Decoder-Queue: %d, Cache: %d, %d, %d",
-                    self.decoder_queue.qsize(),
-                    anfo.article_sum,
-                    anfo.cache_size,
-                    anfo.cache_limit,
-                )
+                logging.warning(T("Decoder failure: Out of memory"))
+                logging.info("Decoder-Queue: %d", self.decoder_queue.qsize())
+                logging.info("Cache: %d, %d, %d", *ArticleCache.do.cache_info())
                 logging.info("Traceback: ", exc_info=True)
-
                 Downloader.do.pause()
+
+                # This article should be fetched again
                 NzbQueue.do.reset_try_lists(article)
-                register = False
+                continue
 
-            except CrcError as e:
-                logme = "CRC Error in %s" % art_id
-                logging.info(logme)
+            except CrcError:
+                logging.info("CRC Error in %s" % art_id)
 
-                data = e.data
+                # Continue to the next one if we found new server
+                if search_new_server(article):
+                    continue
 
             except (BadYenc, ValueError):
                 # Handles precheck and badly formed articles
-                killed = False
-                found = False
                 if nzo.precheck and raw_data and raw_data[0].startswith(b"223 "):
                     # STAT was used, so we only get a status code
-                    found = True
+                    article_found = True
                 else:
                     # Examine headers (for precheck) or body (for download)
-                    # And look for DMCA clues (while skipping "X-" headers)
+                    # Look for DMCA clues (while skipping "X-" headers)
+                    # Detect potential UUencode
                     for line in raw_data:
                         lline = line.lower()
                         if b"message-id:" in lline:
-                            found = True
+                            article_found = True
                         if not lline.startswith(b"X-") and match_str(
                             lline, (b"dmca", b"removed", b"cancel", b"blocked")
                         ):
-                            killed = True
+                            article_found = False
+                            logging.info("Article removed from server (%s)", art_id)
                             break
-                if killed:
-                    logme = "Article removed from server (%s)"
-                    logging.info(logme, art_id)
-                if nzo.precheck:
-                    if found and not killed:
-                        # Pre-check, proper article found, just register
-                        if sabnzbd.LOG_ALL:
-                            logging.debug("Server %s has article %s", article.fetcher, art_id)
-                        register = True
-                elif not killed and not found:
-                    logme = T("Badly formed yEnc article in %s") % art_id
-                    logging.info(logme)
-                    # bad yEnc article, so ... let's check if it's uuencode, to inform user and stop download
-                    if raw_data[0].lower().find(b"\nbegin ") >= 0:
-                        logme = T("UUencode detected, only yEnc encoding is supported [%s]") % nzo.final_name
-                        logging.error(logme)
-                        nzo.fail_msg = logme
-                        NzbQueue.do.end_job(nzo)
-                        break
+                        if lline.find(b"\nbegin ") >= 0:
+                            logme = T("UUencode detected, only yEnc encoding is supported [%s]") % nzo.final_name
+                            logging.error(logme)
+                            nzo.fail_msg = logme
+                            NzbQueue.do.end_job(nzo)
+                            break
 
-                if not found or killed:
-                    new_server_found = article.search_new_server()
-                    if new_server_found:
-                        register = False
-                        logme = None
+                # Pre-check, proper article found so just register
+                if nzo.precheck and article_found and sabnzbd.LOG_ALL:
+                    logging.debug("Server %s has article %s", article.fetcher, art_id)
+                elif not article_found:
+                    # If not pre-check, this must be a bad article
+                    if not nzo.precheck:
+                        logging.info(T("Badly formed yEnc article in %s"), art_id, exc_info=True)
+
+                    # Continue to the next one if we found new server
+                    if search_new_server(article):
+                        continue
 
             except:
-                logme = T("Unknown Error while decoding %s") % art_id
-                logging.info(logme)
+                logging.warning(T("Unknown Error while decoding %s"), art_id)
                 logging.info("Traceback: ", exc_info=True)
-                new_server_found = article.search_new_server()
-                if new_server_found:
-                    register = False
-                    logme = None
 
-            if logme:
-                if killed:
-                    nzo.increase_bad_articles_counter("killed_articles")
-                else:
-                    nzo.increase_bad_articles_counter("bad_articles")
+                # Continue to the next one if we found new server
+                if search_new_server(article):
+                    continue
 
-            if data:
+            if decoded_data:
                 # If the data needs to be written to disk due to full cache, this will be slow
                 # Causing the decoder-queue to fill up and delay the downloader
-                ArticleCache.do.save_article(article, data)
+                ArticleCache.do.save_article(article, decoded_data)
 
-            if register:
-                NzbQueue.do.register_article(article, found)
+            NzbQueue.do.register_article(article, article_found)
 
 
 def decode(article, raw_data):
@@ -283,3 +250,13 @@ def decode(article, raw_data):
         raise CrcError(crc_expected, crc, decoded_data)
 
     return decoded_data
+
+
+def search_new_server(article):
+    """ Shorthand for searching new server or else increasing bad_articles """
+    # Continue to the next one if we found new server
+    if not article.search_new_server():
+        # Increase bad articles if no new server was found
+        article.nzf.nzo.increase_bad_articles_counter("bad_articles")
+        return False
+    return True
