@@ -381,7 +381,7 @@ class Downloader(Thread):
         # Handle broken articles directly
         if not raw_data:
             if not article.search_new_server():
-                sabnzbd.nzbqueue.NzbQueue.do.register_article(article, found=False)
+                sabnzbd.nzbqueue.NzbQueue.do.register_article(article, success=False)
             return
 
         # Send to decoder-queue

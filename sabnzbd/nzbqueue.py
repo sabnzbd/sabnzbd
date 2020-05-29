@@ -676,7 +676,7 @@ class NzbQueue:
                     if self.__top_only:
                         return
 
-    def register_article(self, article, found=True):
+    def register_article(self, article, success=True):
         """ Register the articles we tried
             Not locked for performance, since it only modifies individual NZOs
         """
@@ -687,7 +687,7 @@ class NzbQueue:
             logging.debug("Discarding article %s, no longer in queue", article.article)
             return
 
-        articles_left, file_done, post_done = nzo.remove_article(article, found)
+        articles_left, file_done, post_done = nzo.remove_article(article, success)
 
         if nzo.is_gone():
             logging.debug('Discarding article for file %s, no longer in queue', nzf.filename)
