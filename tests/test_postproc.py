@@ -12,6 +12,7 @@ from sabnzbd.postproc import *
 from unittest import mock
 import os, shutil
 
+
 class TestPostProc:
 
     # Tests of rar_renamer() (=deobfuscate) against various input directories
@@ -49,8 +50,7 @@ class TestPostProc:
 
             return number_renamed_files
 
-
         # The tests and asserts per directory:
         assert deobfuscate_dir("tests/data/obfuscated_single_rar_set") == 7
         assert deobfuscate_dir("tests/data/obfuscated_two_rar_sets") == 16
-        assert deobfuscate_dir("tests/data/obfuscated_but_no_rar/") == 0
+        assert deobfuscate_dir("tests/data/obfuscated_but_no_rar") == 0
