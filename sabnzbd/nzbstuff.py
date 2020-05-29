@@ -430,7 +430,7 @@ class NzbFile(TryList):
         return id(self)
 
     def __repr__(self):
-        return "<NzbFile: filename=%s, type=%s>" % (self.filename, self.type)
+        return "<NzbFile: filename=%s, bytes=%s, nzf_id=%s>" % (self.filename, self.bytes, self.nzf_id)
 
 
 ##############################################################################
@@ -1801,7 +1801,7 @@ class NzbObject(TryList):
                 self.bytes_tried += nzf.bytes - nzf.bytes_left
 
     def __repr__(self):
-        return "<NzbObject: filename=%s>" % self.filename
+        return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)
 
 
 def nzf_get_filename(nzf):
