@@ -291,12 +291,13 @@ class NzbFile(TryList):
         self.valid = bool(raw_article_db)
 
         if self.valid and self.nzf_id:
-            # Save first article separate, but not for all but first par2 file
-            # Non-par2 files and the first par2 will have no volume and block number
+            # Save first article separate so we can do duplicate file detection
+            first_article = self.add_article(raw_article_db.pop(0))
+            first_article.lowest_partnum = True
+
+            # For non-par2 files we also use it to do deobfuscate-during-download
             setname, vol, block = sabnzbd.par2file.analyse_par2(self.filename)
             if not vol and not block:
-                first_article = self.add_article(raw_article_db.pop(0))
-                first_article.lowest_partnum = True
                 self.nzo.first_articles.append(first_article)
                 self.nzo.first_articles_count += 1
 
@@ -411,16 +412,8 @@ class NzbFile(TryList):
         self.md5 = None
 
     def __eq__(self, other):
-        """ Assume it's the same file if the bytes and first article are the same.
-            The par2 files don't have a first article, so we compare filenames instead.
-        """
-        if self.bytes == other.bytes:
-            if self.decodetable and other.decodetable:
-                return self.decodetable[0] == other.decodetable[0]
-            else:
-                return self.filename == other.filename
-        else:
-            return False
+        """ Assume it's the same file if the bytes and first article are the same """
+        return self.bytes == other.bytes and self.decodetable[0] == other.decodetable[0]
 
     def __hash__(self):
         """ Required because we implement eq. The same file can be spread
