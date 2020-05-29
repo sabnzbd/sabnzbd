@@ -334,11 +334,11 @@ class NzbFile(TryList):
         self.decodetable.append(article)
         return article
 
-    def remove_article(self, article, found):
+    def remove_article(self, article, success):
         """ Handle completed article, possibly end of file """
         if article in self.articles:
             self.articles.remove(article)
-            if found:
+            if success:
                 self.bytes_left -= article.bytes
         return len(self.articles)
 
@@ -969,7 +969,7 @@ class NzbObject(TryList):
             return False
 
     @synchronized(NZO_LOCK)
-    def remove_article(self, article, found):
+    def remove_article(self, article, success):
         """ Remove article from the NzbFile and do check if it can succeed"""
         job_can_succeed = True
         nzf = article.nzf
@@ -989,7 +989,7 @@ class NzbObject(TryList):
                     job_can_succeed = self.check_first_article_availability()
 
         # Remove from file-tracking
-        articles_left = nzf.remove_article(article, found)
+        articles_left = nzf.remove_article(article, success)
         file_done = not articles_left
 
         # Only on fully loaded files we can say if it's really done
@@ -1013,7 +1013,7 @@ class NzbObject(TryList):
             logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
             return True, True, True
 
-        if not found:
+        if not success:
             # Add extra parfiles when there was a damaged article and not pre-checking
             if self.extrapars and not self.precheck:
                 self.prospective_add(nzf)

@@ -140,7 +140,7 @@ class DecoderWorker(Thread):
 
             # Keeping track
             decoded_data = None
-            article_found = False
+            article_success = False
 
             try:
                 if nzo.precheck:
@@ -150,7 +150,7 @@ class DecoderWorker(Thread):
                     logging.debug("Decoding %s", art_id)
 
                 decoded_data = decode(article, raw_data)
-                article_found = True
+                article_success = True
 
             except MemoryError:
                 logging.warning(T("Decoder failure: Out of memory"))
@@ -174,7 +174,7 @@ class DecoderWorker(Thread):
                 # Handles precheck and badly formed articles
                 if nzo.precheck and raw_data and raw_data[0].startswith(b"223 "):
                     # STAT was used, so we only get a status code
-                    article_found = True
+                    article_success = True
                 else:
                     # Examine headers (for precheck) or body (for download)
                     # Look for DMCA clues (while skipping "X-" headers)
@@ -182,11 +182,11 @@ class DecoderWorker(Thread):
                     for line in raw_data:
                         lline = line.lower()
                         if b"message-id:" in lline:
-                            article_found = True
+                            article_success = True
                         if not lline.startswith(b"X-") and match_str(
                             lline, (b"dmca", b"removed", b"cancel", b"blocked")
                         ):
-                            article_found = False
+                            article_success = False
                             logging.info("Article removed from server (%s)", art_id)
                             break
                         if lline.find(b"\nbegin ") >= 0:
@@ -197,9 +197,9 @@ class DecoderWorker(Thread):
                             break
 
                 # Pre-check, proper article found so just register
-                if nzo.precheck and article_found and sabnzbd.LOG_ALL:
+                if nzo.precheck and article_success and sabnzbd.LOG_ALL:
                     logging.debug("Server %s has article %s", article.fetcher, art_id)
-                elif not article_found:
+                elif not article_success:
                     # If not pre-check, this must be a bad article
                     if not nzo.precheck:
                         logging.info(T("Badly formed yEnc article in %s"), art_id, exc_info=True)
@@ -221,7 +221,7 @@ class DecoderWorker(Thread):
                 # Causing the decoder-queue to fill up and delay the downloader
                 ArticleCache.do.save_article(article, decoded_data)
 
-            NzbQueue.do.register_article(article, article_found)
+            NzbQueue.do.register_article(article, article_success)
 
 
 def decode(article, raw_data):
