@@ -38,7 +38,9 @@ class TestPostProc:
                     )
             # create a fresh copy
             try:
-                shutil.copytree(sourcedir, workingdir)
+                # shutil.copytree(sourcedir, workingdir)
+                from distutils.dir_util import copy_tree
+                copy_tree(sourcedir, workingdir)
             except:
                 pytest.fail("Could not create copy of files for rar_renamer")
 
