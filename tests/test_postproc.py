@@ -25,7 +25,8 @@ class TestPostProc:
             # enrich to absolute path:
             sourcedir = os.path.join(os.getcwd(), sourcedir)
             # We create a workingdir inside the sourcedir, because the filenames are really changed
-            workingdir = os.path.join(sourcedir, "working-dir")
+            workingdir = os.path.join(sourcedir, "workingdir")
+            print("workingdir is", workingdir)
             # if workingdir is still there from previous run, remove it:
             if os.path.isdir(workingdir):
                 try:
@@ -43,34 +44,38 @@ class TestPostProc:
 
             # And now let the magic happen:
             nzo = mock.Mock()
-            nzo.final_name = "some-download-name"
+            nzo.final_name = "somedownloadname"
             number_renamed_files = rar_renamer(nzo, workingdir)
 
             # run check on the resulting files
-            for filename_match in expected_filename_matches:
-                if (
-                    len(globber_full(workingdir, filename_match))
-                    != expected_filename_matches[filename_match]
-                ):
-                    pytest.fail(
-                        "Fail on checking filename_matchs {}".format(
-                            workingdir, filename_match
+            if expected_filename_matches:
+                for filename_match in expected_filename_matches:
+                    if (
+                        len(globber_full(workingdir, filename_match))
+                        != expected_filename_matches[filename_match]
+                    ):
+                        pytest.fail(
+                            "Fail on checking filename_matchs {}".format(
+                                workingdir, filename_match
+                            )
                         )
-                    )
 
             # Remove workingdir again
             try:
                 shutil.rmtree(workingdir)
             except:
-                pass
+                pytest.fail(
+                    "Could not remove existing workingdir %s for rar_renamer",
+                    workingdir,
+                )
 
             return number_renamed_files
 
         # The tests and asserts per directory:
-        # we use os.path.join('test','data','...' ) to make it OS compatible
+        # we use os.path.join("test","data","..." ) to make it OS compatible
 
         # obfuscated, single rar set
-        sourcedir = os.path.join('tests','data','obfuscated_single_rar_set')
+        sourcedir = os.path.join("tests","data","obfuscated_single_rar_set")
         expected_filename_matches = {
             "*part007.rar": 1,
             "*-*-*-*-*": 0
