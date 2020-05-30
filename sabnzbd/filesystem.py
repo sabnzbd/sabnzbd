@@ -252,7 +252,7 @@ def is_obfuscated_filename(filename):
     """ Check if this file has an extension, if not, it's
         probably obfuscated and we don't use it
     """
-    return os.path.splitext(filename)[1] == ""
+    return len(os.path.splitext(filename)[1]) < 2
 
 
 def real_path(loc, path):
@@ -471,8 +471,8 @@ def set_permissions(path, recursive=True):
             umask = int("0777", 8) & (sabnzbd.ORG_UMASK ^ int("0777", 8))
             report = False
 
-        # Remove X bits for files
-        umask_file = umask & int("7666", 8)
+        # Remove executable and special permissions for files
+        umask_file = umask & int("0666", 8)
 
         if os.path.isdir(path):
             if recursive:
