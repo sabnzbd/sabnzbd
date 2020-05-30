@@ -31,7 +31,10 @@ class TestPostProc:
                 try:
                     shutil.rmtree(workingdir)
                 except PermissionError:
-                    pytest.fail("Could not remove existing workingdir %s for rar_renamer", workingdir)
+                    pytest.fail(
+                        "Could not remove existing workingdir %s for rar_renamer",
+                        workingdir,
+                    )
             # create a fresh copy
             try:
                 shutil.copytree(sourcedir, workingdir)
@@ -45,8 +48,15 @@ class TestPostProc:
 
             # run check on the resulting files
             for filename_match in expected_filename_matches:
-                if len(globber_full(workingdir, filename_match)) != expected_filename_matches[filename_match]:
-                    pytest.fail("Fail on checking filename_matchs {}".format(workingdir,filename_match))
+                if (
+                    len(globber_full(workingdir, filename_match))
+                    != expected_filename_matches[filename_match]
+                ):
+                    pytest.fail(
+                        "Fail on checking filename_matchs {}".format(
+                            workingdir, filename_match
+                        )
+                    )
 
             # Remove workingdir again
             try:
@@ -57,11 +67,29 @@ class TestPostProc:
             return number_renamed_files
 
         # The tests and asserts per directory:
-        expected_filename_matches = { "*part007.rar": 1, "*-*-*-*-*": 0}
-        assert deobfuscate_dir("tests/data/obfuscated_single_rar_set/", expected_filename_matches) == 7
+        # we use os.path.join('test','data','...' ) to make it OS compatible
 
-        expected_filename_matches = { "*part007.rar": 2,  "*part009.rar": 1, "c2bfeeb1-a0b6-47d2-be35-50328927c1ae": 0}
-        assert deobfuscate_dir("tests/data/obfuscated_two_rar_sets", expected_filename_matches) == 16
+        # obfuscated, single rar set
+        sourcedir = os.path.join('tests','data','obfuscated_single_rar_set')
+        expected_filename_matches = {
+            "*part007.rar": 1,
+            "*-*-*-*-*": 0
+        }
+        assert deobfuscate_dir(sourcedir, expected_filename_matches) == 7
 
-        expected_filename_matches = { "*.rar": 0, "*-*-*-*-*": 6}
-        assert deobfuscate_dir("tests/data/obfuscated_but_no_rar", expected_filename_matches) == 0
+        # obfuscated, two rar sets
+        sourcedir = os.path.join("tests", "data", "obfuscated_two_rar_sets")
+        expected_filename_matches = {
+            "*part007.rar": 2,
+            "*part009.rar": 1,
+            "c2bfeeb1-a0b6-47d2-be35-50328927c1ae": 0,
+        }
+        assert deobfuscate_dir(sourcedir, expected_filename_matches) == 16
+
+        # obfuscated, but not a rar set
+        sourcedir = os.path.join("tests", "data", "obfuscated_but_no_rar")
+        expected_filename_matches = {
+            "*.rar": 0,
+            "*-*-*-*-*": 6
+        }
+        assert deobfuscate_dir(sourcedir, expected_filename_matches) == 0
