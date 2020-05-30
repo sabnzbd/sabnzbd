@@ -11,6 +11,7 @@ tests.test_postproc- Tests of various functions in newspack, among which rar_ren
 from sabnzbd.postproc import *
 from unittest import mock
 import os, shutil, pytest
+from distutils.dir_util import copy_tree
 
 
 class TestPostProc:
@@ -26,7 +27,7 @@ class TestPostProc:
             sourcedir = os.path.join(os.getcwd(), sourcedir)
             # We create a workingdir inside the sourcedir, because the filenames are really changed
             workingdir = os.path.join(sourcedir, "workingdir")
-            print("workingdir is", workingdir)
+            #print("workingdir is", workingdir)
             # if workingdir is still there from previous run, remove it:
             if os.path.isdir(workingdir):
                 try:
@@ -39,7 +40,7 @@ class TestPostProc:
             # create a fresh copy
             try:
                 # shutil.copytree(sourcedir, workingdir)
-                from distutils.dir_util import copy_tree
+                # shutil.copytree() gives problems on AppVeyor, so:
                 copy_tree(sourcedir, workingdir)
             except:
                 pytest.fail("Could not create copy of files for rar_renamer")
@@ -77,11 +78,8 @@ class TestPostProc:
         # we use os.path.join("test","data","..." ) to make it OS compatible
 
         # obfuscated, single rar set
-        sourcedir = os.path.join("tests","data","obfuscated_single_rar_set")
-        expected_filename_matches = {
-            "*part007.rar": 1,
-            "*-*-*-*-*": 0
-        }
+        sourcedir = os.path.join("tests", "data", "obfuscated_single_rar_set")
+        expected_filename_matches = {"*part007.rar": 1, "*-*-*-*-*": 0}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 7
 
         # obfuscated, two rar sets
@@ -95,8 +93,5 @@ class TestPostProc:
 
         # obfuscated, but not a rar set
         sourcedir = os.path.join("tests", "data", "obfuscated_but_no_rar")
-        expected_filename_matches = {
-            "*.rar": 0,
-            "*-*-*-*-*": 6
-        }
+        expected_filename_matches = {"*.rar": 0, "*-*-*-*-*": 6}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 0
