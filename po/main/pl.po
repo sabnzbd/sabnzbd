@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:50+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -293,10 +293,6 @@ msgstr "UWAGA: Zadanie \"%s\" zostało przerwane z powodu oceny (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Przerwano, odfiltrowane z powodu oceny (%s)"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "Brakuje %s"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -341,6 +337,10 @@ msgstr "%s nie jest prawidłowym adresem email"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Wymagane jest podanie adresu serwera"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr ""
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -409,10 +409,6 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "Nieznany błąd podczas dekodowania %s"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => nie znaleziono na żadnym serwerze, porzucam"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -497,10 +493,6 @@ msgstr "Błąd logowania do serwera %s"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Błąd połączenia %s@%s, komunikat=%s"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "Serwer %s wymagania podania nazwy użytkownika i hasła"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -612,18 +604,6 @@ msgid "User logged in"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "Brak klucza sesji"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "Błąd: Wymagany klucz sesji"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "Błąd: Nieprawidłowy klucz sesji"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -646,15 +626,6 @@ msgid ""
 msgstr ""
 "Brak danych uwierzytelniających, wprowadź nazwę użytkownika/hasło z sekcji "
 "Konfiguracja->Ogólne do zewnętrznego programu:"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
-"Wypróbuj naszą nową skórkę, Glitter! Zupełnie nowy, świeży projekt "
-"zoptymalizowany dla komputerów stacjonarnych i urządzeń przenośnych. Skórkę "
-"możesz zmienić w sekcji Konfiguracja->Ogólne."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1011,6 +982,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "Próba weryfikacji SFV"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Serwer nie obsługuje SSL na tym porcie"
@@ -1121,9 +1096,9 @@ msgstr "NZB dodany do kolejki"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Nieznane kodowanie"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "Niekompletny plik NZB %s"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => nie znaleziono na żadnym serwerze, porzucam"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1528,10 +1503,6 @@ msgstr "Przetwarzanie końcowe"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s} Brak zestawów par2"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "Próba weryfikacji SFV"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4797,6 +4768,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Folder \"%s\" nie istnieje"
 
+#~ msgid "Server %s requires user/password"
+#~ msgstr "Serwer %s wymagania podania nazwy użytkownika i hasła"
+
 #~ msgid ""
 #~ "Your UNRAR version is not recommended, get it from "
 #~ "http://www.rarlab.com/rar_add.htm<br />"
@@ -4812,6 +4786,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 
 #~ msgid "SQL Commit Failed, see log"
 #~ msgstr "Błąd wykonania polecenia SQL, sprawdź logi"
+
+#~ msgid "Missing Session key"
+#~ msgstr "Brak klucza sesji"
 
 #~ msgid "Not matched"
 #~ msgstr "Nie dopasowano"
@@ -4831,6 +4808,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 #~ msgid "Unpacking failed, an expected file was not unpacked"
 #~ msgstr ""
 #~ "Rozpakowywanie nie powiodło się, oczekiwany plik nie został wypakowany"
+
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "Niekompletny plik NZB %s"
 
 #~ msgid "OK"
 #~ msgstr "OK"
@@ -5134,6 +5114,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 #~ msgstr ""
 #~ "UWAGA: Zadanie \"%s\" zostało przerwane z powodu zaszyfrowanego pliku RAR"
 
+#~ msgid "%s missing"
+#~ msgstr "Brakuje %s"
+
 #~ msgid "Cannot create %s folder %s"
 #~ msgstr "Nie można utworzyć katalogu %s %s"
 
@@ -5142,6 +5125,12 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 
 #~ msgid "No email templates found"
 #~ msgstr "Nie znaleziono szablonów wiadomości email"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "Błąd: Wymagany klucz sesji"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "Błąd: Nieprawidłowy klucz sesji"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Błąd: Nie zdefiniowano zapasowego interfejsu."

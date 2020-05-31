@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:51+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:37+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -285,10 +285,6 @@ msgstr "*警告*: 任务“%s”已中止，由于评分过低 (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "已中止，评分筛选器已命中 (%s)"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "缺少 %s"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -333,6 +329,10 @@ msgstr "%s 不是有效的电子邮箱地址"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "服务器地址必填"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr ""
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -401,10 +401,6 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "解码 %s 时发生未知错误"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => 所有服务器均缺失，正在舍弃"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -487,10 +483,6 @@ msgstr "无法登录服务器 %s"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "连接 %s@%s 失败，消息=%s"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "服务器 %s 需要用户/密码"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -601,18 +593,6 @@ msgid "User logged in"
 msgstr "用户已登录"
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "缺会话 key"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "错误: 需要会话 Key"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "错误: 会话 Key 不正确"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -629,12 +609,6 @@ msgid ""
 "Authentication missing, please enter username/password from Config->General "
 "into your 3rd party program:"
 msgstr "缺身份认证信息，请在第三方程序中输入“配置”->“常规”中的用户名/密码:"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr "请尝试我们的新皮肤“Glitter”! 为桌面及移动设备优化的全新设计。请到“配置”->“常规”更改皮肤。"
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -986,6 +960,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "Python 脚本 \"%s\" 不具有执行 (+x) 权限"
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "正在尝试  SFV 验证"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "该服务器不允许在该端口使用 SSL"
@@ -1096,9 +1074,9 @@ msgstr "NZB 已添加到队列"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> 未知编码"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "NZB 文件 %s 不完整"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => 所有服务器均缺失，正在舍弃"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1497,10 +1475,6 @@ msgstr "后期处理"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] 无 par2 集合"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "正在尝试  SFV 验证"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4696,6 +4670,9 @@ msgstr "URL 装取失败; %s"
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "警告: 由于检测到加密的 RAR 文件，任务 \"%s\" 已暂停"
 
+#~ msgid "%s missing"
+#~ msgstr "缺少 %s"
+
 #~ msgid "Cannot create %s folder %s"
 #~ msgstr "无法创建 %s 文件夹 %s"
 
@@ -4708,11 +4685,23 @@ msgstr "URL 装取失败; %s"
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "CRC 错误：%s (%s -> %s)"
 
+#~ msgid "Server %s requires user/password"
+#~ msgstr "服务器 %s 需要用户/密码"
+
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "email 模板 %s 编码无效"
 
 #~ msgid "No email templates found"
 #~ msgstr "未找到 email 模板"
+
+#~ msgid "Missing Session key"
+#~ msgstr "缺会话 key"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "错误: 需要会话 Key"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "错误: 会话 Key 不正确"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "错误: 未定义第二界面。"
@@ -4784,6 +4773,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "File %s is empty, skipping"
 #~ msgstr "文件 %s 为空，正在跳过"
+
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "NZB 文件 %s 不完整"
 
 #~ msgid ""
 #~ "\n"

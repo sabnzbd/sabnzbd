@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
-"PO-Revision-Date: 2020-04-29 10:07+0000\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"PO-Revision-Date: 2020-05-26 18:48+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:49+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -311,10 +311,6 @@ msgstr "AVERTISSEMENT : tâche \"%s\" annulée à cause du classement (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Tâche annulée, le filtre de classement a été vérifié (%s)"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "%s manquant(s)"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -363,6 +359,10 @@ msgstr "%s n'est pas une adresse email valide"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Adresse du serveur requise"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr "Configuration verrouillée, impossible de sauvegarder les paramètres"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -435,10 +435,6 @@ msgstr "UUencode détecté, seul l'encodage yEnc est pris en charge [%s]"
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "Erreur inconnue lors du décodage de %s"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => absent de tous les serveurs, rejeté"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -526,10 +522,6 @@ msgstr "Échec de la connexion au serveur %s"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "La connexion à %s@%s a échoué, message=%s"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "Le serveur %s requiert un identifiant/mot de passe"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -643,18 +635,6 @@ msgid "User logged in"
 msgstr "Utilisateur connecté"
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "Clé de session manquante"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "Erreur : Clé de session requise"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "Erreur : Clé de session incorrecte"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -677,15 +657,6 @@ msgid ""
 msgstr ""
 "Authentification manquante, entrez vos identifiant/mot de passe de la "
 "configuration générale dans votre application tierce :"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
-"Essayez notre nouveau thème Glitter ! Nouveau design optimisé pour les "
-"ordinateurs et les appareils mobiles. Aller dans Config - > Général pour "
-"changer le thème."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1055,6 +1026,10 @@ msgstr ""
 "Le script Python \"%s\" n'est pas configuré avec les permissions d’exécution "
 "(+x)"
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "Essai vérification SFV"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Ce serveur n'authorise pas de connexion SSL sur ce port"
@@ -1168,9 +1143,9 @@ msgstr "NZB ajouté à la file d'attente"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Encodage inconnu"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "Fichier NZB %s incomplet"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => absent de tous les serveurs, rejeté"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1588,10 +1563,6 @@ msgstr "Post-traitement"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Pas de fichiers par2"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "Essai vérification SFV"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4946,6 +4917,15 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "Erreur CRC dans %s (%s -> %s)"
 
+#~ msgid "Missing Session key"
+#~ msgstr "Clé de session manquante"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "Erreur : Clé de session requise"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "Erreur : Clé de session incorrecte"
+
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Erreur : Pas d'interface secondaire définie."
 
@@ -5406,6 +5386,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "QR Code"
 #~ msgstr "Code QR"
 
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "Fichier NZB %s incomplet"
+
 #~ msgid "Enable Par Cleanup"
 #~ msgstr "Activer nettoyage Par"
 
@@ -5475,8 +5458,14 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ "Envoyer les résultats de la validation calculées automatiquement pour les "
 #~ "téléchargements à l'indexeur."
 
+#~ msgid "%s missing"
+#~ msgstr "%s manquant(s)"
+
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Le dossier \"%s\" est introuvable"
+
+#~ msgid "Server %s requires user/password"
+#~ msgstr "Le serveur %s requiert un identifiant/mot de passe"
 
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr ""

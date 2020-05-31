@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:50+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 "Generated-By: pygettext.py 1.5\n"
 
 #: SABnzbd.py [Error message]
@@ -286,10 +286,6 @@ msgstr ""
 msgid "Aborted, rating filter matched (%s)"
 msgstr ""
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "%s отсутствует"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -334,6 +330,10 @@ msgstr "%s не является допустимым адресом элект�
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Требуется адрес сервера"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr ""
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -402,10 +402,6 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "Неизвестная ошибка декодирования %s"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => отсутствует на всех серверах, отброшен"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -488,10 +484,6 @@ msgstr "Ошибка входа на сервер %s"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr ""
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "Для сервера %s требуется имя пользователя и пароль"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -603,18 +595,6 @@ msgid "User logged in"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "Отсутствует ключ сеанса"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "Ошибка: требуется ключ сеанса"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "Ошибка: неправильный ключ сеанса"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -637,12 +617,6 @@ msgid ""
 msgstr ""
 "Отсутствуют учётные данные. Введите в сторонней программе имя пользователя и "
 "пароль из раздела «Настройка -> Общие»:"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1000,6 +974,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "Проверка SFV-суммы"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr ""
@@ -1110,9 +1088,9 @@ msgstr "NZB-файл добавлен в очередь"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> неизвестная кодировка"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "Неполный NZB-файл %s"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => отсутствует на всех серверах, отброшен"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1519,10 +1497,6 @@ msgstr "Пост-обработка"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Нет PAR2-файлов"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "Проверка SFV-суммы"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4783,6 +4757,9 @@ msgstr "Не удалось загрузить URL: %s"
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "ВНИМАНИЕ! Задание «%s» приостановлено из-за зашифрованного RAR-файла"
 
+#~ msgid "%s missing"
+#~ msgstr "%s отсутствует"
+
 #~ msgid "Cannot create %s folder %s"
 #~ msgstr "Не удаётся создать %s папку %s"
 
@@ -4795,11 +4772,23 @@ msgstr "Не удалось загрузить URL: %s"
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "Ошибка CRC в %s (%s -> %s)"
 
+#~ msgid "Server %s requires user/password"
+#~ msgstr "Для сервера %s требуется имя пользователя и пароль"
+
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "Недопустимая кодировка шаблона электронного письма %s"
 
 #~ msgid "No email templates found"
 #~ msgstr "Не найдены шаблоны электронных писем"
+
+#~ msgid "Missing Session key"
+#~ msgstr "Отсутствует ключ сеанса"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "Ошибка: требуется ключ сеанса"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "Ошибка: неправильный ключ сеанса"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Ошибка: дополнительный интерфейс не определён."
@@ -4875,6 +4864,9 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "File %s is empty, skipping"
 #~ msgstr "Файл %s пустой: пропущен"
+
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "Неполный NZB-файл %s"
 
 #~ msgid ""
 #~ "\n"

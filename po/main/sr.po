@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:50+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -290,10 +290,6 @@ msgstr "UPOZORENJE: Posao \"%s\" prekinut zbog ocene (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Prekinuto, filter ocene se poklopio (%s)"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "%s nedostaje"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -338,6 +334,10 @@ msgstr "%s nije ispravna email adresa"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Потребна је адреса сервера"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr ""
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -406,10 +406,6 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "Nepoznata greška pri dešifrovanju %s"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => фали на свим серверима, одбацивање"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -493,10 +489,6 @@ msgstr "Неуспешно пријављивање на сервер %s"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Povezivanje na %s@%s neuspešno, poruka=%s"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "Server %s zahteva koriničko ime/lozinku"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -607,18 +599,6 @@ msgid "User logged in"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "Недостаје кључ сесије"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "Грешка: потребан је кључ сесије"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "Грешка: Кључ сесије није добар"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -639,14 +619,6 @@ msgid ""
 msgstr ""
 "Недостаје аутентификација, унети у спољни програм име/лозинку из Подешавања-"
 ">Опште:"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
-"Isprobajte naš novi izgled Glitter! Svež, nov dizajn koji je optimizovan za "
-"desktop i mobilne uređaje. Idite na Podešavanja->Opšta da promenite izgled."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1001,6 +973,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "Pokušaj SFV provere"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Ovaj server ne dozvoljava SSL na ovom portu"
@@ -1111,9 +1087,9 @@ msgstr "NZB додат у ред"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Непознато енкодирање"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "Непотпуна НЗБ датотека %s"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => фали на свим серверима, одбацивање"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1513,10 +1489,6 @@ msgstr "Пост-процесирање"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Нема par2 датотеке"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "Pokušaj SFV provere"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -5103,6 +5075,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "Погрешно енкодирање модела е-поруке %s"
 
+#~ msgid "Missing Session key"
+#~ msgstr "Недостаје кључ сесије"
+
 #~ msgid "Not matched"
 #~ msgstr "Не одговара"
 
@@ -5114,6 +5089,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "You have no permisson to use port %s"
 #~ msgstr "Није Вам дозвољено да користите порт %s"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "Грешка: Кључ сесије није добар"
 
 #~ msgid "Initiating restart...<br />"
 #~ msgstr "Иницирање поновног покретања...<br />"
@@ -5222,11 +5200,17 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "Cannot create %s folder %s"
 #~ msgstr "Не могу да креирам %s фасциклу %s"
 
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "Непотпуна НЗБ датотека %s"
+
 #~ msgid "QR Code"
 #~ msgstr "QR Код"
 
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "ПАЖЊА: Посао је паузиран \"%s\" јер је RAR датотека шифрована"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "Грешка: потребан је кључ сесије"
 
 #~ msgid ""
 #~ "Your UNRAR version is not recommended, get it from "
@@ -5352,6 +5336,12 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "_yenc modul... NIJE pronađen!"
+
+#~ msgid "%s missing"
+#~ msgstr "%s nedostaje"
+
+#~ msgid "Server %s requires user/password"
+#~ msgstr "Server %s zahteva koriničko ime/lozinku"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Greška: Sekundarni interfejs nije definisan"

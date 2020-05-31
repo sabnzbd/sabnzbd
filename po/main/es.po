@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Spanish <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:50+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:37+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -295,10 +295,6 @@ msgstr ""
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Abortado, se ha encontrado un filtro de calificación (%s)"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "Falta %s"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -343,6 +339,10 @@ msgstr "%s no es una dirección de correo electrónico válida."
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Se necesita la dirección del servidor"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr ""
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -414,10 +414,6 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "Error inespecifico mientras descodificando %s"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => faltando de todos servidores, desechando"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -502,10 +498,6 @@ msgstr "Registraccion fallo para servidor %s"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Ha fallado la conexión a %s@%s, el mensaje=%s"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "El servidor %s requiere usuario/contraseña"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -617,18 +609,6 @@ msgid "User logged in"
 msgstr "Usuario conectado"
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "Falta clave de sesión"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "Error: Clave de sesión requerido"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "Error: Clave de sesión erróneo"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -651,15 +631,6 @@ msgid ""
 msgstr ""
 "Faltaron datos de cuenta, favor ingresar usuario/contraseña desde Config-"
 ">General en tu aplicacion externa:"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
-"¡Prueba nuestra nueva skin Glitter! Un nuevo diseño recién salido del horno, "
-"optimizado para dispositivos de sobremesa y móviles. Ves a Configuración -> "
-"General para cambiar la skin."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1018,6 +989,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "Intentando verificación por SFV"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Este servidor no permite SSL en este puerto"
@@ -1129,9 +1104,9 @@ msgstr "NZB añadido a la cola"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Codificación desconocida"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "Fichero NZB %s incompleto"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => faltando de todos servidores, desechando"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1540,10 +1515,6 @@ msgstr "Post-Procesado"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] No hay conjuntos par2"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "Intentando verificación por SFV"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4829,6 +4800,9 @@ msgstr "Archivo NZB inusable"
 msgid "URL Fetching failed; %s"
 msgstr "Error al recuperar la URL; %s"
 
+#~ msgid "%s missing"
+#~ msgstr "Falta %s"
+
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "La carpeta «%s» no existe"
 
@@ -4857,6 +4831,9 @@ msgstr "Error al recuperar la URL; %s"
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "módulo _yenc... NO encontrado!"
 
+#~ msgid "Missing Session key"
+#~ msgstr "Falta clave de sesión"
+
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "Codificación de plantilla invalido %s"
 
@@ -4869,6 +4846,12 @@ msgstr "Error al recuperar la URL; %s"
 
 #~ msgid "No PAR2 program found, repairs not possible<br />"
 #~ msgstr "Programa Par2 no encontrado, reparacion no posible<br />"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "Error: Clave de sesión requerido"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "Error: Clave de sesión erróneo"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Error: Interfaz secundario no iniciado"
@@ -4923,6 +4906,9 @@ msgstr "Error al recuperar la URL; %s"
 
 #~ msgid "File %s is empty, skipping"
 #~ msgstr "El fichero%s está vacío, omitiendo"
+
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "Fichero NZB %s incompleto"
 
 #~ msgid ""
 #~ "\n"
@@ -5501,6 +5487,9 @@ msgstr "Error al recuperar la URL; %s"
 
 #~ msgid "Enable OZnzb Integration"
 #~ msgstr "Habilitar Integración OZnzb"
+
+#~ msgid "Server %s requires user/password"
+#~ msgstr "El servidor %s requiere usuario/contraseña"
 
 #~ msgid "Site API Key"
 #~ msgstr "Clave API del sitio"

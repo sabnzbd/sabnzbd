@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:50+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -293,10 +293,6 @@ msgstr "ADVARSEL: Avbrøt jobb \"%s\" grunnet rangering (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Avbrøt, rangeringsfilter var lik (%s)"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "%s mangler"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -341,6 +337,10 @@ msgstr "%s er ikke en godkjent e-post-adresse"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Krever server-adresse"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr ""
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -409,10 +409,6 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "Ukjent feil oppstod under dekoding av %s"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => mangler på alle servere, fjerner"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -496,10 +492,6 @@ msgstr "Kunne ikke logge inn på server %s"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Kontaker %s@%s feilet, feilmelding=%s"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "Server %s krever brukernavn/passord"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -610,18 +602,6 @@ msgid "User logged in"
 msgstr "Bruker pålogget"
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "Mangler sesjonsnøkkel"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "Feil: Krever sesjonsnøkkel"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "Feil: Feil sesjonsnøkkel"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -644,14 +624,6 @@ msgid ""
 msgstr ""
 "Autentisering mangler, angi brukernavn/passord fra Konfigurasjon->Generelt i "
 "ditt tredjepartsprogram:"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
-"Prøv vår nye skin Glitter! Nytt og friskt design som er optimalisert for "
-"stasjonære og mobile enheter. Gå til Konfig -> Generelt for å endre ditt skin"
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1006,6 +978,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "Prøver SFV-verifisering"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Denne serveren tillater ikke SSL på denne porten"
@@ -1116,9 +1092,9 @@ msgstr "NZB er lagt til i køen"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Ukjent koding"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "Ufullstendig NZB-fil %s"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => mangler på alle servere, fjerner"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1521,10 +1497,6 @@ msgstr "Etterbehandling"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Ingen par2 deler"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "Prøver SFV-verifisering"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4776,11 +4748,26 @@ msgstr "Feil, Ubrukelig akrivfil"
 msgid "URL Fetching failed; %s"
 msgstr "URL henting mislyktes; %s"
 
+#~ msgid "%s missing"
+#~ msgstr "%s mangler"
+
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Mappen \"%s\" finnes ikke"
 
 #~ msgid "SQL Commit Failed, see log"
 #~ msgstr "SQL Innsetting mislyktes, se logg"
+
+#~ msgid "Server %s requires user/password"
+#~ msgstr "Server %s krever brukernavn/passord"
+
+#~ msgid "Missing Session key"
+#~ msgstr "Mangler sesjonsnøkkel"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "Feil: Krever sesjonsnøkkel"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "Feil: Feil sesjonsnøkkel"
 
 #~ msgid "No UNRAR program found, unpacking RAR files is not possible<br />"
 #~ msgstr "Kunne ikke finne noen UNRAR program, utpakking er  ikke mulig<br />"
@@ -5242,6 +5229,9 @@ msgstr "URL henting mislyktes; %s"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Feil: Sekundært grensesnitt er ikke definert."
+
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "Ufullstendig NZB-fil %s"
 
 #~ msgid "&nbsp;"
 #~ msgstr "&nbsp;"

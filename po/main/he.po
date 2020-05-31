@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
-"PO-Revision-Date: 2020-05-10 14:15+0000\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"PO-Revision-Date: 2020-05-26 21:21+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-11 06:01+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -291,10 +291,6 @@ msgstr "(%s) בגלל מידרג \"%s\" אזהרה: ביטל את העבודה"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "(%s) בוטל, מסנן מידרג הותאם"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "%s חסרים"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -339,6 +335,10 @@ msgstr "אינה כתובת דוא״ל תקפה %s"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "כתובת שרת דרושה"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr "התצורה נעולה, אי אפשר לשמור הגדרות"
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -407,10 +407,6 @@ msgstr "[%s] נתמך yEnc התגלה, רק קידוד UUencode"
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "%s שגיאה בלתי ידועה בעת פענוח"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "חסר מכל השרתים, משליך <= %s"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -495,10 +491,6 @@ msgstr "%s נכשל בכניסה לשרת"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "%s=נכשלה, הודעה %s@%s התחברות אל"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "דורש שם משתמש/סיסמה %s השרת"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -609,18 +601,6 @@ msgid "User logged in"
 msgstr "משתמש התחבר"
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "מפתח חסר של שיח"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "שגיאה: מפתח דרוש של שיח"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "שגיאה: מפתח לא נכון של שיח"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -641,14 +621,6 @@ msgid ""
 msgstr ""
 ":אימות חסר, אנא הכנס שם משתמש/סיסמה מתוך תצורה->כללי לתוך תוכנית הצד השלישי "
 "שלך"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
-"עיצוב חדש רענן המיועל עבור שולחן עבודה והתקנים ניידים. לך אל תצורה -> כללי "
-"כדי לשנות את עורך !Glitter נסה את העור החדש שלנו"
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1003,6 +975,10 @@ msgstr "אינה מוגדרת build_command הפקודה ב [%s]"
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr "(+x) אין ערכת הרשאות ביצוע \"%s\" לתסריט פייתון"
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "SFV מנסה וידוא"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "בפתחה זו SSL שרת זה אינו מתיר"
@@ -1115,9 +1091,9 @@ msgstr "התווסף לתור NZB"
 msgid "%s -> Unknown encoding"
 msgstr "הצפנה בלתי ידועה <- %s"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "%s בלתי שלם NZB קובץ"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "חסר מכל השרתים, משליך <= %s"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1521,10 +1497,6 @@ msgstr "בתר־עיבוד"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "par2 [%s] אין ערכות"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "SFV מנסה וידוא"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4818,6 +4790,9 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid "Timeleft"
 #~ msgstr "זמן שנותר"
 
+#~ msgid "%s missing"
+#~ msgstr "%s חסרים"
+
 #~ msgid "OK"
 #~ msgstr "אישור"
 
@@ -4915,11 +4890,17 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "בלתי תקפים, לא יכול לוודא או לתקן par2 קבצי"
 
+#~ msgid "Missing Session key"
+#~ msgstr "מפתח חסר של שיח"
+
 #~ msgid "ERROR: %s"
 #~ msgstr "%s :שגיאה"
 
 #~ msgid "File %s is empty, skipping"
 #~ msgstr "ריק, מדלג %s הקובץ"
+
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "%s בלתי שלם NZB קובץ"
 
 #~ msgid "Toggle Add NZB"
 #~ msgstr "NZB עורר הוספת"
@@ -4930,8 +4911,17 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid "Cannot create %s folder %s"
 #~ msgstr "%s תיקייה %s לא יכול ליצור"
 
+#~ msgid "Server %s requires user/password"
+#~ msgstr "דורש שם משתמש/סיסמה %s השרת"
+
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "%s (%s -> %s)-ב CRC שגיאת"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "שגיאה: מפתח דרוש של שיח"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "שגיאה: מפתח לא נכון של שיח"
 
 #~ msgid "Main packet not found..."
 #~ msgstr "...חפיסה ראשית לא נמצאה"

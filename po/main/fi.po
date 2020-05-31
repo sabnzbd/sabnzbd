@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "PO-Revision-Date: 2020-02-10 09:27+0000\n"
 "Last-Translator: tuomass <Unknown>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:49+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -297,10 +297,6 @@ msgstr "VAROITUS : Peruutettiin lataus \"%s\", koska luokituksena on (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Peruutettu, luokituksessa esiintyi suodatinosuma (%s)"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "%s puuttuu"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -345,6 +341,10 @@ msgstr "%s ei ole kelvollinen sähköpostiosoite"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Palvelimen osoite vaaditaan"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr ""
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -414,10 +414,6 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "Tuntematon virhe dekoodattaessa %s"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => puuttuu kaikilta palvelimilta, hylätään"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -501,10 +497,6 @@ msgstr "Kirjautuminen palvelimelle %s epäonnistui"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Yhdistäminen %s@%s epäonnistui, viesti=%s"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "Palvelin %s vaatii käyttäjänimen/salasanan"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -615,18 +607,6 @@ msgid "User logged in"
 msgstr "Käyttäjä kirjautui sisään"
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "Istuntoavain puuttuu"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "Virhe: Istuntoavain vaaditaan"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "Virhe: Istuntoavain on virheellinen"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -649,14 +629,6 @@ msgid ""
 msgstr ""
 "Authentikointi puuttuu, ole hyvä ja syötä käyttäjänimi/salasana Asetukset-"
 ">Yleiset kolmannen osapuolen ohjelmaasi:"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
-"Kokeile uutta Glitter teemaa! Uusittu design on optimoitu työpöytä- ja "
-"mobiilikäyttäjille. Mene Asetukset -> Yleiset muuttaaksesi teemaa."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1010,6 +982,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "Yritetään SFV varmennusta"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Tämä palvelin ei salli SSL yhteyksiä tähän porttiin"
@@ -1120,9 +1096,9 @@ msgstr "NZB lisätty jonoon"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Tuntematon koodaus"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "Keskeneräinen NZB tiedosto %s"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => puuttuu kaikilta palvelimilta, hylätään"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1528,10 +1504,6 @@ msgstr "Jälkikäsittely"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Ei par2 arkistoja"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "Yritetään SFV varmennusta"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4819,11 +4791,17 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "_yenc moduulia... EI löydy!"
 
+#~ msgid "%s missing"
+#~ msgstr "%s puuttuu"
+
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "CRC virhe tiedostossa %s (%s -> %s)"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Kansiota \"%s\" ei ole olemassa"
+
+#~ msgid "Server %s requires user/password"
+#~ msgstr "Palvelin %s vaatii käyttäjänimen/salasanan"
 
 #~ msgid "Initiating restart...<br />"
 #~ msgstr "Aloitetaan uudelleenkäynnistys...<br />"
@@ -4884,6 +4862,15 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ msgstr ""
 #~ "Käyttämäsi UNRAR versio ei ole suositeltu, nouda oikea osoitteesta "
 #~ "http://www.rarlab.com/rar_add.htm<br />"
+
+#~ msgid "Missing Session key"
+#~ msgstr "Istuntoavain puuttuu"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "Virhe: Istuntoavain vaaditaan"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "Virhe: Istuntoavain on virheellinen"
 
 #~ msgid "Invalid par2 files, cannot verify or repair"
 #~ msgstr "Virheelliset par2 arkistot, varmennus ja korjaus ei mahdollista"
@@ -5083,6 +5070,9 @@ msgstr "Osoitteen nouto epäonnistui; %s"
 #~ msgid ""
 #~ "Launch my internet browser with the SABnzbd page when the program starts."
 #~ msgstr "Käynnistä internet selaimeni SABnzbd-sivulle kun ohjelma käynnistyy."
+
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "Keskeneräinen NZB tiedosto %s"
 
 #~ msgid "General configuration"
 #~ msgstr "Yleisasetukset"

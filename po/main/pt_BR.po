@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-05 14:08+0200\n"
+"POT-Creation-Date: 2020-05-26 09:18+0200\n"
 "PO-Revision-Date: 2018-02-14 14:16+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:51+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"X-Launchpad-Export-Date: 2020-05-27 06:37+0000\n"
+"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -293,10 +293,6 @@ msgstr "ATENÇÃO: Tarefa \"%s\" interrompida em razão de pontuação (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Interrompido, filtro de pontuação encontrado (%s)"
 
-#: sabnzbd/assembler.py
-msgid "%s missing"
-msgstr "faltando %s"
-
 #: sabnzbd/assembler.py [Warning message]
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
@@ -341,6 +337,10 @@ msgstr "%s não é um endereço de e-mail válido"
 #: sabnzbd/cfg.py # sabnzbd/interface.py
 msgid "Server address required"
 msgstr "Endereço do servidor necessário"
+
+#: sabnzbd/config.py [Warning message]
+msgid "Configuration locked, cannot save settings"
+msgstr ""
 
 #: sabnzbd/config.py [Error message]
 msgid "Cannot write to INI file %s"
@@ -411,10 +411,6 @@ msgstr ""
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
 msgstr "Erro desconhecido ao decodificar %s"
-
-#: sabnzbd/decoder.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => faltando em todos os servidores. Descartando"
 
 #: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid "Direct Unpack"
@@ -499,10 +495,6 @@ msgstr "Falha de logon ao servidor %s"
 #: sabnzbd/downloader.py [Error message]
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "A conexão a %s@%s falhou. Mensagem=%s"
-
-#: sabnzbd/downloader.py
-msgid "Server %s requires user/password"
-msgstr "Servidor %s requer usuário/senha"
 
 #: sabnzbd/downloader.py [Error message]
 msgid "Suspect error in downloader"
@@ -613,18 +605,6 @@ msgid "User logged in"
 msgstr ""
 
 #: sabnzbd/interface.py
-msgid "Missing Session key"
-msgstr "Faltando chave de sessão"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Required"
-msgstr "Erro: chave de sessão obrigatória"
-
-#: sabnzbd/interface.py
-msgid "Error: Session Key Incorrect"
-msgstr "Erro: chave de sessão incorreta"
-
-#: sabnzbd/interface.py
 msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd "
 "party program:"
@@ -647,14 +627,6 @@ msgid ""
 msgstr ""
 "Autenticação faltando. Por favor insira usuário/senha de Configuração->Geral "
 "em seu programa de terceiros:"
-
-#: sabnzbd/interface.py [Warning message]
-msgid ""
-"Try our new skin Glitter! Fresh new design that is optimized for desktop and "
-"mobile devices. Go to Config -> General to change your skin."
-msgstr ""
-"Teste a nossa nova skin Glitter! Novo design otimizado para desktop e "
-"aparelhos móveis. Vá em Configurações -> Geral para mudar a sua skin"
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -1008,6 +980,10 @@ msgstr ""
 msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
+#: sabnzbd/newsunpack.py
+msgid "Trying SFV verification"
+msgstr "Tentando verificação SFV"
+
 #: sabnzbd/newswrapper.py
 msgid "This server does not allow SSL on this port"
 msgstr "Este servidor não permite SSL nesta porta"
@@ -1118,9 +1094,9 @@ msgstr "NZB adicionado à fila"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Codificação desconhecida"
 
-#: sabnzbd/nzbstuff.py [Warning message]
-msgid "Incomplete NZB file %s"
-msgstr "Arquivo NZB incompleto %s"
+#: sabnzbd/nzbstuff.py
+msgid "%s => missing from all servers, discarding"
+msgstr "%s => faltando em todos os servidores. Descartando"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
@@ -1527,10 +1503,6 @@ msgstr "Pós-processamento"
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Nenhum conjunto par2"
-
-#: sabnzbd/postproc.py
-msgid "Trying SFV verification"
-msgstr "Tentando verificação SFV"
 
 #: sabnzbd/postproc.py
 msgid "Some files failed to verify against \"%s\""
@@ -4796,6 +4768,9 @@ msgstr "A busca da URL falhou; %s"
 #~ msgid "_yenc module... NOT found!"
 #~ msgstr "módulo _yenc... NÃO encontrado!"
 
+#~ msgid "%s missing"
+#~ msgstr "faltando %s"
+
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr ""
 #~ "ATENÇÃO: Tarefa \"%s\" em pausa por causa de arquivo RAR criptografado"
@@ -4809,12 +4784,24 @@ msgstr "A busca da URL falhou; %s"
 #~ msgid "SQL Commit Failed, see log"
 #~ msgstr "O commit do SQL falhou. Consulte o log"
 
+#~ msgid "Server %s requires user/password"
+#~ msgstr "Servidor %s requer usuário/senha"
+
 #~ msgid ""
 #~ "Your UNRAR version is not recommended, get it from "
 #~ "http://www.rarlab.com/rar_add.htm<br />"
 #~ msgstr ""
 #~ "Sua versão do UNRAR não é recomendada. Pegue-a de "
 #~ "http://www.rarlab.com/rar_add.htm<br />"
+
+#~ msgid "Missing Session key"
+#~ msgstr "Faltando chave de sessão"
+
+#~ msgid "Error: Session Key Required"
+#~ msgstr "Erro: chave de sessão obrigatória"
+
+#~ msgid "Error: Session Key Incorrect"
+#~ msgstr "Erro: chave de sessão incorreta"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Erro: Nenhuma interface secundária definida."
@@ -5099,6 +5086,9 @@ msgstr "A busca da URL falhou; %s"
 
 #~ msgid "Cannot create %s folder %s"
 #~ msgstr "Não foi possível criar %s pasta %s"
+
+#~ msgid "Incomplete NZB file %s"
+#~ msgstr "Arquivo NZB incompleto %s"
 
 #~ msgid "Used when no user script is defined by the category."
 #~ msgstr "Usado quando nenhum script de usuário é definido pela categoria."
