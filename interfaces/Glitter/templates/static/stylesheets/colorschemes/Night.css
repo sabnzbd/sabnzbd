@@ -100,8 +100,8 @@ legend,
     background-color: #EBEBEB;
 }
 
-.table-striped>tbody>tr:nth-child(odd)>td,
-.table>tbody>tr:nth-child(odd)>td,
+.table-striped>tbody>tr:nth-child(odd),
+.table>tbody>tr:nth-child(odd),
 .multioperations-selector,
 .pagination li.active span,
 .pagination li span:hover,
@@ -112,8 +112,8 @@ legend,
 }
 
 table,
-.table-striped>tbody>tr:nth-child(even)>td,
-.table>tbody>tr:nth-child(even)>td,
+.table-striped>tbody>tr:nth-child(even),
+.table>tbody>tr:nth-child(even),
 .table th,
 .pagination li span,
 .pagination>.disabled>span,
@@ -129,6 +129,19 @@ select.form-control,
 #modal-options .options-function-box .input-group-addon {
     background-color: #555555;
     color: #EBEBEB;
+}
+
+/* Needed to force the text-color */
+.table-striped>tbody>tr:nth-child(odd)>td,
+.table>tbody>tr:nth-child(odd)>td,
+.table-striped>tbody>tr:nth-child(even)>td,
+.table>tbody>tr:nth-child(even)>td {
+    color: #EBEBEB;
+}
+
+/* Hovering the queue and the history */
+.table>tbody>tr:hover {
+    background-color: #666;
 }
 
 .table,
