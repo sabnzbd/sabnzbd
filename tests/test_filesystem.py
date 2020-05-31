@@ -88,7 +88,7 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("test/aftertest") == "test+aftertest"
         assert filesystem.sanitize_filename("/test") == "+test"
         assert filesystem.sanitize_filename("test/") == "test+"
-        assert filesystem.sanitize_filename("/test\/aftertest/") == "+test\+aftertest+"
+        assert filesystem.sanitize_filename(r"/test\/aftertest/") == r"+test\+aftertest+"
         assert filesystem.sanitize_filename("/") == "+"
         assert filesystem.sanitize_filename("///") == "+++"
         assert filesystem.sanitize_filename("../") == "..+"
@@ -594,7 +594,10 @@ class TestSetPermissions(ffs.TestCase):
             str perms_after: expected permissions after completion of the test.
         """
         perms_test = int(perms_test, 8)
-        perms_after = int(perms_after, 8)
+        if sabnzbd.cfg.umask():
+            perms_after = int(perms_after, 8)
+        else:
+            perms_after = int("0777", 8) & (sabnzbd.ORG_UMASK ^ int("0777", 8))
 
         # Setup and verify fake dir
         test_dir = "/test"
