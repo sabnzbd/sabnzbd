@@ -46,9 +46,7 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("test:") == "test-"
         assert filesystem.sanitize_filename("test: ") == "test-"
         # They should act the same
-        assert filesystem.sanitize_filename(
-            "test:aftertest"
-        ) == filesystem.sanitize_foldername("test:aftertest")
+        assert filesystem.sanitize_filename("test:aftertest") == filesystem.sanitize_foldername("test:aftertest")
 
     @set_platform("darwin")
     def test_colon_handling_darwin(self):
@@ -93,9 +91,7 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("test/aftertest") == "test+aftertest"
         assert filesystem.sanitize_filename("/test") == "+test"
         assert filesystem.sanitize_filename("test/") == "test+"
-        assert (
-            filesystem.sanitize_filename(r"/test\/aftertest/") == r"+test\+aftertest+"
-        )
+        assert filesystem.sanitize_filename(r"/test\/aftertest/") == r"+test\+aftertest+"
         assert filesystem.sanitize_filename("/") == "+"
         assert filesystem.sanitize_filename("///") == "+++"
         assert filesystem.sanitize_filename("../") == "..+"
@@ -106,9 +102,7 @@ class TestFileFolderNameSanitizer:
     def test_folder_illegal_chars_linux(self):
         assert filesystem.sanitize_foldername('test"aftertest') == "test'aftertest"
         assert filesystem.sanitize_foldername("test:") == "test-"
-        assert (
-            filesystem.sanitize_foldername("test<>?*|aftertest") == "test<>?*|aftertest"
-        )
+        assert filesystem.sanitize_foldername("test<>?*|aftertest") == "test<>?*|aftertest"
 
     def test_char_collections(self):
         assert len(filesystem.CH_ILLEGAL) == len(filesystem.CH_LEGAL)
@@ -120,46 +114,32 @@ class TestFileFolderNameSanitizer:
         # Illegal on Windows but not on Linux, unless sanitize_safe is active.
         # Don't bother with '/' which is illegal in filenames on all platforms.
         char_ill = filesystem.CH_ILLEGAL_WIN.replace("/", "")
-        assert filesystem.sanitize_filename("test" + char_ill + "aftertest") == (
-            "test" + char_ill + "aftertest"
-        )
+        assert filesystem.sanitize_filename("test" + char_ill + "aftertest") == ("test" + char_ill + "aftertest")
         for char in char_ill:
             # Try at start, middle, and end of a filename.
-            assert filesystem.sanitize_filename("test" + char * 2 + "aftertest") == (
-                "test" + char * 2 + "aftertest"
-            )
-            assert (
-                filesystem.sanitize_filename("test" + char * 2)
-                == ("test" + char * 2).strip()
-            )
-            assert (
-                filesystem.sanitize_filename(char * 2 + "test")
-                == (char * 2 + "test").strip()
-            )
+            assert filesystem.sanitize_filename("test" + char * 2 + "aftertest") == ("test" + char * 2 + "aftertest")
+            assert filesystem.sanitize_filename("test" + char * 2) == ("test" + char * 2).strip()
+            assert filesystem.sanitize_filename(char * 2 + "test") == (char * 2 + "test").strip()
 
     @set_platform("linux")
     @set_config({"sanitize_safe": True})
     def test_sanitize_safe_linux(self):
         # Set sanitize_safe to on, simulating Windows-style restrictions.
-        assert filesystem.sanitize_filename(
-            "test" + filesystem.CH_ILLEGAL_WIN + "aftertest"
-        ) == ("test" + filesystem.CH_LEGAL_WIN + "aftertest")
+        assert filesystem.sanitize_filename("test" + filesystem.CH_ILLEGAL_WIN + "aftertest") == (
+            "test" + filesystem.CH_LEGAL_WIN + "aftertest"
+        )
         for index in range(0, len(filesystem.CH_ILLEGAL_WIN)):
             char_leg = filesystem.CH_LEGAL_WIN[index]
             char_ill = filesystem.CH_ILLEGAL_WIN[index]
-            assert filesystem.sanitize_filename(
-                "test" + char_ill * 2 + "aftertest"
-            ) == ("test" + char_leg * 2 + "aftertest")
+            assert filesystem.sanitize_filename("test" + char_ill * 2 + "aftertest") == (
+                "test" + char_leg * 2 + "aftertest"
+            )
             # Illegal chars that also get caught by strip() never make it far
             # enough to be replaced by their legal equivalents if they appear
             # on either end of the filename.
             if char_ill.strip():
-                assert filesystem.sanitize_filename("test" + char_ill * 2) == (
-                    "test" + char_leg * 2
-                )
-                assert filesystem.sanitize_filename(char_ill * 2 + "test") == (
-                    char_leg * 2 + "test"
-                )
+                assert filesystem.sanitize_filename("test" + char_ill * 2) == ("test" + char_leg * 2)
+                assert filesystem.sanitize_filename(char_ill * 2 + "test") == (char_leg * 2 + "test")
 
     def test_filename_dot(self):
         # All dots should survive in filenames
@@ -471,21 +451,14 @@ class TestTrimWinPath:
     @set_platform("win32")
     def test_long_path_short_segments(self):
         test_path = "C:\\" + "A" * 20 + "\\" + "B" * 20 + "\\" + "C" * 20  # Strlen 65
-        assert (
-            filesystem.trim_win_path(test_path + "\\" + ("D" * 20))
-            == test_path + "\\" + "D" * 3
-        )
+        assert filesystem.trim_win_path(test_path + "\\" + ("D" * 20)) == test_path + "\\" + "D" * 3
 
     @set_platform("win32")
     def test_long_path_long_segment(self):
         test_path = "C:\\" + "A" * 75 + "\\" + "B" * 20  # Long segment first, strlen 99
-        assert (
-            filesystem.trim_win_path(test_path) == test_path[:69]
-        )  # Cuts into the first segment
+        assert filesystem.trim_win_path(test_path) == test_path[:69]  # Cuts into the first segment
         test_path = "C:\\" + "A" * 20 + "\\" + "B" * 75  # Long segment last
-        assert (
-            filesystem.trim_win_path(test_path) == test_path[:69]
-        )  # Cuts into the last segment
+        assert filesystem.trim_win_path(test_path) == test_path[:69]  # Cuts into the last segment
 
 
 class TestRecursiveListdir(ffs.TestCase):
@@ -522,9 +495,7 @@ class TestRecursiveListdir(ffs.TestCase):
         assert results_parent == results_subdir
 
         # List that subsubsub-directory; no sorting required for a single result
-        assert filesystem.recursive_listdir("/test/dir/sub/sub") == [
-            "/test/dir/sub/sub/sub/dir/file3.ext"
-        ]
+        assert filesystem.recursive_listdir("/test/dir/sub/sub") == ["/test/dir/sub/sub/sub/dir/file3.ext"]
 
     def test_exception_appledouble(self):
         # Anything below a .AppleDouble directory should be omitted
@@ -568,14 +539,9 @@ class TestGetUniquePathFilename(ffs.TestCase):
     @set_config({"wait_ext_drive": 1})
     def test_nonexistent_dir(self):
         # Absolute path
-        assert (
-            filesystem.get_unique_path("/foo/bar", n=0, create_dir=False) == "/foo/bar"
-        )
+        assert filesystem.get_unique_path("/foo/bar", n=0, create_dir=False) == "/foo/bar"
         # Absolute path in a location that matters to check_mount
-        assert (
-            filesystem.get_unique_path("/mnt/foo/bar", n=0, create_dir=False)
-            == "/mnt/foo/bar"
-        )
+        assert filesystem.get_unique_path("/mnt/foo/bar", n=0, create_dir=False) == "/mnt/foo/bar"
         # Relative path
         if self.fs.cwd != "/":
             os.chdir("/")
@@ -583,22 +549,15 @@ class TestGetUniquePathFilename(ffs.TestCase):
 
     def test_creating_dir(self):
         # First call also creates the directory for us
-        assert (
-            filesystem.get_unique_path("/foo/bar", n=0, create_dir=True) == "/foo/bar"
-        )
+        assert filesystem.get_unique_path("/foo/bar", n=0, create_dir=True) == "/foo/bar"
         # Verify creation of the path
         assert os.path.exists("/foo/bar") is True
         # Directories from previous loops get in the way
         for dir_n in range(1, 11):  # Go high enough for double digits
-            assert filesystem.get_unique_path(
-                "/foo/bar", n=0, create_dir=True
-            ) == "/foo/bar." + str(dir_n)
+            assert filesystem.get_unique_path("/foo/bar", n=0, create_dir=True) == "/foo/bar." + str(dir_n)
             assert os.path.exists("/foo/bar." + str(dir_n)) is True
         # Explicitly set parameter n
-        assert (
-            filesystem.get_unique_path("/foo/bar", n=666, create_dir=True)
-            == "/foo/bar.666"
-        )
+        assert filesystem.get_unique_path("/foo/bar", n=666, create_dir=True) == "/foo/bar.666"
         assert os.path.exists("/foo/bar.666") is True
 
     def test_nonexistent_file(self):
@@ -616,10 +575,7 @@ class TestGetUniquePathFilename(ffs.TestCase):
             file_n = "/dir/file." + str(n) + ".name"
             self.fs.create_file(file_n)
             assert os.path.exists(file_n)
-        assert (
-            filesystem.get_unique_filename("/dir/file.name")
-            == "/dir/file." + str(max_obstruct) + ".name"
-        )
+        assert filesystem.get_unique_filename("/dir/file.name") == "/dir/file." + str(max_obstruct) + ".name"
 
     def test_existing_file_without_extension(self):
         test_file = "/some/filename"
@@ -660,10 +616,7 @@ class TestSetPermissions(ffs.TestCase):
             ffs.set_uid(0)
             self.fs.create_dir(test_dir, perms_test)
         assert os.path.exists(test_dir) is True
-        assert (
-            stat.filemode(os.stat(test_dir).st_mode)
-            == "d" + stat.filemode(perms_test)[1:]
-        )
+        assert stat.filemode(os.stat(test_dir).st_mode) == "d" + stat.filemode(perms_test)[1:]
 
         # Setup and verify fake files
         for file in (
@@ -683,10 +636,7 @@ class TestSetPermissions(ffs.TestCase):
                     # Skip creating files, if not even using root gets the job done.
                     break
             assert os.path.exists(file) is True
-            assert (
-                stat.filemode(os.stat(file).st_mode)[1:]
-                == stat.filemode(perms_test)[1:]
-            )
+            assert stat.filemode(os.stat(file).st_mode)[1:] == stat.filemode(perms_test)[1:]
 
         # Set permissions, recursive by default
         filesystem.set_permissions(test_dir)
@@ -695,23 +645,13 @@ class TestSetPermissions(ffs.TestCase):
         for root, dirs, files in os.walk(test_dir):
             for dir in [os.path.join(root, d) for d in dirs]:
                 # Permissions on directories should now match perms_after
-                assert (
-                    stat.filemode(os.stat(dir).st_mode)
-                    == "d" + stat.filemode(perms_after)[1:]
-                )
+                assert stat.filemode(os.stat(dir).st_mode) == "d" + stat.filemode(perms_after)[1:]
             for file in [os.path.join(root, f) for f in files]:
                 # Files also shouldn't have any executable or special bits set
                 assert (
                     stat.filemode(os.stat(file).st_mode)[1:]
                     == stat.filemode(
-                        perms_after
-                        & ~(
-                            stat.S_ISUID
-                            | stat.S_ISGID
-                            | stat.S_IXUSR
-                            | stat.S_IXGRP
-                            | stat.S_IXOTH
-                        )
+                        perms_after & ~(stat.S_ISUID | stat.S_ISGID | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
                     )[1:]
                 )
 
