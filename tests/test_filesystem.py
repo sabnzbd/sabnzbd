@@ -246,6 +246,8 @@ class TestSameFile:
         assert 2 == filesystem.same_file("\\\\?\\c:\\", "\\\\?\\C:\\Users\\")
         assert 2 == filesystem.same_file("/HOME/test123", "/home/test123/sub")
 
+    @pytest.mark.skipif(sys.platform.startswith("win"), reason="Requires a case-sensitive filesystem")
+    @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Requires a case-sensitive filesystem")
     @set_platform("linux")
     def test_capitalization_linux(self):
         assert 0 == filesystem.same_file("/test", "/Test")
