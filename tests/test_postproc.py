@@ -27,20 +27,19 @@ class TestPostProc:
             sourcedir = os.path.join(os.getcwd(), sourcedir)
             # We create a workingdir inside the sourcedir, because the filenames are really changed
             workingdir = os.path.join(sourcedir, "workingdir")
-            #print("workingdir is", workingdir)
+            # print("workingdir is", workingdir)
             # if workingdir is still there from previous run, remove it:
             if os.path.isdir(workingdir):
                 try:
                     shutil.rmtree(workingdir)
                 except PermissionError:
                     pytest.fail(
-                        "Could not remove existing workingdir %s for rar_renamer",
-                        workingdir,
+                        "Could not remove existing workingdir %s for rar_renamer"
+                        % workingdir
                     )
             # create a fresh copy
             try:
-                # shutil.copytree(sourcedir, workingdir)
-                # shutil.copytree() gives problems on AppVeyor, so:
+                # shutil.copytree(sourcedir, workingdir) gives problems on AppVeyor, so:
                 copy_tree(sourcedir, workingdir)
             except:
                 pytest.fail("Could not create copy of files for rar_renamer")
@@ -58,9 +57,8 @@ class TestPostProc:
                         != expected_filename_matches[filename_match]
                     ):
                         pytest.fail(
-                            "Fail on checking filename_matchs {}".format(
-                                workingdir, filename_match
-                            )
+                            "Failed filename_match %s in %s"
+                            % (filename_match, workingdir)
                         )
 
             # Remove workingdir again
@@ -68,8 +66,8 @@ class TestPostProc:
                 shutil.rmtree(workingdir)
             except:
                 pytest.fail(
-                    "Could not remove existing workingdir %s for rar_renamer",
-                    workingdir,
+                    "Could not remove existing workingdir %s for rar_renamer"
+                    % workingdir
                 )
 
             return number_renamed_files
@@ -79,6 +77,7 @@ class TestPostProc:
 
         # obfuscated, single rar set
         sourcedir = os.path.join("tests", "data", "obfuscated_single_rar_set")
+        # Now define the filematches we want to see, in which amount:
         expected_filename_matches = {"*part007.rar": 1, "*-*-*-*-*": 0}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 7
 
@@ -87,7 +86,7 @@ class TestPostProc:
         expected_filename_matches = {
             "*part007.rar": 2,
             "*part009.rar": 1,
-            "c2bfeeb1-a0b6-47d2-be35-50328927c1ae": 0,
+            "*-*-*-*-*": 0,
         }
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 16
 
