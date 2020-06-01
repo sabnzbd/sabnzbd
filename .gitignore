@@ -1,12 +1,7 @@
-# Compiled python
+# Compiled python and venv
 *.py[cod]
 __pycache__
-
-# Working folders for Win build
-build/
-dist/
-locale/
-srcdist/
+/venv
 
 # Snapcraft
 parts/
@@ -18,11 +13,19 @@ snap/.snapcraft/
 # Generated email templates
 email/*.tmpl
 
+# Working folders for build
+build/
+dist/
+locale/
+srcdist/
+
 # Build results
 SABnzbd*.zip
 SABnzbd*.exe
 SABnzbd*.gz
 SABnzbd*.dmg
+SABnzbd*.pkg
+SABnzbd-*/
 
 # WingIDE/PyCharm project files
 *.wp[ru]
@@ -43,5 +46,5 @@ tests/cache
 \#*
 .\#*
 
+# Apple
 .DS_Store
-/venv
