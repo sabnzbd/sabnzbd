@@ -471,8 +471,8 @@ def set_permissions(path, recursive=True):
             umask = int("0777", 8) & (sabnzbd.ORG_UMASK ^ int("0777", 8))
             report = False
 
-        # Remove X bits for files
-        umask_file = umask & int("7666", 8)
+        # Remove executable and special permissions for files
+        umask_file = umask & int("0666", 8)
 
         if os.path.isdir(path):
             if recursive:
