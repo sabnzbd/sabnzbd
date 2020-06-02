@@ -13,7 +13,7 @@ apps:
       LC_CTYPE: C.UTF-8
     command: python3 $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
     daemon: simple
-    plugs: [network, network-bind, removable-media]
+    plugs: [network, home, network-bind, removable-media]
 
 parts:
   sabnzbd:
