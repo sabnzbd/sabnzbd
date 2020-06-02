@@ -8,10 +8,12 @@
 tests.test_postproc- Tests of various functions in newspack, among which rar_renamer()
 """
 
-from sabnzbd.postproc import *
-from unittest import mock
-import os, shutil, pytest
+import pytest
+import shutil
 from distutils.dir_util import copy_tree
+from unittest import mock
+
+from sabnzbd.postproc import *
 
 
 class TestPostProc:
@@ -27,16 +29,14 @@ class TestPostProc:
             sourcedir = os.path.join(os.getcwd(), sourcedir)
             # We create a workingdir inside the sourcedir, because the filenames are really changed
             workingdir = os.path.join(sourcedir, "workingdir")
-            # print("workingdir is", workingdir)
+
             # if workingdir is still there from previous run, remove it:
             if os.path.isdir(workingdir):
                 try:
                     shutil.rmtree(workingdir)
                 except PermissionError:
-                    pytest.fail(
-                        "Could not remove existing workingdir %s for rar_renamer"
-                        % workingdir
-                    )
+                    pytest.fail("Could not remove existing workingdir %s for rar_renamer" % workingdir)
+
             # create a fresh copy
             try:
                 # shutil.copytree(sourcedir, workingdir) gives problems on AppVeyor, so:
@@ -52,42 +52,26 @@ class TestPostProc:
             # run check on the resulting files
             if expected_filename_matches:
                 for filename_match in expected_filename_matches:
-                    if (
-                        len(globber_full(workingdir, filename_match))
-                        != expected_filename_matches[filename_match]
-                    ):
-                        pytest.fail(
-                            "Failed filename_match %s in %s"
-                            % (filename_match, workingdir)
-                        )
+                    if len(globber_full(workingdir, filename_match)) != expected_filename_matches[filename_match]:
+                        pytest.fail("Failed filename_match %s in %s" % (filename_match, workingdir))
 
             # Remove workingdir again
             try:
                 shutil.rmtree(workingdir)
             except:
-                pytest.fail(
-                    "Could not remove existing workingdir %s for rar_renamer"
-                    % workingdir
-                )
+                pytest.fail("Could not remove existing workingdir %s for rar_renamer" % workingdir)
 
             return number_renamed_files
 
-        # The tests and asserts per directory:
-        # we use os.path.join("test","data","..." ) to make it OS compatible
-
         # obfuscated, single rar set
         sourcedir = os.path.join("tests", "data", "obfuscated_single_rar_set")
-        # Now define the filematches we want to see, in which amount:
+        # Now define the filematches we want to see, in which amount ("*-*-*-*-*" are the input files):
         expected_filename_matches = {"*part007.rar": 1, "*-*-*-*-*": 0}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 7
 
         # obfuscated, two rar sets
         sourcedir = os.path.join("tests", "data", "obfuscated_two_rar_sets")
-        expected_filename_matches = {
-            "*part007.rar": 2,
-            "*part009.rar": 1,
-            "*-*-*-*-*": 0,
-        }
+        expected_filename_matches = {"*part007.rar": 2, "*part009.rar": 1, "*-*-*-*-*": 0}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 16
 
         # obfuscated, but not a rar set
