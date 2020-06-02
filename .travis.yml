@@ -75,7 +75,9 @@ script:
         sabnzbd/rss.py
         sabnzbd/par2file.py
         sabnzbd/version.py
-        -l120 --check;
+        --line-length=120
+        --target-version=py35
+        --check;
     fi
 
 notifications:
