@@ -451,11 +451,12 @@ class TestTrimWinPath:
     def test_short_path(self):
         assert filesystem.trim_win_path(r"C:\short\path") == r"C:\short\path"
 
-    # @set_platform("win32")
-    # def test_long_path_short_segments(self):
-    #     test_path = "C:\\" + "A" * 20 + "\\" + "B" * 20 + "\\" + "C" * 20  # Strlen 65
-    #     # Current code causes the path to end up with strlen 70 rather than 69
-    #     assert filesystem.trim_win_path(test_path + "\\" + ("D" * 20)) == test_path + "\\" + "D" * 4
+    @pytest.mark.xfail(sys.platform == "win32", reason="Bug in trim_win_path")
+    @set_platform("win32")
+    def test_long_path_short_segments(self):
+        test_path = "C:\\" + "A" * 20 + "\\" + "B" * 20 + "\\" + "C" * 20  # Strlen 65
+        # Current code causes the path to end up with strlen 70 rather than 69 on Windows
+        assert filesystem.trim_win_path(test_path + "\\" + ("D" * 20)) == test_path + "\\" + "D" * 3
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Broken on Windows")
