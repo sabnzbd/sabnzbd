@@ -252,7 +252,7 @@ def is_obfuscated_filename(filename):
     """ Check if this file has an extension, if not, it's
         probably obfuscated and we don't use it
     """
-    return len(os.path.splitext(filename)[1]) < 2
+    return len(get_ext(filename)) < 2
 
 
 def real_path(loc, path):
