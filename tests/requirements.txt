@@ -2,6 +2,7 @@
 selenium
 requests
 pytest
+pyfakefs
 
 # Only works on Python 3.6+
 black; python_version >= "3.6"
