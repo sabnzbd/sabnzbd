@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">
+<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">
+<file poster="sabnews" date="1591361935" subject="&quot;unicode_rar.nzb&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.par2&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="42640">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.par2|part=1|start=0|size=42640</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part01.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part01.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part01.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part01.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part06.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part06.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part06.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part06.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.vol000+02.par2&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="95856">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol000+02.par2|part=1|start=0|size=95856</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.vol002+04.par2&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="149072">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol002+04.par2|part=1|start=0|size=149072</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.vol006+08.par2&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="212968">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol006+08.par2|part=1|start=0|size=212968</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.vol014+16.par2&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="298224">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol014+16.par2|part=1|start=0|size=298224</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.vol030+32.par2&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="426200">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol030+32.par2|part=1|start=0|size=426200</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.vol062+64.par2&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol062+64.par2|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="139616">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol062+64.par2|part=2|start=500000|size=139616</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.vol126+73.par2&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol126+73.par2|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="187676">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.vol126+73.par2|part=2|start=500000|size=187676</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part02.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part02.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part02.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part02.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part03.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part03.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part03.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part03.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part04.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part04.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part04.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part04.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part05.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part05.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part05.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part05.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part07.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part07.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part07.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part07.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part08.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part08.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part08.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part08.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part09.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part09.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part09.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part09.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part10.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part10.rar|part=1|start=0|size=500000</segment>
+<segment number="2" bytes="500000">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part10.rar|part=2|start=500000|size=500000</segment>
+<segment number="3" bytes="48576">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part10.rar|part=3|start=1000000|size=48576</segment>
+</segments>
+</file>
+<file poster="sabnews" date="1591361935" subject="&quot;你好世界.part11.rar&quot;">
+<groups><group>alt.binaries.test</group></groups>
+<segments>
+<segment number="1" bytes="1133">file=C:\Users\jiriv\Documents\GitHub\sabnzbd3\tests\data\unicode_rar\你好世界.part11.rar|part=1|start=0|size=1133</segment>
+</segments>
+</file>
+</nzb>

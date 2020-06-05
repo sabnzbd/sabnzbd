@@ -152,7 +152,7 @@ async def serve_sabnews(hostname, port):
         await server.serve_forever()
 
 
-def create_nzb(nzb_file, nzb_dir):
+def create_nzb(nzb_file=None, nzb_dir=None):
     article_size = 500000
     files_for_nzb = []
     output_file = ""
@@ -177,7 +177,7 @@ def create_nzb(nzb_file, nzb_dir):
         raise RuntimeError("No files found to include in NZB")
 
     # Let's write a file!
-    with open(output_file, "w") as nzb:
+    with open(output_file, "w", encoding="utf-8") as nzb:
         nzb.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         nzb.write('<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">\n')
         nzb.write('<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">\n')
@@ -203,7 +203,8 @@ def create_nzb(nzb_file, nzb_dir):
             nzb.write("</file>\n")
         nzb.write("</nzb>\n")
 
-        logging.info("NZB saved to %s" % output_file)
+    logging.info("NZB saved to %s" % output_file)
+    return output_file
 
 
 def main():
