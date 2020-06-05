@@ -120,7 +120,7 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
 
 def start_sabnews():
     """ Start sabnews and forget about it """
-    subprocess.Popen([sys.executable, "%s/sabnews.py" % SAB_BASE_DIR])
+    return subprocess.Popen([sys.executable, "%s/sabnews.py" % SAB_BASE_DIR])
 
 
 def create_nzb(nzb_dir):
@@ -151,6 +151,7 @@ class SABnzbdBaseTest(unittest.TestCase):
                 driver_options.binary_location = "/usr/bin/chromium-browser"
 
         cls.driver = webdriver.Chrome(options=driver_options)
+        cls.sabnews = start_sabnews()
 
     @classmethod
     def tearDownClass(cls):
@@ -159,6 +160,12 @@ class SABnzbdBaseTest(unittest.TestCase):
             cls.driver.quit()
         except:
             # If something else fails, this can cause very non-informative long tracebacks
+            pass
+
+        # Kill sabnews
+        try:
+            cls.sabnews.kill()
+        except:
             pass
 
     def no_page_crash(self):

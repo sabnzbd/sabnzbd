@@ -1,11 +1,4 @@
 environment:
-  SAB_NEWSSERVER_HOST:
-    secure: 6SvOPWr5ypJeoumXJAZh90DLpk4C/5UAvzwyX7OOUr4=
-  SAB_NEWSSERVER_USER:
-    secure: Ty3ZG8T5vnacqIFPj5j5hg==
-  SAB_NEWSSERVER_PASSWORD:
-    secure: bO3XHtWTleVF9AqRV/V/nA==
-
   # We only use 64bit to test anyway
   matrix:
     - PYTHON: "C:\\Python35-x64"

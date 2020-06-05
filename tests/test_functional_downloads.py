@@ -33,7 +33,6 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         """
         with open(os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"), "r") as config_file:
             if SAB_NEWSSERVER_HOST not in config_file.read():
-                start_sabnews()
                 self.start_wizard()
 
     def start_wizard(self):
@@ -50,6 +49,11 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
 
         # This will fail if the translations failed to compile!
         self.selenium_wrapper(self.driver.find_element_by_partial_link_text, "Advanced Settings").click()
+
+        # Lower number of connections to prevent testing errors
+        pass_inp = self.selenium_wrapper(self.driver.find_element_by_name, "connections")
+        pass_inp.clear()
+        pass_inp.send_keys(2)
 
         # Change port
         port_inp = self.selenium_wrapper(self.driver.find_element_by_name, "port")

@@ -30,6 +30,8 @@ import argparse
 import asyncio
 import logging
 
+logging.getLogger().setLevel(logging.DEBUG)
+
 
 # Expecting the following message-id:
 # ARTICLE <file=folder/filename.mkv|part=4|start=5000|size=5000>\r\n
@@ -142,14 +144,12 @@ class NewsServerProtocol(asyncio.Protocol):
 
 async def serve_sabnews(hostname, port):
     # Start server
-    logging.getLogger().setLevel(logging.DEBUG)
     logging.info("Starting SABNews on %s:%d", hostname, port)
-    loop = asyncio.get_running_loop()
 
+    # Needed for Python 3.5 support!
+    loop = asyncio.get_event_loop()
     server = await loop.create_server(lambda: NewsServerProtocol(), hostname, port)
-
-    async with server:
-        await server.serve_forever()
+    return server
 
 
 def create_nzb(nzb_file=None, nzb_dir=None):
@@ -218,7 +218,9 @@ def main():
 
     # Serve if we are not creating NZB's
     if not args.nzb_file and not args.nzb_dir:
-        asyncio.run(serve_sabnews(args.hostname, args.port))
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(serve_sabnews(args.hostname, args.port))
+        loop.run_forever()
     else:
         create_nzb(args.nzb_file, args.nzb_dir)
 
