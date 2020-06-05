@@ -53,7 +53,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         # Lower number of connections to prevent testing errors
         pass_inp = self.selenium_wrapper(self.driver.find_element_by_name, "connections")
         pass_inp.clear()
-        pass_inp.send_keys(2)
+        pass_inp.send_keys(4)
 
         # Change port
         port_inp = self.selenium_wrapper(self.driver.find_element_by_name, "port")
