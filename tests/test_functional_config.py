@@ -230,7 +230,6 @@ class SABnzbdConfigRSS(SABnzbdBaseTest):
         assert get_api_result("resume") == {"status": True}
 
 
-@pytest.mark.skipif("SAB_NEWSSERVER_HOST" not in os.environ, reason="Test-server not specified")
 class SABnzbdConfigServers(SABnzbdBaseTest):
 
     server_name = "_SeleniumServer"
@@ -250,25 +249,12 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element_by_id, "addServerButton").click()
         host_inp = self.selenium_wrapper(self.driver.find_element_by_name, "host")
         host_inp.clear()
-        host_inp.send_keys(self.newsserver_host)
-        username_imp = self.selenium_wrapper(
-            self.driver.find_element_by_css_selector, "#addServerContent input[data-hide='username']"
-        )
-        username_imp.clear()
-        username_imp.send_keys(self.newsserver_user)
-        pass_inp = self.selenium_wrapper(
-            self.driver.find_element_by_css_selector, "#addServerContent input[data-hide='password']"
-        )
-        pass_inp.clear()
-        pass_inp.send_keys(self.newsserver_password)
+        host_inp.send_keys(SAB_NEWSSERVER_HOST)
 
-        # With SSL
-        ssl_imp = self.selenium_wrapper(self.driver.find_element_by_name, "ssl")
-        if not ssl_imp.get_attribute("checked"):
-            ssl_imp.click()
-
-        # Check that we filled the right port automatically
-        self.assertEqual(self.selenium_wrapper(self.driver.find_element_by_id, "port").get_attribute("value"), "563")
+        # Change port
+        port_inp = self.selenium_wrapper(self.driver.find_element_by_name, "port")
+        port_inp.clear()
+        port_inp.send_keys(SAB_NEWSSERVER_PORT)
 
         # Test server-check
         self.selenium_wrapper(self.driver.find_element_by_css_selector, "#addServerContent .testServer").click()
@@ -282,7 +268,7 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element_by_id, "displayname").send_keys(self.server_name)
 
         # Add and show details
-        pass_inp.send_keys(Keys.RETURN)
+        port_inp.send_keys(Keys.RETURN)
         time.sleep(1)
         if not self.selenium_wrapper(self.driver.find_element_by_id, "host0").is_displayed():
             self.selenium_wrapper(self.driver.find_element_by_class_name, "showserver").click()
@@ -299,35 +285,4 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
     def test_add_and_remove_server(self):
         self.open_config_servers()
         self.add_test_server()
-        self.remove_server()
-
-    def test_empty_bad_password(self):
-        self.open_config_servers()
-        self.add_test_server()
-
-        # Test server-check with empty password
-        pass_inp = self.driver.find_elements_by_css_selector("input[data-hide='password']")[1]
-        pass_inp.clear()
-        self.driver.find_elements_by_css_selector(".testServer")[1].click()
-        self.wait_for_ajax()
-        check_result = self.driver.find_elements_by_css_selector(".result-box")[1].text.lower()
-        assert "authentication failed" in check_result or "invalid username or password" in check_result
-
-        # Test server-check with bad password
-        pass_inp.send_keys("bad")
-        self.driver.find_elements_by_css_selector(".testServer")[1].click()
-        self.wait_for_ajax()
-        check_result = self.driver.find_elements_by_css_selector(".result-box")[1].text.lower()
-        assert "authentication failed" in check_result or "invalid username or password" in check_result
-
-        # Test no username and password
-        pass_inp.clear()
-        username_inp = self.driver.find_elements_by_css_selector("input[data-hide='username']")[1]
-        username_inp.clear()
-        self.driver.find_elements_by_css_selector(".testServer")[1].click()
-        self.wait_for_ajax()
-        check_result = self.driver.find_elements_by_css_selector(".result-box")[1].text.lower()
-        assert "server requires username and password" in check_result
-
-        # Finish
         self.remove_server()

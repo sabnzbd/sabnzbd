@@ -20,6 +20,7 @@ tests.testhelper - Basic helper functions
 """
 
 import os
+import subprocess
 import sys
 import time
 import unittest
@@ -27,6 +28,7 @@ from http.client import RemoteDisconnected
 
 import pytest
 import requests
+import tests.sabnews
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.keys import Keys
@@ -42,6 +44,8 @@ SAB_PORT = 8081
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache")
 SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "complete")
+SAB_NEWSSERVER_HOST = "127.0.0.1"
+SAB_NEWSSERVER_PORT = 8888
 
 
 def set_config(settings_dict):
@@ -114,6 +118,17 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.json()
 
 
+def start_sabnews():
+    """ Start sabnews and forget about it """
+    subprocess.Popen([sys.executable, "%s/sabnews.py" % SAB_BASE_DIR])
+
+
+def create_nzb(nzb_dir):
+    """ Create NZB from directory using sabnews """
+    nzb_dir_full = os.path.join(SAB_BASE_DIR, "data", nzb_dir)
+    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full)
+
+
 @pytest.mark.usefixtures("start_sabnzbd")
 class SABnzbdBaseTest(unittest.TestCase):
     @classmethod
@@ -136,12 +151,6 @@ class SABnzbdBaseTest(unittest.TestCase):
                 driver_options.binary_location = "/usr/bin/chromium-browser"
 
         cls.driver = webdriver.Chrome(options=driver_options)
-
-        # Get the newsserver-info, if available
-        if "SAB_NEWSSERVER_HOST" in os.environ:
-            cls.newsserver_host = os.environ["SAB_NEWSSERVER_HOST"]
-            cls.newsserver_user = os.environ["SAB_NEWSSERVER_USER"]
-            cls.newsserver_password = os.environ["SAB_NEWSSERVER_PASSWORD"]
 
     @classmethod
     def tearDownClass(cls):

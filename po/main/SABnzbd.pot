@@ -376,6 +376,10 @@ msgstr ""
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
+#: sabnzbd/decoder.py
+msgid "Badly formed yEnc article in %s"
+msgstr ""
+
 #: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr ""
