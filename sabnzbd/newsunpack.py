@@ -2237,7 +2237,7 @@ def is_sfv_file(myfile):
     sfv_info_line_counter = 0
     for line in lines:
         line = line.strip()
-        if re.search("^[^;].*\ +[A-Fa-f0-9]{8}$", line):
+        if re.search(r"^[^;].*\ +[A-Fa-f0-9]{8}$", line):
             # valid, useful SFV line: some text, then one or more space, and a 8-digit hex number
             sfv_info_line_counter += 1
             if sfv_info_line_counter >= 10:
