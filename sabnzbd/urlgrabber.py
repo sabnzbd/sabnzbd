@@ -329,7 +329,11 @@ def _build_request(url):
     user_passwd = None
     u = urllib.parse.urlparse(url)
     if u.username or u.password:
-        user_passwd, host_port = u.netloc.split('@')
+        if u.username and u.password:
+            user_passwd = '%s:%s' % (u.username, u.password)
+        host_port = u.hostname
+        if u.port:
+            host_port += ':' + str(u.port)
         url = urllib.parse.urlunparse(
             urllib.parse.ParseResult(u.scheme, host_port, u.path, u.params, u.query, u.fragment)
         )
