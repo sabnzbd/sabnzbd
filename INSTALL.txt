@@ -54,11 +54,11 @@ Specific guides to install from source are available for Windows and macOS:
 
 Only Python 3.5 and above is supported.
 
-You need to install
+On Linux systems you need to install:
     par2 unrar unzip python3-setuptools python3-pip
 
-On non-X86 platforms (for which pypi does not provide all pre-compiled packages),
-you also need to install (exact names might differ per platform):
+On non-X86 platforms, for which PyPI does not provide all pre-compiled packages,
+you also need to install these development libraries (exact names might differ per platform):
     libffi-dev libssl-dev
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
