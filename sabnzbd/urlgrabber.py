@@ -29,6 +29,7 @@ import urllib.error
 import urllib.parse
 from http.client import IncompleteRead
 from threading import Thread
+import base64
 
 import sabnzbd
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status
@@ -40,6 +41,7 @@ from sabnzbd.postproc import PostProcessor
 import sabnzbd.cfg as cfg
 import sabnzbd.emailer as emailer
 import sabnzbd.notifier as notifier
+from sabnzbd.encoding import ubtou, utob
 
 
 _BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
@@ -325,12 +327,12 @@ def _build_request(url):
     # Detect basic auth
     # Adapted from python-feedparser
     user_passwd = None
-    urltype, rest = urllib.parse.splittype(url)
-    realhost, rest = urllib.parse.splithost(rest)
-    if realhost:
-        user_passwd, realhost = urllib.parse.splituser(realhost)
-        if user_passwd:
-            url = '%s://%s%s' % (urltype, realhost, rest)
+    u = urllib.parse.urlparse(url)
+    if u.username or u.password:
+        user_passwd, host_port = u.netloc.split('@')
+        url = urllib.parse.urlunparse(
+            urllib.parse.ParseResult(u.scheme, host_port, u.path, u.params, u.query, u.fragment)
+        )
 
     # Start request
     req = urllib.request.Request(url)
@@ -340,7 +342,7 @@ def _build_request(url):
     if not any(item in url for item in _BAD_GZ_HOSTS):
         req.add_header('Accept-encoding', 'gzip')
     if user_passwd:
-        req.add_header('Authorization', 'Basic ' + user_passwd.encode('base64').strip())
+        req.add_header('Authorization', 'Basic ' + ubtou(base64.b64encode(utob(user_passwd))).strip())
     return urllib.request.urlopen(req)
 
 
