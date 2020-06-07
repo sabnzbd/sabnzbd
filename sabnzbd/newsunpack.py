@@ -2390,12 +2390,12 @@ def pre_queue(nzo, pp, cat):
             return ''
         return str(p)
 
-    values = [1, nzo.final_name_pw_clean, pp, cat, nzo.script, nzo.priority, None]
+    values = [1, nzo.final_name_with_password, pp, cat, nzo.script, nzo.priority, None]
     script_path = make_script_path(cfg.pre_script())
     if script_path:
         # Basic command-line parameters
-        command = [script_path, nzo.final_name_pw_clean, pp, cat, nzo.script, nzo.priority, str(nzo.bytes), ' '.join(nzo.groups)]
-        command.extend(analyse_show(nzo.final_name_pw_clean))
+        command = [script_path, nzo.final_name_with_password, pp, cat, nzo.script, nzo.priority, str(nzo.bytes), ' '.join(nzo.groups)]
+        command.extend(analyse_show(nzo.final_name_with_password))
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly
@@ -2427,12 +2427,12 @@ def pre_queue(nzo, pp, cat):
                     values[n] = line
                 n += 1
         accept = int_conv(values[0])
-        if  accept < 1:
-            logging.info('Pre-Q refuses %s', nzo.final_name_pw_clean)
+        if accept < 1:
+            logging.info('Pre-Q refuses %s', nzo.final_name)
         elif accept == 2:
-            logging.info('Pre-Q accepts&fails %s', nzo.final_name_pw_clean)
+            logging.info('Pre-Q accepts&fails %s', nzo.final_name)
         else:
-            logging.info('Pre-Q accepts %s', nzo.final_name_pw_clean)
+            logging.info('Pre-Q accepts %s', nzo.final_name)
 
     return values
 

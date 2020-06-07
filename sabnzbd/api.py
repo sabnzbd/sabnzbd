@@ -1290,11 +1290,14 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         mbleft = (bytesleft / MEBI)
         mb = (bytes / MEBI)
 
-        slot = {'index': n, 'nzo_id': str(nzo_id)}
+        slot = {}
+        slot['index'] = n
+        slot['nzo_id'] = str(nzo_id)
         slot['unpackopts'] = str(opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
         slot['priority'] = priorities[priority] if priority >= LOW_PRIORITY else priorities[NORMAL_PRIORITY]
         slot['script'] = pnfo.script if pnfo.script else 'None'
         slot['filename'] = pnfo.filename
+        slot['labels'] = pnfo.labels
         slot['password'] = pnfo.password if pnfo.password else ''
         slot['cat'] = pnfo.category if pnfo.category else 'None'
         slot['mbleft'] = "%.2f" % mbleft

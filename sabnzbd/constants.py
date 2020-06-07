@@ -28,7 +28,7 @@ REC_RAR_VERSION = 500
 
 PNFO = namedtuple(
     "PNFO",
-    "repair unpack delete script nzo_id filename password unpackstrht "
+    "repair unpack delete script nzo_id filename labels password unpackstrht "
     "msgid category url bytes_left bytes avg_stamp avg_date finished_files "
     "active_files queued_files status priority bytes_missing direct_unpack",
 )

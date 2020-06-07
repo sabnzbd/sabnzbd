@@ -56,6 +56,9 @@
   </td>
 
   <td class="download-title" <!--#if $rating_enable#-->style="width:35%"<!--#end if#-->>
+     <!--#for $label in $slot.labels#-->
+       <span class="label">$label</span>
+     <!--#end for#-->
     <a href="nzb/$slot.nzo_id/" title="$T('status'): $T('post-'+$slot.status)<br/>$T('nzo-age'): $slot.avg_age<br/><!--#if $slot.mbmissing!="0.00"#-->$T('missingArt'): $slot.mbmissing $T('MB')<!--#end if#-->">$slot.filename.replace('.', '.&#8203;').replace('_', '_&#8203;')<!--#if $slot.password#--> /  $slot.password<!--#end if#--></a>
   </td>
 

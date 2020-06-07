@@ -675,7 +675,7 @@ class NzbObject(TryList):
             # Beware that cannot do "if priority/pp", because those can
             # also have a valid value of 0, which shouldn't be ignored
             if name:
-                self.set_final_name_pw(name)
+                self.set_final_name_and_scan_password(name)
             try:
                 pp = int(pp)
             except:
@@ -1011,7 +1011,7 @@ class NzbObject(TryList):
             self.set_download_report()
             self.fail_msg = T('Aborted, cannot be completed') + ' - https://sabnzbd.org/not-complete'
             self.set_unpack_info('Download', self.fail_msg, unique=False)
-            logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name_pw_clean)
+            logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
             return True, True, True
 
         if not success:
@@ -1157,46 +1157,43 @@ class NzbObject(TryList):
         self.priority = NORMAL_PRIORITY
 
     @property
-    def final_name_labeled(self):
-        prefix = ''
-        # Duplicate label is always active
+    def labels(self):
+        """ Return (translated) labels of job """
+        labels = []
         if self.duplicate:
-            prefix = T('DUPLICATE') + ' / '  # : Queue indicator for duplicate job
-
-        # Only show label in case the download was not manually resumed
-        if self.status == Status.PAUSED:
-            if self.encrypted > 0:
-                prefix += T('ENCRYPTED') + ' / '  #: Queue indicator for encrypted job
-            if self.oversized:
-                prefix += T('TOO LARGE') + ' / '  # : Queue indicator for oversized job
-            if self.incomplete:
-                prefix += T('INCOMPLETE') + ' / '  # : Queue indicator for incomplete NZB
-            if self.unwanted_ext:
-                prefix += T('UNWANTED') + ' / '  # : Queue indicator for unwanted extensions
-            if self.rating_filtered:
-                prefix += T('FILTERED') + ' / '  # : Queue indicator for filtered
+            labels.append(T('DUPLICATE'))
+        if self.encrypted > 0:
+            labels.append(T('ENCRYPTED'))
+        if self.oversized:
+            labels.append(T('TOO LARGE'))
+        if self.incomplete:
+            labels.append(T('INCOMPLETE'))
+        if self.unwanted_ext:
+            labels.append(T('UNWANTED'))
+        if self.rating_filtered:
+            labels.append(T('FILTERED'))
 
         # Waiting for URL fetching
         if isinstance(self.url_wait, float):
             dif = int(self.url_wait - time.time() + 0.5)
             if dif > 0:
-                prefix += T('WAIT %s sec') % dif + ' / '  # : Queue indicator for waiting URL fetch
+                labels.append(T('WAIT %s sec') % dif)
 
         # Propagation delay label
         if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
             wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time()) / 60 + 0.5)
-            prefix += T('PROPAGATING %s min') % wait_time + ' / '  # : Queue indicator while waiting for propagation of post
+            labels.append(T('PROPAGATING %s min') % wait_time)  # Queue indicator while waiting for propagation of post
 
-        return '%s%s' % (prefix, self.final_name)
+        return labels
 
     @property
-    def final_name_pw_clean(self):
+    def final_name_with_password(self):
         if self.password:
             return '%s / %s' % (self.final_name, self.password)
         else:
             return self.final_name
 
-    def set_final_name_pw(self, name, password=None):
+    def set_final_name_and_scan_password(self, name, password=None):
         if isinstance(name, str):
             if password is not None:
                 self.password = password
@@ -1634,7 +1631,7 @@ class NzbObject(TryList):
                             queued_files.append(nzf)
 
         return PNFO(self.repair, self.unpack, self.delete, self.script, self.nzo_id,
-                self.final_name_labeled, self.password, {}, '', self.cat, self.url, self.remaining,
+                self.final_name, self.labels, self.password, {}, '', self.cat, self.url, self.remaining,
                 self.bytes, self.avg_stamp, self.avg_date, self.finished_files if full else [],
                 self.files if full else [], queued_files, self.status, self.priority,
                 self.bytes_missing, self.direct_unpacker.get_formatted_stats() if self.direct_unpacker else 0)

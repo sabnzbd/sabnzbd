@@ -471,6 +471,7 @@ function QueueListModel(parent) {
 function QueueModel(parent, data) {
     var self = this;
     self.parent = parent;
+    self.rawLabels = []
 
     // Job info
     self.id = data.nzo_id;
@@ -478,6 +479,7 @@ function QueueModel(parent, data) {
     self.password = ko.observable(data.password);
     self.index = ko.observable(data.index);
     self.status = ko.observable(data.status);
+    self.labels = ko.observableArray(data.labels);
     self.isGrabbing = ko.observable(data.status == 'Grabbing' || data.avg_age == '-')
     self.isFetchingBlocks = data.status == 'Fetching' || data.priority == 'Repair' // No need to update
     self.totalMB = ko.observable(parseFloat(data.mb));
@@ -610,6 +612,14 @@ function QueueModel(parent, data) {
         self.unpackopts(parseInt(data.unpackopts)) // UnpackOpts fails if not parseInt'd!
         self.pausedStatus(data.status == 'Paused');
         self.timeLeft(data.timeleft);
+
+        // Did the label-list change?
+        // Otherwise KO will send updates to all texts during refresh()
+        if(self.rawLabels != data.labels.toString()) {
+            // Update
+            self.labels(data.labels);
+            self.rawLabels = data.labels.toString();
+        }
     };
 
     // Pause individual download

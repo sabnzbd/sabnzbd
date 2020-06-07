@@ -265,7 +265,7 @@ class NzbQueue:
             # Abort any ongoing unpacking if the name changed (dirs change)
             nzo.abort_direct_unpacker()
             if not nzo.futuretype:
-                nzo.set_final_name_pw(name, password)
+                nzo.set_final_name_and_scan_password(name, password)
             else:
                 # Reset url fetch wait time
                 nzo.url_wait = None
@@ -388,7 +388,7 @@ class NzbQueue:
         nzo_ids = []
         search = safe_lower(search)
         for nzo_id, nzo in self.__nzo_table.items():
-            if not search or search in nzo.final_name_pw_clean.lower():
+            if not search or search in nzo.final_name.lower():
                 nzo_ids.append(nzo_id)
         return self.remove_multiple(nzo_ids)
 
@@ -776,7 +776,7 @@ class NzbQueue:
                 if n < start:
                     bytes_left_previous_page += b_left
 
-            if (not search) or search in nzo.final_name_pw_clean.lower():
+            if (not search) or search in nzo.final_name.lower():
                 if (not limit) or (start <= n < start + limit):
                     pnfo_list.append(nzo.gather_info())
                 n += 1

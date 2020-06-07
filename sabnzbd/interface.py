@@ -717,17 +717,14 @@ class NzoPage:
                 cat = pnfo.category
                 if not cat:
                     cat = 'None'
-                filename_pw = nzo.final_name_pw_clean
-                filename = nzo.final_name
-                priority = pnfo.priority
 
                 slot['nzo_id'] = str(nzo_id)
                 slot['cat'] = cat
-                slot['filename'] = filename_pw
-                slot['filename_clean'] = filename
+                slot['filename'] = nzo.final_name
+                slot['filename_clean'] = nzo.final_name
                 slot['password'] = nzo.password or ''
                 slot['script'] = script
-                slot['priority'] = str(priority)
+                slot['priority'] = str(pnfo.priority)
                 slot['unpackopts'] = str(unpackopts)
                 info['index'] = n
                 break
