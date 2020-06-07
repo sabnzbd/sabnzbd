@@ -44,21 +44,27 @@ def do_socket_connect(queue, ip, PORT, SSL, ipv4delay):
 
         s.settimeout(3)
         if not SSL:
-            # Connect ...
-            s.connect((ip, PORT))
-            # ... and close
-            s.close()
+            try:
+                # Connect ...
+                s.connect((ip, PORT))
+            finally:
+                # always close
+                s.close()
         else:
-            # WRAP SOCKET
+            # SSL, so wrap socket
             wrappedSocket = ssl.wrap_socket(s)
-            # CONNECT
-            wrappedSocket.connect((ip, PORT))
-            # CLOSE SOCKET CONNECTION
-            wrappedSocket.close()
+            try:
+                # CONNECT
+                wrappedSocket.connect((ip, PORT))
+            finally:
+                # CLOSE SOCKET CONNECTION
+                wrappedSocket.close()
+
         queue.put((ip, True))
         if DEBUG:
             logging.debug("connect to %s OK", ip)
     except:
+        # We got an exception, so no succesfull connect on IP & port:
         queue.put((ip, False))
         if DEBUG:
             logging.debug("connect to %s not OK", ip)
