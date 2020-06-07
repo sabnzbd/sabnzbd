@@ -29,7 +29,7 @@ from tests.testhelper import *
 class SABnzbdDownloadFlow(SABnzbdBaseTest):
     def is_server_configured(self):
         """ Check if the wizard was already performed.
-            If not: run the wizard and start sabnews!
+            If not: run the wizard!
         """
         with open(os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"), "r") as config_file:
             if SAB_NEWSSERVER_HOST not in config_file.read():
@@ -93,7 +93,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
 
         # We wait for 30 seconds to let it complete
-        for _ in range(120):
+        for _ in range(30):
             try:
                 # Locate resulting row
                 result_row = self.driver.find_element_by_xpath(
@@ -120,7 +120,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.is_server_configured()
         self.add_test_nzb("basic_rar5", "testfile.bin")
 
-    @pytest.mark.skip(reason="Fails due to problem with sabnews")
+    @pytest.mark.skip(reason="Fails due to problem with SABNews")
     def test_download_unicode_rar(self):
         self.is_server_configured()
         self.add_test_nzb("http://sabnzbd.org/tests/unicode_rar.nzb", "\u4f60\u597d\u4e16\u754c.bin")

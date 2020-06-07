@@ -25,7 +25,7 @@ Run sabnews.py -h for parameters!
 import os
 import re
 import time
-import zlib
+import sabyenc3
 import argparse
 import asyncio
 import logging
@@ -109,31 +109,12 @@ class NewsServerProtocol(asyncio.Protocol):
             inp_file.seek(start)
             inp_buffer = inp_file.read(size)
 
-        # Calculate CRC of input
-        crc = zlib.crc32(inp_buffer) & 0xFFFFFFFF
-
-        # yEnc-encoder
-        line_size = 0
-        crc = 0
-        for ch in inp_buffer:
-            # Write special chars
-            out_ch = (ch + 42) % 256
-            if out_ch in YENC_ESCAPE:
-                self.transport.write(b"=")
-                line_size += 1
-                out_ch = (out_ch + 64) % 256
-
-            # Write regular chars
-            self.transport.write(bytes([out_ch]))
-            line_size += 1
-
-            # Check line-size
-            if line_size and not line_size >= 128:
-                self.transport.write(b"\r\n")
-                line_size = 0
+        # Encode data
+        output_string, crc = sabyenc3.encode(inp_buffer)
+        self.transport.write(output_string)
 
         # Write footer
-        self.transport.write(b"=yend size=%d part=%d pcrc32=%08x\r\n" % (size, part, crc))
+        self.transport.write(b"\r\n=yend size=%d part=%d pcrc32=%08x\r\n" % (size, part, crc))
         self.transport.write(b".\r\n")
 
     def close_connection(self):
@@ -186,7 +167,7 @@ def create_nzb(nzb_file=None, nzb_dir=None):
 
         for fl in files_for_nzb:
             nzb.write(
-                '<file poster="sabnews" date="%d" subject="&quot;%s&quot;">\n' % (current_time, os.path.basename(fl))
+                '<file poster="SABNews" date="%d" subject="&quot;%s&quot;">\n' % (current_time, os.path.basename(fl))
             )
             nzb.write("<groups><group>alt.binaries.test</group></groups>\n")
             nzb.write("<segments>\n")
