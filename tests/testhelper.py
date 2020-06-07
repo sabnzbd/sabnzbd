@@ -119,12 +119,12 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
 
 
 def start_sabnews():
-    """ Start sabnews and forget about it """
+    """ Start SABNews and forget about it """
     return subprocess.Popen([sys.executable, "%s/sabnews.py" % SAB_BASE_DIR])
 
 
 def create_nzb(nzb_dir):
-    """ Create NZB from directory using sabnews """
+    """ Create NZB from directory using SABNews """
     nzb_dir_full = os.path.join(SAB_BASE_DIR, "data", nzb_dir)
     return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full)
 
@@ -162,9 +162,10 @@ class SABnzbdBaseTest(unittest.TestCase):
             # If something else fails, this can cause very non-informative long tracebacks
             pass
 
-        # Kill sabnews
+        # Kill SABNews
         try:
             cls.sabnews.kill()
+            cls.sabnews.communicate()
         except:
             pass
 
