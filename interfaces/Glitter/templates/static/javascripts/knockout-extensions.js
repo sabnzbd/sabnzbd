@@ -143,17 +143,17 @@ $(document).bind('dragover', function(e) {
     };
 })(ko);
 
-// knockout-sortable 0.11.0 | (c) 2015 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
+// knockout-sortable 1.2.0 | (c) 2019 Ryan Niemeyer |  http://www.opensource.org/licenses/mit-license
 ;(function(factory) {
     if (typeof define === "function" && define.amd) {
         // AMD anonymous module
-        define(["knockout", "jquery", "jquery-ui/sortable", "jquery-ui/draggable"], factory);
+        define(["knockout", "jquery", "jquery-ui/ui/widgets/sortable", "jquery-ui/ui/widgets/draggable"], factory);
     } else if (typeof require === "function" && typeof exports === "object" && typeof module === "object") {
         // CommonJS module
         var ko = require("knockout"),
             jQuery = require("jquery");
-        require("jquery-ui/sortable");
-        require("jquery-ui/draggable");
+        require("jquery-ui/ui/widgets/sortable");
+        require("jquery-ui/ui/widgets/draggable");
         factory(ko, jQuery);
     } else {
         // No module loader (plain <script> tag) - put directly in global namespace
@@ -185,13 +185,16 @@ $(document).bind('dragover', function(e) {
     //prepare the proper options for the template binding
     var prepareTemplateOptions = function(valueAccessor, dataName) {
         var result = {},
-            options = unwrap(valueAccessor()) || {},
+            options = {},
             actualAfterRender;
 
         //build our options to pass to the template engine
-        if (options.data) {
+        if (ko.utils.peekObservable(valueAccessor()).data) {
+            options = unwrap(valueAccessor() || {});
             result[dataName] = options.data;
-            result.name = options.template;
+            if (options.hasOwnProperty("template")) {
+                result.name = options.template;
+            }
         } else {
             result[dataName] = valueAccessor();
         }
@@ -226,7 +229,7 @@ $(document).bind('dragover', function(e) {
         var unwrapped = unwrap(items);
 
         if (unwrapped) {
-            for (var i = 0; i < index; i++) {
+            for (var i = 0; i <= index; i++) {
                 //add one for every destroyed item we find before the targetIndex in the target array
                 if (unwrapped[i] && unwrap(unwrapped[i]._destroy)) {
                     index++;
@@ -300,15 +303,30 @@ $(document).bind('dragover', function(e) {
             startActual = sortable.options.start;
             updateActual = sortable.options.update;
 
+            //ensure draggable table row cells maintain their width while dragging (unless a helper is provided)
+            if ( !sortable.options.helper ) {
+                sortable.options.helper = function(e, ui) {
+                    if (ui.is("tr")) {
+                        ui.children().each(function() {
+                            $(this).width($(this).width());
+                        });
+                    }
+                    return ui;
+                };
+            }
+
             //initialize sortable binding after template binding has rendered in update function
             var createTimeout = setTimeout(function() {
                 var dragItem;
+                var originalReceive = sortable.options.receive;
+
                 $element.sortable(ko.utils.extend(sortable.options, {
                     start: function(event, ui) {
                         //track original index
                         var el = ui.item[0];
                         dataSet(el, INDEXKEY, ko.utils.arrayIndexOf(ui.item.parent().children(), el));
-                        // Add class to parent for active sorting
+
+                        // SABnzbd-edit: Add class to parent for active sorting
                         $(el).parent().parent().addClass('table-active-sorting')
 
                         //make sure that fields have a chance to update model
@@ -318,6 +336,11 @@ $(document).bind('dragover', function(e) {
                         }
                     },
                     receive: function(event, ui) {
+                        //optionally apply an existing receive handler
+                        if (typeof originalReceive === "function") {
+                            originalReceive.call(this, event, ui);
+                        }
+
                         dragItem = dataGet(ui.item[0], DRAGKEY);
                         if (dragItem) {
                             //copy the model item, if a clone option is provided
@@ -337,6 +360,9 @@ $(document).bind('dragover', function(e) {
                             parentEl = ui.item.parent()[0],
                             item = dataGet(el, ITEMKEY) || dragItem;
 
+                        if (!item) {
+                            $(el).remove();
+                        }
                         dragItem = null;
 
                         //make sure that moves only run once, as update fires on multiple containers
@@ -385,22 +411,73 @@ $(document).bind('dragover', function(e) {
                                 return;
                             }
 
-                            //do the actual move
-                            if (targetIndex >= 0) {
-                                if (sourceParent) {
-                                    sourceParent.splice(sourceIndex, 1);
+                            //if the strategy option is unset or false, employ the order strategy involving removal and insertion of items
+                            if (!sortable.hasOwnProperty("strategyMove") || sortable.strategyMove === false) {
+                                //do the actual move
+                                if (targetIndex >= 0) {
+                                    if (sourceParent) {
+                                        sourceParent.splice(sourceIndex, 1);
 
-                                    //if using deferred updates plugin, force updates
-                                    if (ko.processAllDeferredBindingUpdates) {
-                                        ko.processAllDeferredBindingUpdates();
+                                        //if using deferred updates plugin, force updates
+                                        if (ko.processAllDeferredBindingUpdates) {
+                                            ko.processAllDeferredBindingUpdates();
+                                        }
+
+                                        //if using deferred updates on knockout 3.4, force updates
+                                        if (ko.options && ko.options.deferUpdates) {
+                                            ko.tasks.runEarly();
+                                        }
                                     }
+
+                                    targetParent.splice(targetIndex, 0, item);
                                 }
 
-                                targetParent.splice(targetIndex, 0, item);
+                                //rendering is handled by manipulating the observableArray; ignore dropped element
+                                dataSet(el, ITEMKEY, null);
                             }
+                            else { //employ the strategy of moving items
+                                if (targetIndex >= 0) {
+                                    if (sourceParent) {
+                                        if (sourceParent !== targetParent) {
+                                            // moving from one list to another
 
-                            //rendering is handled by manipulating the observableArray; ignore dropped element
-                            dataSet(el, ITEMKEY, null);
+                                            sourceParent.splice(sourceIndex, 1);
+                                            targetParent.splice(targetIndex, 0, item);
+
+                                            //rendering is handled by manipulating the observableArray; ignore dropped element
+                                            dataSet(el, ITEMKEY, null);
+                                            ui.item.remove();
+                                        }
+                                        else {
+                                            // moving within same list
+                                            var underlyingList = unwrap(sourceParent);
+
+                                            // notify 'beforeChange' subscribers
+                                            if (sourceParent.valueWillMutate) {
+                                                sourceParent.valueWillMutate();
+                                            }
+
+                                            // move from source index ...
+                                            underlyingList.splice(sourceIndex, 1);
+                                            // ... to target index
+                                            underlyingList.splice(targetIndex, 0, item);
+
+                                            // notify subscribers
+                                            if (sourceParent.valueHasMutated) {
+                                                sourceParent.valueHasMutated();
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        // drop new element from outside
+                                        targetParent.splice(targetIndex, 0, item);
+
+                                        //rendering is handled by manipulating the observableArray; ignore dropped element
+                                        dataSet(el, ITEMKEY, null);
+                                        ui.item.remove();
+                                    }
+                                }
+                            }
 
                             //if using deferred updates plugin, force updates
                             if (ko.processAllDeferredBindingUpdates) {
@@ -418,6 +495,7 @@ $(document).bind('dragover', function(e) {
                         }
                     },
                     connectWith: sortable.connectClass ? "." + sortable.connectClass : false,
+                    // SABnzbd-edit: we need placeholder
                     placeholder: 'sortable-placeholder'
                 }));
 
@@ -527,6 +605,7 @@ $(document).bind('dragover', function(e) {
         }
     };
 });
+
 
 ko.bindingHandlers.slider = {
     init: function(element, valueAccessor, allBindingsAccessor) {
