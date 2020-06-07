@@ -52,19 +52,25 @@ Specific guides to install from source are available for Windows and macOS:
     https://sabnzbd.org/wiki/installation/install-macos
     https://sabnzbd.org/wiki/installation/install-from-source-windows
 
-Only Python 3.5 and above is supported. Replace python3 with python in the commands
-below if Python 3 is the only version of Python on your system.
+Only Python 3.5 and above is supported.
 
-Install all required Python packages by running:
-    python3 -m pip install -r requirements.txt
+On Linux systems you need to install:
+    par2 unrar unzip python3-setuptools python3-pip
+
+On non-X86 platforms, for which PyPI does not provide all pre-compiled packages,
+you also need to install these development libraries (exact names might differ per platform):
+    libffi-dev libssl-dev
 
 Unpack the ZIP-file containing the SABnzbd sources to any folder of your liking.
 
-If you want multiple languages, you need to compile the translations.
+Inside the SABnzbd source directory, install all required Python packages by running:
+    python3 -m pip install -r requirements.txt
+
+If you want non-English languages, you need to compile the translations.
 Start this from a shell terminal (or command prompt):
     python3 tools/make_mo.py
 
-Start this from a shell terminal (or command prompt):
+To start SABnzbd, run this from a shell terminal (or command prompt):
     python3 -OO SABnzbd.py
 
 Within a few seconds your web browser will start and show the user interface.
