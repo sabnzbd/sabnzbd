@@ -21,6 +21,7 @@ tests.test_urlgrabber - Testing functions in urlgrabber.py
 import urllib.error
 import urllib.parse
 import pytest_httpbin
+import json
 
 import sabnzbd.urlgrabber as urlgrabber
 from sabnzbd.cfg import selftest_host
@@ -71,6 +72,11 @@ class TestBuildRequest:
             if return_body:
                 return r.read().decode("utf-8")
 
+    def _check_auth(self, headers):
+        # Ensure the Authorization header was *not* send with the HTTP request
+        json_headers = json.loads(headers.lower())
+        assert "authorization" not in json_headers["headers"].keys()
+
     def test_http_basic(self):
         # Use selftest_host for the most basic URL
         self._runner("http://" + selftest_host(), 200)
@@ -115,15 +121,18 @@ class TestBuildRequest:
         self._runner(host + path, 200)
 
     def test_http_user_only(self):
-        self._runner("http://root@" + self.httpbin.host + ":" + str(self.httpbin.port) + "/", 200)
+        h = self._runner("http://root@" + self.httpbin.host + ":" + str(self.httpbin.port) + "/headers", 200, True)
+        self._check_auth(h)
 
     def test_http_pass_only(self):
-        self._runner("http://:pass@" + self.httpbin.host + ":" + str(self.httpbin.port) + "/", 200)
+        h = self._runner("http://:pass@" + self.httpbin.host + ":" + str(self.httpbin.port) + "/headers", 200, True)
+        self._check_auth(h)
 
     def test_http_userpass_empty(self):
         # Add colon and at-sign but no username or password
         host = "http://:@" + self.httpbin.host + ":" + str(self.httpbin.port)
-        self._runner(host + "/anything/here/have/some.file", 200)
+        h = self._runner(host + "/headers", 200, True)
+        self._check_auth(h)
 
     def test_http_params_etc(self):
         self._runner(self.httpbin.url + "/anything/test/this.html?urlgrabber=test#says_hi", 200)
