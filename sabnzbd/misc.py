@@ -289,7 +289,7 @@ def get_serv_parms(service):
             if name == _SERVICE_PARM:
                 break
         winreg.CloseKey(key)
-    except WindowsError:
+    except OSError:
         pass
 
     # Always add the base program
@@ -312,7 +312,7 @@ def set_serv_parms(service, args):
         key = winreg.CreateKey(winreg.HKEY_LOCAL_MACHINE, _SERVICE_KEY + service)
         winreg.SetValueEx(key, _SERVICE_PARM, None, winreg.REG_MULTI_SZ, serv)
         winreg.CloseKey(key)
-    except WindowsError:
+    except OSError:
         return False
     return True
 

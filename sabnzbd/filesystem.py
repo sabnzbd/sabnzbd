@@ -705,13 +705,13 @@ def renamer(old, new):
                     logging.debug("Could not rename, trying move for %s to %s", old, new)
                     shutil.move(old, new)
                 return
-            except WindowsError as err:
+            except OSError as err:
                 logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
-                if err.errno == 17:
+                if err.winerror == 17:
                     # Error 17 - Rename can't move to different disk
                     # Jump to moving with shutil.move
                     retries -= 3
-                elif err.errno == 32:
+                elif err.winerror == 32:
                     # Error 32 - Used by another process
                     logging.debug("File busy, retrying rename %s to %s", old, new)
                     retries -= 1
@@ -719,7 +719,7 @@ def renamer(old, new):
                     time.sleep(2)
                 else:
                     raise
-        raise WindowsError("Failed to rename")
+        raise OSError("Failed to rename")
     else:
         shutil.move(old, new)
 
@@ -740,15 +740,15 @@ def remove_dir(path):
             try:
                 os.rmdir(path)
                 return
-            except WindowsError as err:
+            except OSError as err:
                 # In use by another process
-                if err.errno == 32:
+                if err.winerror == 32:
                     logging.debug("Retry delete %s", path)
                     retries -= 1
                 else:
                     raise
             time.sleep(3)
-        raise WindowsError("Failed to remove")
+        raise OSError("Failed to remove")
     else:
         os.rmdir(path)
 

@@ -117,7 +117,7 @@ class SABTrayThread(SysTrayIconThread):
     def opencomplete(self, icon):
         try:
             os.startfile(cfg.complete_dir.get_path())
-        except WindowsError:
+        except OSError:
             pass
 
     # menu handler

@@ -1072,7 +1072,7 @@ def one_file_or_folder(folder):
             if len(cont) == 1:
                 folder = os.path.join(folder, cont[0])
                 folder = one_file_or_folder(folder)
-        except WindowsError:
+        except OSError:
             # Can occur on paths it doesn't like, for example "C:"
             pass
     return folder

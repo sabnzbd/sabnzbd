@@ -51,7 +51,7 @@ def get_connection_info(user=True):
                 url = value
 
         winreg.CloseKey(key)
-    except WindowsError:
+    except OSError:
         pass
     finally:
         winreg.CloseKey(hive)
@@ -77,7 +77,7 @@ def set_connection_info(url, user=True):
         winreg.SetValueEx(mykey, "url", None, winreg.REG_SZ, url)
         winreg.CloseKey(mykey)
         winreg.CloseKey(key)
-    except WindowsError:
+    except OSError:
         if user:
             set_connection_info(url, user=False)
     finally:
@@ -92,7 +92,7 @@ def del_connection_info(user=True):
         key = winreg.OpenKey(hive, keypath)
         winreg.DeleteKey(key, "api")
         winreg.CloseKey(key)
-    except WindowsError:
+    except OSError:
         if user:
             del_connection_info(user=False)
     finally:
@@ -110,7 +110,7 @@ def get_install_lng():
             if name == "Installer Language":
                 lng = value
         winreg.CloseKey(key)
-    except WindowsError:
+    except OSError:
         pass
     finally:
         winreg.CloseKey(hive)
