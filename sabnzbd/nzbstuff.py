@@ -767,14 +767,14 @@ class NzbObject(TryList):
             # Raise error, so it's not added
             raise TypeError
 
-    def update_download_stats(self, bps, serverid, bytes):
+    def update_download_stats(self, bps, serverid, bytes_received):
         if bps:
             self.avg_bps_total += bps / 1024
             self.avg_bps_freq += 1
         if serverid in self.servercount:
-            self.servercount[serverid] += bytes
+            self.servercount[serverid] += bytes_received
         else:
-            self.servercount[serverid] = bytes
+            self.servercount[serverid] = bytes_received
 
     @synchronized(NZO_LOCK)
     def remove_nzf(self, nzf):
@@ -1559,8 +1559,8 @@ class NzbObject(TryList):
     def update_rating(self):
         if cfg.rating_enable():
             try:
-                def _get_first_meta(type):
-                    values = self.nzo_info.get('x-oznzb-rating-' + type, None) or self.nzo_info.get('x-rating-' + type, None)
+                def _get_first_meta(rating_type):
+                    values = self.nzo_info.get('x-oznzb-rating-' + rating_type, None) or self.nzo_info.get('x-rating-' + rating_type, None)
                     return values[0] if values and isinstance(values, list) else values
                 rating_types = ['url', 'host', 'video', 'videocnt', 'audio', 'audiocnt', 'voteup',
                                 'votedown', 'spam', 'confirmed-spam', 'passworded', 'confirmed-passworded']

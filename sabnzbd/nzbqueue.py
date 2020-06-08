@@ -114,7 +114,7 @@ class NzbQueue:
                             pass
 
     @NzbQueueLocker
-    def scan_jobs(self, all=False, action=True):
+    def scan_jobs(self, all_jobs=False, action=True):
         """ Scan "incomplete" for missing folders,
             'all' is True: Include active folders
             'action' is True, do the recovery action
@@ -122,7 +122,7 @@ class NzbQueue:
         """
         result = []
         # Folders from the download queue
-        if all:
+        if all_jobs:
             registered = []
         else:
             registered = [nzo.work_name for nzo in self.__nzo_list]

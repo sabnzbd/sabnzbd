@@ -1059,7 +1059,7 @@ class ConfigPage:
             new[svr] = {}
         conf['servers'] = new
 
-        conf['folders'] = NzbQueue.do.scan_jobs(all=False, action=False)
+        conf['folders'] = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
 
         template = Template(file=os.path.join(sabnzbd.WEB_DIR_CONFIG, 'config.tmpl'),
                             searchList=[conf], compilerSettings=CHEETAH_DIRECTIVES)
@@ -2288,7 +2288,7 @@ def orphan_delete(kwargs):
 
 
 def orphan_delete_all():
-    paths = NzbQueue.do.scan_jobs(all=False, action=False)
+    paths = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
     for path in paths:
         kwargs = {'name': path}
         orphan_delete(kwargs)
@@ -2303,7 +2303,7 @@ def orphan_add(kwargs):
 
 
 def orphan_add_all():
-    paths = NzbQueue.do.scan_jobs(all=False, action=False)
+    paths = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
     for path in paths:
         kwargs = {'name': path}
         orphan_add(kwargs)

@@ -458,9 +458,9 @@ def pause_int():
             val = abs(val)
         else:
             sign = ''
-        min = int(val / 60)
+        mins = int(val / 60)
         sec = int(val - min * 60)
-        return "%s%d:%02d" % (sign, min, sec)
+        return "%s%d:%02d" % (sign, mins, sec)
 
 
 def pause_check():

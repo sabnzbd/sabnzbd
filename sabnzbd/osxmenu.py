@@ -368,11 +368,11 @@ class SABnzbdDelegate(NSObject):
                 for pnfo in pnfo_list:
                     bytesleft = pnfo.bytes_left / MEBI
                     bytesleftprogess += pnfo.bytes_left
-                    bytes = pnfo.bytes / MEBI
+                    bytes_total = pnfo.bytes / MEBI
                     nzo_id = pnfo.nzo_id
                     timeleft = self.calc_timeleft_(bytesleftprogess, BPSMeter.do.bps)
 
-                    job = "%s\t(%d/%d MB) %s" % (pnfo.filename, bytesleft, bytes, timeleft)
+                    job = "%s\t(%d/%d MB) %s" % (pnfo.filename, bytesleft, bytes_total, timeleft)
                     menu_queue_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(job, '', '')
                     self.menu_queue.addItem_(menu_queue_item)
 

@@ -144,11 +144,11 @@ class Assembler(Thread):
                         # Parse par2 files, cloaked or not
                         nzo.handle_par2(nzf, filepath)
 
-                    filter, reason = nzo_filtered_by_rating(nzo)
-                    if filter == 1:
+                    filter_output, reason = nzo_filtered_by_rating(nzo)
+                    if filter_output == 1:
                         logging.warning(remove_warning_label(T('WARNING: Paused job "%s" because of rating (%s)')), nzo.final_name, reason)
                         nzo.pause()
-                    elif filter == 2:
+                    elif filter_output == 2:
                         logging.warning(remove_warning_label(T('WARNING: Aborted job "%s" because of rating (%s)')), nzo.final_name, reason)
                         nzo.fail_msg = T('Aborted, rating filter matched (%s)') % reason
                         sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)

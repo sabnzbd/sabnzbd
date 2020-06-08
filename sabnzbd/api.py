@@ -663,7 +663,7 @@ def _api_osx_icon(name, output, kwargs):
 
 def _api_rescan(name, output, kwargs):
     """ API: accepts output """
-    NzbQueue.do.scan_jobs(all=False, action=True)
+    NzbQueue.do.scan_jobs(all_jobs=False, action=True)
     return report(output)
 
 
@@ -1159,7 +1159,7 @@ def build_status(skip_dashboard=False, output=None):
     info['logfile'] = sabnzbd.LOGFILE
     info['weblogfile'] = sabnzbd.WEBLOGFILE
     info['loglevel'] = str(cfg.log_level())
-    info['folders'] = NzbQueue.do.scan_jobs(all=False, action=False)
+    info['folders'] = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
     info['configfn'] = config.get_filename()
 
     # Dashboard: Speed of System
@@ -1282,13 +1282,13 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     for pnfo in pnfo_list:
         nzo_id = pnfo.nzo_id
         bytesleft = pnfo.bytes_left
-        bytes = pnfo.bytes
+        bytes_total = pnfo.bytes
         average_date = pnfo.avg_date
         is_propagating = (pnfo.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time()
         status = pnfo.status
         priority = pnfo.priority
         mbleft = (bytesleft / MEBI)
-        mb = (bytes / MEBI)
+        mb = (bytes_total / MEBI)
 
         slot = {}
         slot['index'] = n
@@ -1302,7 +1302,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot['cat'] = pnfo.category if pnfo.category else 'None'
         slot['mbleft'] = "%.2f" % mbleft
         slot['mb'] = "%.2f" % mb
-        slot['size'] = format_bytes(bytes)
+        slot['size'] = format_bytes(bytes_total)
         slot['sizeleft'] = format_bytes(bytesleft)
         slot['percentage'] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else '0'
         slot['mbmissing'] = "%.2f" % (pnfo.bytes_missing / MEBI)
@@ -1593,14 +1593,14 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     qnfo = NzbQueue.do.queue_info(search=search, start=start, limit=limit)
 
     bytesleft = qnfo.bytes_left
-    bytes = qnfo.bytes
+    bytes_total = qnfo.bytes
 
     header['kbpersec'] = "%.2f" % (bytespersec / KIBI)
     header['speed'] = to_units(bytespersec)
     header['mbleft'] = "%.2f" % (bytesleft / MEBI)
-    header['mb'] = "%.2f" % (bytes / MEBI)
+    header['mb'] = "%.2f" % (bytes_total / MEBI)
     header['sizeleft'] = format_bytes(bytesleft)
-    header['size'] = format_bytes(bytes)
+    header['size'] = format_bytes(bytes_total)
     header['noofslots_total'] = qnfo.q_fullsize
 
     if Downloader.do.paused or Downloader.do.postproc:

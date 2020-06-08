@@ -424,10 +424,10 @@ class NewsWrapper:
         self.data = []
         self.last_line = ''
 
-    def hard_reset(self, wait=True, quit=True):
+    def hard_reset(self, wait=True, send_quit=True):
         if self.nntp:
             try:
-                if quit:
+                if send_quit:
                     self.nntp.sock.sendall(b'QUIT\r\n')
                     time.sleep(0.1)
                 self.nntp.sock.close()

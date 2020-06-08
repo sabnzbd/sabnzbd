@@ -715,13 +715,13 @@ def commandline_handler():
     if len(sys.argv) > 1 and \
        'sabnzbd' in sys.argv[1].lower() and \
        not sys.argv[1].startswith('-'):
-        slice = 2
+        slice_start = 2
     else:
-        slice = 1
+        slice_start = 1
 
     # Prepend options from env-variable to options
     info = os.environ.get('SABnzbd', '').split()
-    info.extend(sys.argv[slice:])
+    info.extend(sys.argv[slice_start:])
 
     try:
         opts, args = getopt.getopt(info, "phdvncwl:s:f:t:b:2:",

@@ -254,20 +254,20 @@ class RSSQueue:
         rePrios = []
         reScripts = []
         reEnabled = []
-        for filter in feeds.filters():
-            reCat = filter[0]
+        for feed_filter in feeds.filters():
+            reCat = feed_filter[0]
             if defCat in ("", "*"):
                 reCat = None
             reCats.append(reCat)
-            rePPs.append(filter[1])
-            reScripts.append(filter[2])
-            reTypes.append(filter[3])
-            if filter[3] in ("<", ">", "F", "S"):
-                regexes.append(filter[4])
+            rePPs.append(feed_filter[1])
+            reScripts.append(feed_filter[2])
+            reTypes.append(feed_filter[3])
+            if feed_filter[3] in ("<", ">", "F", "S"):
+                regexes.append(feed_filter[4])
             else:
-                regexes.append(convert_filter(filter[4]))
-            rePrios.append(filter[5])
-            reEnabled.append(filter[6] != "0")
+                regexes.append(convert_filter(feed_filter[4]))
+            rePrios.append(feed_filter[5])
+            reEnabled.append(feed_filter[6] != "0")
         regcount = len(regexes)
 
         # Set first if this is the very first scan of this URI
