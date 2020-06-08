@@ -68,9 +68,9 @@ import sabnzbd.emailer
 ##############################################################################
 # API error messages
 ##############################################################################
-_MSG_NO_VALUE = 'expect one parameter'
-_MSG_NO_VALUE2 = 'expect two parameters'
-_MSG_INT_VALUE = 'expect integer value'
+_MSG_NO_VALUE = 'expects one parameter'
+_MSG_NO_VALUE2 = 'expects two parameters'
+_MSG_INT_VALUE = 'expects integer value'
 _MSG_NO_ITEM = 'item does not exist'
 _MSG_NOT_IMPLEMENTED = 'not implemented'
 _MSG_NO_FILE = 'no file given'
@@ -343,7 +343,7 @@ def _api_addfile(name, output, kwargs):
             cat = cat_convert(xcat)
         res = sabnzbd.add_nzbfile(name, kwargs.get('pp'), kwargs.get('script'), cat,
                                   kwargs.get('priority'), kwargs.get('nzbname'))
-        return report(output, keyword='', data={'status': res[0] == 0, 'nzo_ids': res[1]}, compat=True)
+        return report(output, keyword='', data={'status': res[0] == 0, 'nzo_ids': res[1]})
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -377,8 +377,6 @@ def _api_cancel_pp(name, output, kwargs):
 
 def _api_addlocalfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
-    if name and isinstance(name, list):
-        name = name[0]
     if name:
         if os.path.exists(name):
             fn = get_filename(name)
@@ -405,7 +403,7 @@ def _api_addlocalfile(name, output, kwargs):
         else:
             logging.info('API-call addlocalfile: file "%s" not found', name)
             return report(output, _MSG_NO_PATH)
-        return report(output, keyword='', data={'status': res[0] == 0, 'nzo_ids': res[1]}, compat=True)
+        return report(output, keyword='', data={'status': res[0] == 0, 'nzo_ids': res[1]})
     else:
         logging.info('API-call addlocalfile: no file name given')
         return report(output, _MSG_NO_VALUE)
@@ -962,12 +960,11 @@ def api_level(cmd, name):
     return 4
 
 
-def report(output, error=None, keyword='value', data=None, compat=False):
+def report(output, error=None, keyword='value', data=None):
     """ Report message in json, xml or plain text
         If error is set, only an status/error report is made.
         If no error and no data, only a status report is made.
         Else, a data report is made (optional 'keyword' for outer XML section).
-        'compat' is a special case for compatibility for ascii ouput
     """
     if output == 'json':
         content = "application/json;charset=UTF-8"
@@ -1000,7 +997,7 @@ def report(output, error=None, keyword='value', data=None, compat=False):
         content = "text/plain"
         if error:
             response = "error: %s\n" % error
-        elif compat or data is None:
+        elif not data:
             response = 'ok\n'
         else:
             response = '%s\n' % str(data)
