@@ -328,15 +328,13 @@ def _build_request(url):
     # Adapted from python-feedparser
     user_passwd = None
     u = urllib.parse.urlparse(url)
-    if u.username or u.password:
+    if u.username is not None or u.password is not None:
         if u.username and u.password:
             user_passwd = '%s:%s' % (u.username, u.password)
         host_port = u.hostname
         if u.port:
             host_port += ':' + str(u.port)
-        url = urllib.parse.urlunparse(
-            urllib.parse.ParseResult(u.scheme, host_port, u.path, u.params, u.query, u.fragment)
-        )
+        url = urllib.parse.urlunparse(u._replace(netloc=host_port))
 
     # Start request
     req = urllib.request.Request(url)
