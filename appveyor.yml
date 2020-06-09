@@ -1,9 +1,6 @@
 environment:
-  # We only use 64bit to test anyway
+  # We only test the latest Python version
   matrix:
-    - PYTHON: "C:\\Python35-x64"
-    - PYTHON: "C:\\Python36-x64"
-    - PYTHON: "C:\\Python37-x64"
     - PYTHON: "C:\\Python38-x64"
 
 install:

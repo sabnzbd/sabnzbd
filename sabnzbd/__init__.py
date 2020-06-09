@@ -966,7 +966,7 @@ def save_admin(data, data_id):
 
 def load_admin(data_id, remove=False, silent=False):
     """ Read data in admin folder in specified format """
-    logging.debug("[%s] Loading data for %s from %s", misc.caller_name(), data_id)
+    logging.debug("[%s] Loading data for %s", misc.caller_name(), data_id)
     return load_data(data_id, cfg.admin_dir.get_path(), remove=remove, silent=silent)
 
 

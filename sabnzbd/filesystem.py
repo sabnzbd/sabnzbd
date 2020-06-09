@@ -525,7 +525,7 @@ def create_all_dirs(path, umask=False):
             mask = int(sabnzbd.cfg.umask(), 8)
 
         # Use python functions to create the directory
-        logging.info("Creating directories: %s (mask=%s)", (path, mask))
+        logging.info("Creating directories: %s (mask=%s)", path, mask)
         os.makedirs(path, mode=mask, exist_ok=True)
         return path
     except OSError:
