@@ -95,12 +95,12 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         # We wait for 30 seconds to let it complete
         for _ in range(30):
             try:
-                # Locate resulting row
-                result_row = self.driver.find_element_by_xpath(
-                    '//*[@id="history-tab"]//tr[td//text()[contains(., "%s")]]' % test_job_name
-                )
-                # Did it complete?
-                if result_row.find_element_by_css_selector("td.status").text == "Completed":
+                # Locate status of our job
+                status_text = self.driver.find_element_by_xpath(
+                    '//div[@id="history-tab"]//tr[td/div/span[contains(text(), "%s")]]/td[contains(@class, "status")]'
+                    % test_job_name
+                ).text
+                if status_text == "Completed":
                     break
                 else:
                     time.sleep(1)
@@ -109,23 +109,19 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         else:
             self.fail("Download did not complete")
 
-        # Check if the file exists on disk
+        # Check if the expected file exists on disk
         file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
         self.assertTrue(os.path.exists(file_to_find), "File not found")
-
-        # Shutil can't handle unicode, need to remove the file here
-        os.remove(file_to_find)
 
     def test_download_basic_rar5(self):
         self.is_server_configured()
         self.add_test_nzb("basic_rar5", "testfile.bin")
 
-    @pytest.mark.skip(reason="Fails due to problem with SABNews")
     def test_download_unicode_rar(self):
         self.is_server_configured()
-        self.add_test_nzb("http://sabnzbd.org/tests/unicode_rar.nzb", "\u4f60\u597d\u4e16\u754c.bin")
+        self.add_test_nzb("unicode_rar", "我喜欢编程.bin")
 
-    def test_download_win_unicode(self):
+    def test_download_unicode_made_on_windows(self):
         self.is_server_configured()
         self.add_test_nzb("test_win_unicode", "frènch_german_demö")
 
@@ -137,7 +133,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.is_server_configured()
         self.add_test_nzb("test_zip", "testfile.bin")
 
-    @pytest.mark.skip(reason="Fails due to wrong par2-renaming. Needs fixing.")
-    def test_download_win_damaged(self):
+    def test_download_fully_obfuscated(self):
+        # This is also covered by a unit test but added to test full flow
         self.is_server_configured()
-        self.add_test_nzb("http://sabnzbd.org/tests/unicode_rar_broken.nzb", "\u4f60\u597d\u4e16\u754c.bin")
+        self.add_test_nzb("obfuscated_single_rar_set", "100k.bin")
