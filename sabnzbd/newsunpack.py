@@ -1083,7 +1083,7 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
     # Start QuickCheck
     nzo.status = Status.QUICK_CHECK
     nzo.set_action_line(T('Repair'), T('Quick Checking'))
-    qc_result = QuickCheck(setname, nzo)
+    qc_result = quick_check_set(setname, nzo)
     if qc_result:
         logging.info("Quick-check for %s is OK, skipping repair", setname)
         nzo.set_unpack_info('Repair', T('[%s] Quick Check OK') % setname)
@@ -2102,7 +2102,7 @@ def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=
     return joinables, zips, rars, sevens, ts
 
 
-def QuickCheck(set, nzo):
+def quick_check_set(set, nzo):
     """ Check all on-the-fly md5sums of a set """
     md5pack = nzo.md5packs.get(set)
     if md5pack is None:
