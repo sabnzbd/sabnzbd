@@ -49,39 +49,7 @@ install:
 script:
   - python3 -m pytest
 
-  # Force code-style for folders that we already did, only on 1 job
-  - if [[ $TRAVIS_PYTHON_VERSION == "3.8" ]]; then
-      python3 -m black
-        scripts
-        tools
-        tests
-        sabnzbd/utils
-        sabnzbd/__init__.py
-        sabnzbd/cfg.py
-        sabnzbd/config.py
-        sabnzbd/emailer.py
-        sabnzbd/constants.py
-        sabnzbd/decorators.py
-        sabnzbd/decoder.py
-        sabnzbd/database.py
-        sabnzbd/getipaddress.py
-        sabnzbd/filesystem.py
-        sabnzbd/dirscanner.py
-        sabnzbd/postproc.py
-        sabnzbd/misc.py
-        sabnzbd/lang.py
-        sabnzbd/nzbparser.py
-        sabnzbd/notifier.py
-        sabnzbd/rss.py
-        sabnzbd/par2file.py
-        sabnzbd/version.py
-        --line-length=120
-        --target-version=py35
-        --check;
-    fi
-
 notifications:
   email:
     on_success: never
-    on_cancel: never
     on_failure: change
