@@ -38,7 +38,7 @@ install:
   - python3 -m pip install --upgrade -r tests/requirements.txt
 
 script:
-  - python3 -m pytest
+  - python3 -m pytest -s
 
 notifications:
   email:
