@@ -30,7 +30,7 @@ import argparse
 import asyncio
 import logging
 
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 
 
 # Expecting the following message-id:
