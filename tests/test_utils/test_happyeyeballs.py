@@ -19,9 +19,11 @@
 tests.test_utils.test_happyeyeballs - Testing SABnzbd happyeyeballs
 """
 
+from flaky import flaky
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
+@flaky
 class TestHappyEyeballs:
     """ Tests of happyeyeballs() against various websites/servers
         happyeyeballs() returns the quickest IP address (IPv4, or IPv6 if available end-to-end),
