@@ -20,13 +20,11 @@ tests.test_functional_downloads - Test the downloading flow
 """
 
 import random
-from flaky import flaky
 from selenium.common.exceptions import NoSuchElementException
 
 from tests.testhelper import *
 
 
-@flaky
 class SABnzbdDownloadFlow(SABnzbdBaseTest):
     def is_server_configured(self):
         """ Check if the wizard was already performed.

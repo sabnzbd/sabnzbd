@@ -217,9 +217,15 @@ class SABnzbdConfigRSS(SABnzbdBaseTest):
         # Does the page think it's a success?
         assert "Added NZB" in download_btn.text
 
-        # Let's check the queue
-        queue_result_slots = get_api_result("queue")["queue"]["slots"]
-        assert len(queue_result_slots) == 1
+        # Let's check the queue, it can take 10 seconds to fetch the URL
+        for _ in range(10):
+            queue_result_slots = get_api_result("queue")["queue"]["slots"]
+            if len(queue_result_slots) == 1:
+                break
+            time.sleep(1)
+        else:
+            # The loop never stopped, so we fail
+            pytest.fail("Did not find the RSS job in the queue")
 
         # Let's remove this thing
         get_api_result("queue", extra_arguments={"name": "delete", "value": queue_result_slots[0]["nzo_id"]})
