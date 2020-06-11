@@ -22,10 +22,12 @@ sabnzbd.sabtraylinux - System tray icon for Linux, inspired from the Windows one
 import gi
 from gi.repository import Gtk, GLib
 import logging
+
 try:
-    gi.require_version('XApp', '1.0')
+    gi.require_version("XApp", "1.0")
     from gi.repository import XApp
-    if not hasattr(XApp, 'StatusIcon'):
+
+    if not hasattr(XApp, "StatusIcon"):
         raise ImportError
     HAVE_XAPP = True
     logging.debug("XApp found: %s" % XApp)
@@ -49,9 +51,9 @@ from sabnzbd.utils.upload import add_local
 
 class StatusIcon(Thread):
     sabicons = {
-        'default': abspath('icons/logo-arrow.svg'),
-        'green': abspath('icons/logo-arrow_green.svg'),
-        'pause': abspath('icons/logo-arrow_gray.svg')
+        "default": abspath("icons/logo-arrow.svg"),
+        "green": abspath("icons/logo-arrow_green.svg"),
+        "pause": abspath("icons/logo-arrow_gray.svg"),
     }
 
     updatefreq = 1000  # ms
@@ -64,7 +66,7 @@ class StatusIcon(Thread):
         # Wait for translated texts to be loaded
         while not sabnzbd.WEBUI_READY:
             sleep(0.2)
-            logging.debug('language file not loaded, waiting')
+            logging.debug("language file not loaded, waiting")
 
         self.sabpaused = False
         if HAVE_XAPP:
@@ -73,7 +75,7 @@ class StatusIcon(Thread):
             self.statusicon = Gtk.StatusIcon()
         self.statusicon.set_name("SABnzbd")
         self.statusicon.set_visible(True)
-        self.icon = self.sabicons['default']
+        self.icon = self.sabicons["default"]
         self.refresh_icon()
         self.tooltip = "SABnzbd"
         self.refresh_tooltip()
@@ -102,14 +104,14 @@ class StatusIcon(Thread):
         speed = to_units(bpsnow)
 
         if self.sabpaused:
-            self.tooltip = T('Paused')
-            self.icon = self.sabicons['pause']
+            self.tooltip = T("Paused")
+            self.icon = self.sabicons["pause"]
         elif bytes_left > 0:
-            self.tooltip = "%sB/s %s: %sB (%s)" % (speed, T('Remaining'), mb_left, time_left)
-            self.icon = self.sabicons['green']
+            self.tooltip = "%sB/s %s: %sB (%s)" % (speed, T("Remaining"), mb_left, time_left)
+            self.icon = self.sabicons["green"]
         else:
-            self.tooltip = T('Idle')
-            self.icon = self.sabicons['default']
+            self.tooltip = T("Idle")
+            self.icon = self.sabicons["default"]
 
         self.refresh_icon()
         self.refresh_tooltip()
@@ -185,11 +187,11 @@ class StatusIcon(Thread):
             self.pause()
 
     def restart(self, icon):
-        self.hover_text = T('Restart')
+        self.hover_text = T("Restart")
         sabnzbd.trigger_restart()
 
     def shutdown(self, icon):
-        self.hover_text = T('Shutdown')
+        self.hover_text = T("Shutdown")
         sabnzbd.shutdown_program()
 
     def pause(self):

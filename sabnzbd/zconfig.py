@@ -27,6 +27,7 @@ _HOST_PORT = (None, None)
 try:
     from sabnzbd.utils import pybonjour
     from threading import Thread
+
     _HAVE_BONJOUR = True
 except:
     _HAVE_BONJOUR = False
@@ -41,16 +42,23 @@ _BONJOUR_OBJECT = None
 def hostname():
     """ Return host's pretty name """
     if sabnzbd.WIN32:
-        return os.environ.get('computername', 'unknown')
+        return os.environ.get("computername", "unknown")
     try:
         return os.uname()[1]
     except:
-        return 'unknown'
+        return "unknown"
 
 
 def _zeroconf_callback(sdRef, flags, errorCode, name, regtype, domain):
-    logging.debug('Full Bonjour-callback sdRef=%s, flags=%s, errorCode=%s, name=%s, regtype=%s, domain=%s',
-                  sdRef, flags, errorCode, name, regtype, domain)
+    logging.debug(
+        "Full Bonjour-callback sdRef=%s, flags=%s, errorCode=%s, name=%s, regtype=%s, domain=%s",
+        sdRef,
+        flags,
+        errorCode,
+        name,
+        regtype,
+        domain,
+    )
     if errorCode == pybonjour.kDNSServiceErr_NoError:
         logging.info('Registered in Bonjour as "%s" (%s)', name, domain)
 
@@ -60,7 +68,7 @@ def set_bonjour(host=None, port=None):
     global _HOST_PORT, _BONJOUR_OBJECT
 
     if not _HAVE_BONJOUR or not cfg.enable_bonjour():
-        logging.info('No Bonjour/ZeroConfig support installed')
+        logging.info("No Bonjour/ZeroConfig support installed")
         return
 
     if host is None and port is None:
@@ -72,7 +80,7 @@ def set_bonjour(host=None, port=None):
     zhost = None
     domain = None
 
-    if match_str(host, ('localhost', '127.0.', '::1')):
+    if match_str(host, ("localhost", "127.0.", "::1")):
         logging.info('Bonjour/ZeroConfig does not support "localhost"')
         # All implementations fail to implement "localhost" properly
         # A false address is published even when scope==kDNSServiceInterfaceIndexLocalOnly
@@ -83,30 +91,30 @@ def set_bonjour(host=None, port=None):
     try:
         refObject = pybonjour.DNSServiceRegister(
             interfaceIndex=scope,
-            name='SABnzbd on %s:%s' % (name, port),
-            regtype='_http._tcp',
+            name="SABnzbd on %s:%s" % (name, port),
+            regtype="_http._tcp",
             domain=domain,
             host=zhost,
             port=int(port),
-            txtRecord=pybonjour.TXTRecord({'path': cfg.url_base(),
-                                           'https': cfg.enable_https()}),
-            callBack=_zeroconf_callback)
+            txtRecord=pybonjour.TXTRecord({"path": cfg.url_base(), "https": cfg.enable_https()}),
+            callBack=_zeroconf_callback,
+        )
     except sabnzbd.utils.pybonjour.BonjourError as e:
         _BONJOUR_OBJECT = None
-        logging.debug('Failed to start Bonjour service: %s', str(e))
+        logging.debug("Failed to start Bonjour service: %s", str(e))
     except:
         _BONJOUR_OBJECT = None
-        logging.debug('Failed to start Bonjour service due to non-pybonjour related problem', exc_info=True)
+        logging.debug("Failed to start Bonjour service due to non-pybonjour related problem", exc_info=True)
     else:
         Thread(target=_bonjour_server, args=(refObject,))
         _BONJOUR_OBJECT = refObject
-        logging.debug('Successfully started Bonjour service')
+        logging.debug("Successfully started Bonjour service")
 
 
 def _bonjour_server(refObject):
     while 1:
         pybonjour.DNSServiceProcessResult(refObject)
-        logging.debug('GOT A BONJOUR CALL')
+        logging.debug("GOT A BONJOUR CALL")
 
 
 def remove_server():

@@ -44,9 +44,22 @@ import sabnzbd.notifier as notifier
 from sabnzbd.encoding import ubtou, utob
 
 
-_BAD_GZ_HOSTS = ('.zip', 'nzbsa.co.za', 'newshost.za.net')
-_RARTING_FIELDS = ('x-rating-id', 'x-rating-url', 'x-rating-host', 'x-rating-video', 'x-rating-videocnt', 'x-rating-audio', 'x-rating-audiocnt',
-    'x-rating-voteup', 'x-rating-votedown', 'x-rating-spam', 'x-rating-confirmed-spam', 'x-rating-passworded', 'x-rating-confirmed-passworded')
+_BAD_GZ_HOSTS = (".zip", "nzbsa.co.za", "newshost.za.net")
+_RARTING_FIELDS = (
+    "x-rating-id",
+    "x-rating-url",
+    "x-rating-host",
+    "x-rating-video",
+    "x-rating-videocnt",
+    "x-rating-audio",
+    "x-rating-audiocnt",
+    "x-rating-voteup",
+    "x-rating-votedown",
+    "x-rating-spam",
+    "x-rating-confirmed-spam",
+    "x-rating-passworded",
+    "x-rating-confirmed-passworded",
+)
 
 
 class URLGrabber(Thread):
@@ -69,7 +82,7 @@ class URLGrabber(Thread):
 
             # Too many tries? Cancel
             if future_nzo.url_tries > cfg.max_url_retries():
-                self.fail_to_history(future_nzo, url, T('Maximum retries'))
+                self.fail_to_history(future_nzo, url, T("Maximum retries"))
                 return
 
             future_nzo.url_wait = time.time() + when
@@ -77,12 +90,12 @@ class URLGrabber(Thread):
         self.queue.put((url, future_nzo))
 
     def stop(self):
-        logging.info('URLGrabber shutting down')
+        logging.info("URLGrabber shutting down")
         self.shutdown = True
         self.add(None, None)
 
     def run(self):
-        logging.info('URLGrabber starting up')
+        logging.info("URLGrabber starting up")
         self.shutdown = False
 
         while not self.shutdown:
@@ -104,7 +117,7 @@ class URLGrabber(Thread):
                     time.sleep(1.0)
                     continue
 
-            url = url.replace(' ', '')
+            url = url.replace(" ", "")
 
             try:
                 if future_nzo:
@@ -114,7 +127,7 @@ class URLGrabber(Thread):
                     except AttributeError:
                         deleted = True
                     if deleted:
-                        logging.debug('Dropping URL %s, job entry missing', url)
+                        logging.debug("Dropping URL %s, job entry missing", url)
                         continue
 
                 filename = None
@@ -125,7 +138,7 @@ class URLGrabber(Thread):
                 retry = True
                 fetch_request = None
 
-                logging.info('Grabbing URL %s', url)
+                logging.info("Grabbing URL %s", url)
                 try:
                     fetch_request = _build_request(url)
                 except Exception as e:
@@ -133,22 +146,22 @@ class URLGrabber(Thread):
                     error0 = str(sys.exc_info()[0]).lower()
                     error1 = str(sys.exc_info()[1]).lower()
                     logging.debug('Error "%s" trying to get the url %s', error1, url)
-                    if 'certificate_verify_failed' in error1 or 'certificateerror' in error0:
-                        msg = T('Server %s uses an untrusted HTTPS certificate') % ''
-                        msg += ' - https://sabnzbd.org/certificate-errors'
+                    if "certificate_verify_failed" in error1 or "certificateerror" in error0:
+                        msg = T("Server %s uses an untrusted HTTPS certificate") % ""
+                        msg += " - https://sabnzbd.org/certificate-errors"
                         retry = False
-                    elif 'nodename nor servname provided' in error1:
-                        msg = T('Server name does not resolve')
+                    elif "nodename nor servname provided" in error1:
+                        msg = T("Server name does not resolve")
                         retry = False
-                    elif '401' in error1 or 'unauthorized' in error1:
-                        msg = T('Unauthorized access')
+                    elif "401" in error1 or "unauthorized" in error1:
+                        msg = T("Unauthorized access")
                         retry = False
-                    elif '404' in error1:
-                        msg = T('File not on server')
+                    elif "404" in error1:
+                        msg = T("File not on server")
                         retry = False
-                    elif hasattr(e, 'headers') and 'retry-after' in e.headers:
+                    elif hasattr(e, "headers") and "retry-after" in e.headers:
                         # Catch if the server send retry (e.headers is case-INsensitive)
-                        wait = misc.int_conv(e.headers['retry-after'])
+                        wait = misc.int_conv(e.headers["retry-after"])
 
                 if fetch_request:
                     for hdr in fetch_request.headers:
@@ -157,29 +170,29 @@ class URLGrabber(Thread):
                             value = fetch_request.headers[hdr]
                         except:
                             continue
-                        if item in ('content-encoding',) and value == 'gzip':
+                        if item in ("content-encoding",) and value == "gzip":
                             gzipped = True
-                        if item in ('category_id', 'x-dnzb-category'):
+                        if item in ("category_id", "x-dnzb-category"):
                             category = value
-                        elif item in ('x-dnzb-moreinfo',):
-                            nzo_info['more_info'] = value
-                        elif item in ('x-dnzb-name',):
+                        elif item in ("x-dnzb-moreinfo",):
+                            nzo_info["more_info"] = value
+                        elif item in ("x-dnzb-name",):
                             filename = value
-                            if not filename.endswith('.nzb'):
-                                filename += '.nzb'
-                        elif item == 'x-dnzb-propername':
-                            nzo_info['propername'] = value
-                        elif item == 'x-dnzb-episodename':
-                            nzo_info['episodename'] = value
-                        elif item == 'x-dnzb-year':
-                            nzo_info['year'] = value
-                        elif item == 'x-dnzb-failure':
-                            nzo_info['failure'] = value
-                        elif item == 'x-dnzb-details':
-                            nzo_info['details'] = value
-                        elif item == 'x-dnzb-password':
-                            nzo_info['password'] = value
-                        elif item == 'retry-after':
+                            if not filename.endswith(".nzb"):
+                                filename += ".nzb"
+                        elif item == "x-dnzb-propername":
+                            nzo_info["propername"] = value
+                        elif item == "x-dnzb-episodename":
+                            nzo_info["episodename"] = value
+                        elif item == "x-dnzb-year":
+                            nzo_info["year"] = value
+                        elif item == "x-dnzb-failure":
+                            nzo_info["failure"] = value
+                        elif item == "x-dnzb-details":
+                            nzo_info["details"] = value
+                        elif item == "x-dnzb-password":
+                            nzo_info["password"] = value
+                        elif item == "retry-after":
                             wait = misc.int_conv(value)
 
                         # Rating fields
@@ -188,11 +201,11 @@ class URLGrabber(Thread):
 
                         # Get filename from Content-Disposition header
                         if not filename and "filename=" in value:
-                            filename = value[value.index("filename=") + 9:].strip(';').strip('"')
+                            filename = value[value.index("filename=") + 9 :].strip(";").strip('"')
 
                 if wait:
                     # For sites that have a rate-limiting attribute
-                    msg = ''
+                    msg = ""
                     retry = True
                     fetch_request = None
                 elif retry:
@@ -200,7 +213,7 @@ class URLGrabber(Thread):
 
                 if not fetch_request:
                     if retry:
-                        logging.info('Retry URL %s', url)
+                        logging.info("Retry URL %s", url)
                         self.add(url, future_nzo, wait)
                     else:
                         self.fail_to_history(future_nzo, url, msg)
@@ -213,56 +226,66 @@ class URLGrabber(Thread):
                     # Check if the original URL has extension
                     if url != fetch_request.url and sabnzbd.filesystem.get_ext(filename) not in VALID_NZB_FILES:
                         filename = os.path.basename(urllib.parse.unquote(fetch_request.url))
-                elif '&nzbname=' in filename:
+                elif "&nzbname=" in filename:
                     # Sometimes the filename contains the full URL, duh!
-                    filename = filename[filename.find('&nzbname=') + 9:]
+                    filename = filename[filename.find("&nzbname=") + 9 :]
 
                 pp = future_nzo.pp
                 script = future_nzo.script
                 cat = future_nzo.cat
-                if (cat is None or cat == '*') and category:
+                if (cat is None or cat == "*") and category:
                     cat = misc.cat_convert(category)
                 priority = future_nzo.priority
                 nzbname = future_nzo.custom_name
 
                 # process data
                 if gzipped:
-                    filename += '.gz'
+                    filename += ".gz"
                 if not data:
                     try:
                         data = fetch_request.read()
                     except (IncompleteRead, IOError):
-                        self.fail_to_history(future_nzo, url, T('Server could not complete request'))
+                        self.fail_to_history(future_nzo, url, T("Server could not complete request"))
                         fetch_request.close()
                         continue
                 fetch_request.close()
 
-                if b'<nzb' in data and sabnzbd.filesystem.get_ext(filename) != '.nzb':
-                    filename += '.nzb'
+                if b"<nzb" in data and sabnzbd.filesystem.get_ext(filename) != ".nzb":
+                    filename += ".nzb"
 
                 # Sanitize filename first (also removing forbidden Windows-names)
                 filename = sabnzbd.filesystem.sanitize_filename(filename)
 
                 # Write data to temp file
                 path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER, filename)
-                with open(path, 'wb') as temp_nzb:
+                with open(path, "wb") as temp_nzb:
                     temp_nzb.write(data)
 
                 # Check if nzb file
                 if sabnzbd.filesystem.get_ext(filename) in VALID_NZB_FILES:
-                    res = dirscanner.process_single_nzb(filename, path, pp=pp, script=script, cat=cat, priority=priority,
-                                                        nzbname=nzbname, nzo_info=nzo_info, url=future_nzo.url, keep=False,
-                                                        nzo_id=future_nzo.nzo_id)[0]
+                    res = dirscanner.process_single_nzb(
+                        filename,
+                        path,
+                        pp=pp,
+                        script=script,
+                        cat=cat,
+                        priority=priority,
+                        nzbname=nzbname,
+                        nzo_info=nzo_info,
+                        url=future_nzo.url,
+                        keep=False,
+                        nzo_id=future_nzo.nzo_id,
+                    )[0]
                     if res:
                         if res == -2:
-                            logging.info('Incomplete NZB, retry after 5 min %s', url)
+                            logging.info("Incomplete NZB, retry after 5 min %s", url)
                             when = 300
                         elif res == -1:
                             # Error, but no reason to retry. Warning is already given
                             NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
                             continue
                         else:
-                            logging.info('Unknown error fetching NZB, retry after 2 min %s', url)
+                            logging.info("Unknown error fetching NZB, retry after 2 min %s", url)
                             when = 120
                         self.add(url, future_nzo, when)
 
@@ -270,27 +293,36 @@ class URLGrabber(Thread):
                     # Check if a supported archive
                     status, zf, exp_ext = dirscanner.is_archive(path)
                     if status == 0:
-                        if sabnzbd.filesystem.get_ext(filename) not in ('.rar', '.zip', '.7z'):
+                        if sabnzbd.filesystem.get_ext(filename) not in (".rar", ".zip", ".7z"):
                             filename = filename + exp_ext
                             os.rename(path, path + exp_ext)
                             path = path + exp_ext
 
-                        dirscanner.process_nzb_archive_file(filename, path, pp, script, cat, priority=priority,
-                                                            nzbname=nzbname, url=future_nzo.url, keep=False,
-                                                            nzo_id=future_nzo.nzo_id)
+                        dirscanner.process_nzb_archive_file(
+                            filename,
+                            path,
+                            pp,
+                            script,
+                            cat,
+                            priority=priority,
+                            nzbname=nzbname,
+                            url=future_nzo.url,
+                            keep=False,
+                            nzo_id=future_nzo.nzo_id,
+                        )
                     else:
                         # Not a supported filetype, not an nzb (text/html ect)
                         try:
                             os.remove(fetch_request)
                         except:
                             pass
-                        logging.info('Unknown filetype when fetching NZB, retry after 30s %s', url)
+                        logging.info("Unknown filetype when fetching NZB, retry after 30s %s", url)
                         self.add(url, future_nzo, 30)
             except:
-                logging.error(T('URLGRABBER CRASHED'), exc_info=True)
+                logging.error(T("URLGRABBER CRASHED"), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
-    def fail_to_history(self, nzo, url, msg='', content=False):
+    def fail_to_history(self, nzo, url, msg="", content=False):
         """ Create History entry for failed URL Fetch
             msg: message to be logged
             content: report in history that cause is a bad NZB file
@@ -302,16 +334,16 @@ class URLGrabber(Thread):
 
         if content:
             # Bad content
-            msg = T('Unusable NZB file')
+            msg = T("Unusable NZB file")
         else:
             # Failed fetch
-            msg = T('URL Fetching failed; %s') % msg
+            msg = T("URL Fetching failed; %s") % msg
 
         # Mark as failed
         nzo.status = Status.FAILED
         nzo.fail_msg = msg
 
-        notifier.send_notification(T('URL Fetching failed; %s') % '', '%s\n%s' % (msg, url), 'other', nzo.cat)
+        notifier.send_notification(T("URL Fetching failed; %s") % "", "%s\n%s" % (msg, url), "other", nzo.cat)
         if cfg.email_endjob() > 0:
             emailer.badfetch_mail(msg, url)
 
@@ -330,21 +362,21 @@ def _build_request(url):
     u = urllib.parse.urlparse(url)
     if u.username is not None or u.password is not None:
         if u.username and u.password:
-            user_passwd = '%s:%s' % (u.username, u.password)
+            user_passwd = "%s:%s" % (u.username, u.password)
         host_port = u.hostname
         if u.port:
-            host_port += ':' + str(u.port)
+            host_port += ":" + str(u.port)
         url = urllib.parse.urlunparse(u._replace(netloc=host_port))
 
     # Start request
     req = urllib.request.Request(url)
 
     # Add headers
-    req.add_header('User-Agent', 'SABnzbd+/%s' % sabnzbd.version.__version__)
+    req.add_header("User-Agent", "SABnzbd+/%s" % sabnzbd.version.__version__)
     if not any(item in url for item in _BAD_GZ_HOSTS):
-        req.add_header('Accept-encoding', 'gzip')
+        req.add_header("Accept-encoding", "gzip")
     if user_passwd:
-        req.add_header('Authorization', 'Basic ' + ubtou(base64.b64encode(utob(user_passwd))).strip())
+        req.add_header("Authorization", "Basic " + ubtou(base64.b64encode(utob(user_passwd))).strip())
     return urllib.request.urlopen(req)
 
 
@@ -357,11 +389,11 @@ def _analyse(fetch_request, future_nzo):
         if fetch_request:
             msg = fetch_request.msg
         else:
-            msg = ''
+            msg = ""
 
         # Increasing wait-time in steps for standard errors
         when = DEF_TIMEOUT * (future_nzo.url_tries + 1)
-        logging.debug('No usable response from indexer, retry after %s sec', when)
+        logging.debug("No usable response from indexer, retry after %s sec", when)
         return None, msg, True, when, data
 
     return fetch_request, fetch_request.msg, False, 0, data

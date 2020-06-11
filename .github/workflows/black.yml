@@ -10,29 +10,11 @@ jobs:
       uses: lgeiger/black-action@v1.0.1
       with:
           args: >
+            SABnzbd.py
+            sabnzbd
             scripts
             tools
             tests
-            sabnzbd/utils
-            sabnzbd/__init__.py
-            sabnzbd/cfg.py
-            sabnzbd/config.py
-            sabnzbd/emailer.py
-            sabnzbd/constants.py
-            sabnzbd/decorators.py
-            sabnzbd/decoder.py
-            sabnzbd/database.py
-            sabnzbd/getipaddress.py
-            sabnzbd/filesystem.py
-            sabnzbd/dirscanner.py
-            sabnzbd/postproc.py
-            sabnzbd/misc.py
-            sabnzbd/lang.py
-            sabnzbd/nzbparser.py
-            sabnzbd/notifier.py
-            sabnzbd/rss.py
-            sabnzbd/par2file.py
-            sabnzbd/version.py
             --line-length=120
             --target-version=py35
             --check

@@ -31,14 +31,14 @@ def utob(str_in):
     """ Shorthand for converting UTF-8 to bytes """
     if isinstance(str_in, bytes):
         return str_in
-    return str_in.encode('utf-8')
+    return str_in.encode("utf-8")
 
 
 def ubtou(str_in):
     """ Shorthand for converting unicode bytes to UTF-8 """
     if not isinstance(str_in, bytes):
         return str_in
-    return str_in.decode('utf-8')
+    return str_in.decode("utf-8")
 
 
 def platform_btou(str_in):
@@ -50,7 +50,7 @@ def platform_btou(str_in):
         try:
             return ubtou(str_in)
         except UnicodeDecodeError:
-            return str_in.decode(CODEPAGE, errors='replace').replace('?', '!')
+            return str_in.decode(CODEPAGE, errors="replace").replace("?", "!")
     else:
         return str_in
 
@@ -63,7 +63,7 @@ def correct_unknown_encoding(str_or_bytes_in):
     """
     # If already string, back to bytes
     if not isinstance(str_or_bytes_in, bytes):
-        str_or_bytes_in = str_or_bytes_in.encode('utf-8', 'surrogateescape')
+        str_or_bytes_in = str_or_bytes_in.encode("utf-8", "surrogateescape")
 
     # Try simple bytes-to-string
     try:
@@ -71,14 +71,12 @@ def correct_unknown_encoding(str_or_bytes_in):
     except UnicodeDecodeError:
         try:
             # Try using 8-bit ASCII, if came from Windows
-            return str_or_bytes_in.decode('ISO-8859-1')
+            return str_or_bytes_in.decode("ISO-8859-1")
         except ValueError:
             # Last resort we use the slow chardet package
-            return str_or_bytes_in.decode(chardet.detect(str_or_bytes_in)['encoding'])
+            return str_or_bytes_in.decode(chardet.detect(str_or_bytes_in)["encoding"])
 
 
 def xml_name(p):
     """ Prepare name for use in HTML/XML contect """
     return escape(str(p))
-
-

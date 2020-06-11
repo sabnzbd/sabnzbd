@@ -39,8 +39,8 @@ class ArticleCache:
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__article_list = []    # List of buffered articles
-        self.__article_table = {}   # Dict of buffered articles
+        self.__article_list = []  # List of buffered articles
+        self.__article_table = {}  # Dict of buffered articles
 
         # Limit for the decoder is based on the total available cache
         # so it can be larger on memory-rich systems
@@ -50,7 +50,7 @@ class ArticleCache:
         # For 64 bit we allow up to 4GB, in case somebody wants that
         self.__cache_upper_limit = GIGI
         if sabnzbd.DARWIN or sabnzbd.WIN64 or (struct.calcsize("P") * 8) == 64:
-            self.__cache_upper_limit = 4*GIGI
+            self.__cache_upper_limit = 4 * GIGI
 
         ArticleCache.do = self
 
@@ -67,7 +67,7 @@ class ArticleCache:
 
         # The decoder-limit should not be larger than 1/3th of the whole cache
         # Calculated in number of articles, assuming 1 article = 1MB max
-        decoder_cache_limit = int(min(self.__cache_limit/3/MEBI, LIMIT_DECODE_QUEUE))
+        decoder_cache_limit = int(min(self.__cache_limit / 3 / MEBI, LIMIT_DECODE_QUEUE))
         # The cache should also not be too small
         self.decoder_cache_article_limit = max(decoder_cache_limit, MIN_DECODE_QUEUE)
 
@@ -128,8 +128,7 @@ class ArticleCache:
             self.__article_list.remove(article)
             self.free_reserved_space(len(data))
         elif article.art_id:
-            data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True,
-                                     do_pickle=False, silent=True)
+            data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True, do_pickle=False, silent=True)
         nzo.remove_saved_article(article)
 
         return data

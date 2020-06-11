@@ -37,48 +37,60 @@ from sabnzbd.utils.systrayiconthread import SysTrayIconThread
 
 class SABTrayThread(SysTrayIconThread):
     sabicons = {
-        'default': 'icons/sabnzbd16_32.ico',
-        'green': 'icons/sabnzbd16_32green.ico',
-        'pause': 'icons/sabnzbd16_32paused.ico'
+        "default": "icons/sabnzbd16_32.ico",
+        "green": "icons/sabnzbd16_32green.ico",
+        "pause": "icons/sabnzbd16_32paused.ico",
     }
 
     def __init__(self):
         # Wait for translated texts to be loaded
         while not sabnzbd.WEBUI_READY:
             sleep(0.2)
-            logging.debug('language file not loaded, waiting')
+            logging.debug("language file not loaded, waiting")
 
         self.sabpaused = False
         self.counter = 0
         self.set_texts()
 
         menu_options = (
-            (T('Show interface'), None, self.browse),
-            (T('Open complete folder'), None, self.opencomplete),
-            ('SEPARATOR', None, None),
-            (T('Pause') + '/' + T('Resume'), None, self.pauseresume),
-            (T('Pause for'), None, ((T('Pause for 5 minutes'), None, self.pausefor5min),
-                                    (T('Pause for 15 minutes'), None, self.pausefor15min),
-                                    (T('Pause for 30 minutes'), None, self.pausefor30min),
-                                    (T('Pause for 1 hour'), None, self.pausefor1hour),
-                                    (T('Pause for 3 hours'), None, self.pausefor3hour),
-                                    (T('Pause for 6 hours'), None, self.pausefor6hour))),
-            ('SEPARATOR', None, None),
-            (T('Read all RSS feeds'), None, self.rss),
-            ('SEPARATOR', None, None),
-            (T('Troubleshoot'), None, ((T('Restart'), None, self.restart_sab),
-                                       (T('Restart without login'), None, self.nologin),
-                                       (T('Restart') + ' - 127.0.0.1:8080', None, self.defhost))),
-            (T('Shutdown'), None, self.shutdown),
+            (T("Show interface"), None, self.browse),
+            (T("Open complete folder"), None, self.opencomplete),
+            ("SEPARATOR", None, None),
+            (T("Pause") + "/" + T("Resume"), None, self.pauseresume),
+            (
+                T("Pause for"),
+                None,
+                (
+                    (T("Pause for 5 minutes"), None, self.pausefor5min),
+                    (T("Pause for 15 minutes"), None, self.pausefor15min),
+                    (T("Pause for 30 minutes"), None, self.pausefor30min),
+                    (T("Pause for 1 hour"), None, self.pausefor1hour),
+                    (T("Pause for 3 hours"), None, self.pausefor3hour),
+                    (T("Pause for 6 hours"), None, self.pausefor6hour),
+                ),
+            ),
+            ("SEPARATOR", None, None),
+            (T("Read all RSS feeds"), None, self.rss),
+            ("SEPARATOR", None, None),
+            (
+                T("Troubleshoot"),
+                None,
+                (
+                    (T("Restart"), None, self.restart_sab),
+                    (T("Restart without login"), None, self.nologin),
+                    (T("Restart") + " - 127.0.0.1:8080", None, self.defhost),
+                ),
+            ),
+            (T("Shutdown"), None, self.shutdown),
         )
 
-        SysTrayIconThread.__init__(self, self.sabicons['default'], "SABnzbd", menu_options, None, 0, "SabTrayIcon")
+        SysTrayIconThread.__init__(self, self.sabicons["default"], "SABnzbd", menu_options, None, 0, "SabTrayIcon")
 
     def set_texts(self):
         """ Cache texts for performance, doUpdates is called often """
-        self.txt_idle = T('Idle')
-        self.txt_paused = T('Paused')
-        self.txt_remaining = T('Remaining')
+        self.txt_idle = T("Idle")
+        self.txt_paused = T("Paused")
+        self.txt_remaining = T("Remaining")
 
     # called every few ms by SysTrayIconThread
     def doUpdates(self):
@@ -94,13 +106,13 @@ class SABTrayThread(SysTrayIconThread):
                     self.hover_text = "%s - %s: %sB" % (self.txt_paused, self.txt_remaining, mb_left)
                 else:
                     self.hover_text = self.txt_paused
-                self.icon = self.sabicons['pause']
+                self.icon = self.sabicons["pause"]
             elif bytes_left > 0:
                 self.hover_text = "%sB/s - %s: %sB (%s)" % (speed, self.txt_remaining, mb_left, time_left)
-                self.icon = self.sabicons['green']
+                self.icon = self.sabicons["green"]
             else:
                 self.hover_text = self.txt_idle
-                self.icon = self.sabicons['default']
+                self.icon = self.sabicons["default"]
 
             self.refresh_icon()
             self.counter = 0
@@ -148,36 +160,36 @@ class SABTrayThread(SysTrayIconThread):
         self.pausefor(60)
 
     def pausefor3hour(self, icon):
-        self.pausefor(3*60)
+        self.pausefor(3 * 60)
 
     def pausefor6hour(self, icon):
-        self.pausefor(6*60)
+        self.pausefor(6 * 60)
 
     def restart_sab(self, icon):
-        self.hover_text = T('Restart')
-        logging.info('Restart requested by tray')
+        self.hover_text = T("Restart")
+        logging.info("Restart requested by tray")
         sabnzbd.trigger_restart()
 
     def rss(self, icon):
-        self.hover_text = T('Read all RSS feeds')
+        self.hover_text = T("Read all RSS feeds")
         scheduler.force_rss()
 
     def nologin(self, icon):
-        sabnzbd.cfg.username.set('')
-        sabnzbd.cfg.password.set('')
+        sabnzbd.cfg.username.set("")
+        sabnzbd.cfg.password.set("")
         sabnzbd.config.save_config()
-        self.hover_text = T('Restart')
+        self.hover_text = T("Restart")
         sabnzbd.trigger_restart()
 
     def defhost(self, icon):
-        sabnzbd.cfg.cherryhost.set('127.0.0.1')
+        sabnzbd.cfg.cherryhost.set("127.0.0.1")
         sabnzbd.cfg.enable_https.set(False)
         sabnzbd.config.save_config()
-        self.hover_text = T('Restart')
+        self.hover_text = T("Restart")
         sabnzbd.trigger_restart()
 
     def shutdown(self, icon):
-        self.hover_text = T('Shutdown')
+        self.hover_text = T("Shutdown")
         sabnzbd.shutdown_program()
 
     def pause(self):

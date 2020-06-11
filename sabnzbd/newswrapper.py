@@ -43,7 +43,7 @@ socket.setdefaulttimeout(DEF_TIMEOUT)
 
 def _retrieve_info(server):
     """ Async attempt to run getaddrinfo() for specified server """
-    logging.debug('Retrieving server address information for %s', server.host)
+    logging.debug("Retrieving server address information for %s", server.host)
     info = GetServerParms(server.host, server.port)
     if not info:
         server.bad_cons += server.threads
@@ -67,12 +67,12 @@ def GetServerParms(host, port):
     except:
         port = 119
     opt = sabnzbd.cfg.ipv6_servers()
-    ''' ... with the following meaning for 'opt':
+    """ ... with the following meaning for 'opt':
     Control the use of IPv6 Usenet server addresses. Meaning:
     0 = don't use
     1 = use when available and reachable (DEFAULT)
     2 = force usage (when SABnzbd's detection fails)
-    '''
+    """
     try:
         # Standard IPV4 or IPV6
         ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
@@ -82,13 +82,14 @@ def GetServerParms(host, port):
             return ips
         else:
             # IPv6 unreachable or not allowed by user, so only return IPv4 address(es):
-            return [ip for ip in ips if ':' not in ip[4][0]]
+            return [ip for ip in ips if ":" not in ip[4][0]]
     except:
         if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
             try:
                 # Try IPV6 explicitly
-                return socket.getaddrinfo(host, port, socket.AF_INET6,
-                                          socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME)
+                return socket.getaddrinfo(
+                    host, port, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME
+                )
             except:
                 # Nothing found!
                 pass
@@ -101,8 +102,9 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
         sock.setblocking(0)
         if sslenabled:
             # Log SSL/TLS info
-            logging.info("%s@%s: Connected using %s (%s)",
-                                              nntp.nw.thrdnum, nntp.nw.server.host, sock.version(), sock.cipher()[0])
+            logging.info(
+                "%s@%s: Connected using %s (%s)", nntp.nw.thrdnum, nntp.nw.server.host, sock.version(), sock.cipher()[0]
+            )
             nntp.nw.server.ssl_info = "%s (%s)" % (sock.version(), sock.cipher()[0])
 
         # Now it's safe to add the socket to the list of active sockets.
@@ -132,7 +134,7 @@ def con(sock, host, port, sslenabled, write_fds, nntp):
 
 class NNTP:
     # Pre-define attributes to save memory
-    __slots__ = ('host', 'port', 'nw', 'blocking', 'error_msg', 'sock')
+    __slots__ = ("host", "port", "nw", "blocking", "error_msg", "sock")
 
     def __init__(self, host, port, info, sslenabled, nw, block=False, write_fds=None):
         self.host = host
@@ -192,8 +194,13 @@ class NNTP:
                 self.sock.connect((self.host, self.port))
                 if sslenabled:
                     # Log SSL/TLS info
-                    logging.info("%s@%s: Connected using %s (%s)",
-                                              self.nw.thrdnum, self.nw.server.host, self.sock.version(), self.sock.cipher()[0])
+                    logging.info(
+                        "%s@%s: Connected using %s (%s)",
+                        self.nw.thrdnum,
+                        self.nw.server.host,
+                        self.sock.version(),
+                        self.sock.cipher()[0],
+                    )
                     self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
 
         except (ssl.SSLError, ssl.CertificateError) as e:
@@ -216,23 +223,25 @@ class NNTP:
 
     def error(self, error):
         raw_error_str = str(error)
-        if 'SSL23_GET_SERVER_HELLO' in str(error) or 'SSL3_GET_RECORD' in raw_error_str:
-            error = T('This server does not allow SSL on this port')
+        if "SSL23_GET_SERVER_HELLO" in str(error) or "SSL3_GET_RECORD" in raw_error_str:
+            error = T("This server does not allow SSL on this port")
 
         # Catch certificate errors
-        if type(error) == ssl.CertificateError or 'CERTIFICATE_VERIFY_FAILED' in raw_error_str:
+        if type(error) == ssl.CertificateError or "CERTIFICATE_VERIFY_FAILED" in raw_error_str:
             # Log the raw message for debug purposes
-            logging.info('Certificate error for host %s: %s', self.nw.server.host, raw_error_str)
+            logging.info("Certificate error for host %s: %s", self.nw.server.host, raw_error_str)
 
             # Try to see if we should catch this message and provide better text
-            if 'hostname' in raw_error_str:
-                raw_error_str = T('Certificate hostname mismatch: the server hostname is not listed in the certificate. This is a server issue.')
-            elif 'certificate verify failed' in raw_error_str:
-                raw_error_str = T('Certificate not valid. This is most probably a server issue.')
+            if "hostname" in raw_error_str:
+                raw_error_str = T(
+                    "Certificate hostname mismatch: the server hostname is not listed in the certificate. This is a server issue."
+                )
+            elif "certificate verify failed" in raw_error_str:
+                raw_error_str = T("Certificate not valid. This is most probably a server issue.")
 
             # Reformat error
-            error = T('Server %s uses an untrusted certificate [%s]') % (self.nw.server.host, raw_error_str)
-            error = '%s - %s: %s' % (error, T('Wiki'), 'https://sabnzbd.org/certificate-errors')
+            error = T("Server %s uses an untrusted certificate [%s]") % (self.nw.server.host, raw_error_str)
+            error = "%s - %s: %s" % (error, T("Wiki"), "https://sabnzbd.org/certificate-errors")
 
             # Prevent throwing a lot of errors or when testing server
             if error not in self.nw.server.warning and not self.blocking:
@@ -254,8 +263,24 @@ class NNTP:
 
 class NewsWrapper:
     # Pre-define attributes to save memory
-    __slots__ = ('server', 'thrdnum', 'blocking', 'timeout', 'article', 'data', 'last_line',  'nntp',
-                 'recv', 'connected', 'user_sent', 'pass_sent', 'group', 'user_ok', 'pass_ok', 'force_login')
+    __slots__ = (
+        "server",
+        "thrdnum",
+        "blocking",
+        "timeout",
+        "article",
+        "data",
+        "last_line",
+        "nntp",
+        "recv",
+        "connected",
+        "user_sent",
+        "pass_sent",
+        "group",
+        "user_ok",
+        "pass_ok",
+        "force_login",
+    )
 
     def __init__(self, server, thrdnum, block=False):
         self.server = server
@@ -265,7 +290,7 @@ class NewsWrapper:
         self.timeout = None
         self.article = None
         self.data = []
-        self.last_line = ''
+        self.last_line = ""
 
         self.nntp = None
         self.recv = None
@@ -296,8 +321,9 @@ class NewsWrapper:
             self.server.info = GetServerParms(self.server.host, self.server.port)
 
         # Construct NNTP object and shorthands
-        self.nntp = NNTP(self.server.hostip, self.server.port, self.server.info, self.server.ssl,
-                         self, self.blocking, write_fds)
+        self.nntp = NNTP(
+            self.server.hostip, self.server.port, self.server.info, self.server.ssl, self, self.blocking, write_fds
+        )
         self.recv = self.nntp.sock.recv
         self.timeout = time.time() + self.server.timeout
 
@@ -312,7 +338,7 @@ class NewsWrapper:
         if code == 501 and self.user_sent:
             # Change to a sensible text
             code = 481
-            self.data[0] = "%d %s" % (code, T('Authentication failed, check username/password.'))
+            self.data[0] = "%d %s" % (code, T("Authentication failed, check username/password."))
             self.user_ok = True
             self.pass_sent = True
 
@@ -327,7 +353,7 @@ class NewsWrapper:
         if code in (400, 502):
             raise NNTPPermanentError(nntp_to_msg(self.data))
         elif not self.user_sent:
-            command = utob('authinfo user %s\r\n' % self.server.username)
+            command = utob("authinfo user %s\r\n" % self.server.username)
             self.nntp.sock.sendall(command)
             self.data = []
             self.user_sent = True
@@ -342,7 +368,7 @@ class NewsWrapper:
                 self.connected = True
 
         if self.user_ok and not self.pass_sent:
-            command = utob('authinfo pass %s\r\n' % self.server.password)
+            command = utob("authinfo pass %s\r\n" % self.server.password)
             self.nntp.sock.sendall(command)
             self.data = []
             self.pass_sent = True
@@ -359,19 +385,19 @@ class NewsWrapper:
         self.timeout = time.time() + self.server.timeout
         if precheck:
             if self.server.have_stat:
-                command = utob('STAT <%s>\r\n' % (self.article.article))
+                command = utob("STAT <%s>\r\n" % (self.article.article))
             else:
-                command = utob('HEAD <%s>\r\n' % (self.article.article))
+                command = utob("HEAD <%s>\r\n" % (self.article.article))
         elif self.server.have_body:
-            command = utob('BODY <%s>\r\n' % (self.article.article))
+            command = utob("BODY <%s>\r\n" % (self.article.article))
         else:
-            command = utob('ARTICLE <%s>\r\n' % (self.article.article))
+            command = utob("ARTICLE <%s>\r\n" % (self.article.article))
         self.nntp.sock.sendall(command)
         self.data = []
 
     def send_group(self, group):
         self.timeout = time.time() + self.server.timeout
-        command = utob('GROUP %s\r\n' % (group))
+        command = utob("GROUP %s\r\n" % (group))
         self.nntp.sock.sendall(command)
         self.data = []
 
@@ -403,13 +429,13 @@ class NewsWrapper:
 
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
         chunk_len = len(chunk)
-        if chunk[-5:] == b'\r\n.\r\n':
+        if chunk[-5:] == b"\r\n.\r\n":
             return (chunk_len, True, False)
         elif chunk_len < 5 and len(self.data) > 1:
             # We need to make sure the end is not split over 2 chunks
             # This is faster than join()
             combine_chunk = self.data[-2][-5:] + chunk
-            if combine_chunk[-5:] == b'\r\n.\r\n':
+            if combine_chunk[-5:] == b"\r\n.\r\n":
                 return (chunk_len, True, False)
 
         # Still in middle of data, so continue!
@@ -422,13 +448,13 @@ class NewsWrapper:
 
     def clear_data(self):
         self.data = []
-        self.last_line = ''
+        self.last_line = ""
 
     def hard_reset(self, wait=True, send_quit=True):
         if self.nntp:
             try:
                 if send_quit:
-                    self.nntp.sock.sendall(b'QUIT\r\n')
+                    self.nntp.sock.sendall(b"QUIT\r\n")
                     time.sleep(0.1)
                 self.nntp.sock.close()
             except:
@@ -449,7 +475,7 @@ class NewsWrapper:
         if self.nntp:
             try:
                 if quit:
-                    self.nntp.sock.sendall(b'QUIT\r\n')
+                    self.nntp.sock.sendall(b"QUIT\r\n")
                     time.sleep(0.1)
                 self.nntp.sock.close()
             except:
