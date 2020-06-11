@@ -459,7 +459,7 @@ def pause_int():
         else:
             sign = ''
         mins = int(val / 60)
-        sec = int(val - min * 60)
+        sec = int(val - mins * 60)
         return "%s%d:%02d" % (sign, mins, sec)
 
 
