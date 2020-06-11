@@ -360,7 +360,7 @@ def send_nscript(title, msg, gtype, force=False, test=None):
         if script_path:
             output, ret = external_script(script_path, gtype, title, msg, parameters)
             if ret:
-                logging.error(T('Script returned exit code %s and output "%s"') % (ret, output))
+                logging.error(T('Script returned exit code %s and output "%s"'), ret, output)
                 return T('Script returned exit code %s and output "%s"') % (ret, output)
             else:
                 logging.info("Successfully executed notification script " + script_path)

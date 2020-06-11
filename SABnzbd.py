@@ -395,14 +395,15 @@ def print_modules():
         if sabnzbd.decoder.SABYENC_VERSION:
             # We have a VERSION, thus a SABYenc module, but it's not the correct version
             logging.error(
-                T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)")
-                % (sabnzbd.decoder.SABYENC_VERSION, sabnzbd.constants.SABYENC_VERSION_REQUIRED)
+                T("SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"),
+                sabnzbd.decoder.SABYENC_VERSION,
+                sabnzbd.constants.SABYENC_VERSION_REQUIRED,
             )
         else:
             # No SABYenc module at all
             logging.error(
-                T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc")
-                % sabnzbd.constants.SABYENC_VERSION_REQUIRED
+                T("SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"),
+                sabnzbd.constants.SABYENC_VERSION_REQUIRED,
             )
         # Do not allow downloading
         sabnzbd.NO_DOWNLOADING = True
@@ -419,9 +420,7 @@ def print_modules():
     if sabnzbd.newsunpack.MULTIPAR_COMMAND:
         logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
     elif sabnzbd.WIN32:
-        logging.error(
-            "%s %s" % (T("MultiPar binary... NOT found!"), T("Verification and repair will not be possible."))
-        )
+        logging.error("%s %s", T("MultiPar binary... NOT found!"), T("Verification and repair will not be possible."))
 
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
@@ -430,9 +429,7 @@ def print_modules():
         if sabnzbd.newsunpack.RAR_PROBLEM and not sabnzbd.cfg.ignore_wrong_unrar():
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
-            logging.warning(
-                T("Your UNRAR version is %s, we recommend version %s or higher.<br />") % (have_str, want_str)
-            )
+            logging.warning(T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str)
         elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
             logging.info("UNRAR binary version %.2f", (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
@@ -1167,8 +1164,8 @@ def main():
         logging.warning(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
-            )
-            % sabnzbd.encoding.CODEPAGE
+            ),
+            sabnzbd.encoding.CODEPAGE,
         )
 
     # SSL Information

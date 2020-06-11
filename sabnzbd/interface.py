@@ -342,7 +342,7 @@ def log_warning_and_ip(txt):
         )
     else:
         txt = "%s %s>%s" % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get("User-Agent", "??"))
-    logging.warning("%s", txt)
+    logging.warning(txt)
 
 
 ##############################################################################

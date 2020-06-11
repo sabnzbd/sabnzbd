@@ -46,6 +46,7 @@ from sabnzbd.filesystem import (
     recursive_listdir,
     setname_from_path,
     get_ext,
+    get_filename,
 )
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
@@ -669,7 +670,7 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
             break
 
     if fail == 2:
-        logging.error("%s (%s)", T("Unpacking failed, archive requires a password"), os.path.split(rarfile_path)[1])
+        logging.error("%s (%s)", T("Unpacking failed, archive requires a password"), get_filename(rarfile_path))
     return fail, new_files, rars
 
 
@@ -848,7 +849,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
             p.kill()
 
         elif line.startswith("ERROR: "):
-            msg = T("ERROR: %s" % line[7:])
+            msg = T("ERROR: %s") % line[7:]
             nzo.fail_msg = msg
             logging.warning(msg)
             nzo.set_unpack_info("Unpack", msg, setname)
