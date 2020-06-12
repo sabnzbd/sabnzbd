@@ -20,7 +20,6 @@ sabnzbd.emailer - Send notification emails
 """
 
 import smtplib
-import os
 import logging
 import re
 import time

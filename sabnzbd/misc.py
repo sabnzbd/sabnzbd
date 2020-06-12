@@ -118,6 +118,18 @@ def cmp(x, y):
     return (x > y) - (x < y)
 
 
+def name_to_cat(fname, cat=None):
+    """ Retrieve category from file name, but only if "cat" is None. """
+    if cat is None and fname.startswith("{{"):
+        n = fname.find("}}")
+        if n > 2:
+            cat = fname[2:n].strip()
+            fname = fname[n + 2 :].strip()
+            logging.debug("Job %s has category %s", fname, cat)
+
+    return fname, cat
+
+
 def cat_to_opts(cat, pp=None, script=None, priority=None):
     """ Derive options from category, if options not already defined.
         Specified options have priority over category-options.
@@ -426,6 +438,27 @@ def check_latest_version():
     elif testver and current < latest_test:
         # This is a test version beyond the latest Final, so show latest Alpha/Beta/RC
         sabnzbd.NEW_VERSION = (latest_testlabel, url_beta)
+
+
+def upload_file_to_sabnzbd(url, fp):
+    """ Function for uploading nzbs to a running SABnzbd instance """
+    try:
+        fp = urllib.parse.quote_plus(fp)
+        url = "%s&mode=addlocalfile&name=%s" % (url, fp)
+        # Add local API-key if it wasn't already in the registered URL
+        apikey = cfg.api_key()
+        if apikey and "apikey" not in url:
+            url = "%s&apikey=%s" % (url, apikey)
+        if "apikey" not in url:
+            # Use alternative login method
+            username = cfg.username()
+            password = cfg.password()
+            if username and password:
+                url = "%s&ma_username=%s&ma_password=%s" % (url, username, password)
+        get_from_url(url)
+    except:
+        logging.error("Failed to upload file: %s", fp)
+        logging.info("Traceback: ", exc_info=True)
 
 
 def from_units(val):

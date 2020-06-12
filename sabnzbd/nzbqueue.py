@@ -29,6 +29,7 @@ import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp, safe_lower
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file
+from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
 from sabnzbd.decorators import NzbQueueLocker
@@ -55,7 +56,6 @@ import sabnzbd.downloader
 from sabnzbd.assembler import Assembler, file_has_articles
 import sabnzbd.notifier as notifier
 from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.dirscanner import process_single_nzb
 
 
 class NzbQueue:
@@ -175,40 +175,31 @@ class NzbQueue:
 
         name = os.path.basename(folder)
         path = os.path.join(folder, JOB_ADMIN)
-        if hasattr(new_nzb, "filename"):
-            filename = new_nzb.filename
+
+        # If Retry was used and a new NZB was uploaded
+        if getattr(new_nzb, "filename", None):
+            remove_all(path, "*.gz", keep_folder=True)
+            logging.debug("Repair job %s with new NZB (%s)", name, new_nzb.filename)
+            _, nzo_ids = sabnzbd.add_nzbfile(new_nzb, nzbname=name, reuse=True, password=password)
+            nzo_id = nzo_ids[0]
         else:
-            filename = ""
-        if not filename:
             # Was this file already post-processed?
             verified = sabnzbd.load_data(VERIFIED_FILE, path, remove=False)
+            filenames = []
             if not verified or not all(verified[x] for x in verified):
-                filename = globber_full(path, "*.gz")
+                filenames = globber_full(path, "*.gz")
 
-            if len(filename) > 0:
+            if filenames:
                 logging.debug("Repair job %s by re-parsing stored NZB", name)
-                nzo_id = sabnzbd.add_nzbfile(
-                    filename[0],
-                    pp=None,
-                    script=None,
-                    cat=None,
-                    priority=None,
-                    nzbname=name,
-                    reuse=True,
-                    password=password,
-                )[1]
+                _, nzo_ids = sabnzbd.add_nzbfile(filenames[0], nzbname=name, reuse=True, password=password)
+                nzo_id = nzo_ids[0]
             else:
                 logging.debug("Repair job %s without stored NZB", name)
-                nzo = NzbObject(name, pp=None, script=None, nzb="", cat=None, priority=None, nzbname=name, reuse=True)
+                nzo = NzbObject(name, nzbname=name, reuse=True)
                 nzo.password = password
                 self.add(nzo)
                 nzo_id = nzo.nzo_id
-        else:
-            remove_all(path, "*.gz")
-            logging.debug("Repair job %s with new NZB (%s)", name, filename)
-            nzo_id = sabnzbd.add_nzbfile(
-                new_nzb, pp=None, script=None, cat=None, priority=None, nzbname=name, reuse=True, password=password
-            )[1]
+
         return nzo_id
 
     @NzbQueueLocker

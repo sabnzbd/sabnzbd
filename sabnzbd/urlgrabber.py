@@ -32,10 +32,9 @@ from threading import Thread
 import base64
 
 import sabnzbd
-from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status
+from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
-import sabnzbd.dirscanner as dirscanner
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
 import sabnzbd.cfg as cfg
@@ -44,7 +43,6 @@ import sabnzbd.notifier as notifier
 from sabnzbd.encoding import ubtou, utob
 
 
-_BAD_GZ_HOSTS = (".zip", "nzbsa.co.za", "newshost.za.net")
 _RARTING_FIELDS = (
     "x-rating-id",
     "x-rating-url",
@@ -132,7 +130,6 @@ class URLGrabber(Thread):
 
                 filename = None
                 category = None
-                gzipped = False
                 nzo_info = {}
                 wait = 0
                 retry = True
@@ -170,8 +167,6 @@ class URLGrabber(Thread):
                             value = fetch_request.headers[hdr]
                         except:
                             continue
-                        if item in ("content-encoding",) and value == "gzip":
-                            gzipped = True
                         if item in ("category_id", "x-dnzb-category"):
                             category = value
                         elif item in ("x-dnzb-moreinfo",):
@@ -224,7 +219,10 @@ class URLGrabber(Thread):
 
                     # URL was redirected, maybe the redirect has better filename?
                     # Check if the original URL has extension
-                    if url != fetch_request.url and sabnzbd.filesystem.get_ext(filename) not in VALID_NZB_FILES:
+                    if (
+                        url != fetch_request.url
+                        and sabnzbd.filesystem.get_ext(filename) not in VALID_NZB_FILES + VALID_ARCHIVES
+                    ):
                         filename = os.path.basename(urllib.parse.unquote(fetch_request.url))
                 elif "&nzbname=" in filename:
                     # Sometimes the filename contains the full URL, duh!
@@ -239,8 +237,6 @@ class URLGrabber(Thread):
                 nzbname = future_nzo.custom_name
 
                 # process data
-                if gzipped:
-                    filename += ".gz"
                 if not data:
                     try:
                         data = fetch_request.read()
@@ -256,15 +252,18 @@ class URLGrabber(Thread):
                 # Sanitize filename first (also removing forbidden Windows-names)
                 filename = sabnzbd.filesystem.sanitize_filename(filename)
 
+                # If no filename, make one
+                if not filename:
+                    filename = sabnzbd.get_new_id("url", os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER))
+
                 # Write data to temp file
                 path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER, filename)
                 with open(path, "wb") as temp_nzb:
                     temp_nzb.write(data)
 
                 # Check if nzb file
-                if sabnzbd.filesystem.get_ext(filename) in VALID_NZB_FILES:
-                    res = dirscanner.process_single_nzb(
-                        filename,
+                if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
+                    res, _ = sabnzbd.add_nzbfile(
                         path,
                         pp=pp,
                         script=script,
@@ -275,49 +274,26 @@ class URLGrabber(Thread):
                         url=future_nzo.url,
                         keep=False,
                         nzo_id=future_nzo.nzo_id,
-                    )[0]
-                    if res:
-                        if res == -2:
-                            logging.info("Incomplete NZB, retry after 5 min %s", url)
-                            when = 300
-                        elif res == -1:
-                            # Error, but no reason to retry. Warning is already given
-                            NzbQueue.do.remove(future_nzo.nzo_id, add_to_history=False)
-                            continue
-                        else:
-                            logging.info("Unknown error fetching NZB, retry after 2 min %s", url)
-                            when = 120
-                        self.add(url, future_nzo, when)
-
+                    )
+                    # -2==Error/retry, -1==Error, 0==OK, 1==Empty
+                    if res == -2:
+                        logging.info("Incomplete NZB, retry after 5 min %s", url)
+                        self.add(url, future_nzo, when=300)
+                    elif res == -1:
+                        # Error already thrown
+                        self.fail_to_history(future_nzo, url)
+                    elif res == 1:
+                        # No NZB-files inside archive
+                        self.fail_to_history(future_nzo, url, T("Empty NZB file %s") % filename)
                 else:
-                    # Check if a supported archive
-                    status, zf, exp_ext = dirscanner.is_archive(path)
-                    if status == 0:
-                        if sabnzbd.filesystem.get_ext(filename) not in (".rar", ".zip", ".7z"):
-                            filename = filename + exp_ext
-                            os.rename(path, path + exp_ext)
-                            path = path + exp_ext
+                    logging.info("Unknown filetype when fetching NZB, retry after 30s %s", url)
+                    self.add(url, future_nzo, 30)
 
-                        dirscanner.process_nzb_archive_file(
-                            filename,
-                            path,
-                            pp,
-                            script,
-                            cat,
-                            priority=priority,
-                            nzbname=nzbname,
-                            url=future_nzo.url,
-                            keep=False,
-                            nzo_id=future_nzo.nzo_id,
-                        )
-                    else:
-                        # Not a supported filetype, not an nzb (text/html ect)
-                        try:
-                            os.remove(fetch_request)
-                        except:
-                            pass
-                        logging.info("Unknown filetype when fetching NZB, retry after 30s %s", url)
-                        self.add(url, future_nzo, 30)
+                # Always clean up what we wrote to disk
+                try:
+                    sabnzbd.filesystem.remove_file(path)
+                except:
+                    pass
             except:
                 logging.error(T("URLGRABBER CRASHED"), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
@@ -351,7 +327,7 @@ class URLGrabber(Thread):
         nzo.cat, _, nzo.script, _ = misc.cat_to_opts(nzo.cat, script=nzo.script)
 
         # Add to history and run script if desired
-        NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, delete_all_data=False)
+        NzbQueue.do.remove(nzo.nzo_id, add_to_history=False)
         PostProcessor.do.process(nzo)
 
 
@@ -373,8 +349,7 @@ def _build_request(url):
 
     # Add headers
     req.add_header("User-Agent", "SABnzbd+/%s" % sabnzbd.version.__version__)
-    if not any(item in url for item in _BAD_GZ_HOSTS):
-        req.add_header("Accept-encoding", "gzip")
+    req.add_header("Accept-encoding", "gzip")
     if user_passwd:
         req.add_header("Authorization", "Basic " + ubtou(base64.b64encode(utob(user_passwd))).strip())
     return urllib.request.urlopen(req)

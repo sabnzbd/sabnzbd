@@ -59,6 +59,8 @@ from sabnzbd.filesystem import (
     setname_from_path,
     create_all_dirs,
     get_unique_filename,
+    get_ext,
+    get_filename,
 )
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
@@ -71,9 +73,9 @@ from sabnzbd.constants import (
     Status,
     VERIFIED_FILE,
 )
+from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
-import sabnzbd.dirscanner as dirscanner
 import sabnzbd.downloader
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -464,9 +466,7 @@ def process_job(nzo):
                 # Check if this is an NZB-only download, if so redirect to queue
                 # except when PP was Download-only
                 if flag_repair:
-                    nzb_list = nzb_redirect(
-                        tmp_workdir_complete, nzo.final_name, nzo.pp, script, nzo.cat, priority=nzo.priority
-                    )
+                    nzb_list = nzb_redirect(tmp_workdir_complete, nzo.final_name, nzo.pp, script, nzo.cat, nzo.priority)
                 else:
                     nzb_list = None
                 if nzb_list:
@@ -1040,8 +1040,8 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
     """
     files = recursive_listdir(wdir)
 
-    for file_ in files:
-        if os.path.splitext(file_)[1].lower() != ".nzb":
+    for nzb_file in files:
+        if get_ext(nzb_file) != ".nzb":
             return None
 
     # For multiple NZBs, cannot use the current job name
@@ -1050,14 +1050,13 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
 
     # Process all NZB files
     for nzb_file in files:
-        dirscanner.process_single_nzb(
-            os.path.split(nzb_file)[1],
-            file_,
-            pp,
-            script,
-            cat,
+        process_single_nzb(
+            get_filename(nzb_file),
+            nzb_file,
+            pp=pp,
+            script=script,
+            cat=cat,
             priority=priority,
-            keep=False,
             dup_check=False,
             nzbname=nzbname,
         )

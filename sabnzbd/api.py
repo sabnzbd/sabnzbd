@@ -68,7 +68,7 @@ from sabnzbd.misc import (
     calc_age,
     opts_to_pp,
 )
-from sabnzbd.filesystem import diskspace, get_ext, get_filename, globber_full, clip_path, remove_all
+from sabnzbd.filesystem import diskspace, get_ext, globber_full, clip_path, remove_all
 from sabnzbd.encoding import xml_name
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -349,34 +349,18 @@ def _api_translate(name, output, kwargs):
 
 def _api_addfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
-    # Normal upload will send the nzb in a kw arg called nzbfile
-    if name is None or isinstance(name, str):
-        name = kwargs.get("nzbfile")
-    if hasattr(name, "getvalue"):
-        # Side effect of next line is that attribute .value is created
-        # which is needed to make add_nzbfile() work
-        size = name.length
-    elif hasattr(name, "file") and hasattr(name, "filename") and name.filename:
-        # CherryPy 3.2.2 object
-        if hasattr(name.file, "file"):
-            name.value = name.file.file.read()
-        else:
-            name.value = name.file.read()
-        size = len(name.value)
-    elif hasattr(name, "value"):
-        size = len(name.value)
-    else:
-        size = 0
-    if name is not None and size and name.filename:
+    # Normal upload will send the nzb in a kw arg called name
+    if hasattr(name, "file") and hasattr(name, "filename") and name.filename:
         cat = kwargs.get("cat")
         xcat = kwargs.get("xcat")
         if not cat and xcat:
             # Indexer category, so do mapping
             cat = cat_convert(xcat)
-        res = sabnzbd.add_nzbfile(
+        # Add the NZB-file
+        res, nzo_ids = sabnzbd.add_nzbfile(
             name, kwargs.get("pp"), kwargs.get("script"), cat, kwargs.get("priority"), kwargs.get("nzbname")
         )
-        return report(output, keyword="", data={"status": res[0] == 0, "nzo_ids": res[1]})
+        return report(output, keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
     else:
         return report(output, _MSG_NO_VALUE)
 
@@ -392,8 +376,6 @@ def _api_retry(name, output, kwargs):
 
     nzo_id = retry_job(value, name, password)
     if nzo_id:
-        if isinstance(nzo_id, list):
-            nzo_id = nzo_id[0]
         return report(output, keyword="", data={"status": True, "nzo_id": nzo_id})
     else:
         return report(output, _MSG_NO_ITEM)
@@ -412,33 +394,27 @@ def _api_addlocalfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
     if name:
         if os.path.exists(name):
-            fn = get_filename(name)
-            if fn:
-                pp = kwargs.get("pp")
-                script = kwargs.get("script")
-                cat = kwargs.get("cat")
-                xcat = kwargs.get("xcat")
-                if not cat and xcat:
-                    # Indexer category, so do mapping
-                    cat = cat_convert(xcat)
-                priority = kwargs.get("priority")
-                nzbname = kwargs.get("nzbname")
+            pp = kwargs.get("pp")
+            script = kwargs.get("script")
+            cat = kwargs.get("cat")
+            xcat = kwargs.get("xcat")
+            if not cat and xcat:
+                # Indexer category, so do mapping
+                cat = cat_convert(xcat)
+            priority = kwargs.get("priority")
+            nzbname = kwargs.get("nzbname")
 
-                if get_ext(name) in VALID_ARCHIVES:
-                    res = sabnzbd.dirscanner.process_nzb_archive_file(
-                        fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname
-                    )
-                elif get_ext(name) in VALID_NZB_FILES:
-                    res = sabnzbd.dirscanner.process_single_nzb(
-                        fn, name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname
-                    )
+            if get_ext(name) in VALID_ARCHIVES + VALID_NZB_FILES:
+                res, nzo_ids = sabnzbd.add_nzbfile(
+                    name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname
+                )
+                return report(output, keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
             else:
-                logging.info('API-call addlocalfile: "%s" not a proper file name', name)
+                logging.info('API-call addlocalfile: "%s" is not a supported file', name)
                 return report(output, _MSG_NO_FILE)
         else:
             logging.info('API-call addlocalfile: file "%s" not found', name)
             return report(output, _MSG_NO_PATH)
-        return report(output, keyword="", data={"status": res[0] == 0, "nzo_ids": res[1]})
     else:
         logging.info("API-call addlocalfile: no file name given")
         return report(output, _MSG_NO_VALUE)

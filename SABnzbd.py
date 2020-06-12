@@ -70,6 +70,7 @@ from sabnzbd.misc import (
     set_serv_parms,
     get_serv_parms,
     get_from_url,
+    upload_file_to_sabnzbd,
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
@@ -681,11 +682,9 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
     if is_sabnzbd_running(url):
         # Upload any specified nzb files to the running instance
         if upload_nzbs:
-            from sabnzbd.utils.upload import upload_file
-
             prev = sabnzbd.set_https_verification(False)
             for f in upload_nzbs:
-                upload_file(url, f)
+                upload_file_to_sabnzbd(url, f)
             sabnzbd.set_https_verification(prev)
         else:
             # Launch the web browser and quit since sabnzbd is already running
@@ -1449,10 +1448,8 @@ def main():
 
     # Upload any nzb/zip/rar/nzb.gz/nzb.bz2 files from file association
     if upload_nzbs:
-        from sabnzbd.utils.upload import add_local
-
-        for f in upload_nzbs:
-            add_local(f)
+        for upload_nzb in upload_nzbs:
+            sabnzbd.add_nzbfile(upload_nzb)
 
     # Set URL for browser
     if enable_https:

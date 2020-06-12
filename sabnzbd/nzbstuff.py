@@ -563,8 +563,8 @@ class NzbObject(TryList):
     def __init__(
         self,
         filename,
-        pp,
-        script,
+        pp=None,
+        script=None,
         nzb=None,
         futuretype=False,
         cat=None,
@@ -1197,7 +1197,7 @@ class NzbObject(TryList):
             self.renames = renames
 
         # Looking for the longest name first, minimizes the chance on a mismatch
-        files.sort(key=lambda x: len(x))
+        files.sort(key=len)
 
         # The NZFs should be tried shortest first, to improve the chance on a proper match
         nzfs = self.files[:]
@@ -1227,7 +1227,7 @@ class NzbObject(TryList):
         # Create an NZF for each remaining existing file
         try:
             for filename in files:
-                # Create NZB's using basic information
+                # Create NZO's using basic information
                 filepath = os.path.join(wdir, filename)
                 if os.path.exists(filepath):
                     tup = os.stat(filepath)
@@ -1248,7 +1248,7 @@ class NzbObject(TryList):
                         self.handle_par2(nzf, filepath)
                     logging.info("Existing file %s added to job", filename)
         except:
-            logging.debug("Bad NZB handling")
+            logging.error(T("Error importing %s"), self.final_name)
             logging.info("Traceback: ", exc_info=True)
 
     @property
@@ -1778,8 +1778,11 @@ class NzbObject(TryList):
         # Remove all cached files
         ArticleCache.do.purge_articles(self.saved_articles)
 
-        # Delete all, or just basic?
-        if delete_all_data:
+        # Delete all, or just basic files
+        if self.futuretype:
+            # Remove temporary file left from URL-fetches
+            sabnzbd.remove_data(self.nzo_id, self.workpath)
+        elif delete_all_data:
             remove_all(self.downpath, recursive=True)
         else:
             # We remove any saved articles and save the renames file
