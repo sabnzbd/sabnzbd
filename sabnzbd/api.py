@@ -581,7 +581,8 @@ def _api_addurl(name, output, kwargs):
 
     if name:
         nzo_id = sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
-        return report(output, keyword="", data={"status": True, "nzo_ids": nzo_id})
+        # Reporting a list of NZO's, for compatibility with other add-methods
+        return report(output, keyword="", data={"status": True, "nzo_ids": [nzo_id]})
     else:
         logging.info("API-call addurl: no URLs recieved")
         return report(output, _MSG_NO_VALUE)
