@@ -81,7 +81,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         nzb_path = create_nzb(nzb_dir)
 
         # Add NZB
-        test_job_name = "testfile_%s" % random.randint(500, 1000)
+        test_job_name = "testfile_%s" % int(time.time())
         api_result = get_api_result("addlocalfile", extra_arguments={"name": nzb_path, "nzbname": test_job_name})
         assert api_result["status"]
 
