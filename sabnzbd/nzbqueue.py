@@ -413,8 +413,6 @@ class NzbQueue:
         for nzo_id in nzo_ids:
             if self.remove(nzo_id, add_to_history=False, delete_all_data=delete_all_data):
                 removed.append(nzo_id)
-        # Save with invalid nzo_id, to that only queue file is saved
-        self.save(False)
 
         # Any files left? Otherwise let's disconnect
         if self.actives(grabs=False) == 0 and cfg.autodisconnect():
