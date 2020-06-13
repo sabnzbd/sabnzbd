@@ -174,6 +174,7 @@ def send_with_template(prefix, parm, test=None):
             email_templates = [os.path.join(path, "%s-en.tmpl" % prefix)]
 
     for template_file in email_templates:
+        logging.debug("Trying to send email using template %s", template_file)
         if os.access(template_file, os.R_OK):
             if test:
                 recipients = [test.get("email_to")]
@@ -189,6 +190,13 @@ def send_with_template(prefix, parm, test=None):
                         ret = send_email(message.respond(), recipient, test)
             else:
                 ret = T("No recipients given, no email sent")
+        else:
+            # Can't open or read file, stop
+            return errormsg(T("Cannot read %s") % template_file)
+
+    # Did we send any emails at all?
+    if not ret:
+        ret = T("No email templates found")
     return ret
 
 

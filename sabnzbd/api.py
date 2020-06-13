@@ -753,7 +753,7 @@ def _api_test_email(name, output, kwargs):
         test=kwargs,
     )
     if res == T("Email succeeded"):
-        res = None
+        return report(output)
     return report(output, error=res)
 
 
