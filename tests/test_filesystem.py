@@ -460,7 +460,7 @@ class TestTrimWinPath:
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Broken on Windows")
-class TestRecursiveListdir(ffs.TestCase):
+class TestListdirFull(ffs.TestCase):
     # Basic fake filesystem setup stanza
     def setUp(self):
         self.setUpPyfakefs()
@@ -468,7 +468,7 @@ class TestRecursiveListdir(ffs.TestCase):
         self.fs.is_case_sensitive = True
 
     def test_nonexistent_dir(self):
-        assert filesystem.recursive_listdir("/foo/bar") == []
+        assert filesystem.listdir_full("/foo/bar") == []
 
     def test_no_exceptions(self):
         test_files = (
@@ -480,30 +480,38 @@ class TestRecursiveListdir(ffs.TestCase):
             self.fs.create_file(file)
             assert os.path.exists(file) is True
         # List our fake directory structure
-        results_subdir = filesystem.recursive_listdir("/test/dir")
+        results_subdir = filesystem.listdir_full("/test/dir")
         assert len(results_subdir) == 3
         for entry in test_files:
             assert (entry in results_subdir) is True
 
         # List the same directory again, this time using its parent as the function argument.
         # Results should be identical, since there's nothing in /test but that one subdirectory
-        results_parent = filesystem.recursive_listdir("/test")
+        results_parent = filesystem.listdir_full("/test")
         # Don't make assumptions about the sorting of the lists of results
         results_parent.sort()
         results_subdir.sort()
         assert results_parent == results_subdir
 
         # List that subsubsub-directory; no sorting required for a single result
-        assert filesystem.recursive_listdir("/test/dir/sub/sub") == ["/test/dir/sub/sub/sub/dir/file3.ext"]
+        assert filesystem.listdir_full("/test/dir/sub/sub") == ["/test/dir/sub/sub/sub/dir/file3.ext"]
+
+        # Test non-recursive version
+        assert filesystem.listdir_full(r"/test", recursive=False) == []
+        assert filesystem.listdir_full(r"/test/dir/sub", recursive=False) == []
+        assert len(filesystem.listdir_full(r"/test/dir", recursive=False)) == 2
 
     def test_exception_appledouble(self):
         # Anything below a .AppleDouble directory should be omitted
         test_file = "/foo/bar/.AppleDouble/Oooooo.ps"
         self.fs.create_file(test_file)
         assert os.path.exists(test_file) is True
-        assert filesystem.recursive_listdir("/foo") == []
-        assert filesystem.recursive_listdir("/foo/bar") == []
-        assert filesystem.recursive_listdir("/foo/bar/.AppleDouble") == []
+        assert filesystem.listdir_full("/foo") == []
+        assert filesystem.listdir_full("/foo/bar") == []
+        assert filesystem.listdir_full("/foo/bar/.AppleDouble") == []
+        assert filesystem.listdir_full("/foo", recursive=False) == []
+        assert filesystem.listdir_full("/foo/bar", recursive=False) == []
+        assert filesystem.listdir_full("/foo/bar/.AppleDouble", recursive=False) == []
 
     def test_exception_dsstore(self):
         # Anything below a .DS_Store directory should be omitted
@@ -514,9 +522,12 @@ class TestRecursiveListdir(ffs.TestCase):
         ):
             self.fs.create_file(file)
             assert os.path.exists(file) is True
-        assert filesystem.recursive_listdir("/some") == ["/some/FILE"]
-        assert filesystem.recursive_listdir("/some/.DS_Store/") == []
-        assert filesystem.recursive_listdir("/some/.DS_Store/subdir") == []
+        assert filesystem.listdir_full("/some") == ["/some/FILE"]
+        assert filesystem.listdir_full("/some/.DS_Store/") == []
+        assert filesystem.listdir_full("/some/.DS_Store/subdir") == []
+        assert filesystem.listdir_full("/some", recursive=False) == ["/some/FILE"]
+        assert filesystem.listdir_full("/some/.DS_Store/", recursive=False) == []
+        assert filesystem.listdir_full("/some/.DS_Store/subdir", recursive=False) == []
 
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
@@ -524,10 +535,10 @@ class TestRecursiveListdir(ffs.TestCase):
         test_file = "/dev/sleepy"
         self.fs.create_file(test_file)
         assert os.path.exists(test_file) is True
-        assert filesystem.recursive_listdir(test_file) == []
+        assert filesystem.listdir_full(test_file) == []
 
 
-class TestRecursiveListdirWin(ffs.TestCase):
+class TestListdirFullWin(ffs.TestCase):
     # Basic fake filesystem setup stanza
     @set_platform("win32")
     def setUp(self):
@@ -537,7 +548,7 @@ class TestRecursiveListdirWin(ffs.TestCase):
         self.fs.is_case_sensitive = False
 
     def test_nonexistent_dir(self):
-        assert filesystem.recursive_listdir(r"F:\foo\bar") == []
+        assert filesystem.listdir_full(r"F:\foo\bar") == []
 
     def test_no_exceptions(self):
         test_files = (
@@ -549,32 +560,38 @@ class TestRecursiveListdirWin(ffs.TestCase):
             self.fs.create_file(file)
             assert os.path.exists(file) is True
         # List our fake directory structure
-        results_subdir = filesystem.recursive_listdir(r"f:\test\dir")
+        results_subdir = filesystem.listdir_full(r"f:\test\dir")
         assert len(results_subdir) == 3
         for entry in test_files:
             assert (entry in results_subdir) is True
 
         # List the same directory again, this time using its parent as the function argument.
         # Results should be identical, since there's nothing in /test but that one subdirectory
-        results_parent = filesystem.recursive_listdir(r"f:\test")
+        results_parent = filesystem.listdir_full(r"f:\test")
         # Don't make assumptions about the sorting of the lists of results
         results_parent.sort()
         results_subdir.sort()
         assert results_parent == results_subdir
 
         # List that subsubsub-directory; no sorting required for a single result
-        assert (
-            filesystem.recursive_listdir(r"F:\test\dir\SUB\sub")[0].lower() == r"f:\test\dir\sub\sub\sub\dir\file3.ext"
-        )
+        assert filesystem.listdir_full(r"F:\test\dir\SUB\sub")[0].lower() == r"f:\test\dir\sub\sub\sub\dir\file3.ext"
+
+        # Test non-recursive version
+        assert filesystem.listdir_full(r"f:\test", recursive=False) == []
+        assert filesystem.listdir_full(r"F:\test\dir\SUB", recursive=False) == []
+        assert len(filesystem.listdir_full(r"f:\test\dir", recursive=False)) == 2
 
     def test_exception_appledouble(self):
         # Anything below a .AppleDouble directory should be omitted
         test_file = r"f:\foo\bar\.AppleDouble\Oooooo.ps"
         self.fs.create_file(test_file)
         assert os.path.exists(test_file) is True
-        assert filesystem.recursive_listdir(r"f:\foo") == []
-        assert filesystem.recursive_listdir(r"f:\foo\bar") == []
-        assert filesystem.recursive_listdir(r"F:\foo\bar\.AppleDouble") == []
+        assert filesystem.listdir_full(r"f:\foo") == []
+        assert filesystem.listdir_full(r"f:\foo\bar") == []
+        assert filesystem.listdir_full(r"F:\foo\bar\.AppleDouble") == []
+        assert filesystem.listdir_full(r"f:\foo", recursive=False) == []
+        assert filesystem.listdir_full(r"f:\foo\bar", recursive=False) == []
+        assert filesystem.listdir_full(r"F:\foo\bar\.AppleDouble", recursive=False) == []
 
     def test_exception_dsstore(self):
         # Anything below a .DS_Store directory should be omitted
@@ -585,9 +602,12 @@ class TestRecursiveListdirWin(ffs.TestCase):
         ):
             self.fs.create_file(file)
             assert os.path.exists(file) is True
-        assert filesystem.recursive_listdir(r"f:\some") == [r"f:\some\FILE"]
-        assert filesystem.recursive_listdir(r"f:\some\.DS_Store") == []
-        assert filesystem.recursive_listdir(r"f:\some\.DS_Store\subdir") == []
+        assert filesystem.listdir_full(r"f:\some") == [r"f:\some\FILE"]
+        assert filesystem.listdir_full(r"f:\some\.DS_Store") == []
+        assert filesystem.listdir_full(r"f:\some\.DS_Store\subdir") == []
+        assert filesystem.listdir_full(r"f:\some", recursive=True) == [r"f:\some\FILE"]
+        assert filesystem.listdir_full(r"f:\some\.DS_Store", recursive=True) == []
+        assert filesystem.listdir_full(r"f:\some\.DS_Store\subdir", recursive=True) == []
 
     def test_invalid_file_argument(self):
         # This is obviously not intended use; the function expects a directory
@@ -595,7 +615,7 @@ class TestRecursiveListdirWin(ffs.TestCase):
         test_file = r"f:\dev\sleepy"
         self.fs.create_file(test_file)
         assert os.path.exists(test_file) is True
-        assert filesystem.recursive_listdir(test_file) == []
+        assert filesystem.listdir_full(test_file) == []
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Broken on Windows")

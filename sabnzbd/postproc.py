@@ -55,7 +55,7 @@ from sabnzbd.filesystem import (
     sanitize_and_trim_path,
     sanitize_files_in_folder,
     remove_file,
-    recursive_listdir,
+    listdir_full,
     setname_from_path,
     create_all_dirs,
     get_unique_filename,
@@ -1038,7 +1038,7 @@ def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
         if so send to queue and remove if on clean-up list
         Returns list of processed NZB's
     """
-    files = recursive_listdir(wdir)
+    files = listdir_full(wdir)
 
     for nzb_file in files:
         if get_ext(nzb_file) != ".nzb":

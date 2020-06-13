@@ -43,7 +43,7 @@ from sabnzbd.filesystem import (
     clip_path,
     long_path,
     remove_file,
-    recursive_listdir,
+    listdir_full,
     setname_from_path,
     get_ext,
     get_filename,
@@ -931,7 +931,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
         tms = time.time()
 
         # For file-bookkeeping
-        orig_dir_content = recursive_listdir(workdir_complete)
+        orig_dir_content = listdir_full(workdir_complete)
 
         for _zip in zips:
             logging.info("Starting extract on zipfile: %s ", _zip)
@@ -951,7 +951,7 @@ def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
         nzo.set_unpack_info("Unpack", msg)
 
         # What's new?
-        new_files = list(set(orig_dir_content + recursive_listdir(workdir_complete)))
+        new_files = list(set(orig_dir_content + listdir_full(workdir_complete)))
 
         # Delete the old files if we have to
         if delete and not unzip_failed:
@@ -1124,7 +1124,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
         return 1, [], T('7ZIP set "%s" is incomplete, cannot unpack') % setname_from_path(sevenset)
 
     # For file-bookkeeping
-    orig_dir_content = recursive_listdir(extraction_path)
+    orig_dir_content = listdir_full(extraction_path)
 
     command = [SEVEN_COMMAND, method, "-y", overwrite, parm, case, password, "-o%s" % extraction_path, name]
 
@@ -1155,7 +1155,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
         msg = T("Could not unpack %s") % setname_from_path(sevenset)
 
     # What's new?
-    new_files = list(set(orig_dir_content + recursive_listdir(extraction_path)))
+    new_files = list(set(orig_dir_content + listdir_full(extraction_path)))
 
     if ret == 0 and delete:
         if extensions:
@@ -2207,10 +2207,10 @@ def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=
     sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
 
     if workdir_complete:
-        filelist.extend(recursive_listdir(workdir_complete))
+        filelist.extend(listdir_full(workdir_complete))
 
     if workdir and (not filelist or check_both):
-        filelist.extend(recursive_listdir(workdir))
+        filelist.extend(listdir_full(workdir, recursive=False))
 
     for file in filelist:
         # Extra check for rar (takes CPU/disk)

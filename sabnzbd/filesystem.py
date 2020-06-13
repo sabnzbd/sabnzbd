@@ -605,7 +605,7 @@ def get_unique_filename(path):
 
 
 @synchronized(DIR_LOCK)
-def recursive_listdir(input_dir):
+def listdir_full(input_dir, recursive=True):
     """ List all files in dirs and sub-dirs """
     filelist = []
     for root, dirs, files in os.walk(input_dir):
@@ -613,6 +613,8 @@ def recursive_listdir(input_dir):
             if ".AppleDouble" not in root and ".DS_Store" not in root:
                 p = os.path.join(root, file)
                 filelist.append(p)
+        if not recursive:
+            break
     return filelist
 
 
