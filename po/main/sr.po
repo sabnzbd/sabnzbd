@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
-"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
+"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
+"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -387,23 +387,15 @@ msgstr "Неуспешно затварање базе, видети извеш�
 msgid "Invalid stage logging in history for %s"
 msgstr "Погрешне етапе извештаја можете наћи у хронологији за %s"
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr "Dešifrovanje %s neuspešno"
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
 msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
-msgstr "Лоше формиран yEnc артикал у %s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr "Nepoznata greška pri dešifrovanju %s"
 
@@ -1174,10 +1166,6 @@ msgstr "%s артикла недостају"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s артикла нису дупликате"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
-msgstr "%s артикла су уклоњени"
 
 #: sabnzbd/nzbstuff.py [Error message]
 msgid "Error importing %s"
@@ -5209,6 +5197,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "WARNING: Paused job \"%s\" because of encrypted RAR file"
 #~ msgstr "ПАЖЊА: Посао је паузиран \"%s\" јер је RAR датотека шифрована"
 
+#~ msgid "Badly formed yEnc article in %s"
+#~ msgstr "Лоше формиран yEnc артикал у %s"
+
 #~ msgid "Error: Session Key Required"
 #~ msgstr "Грешка: потребан је кључ сесије"
 
@@ -5322,6 +5313,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ "following location: %s"
 #~ msgstr "После покретања SABnzb-а, можете оведе приступити: %s"
 
+#~ msgid "%s articles were removed"
+#~ msgstr "%s артикла су уклоњени"
+
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr "ПАЖЊА: Поништен рад \"%s\" због шифроване RAR датотеке"
 
@@ -5342,6 +5336,9 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "Server %s requires user/password"
 #~ msgstr "Server %s zahteva koriničko ime/lozinku"
+
+#~ msgid "Decoding %s failed"
+#~ msgstr "Dešifrovanje %s neuspešno"
 
 #~ msgid "Error: No secondary interface defined."
 #~ msgstr "Greška: Sekundarni interfejs nije definisan"

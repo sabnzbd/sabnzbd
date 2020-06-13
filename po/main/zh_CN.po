@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-27 06:37+0000\n"
-"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
+"X-Launchpad-Export-Date: 2020-06-02 06:04+0000\n"
+"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -382,23 +382,15 @@ msgstr "无法关闭数据库，参见日志"
 msgid "Invalid stage logging in history for %s"
 msgstr "%s 历史信息中 stage 日志无效"
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr "%s 解码失败"
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
 msgstr "解码器失败：内存不足"
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
-msgstr "yEnc 文章格式错误：%s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr "解码 %s 时发生未知错误"
 
@@ -1161,10 +1153,6 @@ msgstr "%s 篇文章缺失"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s 篇文章存在未匹配的重复"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
-msgstr "已移除 %s 篇文章"
 
 #: sabnzbd/nzbstuff.py [Error message]
 msgid "Error importing %s"
@@ -4682,8 +4670,14 @@ msgstr "URL 装取失败; %s"
 #~ msgid "SQL Commit Failed, see log"
 #~ msgstr "SQL 保存失败，参见日志"
 
+#~ msgid "Decoding %s failed"
+#~ msgstr "%s 解码失败"
+
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "CRC 错误：%s (%s -> %s)"
+
+#~ msgid "Badly formed yEnc article in %s"
+#~ msgstr "yEnc 文章格式错误：%s"
 
 #~ msgid "Server %s requires user/password"
 #~ msgstr "服务器 %s 需要用户/密码"
@@ -5297,6 +5291,9 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Send notifications to Notification Center"
 #~ msgstr "将通知发送到“通知中心”"
+
+#~ msgid "%s articles were removed"
+#~ msgstr "已移除 %s 篇文章"
 
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr "*警告*: 已中止任务 \"%s\"，因为发现了加密的 RAR 文件"

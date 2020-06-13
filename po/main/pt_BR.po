@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "PO-Revision-Date: 2018-02-14 14:16+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Brazilian Portuguese <pt_BR@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-27 06:37+0000\n"
-"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
+"X-Launchpad-Export-Date: 2020-06-02 06:04+0000\n"
+"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -392,23 +392,15 @@ msgstr "Falha ao fechar o banco de dados. Consulte o log"
 msgid "Invalid stage logging in history for %s"
 msgstr "Registro inválido de etapa no histórico para %s"
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr "Falha ao decodificar %s"
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
 msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
-msgstr "Artigo yEnc mal formado em %s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr "Erro desconhecido ao decodificar %s"
 
@@ -1181,10 +1173,6 @@ msgstr "%s artigos estavam faltando"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artigos tinham duplicatas não-correspondentes"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
-msgstr "%s artigos foram removidos"
 
 #: sabnzbd/nzbstuff.py [Error message]
 msgid "Error importing %s"
@@ -4775,8 +4763,14 @@ msgstr "A busca da URL falhou; %s"
 #~ msgstr ""
 #~ "ATENÇÃO: Tarefa \"%s\" em pausa por causa de arquivo RAR criptografado"
 
+#~ msgid "Badly formed yEnc article in %s"
+#~ msgstr "Artigo yEnc mal formado em %s"
+
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "Erro de CRC em %s (%s -> %s)"
+
+#~ msgid "Decoding %s failed"
+#~ msgstr "Falha ao decodificar %s"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "A pasta \"%s\" não existe"
@@ -5411,6 +5405,9 @@ msgstr "A busca da URL falhou; %s"
 
 #~ msgid "Send notifications to Notification Center"
 #~ msgstr "Envia notificações para o Centro de Notificações"
+
+#~ msgid "%s articles were removed"
+#~ msgstr "%s artigos foram removidos"
 
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr ""

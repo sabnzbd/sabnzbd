@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "PO-Revision-Date: 2020-05-03 15:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
-"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
+"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
+"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -408,23 +408,15 @@ msgstr "Het lukt niet om de database te sluiten, zie log"
 msgid "Invalid stage logging in history for %s"
 msgstr "Ongeldig loggen van fase in geschiedenis voor %s"
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr "Decoderen van %s mislukt"
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
 msgstr "Decoder fout: onvoldoende geheugen"
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
-msgstr "Slecht opgemaakt yEnc-artikel in %s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr "UUencode gevonden, alleen yEnc codering wordt ondersteund [%s]"
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr "Onbekende fout tijdens het decoderen van %s"
 
@@ -1210,10 +1202,6 @@ msgstr "%s artikelen ontbreken"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikelen hadden afwijkende duplicaten"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
-msgstr "%s artikelen zijn verwijderd"
 
 #: sabnzbd/nzbstuff.py [Error message]
 msgid "Error importing %s"
@@ -4855,6 +4843,9 @@ msgstr "URL ophalen mislukt; %s"
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Map \"%s\" bestaat niet."
 
+#~ msgid "Decoding %s failed"
+#~ msgstr "Decoderen van %s mislukt"
+
 #~ msgid "Server %s requires user/password"
 #~ msgstr "Server %s heeft gebruikersnaam/wachtwoord nodig"
 
@@ -5392,6 +5383,9 @@ msgstr "URL ophalen mislukt; %s"
 #~ msgid "Enable classes of messages to be reported (none, one or multiple)"
 #~ msgstr "Kies welke bericht types verstuurd moeten worden (geen, één of meer)"
 
+#~ msgid "%s articles were removed"
+#~ msgstr "%s artikelen zijn verwijderd"
+
 #~ msgid "Refer to https://www.oznzb.com/profile"
 #~ msgstr "Kijk op https://www.oznzb.com/profile"
 
@@ -5505,6 +5499,9 @@ msgstr "URL ophalen mislukt; %s"
 
 #~ msgid "Cannot create %s folder %s"
 #~ msgstr "Niet mogelijk %s map %s aan te maken"
+
+#~ msgid "Badly formed yEnc article in %s"
+#~ msgstr "Slecht opgemaakt yEnc-artikel in %s"
 
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "CRC-fout in %s (%s -> %s)"

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "PO-Revision-Date: 2020-05-26 18:48+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
-"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
+"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
+"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -416,23 +416,15 @@ msgstr "Impossible de fermer la base de données, voir le journal"
 msgid "Invalid stage logging in history for %s"
 msgstr "Étape de journalisation invalide dans l'historique pour %s"
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr "Échec du décodage de %s"
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
 msgstr "Échec du décodeur : mémoire insuffisante"
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
-msgstr "Article yEnc mal construit dans %s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr "UUencode détecté, seul l'encodage yEnc est pris en charge [%s]"
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr "Erreur inconnue lors du décodage de %s"
 
@@ -1230,10 +1222,6 @@ msgstr "%s articles manquants"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articles avec doublons sans correspondance"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
-msgstr "%s articles ont été retirés"
 
 #: sabnzbd/nzbstuff.py [Error message]
 msgid "Error importing %s"
@@ -5210,6 +5198,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "Get NZB"
 #~ msgstr "Récupérer NZB"
 
+#~ msgid "Decoding %s failed"
+#~ msgstr "Échec du décodage de %s"
+
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "Codage non valide pour le modèle d'email %s"
 
@@ -5350,6 +5341,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "Show files"
 #~ msgstr "Afficher les fichiers"
 
+#~ msgid "Badly formed yEnc article in %s"
+#~ msgstr "Article yEnc mal construit dans %s"
+
 #~ msgid "SQL Commit Failed, see log"
 #~ msgstr "Echec du commit SQL, voir le journal"
 
@@ -5436,6 +5430,9 @@ msgstr "Échec de récupération de l'URL ; %s"
 
 #~ msgid "Send notifications to Notification Center"
 #~ msgstr "Envoyer des notifications au centre de notification"
+
+#~ msgid "%s articles were removed"
+#~ msgstr "%s articles ont été retirés"
 
 #~ msgid "Refer to https://www.oznzb.com/profile"
 #~ msgstr "Reportez-vous à https://www.oznzb.com/profile"

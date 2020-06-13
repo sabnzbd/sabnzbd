@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Norwegian Bokmal <nb@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
-"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
+"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
+"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -390,23 +390,15 @@ msgstr "Kunne ikke stenge databasen, se logg"
 msgid "Invalid stage logging in history for %s"
 msgstr "Ugyldig scenen logging i historien for %s"
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr "Dekoding av %s mislyktes"
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
 msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
-msgstr "Feilaktigt utformet yEnc artikkel i %s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr "Ukjent feil oppstod under dekoding av %s"
 
@@ -1179,10 +1171,6 @@ msgstr "%s artikler manglet"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artikler hadde ulike duplikater"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
-msgstr "%s artikler ble slettet"
 
 #: sabnzbd/nzbstuff.py [Error message]
 msgid "Error importing %s"
@@ -4757,6 +4745,9 @@ msgstr "URL henting mislyktes; %s"
 #~ msgid "SQL Commit Failed, see log"
 #~ msgstr "SQL Innsetting mislyktes, se logg"
 
+#~ msgid "Badly formed yEnc article in %s"
+#~ msgstr "Feilaktigt utformet yEnc artikkel i %s"
+
 #~ msgid "Server %s requires user/password"
 #~ msgstr "Server %s krever brukernavn/passord"
 
@@ -5217,6 +5208,9 @@ msgstr "URL henting mislyktes; %s"
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "CRC-feil i %s (%s -> %s)"
 
+#~ msgid "Decoding %s failed"
+#~ msgstr "Dekoding av %s mislyktes"
+
 #~ msgid "No email templates found"
 #~ msgstr "Ingen e-post-mal funnet"
 
@@ -5271,6 +5265,9 @@ msgstr "URL henting mislyktes; %s"
 
 #~ msgid "New Feed URL"
 #~ msgstr "Ny RSS-kilde adresse"
+
+#~ msgid "%s articles were removed"
+#~ msgstr "%s artikler ble slettet"
 
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr "ADVARSEL: Avbrutt jobb \"%s\" grunnet kryptert RAR fil"

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
-"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
+"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
+"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -390,23 +390,15 @@ msgstr "Błąd zamykania bazy danych, sprawdź logi"
 msgid "Invalid stage logging in history for %s"
 msgstr "Nieprawidłowy log etapu w historii dla %s"
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr "Błąd dekodowania %s"
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
 msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
-msgstr "Źle zbudowany artykuł yEnc w %s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr "Nieznany błąd podczas dekodowania %s"
 
@@ -1183,10 +1175,6 @@ msgstr "Brakowało %s artykułów"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s artykułów posiadało niepasujące duplikaty"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
-msgstr "%s artykułów zostało usuniętych"
 
 #: sabnzbd/nzbstuff.py [Error message]
 msgid "Error importing %s"
@@ -4765,6 +4753,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "Błąd CRC w %s (%s -> %s)"
 
+#~ msgid "Decoding %s failed"
+#~ msgstr "Błąd dekodowania %s"
+
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Folder \"%s\" nie istnieje"
 
@@ -5120,6 +5111,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 #~ msgid "Cannot create %s folder %s"
 #~ msgstr "Nie można utworzyć katalogu %s %s"
 
+#~ msgid "Badly formed yEnc article in %s"
+#~ msgstr "Źle zbudowany artykuł yEnc w %s"
+
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "Nieprawidłowe kodowanie szablonu wiadomości email %s"
 
@@ -5167,6 +5161,9 @@ msgstr "Pobieranie URL nie powiodło się; %s"
 
 #~ msgid "File %s is empty, skipping"
 #~ msgstr "Plik %s jest pusty, pomijam"
+
+#~ msgid "%s articles were removed"
+#~ msgstr "%s artykułów zostało usuniętych"
 
 #~ msgid ""
 #~ "\n"

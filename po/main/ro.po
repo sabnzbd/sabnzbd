@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-26 09:18+0200\n"
+"POT-Creation-Date: 2020-05-27 10:45+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-27 06:36+0000\n"
-"X-Generator: Launchpad (build 1f7bc749b40714a4cc10f5e4d787118a78037035)\n"
+"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
+"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -394,23 +394,15 @@ msgstr "Închidere bază de date nereuşită, vedeţi jurnal"
 msgid "Invalid stage logging in history for %s"
 msgstr "Jurnal istoric stagii invalid pentru %s"
 
-#: sabnzbd/decoder.py
-msgid "Decoding %s failed"
-msgstr "Decodarea %s nereuşită"
-
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Decoder failure: Out of memory"
 msgstr ""
-
-#: sabnzbd/decoder.py
-msgid "Badly formed yEnc article in %s"
-msgstr "Articoul yEnc invalid în %s"
 
 #: sabnzbd/decoder.py
 msgid "UUencode detected, only yEnc encoding is supported [%s]"
 msgstr ""
 
-#: sabnzbd/decoder.py
+#: sabnzbd/decoder.py [Warning message]
 msgid "Unknown Error while decoding %s"
 msgstr "Eroare Necunoscută în timpul decodării %s"
 
@@ -1185,10 +1177,6 @@ msgstr "%s articolele au fost lipsă"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articolele au avut duplicate diferite"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s articles were removed"
-msgstr "Articolele %s au fost eliminate"
 
 #: sabnzbd/nzbstuff.py [Error message]
 msgid "Error importing %s"
@@ -4776,8 +4764,14 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgstr ""
 #~ "ATENŢIE: Sarcina \"%s\" întreruptă din cauza fişierelor RAR encriptate"
 
+#~ msgid "Badly formed yEnc article in %s"
+#~ msgstr "Articoul yEnc invalid în %s"
+
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "Eroare CRC în %s (%s -> %s)"
+
+#~ msgid "Decoding %s failed"
+#~ msgstr "Decodarea %s nereuşită"
 
 #~ msgid "Folder \"%s\" does not exist"
 #~ msgstr "Dosarul \"%s\" nu există"
@@ -5425,6 +5419,9 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file"
 #~ msgstr ""
 #~ "ATENŢIE: Sarcină  \"%s\"  abandonată  deoarce conţine un fişier RAR ecriptat"
+
+#~ msgid "%s articles were removed"
+#~ msgstr "Articolele %s au fost eliminate"
 
 #~ msgid ""
 #~ "Send automatically calculated validation results for downloads to indexer."
