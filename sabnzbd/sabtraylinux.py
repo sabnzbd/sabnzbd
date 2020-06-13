@@ -46,7 +46,6 @@ import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
-from sabnzbd.utils.upload import add_local
 
 
 class StatusIcon(Thread):
@@ -171,7 +170,7 @@ class StatusIcon(Thread):
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             for filename in dialog.get_filenames():
-                add_local(filename)
+                sabnzbd.add_nzbfile(filename)
         dialog.destroy()
 
     def opencomplete(self, icon):

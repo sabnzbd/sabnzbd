@@ -84,7 +84,7 @@ from sabnzbd.rating import Rating
 import sabnzbd.misc as misc
 import sabnzbd.filesystem as filesystem
 import sabnzbd.powersup as powersup
-from sabnzbd.dirscanner import DirScanner, process_nzb_archive_file, process_single_nzb
+from sabnzbd.dirscanner import DirScanner
 from sabnzbd.urlgrabber import URLGrabber
 import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
@@ -98,6 +98,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.par2file as par2file
+import sabnzbd.nzbparser as nzbparser
 import sabnzbd.api
 import sabnzbd.interface
 import sabnzbd.nzbstuff as nzbstuff
@@ -634,12 +635,24 @@ def save_compressed(folder, filename, data):
 
 
 def add_nzbfile(
-    nzbfile, pp=None, script=None, cat=None, priority=NORMAL_PRIORITY, nzbname=None, reuse=False, password=None
+    nzbfile,
+    pp=None,
+    script=None,
+    cat=None,
+    catdir=None,
+    priority=NORMAL_PRIORITY,
+    nzbname=None,
+    nzo_info=None,
+    url=None,
+    keep=None,
+    reuse=False,
+    password=None,
+    nzo_id=None,
 ):
-    """ Add disk-based NZB file, optional attributes,
+    """ Add file
         'reuse' flag will suppress duplicate detection
     """
-    if pp and pp == "-1":
+    if pp == "-1":
         pp = None
     if script and script.lower() == "default":
         script = None
@@ -648,56 +661,68 @@ def add_nzbfile(
 
     if isinstance(nzbfile, str):
         # File coming from queue repair
-        filename = nzbfile
-        keep = True
-    else:
-        # TODO: CherryPy mangles unicode-filenames!
-        # See https://github.com/cherrypy/cherrypy/issues/1766
-        filename = encoding.correct_unknown_encoding(nzbfile.filename)
-        keep = False
-
-    if not sabnzbd.WIN32:
-        # If windows client sends file to Unix server backslashes may
-        # be included, so convert these
-        filename = filename.replace("\\", "/")
-
-    filename = os.path.basename(filename)
-    ext = os.path.splitext(filename)[1]
-    if ext.lower() in VALID_ARCHIVES:
-        suffix = ext.lower()
-    else:
-        suffix = ".nzb"
-
-    logging.info("Adding %s", filename)
-
-    if isinstance(nzbfile, str):
         path = nzbfile
+        filename = os.path.basename(path)
+        keep_default = True
+        if not sabnzbd.WIN32:
+            # If windows client sends file to Unix server backslashes may
+            # be included, so convert these
+            path = path.replace("\\", "/")
+        logging.info("Attempting to add %s [%s]", filename, path)
     else:
+        # File from file-upload object
+        # CherryPy mangles unicode-filenames: https://github.com/cherrypy/cherrypy/issues/1766
+        filename = encoding.correct_unknown_encoding(nzbfile.filename)
+        logging.info("Attempting to add %s", filename)
+        keep_default = False
         try:
-            nzb_file, path = tempfile.mkstemp(suffix=suffix)
-            os.write(nzb_file, nzbfile.value)
-            os.close(nzb_file)
+            # We have to create a copy, because we can't re-use the CherryPy temp-file
+            # Just to be sure we add the extension to detect file type later on
+            nzb_temp_file, path = tempfile.mkstemp(suffix=filesystem.get_ext(filename))
+            os.write(nzb_temp_file, nzbfile.file.read())
+            os.close(nzb_temp_file)
         except OSError:
             logging.error(T("Cannot create temp file for %s"), filename)
             logging.info("Traceback: ", exc_info=True)
             return None
 
-    if ext.lower() in VALID_ARCHIVES:
-        return process_nzb_archive_file(
-            filename, path, pp, script, cat, priority=priority, nzbname=nzbname, password=password
-        )
-    else:
-        return process_single_nzb(
+    # Externally defined if we should keep the file?
+    if keep is None:
+        keep = keep_default
+
+    if filesystem.get_ext(filename) in VALID_ARCHIVES:
+        return nzbparser.process_nzb_archive_file(
             filename,
-            path,
-            pp,
-            script,
-            cat,
+            path=path,
+            pp=pp,
+            script=script,
+            cat=cat,
+            catdir=catdir,
             priority=priority,
             nzbname=nzbname,
             keep=keep,
             reuse=reuse,
+            nzo_info=nzo_info,
+            url=url,
             password=password,
+            nzo_id=nzo_id,
+        )
+    else:
+        return nzbparser.process_single_nzb(
+            filename,
+            path=path,
+            pp=pp,
+            script=script,
+            cat=cat,
+            catdir=catdir,
+            priority=priority,
+            nzbname=nzbname,
+            keep=keep,
+            reuse=reuse,
+            nzo_info=nzo_info,
+            url=url,
+            password=password,
+            nzo_id=nzo_id,
         )
 
 
@@ -872,7 +897,7 @@ def get_new_id(prefix, folder, check_list=None):
     """ Return unique prefixed admin identifier within folder
         optionally making sure that id is not in the check_list.
     """
-    for n in range(10000):
+    for n in range(100):
         try:
             if not os.path.exists(folder):
                 os.makedirs(folder)

@@ -25,13 +25,11 @@ import os.path
 import logging
 import urllib.request, urllib.error, urllib.parse
 import http.client
-import subprocess
 import json
 from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import platform_btou
 from sabnzbd.filesystem import make_script_path
 from sabnzbd.newsunpack import external_script
 

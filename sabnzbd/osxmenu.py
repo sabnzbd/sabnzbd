@@ -34,7 +34,7 @@ import cherrypy
 import sabnzbd
 import sabnzbd.cfg
 
-from sabnzbd.filesystem import get_filename, get_ext, diskspace
+from sabnzbd.filesystem import diskspace
 from sabnzbd.misc import to_units
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
 from sabnzbd.panic import launch_a_browser
@@ -45,7 +45,6 @@ from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.config as config
 import sabnzbd.scheduler as scheduler
 import sabnzbd.downloader
-import sabnzbd.dirscanner as dirscanner
 from sabnzbd.bpsmeter import BPSMeter
 
 status_icons = {
@@ -802,18 +801,11 @@ class SABnzbdDelegate(NSObject):
     def application_openFiles_(self, nsapp, filenames):
         # logging.info('[osx] file open')
         # logging.info('[osx] file : %s' % (filenames))
-        for name in filenames:
-            logging.info("[osx] receiving from OSX : %s", name)
-            if os.path.exists(name):
-                fn = get_filename(name)
-                # logging.info('[osx] filename : %s' % (fn))
-                if fn:
-                    if get_ext(name) in VALID_ARCHIVES:
-                        # logging.info('[osx] archive')
-                        dirscanner.process_nzb_archive_file(fn, name, keep=True)
-                    elif get_ext(name) in VALID_NZB_FILES:
-                        # logging.info('[osx] nzb')
-                        dirscanner.process_single_nzb(fn, name, keep=True)
+        for filename in filenames:
+            logging.info("[osx] receiving from OSX : %s", filename)
+            if os.path.exists(filename):
+                if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
+                    sabnzbd.add_nzbfile(filename, keep=True)
         # logging.info('opening done')
 
     def applicationShouldTerminate_(self, sender):
