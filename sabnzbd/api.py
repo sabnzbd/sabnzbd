@@ -127,8 +127,8 @@ def api_handler(kwargs):
 
     # Clean-up the arguments
     for vr in ("mode", "output", "name"):
-        if isinstance(kwargs.get(vr, None), list):
-            kwargs[vr] = vr[0]
+        if vr in kwargs and isinstance(kwargs[vr], list):
+            kwargs[vr] = kwargs[vr][0]
 
     mode = kwargs.get("mode", "")
     output = kwargs.get("output", "")
