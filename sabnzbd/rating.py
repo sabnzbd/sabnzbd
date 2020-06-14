@@ -19,17 +19,19 @@
 sabnzbd.rating - Rating support functions
 """
 
-import http.client
-import urllib.parse
-import time
-import logging
-import copy
-import queue
 import collections
+import copy
+import http.client
+import logging
+import queue
+import time
+import urllib.parse
 from threading import RLock, Thread
+
 import sabnzbd
-from sabnzbd.decorators import synchronized
 import sabnzbd.cfg as cfg
+from sabnzbd.decorators import synchronized
+
 
 # A queue which ignores duplicates but maintains ordering
 class OrderedSetQueue(queue.Queue):

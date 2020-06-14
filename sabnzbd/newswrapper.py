@@ -20,17 +20,17 @@ sabnzbd.newswrapper
 """
 
 import errno
-import socket
-from threading import Thread
-from nntplib import NNTPPermanentError
-import time
 import logging
+import socket
 import ssl
+import time
+from nntplib import NNTPPermanentError
+from threading import Thread
 
 import sabnzbd
+import sabnzbd.cfg
 from sabnzbd.constants import *
 from sabnzbd.encoding import utob
-import sabnzbd.cfg
 from sabnzbd.misc import nntp_to_msg, probablyipv4, probablyipv6
 
 # Set pre-defined socket timeout

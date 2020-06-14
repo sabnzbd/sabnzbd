@@ -8,10 +8,11 @@
 tests.test_postproc- Tests of various functions in newspack, among which rar_renamer()
 """
 
-import pytest
 import shutil
 from distutils.dir_util import copy_tree
 from unittest import mock
+
+import pytest
 
 from sabnzbd.postproc import *
 

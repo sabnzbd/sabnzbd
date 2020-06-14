@@ -5,13 +5,14 @@ Adapted from the docs of cryptography
 Creates a key and self-signed certificate for local use
 """
 
+import datetime
+import socket
+
+from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography import x509
 from cryptography.x509.oid import NameOID
-import datetime
-import socket
 
 from sabnzbd.getipaddress import localipv4
 

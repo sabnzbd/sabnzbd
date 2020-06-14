@@ -19,20 +19,19 @@
 sabnzbd.scheduler - Event Scheduler
 """
 
-import random
 import logging
+import random
 import time
 
-import sabnzbd.utils.kronos as kronos
-import sabnzbd.rss as rss
-import sabnzbd.downloader
-import sabnzbd.dirscanner
-import sabnzbd.misc
-import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.postproc import PostProcessor
+import sabnzbd.config as config
+import sabnzbd.dirscanner
+import sabnzbd.downloader
+import sabnzbd.misc
+import sabnzbd.rss as rss
+import sabnzbd.utils.kronos as kronos
 from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
-
+from sabnzbd.postproc import PostProcessor
 
 __SCHED = None  # Global pointer to Scheduler instance
 

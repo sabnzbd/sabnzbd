@@ -19,20 +19,20 @@
 sabnzbd.emailer - Send notification emails
 """
 
-import smtplib
+import glob
 import logging
 import re
+import smtplib
 import time
-import glob
-
-from Cheetah.Template import Template
 from email.message import EmailMessage
 
-from sabnzbd.constants import *
+from Cheetah.Template import Template
+
 import sabnzbd
+import sabnzbd.cfg as cfg
+from sabnzbd.constants import *
 from sabnzbd.misc import to_units, split_host, time_format
 from sabnzbd.notifier import check_cat
-import sabnzbd.cfg as cfg
 
 RE_HEADER = re.compile(r"^([^:]+):(.*)")
 

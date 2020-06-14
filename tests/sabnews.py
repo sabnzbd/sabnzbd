@@ -22,13 +22,14 @@ Run sabnews.py -h for parameters!
 
 """
 
-import os
-import re
-import time
-import sabyenc3
 import argparse
 import asyncio
 import logging
+import os
+import re
+import time
+
+import sabyenc3
 
 logging.getLogger().setLevel(logging.INFO)
 

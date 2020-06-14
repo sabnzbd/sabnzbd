@@ -19,22 +19,22 @@
 sabnzbd.database - Database Support
 """
 
-import os
-import time
-import zlib
 import logging
+import os
+import sqlite3
 import sys
 import threading
-import sqlite3
+import time
+import zlib
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status
 from sabnzbd.bpsmeter import this_week, this_month
+from sabnzbd.constants import DB_HISTORY_NAME, STAGES, Status
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
-from sabnzbd.misc import int_conv, caller_name, opts_to_pp
 from sabnzbd.filesystem import remove_file
+from sabnzbd.misc import int_conv, caller_name, opts_to_pp
 
 DB_LOCK = threading.RLock()
 

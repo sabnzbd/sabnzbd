@@ -19,11 +19,11 @@
 sabnzbd.getipaddress
 """
 
-import socket
-import multiprocessing.pool
 import functools
-import urllib.request
+import multiprocessing.pool
+import socket
 import urllib.error
+import urllib.request
 
 import sabnzbd
 import sabnzbd.cfg

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import time
 import os
 import sys
+import time
 
 _DUMP_DATA_SIZE = 10 * 1024 * 1024
 _DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)

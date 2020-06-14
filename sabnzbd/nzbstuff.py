@@ -19,17 +19,21 @@
 sabnzbd.nzbstuff - misc
 """
 
-import os
-import time
-import re
-import logging
 import datetime
-import threading
-import functools
 import difflib
+import functools
+import logging
+import os
+import re
+import threading
+import time
 
 # SABnzbd modules
 import sabnzbd
+import sabnzbd.cfg as cfg
+import sabnzbd.config as config
+import sabnzbd.nzbparser
+from sabnzbd.articlecache import ArticleCache
 from sabnzbd.constants import (
     GIGI,
     ATTRIB_FILE,
@@ -48,18 +52,8 @@ from sabnzbd.constants import (
     Status,
     PNFO,
 )
-from sabnzbd.misc import (
-    to_units,
-    cat_to_opts,
-    cat_convert,
-    int_conv,
-    format_time_string,
-    calc_age,
-    cmp,
-    caller_name,
-    opts_to_pp,
-    pp_to_opts,
-)
+from sabnzbd.database import HistoryDB
+from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import (
     sanitize_foldername,
     get_unique_path,
@@ -79,12 +73,18 @@ from sabnzbd.filesystem import (
     get_filepath,
     listdir_full,
 )
-from sabnzbd.decorators import synchronized
-import sabnzbd.config as config
-import sabnzbd.cfg as cfg
-import sabnzbd.nzbparser
-from sabnzbd.database import HistoryDB
-from sabnzbd.articlecache import ArticleCache
+from sabnzbd.misc import (
+    to_units,
+    cat_to_opts,
+    cat_convert,
+    int_conv,
+    format_time_string,
+    calc_age,
+    cmp,
+    caller_name,
+    opts_to_pp,
+    pp_to_opts,
+)
 from sabnzbd.rating import Rating
 
 # Name patterns

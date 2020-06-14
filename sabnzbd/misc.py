@@ -18,23 +18,23 @@
 """
 sabnzbd.misc - misc classes
 """
-import os
-import sys
-import logging
-import urllib.request
-import urllib.parse
-import re
-import subprocess
-import socket
-import time
+import ctypes
 import datetime
 import inspect
-import ctypes
+import logging
+import os
+import re
+import socket
+import subprocess
+import sys
+import time
+import urllib.parse
+import urllib.request
 
 import sabnzbd
-from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
-import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+import sabnzbd.config as config
+from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 from sabnzbd.encoding import ubtou, platform_btou
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")

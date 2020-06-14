@@ -19,13 +19,13 @@
 sabnzbd.bpsmeter - bpsmeter
 """
 
-import time
 import logging
 import re
+import time
 
 import sabnzbd
-from sabnzbd.constants import BYTES_FILE_NAME, KIBI
 import sabnzbd.cfg as cfg
+from sabnzbd.constants import BYTES_FILE_NAME, KIBI
 
 DAY = float(24 * 60 * 60)
 WEEK = DAY * 7

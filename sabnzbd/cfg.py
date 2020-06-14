@@ -21,17 +21,6 @@ sabnzbd.cfg - Configuration Parameters
 import re
 
 import sabnzbd
-from sabnzbd.constants import (
-    DEF_HOST,
-    DEF_PORT,
-    DEF_STDINTF,
-    DEF_ADMIN_DIR,
-    DEF_DOWNLOAD_DIR,
-    DEF_NZBBACK_DIR,
-    DEF_SCANRATE,
-    DEF_COMPLETE_DIR,
-)
-
 from sabnzbd.config import (
     OptionBool,
     OptionNumber,
@@ -45,6 +34,16 @@ from sabnzbd.config import (
     all_lowercase,
     create_api_key,
     validate_notempty,
+)
+from sabnzbd.constants import (
+    DEF_HOST,
+    DEF_PORT,
+    DEF_STDINTF,
+    DEF_ADMIN_DIR,
+    DEF_DOWNLOAD_DIR,
+    DEF_NZBBACK_DIR,
+    DEF_SCANRATE,
+    DEF_COMPLETE_DIR,
 )
 
 ##############################################################################

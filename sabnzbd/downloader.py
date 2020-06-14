@@ -19,26 +19,25 @@
 sabnzbd.downloader - download engine
 """
 
-import time
-import select
 import logging
-from threading import Thread, RLock
-from nntplib import NNTPPermanentError
-import socket
 import random
+import select
+import socket
 import sys
+import time
+from nntplib import NNTPPermanentError
+from threading import Thread, RLock
 
 import sabnzbd
-from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
-from sabnzbd.newswrapper import NewsWrapper, request_server_info
-import sabnzbd.notifier as notifier
-import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.bpsmeter import BPSMeter
+import sabnzbd.config as config
+import sabnzbd.notifier as notifier
 import sabnzbd.scheduler
+from sabnzbd.bpsmeter import BPSMeter
+from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.misc import from_units, nntp_to_msg, int_conv
+from sabnzbd.newswrapper import NewsWrapper, request_server_info
 from sabnzbd.utils.happyeyeballs import happyeyeballs
-
 
 # Timeout penalty in minutes for each cause
 _PENALTY_UNKNOWN = 3  # Unknown cause

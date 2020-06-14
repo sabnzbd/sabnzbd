@@ -19,25 +19,36 @@
 sabnzbd.postproc - threaded post-processing of jobs
 """
 
-import os
-import logging
-import sabnzbd
 import functools
-import time
-import re
+import logging
+import os
 import queue
-
-from sabnzbd.newsunpack import (
-    unpack_magic,
-    par2_repair,
-    external_processing,
-    sfv_check,
-    build_filelists,
-    rar_sort,
-    is_sfv_file,
-)
+import re
+import time
 from threading import Thread
-from sabnzbd.misc import on_cleanup_list
+
+import sabnzbd
+import sabnzbd.cfg as cfg
+import sabnzbd.config as config
+import sabnzbd.database as database
+import sabnzbd.downloader
+import sabnzbd.emailer as emailer
+import sabnzbd.encoding as encoding
+import sabnzbd.notifier as notifier
+import sabnzbd.nzbqueue
+import sabnzbd.utils.checkdir
+import sabnzbd.utils.rarfile as rarfile
+import sabnzbd.utils.rarvolinfo as rarvolinfo
+from sabnzbd.constants import (
+    REPAIR_PRIORITY,
+    TOP_PRIORITY,
+    POSTPROC_QUEUE_FILE_NAME,
+    POSTPROC_QUEUE_VERSION,
+    sample_match,
+    JOB_ADMIN,
+    Status,
+    VERIFIED_FILE,
+)
 from sabnzbd.filesystem import (
     real_path,
     get_unique_path,
@@ -62,30 +73,19 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
-from sabnzbd.sorting import Sorter
-from sabnzbd.constants import (
-    REPAIR_PRIORITY,
-    TOP_PRIORITY,
-    POSTPROC_QUEUE_FILE_NAME,
-    POSTPROC_QUEUE_VERSION,
-    sample_match,
-    JOB_ADMIN,
-    Status,
-    VERIFIED_FILE,
+from sabnzbd.misc import on_cleanup_list
+from sabnzbd.newsunpack import (
+    unpack_magic,
+    par2_repair,
+    external_processing,
+    sfv_check,
+    build_filelists,
+    rar_sort,
+    is_sfv_file,
 )
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.rating import Rating
-import sabnzbd.emailer as emailer
-import sabnzbd.downloader
-import sabnzbd.config as config
-import sabnzbd.cfg as cfg
-import sabnzbd.encoding as encoding
-import sabnzbd.nzbqueue
-import sabnzbd.database as database
-import sabnzbd.notifier as notifier
-import sabnzbd.utils.rarfile as rarfile
-import sabnzbd.utils.rarvolinfo as rarvolinfo
-import sabnzbd.utils.checkdir
+from sabnzbd.sorting import Sorter
 
 MAX_FAST_JOB_COUNT = 3
 

@@ -19,12 +19,12 @@
 sabnzbd.nzbparser - Parse and import NZB files
 """
 import bz2
-import gzip
-import time
-import logging
-import hashlib
-import xml.etree.ElementTree
 import datetime
+import gzip
+import hashlib
+import logging
+import time
+import xml.etree.ElementTree
 
 import sabnzbd
 from sabnzbd import filesystem, nzbstuff

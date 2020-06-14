@@ -19,14 +19,14 @@
 sabnzbd.utils.servertests - Debugging server connections. Currently only NNTP server tests are done.
 """
 
+import select
 import socket
 import sys
-import select
 
-from sabnzbd.newswrapper import NewsWrapper
-from sabnzbd.downloader import Server, clues_login, clues_too_many, nntp_to_msg
 from sabnzbd.config import get_servers
+from sabnzbd.downloader import Server, clues_login, clues_too_many, nntp_to_msg
 from sabnzbd.misc import int_conv
+from sabnzbd.newswrapper import NewsWrapper
 
 
 def test_nntp_server_dict(kwargs):

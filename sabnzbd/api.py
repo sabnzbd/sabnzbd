@@ -19,15 +19,13 @@
 sabnzbd.api - api
 """
 
-import os
-import logging
-import re
 import datetime
-import time
 import json
-import cherrypy
 import locale
-
+import logging
+import os
+import re
+import time
 from threading import Thread
 
 try:
@@ -36,7 +34,17 @@ try:
 except ImportError:
     pass
 
+import cherrypy
+
 import sabnzbd
+import sabnzbd.cfg as cfg
+import sabnzbd.config as config
+import sabnzbd.emailer
+import sabnzbd.notifier
+import sabnzbd.rss
+import sabnzbd.scheduler as scheduler
+from sabnzbd.articlecache import ArticleCache
+from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.constants import (
     VALID_ARCHIVES,
     VALID_NZB_FILES,
@@ -50,14 +58,11 @@ from sabnzbd.constants import (
     MEBI,
     GIGI,
 )
-import sabnzbd.config as config
-import sabnzbd.cfg as cfg
+from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 from sabnzbd.downloader import Downloader
-from sabnzbd.nzbqueue import NzbQueue
-import sabnzbd.scheduler as scheduler
-from sabnzbd.skintext import SKIN_TEXT
-from sabnzbd.utils.pathbrowser import folders_at_path
-from sabnzbd.utils.getperformance import getcpu
+from sabnzbd.encoding import xml_name
+from sabnzbd.filesystem import diskspace, get_ext, globber_full, clip_path, remove_all
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
 from sabnzbd.misc import (
     loadavg,
     to_units,
@@ -68,19 +73,14 @@ from sabnzbd.misc import (
     calc_age,
     opts_to_pp,
 )
-from sabnzbd.filesystem import diskspace, get_ext, globber_full, clip_path, remove_all
-from sabnzbd.encoding import xml_name
-from sabnzbd.postproc import PostProcessor
-from sabnzbd.articlecache import ArticleCache
-from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.rating import Rating
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
 from sabnzbd.newsunpack import userxbit
-from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
-import sabnzbd.notifier
-import sabnzbd.rss
-import sabnzbd.emailer
+from sabnzbd.nzbqueue import NzbQueue
+from sabnzbd.postproc import PostProcessor
+from sabnzbd.rating import Rating
+from sabnzbd.skintext import SKIN_TEXT
+from sabnzbd.utils.getperformance import getcpu
+from sabnzbd.utils.pathbrowser import folders_at_path
+from sabnzbd.utils.servertests import test_nntp_server_dict
 
 ##############################################################################
 # API error messages

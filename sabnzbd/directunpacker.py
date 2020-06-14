@@ -19,24 +19,24 @@
 sabnzbd.directunpacker
 """
 
+import logging
 import os
 import re
-import time
-import threading
 import subprocess
-import logging
+import threading
+import time
 from subprocess import Popen
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, format_time_string
-from sabnzbd.filesystem import clip_path, long_path, remove_all, real_path, remove_file
-from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
+from sabnzbd.encoding import platform_btou
+from sabnzbd.filesystem import clip_path, long_path, remove_all, real_path, remove_file
+from sabnzbd.misc import int_conv, format_time_string
 from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
-from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
+from sabnzbd.utils.rarfile import RarFile
 
 # Need a lock to make sure start and stop is handled correctly
 # Otherwise we could stop while the thread was still starting

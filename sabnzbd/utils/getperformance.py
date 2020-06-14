@@ -1,6 +1,7 @@
+import locale
 import platform
 import subprocess
-import locale
+
 from .pystone import pystones
 
 

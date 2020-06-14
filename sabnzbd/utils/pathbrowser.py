@@ -19,6 +19,7 @@
 # along with Sick Beard. If not, see <http://www.gnu.org/licenses/>.
 
 import os
+
 import sabnzbd
 
 if os.name == "nt":

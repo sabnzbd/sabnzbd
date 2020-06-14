@@ -19,7 +19,6 @@
 tests.test_functional_downloads - Test the downloading flow
 """
 
-import random
 from selenium.common.exceptions import NoSuchElementException
 
 from tests.testhelper import *

@@ -19,57 +19,32 @@
 sabnzbd.interface - webinterface
 """
 
-import os
-import time
-from datetime import datetime
-import cherrypy
-import logging
-import urllib.request, urllib.parse, urllib.error
-import re
+import functools
 import hashlib
+import logging
+import os
+import re
 import socket
 import ssl
-import functools
-from threading import Thread
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from datetime import datetime
 from random import randint
+from threading import Thread
 from xml.sax.saxutils import escape
 
+import cherrypy
+from Cheetah.Template import Template
+
 import sabnzbd
+import sabnzbd.cfg as cfg
+import sabnzbd.config as config
+import sabnzbd.newsunpack
+import sabnzbd.notifier as notifier
 import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
-
-from Cheetah.Template import Template
-from sabnzbd.misc import (
-    to_units,
-    from_units,
-    time_format,
-    calc_age,
-    int_conv,
-    get_base_url,
-    probablyipv4,
-    probablyipv6,
-    opts_to_pp,
-)
-from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
-from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.bpsmeter import BPSMeter
-from sabnzbd.encoding import xml_name, utob
-import sabnzbd.config as config
-import sabnzbd.cfg as cfg
-import sabnzbd.notifier as notifier
-import sabnzbd.newsunpack
-from sabnzbd.downloader import Downloader
-from sabnzbd.nzbqueue import NzbQueue
-from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.decoder import SABYENC_ENABLED
-from sabnzbd.utils.diskspeed import diskspeedmeasure
-from sabnzbd.utils.getperformance import getpystone
-from sabnzbd.utils.internetspeed import internetspeed
-
-from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
-
-from sabnzbd.lang import list_languages
-
 from sabnzbd.api import (
     list_scripts,
     list_cats,
@@ -81,11 +56,35 @@ from sabnzbd.api import (
     build_header,
     build_history,
     format_bytes,
-    report,
     del_hist_job,
     Ttemplate,
     build_queue_header,
 )
+from sabnzbd.bpsmeter import BPSMeter
+from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
+from sabnzbd.decoder import SABYENC_ENABLED
+from sabnzbd.downloader import Downloader
+from sabnzbd.encoding import xml_name, utob
+from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
+from sabnzbd.lang import list_languages
+from sabnzbd.misc import (
+    to_units,
+    from_units,
+    time_format,
+    calc_age,
+    int_conv,
+    get_base_url,
+    probablyipv4,
+    probablyipv6,
+    opts_to_pp,
+)
+from sabnzbd.newswrapper import GetServerParms
+from sabnzbd.nzbqueue import NzbQueue
+from sabnzbd.utils.diskspeed import diskspeedmeasure
+from sabnzbd.utils.getperformance import getpystone
+from sabnzbd.utils.internetspeed import internetspeed
+from sabnzbd.utils.servertests import test_nntp_server_dict
+
 
 ##############################################################################
 # Global constants

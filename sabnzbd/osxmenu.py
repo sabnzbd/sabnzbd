@@ -19,33 +19,29 @@
 sabnzbd.osxmenu - OSX Top Menu
 """
 
-import objc
-from Foundation import *
-from AppKit import *
-from PyObjCTools import AppHelper
-from objc import YES, NO
-
+import logging
 import os
 import sys
 import time
-import logging
 
 import cherrypy
+from AppKit import *
+from Foundation import *
+from objc import YES, NO
+
 import sabnzbd
 import sabnzbd.cfg
-
+import sabnzbd.config as config
+import sabnzbd.downloader
+import sabnzbd.notifier as notifier
+import sabnzbd.scheduler as scheduler
+from sabnzbd.api import fast_queue
+from sabnzbd.bpsmeter import BPSMeter
+from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
 from sabnzbd.filesystem import diskspace
 from sabnzbd.misc import to_units
-from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
-from sabnzbd.panic import launch_a_browser
-import sabnzbd.notifier as notifier
-
-from sabnzbd.api import fast_queue
 from sabnzbd.nzbqueue import NzbQueue
-import sabnzbd.config as config
-import sabnzbd.scheduler as scheduler
-import sabnzbd.downloader
-from sabnzbd.bpsmeter import BPSMeter
+from sabnzbd.panic import launch_a_browser
 
 status_icons = {
     "idle": "icons/sabnzbd_osx_idle.tiff",

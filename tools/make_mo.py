@@ -20,12 +20,12 @@
 make_mo - Compile PO files to MO files
 """
 
+import gettext
 import glob
 import os
 import re
-import sys
-import gettext
 import subprocess
+import sys
 
 PO_DIR = "po/main"
 POE_DIR = "po/email"

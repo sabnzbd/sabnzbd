@@ -19,21 +19,22 @@
 sabnzbd.newsunpack
 """
 
-import os
-import sys
-import re
-import subprocess
+import functools
 import logging
+import os
+import re
+import shutil
+import subprocess
+import sys
 import time
 import zlib
-import shutil
-import functools
 from subprocess import Popen
 
 import sabnzbd
-from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
+import sabnzbd.cfg as cfg
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.misc import format_time_string, find_on_path, int_conv, get_all_passwords, calc_age, cmp, caller_name
+from sabnzbd.constants import Status
+from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
 from sabnzbd.filesystem import (
     make_script_path,
     real_path,
@@ -48,9 +49,8 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
+from sabnzbd.misc import format_time_string, find_on_path, int_conv, get_all_passwords, calc_age, cmp, caller_name
 from sabnzbd.sorting import SeriesSorter
-import sabnzbd.cfg as cfg
-from sabnzbd.constants import Status
 
 if sabnzbd.WIN32:
     try:

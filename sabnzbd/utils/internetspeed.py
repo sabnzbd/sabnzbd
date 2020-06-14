@@ -6,8 +6,8 @@ Method: get one or more files, and measure how long it takes
 Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
 """
 
-import time
 import logging
+import time
 import urllib.request
 
 SizeUrlList = [
