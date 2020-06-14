@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-27 10:45+0200\n"
+"POT-Creation-Date: 2020-06-11 10:12+0200\n"
 "PO-Revision-Date: 2020-05-26 21:21+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
-"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
+"X-Launchpad-Export-Date: 2020-06-14 06:52+0000\n"
+"X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,12 +25,12 @@ msgstr "נכשל בהתחלת ממשק רשת"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "מנסה תבנית תקנית ,%s :לא ניתן למצוא תבניות רשת"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr "מושבת: לא נמצאה גרסה נכונה! (נמצאה %s מצפה אל %s) SABYenc"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr "%s - https://sabnzbd.org/sabyenc לא נמצא! מצפה אל ...SABYenc פירקן"
@@ -39,15 +39,15 @@ msgstr "%s - https://sabnzbd.org/sabyenc לא נמצא! מצפה אל ...SABYenc
 msgid "par2 binary... NOT found!"
 msgstr "!בינארי... לא נמצא par2"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "MultiPar binary... NOT found!"
 msgstr "!בינארי... לא נמצא MultiPar"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "Verification and repair will not be possible."
 msgstr ".וידוא ותיקון לא יהיו אפשריים"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ".שלך היא %s אנו ממליצים על גרסה %s או גבוהה יותר UNRAR גרסת<br />"
 
@@ -77,7 +77,7 @@ msgstr "עבור גישה חיצונית IPv6 אנא היה מודע ששם המ
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "אינן יכולות להיות אותו דבר HTTPS-ו HTTP פתחות של"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -246,7 +246,7 @@ msgstr "%s שגיאת דיסק ביצירת קובץ"
 msgid "Fatal error in Assembler"
 msgstr "Assembler-שגיאה חמורה ב"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
@@ -254,7 +254,7 @@ msgstr ""
 "(מוצפן (במקרה שסופקה, כל הסיסמאות נוסו RAR בגלל קובץ \"%s\" אזהרה: השהה את "
 "העבודה"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
@@ -266,7 +266,7 @@ msgstr ""
 msgid "Aborted, encryption detected"
 msgstr "בוטל, הצפנה התגלתה"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr "%s קובץ בלתי רצוי הוא .RAR סיומת בלתי רצויה בקובץ \"%s\"-אזהרה: ב "
@@ -279,11 +279,11 @@ msgstr "%s rar סיומת בלתי רצויה בקובץ"
 msgid "Aborted, unwanted extension detected"
 msgstr "בוטל, סיומת בלתי רצויה התגלתה"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid "WARNING: Paused job \"%s\" because of rating (%s)"
 msgstr "(%s) בגלל מידרג \"%s\" אזהרה: השהה את העבודה"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
 msgstr "(%s) בגלל מידרג \"%s\" אזהרה: ביטל את העבודה"
 
@@ -291,7 +291,7 @@ msgstr "(%s) בגלל מידרג \"%s\" אזהרה: ביטל את העבודה"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "(%s) בוטל, מסנן מידרג הותאם"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
 msgstr "זה RAR עם אותו השם בתוך RAR כנראה מוצפנת עקב \"%s\" העבודה"
@@ -412,11 +412,11 @@ msgstr "הושלם"
 msgid "Unpacked %s files/folders in %s"
 msgstr "פורקו %s קבצים/תיקיות תוך %s"
 
-#: sabnzbd/directunpacker.py [Warning message]
+#: sabnzbd/directunpacker.py
 msgid "Direct Unpack was automatically enabled."
 msgstr ".פריקה ישירה אופשרה באופן אוטומטי"
 
-#: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
@@ -464,7 +464,7 @@ msgstr "שם השרת אינו פותר"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "ייתקל בהתעלמות למשך %s דקות %s השרת"
 
-#: sabnzbd/downloader.py [Error message]
+#: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "%s :מהסיבה  %s@%sנכשל באתחול"
 
@@ -480,7 +480,7 @@ msgstr "שיתוף סביר של חשבון"
 msgid "Failed login for server %s"
 msgstr "%s נכשל בכניסה לשרת"
 
-#: sabnzbd/downloader.py [Error message]
+#: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "%s=נכשלה, הודעה %s@%s התחברות אל"
 
@@ -692,13 +692,13 @@ msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr ".תיקיית קטגוריה אינה יכולה להיות תת־תיקייה של תיקיית ההורדות הזמניות"
 
-#: sabnzbd/interface.py
-msgid "Back"
-msgstr "הקודם"
-
 #: sabnzbd/interface.py # sabnzbd/skintext.py
 msgid "ERROR:"
 msgstr "שגיאה:"
+
+#: sabnzbd/interface.py
+msgid "Back"
+msgstr "הקודם"
 
 #: sabnzbd/interface.py
 msgid "Incorrect value for %s: %s"
@@ -1071,7 +1071,7 @@ msgstr "%s נכשל ביבוא %s קבצים מ"
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "קובץ תור בלתי תואם נמצא, לא יכול להמשיך"
 
-#: sabnzbd/nzbqueue.py [Error message]
+#: sabnzbd/nzbqueue.py
 msgid "Error loading %s, corrupt file detected"
 msgstr "התגלה קובץ פגום ,%s שגיאה בטעינת"
 
@@ -1123,7 +1123,7 @@ msgstr "בוטל, לא יכול להיות שלם"
 msgid "DUPLICATE"
 msgstr "כפול"
 
-#: sabnzbd/nzbstuff.py [Queue indicator for encrypted job] # sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "ENCRYPTED"
 msgstr "מוצפן"
 
@@ -1379,16 +1379,16 @@ msgid "Program did not start!"
 msgstr "!התוכנית לא התחילה"
 
 #: sabnzbd/panic.py
+msgid "Fatal error"
+msgstr "שגיאה חמורה"
+
+#: sabnzbd/panic.py
 msgid ""
 "Unable to bind to port %s on %s. Some other software uses the port or "
 "SABnzbd is already running."
 msgstr ""
 ".כבר רץ SABnzbd איזשהי תוכנה אחרת משתמשת בפתחה או %s לא היה ניתן לקשר את "
 "פתחה %s על"
-
-#: sabnzbd/panic.py
-msgid "Fatal error"
-msgstr "שגיאה חמורה"
 
 #: sabnzbd/panic.py [Warning message]
 msgid "Cannot launch the browser, probably not found"
@@ -2308,7 +2308,7 @@ msgstr "גודל"
 msgid "Purge Failed NZBs"
 msgstr "נכשלים NZB טהר"
 
-#: sabnzbd/skintext.py [Button to delete all failed jobs in History, including files]
+#: sabnzbd/skintext.py
 msgid "Purge Failed NZBs & Delete Files"
 msgstr "נכשלים ומחק קבצים NZB טהר"
 
@@ -2352,7 +2352,7 @@ msgstr "בעיה אחרת"
 msgid "Force Disconnect"
 msgstr "אלץ ניתוק"
 
-#: sabnzbd/skintext.py [Status page button text]
+#: sabnzbd/skintext.py
 msgid ""
 "Disconnect all active connections to usenet servers. Connections will be "
 "reopened after a few seconds if there are items in the queue."
@@ -3558,7 +3558,7 @@ msgstr "0 הוא העדיפות הגבוהה ביותר, 99 הוא העדיפו�
 msgid "Optional"
 msgstr "רשותי"
 
-#: sabnzbd/skintext.py [Explain server optional tickbox]
+#: sabnzbd/skintext.py
 msgid "For unreliable servers, will be ignored longer in case of failures"
 msgstr "עבור שרתים בלתי מהימנים, ייתקל בהתעלמות במקרה של כישלונות"
 
@@ -3849,7 +3849,7 @@ msgstr "התקנים אליהם הודעה תישלח"
 msgid "Emergency retry"
 msgstr "ניסיון חוזר חרום"
 
-#: sabnzbd/skintext.py [Pushover settings]
+#: sabnzbd/skintext.py
 msgid "How often (in seconds) the same notification will be sent"
 msgstr "באיזו תדירות (בשניות) אותה ההתראה תישלח"
 
@@ -3857,7 +3857,7 @@ msgstr "באיזו תדירות (בשניות) אותה ההתראה תישלח"
 msgid "Emergency expire"
 msgstr "תפוגת חרום"
 
-#: sabnzbd/skintext.py [Pushover settings]
+#: sabnzbd/skintext.py
 msgid "How many seconds your notification will continue to be retried"
 msgstr "כמה שניות ההתראה שלך תמשיך להיות מנוסה שוב"
 
@@ -4370,7 +4370,7 @@ msgstr "הצג יומן תסריטים"
 msgid "Update Available!"
 msgstr "עדכון זמין!"
 
-#: sabnzbd/skintext.py [Don't translate LocalStorage]
+#: sabnzbd/skintext.py
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
@@ -4656,7 +4656,7 @@ msgstr ".ירוץ כעת ברקע SABnzbd"
 msgid "Closing any browser windows/tabs will NOT close SABnzbd."
 msgstr ".SABnzbd סגירה של חלונות/לשוניות כלשהם/כלשהן לא תסגור את"
 
-#: sabnzbd/skintext.py [Wizard tip]
+#: sabnzbd/skintext.py
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
@@ -4664,7 +4664,7 @@ msgstr ""
 ".כאשר הוא רץ ברקע SABnzbd מומלץ ללחוץ לחיצה ימנית וליצור סימנייה למיקום זה "
 "ולהשתמש בסימנייה זו כדי להשיג גישה אל"
 
-#: sabnzbd/skintext.py [Will be appended with a wiki-link, adjust word order accordingly]
+#: sabnzbd/skintext.py
 msgid "Further help can be found on our"
 msgstr "עזרה נוספת יכולה להימצא ב"
 
@@ -4710,7 +4710,7 @@ msgstr ".%s אנו ממליצים לנסות את ?usenet אין לך ספק"
 msgid "Error getting TV info (%s)"
 msgstr "(%s) שגיאה בהשגת מידע טלוויזיה"
 
-#: sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py
 msgid "Failed to rename: %s to %s"
 msgstr "%s אל %s:נכשל בשינוי שם"
 

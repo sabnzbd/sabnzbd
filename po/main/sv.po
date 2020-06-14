@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-27 10:45+0200\n"
+"POT-Creation-Date: 2020-06-11 10:12+0200\n"
 "PO-Revision-Date: 2018-02-14 14:19+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
-"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
+"X-Launchpad-Export-Date: 2020-06-14 06:53+0000\n"
+"X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,12 +25,12 @@ msgstr "Det gick inte att starta webbgränssnittet"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Hittar inte webbmall: %s, försöker med standardmall"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -39,15 +39,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 binär... EJ funnen!"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Din UNRAR version är %s, vi rekommenderar version %s eller högre.<br />"
@@ -79,7 +79,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP och HTTPS portar kan inte vara likadana"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -248,13 +248,13 @@ msgstr "Diskfel vid skapande av fil %s"
 msgid "Fatal error in Assembler"
 msgstr "Kritiskt  fel i Assembler"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
@@ -264,7 +264,7 @@ msgstr ""
 msgid "Aborted, encryption detected"
 msgstr "Avbruten, kryptering detekterad."
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
@@ -278,11 +278,11 @@ msgstr "Oönskad filändelse i RAR-fil %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Avbruten, oönskad filändelse detekterad"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid "WARNING: Paused job \"%s\" because of rating (%s)"
 msgstr "VARNING: Pausat jobb \"%s\" pga betyg (%s)"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
 msgstr "VARNING: Avbrutet jobb \"%s\" pga betyg (%s)"
 
@@ -290,7 +290,7 @@ msgstr "VARNING: Avbrutet jobb \"%s\" pga betyg (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Avbrutet, betyget matchade (%s)"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
 msgstr ""
@@ -412,11 +412,11 @@ msgstr "Färdig"
 msgid "Unpacked %s files/folders in %s"
 msgstr "Uppackad %s filer/mappar i %s"
 
-#: sabnzbd/directunpacker.py [Warning message]
+#: sabnzbd/directunpacker.py
 msgid "Direct Unpack was automatically enabled."
 msgstr ""
 
-#: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
@@ -462,7 +462,7 @@ msgstr "Servernamn kunde inte läsas"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s kommer att ignoreras i %s minuter"
 
-#: sabnzbd/downloader.py [Error message]
+#: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Misslyckades att initiera %s@%s med orsak %s"
 
@@ -478,7 +478,7 @@ msgstr "Misstänkt kontodelning"
 msgid "Failed login for server %s"
 msgstr "Det gick inte att logga in på server %s"
 
-#: sabnzbd/downloader.py [Error message]
+#: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Anslutning %s@%s misslyckades, meddelande=%s"
 
@@ -694,13 +694,13 @@ msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr ""
 
-#: sabnzbd/interface.py
-msgid "Back"
-msgstr "Bakåt"
-
 #: sabnzbd/interface.py # sabnzbd/skintext.py
 msgid "ERROR:"
 msgstr "FEL:"
+
+#: sabnzbd/interface.py
+msgid "Back"
+msgstr "Bakåt"
 
 #: sabnzbd/interface.py
 msgid "Incorrect value for %s: %s"
@@ -1071,7 +1071,7 @@ msgstr "Det gick inte att importera %s filer från %s"
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "Felaktig köfil funnen, kan ej fortsätta"
 
-#: sabnzbd/nzbqueue.py [Error message]
+#: sabnzbd/nzbqueue.py
 msgid "Error loading %s, corrupt file detected"
 msgstr "Laddningsfel %s, felaktig fil detekterad"
 
@@ -1123,7 +1123,7 @@ msgstr "Avbrutet, kan inte slutföras"
 msgid "DUPLICATE"
 msgstr "DUBLETT"
 
-#: sabnzbd/nzbstuff.py [Queue indicator for encrypted job] # sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "ENCRYPTED"
 msgstr "KRYPTERAT"
 
@@ -1384,14 +1384,14 @@ msgid "Program did not start!"
 msgstr "Programmet startade inte!"
 
 #: sabnzbd/panic.py
+msgid "Fatal error"
+msgstr "Allvarligt fel"
+
+#: sabnzbd/panic.py
 msgid ""
 "Unable to bind to port %s on %s. Some other software uses the port or "
 "SABnzbd is already running."
 msgstr ""
-
-#: sabnzbd/panic.py
-msgid "Fatal error"
-msgstr "Allvarligt fel"
 
 #: sabnzbd/panic.py [Warning message]
 msgid "Cannot launch the browser, probably not found"
@@ -2310,7 +2310,7 @@ msgstr "Storlek"
 msgid "Purge Failed NZBs"
 msgstr "Rensa Misslyckade NZB:er."
 
-#: sabnzbd/skintext.py [Button to delete all failed jobs in History, including files]
+#: sabnzbd/skintext.py
 msgid "Purge Failed NZBs & Delete Files"
 msgstr "Rensa Misslyckade NZB:er och ta bort filer"
 
@@ -2354,7 +2354,7 @@ msgstr "Andra fel"
 msgid "Force Disconnect"
 msgstr "Tvinga frånkoppling"
 
-#: sabnzbd/skintext.py [Status page button text]
+#: sabnzbd/skintext.py
 msgid ""
 "Disconnect all active connections to usenet servers. Connections will be "
 "reopened after a few seconds if there are items in the queue."
@@ -3550,7 +3550,7 @@ msgstr "0 är högst prioritet, 99 är lägst prioritet"
 msgid "Optional"
 msgstr "Valfri"
 
-#: sabnzbd/skintext.py [Explain server optional tickbox]
+#: sabnzbd/skintext.py
 msgid "For unreliable servers, will be ignored longer in case of failures"
 msgstr ""
 
@@ -3842,7 +3842,7 @@ msgstr "Enhet(er) där medellandet skall skickas"
 msgid "Emergency retry"
 msgstr ""
 
-#: sabnzbd/skintext.py [Pushover settings]
+#: sabnzbd/skintext.py
 msgid "How often (in seconds) the same notification will be sent"
 msgstr ""
 
@@ -3850,7 +3850,7 @@ msgstr ""
 msgid "Emergency expire"
 msgstr ""
 
-#: sabnzbd/skintext.py [Pushover settings]
+#: sabnzbd/skintext.py
 msgid "How many seconds your notification will continue to be retried"
 msgstr ""
 
@@ -4361,7 +4361,7 @@ msgstr "Visa skriptlogg"
 msgid "Update Available!"
 msgstr "Uppdatering tillgänglig"
 
-#: sabnzbd/skintext.py [Don't translate LocalStorage]
+#: sabnzbd/skintext.py
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
@@ -4647,7 +4647,7 @@ msgstr ""
 "SABnzbd kommer inte att stängas av om du stänger ett fönster eller en tab i "
 "webbläsaren."
 
-#: sabnzbd/skintext.py [Wizard tip]
+#: sabnzbd/skintext.py
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
@@ -4655,7 +4655,7 @@ msgstr ""
 "Det är rekommenderat att du sparar denna plats som ett bokmärke för att "
 "komma åt SABnzbd när det körs i bakgrunden."
 
-#: sabnzbd/skintext.py [Will be appended with a wiki-link, adjust word order accordingly]
+#: sabnzbd/skintext.py
 msgid "Further help can be found on our"
 msgstr "Övrig hjälp kan du hitta på våran"
 
@@ -4704,7 +4704,7 @@ msgstr "Har du inte någon usenet leverantör? Vi rekommenderar att prova %s."
 msgid "Error getting TV info (%s)"
 msgstr "Det gick inte att hämta TV info (%s)"
 
-#: sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py
 msgid "Failed to rename: %s to %s"
 msgstr "Det gick inte att döpa om: %s till %s"
 

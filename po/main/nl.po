@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-27 10:45+0200\n"
+"POT-Creation-Date: 2020-06-11 10:12+0200\n"
 "PO-Revision-Date: 2020-05-03 15:07+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Dutch <nl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
-"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
+"X-Launchpad-Export-Date: 2020-06-14 06:51+0000\n"
+"X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -25,14 +25,14 @@ msgstr "Webinterface kan niet gestart worden"
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 "SABYenc uitgeschakeld, geen bruikbare versie gevonden! (V%s gevonden, V%s "
 "verwacht)"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -42,15 +42,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2-programma niet gevonden."
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "MultiPar binary... NOT found!"
 msgstr "MultiPar niet gevonden!"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "Verification and repair will not be possible."
 msgstr "Verificatie en reparatie zal niet mogelijk zijn."
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "De UNRAR-versie is %s, we adviseren versie %s of hoger te gebruiken.<br />"
@@ -83,7 +83,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP- en HTTPS-poort kunnen niet hetzelfde zijn"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -257,7 +257,7 @@ msgstr "Schrijffout bij opslaan van bestand %s"
 msgid "Fatal error in Assembler"
 msgstr "Onherstelbare fout in de Assembler"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
@@ -265,7 +265,7 @@ msgstr ""
 "WAARSCHUWING: Download \"%s\" is gepauzeerd vanwege een versleuteld RAR "
 "bestand (indien aanwezig, zijn alle wachtwoorden geprobeerd)"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
@@ -277,7 +277,7 @@ msgstr ""
 msgid "Aborted, encryption detected"
 msgstr "Afgebroken, versleuteling ontdekt"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
@@ -292,11 +292,11 @@ msgstr "De ongewenste extensie zit in RAR-bestand %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Afgebroken, ongewenste extensie ontdekt"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid "WARNING: Paused job \"%s\" because of rating (%s)"
 msgstr "WAARSCHUWING: Download '%s' gepauzeerd vanwege rating (%s)"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
 msgstr "WAARSCHUWING: Download '%s' afgebroken vanwege rating (%s)"
 
@@ -304,7 +304,7 @@ msgstr "WAARSCHUWING: Download '%s' afgebroken vanwege rating (%s)"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Afgebroken, ratingfilter komt overeen (%s)"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
 msgstr ""
@@ -432,11 +432,11 @@ msgstr "Voltooid"
 msgid "Unpacked %s files/folders in %s"
 msgstr "%s bestanden/mappen uitgepakt in %s"
 
-#: sabnzbd/directunpacker.py [Warning message]
+#: sabnzbd/directunpacker.py
 msgid "Direct Unpack was automatically enabled."
 msgstr "Direct Uitpakken is automatisch ingeschakeld."
 
-#: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
@@ -487,7 +487,7 @@ msgstr "Servernaam niet te vinden"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s wordt gedurende %s minuten genegeerd"
 
-#: sabnzbd/downloader.py [Error message]
+#: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Initialisatie van %s@%s mislukt, vanwege: %s"
 
@@ -503,7 +503,7 @@ msgstr "Mogelijk delen van account"
 msgid "Failed login for server %s"
 msgstr "Aanmelden bij server %s mislukt"
 
-#: sabnzbd/downloader.py [Error message]
+#: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Verbinding %s@%s mislukt, bericht=%s"
 
@@ -720,13 +720,13 @@ msgstr ""
 "Een Categorie specifieke map mag niet een map in de Tijdelijke download map "
 "zijn."
 
-#: sabnzbd/interface.py
-msgid "Back"
-msgstr "Terug"
-
 #: sabnzbd/interface.py # sabnzbd/skintext.py
 msgid "ERROR:"
 msgstr "FOUT:"
+
+#: sabnzbd/interface.py
+msgid "Back"
+msgstr "Terug"
 
 #: sabnzbd/interface.py
 msgid "Incorrect value for %s: %s"
@@ -1103,7 +1103,7 @@ msgstr "Importeren van %s bestanden van %s mislukt"
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "Onbruikbaar wachtrij bestand gevonden, kan niet verder"
 
-#: sabnzbd/nzbqueue.py [Error message]
+#: sabnzbd/nzbqueue.py
 msgid "Error loading %s, corrupt file detected"
 msgstr "Fout bij inladen van %s, corrupt bestand gevonden"
 
@@ -1155,7 +1155,7 @@ msgstr "Afgebroken, kan niet voltooid worden"
 msgid "DUPLICATE"
 msgstr "DUBBEL"
 
-#: sabnzbd/nzbstuff.py [Queue indicator for encrypted job] # sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "ENCRYPTED"
 msgstr "VERSLEUTELD"
 
@@ -1414,16 +1414,16 @@ msgid "Program did not start!"
 msgstr "Programma is niet opgestart!"
 
 #: sabnzbd/panic.py
+msgid "Fatal error"
+msgstr "Fatale fout"
+
+#: sabnzbd/panic.py
 msgid ""
 "Unable to bind to port %s on %s. Some other software uses the port or "
 "SABnzbd is already running."
 msgstr ""
 "Kan niet binden aan poort %s van %s. Andere software gebruikt deze poort of "
 "SABnzbd is al actief."
-
-#: sabnzbd/panic.py
-msgid "Fatal error"
-msgstr "Fatale fout"
 
 #: sabnzbd/panic.py [Warning message]
 msgid "Cannot launch the browser, probably not found"
@@ -2346,7 +2346,7 @@ msgstr "Omvang"
 msgid "Purge Failed NZBs"
 msgstr "Verwijder mislukte downloads"
 
-#: sabnzbd/skintext.py [Button to delete all failed jobs in History, including files]
+#: sabnzbd/skintext.py
 msgid "Purge Failed NZBs & Delete Files"
 msgstr "Verwijder mislukte downloads incl. bestanden"
 
@@ -2390,7 +2390,7 @@ msgstr "Ander probleem"
 msgid "Force Disconnect"
 msgstr "Verbreek verbindingen"
 
-#: sabnzbd/skintext.py [Status page button text]
+#: sabnzbd/skintext.py
 msgid ""
 "Disconnect all active connections to usenet servers. Connections will be "
 "reopened after a few seconds if there are items in the queue."
@@ -3640,7 +3640,7 @@ msgstr "0 is de hoogste en 99 de laagste prioriteit"
 msgid "Optional"
 msgstr "Optioneel"
 
-#: sabnzbd/skintext.py [Explain server optional tickbox]
+#: sabnzbd/skintext.py
 msgid "For unreliable servers, will be ignored longer in case of failures"
 msgstr ""
 "Voor onbetrouwbare servers, deze zullen langer worden genegeerd wanneer ze "
@@ -3937,7 +3937,7 @@ msgstr "Apparaat of apparaten die het bericht moeten ontvangen"
 msgid "Emergency retry"
 msgstr "Noodgeval herhaling"
 
-#: sabnzbd/skintext.py [Pushover settings]
+#: sabnzbd/skintext.py
 msgid "How often (in seconds) the same notification will be sent"
 msgstr "Hoevaak moet de notification herhaald worden (in seconden)"
 
@@ -3945,7 +3945,7 @@ msgstr "Hoevaak moet de notification herhaald worden (in seconden)"
 msgid "Emergency expire"
 msgstr "Einde van noodgeval"
 
-#: sabnzbd/skintext.py [Pushover settings]
+#: sabnzbd/skintext.py
 msgid "How many seconds your notification will continue to be retried"
 msgstr "Hoeveel seconden moet de notificatie herhaald worden"
 
@@ -4462,7 +4462,7 @@ msgstr "Toon Script resultaat"
 msgid "Update Available!"
 msgstr "Update beschikbaar!"
 
-#: sabnzbd/skintext.py [Don't translate LocalStorage]
+#: sabnzbd/skintext.py
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
@@ -4749,7 +4749,7 @@ msgstr "SABnzbd is actief op de achtergrond."
 msgid "Closing any browser windows/tabs will NOT close SABnzbd."
 msgstr "Afsluiten van het browservenster zal SABnzbd <b>niet</b> stoppen."
 
-#: sabnzbd/skintext.py [Wizard tip]
+#: sabnzbd/skintext.py
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
@@ -4757,7 +4757,7 @@ msgstr ""
 "Tip: maak een \"Bladwijzer\" of \"Favoriet\" voor deze locatie, zodat je "
 "SABnzbd gemakkelijk terug kunt vinden."
 
-#: sabnzbd/skintext.py [Will be appended with a wiki-link, adjust word order accordingly]
+#: sabnzbd/skintext.py
 msgid "Further help can be found on our"
 msgstr "Voor meer informatie bekijk de"
 
@@ -4805,7 +4805,7 @@ msgstr "Heb je nog geen Usenet provider? Wij bevelen %s aan."
 msgid "Error getting TV info (%s)"
 msgstr "Fout bij ophalen TV info (%s)"
 
-#: sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py
 msgid "Failed to rename: %s to %s"
 msgstr "Hernoemen van %s tot %s mislukt"
 

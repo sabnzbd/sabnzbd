@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-27 10:45+0200\n"
+"POT-Creation-Date: 2020-06-11 10:12+0200\n"
 "PO-Revision-Date: 2020-01-13 14:32+0000\n"
 "Last-Translator: TBSniller <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-02 06:03+0000\n"
-"X-Generator: Launchpad (build 275d46a24253e557e4403d52832837e4bfa425b6)\n"
+"X-Launchpad-Export-Date: 2020-06-14 06:52+0000\n"
+"X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
 msgid "Failed to start web-interface"
@@ -27,14 +27,14 @@ msgstr ""
 "Konnte Web-Vorlage nicht finden: %s Versuche die Standard-Vorlage zu "
 "verwenden."
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid ""
 "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
 "SABYenc deaktiviert: Keine korrekte Version gefunden! (Gefunden v%s, "
 "Erwartet v%s)"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid ""
 "SABYenc module... NOT found! Expecting v%s - https://sabnzbd.org/sabyenc"
 msgstr ""
@@ -44,15 +44,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2-Programmdatei nicht gefunden!"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "MultiPar binary... NOT found!"
 msgstr "MultiPar binary... NICHT gefunden!"
 
-#: SABnzbd.py [Error message]
+#: SABnzbd.py
 msgid "Verification and repair will not be possible."
 msgstr "Überprüfung und Reparatur sind nicht möglich."
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Deine UNRAR-Version ist %s, Wir empfehlen Version %s oder höher.<br />"
@@ -85,7 +85,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP und HTTPS Ports dürfen nicht Identisch sein!"
 
-#: SABnzbd.py [Warning message]
+#: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
@@ -262,7 +262,7 @@ msgstr "Festplattenfehler beim Anlegen der Datei %s"
 msgid "Fatal error in Assembler"
 msgstr "Schwerer Fehler im Assembler"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
@@ -270,7 +270,7 @@ msgstr ""
 "ACHTUNG: \"%s\" wurde angehalten, da es ein verschlüsseltes RAR Archiv "
 "enthält (falls unterstützt, wurden alle Passwörter ausprobiert)"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
@@ -282,7 +282,7 @@ msgstr ""
 msgid "Aborted, encryption detected"
 msgstr "Abgebrochen, Verschlüsselung vorhanden"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
@@ -296,11 +296,11 @@ msgstr "Unerwünschter Dateityp in rar-Archiv %s"
 msgid "Aborted, unwanted extension detected"
 msgstr "Abgebrochen, unerwünschte Dateieindung gefunden"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid "WARNING: Paused job \"%s\" because of rating (%s)"
 msgstr "WARNUNG: Aufgabe \"%s\" aufgrund der Bewertung (%s) pausiert."
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
 msgstr "Warnung: Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
 
@@ -308,7 +308,7 @@ msgstr "Warnung: Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
 msgid "Aborted, rating filter matched (%s)"
 msgstr "Abbruch, Bewertungsfilter stimmt überein (%s)"
 
-#: sabnzbd/assembler.py [Warning message]
+#: sabnzbd/assembler.py
 msgid ""
 "Job \"%s\" is probably encrypted due to RAR with same name inside this RAR"
 msgstr ""
@@ -437,11 +437,11 @@ msgstr "Fertiggestellt"
 msgid "Unpacked %s files/folders in %s"
 msgstr "%s Datei(en)/Ordner entpackt in %s"
 
-#: sabnzbd/directunpacker.py [Warning message]
+#: sabnzbd/directunpacker.py
 msgid "Direct Unpack was automatically enabled."
 msgstr "Direkt entpacken wurde automatisch aktiviert"
 
-#: sabnzbd/directunpacker.py [Warning message] # sabnzbd/skintext.py
+#: sabnzbd/directunpacker.py # sabnzbd/skintext.py
 msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
@@ -492,7 +492,7 @@ msgstr "Konnte Servernamen nicht auflösen"
 msgid "Server %s will be ignored for %s minutes"
 msgstr "Server %s wird für %s Minuten ignoriert"
 
-#: sabnzbd/downloader.py [Error message]
+#: sabnzbd/downloader.py
 msgid "Failed to initialize %s@%s with reason: %s"
 msgstr "Fehler %s@%s zu initialisieren, aus folgendem Grund: %s"
 
@@ -508,7 +508,7 @@ msgstr "Möglicherweise wird das Konto geteilt"
 msgid "Failed login for server %s"
 msgstr "Anmelden beim Server fehlgeschlagen. %s"
 
-#: sabnzbd/downloader.py [Error message]
+#: sabnzbd/downloader.py
 msgid "Connecting %s@%s failed, message=%s"
 msgstr "Fehler beim Verbinden mit %s@%s, Meldung = %s"
 
@@ -728,13 +728,13 @@ msgstr ""
 "Der Category-Ordner darf kein Unterordner des Temporärer Download-Ordners "
 "sein."
 
-#: sabnzbd/interface.py
-msgid "Back"
-msgstr "Zurück"
-
 #: sabnzbd/interface.py # sabnzbd/skintext.py
 msgid "ERROR:"
 msgstr "FEHLER:"
+
+#: sabnzbd/interface.py
+msgid "Back"
+msgstr "Zurück"
 
 #: sabnzbd/interface.py
 msgid "Incorrect value for %s: %s"
@@ -1117,7 +1117,7 @@ msgid "Incompatible queuefile found, cannot proceed"
 msgstr ""
 "Inkompatible Warteschlangen-Datei gefunden. Fortsetzen nicht möglich."
 
-#: sabnzbd/nzbqueue.py [Error message]
+#: sabnzbd/nzbqueue.py
 msgid "Error loading %s, corrupt file detected"
 msgstr "Fehler beim Laden von %s. Beschädigte Datei gefunden."
 
@@ -1171,7 +1171,7 @@ msgstr "Abgebrochen, kann nicht fertiggestellt werden"
 msgid "DUPLICATE"
 msgstr "DUPLIKAT"
 
-#: sabnzbd/nzbstuff.py [Queue indicator for encrypted job] # sabnzbd/skintext.py
+#: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "ENCRYPTED"
 msgstr "VERSCHLÜSSELT"
 
@@ -1435,16 +1435,16 @@ msgid "Program did not start!"
 msgstr "Programm wurde nicht gestartet!"
 
 #: sabnzbd/panic.py
+msgid "Fatal error"
+msgstr "Schwerwiegender Fehler"
+
+#: sabnzbd/panic.py
 msgid ""
 "Unable to bind to port %s on %s. Some other software uses the port or "
 "SABnzbd is already running."
 msgstr ""
 "Konnte nicht an Port %s auf %s starten. Eine andere Software nutzt diesen "
 "Port oder SABnzbd läuft bereits."
-
-#: sabnzbd/panic.py
-msgid "Fatal error"
-msgstr "Schwerwiegender Fehler"
 
 #: sabnzbd/panic.py [Warning message]
 msgid "Cannot launch the browser, probably not found"
@@ -2372,7 +2372,7 @@ msgstr "Grösse"
 msgid "Purge Failed NZBs"
 msgstr "Fehlgeschlagene NZBs löschen"
 
-#: sabnzbd/skintext.py [Button to delete all failed jobs in History, including files]
+#: sabnzbd/skintext.py
 msgid "Purge Failed NZBs & Delete Files"
 msgstr "Fehlgeschlagene NZBs und Dateien löschen"
 
@@ -2416,7 +2416,7 @@ msgstr "Anderes Problem"
 msgid "Force Disconnect"
 msgstr "Verbindung trennen"
 
-#: sabnzbd/skintext.py [Status page button text]
+#: sabnzbd/skintext.py
 msgid ""
 "Disconnect all active connections to usenet servers. Connections will be "
 "reopened after a few seconds if there are items in the queue."
@@ -3682,7 +3682,7 @@ msgstr "0 ist die höchste, 99 die niedrigste Priorität"
 msgid "Optional"
 msgstr "Optional"
 
-#: sabnzbd/skintext.py [Explain server optional tickbox]
+#: sabnzbd/skintext.py
 msgid "For unreliable servers, will be ignored longer in case of failures"
 msgstr "Für unzuverlässige Server, wird bei Fehlern länger ignoriert"
 
@@ -3976,7 +3976,7 @@ msgstr "Geräte, welche die Nachrichten empfangen sollen"
 msgid "Emergency retry"
 msgstr "Notfall Wiederanlauf"
 
-#: sabnzbd/skintext.py [Pushover settings]
+#: sabnzbd/skintext.py
 msgid "How often (in seconds) the same notification will be sent"
 msgstr "Wie oft die selbe benachrichtigung (in Sekunden) geschickt wird."
 
@@ -3984,7 +3984,7 @@ msgstr "Wie oft die selbe benachrichtigung (in Sekunden) geschickt wird."
 msgid "Emergency expire"
 msgstr "Notfall Verfall"
 
-#: sabnzbd/skintext.py [Pushover settings]
+#: sabnzbd/skintext.py
 msgid "How many seconds your notification will continue to be retried"
 msgstr ""
 "Wieviele Sekunden soll versucht werden deine Nachricht erneut zu versenden"
@@ -4503,7 +4503,7 @@ msgstr "Skript-Protokoll anzeigen"
 msgid "Update Available!"
 msgstr "Neue Version verfügbar!"
 
-#: sabnzbd/skintext.py [Don't translate LocalStorage]
+#: sabnzbd/skintext.py
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will "
 "be lost after you close the browser!"
@@ -4792,7 +4792,7 @@ msgid "Closing any browser windows/tabs will NOT close SABnzbd."
 msgstr ""
 "Das Schliessen des Browser-Fensters oder -Tabs beendet SABnzbd NICHT."
 
-#: sabnzbd/skintext.py [Wizard tip]
+#: sabnzbd/skintext.py
 msgid ""
 "It is recommended you right click and bookmark this location and use this "
 "bookmark to access SABnzbd when it is running in the background."
@@ -4800,7 +4800,7 @@ msgstr ""
 "Es ist empfehlenswert, diese Seite mit einem Lesezeichen zu versehen und "
 "dieses verwenden, um SABnzbd aufzurufen, wenn es im Hintergrund läuft."
 
-#: sabnzbd/skintext.py [Will be appended with a wiki-link, adjust word order accordingly]
+#: sabnzbd/skintext.py
 msgid "Further help can be found on our"
 msgstr "Weiterführende Informationen finden Sie in unserem"
 
@@ -4849,7 +4849,7 @@ msgstr "Wenn Sie noch keinen Usenet-Provider haben, empfehlen wir Ihnen %s."
 msgid "Error getting TV info (%s)"
 msgstr "Fehler beim Abrufen der TV-Informationen: %s"
 
-#: sabnzbd/sorting.py [Error message]
+#: sabnzbd/sorting.py [Error message] # sabnzbd/sorting.py
 msgid "Failed to rename: %s to %s"
 msgstr "Umbenennen von %s nach %s fehlgeschlagen."
 
