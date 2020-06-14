@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 3.0.0 Beta 2
+Release Notes - SABnzbd 3.0.0 Beta 3
 =========================================================
 
 ## About this new version
@@ -7,17 +7,19 @@ Although it might not sound like a big change, we had to rewrite almost every pa
 the code. This also means that we might have introduced new bugs. We therefore encourage
 you to let us know of any errors or strange behavior you might notice!
 
-## Changes and bugfixes since 3.0.0 Beta 1
-- Articles failing with CRC errors are now retried on other servers.
-- Linux: special permission bits are removed from files after download.
-- Add hover color for queue and history in Glitter Night.
-- Improvements to built-in internet bandwidth test.
-- Adding new NZB's could fail.
-- Some API-calls could result in errors.
+## Changes and bugfixes since 3.0.0 Beta 2
+- Refactor of the code that handles adding NZB's and retrying jobs.
+- Queue-item labels are no longer part of the name but separated in API-property "labels".
+- Using the API with output=text to add NZB's will report the nzo_ids instead of "ok".
+- Repeated API-arguments were handled incorrectly.
+- Pausing the queue using the scheduler was broken.
+- Updated Javascript libraries of Glitter and the config.
+- Proper error-handling of bad email templates.
 
 ## Big changes in 3.0.0
 - Python 3.5 and above are the only supported versions of Python.
 - Cache handling is greatly improved, resulting in more stable speeds on some systems.
+- Articles failing with CRC errors are now retried on other servers.
 - SFV files, even obfuscated, will be used for renaming when there are no par2 files.
 - Fully obfuscated RAR-sets with no verification files are detected and extracted.
 - Built-in internet bandwidth test.
@@ -28,6 +30,7 @@ you to let us know of any errors or strange behavior you might notice!
 ## Other changes since 2.3.9
 - Files that are fully identical are now skipped automatically.
 - Linux tray icon support was improved.
+- On Linux special permission bits are removed from files after download.
 - macOS features such as the menu and notifications now use native code.
 - In Python 3 OpenSSL 1.1.1 is used for Windows and macOS, as a result 
   newsservers manually set to "RC4-MD5" cipher can no longer connect. 
