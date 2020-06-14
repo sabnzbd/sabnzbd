@@ -66,7 +66,6 @@ from sabnzbd.filesystem import (
     get_admin_path,
     remove_all,
     sanitize_filename,
-    globber_full,
     set_permissions,
     long_path,
     trim_win_path,
@@ -78,6 +77,7 @@ from sabnzbd.filesystem import (
     renamer,
     remove_file,
     get_filepath,
+    listdir_full,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
@@ -573,7 +573,7 @@ class NzbObject(TryList):
         nzbname=None,
         status=Status.QUEUED,
         nzo_info=None,
-        reuse=False,
+        reuse=None,
         dup_check=True,
     ):
         TryList.__init__(self)
@@ -704,29 +704,33 @@ class NzbObject(TryList):
             logging.info("Replacing dots with spaces in %s", self.final_name)
             self.final_name = self.final_name.replace(".", " ")
 
-        # Determine "incomplete" folder
-        wdir = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
-        adir = os.path.join(wdir, JOB_ADMIN)
-
         # Check against identical checksum or series/season/episode
         if (not reuse) and nzb and dup_check and priority != REPAIR_PRIORITY:
             duplicate, series = self.has_duplicates()
         else:
             duplicate = series = 0
 
-        if reuse:
-            remove_all(adir, "SABnzbd_nz?_*", keep_folder=True)
-            remove_all(adir, "SABnzbd_article_*", keep_folder=True)
+        # Reuse the existing directory
+        if reuse and os.path.exists(reuse):
+            work_dir = long_path(reuse)
         else:
-            wdir = trim_win_path(wdir)
-            wdir = get_unique_path(wdir, create_dir=True)
-            set_permissions(wdir)
-            adir = os.path.join(wdir, JOB_ADMIN)
+            # Determine "incomplete" folder and trim path on Windows to prevent long-path unrar errors
+            work_dir = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
+            work_dir = trim_win_path(work_dir)
+            work_dir = get_unique_path(work_dir, create_dir=True)
+            set_permissions(work_dir)
 
-        if not os.path.exists(adir):
-            os.mkdir(adir)
-        _, self.work_name = os.path.split(wdir)
+        # Always create the admin-directory, just to be sure
+        admin_dir = os.path.join(work_dir, JOB_ADMIN)
+        if not os.path.exists(admin_dir):
+            os.mkdir(admin_dir)
+        _, self.work_name = os.path.split(work_dir)
         self.created = True
+
+        # When doing a retry or repair, remove old cache-files
+        if reuse:
+            remove_all(admin_dir, "SABnzbd_nz?_*", keep_folder=True)
+            remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
         if nzb and "<nzb" in nzb:
             try:
@@ -744,7 +748,7 @@ class NzbObject(TryList):
                     raise ValueError
 
             sabnzbd.backup_nzb(filename, nzb)
-            sabnzbd.save_compressed(adir, filename, nzb)
+            sabnzbd.save_compressed(admin_dir, filename, nzb)
 
         if not self.files and not reuse:
             self.purge_data()
@@ -864,7 +868,7 @@ class NzbObject(TryList):
             self.priority = NORMAL_PRIORITY
 
         if reuse:
-            self.check_existing_files(wdir)
+            self.check_existing_files(work_dir)
 
         if cfg.auto_sort():
             self.files.sort(key=functools.cmp_to_key(nzf_cmp_date))
@@ -1184,7 +1188,7 @@ class NzbObject(TryList):
         fix_unix_encoding(wdir)
 
         # Get a list of already present files
-        files = [os.path.basename(f) for f in globber_full(wdir) if os.path.isfile(f)]
+        files = listdir_full(wdir, recursive=False)
 
         # Substitute renamed files
         renames = sabnzbd.load_data(RENAMES_FILE, self.workpath, remove=True)

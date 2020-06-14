@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2020-06-11 10:12+0200\n"
+"POT-Creation-Date: 2020-06-14 09:40+0200\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -36,15 +36,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 
@@ -400,18 +400,6 @@ msgstr ""
 msgid "Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
-msgid "Cannot read %s"
-msgstr ""
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr ""
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr ""
-
 #: sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr ""
@@ -510,6 +498,14 @@ msgstr ""
 
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
+msgstr ""
+
+#: sabnzbd/emailer.py # sabnzbd/filesystem.py # sabnzbd/nzbparser.py [Error message] # sabnzbd/nzbparser.py [Warning message] # sabnzbd/rss.py [Warning message]
+msgid "Cannot read %s"
+msgstr ""
+
+#: sabnzbd/emailer.py
+msgid "No email templates found"
 msgstr ""
 
 #: sabnzbd/emailer.py
@@ -787,6 +783,10 @@ msgid "ERROR: path too long (%s)"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
+msgid "ERROR: %s"
+msgstr ""
+
+#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr ""
 
@@ -1006,6 +1006,14 @@ msgstr ""
 msgid "Failed to import %s files from %s"
 msgstr ""
 
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr ""
+
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error removing %s"
+msgstr ""
+
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr ""
@@ -1030,7 +1038,7 @@ msgstr ""
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr ""
 
-#: sabnzbd/nzbstuff.py
+#: sabnzbd/nzbstuff.py # sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr ""
 
@@ -1056,6 +1064,10 @@ msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
+msgstr ""
+
+#: sabnzbd/nzbstuff.py [Error message]
+msgid "Error importing %s"
 msgstr ""
 
 #: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
@@ -1108,10 +1120,6 @@ msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
-msgstr ""
-
-#: sabnzbd/nzbstuff.py [Error message]
-msgid "Error importing %s"
 msgstr ""
 
 #: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]

@@ -645,12 +645,12 @@ def add_nzbfile(
     nzo_info=None,
     url=None,
     keep=None,
-    reuse=False,
+    reuse=None,
     password=None,
     nzo_id=None,
 ):
-    """ Add file
-        'reuse' flag will suppress duplicate detection
+    """ Add file, either a single NZB-file or an archive.
+        All other parameters are passed to the NZO-creation.
     """
     if pp == "-1":
         pp = None
@@ -660,7 +660,7 @@ def add_nzbfile(
         cat = None
 
     if isinstance(nzbfile, str):
-        # File coming from queue repair
+        # File coming from queue repair or local file-path
         path = nzbfile
         filename = os.path.basename(path)
         keep_default = True

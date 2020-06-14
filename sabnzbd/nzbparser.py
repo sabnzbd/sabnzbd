@@ -162,7 +162,7 @@ def process_nzb_archive_file(
     keep=False,
     priority=None,
     nzbname=None,
-    reuse=False,
+    reuse=None,
     nzo_info=None,
     dup_check=True,
     url=None,
@@ -263,7 +263,7 @@ def process_single_nzb(
     keep=False,
     priority=None,
     nzbname=None,
-    reuse=False,
+    reuse=None,
     nzo_info=None,
     dup_check=True,
     url=None,
@@ -285,35 +285,34 @@ def process_single_nzb(
 
         if check_bytes == b"\x1f\x8b":
             # gzip file or gzip in disguise
-            name = filename.replace(".nzb.gz", ".nzb")
+            filename = filename.replace(".nzb.gz", ".nzb")
             nzb_reader_handler = gzip.GzipFile
         elif check_bytes == b"BZ":
             # bz2 file or bz2 in disguise
-            name = filename.replace(".nzb.bz2", ".nzb")
+            filename = filename.replace(".nzb.bz2", ".nzb")
             nzb_reader_handler = bz2.BZ2File
         else:
-            name = filename
             nzb_reader_handler = open
 
         # Let's get some data and hope we can decode it
         with nzb_reader_handler(path, "rb") as nzb_file:
             data = correct_unknown_encoding(nzb_file.read())
 
-    except:
+    except OSError:
         logging.warning(T("Cannot read %s"), filesystem.clip_path(path))
         logging.info("Traceback: ", exc_info=True)
         return -2, nzo_ids
 
-    if name:
-        name, cat = name_to_cat(name, catdir)
+    if filename:
+        filename, cat = name_to_cat(filename, catdir)
         # The name is used as the name of the folder, so sanitize it using folder specific santization
         if not nzbname:
             # Prevent embedded password from being damaged by sanitize and trimming
-            nzbname = get_filename(name)
+            nzbname = get_filename(filename)
 
     try:
         nzo = nzbstuff.NzbObject(
-            name,
+            filename,
             pp=pp,
             script=script,
             nzb=data,
@@ -341,7 +340,7 @@ def process_single_nzb(
             return -2, nzo_ids
         else:
             # Something else is wrong, show error
-            logging.error(T("Error while adding %s, removing"), name, exc_info=True)
+            logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
             return -1, nzo_ids
 
     if nzo:

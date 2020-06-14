@@ -167,35 +167,35 @@ class NzbQueue:
                     logging.info("Skipping repair for job %s", folder)
         return result
 
-    def repair_job(self, folder, new_nzb=None, password=None):
+    def repair_job(self, repair_folder, new_nzb=None, password=None):
         """ Reconstruct admin for a single job folder, optionally with new NZB """
         # Check if folder exists
-        if not folder or not os.path.exists(folder):
+        if not repair_folder or not os.path.exists(repair_folder):
             return None
 
-        name = os.path.basename(folder)
-        path = os.path.join(folder, JOB_ADMIN)
+        name = os.path.basename(repair_folder)
+        admin_path = os.path.join(repair_folder, JOB_ADMIN)
 
         # If Retry was used and a new NZB was uploaded
         if getattr(new_nzb, "filename", None):
-            remove_all(path, "*.gz", keep_folder=True)
+            remove_all(admin_path, "*.gz", keep_folder=True)
             logging.debug("Repair job %s with new NZB (%s)", name, new_nzb.filename)
-            _, nzo_ids = sabnzbd.add_nzbfile(new_nzb, nzbname=name, reuse=True, password=password)
+            _, nzo_ids = sabnzbd.add_nzbfile(new_nzb, nzbname=name, reuse=repair_folder, password=password)
             nzo_id = nzo_ids[0]
         else:
             # Was this file already post-processed?
-            verified = sabnzbd.load_data(VERIFIED_FILE, path, remove=False)
+            verified = sabnzbd.load_data(VERIFIED_FILE, admin_path, remove=False)
             filenames = []
             if not verified or not all(verified[x] for x in verified):
-                filenames = globber_full(path, "*.gz")
+                filenames = globber_full(admin_path, "*.gz")
 
             if filenames:
                 logging.debug("Repair job %s by re-parsing stored NZB", name)
-                _, nzo_ids = sabnzbd.add_nzbfile(filenames[0], nzbname=name, reuse=True, password=password)
+                _, nzo_ids = sabnzbd.add_nzbfile(filenames[0], nzbname=name, reuse=repair_folder, password=password)
                 nzo_id = nzo_ids[0]
             else:
                 logging.debug("Repair job %s without stored NZB", name)
-                nzo = NzbObject(name, nzbname=name, reuse=True)
+                nzo = NzbObject(name, nzbname=name, reuse=repair_folder)
                 nzo.password = password
                 self.add(nzo)
                 nzo_id = nzo.nzo_id
@@ -208,15 +208,15 @@ class NzbQueue:
         try:
             nzb_path = globber_full(nzo.workpath, "*.gz")[0]
         except:
-            logging.debug("Failed to find NZB file after pre-check (%s)", nzo.nzo_id)
+            logging.info("Failed to find NZB file after pre-check (%s)", nzo.nzo_id)
             return
 
         # Need to remove it first, otherwise it might still be downloading
         self.remove(nzo, add_to_history=False, cleanup=False)
-        res, nzo_ids = process_single_nzb(nzo.work_name, nzb_path, keep=True, reuse=True, nzo_id=nzo.nzo_id)
+        res, nzo_ids = process_single_nzb(nzo.filename, nzb_path, keep=True, reuse=nzo.downpath, nzo_id=nzo.nzo_id)
         if res == 0 and nzo_ids:
             # Reset reuse flag to make pause/abort on encryption possible
-            self.__nzo_table[nzo_ids[0]].reuse = False
+            self.__nzo_table[nzo_ids[0]].reuse = None
 
     @NzbQueueLocker
     def save(self, save_nzo=None):
@@ -244,10 +244,9 @@ class NzbQueue:
         """ Create and return a placeholder nzo object """
         logging.debug("Creating placeholder NZO")
         future_nzo = NzbObject(
-            msg,
-            pp,
-            script,
-            None,
+            filename=msg,
+            pp=pp,
+            script=script,
             futuretype=True,
             cat=cat,
             url=url,
