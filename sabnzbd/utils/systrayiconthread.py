@@ -7,12 +7,11 @@
 #  override click to perform actions when left-clicking the icon
 
 import os
-
 import pywintypes
-import timer
 import win32api
 import win32con
 import win32gui_struct
+import timer
 
 try:
     import winxpgui as win32gui

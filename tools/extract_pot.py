@@ -20,8 +20,8 @@ extract_pot - Extract translatable strings from all PY files
 """
 
 import os
-import re
 import sys
+import re
 
 # Import version.py without the sabnzbd overhead
 with open("sabnzbd/version.py") as version_file:

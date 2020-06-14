@@ -15,36 +15,36 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import getopt
-import logging
-import logging.handlers
-import platform
-import re
-import signal
-import socket
-import ssl
-import subprocess
 import sys
-import time
-import traceback
 
 if sys.hexversion < 0x03050000:
     print("Sorry, requires Python 3.5 or above")
     print("You can read more at: https://sabnzbd.org/python3")
     sys.exit(1)
 
+import logging
+import logging.handlers
+import traceback
+import getopt
+import signal
+import socket
+import platform
+import subprocess
+import ssl
+import time
+import re
+
 try:
     import Cheetah
 
     if Cheetah.Version[0] != "3":
         raise ValueError
-
-    import cherrypy
-    import chardet
-    import configobj
-    import cryptography
     import feedparser
+    import configobj
+    import cherrypy
     import portend
+    import cryptography
+    import chardet
 except ValueError:
     print("Sorry, requires Python module Cheetah 3 or higher.")
     sys.exit(1)
@@ -56,17 +56,10 @@ except ImportError as e:
     sys.exit(1)
 
 import sabnzbd
-import sabnzbd.cfg
-import sabnzbd.config as config
-import sabnzbd.downloader
-import sabnzbd.interface
 import sabnzbd.lang
-import sabnzbd.newsunpack
-import sabnzbd.notifier as notifier
-import sabnzbd.scheduler as scheduler
-import sabnzbd.zconfig
+import sabnzbd.interface
 from sabnzbd.constants import *
-from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
+import sabnzbd.newsunpack
 from sabnzbd.misc import (
     check_latest_version,
     exit_sab,
@@ -79,7 +72,14 @@ from sabnzbd.misc import (
     get_from_url,
     upload_file_to_sabnzbd,
 )
+from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
+import sabnzbd.scheduler as scheduler
+import sabnzbd.config as config
+import sabnzbd.cfg
+import sabnzbd.downloader
+import sabnzbd.notifier as notifier
+import sabnzbd.zconfig
 
 try:
     import win32api

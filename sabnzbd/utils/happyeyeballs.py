@@ -18,12 +18,12 @@ logger.setLevel(logging.DEBUG)
 print happyeyeballs('newszilla.xs4all.nl', port=119)
 """
 
-import logging
-import queue
 import socket
 import ssl
 import threading
 import time
+import logging
+import queue
 
 DEBUG = False
 

@@ -18,13 +18,15 @@
 """
 tests.test_filesystem - Testing functions in filesystem.py
 """
+import os
 import stat
-
 import pyfakefs.fake_filesystem_unittest as ffs
 
-import sabnzbd.cfg
 import sabnzbd.filesystem as filesystem
+import sabnzbd.cfg
+
 from tests.testhelper import *
+
 
 # Set the global uid for fake filesystems to a non-root user;
 # by default this depends on the user running pytest.

@@ -19,10 +19,11 @@
 sabnzbd.powersup - System power management support
 """
 
-import logging
 import os
 import subprocess
+import logging
 import time
+
 
 ##############################################################################
 # Power management for Windows

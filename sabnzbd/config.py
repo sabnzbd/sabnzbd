@@ -19,20 +19,18 @@
 sabnzbd.config - Configuration Support
 """
 
-import logging
 import os
 import re
-import shutil
+import logging
 import threading
+import shutil
 import uuid
 from urllib.parse import urlparse
-
-import configobj
-
 import sabnzbd.misc
-from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
-from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
+from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
+import configobj
+from sabnzbd.decorators import synchronized
 
 CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()

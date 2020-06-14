@@ -15,24 +15,23 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-import datetime
-import gzip
-import logging
-import os
-import pickle
-import re
-import socket
-import ssl
-import subprocess
-import sys
-import tempfile
-import time
-from threading import Lock, Thread
-
-import cherrypy
-
 # Imported to be referenced from other files directly
 from sabnzbd.version import __version__, __baseline__
+
+import os
+import logging
+import datetime
+import tempfile
+import pickle
+import gzip
+import subprocess
+import time
+import socket
+import cherrypy
+import sys
+import re
+import ssl
+from threading import Lock, Thread
 
 ##############################################################################
 # Determine platform flags

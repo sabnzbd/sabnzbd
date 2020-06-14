@@ -19,12 +19,13 @@
 sabnzbd.articlecache - Article cache handling
 """
 
-import struct
+import logging
 import threading
+import struct
 
 import sabnzbd
-from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE
 from sabnzbd.decorators import synchronized
+from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE
 
 # Operations on lists and dicts are atomic, but for
 # the bytes counter we do need a lock

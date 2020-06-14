@@ -19,10 +19,10 @@
 sabnzbd.panic - Send panic message to the browser
 """
 
-import ctypes
-import logging
 import os
+import logging
 import tempfile
+import ctypes
 
 try:
     import webbrowser

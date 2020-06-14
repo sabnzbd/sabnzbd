@@ -19,20 +19,20 @@
 sabnzbd.misc - filesystem operations
 """
 
-import fnmatch
-import logging
 import os
+import sys
+import logging
 import re
 import shutil
-import stat
-import sys
 import threading
 import time
+import fnmatch
+import stat
 import zipfile
 
 import sabnzbd
-from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
 from sabnzbd.decorators import synchronized
+from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
 from sabnzbd.encoding import correct_unknown_encoding
 from sabnzbd.utils import rarfile
 

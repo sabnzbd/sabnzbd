@@ -19,21 +19,21 @@
 sabnzbd.rss - rss client functionality
 """
 
-import datetime
-import logging
 import re
-import threading
+import logging
 import time
-
-import feedparser
+import datetime
+import threading
 
 import sabnzbd
-import sabnzbd.cfg as cfg
-import sabnzbd.config as config
-import sabnzbd.emailer as emailer
 from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, NORMAL_PRIORITY, DUP_PRIORITY
 from sabnzbd.decorators import synchronized
+import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 from sabnzbd.misc import cat_convert, wildcard_to_re, cat_to_opts, match_str, from_units, int_conv, get_base_url
+import sabnzbd.emailer as emailer
+
+import feedparser
 
 __RSS = None  # Global pointer to RSS-scanner instance
 

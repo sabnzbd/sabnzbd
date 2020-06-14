@@ -21,13 +21,11 @@ sabnzbd.notifier - Send notifications to any notification services
 """
 
 
+import os.path
+import logging
+import urllib.request, urllib.error, urllib.parse
 import http.client
 import json
-import logging
-import os.path
-import urllib.error
-import urllib.parse
-import urllib.request
 from threading import Thread
 
 import sabnzbd

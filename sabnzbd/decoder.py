@@ -19,18 +19,18 @@
 sabnzbd.decoder - article decoder
 """
 
-import hashlib
 import logging
+import hashlib
 import queue
 from threading import Thread
 
 import sabnzbd
-import sabnzbd.cfg as cfg
-from sabnzbd.articlecache import ArticleCache
 from sabnzbd.constants import SABYENC_VERSION_REQUIRED
+from sabnzbd.articlecache import ArticleCache
 from sabnzbd.downloader import Downloader
-from sabnzbd.misc import match_str
 from sabnzbd.nzbqueue import NzbQueue
+import sabnzbd.cfg as cfg
+from sabnzbd.misc import match_str
 
 # Check for correct SABYenc version
 SABYENC_VERSION = None

@@ -19,8 +19,8 @@
 sabnzbd.zconfig - bonjour/zeroconfig support
 """
 
-import logging
 import os
+import logging
 
 _HOST_PORT = (None, None)
 

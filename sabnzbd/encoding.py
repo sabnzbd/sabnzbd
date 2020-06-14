@@ -20,9 +20,9 @@ sabnzbd.encoding - Unicode/byte translation functions
 """
 
 import locale
+import chardet
 from xml.sax.saxutils import escape
 
-import chardet
 
 CODEPAGE = locale.getpreferredencoding()
 

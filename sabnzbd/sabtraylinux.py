@@ -19,10 +19,9 @@
 sabnzbd.sabtraylinux - System tray icon for Linux, inspired from the Windows one
 """
 
-import logging
-
 import gi
 from gi.repository import Gtk, GLib
+import logging
 
 try:
     gi.require_version("XApp", "1.0")

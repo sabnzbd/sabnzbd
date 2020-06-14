@@ -18,15 +18,15 @@
 """
 tests.test_urlgrabber - Testing functions in urlgrabber.py
 """
-import json
 import urllib.error
 import urllib.parse
-
 import pytest_httpbin
+import json
 
 import sabnzbd.urlgrabber as urlgrabber
-import sabnzbd.version
 from sabnzbd.cfg import selftest_host
+import sabnzbd.version
+
 from tests.testhelper import *
 
 

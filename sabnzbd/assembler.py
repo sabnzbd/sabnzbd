@@ -19,24 +19,24 @@
 sabnzbd.assembler - threaded assembly/decoding of files
 """
 
-import hashlib
-import logging
 import os
 import queue
+import logging
 import re
 from threading import Thread
 from time import sleep
+import hashlib
 
 import sabnzbd
+from sabnzbd.misc import get_all_passwords
+from sabnzbd.filesystem import set_permissions, clip_path, has_win_device, diskspace, get_filename, get_ext
+from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
+from sabnzbd.articlecache import ArticleCache
+from sabnzbd.postproc import PostProcessor
 import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.articlecache import ArticleCache
-from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
-from sabnzbd.filesystem import set_permissions, clip_path, has_win_device, diskspace, get_filename, get_ext
-from sabnzbd.misc import get_all_passwords
-from sabnzbd.postproc import PostProcessor
 from sabnzbd.rating import Rating
 
 

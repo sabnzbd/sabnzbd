@@ -4,8 +4,8 @@
 Functions to check if the path filesystem uses FAT
 """
 
-import os
 import sys
+import os
 
 debug = False
 

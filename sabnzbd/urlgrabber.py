@@ -19,28 +19,29 @@
 sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 """
 
-import base64
-import logging
 import os
-import queue
 import sys
 import time
+import logging
+import queue
+import urllib.request
 import urllib.error
 import urllib.parse
-import urllib.request
 from http.client import IncompleteRead
 from threading import Thread
+import base64
 
 import sabnzbd
-import sabnzbd.cfg as cfg
-import sabnzbd.emailer as emailer
-import sabnzbd.filesystem
-import sabnzbd.misc as misc
-import sabnzbd.notifier as notifier
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
-from sabnzbd.encoding import ubtou, utob
+import sabnzbd.misc as misc
+import sabnzbd.filesystem
 from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.postproc import PostProcessor
+import sabnzbd.cfg as cfg
+import sabnzbd.emailer as emailer
+import sabnzbd.notifier as notifier
+from sabnzbd.encoding import ubtou, utob
+
 
 _RARTING_FIELDS = (
     "x-rating-id",

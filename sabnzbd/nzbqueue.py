@@ -19,19 +19,20 @@
 sabnzbd.nzbqueue - nzb queue
 """
 
+import os
+import logging
+import time
 import datetime
 import functools
-import logging
-import os
-import time
 
 import sabnzbd
-import sabnzbd.cfg as cfg
+from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp, safe_lower
+from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file
+from sabnzbd.nzbparser import process_single_nzb
+from sabnzbd.panic import panic_queue
 import sabnzbd.database as database
-import sabnzbd.downloader
-import sabnzbd.notifier as notifier
-from sabnzbd.assembler import Assembler, file_has_articles
-from sabnzbd.bpsmeter import BPSMeter
+from sabnzbd.decorators import NzbQueueLocker
 from sabnzbd.constants import (
     QUEUE_FILE_NAME,
     QUEUE_VERSION,
@@ -49,12 +50,12 @@ from sabnzbd.constants import (
     QNFO,
     DIRECT_WRITE_TRIGGER,
 )
-from sabnzbd.decorators import NzbQueueLocker
-from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file
-from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp, safe_lower
-from sabnzbd.nzbparser import process_single_nzb
-from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.panic import panic_queue
+
+import sabnzbd.cfg as cfg
+import sabnzbd.downloader
+from sabnzbd.assembler import Assembler, file_has_articles
+import sabnzbd.notifier as notifier
+from sabnzbd.bpsmeter import BPSMeter
 
 
 class NzbQueue:

@@ -18,12 +18,11 @@
 """
 sabnzbd.par2file - All par2-related functionality
 """
-import hashlib
-import logging
 import os
+import logging
 import re
+import hashlib
 import struct
-
 from sabnzbd.encoding import correct_unknown_encoding
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[\+\-](\d*)\.par2", re.I)

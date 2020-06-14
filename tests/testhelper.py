@@ -28,16 +28,16 @@ from http.client import RemoteDisconnected
 
 import pytest
 import requests
+import tests.sabnews
 from selenium import webdriver
-from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import WebDriverException
 from urllib3.exceptions import ProtocolError
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-import tests.sabnews
 
 SAB_HOST = "localhost"
 SAB_PORT = 8081

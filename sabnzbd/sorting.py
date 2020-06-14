@@ -22,13 +22,11 @@ Date Sorting - Sorting downloads by a custom date matching
 Generic Sorting - Sorting large files by a custom matching
 """
 
-import logging
 import os
+import logging
 import re
 
 import sabnzbd
-import sabnzbd.cfg as cfg
-from sabnzbd.constants import series_match, date_match, year_match, sample_match
 from sabnzbd.filesystem import (
     move_to_path,
     cleanup_empty_directories,
@@ -39,6 +37,8 @@ from sabnzbd.filesystem import (
     sanitize_foldername,
     clip_path,
 )
+from sabnzbd.constants import series_match, date_match, year_match, sample_match
+import sabnzbd.cfg as cfg
 
 RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's

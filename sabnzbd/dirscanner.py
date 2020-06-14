@@ -19,16 +19,16 @@
 sabnzbd.dirscanner - Scanner for Watched Folder
 """
 
-import logging
 import os
-import threading
 import time
+import logging
+import threading
 
 import sabnzbd
-import sabnzbd.cfg as cfg
-import sabnzbd.config as config
-import sabnzbd.filesystem as filesystem
 from sabnzbd.constants import SCAN_FILE_NAME, VALID_ARCHIVES, VALID_NZB_FILES
+import sabnzbd.filesystem as filesystem
+import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 
 
 def compare_stat_tuple(tup1, tup2):

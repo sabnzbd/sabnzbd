@@ -32,11 +32,11 @@ sabnzbd.lang - Language support
 # T()   Unicode translation
 # TT()  Dummy translation, use to mark table entries for POT scanning
 
-import builtins
 import gettext
+import builtins
 import glob
-import locale
 import os
+import locale
 
 __all__ = ["set_locale_info", "set_language", "list_languages"]
 

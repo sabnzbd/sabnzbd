@@ -19,17 +19,17 @@
 sabtray.py - Systray icon for SABnzbd on Windows, contributed by Jan Schejbal
 """
 
-import logging
 import os
+import logging
 from time import sleep
 
 import sabnzbd
+from sabnzbd.panic import launch_a_browser
 import sabnzbd.api as api
-import sabnzbd.cfg as cfg
 import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
+import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
-from sabnzbd.panic import launch_a_browser
 
 # contains the tray icon, which demands its own thread
 from sabnzbd.utils.systrayiconthread import SysTrayIconThread
