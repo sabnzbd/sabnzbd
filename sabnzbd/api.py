@@ -349,7 +349,9 @@ def _api_translate(name, output, kwargs):
 
 def _api_addfile(name, output, kwargs):
     """ API: accepts name, output, pp, script, cat, priority, nzbname """
-    # Normal upload will send the nzb in a kw arg called name
+    # Normal upload will send the nzb in a kw arg called name or nzbfile
+    if not name:
+        name = kwargs.get("nzbfile", None)
     if hasattr(name, "file") and hasattr(name, "filename") and name.filename:
         cat = kwargs.get("cat")
         xcat = kwargs.get("xcat")
