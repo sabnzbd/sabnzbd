@@ -19,10 +19,11 @@
 tests.test_sleepless - Test sleepless for macOS
 """
 
-import sys
-import pytest
-import time
 import subprocess
+import sys
+import time
+
+import pytest
 
 if not sys.platform.startswith("darwin"):
     pytest.skip("Skipping macOS-only tests", allow_module_level=True)

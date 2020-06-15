@@ -20,8 +20,6 @@ tests.conftest - Setup pytest fixtures
 These have to be separate otherwise SABnzbd is started multiple times!
 """
 import shutil
-import subprocess
-import sys
 
 from tests.testhelper import *
 
@@ -34,7 +32,7 @@ def start_sabnzbd():
 
     # Copy basic config file with API key
     os.makedirs(SAB_CACHE_DIR, exist_ok=True)
-    shutil.copyfile(os.path.join(SAB_BASE_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
+    shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
 
     # Check if we have language files
     if not os.path.exists(os.path.join(SAB_BASE_DIR, "..", "locale")):

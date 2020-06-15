@@ -8,12 +8,12 @@
 tests.test_postproc- Tests of various functions in newspack, among which rar_renamer()
 """
 
-import pytest
 import shutil
 from distutils.dir_util import copy_tree
 from unittest import mock
 
 from sabnzbd.postproc import *
+from tests.testhelper import *
 
 
 class TestPostProc:
@@ -23,10 +23,6 @@ class TestPostProc:
 
         # Function to deobfuscate one directorty with rar_renamer()
         def deobfuscate_dir(sourcedir, expected_filename_matches):
-            # sourcedir is the relative path to the directory with obfuscated files
-
-            # enrich to absolute path:
-            sourcedir = os.path.join(os.getcwd(), sourcedir)
             # We create a workingdir inside the sourcedir, because the filenames are really changed
             workingdir = os.path.join(sourcedir, "workingdir")
 
@@ -64,17 +60,17 @@ class TestPostProc:
             return number_renamed_files
 
         # obfuscated, single rar set
-        sourcedir = os.path.join("tests", "data", "obfuscated_single_rar_set")
+        sourcedir = os.path.join(SAB_DATA_DIR, "obfuscated_single_rar_set")
         # Now define the filematches we want to see, in which amount ("*-*-*-*-*" are the input files):
         expected_filename_matches = {"*part007.rar": 1, "*-*-*-*-*": 0}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 7
 
         # obfuscated, two rar sets
-        sourcedir = os.path.join("tests", "data", "obfuscated_two_rar_sets")
+        sourcedir = os.path.join(SAB_DATA_DIR, "obfuscated_two_rar_sets")
         expected_filename_matches = {"*part007.rar": 2, "*part009.rar": 1, "*-*-*-*-*": 0}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 16
 
         # obfuscated, but not a rar set
-        sourcedir = os.path.join("tests", "data", "obfuscated_but_no_rar")
+        sourcedir = os.path.join(SAB_DATA_DIR, "obfuscated_but_no_rar")
         expected_filename_matches = {"*.rar": 0, "*-*-*-*-*": 6}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 0

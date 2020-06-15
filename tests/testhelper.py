@@ -28,21 +28,22 @@ from http.client import RemoteDisconnected
 
 import pytest
 import requests
-import tests.sabnews
 from selenium import webdriver
+from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import WebDriverException
 from urllib3.exceptions import ProtocolError
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+import tests.sabnews
 
 SAB_HOST = "localhost"
 SAB_PORT = 8081
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache")
+SAB_DATA_DIR = os.path.join(SAB_BASE_DIR, "data")
 SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "complete")
 SAB_NEWSSERVER_HOST = "127.0.0.1"
 SAB_NEWSSERVER_PORT = 8888
@@ -125,7 +126,7 @@ def start_sabnews():
 
 def create_nzb(nzb_dir):
     """ Create NZB from directory using SABNews """
-    nzb_dir_full = os.path.join(SAB_BASE_DIR, "data", nzb_dir)
+    nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
     return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full)
 
 

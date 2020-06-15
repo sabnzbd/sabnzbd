@@ -19,9 +19,6 @@
 tests.test_functional_downloads - Test the downloading flow
 """
 
-import random
-from selenium.common.exceptions import NoSuchElementException
-
 from tests.testhelper import *
 
 
@@ -48,11 +45,6 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
 
         # This will fail if the translations failed to compile!
         self.selenium_wrapper(self.driver.find_element_by_partial_link_text, "Advanced Settings").click()
-
-        # Lower number of connections to prevent testing errors
-        pass_inp = self.selenium_wrapper(self.driver.find_element_by_name, "connections")
-        pass_inp.clear()
-        pass_inp.send_keys(4)
 
         # Change port
         port_inp = self.selenium_wrapper(self.driver.find_element_by_name, "port")
@@ -81,7 +73,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         nzb_path = create_nzb(nzb_dir)
 
         # Add NZB
-        test_job_name = "testfile_%s" % int(time.time())
+        test_job_name = "testfile_%s" % time.time()
         api_result = get_api_result("addlocalfile", extra_arguments={"name": nzb_path, "nzbname": test_job_name})
         assert api_result["status"]
 
@@ -103,7 +95,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
                     break
                 else:
                     time.sleep(1)
-            except NoSuchElementException:
+            except WebDriverException:
                 time.sleep(1)
         else:
             self.fail("Download did not complete")

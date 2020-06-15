@@ -20,6 +20,7 @@ tests.test_utils.test_happyeyeballs - Testing SABnzbd happyeyeballs
 """
 
 from flaky import flaky
+
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 

@@ -20,6 +20,7 @@ tests.test_win_utils - Testing Windows utils
 """
 
 import sys
+
 import pytest
 
 if not sys.platform.startswith("win"):

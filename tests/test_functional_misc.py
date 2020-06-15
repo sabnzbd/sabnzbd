@@ -19,8 +19,6 @@
 tests.test_functional_misc - Functional tests of various functions
 """
 import shutil
-import subprocess
-import sys
 
 import sabnzbd.encoding
 from tests.testhelper import *
@@ -121,7 +119,7 @@ class TestDaemonizing(SABnzbdBaseTest):
 
         # We need the basic-config to set the API-key
         # Otherwise we can't shut it down at the end
-        shutil.copyfile(os.path.join(SAB_BASE_DIR, "sabnzbd.basic.ini"), os.path.join(ini_location, "sabnzbd.ini"))
+        shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(ini_location, "sabnzbd.ini"))
 
         # Combine it all into the script call
         script_call = [
