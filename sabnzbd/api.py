@@ -360,7 +360,12 @@ def _api_addfile(name, output, kwargs):
             cat = cat_convert(xcat)
         # Add the NZB-file
         res, nzo_ids = sabnzbd.add_nzbfile(
-            name, kwargs.get("pp"), kwargs.get("script"), cat, kwargs.get("priority"), kwargs.get("nzbname")
+            name,
+            pp=kwargs.get("pp"),
+            script=kwargs.get("script"),
+            cat=cat,
+            priority=kwargs.get("priority"),
+            nzbname=kwargs.get("nzbname"),
         )
         return report(output, keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
     else:
