@@ -358,8 +358,9 @@ def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zi
     # Only re-run if something was unpacked and it was success
     rerun = error in (False, 0)
 
-    # During a Retry we might miss files that failed during recursive unpack
-    if nzo.reuse and depth == 1 and any(build_filelists(workdir, workdir_complete)):
+    # During a Retry we might miss files in the complete folder
+    # that failed during recursive unpack in the first run
+    if nzo.reuse and depth == 1 and any(build_filelists(workdir=None, workdir_complete=workdir_complete)):
         rerun = True
 
     # We can't recursive unpack on long paths on Windows
