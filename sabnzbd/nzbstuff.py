@@ -1189,7 +1189,7 @@ class NzbObject(TryList):
         fix_unix_encoding(wdir)
 
         # Get a list of already present files
-        files = globber(wdir)
+        files = [f for f in os.listdir(wdir) if os.path.isfile(f)]
 
         # Substitute renamed files
         renames = sabnzbd.load_data(RENAMES_FILE, self.workpath, remove=True)
