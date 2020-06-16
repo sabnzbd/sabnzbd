@@ -77,7 +77,7 @@ from sabnzbd.filesystem import (
     renamer,
     remove_file,
     get_filepath,
-    listdir_full,
+    globber,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
@@ -1188,7 +1188,7 @@ class NzbObject(TryList):
         fix_unix_encoding(wdir)
 
         # Get a list of already present files
-        files = listdir_full(wdir, recursive=False)
+        files = globber(wdir)
 
         # Substitute renamed files
         renames = sabnzbd.load_data(RENAMES_FILE, self.workpath, remove=True)
