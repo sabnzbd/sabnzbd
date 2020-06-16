@@ -481,21 +481,20 @@ def process_job(nzo):
         if not nzb_list:
             # Give destination its final name
             if cfg.folder_rename() and tmp_workdir_complete and not one_folder:
-                if all_ok:
-                    try:
-                        newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
-                    except:
-                        logging.error(
-                            T('Error renaming "%s" to "%s"'),
-                            clip_path(tmp_workdir_complete),
-                            clip_path(workdir_complete),
-                        )
-                        logging.info("Traceback: ", exc_info=True)
-                        # Better disable sorting because filenames are all off now
-                        file_sorter.sort_file = None
-                else:
+                if not all_ok:
+                    # Rename failed folders so they are easy to recognize
                     workdir_complete = tmp_workdir_complete.replace("_UNPACK_", "_FAILED_")
-                    workdir_complete = get_unique_path(workdir_complete, n=0, create_dir=False)
+                    workdir_complete = get_unique_path(workdir_complete, create_dir=False)
+
+                try:
+                    newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
+                except:
+                    logging.error(
+                        T('Error renaming "%s" to "%s"'), clip_path(tmp_workdir_complete), clip_path(workdir_complete),
+                    )
+                    logging.info("Traceback: ", exc_info=True)
+                    # Better disable sorting because filenames are all off now
+                    file_sorter.sort_file = None
 
             if empty:
                 job_result = -1
