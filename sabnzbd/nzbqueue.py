@@ -319,7 +319,7 @@ class NzbQueue:
         # If no files are to be downloaded anymore, send to postproc
         if not nzo.files and not nzo.futuretype:
             self.end_job(nzo)
-            return ""
+            return nzo.nzo_id
 
         # Reset try_lists
         nzo.reset_try_list()

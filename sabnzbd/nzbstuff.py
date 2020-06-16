@@ -692,8 +692,9 @@ class NzbObject(TryList):
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum = None
 
-        if nzb is None:
+        if nzb is None and not reuse:
             # This is a slot for a future NZB, ready now
+            # It can also be a retry of a failed job with no extra NZB-file
             return
 
         # Apply conversion option to final folder
