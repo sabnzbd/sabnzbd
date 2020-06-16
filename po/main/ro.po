@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-06-11 10:12+0200\n"
+"POT-Creation-Date: 2020-06-14 09:40+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-14 06:52+0000\n"
+"X-Launchpad-Export-Date: 2020-06-15 06:06+0000\n"
 "X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
@@ -39,15 +39,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "binar par2 ... Negăsit!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Versiunea ta de UNRAR este %s,  noi recomandăm versiunea %s sau mai mare.<br "
@@ -428,18 +428,6 @@ msgid ""
 "time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
-msgid "Cannot read %s"
-msgstr "Nu pot citi %s"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr "Eroare adăugare %s, ştergem"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Eroare ştergere %s"
-
 #: sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr "Nu pot citi Dosar Urnărire %s"
@@ -541,6 +529,14 @@ msgstr "Nu pot gasi şabloane email în %s"
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "Destinatar necunoscut, niciun email trimis"
+
+#: sabnzbd/emailer.py # sabnzbd/filesystem.py # sabnzbd/nzbparser.py [Error message] # sabnzbd/nzbparser.py [Warning message] # sabnzbd/rss.py [Warning message]
+msgid "Cannot read %s"
+msgstr "Nu pot citi %s"
+
+#: sabnzbd/emailer.py
+msgid "No email templates found"
+msgstr "Şabloane email negăsite"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -848,6 +844,10 @@ msgid "ERROR: path too long (%s)"
 msgstr "EROARE: calea este prea lungă (%s)"
 
 #: sabnzbd/newsunpack.py
+msgid "ERROR: %s"
+msgstr "EROARE: %s"
+
+#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr "Fișier RAR ce poate fi folosit"
 
@@ -1074,6 +1074,14 @@ msgstr "Nu am putut trimite notificări în Fereastră"
 msgid "Failed to import %s files from %s"
 msgstr "Importare %s a fişierelor de la %s nereuşită"
 
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Eroare adăugare %s, ştergem"
+
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error removing %s"
+msgstr "Eroare ştergere %s"
+
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "Fişier coadă găsit incompatibil, nu pot înainta"
@@ -1098,7 +1106,7 @@ msgstr "%s => lipsă de pe toate serverele, ignorare"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Fişier NZB invalid %s, ignorăm (motiv=%s, line=%s)"
 
-#: sabnzbd/nzbstuff.py
+#: sabnzbd/nzbstuff.py # sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Fişier NZB gol %s"
 
@@ -1125,6 +1133,10 @@ msgstr "Întrerupem duplicat NZB \"%s\""
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
 msgstr "Anulat nu poate fi finalizat"
+
+#: sabnzbd/nzbstuff.py [Error message]
+msgid "Error importing %s"
+msgstr "Eroare importare %s"
 
 #: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "DUPLICATE"
@@ -1177,10 +1189,6 @@ msgstr "%s articolele au fost lipsă"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articolele au avut duplicate diferite"
-
-#: sabnzbd/nzbstuff.py [Error message]
-msgid "Error importing %s"
-msgstr "Eroare importare %s"
 
 #: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
@@ -4782,9 +4790,6 @@ msgstr "Descărcare URL nereuşită; %s"
 #~ msgid "Server %s requires user/password"
 #~ msgstr "Serverul %s necesită utilizator/parolă"
 
-#~ msgid "No email templates found"
-#~ msgstr "Şabloane email negăsite"
-
 #~ msgid "Missing Session key"
 #~ msgstr "Cheie Sesiune lipsă"
 
@@ -4874,9 +4879,6 @@ msgstr "Descărcare URL nereuşită; %s"
 
 #~ msgid "Unpacking failed, these file(s) are missing:"
 #~ msgstr "Dezarhivare nereuşită, acest(e) fişier(e) sunt lipsă:"
-
-#~ msgid "ERROR: %s"
-#~ msgstr "EROARE: %s"
 
 #~ msgid "Unpacking failed, an expected file was not unpacked"
 #~ msgstr "Dezarhivare nereuşită, un fişier aşteptat nu a fost dezarhivat"

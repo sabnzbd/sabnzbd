@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: ОZZII <ozzii.translate@gmail.com>\n"
-"POT-Creation-Date: 2020-06-11 10:12+0200\n"
+"POT-Creation-Date: 2020-06-14 09:40+0200\n"
 "PO-Revision-Date: 2018-02-14 14:18+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Serbian <sr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-14 06:52+0000\n"
+"X-Launchpad-Export-Date: 2020-06-15 06:06+0000\n"
 "X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
@@ -39,15 +39,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 program...NIJE pronađen!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Verzija vašeg UNRAR-a je %s, mi preporučujemo verziju %s ili noviju.<br />"
@@ -421,18 +421,6 @@ msgid ""
 "time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
-msgid "Cannot read %s"
-msgstr "Неуспешно читање %s"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr "Грешка додавања %s, уклањање"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Greška pri uklanjanju %s"
-
 #: sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr "Неуспешно читање надгледане фасцикле %s"
@@ -533,6 +521,14 @@ msgstr "Немогуће наћи модел е-поруке у %s"
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "Нема примаоце, е-порука није послана"
+
+#: sabnzbd/emailer.py # sabnzbd/filesystem.py # sabnzbd/nzbparser.py [Error message] # sabnzbd/nzbparser.py [Warning message] # sabnzbd/rss.py [Warning message]
+msgid "Cannot read %s"
+msgstr "Неуспешно читање %s"
+
+#: sabnzbd/emailer.py
+msgid "No email templates found"
+msgstr "Нема модела е-поруке"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -838,6 +834,10 @@ msgid "ERROR: path too long (%s)"
 msgstr "ГРЕШКА: путања је превелика (%s)"
 
 #: sabnzbd/newsunpack.py
+msgid "ERROR: %s"
+msgstr "ГРЕШКА: %s"
+
+#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr "Neupotrebljiva RAR datoteka"
 
@@ -1063,6 +1063,14 @@ msgstr ""
 msgid "Failed to import %s files from %s"
 msgstr "Неуспешан унос %s датотеке са %s"
 
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Грешка додавања %s, уклањање"
+
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error removing %s"
+msgstr "Greška pri uklanjanju %s"
+
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "Некомпатибилан ред нађен, на могу да наставим"
@@ -1087,7 +1095,7 @@ msgstr "%s => фали на свим серверима, одбацивање"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Неважећи NZB %s, прескакање (разлог=%s, линија=%s)"
 
-#: sabnzbd/nzbstuff.py
+#: sabnzbd/nzbstuff.py # sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Празан NZB %s"
 
@@ -1114,6 +1122,10 @@ msgstr "Паузирам због дуплог NZB-а \"%s\""
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
 msgstr "Поништено, не може да се заврши"
+
+#: sabnzbd/nzbstuff.py [Error message]
+msgid "Error importing %s"
+msgstr "Грешка увоза %s"
 
 #: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "DUPLICATE"
@@ -1166,10 +1178,6 @@ msgstr "%s артикла недостају"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s артикла нису дупликате"
-
-#: sabnzbd/nzbstuff.py [Error message]
-msgid "Error importing %s"
-msgstr "Грешка увоза %s"
 
 #: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
@@ -5057,9 +5065,6 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 #~ msgid "CRC Error in %s (%s -> %s)"
 #~ msgstr "CRC грешка у %s (%s -> %s)"
 
-#~ msgid "No email templates found"
-#~ msgstr "Нема модела е-поруке"
-
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "Погрешно енкодирање модела е-поруке %s"
 
@@ -5108,9 +5113,6 @@ msgstr "Погрешно учитавање УРЛ-а; %s"
 
 #~ msgid "pyopenssl module missing, please install for https access"
 #~ msgstr "фали 'pyopenssl' модул, инсталирајте га за 'https' приступ"
-
-#~ msgid "ERROR: %s"
-#~ msgstr "ГРЕШКА: %s"
 
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Фали датотека: %s => грешка 'unrar'?"

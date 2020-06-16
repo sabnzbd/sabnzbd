@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-06-11 10:12+0200\n"
+"POT-Creation-Date: 2020-06-14 09:40+0200\n"
 "PO-Revision-Date: 2020-05-26 18:48+0000\n"
 "Last-Translator: Fred <88com88@gmail.com>\n"
 "Language-Team: French <fr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-14 06:51+0000\n"
+"X-Launchpad-Export-Date: 2020-06-15 06:05+0000\n"
 "X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
@@ -44,15 +44,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "binaire par2... Introuvable!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr "Fichier binaire MultiPar... NON trouvé !"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr "La vérification et la réparation ne seront pas possibles."
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 "Votre version de UNRAR est %s, nous recommandons la version %s ou plus.<br />"
@@ -453,18 +453,6 @@ msgstr ""
 "temps de post-traitement. Fonctionne uniquement pour les tâches qui ne "
 "nécessitent aucune réparation."
 
-#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
-msgid "Cannot read %s"
-msgstr "Impossible de lire %s"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr "Erreur lors de l'ajout de %s, suppression"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Erreur lors de la suppression de %s"
-
 #: sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr "Impossible de lire le dossier surveillé %s"
@@ -568,6 +556,14 @@ msgstr "Impossible de trouver les modèles d'email dans %s"
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "Aucun destinataire déterminé, aucun email envoyé"
+
+#: sabnzbd/emailer.py # sabnzbd/filesystem.py # sabnzbd/nzbparser.py [Error message] # sabnzbd/nzbparser.py [Warning message] # sabnzbd/rss.py [Warning message]
+msgid "Cannot read %s"
+msgstr "Impossible de lire %s"
+
+#: sabnzbd/emailer.py
+msgid "No email templates found"
+msgstr "Aucun modèle email trouvés"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -886,6 +882,10 @@ msgid "ERROR: path too long (%s)"
 msgstr "ERREUR : chemin trop long  (%s)"
 
 #: sabnzbd/newsunpack.py
+msgid "ERROR: %s"
+msgstr "ERREUR : %s"
+
+#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr "Fichier RAR inutilisable"
 
@@ -1119,6 +1119,14 @@ msgstr "Echec d'envoi de la notification Windows"
 msgid "Failed to import %s files from %s"
 msgstr "Echec de l'importation des fichiers %s depuis %s"
 
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Erreur lors de l'ajout de %s, suppression"
+
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error removing %s"
+msgstr "Erreur lors de la suppression de %s"
+
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "Fichier de file d'attente incompatible, impossible de continuer"
@@ -1143,7 +1151,7 @@ msgstr "%s => absent de tous les serveurs, rejeté"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Fichier NZB invalide %s, ignoré (raison=%s, ligne=%s)"
 
-#: sabnzbd/nzbstuff.py
+#: sabnzbd/nzbstuff.py # sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Fichier NZB %s vide"
 
@@ -1170,6 +1178,10 @@ msgstr "Mise en pause du doublon NZB \"%s\""
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
 msgstr "Interrompu, ne peut être achevé"
+
+#: sabnzbd/nzbstuff.py [Error message]
+msgid "Error importing %s"
+msgstr "Erreur lors de l'importation de %s"
 
 #: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "DUPLICATE"
@@ -1222,10 +1234,6 @@ msgstr "%s articles manquants"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s articles avec doublons sans correspondance"
-
-#: sabnzbd/nzbstuff.py [Error message]
-msgid "Error importing %s"
-msgstr "Erreur lors de l'importation de %s"
 
 #: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
@@ -4946,9 +4954,6 @@ msgstr "Échec de récupération de l'URL ; %s"
 #~ msgid "You have no permisson to use port %s"
 #~ msgstr "Le port %s n'est pas accessible"
 
-#~ msgid "ERROR: %s"
-#~ msgstr "ERREUR : %s"
-
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Le fichier attendu est manquant : %s => erreur unrar ?"
 
@@ -5173,9 +5178,6 @@ msgstr "Échec de récupération de l'URL ; %s"
 
 #~ msgid "OK"
 #~ msgstr "OK"
-
-#~ msgid "No email templates found"
-#~ msgstr "Aucun modèle email trouvés"
 
 #~ msgid "Backup server"
 #~ msgstr "Serveur de soutien"

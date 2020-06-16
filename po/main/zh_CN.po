@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-06-11 10:12+0200\n"
+"POT-Creation-Date: 2020-06-14 09:40+0200\n"
 "PO-Revision-Date: 2017-06-22 07:06+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>\n"
 "Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-14 06:53+0000\n"
+"X-Launchpad-Export-Date: 2020-06-15 06:06+0000\n"
 "X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
@@ -39,15 +39,15 @@ msgstr "SABYenc 模块... 未找到！要求  v%s - https://sabnzbd.org/sabyenc"
 msgid "par2 binary... NOT found!"
 msgstr "par2 可执行程序... *未* 找到!"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "您的 UNRAR 程序版本为 %s，我们建议使用 %s 或更高版本。<br />"
 
@@ -416,18 +416,6 @@ msgid ""
 "time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
-msgid "Cannot read %s"
-msgstr "无法读取 %s"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr "加载 %s 出错，正在移除"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "移除 %s 时出错"
-
 #: sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr "无法读取监视文件夹 %s"
@@ -527,6 +515,14 @@ msgstr "无法找到 email 模板：%s"
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "未给定收件人，电子邮件未发出"
+
+#: sabnzbd/emailer.py # sabnzbd/filesystem.py # sabnzbd/nzbparser.py [Error message] # sabnzbd/nzbparser.py [Warning message] # sabnzbd/rss.py [Warning message]
+msgid "Cannot read %s"
+msgstr "无法读取 %s"
+
+#: sabnzbd/emailer.py
+msgid "No email templates found"
+msgstr "未找到 email 模板"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -827,6 +823,10 @@ msgid "ERROR: path too long (%s)"
 msgstr "*错误*: 路径过长 (%s)"
 
 #: sabnzbd/newsunpack.py
+msgid "ERROR: %s"
+msgstr "错误: %s"
+
+#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr "无法使用的 RAR 文件"
 
@@ -1050,6 +1050,14 @@ msgstr "无法发送 Windows 通知"
 msgid "Failed to import %s files from %s"
 msgstr "导入 %s 文件失败，来自 %s"
 
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "加载 %s 出错，正在移除"
+
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error removing %s"
+msgstr "移除 %s 时出错"
+
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "发现不兼容的队列文件，无法继续处理"
@@ -1074,7 +1082,7 @@ msgstr "%s => 所有服务器均缺失，正在舍弃"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "无效 NZB 文件 %s，正在跳过 (原因=%s, 行=%s)"
 
-#: sabnzbd/nzbstuff.py
+#: sabnzbd/nzbstuff.py # sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "空 NZB 文件 %s"
 
@@ -1101,6 +1109,10 @@ msgstr "正在暂停重复 NZB \"%s\""
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
 msgstr "已中止，无法完成"
+
+#: sabnzbd/nzbstuff.py [Error message]
+msgid "Error importing %s"
+msgstr "导入 %s 出错"
 
 #: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "DUPLICATE"
@@ -1153,10 +1165,6 @@ msgstr "%s 篇文章缺失"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s 篇文章存在未匹配的重复"
-
-#: sabnzbd/nzbstuff.py [Error message]
-msgid "Error importing %s"
-msgstr "导入 %s 出错"
 
 #: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
@@ -4685,9 +4693,6 @@ msgstr "URL 装取失败; %s"
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "email 模板 %s 编码无效"
 
-#~ msgid "No email templates found"
-#~ msgstr "未找到 email 模板"
-
 #~ msgid "Missing Session key"
 #~ msgstr "缺会话 key"
 
@@ -4743,9 +4748,6 @@ msgstr "URL 装取失败; %s"
 
 #~ msgid "Unpacking failed, see log"
 #~ msgstr "解压失败，参见日志"
-
-#~ msgid "ERROR: %s"
-#~ msgstr "错误: %s"
 
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "缺预期文件: %s => unrar 错误?"

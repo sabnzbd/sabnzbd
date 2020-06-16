@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-0.7.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-11 10:12+0200\n"
+"POT-Creation-Date: 2020-06-14 09:40+0200\n"
 "PO-Revision-Date: 2013-05-05 14:50+0000\n"
 "Last-Translator: Pavel Maryanov <Unknown>\n"
 "Language-Team: Russian <gmu@mx.ru>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-14 06:52+0000\n"
+"X-Launchpad-Export-Date: 2020-06-15 06:06+0000\n"
 "X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 "Generated-By: pygettext.py 1.5\n"
 
@@ -37,15 +37,15 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "Исполняемый файл par2... НЕ найден"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ""
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
 
@@ -417,18 +417,6 @@ msgid ""
 "time. Only works for jobs that do not need repair."
 msgstr ""
 
-#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
-msgid "Cannot read %s"
-msgstr "Не удаётся прочитать %s"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr "Не удалось добавить %s: удалён"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "Ошибка удаления %s"
-
 #: sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr "Не удаётся прочитать наблюдаемую папку %s"
@@ -528,6 +516,14 @@ msgstr "Не удаётся найти шаблонны электронных �
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "Получатели не указаны. Электронное письмо не отправлено"
+
+#: sabnzbd/emailer.py # sabnzbd/filesystem.py # sabnzbd/nzbparser.py [Error message] # sabnzbd/nzbparser.py [Warning message] # sabnzbd/rss.py [Warning message]
+msgid "Cannot read %s"
+msgstr "Не удаётся прочитать %s"
+
+#: sabnzbd/emailer.py
+msgid "No email templates found"
+msgstr "Не найдены шаблоны электронных писем"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -838,6 +834,10 @@ msgid "ERROR: path too long (%s)"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
+msgid "ERROR: %s"
+msgstr "ОШИБКА: %s"
+
+#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr ""
 
@@ -1064,6 +1064,14 @@ msgstr ""
 msgid "Failed to import %s files from %s"
 msgstr "Не удалось импортировать %s файлов из %s"
 
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "Не удалось добавить %s: удалён"
+
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error removing %s"
+msgstr "Ошибка удаления %s"
+
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "Найден несовместимый файл очереди. Продолжение работы невозможно"
@@ -1088,7 +1096,7 @@ msgstr "%s => отсутствует на всех серверах, отбро�
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Недопустимый NZB-файл %s: пропущен (причина — %s, строка — %s)"
 
-#: sabnzbd/nzbstuff.py
+#: sabnzbd/nzbstuff.py # sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Пустой NZB-файл %s"
 
@@ -1115,6 +1123,10 @@ msgstr "Приостановлен повторяющийся NZB-файл «%s�
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
 msgstr ""
+
+#: sabnzbd/nzbstuff.py [Error message]
+msgid "Error importing %s"
+msgstr "Ошибка импорта %s"
 
 #: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "DUPLICATE"
@@ -1167,10 +1179,6 @@ msgstr "%s статей отсутствует"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "%s статей содержат несовпадающие повторы"
-
-#: sabnzbd/nzbstuff.py [Error message]
-msgid "Error importing %s"
-msgstr "Ошибка импорта %s"
 
 #: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
@@ -4772,9 +4780,6 @@ msgstr "Не удалось загрузить URL: %s"
 #~ msgid "Invalid encoding of email template %s"
 #~ msgstr "Недопустимая кодировка шаблона электронного письма %s"
 
-#~ msgid "No email templates found"
-#~ msgstr "Не найдены шаблоны электронных писем"
-
 #~ msgid "Missing Session key"
 #~ msgstr "Отсутствует ключ сеанса"
 
@@ -4834,9 +4839,6 @@ msgstr "Не удалось загрузить URL: %s"
 
 #~ msgid "Unpacking failed, see log"
 #~ msgstr "Не удалось распаковать (см. журнал)"
-
-#~ msgid "ERROR: %s"
-#~ msgstr "ОШИБКА: %s"
 
 #~ msgid "Missing expected file: %s => unrar error?"
 #~ msgstr "Отсутствует ожидаемый файл: %s => ошибка unrar?"

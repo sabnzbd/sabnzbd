@@ -7,14 +7,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: sabnzbd\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-06-11 10:12+0200\n"
+"POT-Creation-Date: 2020-06-14 09:40+0200\n"
 "PO-Revision-Date: 2020-05-26 21:21+0000\n"
 "Last-Translator: ION IL <Unknown>\n"
 "Language-Team: Hebrew <he@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-06-14 06:52+0000\n"
+"X-Launchpad-Export-Date: 2020-06-15 06:05+0000\n"
 "X-Generator: Launchpad (build b190cebbf563f89e480a8b57f641753c8196bda0)\n"
 
 #: SABnzbd.py [Error message]
@@ -39,15 +39,15 @@ msgstr "%s - https://sabnzbd.org/sabyenc לא נמצא! מצפה אל ...SABYenc
 msgid "par2 binary... NOT found!"
 msgstr "!בינארי... לא נמצא par2"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "MultiPar binary... NOT found!"
 msgstr "!בינארי... לא נמצא MultiPar"
 
-#: SABnzbd.py
+#: SABnzbd.py [Error message]
 msgid "Verification and repair will not be possible."
 msgstr ".וידוא ותיקון לא יהיו אפשריים"
 
-#: SABnzbd.py
+#: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ".שלך היא %s אנו ממליצים על גרסה %s או גבוהה יותר UNRAR גרסת<br />"
 
@@ -424,18 +424,6 @@ msgstr ""
 ".עבודות יתחילו להיפרק במהלך ההורדה כדי להפחית זמן בתר־עיבוד. עובד רק עבור "
 "עבודות שאינן צריכות תיקון"
 
-#: sabnzbd/dirscanner.py # sabnzbd/dirscanner.py [Error message] # sabnzbd/dirscanner.py [Warning message] # sabnzbd/rss.py [Warning message]
-msgid "Cannot read %s"
-msgstr "לא יכול לקרוא את %s"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error while adding %s, removing"
-msgstr "מסיר ,%s שגיאה בזמן הוספת"
-
-#: sabnzbd/dirscanner.py [Error message]
-msgid "Error removing %s"
-msgstr "%s שגיאה בהסרת"
-
 #: sabnzbd/dirscanner.py [Error message]
 msgid "Cannot read Watched Folder %s"
 msgstr "%s לא ניתן לקרוא את התיקייה המושגחת"
@@ -535,6 +523,14 @@ msgstr "%s-לא ניתן למצוא תבניות דוא״ל"
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
 msgstr "נמענים לא ניתנו, דוא״ל לא נשלח"
+
+#: sabnzbd/emailer.py # sabnzbd/filesystem.py # sabnzbd/nzbparser.py [Error message] # sabnzbd/nzbparser.py [Warning message] # sabnzbd/rss.py [Warning message]
+msgid "Cannot read %s"
+msgstr "לא יכול לקרוא את %s"
+
+#: sabnzbd/emailer.py
+msgid "No email templates found"
+msgstr "לא נמצאו תבניות דוא\"ל"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -841,6 +837,10 @@ msgid "ERROR: path too long (%s)"
 msgstr "(%s) שגיאה: נתיב ארוך מדי"
 
 #: sabnzbd/newsunpack.py
+msgid "ERROR: %s"
+msgstr "%s :שגיאה"
+
+#: sabnzbd/newsunpack.py
 msgid "Unusable RAR file"
 msgstr "בלתי שמיש RAR קובץ"
 
@@ -1067,6 +1067,14 @@ msgstr "Windows נכשל בשליחת התראת"
 msgid "Failed to import %s files from %s"
 msgstr "%s נכשל ביבוא %s קבצים מ"
 
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error while adding %s, removing"
+msgstr "מסיר ,%s שגיאה בזמן הוספת"
+
+#: sabnzbd/nzbparser.py [Error message]
+msgid "Error removing %s"
+msgstr "%s שגיאה בהסרת"
+
 #: sabnzbd/nzbqueue.py [Error message]
 msgid "Incompatible queuefile found, cannot proceed"
 msgstr "קובץ תור בלתי תואם נמצא, לא יכול להמשיך"
@@ -1091,7 +1099,7 @@ msgstr "חסר מכל השרתים, משליך <= %s"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "מדלג ,%s בלתי תקף NZB קובץ (סיבה=%s שורה=%s)"
 
-#: sabnzbd/nzbstuff.py
+#: sabnzbd/nzbstuff.py # sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "%s ריק NZB קובץ"
 
@@ -1118,6 +1126,10 @@ msgstr "\"%s\" NZB משהה שכפול"
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
 msgstr "בוטל, לא יכול להיות שלם"
+
+#: sabnzbd/nzbstuff.py [Error message]
+msgid "Error importing %s"
+msgstr "%s שגיאה ביבוא"
 
 #: sabnzbd/nzbstuff.py # sabnzbd/skintext.py
 msgid "DUPLICATE"
@@ -1170,10 +1182,6 @@ msgstr "%s מאמרים היו חסרים"
 #: sabnzbd/nzbstuff.py
 msgid "%s articles had non-matching duplicates"
 msgstr "ל-%s מאמרים יש כפילויות בלתי-תואמות"
-
-#: sabnzbd/nzbstuff.py [Error message]
-msgid "Error importing %s"
-msgstr "%s שגיאה ביבוא"
 
 #: sabnzbd/osxmenu.py # sabnzbd/skintext.py [Footer: indicator of warnings]
 msgid "Warnings"
@@ -4863,9 +4871,6 @@ msgstr "%s ;משיכת כתובת נכשלה"
 #~ msgid "%s articles were removed"
 #~ msgstr "%s מאמרים הוסרו"
 
-#~ msgid "No email templates found"
-#~ msgstr "לא נמצאו תבניות דוא\"ל"
-
 #~ msgid "Original Foldername"
 #~ msgstr "שם קובץ מקורי"
 
@@ -4886,9 +4891,6 @@ msgstr "%s ;משיכת כתובת נכשלה"
 
 #~ msgid "Missing Session key"
 #~ msgstr "מפתח חסר של שיח"
-
-#~ msgid "ERROR: %s"
-#~ msgstr "%s :שגיאה"
 
 #~ msgid "File %s is empty, skipping"
 #~ msgstr "ריק, מדלג %s הקובץ"
