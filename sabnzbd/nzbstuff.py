@@ -2108,40 +2108,35 @@ def scan_password(name):
 
 def get_attrib_file(path, size):
     """ Read job's attributes from file """
+    logging.debug("Reading %s attributes from %s", size, path)
     attribs = []
     path = os.path.join(path, ATTRIB_FILE)
     try:
-        f = open(path, "r", encoding="utf-8")
-    except:
-        return [None for unused in range(size)]
-
-    for unused in range(size):
-        line = f.readline().strip("\r\n ")
-        if line:
-            if line.lower() == "none":
-                line = None
-            try:
-                line = int(line)
-            except:
-                pass
-            attribs.append(line)
-        else:
-            attribs.append(None)
-    f.close()
-    return attribs
+        with open(path, "r", encoding="utf-8") as attr_file:
+            for _ in range(size):
+                line = attr_file.readline().strip("\r\n ")
+                if line:
+                    if line.lower() == "none":
+                        line = None
+                    try:
+                        line = int(line)
+                    except:
+                        pass
+                    attribs.append(line)
+                else:
+                    attribs.append(None)
+            return attribs
+    except OSError:
+        return [None for _ in range(size)]
 
 
 def set_attrib_file(path, attribs):
     """ Write job's attributes to file """
+    logging.debug("Writing attributes %s to %s", attribs, path)
     path = os.path.join(path, ATTRIB_FILE)
-    try:
-        f = open(path, "w", encoding="utf-8")
-    except:
-        return
-
-    for item in attribs:
-        f.write("%s\n" % item)
-    f.close()
+    with open(path, "w", encoding="utf-8") as attr_file:
+        for item in attribs:
+            attr_file.write("%s\n" % item)
 
 
 def name_extractor(subject):
