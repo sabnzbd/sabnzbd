@@ -108,21 +108,25 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.is_server_configured()
         self.add_test_nzb("basic_rar5", "testfile.bin")
 
+    def test_download_zip(self):
+        self.is_server_configured()
+        self.add_test_nzb("test_zip", "testfile.bin")
+
+    def test_download_7zip(self):
+        self.is_server_configured()
+        self.add_test_nzb("test_7zip", "testfile.bin")
+
+    def test_download_passworded(self):
+        self.is_server_configured()
+        self.add_test_nzb("test_passworded{{secret}}", "testfile.bin")
+
     def test_download_unicode_rar(self):
         self.is_server_configured()
         self.add_test_nzb("unicode_rar", "我喜欢编程.bin")
 
     def test_download_unicode_made_on_windows(self):
         self.is_server_configured()
-        self.add_test_nzb("test_win_unicode", "frènch_german_demö")
-
-    def test_download_passworded(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_passworded{{secret}}", "random-1MB.bin")
-
-    def test_download_zip(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_zip", "testfile.bin")
+        self.add_test_nzb("test_win_unicode", "frènch_german_demö.bin")
 
     def test_download_fully_obfuscated(self):
         # This is also covered by a unit test but added to test full flow
