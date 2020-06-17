@@ -95,9 +95,7 @@ class TestBuildRequest:
 
     def test_user_agent(self):
         # Verify the User-Agent string
-        assert ("SABnzbd+/%s" % sabnzbd.version.__version__) in self._runner(
-            self.httpbin.url + "/user-agent", 200, True
-        )
+        assert ("SABnzbd/%s" % sabnzbd.__version__) in self._runner(self.httpbin.url + "/user-agent", 200, True)
 
     def test_http_userpass(self):
         usr = "abcdefghijklm01234"

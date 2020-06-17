@@ -333,7 +333,7 @@ def get_from_url(url):
     """ Retrieve URL and return content """
     try:
         req = urllib.request.Request(url)
-        req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.version.__version__)
+        req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
         with urllib.request.urlopen(req) as response:
             return ubtou(response.read())
     except:

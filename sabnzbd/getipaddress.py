@@ -97,7 +97,7 @@ def publicipv4():
             # put the selftest_host's IPv4 address into the URL
             req = urllib.request.Request("http://" + selftest_ipv4 + "/")
             # specify the User-Agent, because certain sites refuse connections with "python urllib2" as User-Agent:
-            req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.version.__version__)
+            req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
             # specify the Host, because we only provide the IPv4 address in the URL:
             req.add_header("Host", sabnzbd.cfg.selftest_host())
             # get the response, timeout 2 seconds, in case the website is not accessible

@@ -290,7 +290,7 @@ class Rating(Thread):
 
         requests = []
         _headers = {
-            "User-agent": "SABnzbd+/%s" % sabnzbd.version.__version__,
+            "User-agent": "SABnzbd/%s" % sabnzbd.__version__,
             "Content-type": "application/x-www-form-urlencoded",
         }
         rating = self._get_rating_by_indexer(

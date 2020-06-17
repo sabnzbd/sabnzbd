@@ -274,7 +274,7 @@ class RSSQueue:
         first = (feed not in self.jobs) and ignoreFirst
 
         # Add SABnzbd's custom User Agent
-        feedparser.USER_AGENT = "SABnzbd+/%s" % sabnzbd.version.__version__
+        feedparser.USER_AGENT = "SABnzbd/%s" % sabnzbd.__version__
 
         # Read the RSS feed
         msg = None
