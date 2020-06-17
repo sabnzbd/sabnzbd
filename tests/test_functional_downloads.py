@@ -120,10 +120,6 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         self.is_server_configured()
         self.add_test_nzb("test_passworded{{secret}}", "testfile.bin")
 
-    def test_download_unicode_rar(self):
-        self.is_server_configured()
-        self.add_test_nzb("unicode_rar", "我喜欢编程.bin")
-
     def test_download_unicode_made_on_windows(self):
         self.is_server_configured()
         self.add_test_nzb("test_win_unicode", "frènch_german_demö.bin")
@@ -132,3 +128,8 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         # This is also covered by a unit test but added to test full flow
         self.is_server_configured()
         self.add_test_nzb("obfuscated_single_rar_set", "100k.bin")
+
+    @pytest.mark.xfail(reason="https://github.com/sabnzbd/sabnzbd/issues/1509")
+    def test_download_unicode_rar(self):
+        self.is_server_configured()
+        self.add_test_nzb("unicode_rar", "我喜欢编程.bin")
