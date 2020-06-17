@@ -348,7 +348,7 @@ def _build_request(url):
     req = urllib.request.Request(url)
 
     # Add headers
-    req.add_header("User-Agent", "SABnzbd+/%s" % sabnzbd.version.__version__)
+    req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.version.__version__)
     req.add_header("Accept-encoding", "gzip")
     if user_passwd:
         req.add_header("Authorization", "Basic " + ubtou(base64.b64encode(utob(user_passwd))).strip())
