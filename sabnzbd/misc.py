@@ -332,7 +332,9 @@ def set_serv_parms(service, args):
 def get_from_url(url):
     """ Retrieve URL and return content """
     try:
-        with urllib.request.urlopen(url) as response:
+        req = urllib.request.Request(url)
+        req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.version.__version__)
+        with urllib.request.urlopen(req) as response:
             return ubtou(response.read())
     except:
         return None
@@ -389,7 +391,7 @@ def check_latest_version():
         return
 
     # Fetch version info
-    data = get_from_url("https://raw.githubusercontent.com/sabnzbd/sabnzbd.github.io/master/latest.txt")
+    data = get_from_url("https://sabnzbd.org/latest.txt")
     if not data:
         logging.info("Cannot retrieve version information from GitHub.com")
         logging.debug("Traceback: ", exc_info=True)
