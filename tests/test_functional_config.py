@@ -220,8 +220,9 @@ class SABnzbdConfigRSS(SABnzbdBaseTest):
         # Let's check the queue, it can take 60 seconds to fetch the URL in case it needs a retry
         for _ in range(60):
             queue_result_slots = get_api_result("queue")["queue"]["slots"]
-            # Wait until fetched, then it will not have a label anymore
-            if queue_result_slots and not queue_result_slots[0]["labels"]:
+            # Check if the fetch-request was added to the queue
+            # The URL provided by the RSS is invalid, so it will be stuck fetching
+            if queue_result_slots:
                 break
             time.sleep(1)
         else:
