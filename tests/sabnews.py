@@ -72,7 +72,7 @@ class NewsServerProtocol(asyncio.Protocol):
         # Check if we parsed everything
         try:
             message_id = parsed_message.group("message_id")
-            file = parsed_message.group("file")
+            file = parsed_message.group("file").decode("utf-8")
             file_base = os.path.basename(file)
             part = int(parsed_message.group("part"))
             start = int(parsed_message.group("start"))
@@ -100,10 +100,12 @@ class NewsServerProtocol(asyncio.Protocol):
         # File is found, send headers
         self.transport.write(b"222 0 %s\r\n" % message_id)
         self.transport.write(b"Message-ID: %s\r\n" % message_id)
-        self.transport.write(b'Subject: "%s"\r\n\r\n' % file_base)
+        self.transport.write(b'Subject: "%s"\r\n\r\n' % file_base.encode("utf-8"))
 
         # Write yEnc headers
-        self.transport.write(b"=ybegin part=%d line=128 size=%d name=%s\r\n" % (part, file_size, file_base))
+        self.transport.write(
+            b"=ybegin part=%d line=128 size=%d name=%s\r\n" % (part, file_size, file_base.encode("utf-8"))
+        )
         self.transport.write(b"=ypart begin=%d end=%d\r\n" % (start + 1, start + size))
 
         with open(file, "rb") as inp_file:
