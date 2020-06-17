@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 3.0.0 Beta 3
+Release Notes - SABnzbd 3.0.0 Beta 4
 =========================================================
 
 ## About this new version
@@ -7,10 +7,17 @@ Although it might not sound like a big change, we had to rewrite almost every pa
 the code. This also means that we might have introduced new bugs. We therefore encourage
 you to let us know of any errors or strange behavior you might notice!
 
+## Changes and bugfixes since 3.0.0 Beta 3
+- Category was not parsed correctly when using `addfile` API-call.
+- Restore `nzbfile`-parameter when using `addfile` API-call.
+- Correctly detect filenames of existing files when retrying a job.
+- Restore attributes when retrying a job that failed post-processing.
+- Rename folders of failed jobs to `_FAILED_` instead of leaving `_UNPACK_`.
+
 ## Changes and bugfixes since 3.0.0 Beta 2
 - Refactor of the code that handles adding NZB's and retrying jobs.
-- Queue-item labels are no longer part of the name but separated in API-property "labels".
-- Using the API with output=text to add NZB's will report the nzo_ids instead of "ok".
+- Queue-item labels are no longer part of the name but separated in API-property `labels`.
+- Using the API with `output=text` to add NZB's will report the nzo_ids instead of `ok`.
 - Repeated API-arguments were handled incorrectly.
 - Pausing the queue using the scheduler was broken.
 - Updated Javascript libraries of Glitter and the config.
@@ -33,13 +40,13 @@ you to let us know of any errors or strange behavior you might notice!
 - On Linux special permission bits are removed from files after download.
 - macOS features such as the menu and notifications now use native code.
 - In Python 3 OpenSSL 1.1.1 is used for Windows and macOS, as a result 
-  newsservers manually set to "RC4-MD5" cipher can no longer connect. 
+  newsservers manually set to `RC4-MD5` cipher can no longer connect. 
   Documentation: https://sabnzbd.org/wiki/advanced/ssl-ciphers
 - TLS1.3 support for newsserver connections.
 - SABYenc, par2 and unrar are now required to start downloading.
 - Growl-support was removed.
-- API-calls "tapi" and "qstatus" were removed.
-- The "smpl" skin was removed.
+- API-calls `tapi` and `qstatus` were removed.
+- The `smpl` skin was removed.
 
 ## Bugfixes since 2.3.9
 - Resolved potential security issue in FAT-filesystem check.
