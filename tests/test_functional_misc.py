@@ -19,12 +19,14 @@
 tests.test_functional_misc - Functional tests of various functions
 """
 import shutil
+import subprocess
+import sys
 
 import sabnzbd.encoding
 from tests.testhelper import *
 
 
-class SABnzbdShowLoggingTest(SABnzbdBaseTest):
+class TestShowLogging(SABnzbdBaseTest):
     def test_showlog(self):
         """ Test the output of the filtered-log button """
         # Basic URL-fetching, easier than Selenium file download

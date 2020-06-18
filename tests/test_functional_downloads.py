@@ -22,7 +22,7 @@ tests.test_functional_downloads - Test the downloading flow
 from tests.testhelper import *
 
 
-class SABnzbdDownloadFlow(SABnzbdBaseTest):
+class TestDownloadFlow(SABnzbdBaseTest):
     def is_server_configured(self):
         """ Check if the wizard was already performed.
             If not: run the wizard!
@@ -54,9 +54,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
         # Test server-check
         self.selenium_wrapper(self.driver.find_element_by_id, "serverTest").click()
         self.wait_for_ajax()
-        self.assertIn(
-            "Connection Successful", self.selenium_wrapper(self.driver.find_element_by_id, "serverResponse").text
-        )
+        assert "Connection Successful" in self.selenium_wrapper(self.driver.find_element_by_id, "serverResponse").text
 
         # Final page done
         self.selenium_wrapper(self.driver.find_element_by_id, "next-button").click()
@@ -102,7 +100,7 @@ class SABnzbdDownloadFlow(SABnzbdBaseTest):
 
         # Check if the expected file exists on disk
         file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
-        self.assertTrue(os.path.exists(file_to_find), "File not found")
+        assert os.path.exists(file_to_find)
 
     def test_download_basic_rar5(self):
         self.is_server_configured()

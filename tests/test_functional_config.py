@@ -24,7 +24,7 @@ from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPr
 from tests.testhelper import *
 
 
-class SABnzbdBasicPagesTest(SABnzbdBaseTest):
+class TestBasicPages(SABnzbdBaseTest):
     def test_base_pages(self):
         # Quick-check of all Config pages
         test_urls = ["config", "config/server", "config/categories", "config/scheduling", "config/rss"]
@@ -74,7 +74,7 @@ class SABnzbdBasicPagesTest(SABnzbdBaseTest):
                 assert submit_btn.text == "Save Changes"
 
 
-class SABnzbdConfigLogin(SABnzbdBaseTest):
+class TestConfigLogin(SABnzbdBaseTest):
     def test_login(self):
         # Test if base page works
         self.open_page("http://%s:%s/sabnzbd/config/general" % (SAB_HOST, SAB_PORT))
@@ -154,7 +154,7 @@ class SABnzbdConfigLogin(SABnzbdBaseTest):
         assert "/login/" not in self.driver.current_url
 
 
-class SABnzbdConfigCategories(SABnzbdBaseTest):
+class TestConfigCategories(SABnzbdBaseTest):
 
     category_name = "testCat"
 
@@ -168,10 +168,10 @@ class SABnzbdConfigCategories(SABnzbdBaseTest):
             self.driver.find_element_by_xpath, "//button/text()[normalize-space(.)='Add']/parent::*"
         ).click()
         self.no_page_crash()
-        self.assertNotIn(self.category_name, self.driver.page_source)
+        assert self.category_name not in self.driver.page_source
 
 
-class SABnzbdConfigRSS(SABnzbdBaseTest):
+class TestConfigRSS(SABnzbdBaseTest):
 
     rss_url = "https://sabnzbd.org/tests/rss_feed_test.xml"
     rss_name = "_SeleniumFeed"
@@ -239,7 +239,7 @@ class SABnzbdConfigRSS(SABnzbdBaseTest):
         assert get_api_result("resume") == {"status": True}
 
 
-class SABnzbdConfigServers(SABnzbdBaseTest):
+class TestConfigServers(SABnzbdBaseTest):
 
     server_name = "_SeleniumServer"
 
@@ -289,7 +289,7 @@ class SABnzbdConfigServers(SABnzbdBaseTest):
 
         # Check that it's gone
         time.sleep(2)
-        self.assertNotIn(self.server_name, self.driver.page_source)
+        assert self.server_name not in self.driver.page_source
 
     def test_add_and_remove_server(self):
         self.open_config_servers()

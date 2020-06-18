@@ -20,17 +20,12 @@ tests.testhelper - Basic helper functions
 """
 
 import os
-import subprocess
-import sys
 import time
-import unittest
 from http.client import RemoteDisconnected
 
 import pytest
 import requests
-from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
-from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from urllib3.exceptions import ProtocolError
@@ -119,60 +114,17 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.json()
 
 
-def start_sabnews():
-    """ Start SABNews and forget about it """
-    return subprocess.Popen([sys.executable, "%s/sabnews.py" % SAB_BASE_DIR])
-
-
 def create_nzb(nzb_dir):
     """ Create NZB from directory using SABNews """
     nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
     return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full)
 
 
-@pytest.mark.usefixtures("start_sabnzbd")
-class SABnzbdBaseTest(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # We only try Chrome for consistent results
-        driver_options = ChromeOptions()
-
-        # Headless on Appveyor/Travis
-        if "CI" in os.environ:
-            driver_options.add_argument("--headless")
-            driver_options.add_argument("--no-sandbox")
-
-            # Useful for stability on Linux/macOS, doesn't work on Windows
-            if not sys.platform.startswith("win"):
-                driver_options.add_argument("--single-process")
-
-            # On Linux we want to use the PPA Chrome
-            # This makes sure we always match Chrome and chromedriver
-            if not sys.platform.startswith(("win", "darwin")):
-                driver_options.binary_location = "/usr/bin/chromium-browser"
-
-        cls.driver = webdriver.Chrome(options=driver_options)
-        cls.sabnews = start_sabnews()
-
-    @classmethod
-    def tearDownClass(cls):
-        try:
-            cls.driver.close()
-            cls.driver.quit()
-        except:
-            # If something else fails, this can cause very non-informative long tracebacks
-            pass
-
-        # Kill SABNews
-        try:
-            cls.sabnews.kill()
-            cls.sabnews.communicate()
-        except:
-            pass
-
+@pytest.mark.usefixtures("start_sabnzbd_and_selenium")
+class SABnzbdBaseTest:
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test
-        self.assertNotIn("500 Internal Server Error", self.driver.title)
+        assert "500 Internal Server Error" not in self.driver.title
 
     def open_page(self, url):
         # Open a page and test for crash

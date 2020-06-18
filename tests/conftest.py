@@ -20,12 +20,17 @@ tests.conftest - Setup pytest fixtures
 These have to be separate otherwise SABnzbd is started multiple times!
 """
 import shutil
+import subprocess
+import sys
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
 
 from tests.testhelper import *
 
 
 @pytest.fixture(scope="session")
-def start_sabnzbd():
+def start_sabnzbd_and_selenium(request):
     # Remove cache if already there
     if os.path.isdir(SAB_CACHE_DIR):
         shutil.rmtree(SAB_CACHE_DIR)
@@ -54,6 +59,33 @@ def start_sabnzbd():
     )
     subprocess.Popen(sab_command.split())
 
+    # In the mean time, start Selenium and Chrome
+    # We only try Chrome for consistent results
+    driver_options = ChromeOptions()
+
+    # Headless on Appveyor/Travis
+    if "CI" in os.environ:
+        driver_options.add_argument("--headless")
+        driver_options.add_argument("--no-sandbox")
+
+        # Useful for stability on Linux/macOS, doesn't work on Windows
+        if not sys.platform.startswith("win"):
+            driver_options.add_argument("--single-process")
+
+        # On Linux we want to use the PPA Chrome
+        # This makes sure we always match Chrome and chromedriver
+        if not sys.platform.startswith(("win", "darwin")):
+            driver_options.binary_location = "/usr/bin/chromium-browser"
+
+    # Start the driver and pass it on to all the classes
+    driver = webdriver.Chrome(options=driver_options)
+    for item in request.node.items:
+        parent_class = item.getparent(pytest.Class)
+        parent_class.obj.driver = driver
+
+    # Start SABNews
+    sabnews = start_sabnews()
+
     # Wait for SAB to respond
     for _ in range(10):
         try:
@@ -67,8 +99,23 @@ def start_sabnzbd():
         shutdown_sabnzbd()
         raise requests.ConnectionError()
 
-    # How we run the tests
+    # Now we run the tests
     yield True
+
+    # Shutdown SABNews
+    try:
+        sabnews.kill()
+        sabnews.communicate()
+    except:
+        pass
+
+    # Shutdown Selenium/Chrome
+    try:
+        driver.close()
+        driver.quit()
+    except:
+        # If something else fails, this can cause very non-informative long tracebacks
+        pass
 
     # Shutdown SABnzbd gracefully
     shutdown_sabnzbd()
@@ -89,3 +136,8 @@ def shutdown_sabnzbd():
         except OSError:
             print("Unable to remove cache dir (try %d)" % x)
             time.sleep(1)
+
+
+def start_sabnews():
+    """ Start SABNews and forget about it """
+    return subprocess.Popen([sys.executable, "%s/sabnews.py" % SAB_BASE_DIR])
