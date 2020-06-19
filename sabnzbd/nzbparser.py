@@ -25,14 +25,13 @@ import logging
 import hashlib
 import xml.etree.ElementTree
 import datetime
-import os
 
 import sabnzbd
 from sabnzbd import filesystem, nzbstuff
 from sabnzbd.encoding import utob, correct_unknown_encoding
 from sabnzbd.filesystem import is_archive, get_filename
 from sabnzbd.misc import name_to_cat
-import sabnzbd.cfg as cfg
+
 
 def nzbfile_parser(raw_data, nzo):
     # Load data as file-object
