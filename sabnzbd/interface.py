@@ -1311,7 +1311,7 @@ class ConfigSwitches:
                 value = value.lower().replace(".", "")
             msg = item.set(value)
             if msg:
-                return badParameterResponse(msg)
+                return badParameterResponse(msg, kwargs.get("ajax"))
 
         cleanup_list = kwargs.get("cleanup_list")
         if cleanup_list and sabnzbd.WIN32:
@@ -1319,7 +1319,10 @@ class ConfigSwitches:
         cfg.cleanup_list.set(cleanup_list)
 
         config.save_config()
-        raise Raiser(self.__root)
+        if kwargs.get("ajax"):
+            return sabnzbd.api.report("json")
+        else:
+            raise Raiser(self.__root)
 
 
 ##############################################################################

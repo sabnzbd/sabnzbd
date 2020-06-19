@@ -18,19 +18,21 @@
 """
 sabnzbd.config - Configuration Support
 """
-
+import argparse
+import logging
 import os
 import re
-import logging
-import threading
 import shutil
+import threading
 import uuid
 from urllib.parse import urlparse
-import sabnzbd.misc
-from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
-from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
+
 import configobj
+
+import sabnzbd.misc
+from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
 from sabnzbd.decorators import synchronized
+from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 
 CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()
@@ -1008,6 +1010,13 @@ def get_filename():
 __PW_PREFIX = "!!!encoded!!!"
 
 
+class ErrorCatchingArgumentParser(argparse.ArgumentParser):
+    def error(self, status=0, message=None):
+        # Need to override so it doesn't raise SystemExit
+        if status:
+            raise ValueError
+
+
 def encode_password(pw):
     """ Encode password in hexadecimal if needed """
     enc = False
@@ -1041,11 +1050,26 @@ def decode_password(pw, name):
         return pw
 
 
-def no_nonsense(value):
-    """ Strip and Filter out None and 'None' from strings """
-    value = str(value).strip()
-    if value.lower() == "none":
-        value = ""
+def clean_nice_ionice_parameters(value):
+    """ Verify that the passed parameters are not exploits """
+    if value:
+        parser = ErrorCatchingArgumentParser()
+
+        # Nice parameters
+        parser.add_argument("-n", "--adjustment", type=int)
+
+        # Ionice parameters, not supporting -p
+        parser.add_argument("--classdata", type=int)
+        parser.add_argument("-c", "--class", type=int)
+        parser.add_argument("-t", "--ignore", action="store_true")
+
+        try:
+            parser.parse_args(value.split())
+        except ValueError:
+            # Also log at start-up if invalid parameter was set in the ini
+            msg = "%s: %s" % (T("Incorrect parameter"), value)
+            logging.error(msg)
+            return msg, None
     return None, value
 
 

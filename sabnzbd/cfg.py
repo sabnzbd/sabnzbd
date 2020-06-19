@@ -21,6 +21,20 @@ sabnzbd.cfg - Configuration Parameters
 import re
 
 import sabnzbd
+from sabnzbd.config import (
+    OptionBool,
+    OptionNumber,
+    OptionPassword,
+    OptionDir,
+    OptionStr,
+    OptionList,
+    validate_octal,
+    validate_safedir,
+    all_lowercase,
+    create_api_key,
+    validate_notempty,
+    clean_nice_ionice_parameters,
+)
 from sabnzbd.constants import (
     DEF_HOST,
     DEF_PORT,
@@ -30,21 +44,6 @@ from sabnzbd.constants import (
     DEF_NZBBACK_DIR,
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
-)
-
-from sabnzbd.config import (
-    OptionBool,
-    OptionNumber,
-    OptionPassword,
-    OptionDir,
-    OptionStr,
-    OptionList,
-    no_nonsense,
-    validate_octal,
-    validate_safedir,
-    all_lowercase,
-    create_api_key,
-    validate_notempty,
 )
 
 ##############################################################################
@@ -156,11 +155,11 @@ script_can_fail = OptionBool("misc", "script_can_fail", False)
 ssl_ciphers = OptionStr("misc", "ssl_ciphers", "")  # Now per-server setting
 enable_recursive = OptionBool("misc", "enable_recursive", True)
 flat_unpack = OptionBool("misc", "flat_unpack", False)
-par_option = OptionStr("misc", "par_option", "", validation=no_nonsense)
+par_option = OptionStr("misc", "par_option", "")
 pre_check = OptionBool("misc", "pre_check", False)
-nice = OptionStr("misc", "nice", "", validation=no_nonsense)
+nice = OptionStr("misc", "nice", "", validation=clean_nice_ionice_parameters)
 win_process_prio = OptionNumber("misc", "win_process_prio", 3)
-ionice = OptionStr("misc", "ionice", "", validation=no_nonsense)
+ionice = OptionStr("misc", "ionice", "", validation=clean_nice_ionice_parameters)
 fail_hopeless_jobs = OptionBool("misc", "fail_hopeless_jobs", True)
 fast_fail = OptionBool("misc", "fast_fail", True)
 autodisconnect = OptionBool("misc", "auto_disconnect", True)
