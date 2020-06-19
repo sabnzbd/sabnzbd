@@ -870,8 +870,8 @@ class NzbObject(TryList):
                 cfg.action_on_unwanted_extensions() >= 1
                 and get_ext(nzf.filename).replace(".", "") in cfg.unwanted_extensions()
             ):
-                # So we found an unwanted extension
-                logging.warning(T("Unwanted Extension in file %s (%s)") % (nzf.filename, self.final_name))
+                # ... we found an unwanted extension
+                logging.warning(T("Unwanted Extension in file %s (%s)"), nzf.filename, self.final_name)
                 # Pause, or Abort:
                 if cfg.action_on_unwanted_extensions() == 1:
                     logging.debug("Unwanted extension ... pausing")
@@ -879,7 +879,7 @@ class NzbObject(TryList):
                     self.pause()
                 if cfg.action_on_unwanted_extensions() == 2:
                     logging.debug("Unwanted extension ... aborting")
-                    self.fail_msg = T("Unwanted extension ... aborting")
+                    self.fail_msg = T("Aborted, unwanted extension detected")
                     accept = 2
 
         if self.priority == PAUSED_PRIORITY:
