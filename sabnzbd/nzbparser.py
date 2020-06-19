@@ -130,7 +130,14 @@ def nzbfile_parser(raw_data, nzo):
             continue
 
         # Add valid NZF's
-        if file_name and nzf.valid and nzf.nzf_id:
+        _, file_extension = os.path.splitext(nzf.filename)
+        file_extension = file_extension.replace('.', '').lower()
+        if file_extension in cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions() >= 1:
+            logging.warning("Unwanted extension %s in file %s, so skipping", file_extension, nzf.filename)
+            if nzf.nzf_id:
+                sabnzbd.remove_data(nzf.nzf_id, nzo.workpath)
+            skipped_files += 1
+        elif file_name and nzf.valid and nzf.nzf_id:
             logging.info("File %s added to queue", nzf.filename)
             nzo.files.append(nzf)
             nzo.files_table[nzf.nzf_id] = nzf
