@@ -864,7 +864,7 @@ class NzbObject(TryList):
                 self.pause()
                 self.priority = NORMAL_PRIORITY
 
-        # Check if there are any unwanted extension in plain sight in the NZB itself
+        # Check if there is any unwanted extension in plain sight in the NZB itself
         for nzf in self.files:
             if (
                 cfg.action_on_unwanted_extensions() >= 1
