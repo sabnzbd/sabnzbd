@@ -44,6 +44,7 @@ try:
     import cherrypy
     import portend
     import cryptography
+    import OpenSSL
     import chardet
 except ValueError:
     print("Sorry, requires Python module Cheetah 3 or higher.")
@@ -1309,7 +1310,7 @@ def main():
 
         cherrypy.config.update(
             {
-                "server.ssl_module": "builtin",
+                "server.ssl_module": "pyopenssl",
                 "server.ssl_certificate": https_cert,
                 "server.ssl_private_key": https_key,
                 "server.ssl_certificate_chain": https_chain,

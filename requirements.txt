@@ -1,6 +1,7 @@
 sabyenc3
 cheetah3
 cryptography
+pyopenssl
 feedparser
 configobj
 cherrypy
