@@ -304,6 +304,12 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
         cfg.sched_converted.set(2)
         config.save_config()
 
+    # Convert auto-sort
+    if cfg.auto_sort() == "0":
+        cfg.auto_sort.set("")
+    elif cfg.auto_sort() == "1":
+        cfg.auto_sort.set("avg_age asc")
+
     # Add hostname to the whitelist
     if not cfg.host_whitelist():
         cfg.host_whitelist.set(socket.gethostname())

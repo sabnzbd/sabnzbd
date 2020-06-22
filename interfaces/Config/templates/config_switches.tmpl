@@ -134,7 +134,15 @@
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
-                        <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
+                        <select name="auto_sort" id="auto_sort">
+                            <option value=""></option>
+                            <option value="avg_age asc" <!--#if $auto_sort == "avg_age asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeAsc')</option>
+                            <option value="avg_age desc" <!--#if $auto_sort == "avg_age desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeDesc')</option>
+                            <option value="name asc" <!--#if $auto_sort == "name asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortNameAsc')</option>
+                            <option value="name desc" <!--#if $auto_sort == "name desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortNameDesc')</option>
+                            <option value="size asc" <!--#if $auto_sort == "size asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortSizeAsc')</option>
+                            <option value="size desc" <!--#if $auto_sort == "size desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortSizeDesc')</option>
+                        </select>
                         <span class="desc">$T('explain-auto_sort')</span>
                     </div>
                     <div class="field-pair">

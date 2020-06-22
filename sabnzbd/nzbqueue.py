@@ -364,7 +364,11 @@ class NzbQueue:
                 notifier.send_notification(T("NZB added to queue"), nzo.filename, "download", nzo.cat)
 
         if not quiet and cfg.auto_sort():
-            self.sort_by_avg_age()
+            try:
+                field, direction = cfg.auto_sort().split()
+                self.sort_queue(field, direction)
+            except ValueError:
+                pass
         return nzo.nzo_id
 
     @NzbQueueLocker
@@ -558,20 +562,23 @@ class NzbQueue:
 
     @NzbQueueLocker
     def sort_by_avg_age(self, reverse=False):
-        logging.info("Sorting by average date... (reversed:%s)", reverse)
+        logging.info("Sorting by average date... (reversed: %s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_date_cmp, reverse)
 
     @NzbQueueLocker
     def sort_by_name(self, reverse=False):
-        logging.info("Sorting by name... (reversed:%s)", reverse)
+        logging.info("Sorting by name... (reversed: %s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_name_cmp, reverse)
 
     @NzbQueueLocker
     def sort_by_size(self, reverse=False):
-        logging.info("Sorting by size... (reversed:%s)", reverse)
+        logging.info("Sorting by size... (reversed: %s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
 
     def sort_queue(self, field, reverse=None):
+        """ Sort queue by field: "name", "size" or "avg_age"
+            Direction is specified as "desc"/True or "asc"/False
+        """
         if isinstance(reverse, str):
             if reverse.lower() == "desc":
                 reverse = True

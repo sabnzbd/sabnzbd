@@ -516,8 +516,8 @@ SKIN_TEXT = {
     "win_process_prio-idle": TT("Idle"),
     "opt-auto_disconnect": TT("Disconnect on Empty Queue"),
     "explain-auto_disconnect": TT("Disconnect from Usenet server(s) when queue is empty or paused."),
-    "opt-auto_sort": TT("Sort by Age"),
-    "explain-auto_sort": TT("Automatically sort items by (average) age."),
+    "opt-auto_sort": TT("Automatically sort queue"),
+    "explain-auto_sort": TT("Automatically sort jobs in the queue when a new job is added."),
     "opt-direct_unpack": TT("Direct Unpack"),
     "explain-direct_unpack": TT(
         "Jobs will start unpacking during the downloading to reduce post-processing time. Only works for jobs that do not need repair."
