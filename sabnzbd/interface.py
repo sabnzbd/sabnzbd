@@ -1342,7 +1342,6 @@ SPECIAL_BOOL_LIST = (
     "enable_filejoin",
     "enable_tsjoin",
     "ignore_unrar_dates",
-    "multipar",
     "osx_menu",
     "osx_speed",
     "win_menu",

@@ -113,13 +113,12 @@ def find_programs(curdir):
     if sabnzbd.WIN32:
         if sabnzbd.WIN64:
             # 64 bit versions
-            sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/par2/multipar/par2j64.exe")
+            sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j64.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/x64/UnRAR.exe")
         else:
             # 32 bit versions
-            sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/par2/multipar/par2j.exe")
+            sabnzbd.newsunpack.MULTIPAR_COMMAND = check(curdir, "win/multipar/par2j.exe")
             sabnzbd.newsunpack.RAR_COMMAND = check(curdir, "win/unrar/UnRAR.exe")
-        sabnzbd.newsunpack.PAR2_COMMAND = check(curdir, "win/par2/par2.exe")
         sabnzbd.newsunpack.SEVEN_COMMAND = check(curdir, "win/7zip/7za.exe")
     else:
         if not sabnzbd.newsunpack.PAR2_COMMAND:
@@ -1233,8 +1232,8 @@ def par2_repair(parfile_nzf, nzo, workdir, setname, single):
 
             joinables, zips, rars, sevens, ts = build_filelists(workdir, check_rar=False)
 
-            # Multipar or not?
-            if sabnzbd.WIN32 and cfg.multipar():
+            # Multipar on Windows, par2 on the other platforms
+            if sabnzbd.WIN32:
                 finished, readd, datafiles, used_joinables, used_for_repair = MultiPar_Verify(
                     parfile, nzo, setname, joinables, single=single
                 )

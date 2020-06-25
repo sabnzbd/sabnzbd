@@ -411,17 +411,14 @@ def print_modules():
 
     logging.info("Cryptography module (v%s)... found!", cryptography.__version__)
 
-    if sabnzbd.newsunpack.PAR2_COMMAND:
+    if sabnzbd.WIN32 and sabnzbd.newsunpack.MULTIPAR_COMMAND:
+        logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
+    elif sabnzbd.newsunpack.PAR2_COMMAND:
         logging.info("par2 binary... found (%s)", sabnzbd.newsunpack.PAR2_COMMAND)
     else:
         logging.error(T("par2 binary... NOT found!"))
         # Do not allow downloading
         sabnzbd.NO_DOWNLOADING = True
-
-    if sabnzbd.newsunpack.MULTIPAR_COMMAND:
-        logging.info("MultiPar binary... found (%s)", sabnzbd.newsunpack.MULTIPAR_COMMAND)
-    elif sabnzbd.WIN32:
-        logging.error("%s %s", T("MultiPar binary... NOT found!"), T("Verification and repair will not be possible."))
 
     if sabnzbd.newsunpack.RAR_COMMAND:
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
@@ -438,15 +435,16 @@ def print_modules():
         # Do not allow downloading
         sabnzbd.NO_DOWNLOADING = True
 
-    if sabnzbd.newsunpack.ZIP_COMMAND:
-        logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
-    else:
-        logging.info(T("unzip binary... NOT found!"))
-
+    # If available, we prefer 7zip over unzip
     if sabnzbd.newsunpack.SEVEN_COMMAND:
         logging.info("7za binary... found (%s)", sabnzbd.newsunpack.SEVEN_COMMAND)
     else:
         logging.info(T("7za binary... NOT found!"))
+
+        if sabnzbd.newsunpack.ZIP_COMMAND:
+            logging.info("unzip binary... found (%s)", sabnzbd.newsunpack.ZIP_COMMAND)
+        else:
+            logging.info(T("unzip binary... NOT found!"))
 
     if not sabnzbd.WIN32:
         if sabnzbd.newsunpack.NICE_COMMAND:

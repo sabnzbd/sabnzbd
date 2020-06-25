@@ -12,7 +12,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ASCII\n"
 "Content-Transfer-Encoding: 7bit\n"
-"POT-Creation-Date: 2020-06-22 13:35+0000\n"
+"POT-Creation-Date: 2020-06-25 23:29+0200\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
@@ -36,14 +36,6 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr ""
 
-#: SABnzbd.py [Error message]
-msgid "MultiPar binary... NOT found!"
-msgstr ""
-
-#: SABnzbd.py [Error message]
-msgid "Verification and repair will not be possible."
-msgstr ""
-
 #: SABnzbd.py [Warning message]
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -53,11 +45,11 @@ msgid "unrar binary... NOT found"
 msgstr ""
 
 #: SABnzbd.py
-msgid "unzip binary... NOT found!"
+msgid "7za binary... NOT found!"
 msgstr ""
 
 #: SABnzbd.py
-msgid "7za binary... NOT found!"
+msgid "unzip binary... NOT found!"
 msgstr ""
 
 #: SABnzbd.py [Error message]
@@ -102,6 +94,62 @@ msgstr ""
 
 #: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py # sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
 msgstr ""
 
 #: sabnzbd/__init__.py [Warning message]
@@ -512,10 +560,6 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
-msgstr ""
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py # sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -2979,11 +3023,11 @@ msgid "Disconnect from Usenet server(s) when queue is empty or paused."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Sort by Age"
+msgid "Automatically sort queue"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Automatically sort items by (average) age."
+msgid "Automatically sort jobs in the queue when a new job is added."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4412,57 +4456,5 @@ msgstr ""
 
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
 msgstr ""
 
