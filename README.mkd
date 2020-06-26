@@ -1,27 +1,10 @@
-Release Notes - SABnzbd 3.0.0 Beta 4
+Release Notes - SABnzbd 3.0.0 RC 1
 =========================================================
 
 ## About this new version
 We have been working for months to upgrade the SABnzbd code from Python 2 to Python 3.
 Although it might not sound like a big change, we had to rewrite almost every part of
-the code. This also means that we might have introduced new bugs. We therefore encourage
-you to let us know of any errors or strange behavior you might notice!
-
-## Changes and bugfixes since 3.0.0 Beta 3
-- Category was not parsed correctly when using `addfile` API-call.
-- Restore `nzbfile`-parameter when using `addfile` API-call.
-- Correctly detect filenames of existing files when retrying a job.
-- Restore attributes when retrying a job that failed post-processing.
-- Rename folders of failed jobs to `_FAILED_` instead of leaving `_UNPACK_`.
-
-## Changes and bugfixes since 3.0.0 Beta 2
-- Refactor of the code that handles adding NZB's and retrying jobs.
-- Queue-item labels are no longer part of the name but separated in API-property `labels`.
-- Using the API with `output=text` to add NZB's will report the nzo_ids instead of `ok`.
-- Repeated API-arguments were handled incorrectly.
-- Pausing the queue using the scheduler was broken.
-- Updated Javascript libraries of Glitter and the config.
-- Proper error-handling of bad email templates.
+the code. We also included a number of new features, listed below.
 
 ## Big changes in 3.0.0
 - Python 3.5 and above are the only supported versions of Python.
@@ -32,27 +15,32 @@ you to let us know of any errors or strange behavior you might notice!
 - Built-in internet bandwidth test.
 - Windows Service support was changed. The service will need to be reinstalled!
   Documentation: https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
-- The Windows installer is 64-bit only, for 32-bit use the standalone package.
+- The Windows installer is 64-bit only, for 32-bit please use the standalone package.
 
 ## Other changes since 2.3.9
-- Files that are fully identical are now skipped automatically.
-- Linux tray icon support was improved.
-- On Linux special permission bits are removed from files after download.
-- macOS features such as the menu and notifications now use native code.
+- Files inside an NZB that are fully identical are now skipped automatically.
+- Folders of jobs that failed post-processing are renamed to `_FAILED_`.
+- Blocking of unwanted extensions that are directly inside an NZB.
 - In Python 3 OpenSSL 1.1.1 is used for Windows and macOS, as a result 
   newsservers manually set to `RC4-MD5` cipher can no longer connect. 
   Documentation: https://sabnzbd.org/wiki/advanced/ssl-ciphers
 - TLS1.3 support for newsserver connections.
 - SABYenc, par2 and unrar are now required to start downloading.
 - Growl-support was removed.
-- API-calls `tapi` and `qstatus` were removed.
 - The `smpl` skin was removed.
+- Using the API with `output=text` to add NZB's will report the `nzo_ids` instead of `ok`.
+- Queue-item labels are no longer part of the name but separated in API-property `labels`.
+- API-calls `tapi` and `qstatus` were removed.
+- On Windows only Multipar is available for repair.
+- Linux tray icon support was improved.
+- On Linux special permission bits are removed from files after download.
+- macOS features such as the menu and notifications now use native code.
 
 ## Bugfixes since 2.3.9
 - Resolved potential security issue in FAT-filesystem check.
 - Sample removal did not work if only 1 sample file was present.
 - Crash on badly formatted RSS-feeds or readout during editing.
-- Aborting jobs that can't be completed would sometimes not trigger.
+- Automatic aborting of jobs that can't be completed would sometimes not trigger.
 - Windows systems could enter standby state during downloading.
 - Some errors thrown by unrar were not caught.
 - Files and sockets were not always closed correctly.

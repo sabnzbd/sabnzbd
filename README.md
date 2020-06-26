@@ -1,7 +1,6 @@
 SABnzbd - The automated Usenet download tool
 ============================================
 
-[![Average time to resolve an issue](https://isitmaintained.com/badge/resolution/sabnzbd/sabnzbd.svg)](https://isitmaintained.com/project/sabnzbd/sabnzbd "Average time to resolve an issue")
 [![Travis CI](https://travis-ci.org/sabnzbd/sabnzbd.svg?branch=develop)](https://travis-ci.org/sabnzbd/sabnzbd)
 [![AppVeryor](https://ci.appveyor.com/api/projects/status/github/sabnzbd/sabnzbd?svg=true&branch=develop)](https://ci.appveyor.com/project/Safihre/sabnzbd)
 [![Snap Status](https://build.snapcraft.io/badge/sabnzbd/sabnzbd.svg)](https://snapcraft.io/sabnzbd)
