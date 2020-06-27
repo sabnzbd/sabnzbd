@@ -4,13 +4,14 @@
 # 
 # Translators:
 # Safihre SABnzbd <safihre@sabnzbd.org>, 2020
+# ION, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.0.0-develop\n"
 "POT-Creation-Date: 2020-06-26 09:41+0000\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre SABnzbd <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: ION, 2020\n"
 "Language-Team: Hebrew (https://www.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1076,7 +1077,7 @@ msgstr "\"%s\" NZB משהה שכפול"
 
 #: sabnzbd/nzbstuff.py [Warning message]
 msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
+msgstr "%s (%s) סיומת בלתי רצויה בקובץ"
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -3226,11 +3227,11 @@ msgstr ".כאשר התור ריק או מושהה Usenet התנתק משרת(י)
 
 #: sabnzbd/skintext.py
 msgid "Automatically sort queue"
-msgstr ""
+msgstr "מיין תור באופן אוטומטי"
 
 #: sabnzbd/skintext.py
 msgid "Automatically sort jobs in the queue when a new job is added."
-msgstr ""
+msgstr "מיין עבודות באופן אוטומטי בתור כאשר עבודה חדשה מתווספת"
 
 #: sabnzbd/skintext.py
 msgid ""
