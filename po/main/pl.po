@@ -8,13 +8,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.0.0-develop\n"
-"POT-Creation-Date: 2020-06-26 09:41+0000\n"
+"POT-Creation-Date: 2020-06-27 23:06+0200\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Polish (https://www.transifex.com/sabnzbd/teams/111101/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 7bit\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Language: pl\n"
 "Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
@@ -104,6 +104,70 @@ msgstr "Błąd"
 #: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd został wyłączony"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Nie ustawiono nazwy hosta."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr ""
+"Nie ustawiono maksymalnej liczby połączeń. Proszę umożliwić przynajmniej "
+"jedno połączenie."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Hasło ukryte za ******, proszę wprowadzić je ponownie"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Niewłaściwe dane serwera"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr ""
+"Upłynął limit czasu odpowiedzi: spróbuj włączyć SSL lub połącz się z innym "
+"portem."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Upłynął limit czasu odpowiedzi."
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Nieprawidłowy adres serwera."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Serwer przerwał połączenie w trakcie logowania."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Serwer wymaga podania nazwy użytkownika i hasła."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Połączenie udane!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py #
+#: sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"Zbyt wiele połączeń, proszę wstrzymać pobieranie lub spróbować ponownie "
+"później"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Nie można określić wyniku połączenia (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -556,11 +620,6 @@ msgid ""
 msgstr ""
 "Brak danych uwierzytelniających, wprowadź nazwę użytkownika/hasło z sekcji "
 "Konfiguracja->Ogólne do zewnętrznego programu:"
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py #
-#: sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -4739,62 +4798,3 @@ msgstr "Bezużyteczny plik NZB"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "Pobieranie URL nie powiodło się; %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Nie ustawiono nazwy hosta."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr ""
-"Nie ustawiono maksymalnej liczby połączeń. Proszę umożliwić przynajmniej "
-"jedno połączenie."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Hasło ukryte za ******, proszę wprowadzić je ponownie"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Niewłaściwe dane serwera"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr ""
-"Upłynął limit czasu odpowiedzi: spróbuj włączyć SSL lub połącz się z innym "
-"portem."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Upłynął limit czasu odpowiedzi."
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Nieprawidłowy adres serwera."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Serwer przerwał połączenie w trakcie logowania."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Serwer wymaga podania nazwy użytkownika i hasła."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Połączenie udane!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"Zbyt wiele połączeń, proszę wstrzymać pobieranie lub spróbować ponownie "
-"później"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Nie można określić wyniku połączenia (%s)"

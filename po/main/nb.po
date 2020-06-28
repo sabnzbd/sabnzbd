@@ -8,13 +8,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.0.0-develop\n"
-"POT-Creation-Date: 2020-06-26 09:41+0000\n"
+"POT-Creation-Date: 2020-06-27 23:06+0200\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Norwegian Bokmål (https://www.transifex.com/sabnzbd/teams/111101/nb/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 7bit\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Language: nb\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
@@ -109,6 +109,67 @@ msgstr "Feil"
 #: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd er nå avsluttet"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "Du har ikke stilt inn vertsnavn."
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "Ingen tilkoblinger er aktivert. Du må aktivere minst en tilkobling."
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "Passordet er skjult med ******, prøv igjen"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "Ugyldige server-innstillinger"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "Tidsavbrudd: Prøv å aktivere SSL eller bruk en annen port."
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "Tidsavbrudd"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr ""
+"Ukjent SSL-protokoll: Prøv å deaktivere SSL eller koble til på en annen "
+"port."
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "Ugyldig server-adresse."
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "Server avbrøt undet innloggingssekvens"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "Server krever brukernavn og passord."
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "Tilkobling lyktes!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py #
+#: sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "Godkjenning mislyktes, kontroller brukernavn og passord."
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr ""
+"For mange tilkoblinger, sett nedlasting på pause eller prøv igjen senere"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "Kunne ikke koble til (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -555,11 +616,6 @@ msgid ""
 msgstr ""
 "Autentisering mangler, angi brukernavn/passord fra Konfigurasjon->Generelt i"
 " ditt tredjepartsprogram:"
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py #
-#: sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "Godkjenning mislyktes, kontroller brukernavn og passord."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -4728,59 +4784,3 @@ msgstr "Feil, Ubrukelig akrivfil"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "URL henting mislyktes; %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "Du har ikke stilt inn vertsnavn."
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "Ingen tilkoblinger er aktivert. Du må aktivere minst en tilkobling."
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "Passordet er skjult med ******, prøv igjen"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "Ugyldige server-innstillinger"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "Tidsavbrudd: Prøv å aktivere SSL eller bruk en annen port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "Tidsavbrudd"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr ""
-"Ukjent SSL-protokoll: Prøv å deaktivere SSL eller koble til på en annen "
-"port."
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "Ugyldig server-adresse."
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "Server avbrøt undet innloggingssekvens"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "Server krever brukernavn og passord."
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "Tilkobling lyktes!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr ""
-"For mange tilkoblinger, sett nedlasting på pause eller prøv igjen senere"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "Kunne ikke koble til (%s)"

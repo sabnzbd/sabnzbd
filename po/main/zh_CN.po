@@ -8,13 +8,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.0.0-develop\n"
-"POT-Creation-Date: 2020-06-26 09:41+0000\n"
+"POT-Creation-Date: 2020-06-27 23:06+0200\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 7bit\n"
+"Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Language: zh_CN\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
@@ -104,6 +104,64 @@ msgstr "错误"
 #: SABnzbd.py # sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "SABnzbd 关闭完成"
+
+#: sabnzbd/utils/servertests.py
+msgid "The hostname is not set."
+msgstr "主机名未设置。"
+
+#: sabnzbd/utils/servertests.py
+msgid "There are no connections set. Please set at least one connection."
+msgstr "未设置连接。请设置至少一个连接。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Password masked in ******, please re-enter"
+msgstr "密码会以 ****** 显示，请重新输入"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server details"
+msgstr "服务器信息无效"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out: Try enabling SSL or connecting on a different port."
+msgstr "超时: 请尝试启用 SSL 或连接其他端口。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Timed out"
+msgstr "超时"
+
+#: sabnzbd/utils/servertests.py
+msgid ""
+"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
+msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Invalid server address."
+msgstr "服务器地址无效。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server quit during login sequence."
+msgstr "登录过程中服务器退出。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Server requires username and password."
+msgstr "服务器需要用户名与密码。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Connection Successful!"
+msgstr "连接成功!"
+
+#: sabnzbd/utils/servertests.py # sabnzbd/interface.py #
+#: sabnzbd/newswrapper.py
+msgid "Authentication failed, check username/password."
+msgstr "身份认证失败，请检查用户名/密码。"
+
+#: sabnzbd/utils/servertests.py
+msgid "Too many connections, please pause downloading or try again later"
+msgstr "连接数过多，请先暂停下载或稍后再试"
+
+#: sabnzbd/utils/servertests.py
+msgid "Could not determine connection result (%s)"
+msgstr "无法判断连接结果 (%s)"
 
 #: sabnzbd/__init__.py [Warning message]
 msgid "Signal %s caught, saving and exiting..."
@@ -544,11 +602,6 @@ msgid ""
 "Authentication missing, please enter username/password from Config->General "
 "into your 3rd party program:"
 msgstr "缺身份认证信息，请在第三方程序中输入“配置”->“常规”中的用户名/密码:"
-
-#: sabnzbd/interface.py # sabnzbd/newswrapper.py #
-#: sabnzbd/utils/servertests.py
-msgid "Authentication failed, check username/password."
-msgstr "身份认证失败，请检查用户名/密码。"
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -4649,56 +4702,3 @@ msgstr "不可用的 NZB 文件"
 #: sabnzbd/urlgrabber.py
 msgid "URL Fetching failed; %s"
 msgstr "URL 装取失败; %s"
-
-#: sabnzbd/utils/servertests.py
-msgid "The hostname is not set."
-msgstr "主机名未设置。"
-
-#: sabnzbd/utils/servertests.py
-msgid "There are no connections set. Please set at least one connection."
-msgstr "未设置连接。请设置至少一个连接。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Password masked in ******, please re-enter"
-msgstr "密码会以 ****** 显示，请重新输入"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server details"
-msgstr "服务器信息无效"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out: Try enabling SSL or connecting on a different port."
-msgstr "超时: 请尝试启用 SSL 或连接其他端口。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Timed out"
-msgstr "超时"
-
-#: sabnzbd/utils/servertests.py
-msgid ""
-"Unknown SSL protocol: Try disabling SSL or connecting on a different port."
-msgstr "未知的 SSL 协议：尝试禁用 SSL 或者连接不同的端口。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Invalid server address."
-msgstr "服务器地址无效。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server quit during login sequence."
-msgstr "登录过程中服务器退出。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Server requires username and password."
-msgstr "服务器需要用户名与密码。"
-
-#: sabnzbd/utils/servertests.py
-msgid "Connection Successful!"
-msgstr "连接成功!"
-
-#: sabnzbd/utils/servertests.py
-msgid "Too many connections, please pause downloading or try again later"
-msgstr "连接数过多，请先暂停下载或稍后再试"
-
-#: sabnzbd/utils/servertests.py
-msgid "Could not determine connection result (%s)"
-msgstr "无法判断连接结果 (%s)"
