@@ -1,0 +1,22 @@
+name: Update translatable texts
+
+on:
+  push:
+    branches:
+    - develop
+
+jobs:
+  translations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Generate translatable texts
+        run: |
+          python3 tools/extract_pot.py
+      - name: Push translatable texts back to repo
+        uses: stefanzweifel/git-auto-commit-action@master
+        with:
+          commit_message: Update translatable texts
+          commit_user_name: SABnzbd Automation
+          commit_user_email: bugs@sabnzbd.org
+          commit_author: SABnzbd Automation <bugs@sabnzbd.org>
