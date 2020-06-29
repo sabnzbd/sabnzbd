@@ -120,7 +120,7 @@ def get_context(ctx_line):
     return_val = "#: " + ", ".join(newlines) + "\n"
     if contexts:
         # Syntax defined by GNU gettext for context-comments
-        return_val = "#. " + "\n#. ".join(contexts) + "\n" + return_val
+        return_val = "#. " + " - ".join(contexts) + "\n" + return_val
     return return_val
 
 
