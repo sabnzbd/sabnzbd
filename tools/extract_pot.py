@@ -71,21 +71,21 @@ def get_a_line(line_src, number):
         for file_line in open(line_src, "r"):
             FILE_CACHE[line_src].append(file_line)
     try:
-        return FILE_CACHE[line_src][number - 1]
+        # We include 2 lines extra, since sometimes the "logging.warning"
+        # can be on the line above, due to code-formatting
+        return "".join(FILE_CACHE[line_src][number - 3 : number])
     except:
         return ""
 
 
 def get_context(ctx_line):
-    """ Read context info from source file and append to line.
-        input: "#: filepath.py:123 filepath2.py:456"
-        output: "#: filepath.py:123 # [context info] # filepath2.py:456 # [context info 2]"
-    """
+    """ Read context info from source file and append to line. """
     if not ctx_line.startswith("#:"):
         return ctx_line
 
     newlines = []
-    for item in ctx_line[2:].strip("\r\n").split():
+    contexts = []
+    for item in ctx_line[2:].strip().split():
         m = RE_LINE.search(item)
         if m:
             line_src = m.group(1)
@@ -98,24 +98,30 @@ def get_context(ctx_line):
         context = ""
         m = RE_CONTEXT.search(srcline)
         if m:
+            # Context was defined in the source file
             context = m.group(1)
         else:
             if "logging.error(" in srcline:
                 context = "Error message"
             elif "logging.warning(" in srcline:
                 context = "Warning message"
-        # Remove line-number
-        item = item.split(":")[0]
 
-        if context:
-            # Format context
-            item = "%s [%s]" % (item, context)
+        if context and context not in contexts:
+            contexts.append(context)
+
+        # Remove line-number to prevent unnecessary updates of the POT-files
+        item = item.split(":")[0]
 
         # Only add new texts
         if item not in newlines:
             newlines.append(item)
 
-    return "#: " + " # ".join(newlines) + "\n"
+    # Build return value
+    return_val = "#: " + ", ".join(newlines) + "\n"
+    if contexts:
+        # Syntax defined by GNU gettext for context-comments
+        return_val = "#. " + "\n#. ".join(contexts) + "\n" + return_val
+    return return_val
 
 
 def add_tmpl_to_pot(prefix, dst_file):
