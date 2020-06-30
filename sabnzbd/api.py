@@ -1610,7 +1610,7 @@ def build_header(webdir="", output=None, trans_functions=True):
         header["new_release"], header["new_rel_url"] = sabnzbd.NEW_VERSION
 
     header["version"] = sabnzbd.__version__
-    header["paused"] = Downloader.do.paused or Downloader.do.postproc
+    header["paused"] = bool(Downloader.do.paused or Downloader.do.postproc)
     header["pause_int"] = scheduler.pause_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
