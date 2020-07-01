@@ -106,8 +106,7 @@ msgstr "Misslyckades att starta webbgränsnitt: "
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s startad"
 
-#. Notification
-#. Status page, table column header, actual message
+#. Notification - Status page, table column header, actual message
 #: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Warning"
 msgstr "Varning"
@@ -172,8 +171,7 @@ msgstr "Testa notifikation"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Lösa adress"
 
-#. No value, used in dropdown menus
-#. Job details page, select no files
+#. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
 msgstr "Ingen"
@@ -389,8 +387,7 @@ msgstr "Okänt fel under avkodning av %s"
 msgid "Direct Unpack"
 msgstr ""
 
-#. PP status
-#. History: job status
+#. PP status - History: job status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Completed"
 msgstr "Färdig"
@@ -419,8 +416,7 @@ msgstr "Kan ej läsa övervakad mapp %s"
 msgid "Resuming"
 msgstr "Fortsätter"
 
-#. PP status
-#. Priority pick list
+#. PP status - Priority pick list
 #: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
@@ -524,8 +520,7 @@ msgstr "Kan ej finna e-mail mallar i %s"
 msgid "No recipients given, no email sent"
 msgstr "Ingen mottagare angiven, ingen e-post har skickats"
 
-#. Error message
-#. Warning message
+#. Error message - Warning message
 #: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
 #: sabnzbd/rss.py
 msgid "Cannot read %s"
@@ -745,8 +740,7 @@ msgstr "Kör skript"
 msgid "PostProcessing was aborted (%s)"
 msgstr "Efterbehandling avbröts (%s)"
 
-#. PP phase "script"
-#. Notification Script settings
+#. PP phase "script" - Notification Script settings
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "Script"
 msgstr "Skript"
@@ -1036,8 +1030,7 @@ msgstr "Wiki"
 msgid "Startup/Shutdown"
 msgstr "Starta/Stäng"
 
-#. Notification
-#. Config->RSS after adding to queue
+#. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
 msgstr "NZB tillagd"
@@ -1084,8 +1077,7 @@ msgstr "Misslyckades att skicka Prowlmeddelande"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Dålig respons från Pushover (%s): %s"
 
-#. Error message
-#. Warning message
+#. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "Misslyckades att skicka pushovermeddelande"
@@ -1289,9 +1281,7 @@ msgstr "Töm historik"
 msgid "Limit Speed"
 msgstr "Hastighetsbegränsning"
 
-#. Pause downloading
-#. Four way switch for duplicates
-#. Config->Scheduling
+#. Pause downloading - Four way switch for duplicates - Config->Scheduling
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Pause"
@@ -1301,8 +1291,7 @@ msgstr "Pausa"
 msgid "min."
 msgstr "min."
 
-#. Resume downloading
-#. Config->Scheduling
+#. Resume downloading - Config->Scheduling
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Resume"
@@ -1720,8 +1709,7 @@ msgstr "Pausa 3 timmar"
 msgid "Pause for 6 hours"
 msgstr "Pausa 6 timmar"
 
-#. Shutdown SABnzbd
-#. Config->Scheduling
+#. Shutdown SABnzbd - Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Shutdown"
 msgstr "Stäng Av"
@@ -1749,9 +1737,8 @@ msgstr "Okänd åtgärd: %s"
 msgid "Schedule for non-existing server %s"
 msgstr "Schema för icke existerande server %s"
 
-#. Queue status "download"
-#. Post processing pick list
-#. Config->RSS button "download item"
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
 #: sabnzbd/skintext.py
 msgid "Download"
 msgstr "Nedladdning"
@@ -1761,14 +1748,12 @@ msgstr "Nedladdning"
 msgid "Join files"
 msgstr "Slår ihop filer"
 
-#. PP Source of the NZB (path or URL)
-#. Where to find the SABnzbd sourcecode
+#. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
 msgid "Source"
 msgstr "Källa"
 
-#. PP Distribution over servers
-#. Main menu item
+#. PP Distribution over servers - Main menu item
 #: sabnzbd/skintext.py
 msgid "Servers"
 msgstr "Servrar"
@@ -1932,8 +1917,7 @@ msgstr ""
 msgid "Resume jobs with category"
 msgstr ""
 
-#. Prowl priority
-#. Three way switch for duplicates
+#. Prowl priority - Three way switch for duplicates
 #: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Av"
@@ -1948,14 +1932,12 @@ msgstr "Mycket låg"
 msgid "Moderate"
 msgstr "Medel"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Normal"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "High"
 msgstr "Hög"
@@ -1965,8 +1947,7 @@ msgstr "Hög"
 msgid "Emergency"
 msgstr "Nödfall"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Low"
 msgstr "Låg"
@@ -2103,8 +2084,7 @@ msgstr "Totalt"
 msgid "on"
 msgstr "den"
 
-#. Config: startup parameters of SABnzbd
-#. Notification Script settings
+#. Config: startup parameters of SABnzbd - Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Parameters"
 msgstr "Parametrar"
@@ -2210,8 +2190,7 @@ msgstr "Hem"
 msgid "Config"
 msgstr "Konfiguration"
 
-#. Main menu item
-#. History table header
+#. Main menu item - History table header
 #: sabnzbd/skintext.py
 msgid "Status"
 msgstr "Status"
@@ -2320,8 +2299,7 @@ msgstr "Ny utgåva %s tillgänglig"
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Är du säker på att du vill stänga av SABnzbd?"
 
-#. Add NZB to queue (button)
-#. Add NZB to queue (header)
+#. Add NZB to queue (button) - Add NZB to queue (header)
 #: sabnzbd/skintext.py
 msgid "Add"
 msgstr "Lägg till"
@@ -2421,14 +2399,12 @@ msgstr "Stäng av SABnzbd"
 msgid "Speed Limit"
 msgstr "Hastighetsgräns"
 
-#. Queue page table column header
-#. Config->RSS table column header
+#. Queue page table column header - Config->RSS table column header
 #: sabnzbd/skintext.py
 msgid "Order"
 msgstr "Ordning"
 
-#. Queue page table column header
-#. Job details page
+#. Queue page table column header - Job details page
 #: sabnzbd/skintext.py
 msgid "Name"
 msgstr "Namn"
@@ -2542,8 +2518,7 @@ msgstr "Visa Misslyckade"
 msgid "Show All"
 msgstr "Visa alla"
 
-#. History table header
-#. Size of the download quota
+#. History table header - Size of the download quota
 #: sabnzbd/skintext.py
 msgid "Size"
 msgstr "Storlek"
@@ -2644,8 +2619,7 @@ msgstr "+ Info"
 msgid "+ Debug"
 msgstr "+ Debug"
 
-#. Status page tab header
-#. Server: amount of connections
+#. Status page tab header - Server: amount of connections
 #: sabnzbd/skintext.py
 msgid "Connections"
 msgstr "Anslutningar"
@@ -2680,8 +2654,8 @@ msgstr "Filuppsättning"
 msgid "When"
 msgstr "När"
 
-#. Status page, table column header, type of message
-#. Config->RSS table column header
+#. Status page, table column header, type of message - Config->RSS table
+#. column header
 #: sabnzbd/skintext.py
 msgid "Type"
 msgstr "Typ"
@@ -3768,8 +3742,7 @@ msgstr ""
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
 msgstr "Användbar om en newsserver har fler val än en IPv4/IPv6adress"
 
-#. Caption
-#. Button: Add server
+#. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"
 msgstr "Lägg till server"
@@ -3860,8 +3833,7 @@ msgstr "Aktivera"
 msgid "Remove Server"
 msgstr "Ta bort server"
 
-#. Button: Test server
-#. Wizard step
+#. Button: Test server - Wizard step
 #: sabnzbd/skintext.py
 msgid "Test Server"
 msgstr "Testserver"
@@ -3901,8 +3873,7 @@ msgstr "Lägg till schema"
 msgid "Frequency"
 msgstr "Förekomst"
 
-#. Config->Scheduling
-#. Job details page, section header
+#. Config->Scheduling - Job details page, section header
 #: sabnzbd/skintext.py
 msgid "Action"
 msgstr "Åtgärd"

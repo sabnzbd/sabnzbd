@@ -108,8 +108,7 @@ msgstr "Error al iniciar la interfaz web: "
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s comenzó"
 
-#. Notification
-#. Status page, table column header, actual message
+#. Notification - Status page, table column header, actual message
 #: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Warning"
 msgstr "Advertencia"
@@ -174,8 +173,7 @@ msgstr "Notificación de prueba"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Resolviendo sitio"
 
-#. No value, used in dropdown menus
-#. Job details page, select no files
+#. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
 msgstr "Ninguno"
@@ -394,8 +392,7 @@ msgstr "Error inespecifico mientras descodificando %s"
 msgid "Direct Unpack"
 msgstr ""
 
-#. PP status
-#. History: job status
+#. PP status - History: job status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Completed"
 msgstr "Completado"
@@ -424,8 +421,7 @@ msgstr "Directorio Watched %s no se puede leer"
 msgid "Resuming"
 msgstr "Reanudando"
 
-#. PP status
-#. Priority pick list
+#. PP status - Priority pick list
 #: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
@@ -532,8 +528,7 @@ msgstr "No se pudo encontrar plantillas de email en %s"
 msgid "No recipients given, no email sent"
 msgstr "Sin destinatarios no se pudo enviar el email"
 
-#. Error message
-#. Warning message
+#. Error message - Warning message
 #: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
 #: sabnzbd/rss.py
 msgid "Cannot read %s"
@@ -753,8 +748,7 @@ msgstr "Ejecutando script"
 msgid "PostProcessing was aborted (%s)"
 msgstr "Se ha abortado el PostProcesamiento (%s)"
 
-#. PP phase "script"
-#. Notification Script settings
+#. PP phase "script" - Notification Script settings
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "Script"
 msgstr "Script"
@@ -1046,8 +1040,7 @@ msgstr "Wiki"
 msgid "Startup/Shutdown"
 msgstr "Inicio/Apagado"
 
-#. Notification
-#. Config->RSS after adding to queue
+#. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
 msgstr "NZB añadido"
@@ -1094,8 +1087,7 @@ msgstr "No se pudo enviar el mensaje de Prowl"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Mala respuesta de Pushover (%s): %s"
 
-#. Error message
-#. Warning message
+#. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "No se pudo enviar el mensaje de Pushover"
@@ -1300,9 +1292,7 @@ msgstr "Purgar historial"
 msgid "Limit Speed"
 msgstr "Limitar Velocidad"
 
-#. Pause downloading
-#. Four way switch for duplicates
-#. Config->Scheduling
+#. Pause downloading - Four way switch for duplicates - Config->Scheduling
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Pause"
@@ -1312,8 +1302,7 @@ msgstr "Pausar"
 msgid "min."
 msgstr "mín."
 
-#. Resume downloading
-#. Config->Scheduling
+#. Resume downloading - Config->Scheduling
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Resume"
@@ -1738,8 +1727,7 @@ msgstr "Pausar 3 horas"
 msgid "Pause for 6 hours"
 msgstr "Pausar 6 horas"
 
-#. Shutdown SABnzbd
-#. Config->Scheduling
+#. Shutdown SABnzbd - Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Shutdown"
 msgstr "Apagar"
@@ -1767,9 +1755,8 @@ msgstr "Acción desconocida: %s"
 msgid "Schedule for non-existing server %s"
 msgstr "Planificación para servidor %s inexistente"
 
-#. Queue status "download"
-#. Post processing pick list
-#. Config->RSS button "download item"
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
 #: sabnzbd/skintext.py
 msgid "Download"
 msgstr "Descargar"
@@ -1779,14 +1766,12 @@ msgstr "Descargar"
 msgid "Join files"
 msgstr "Unir ficheros"
 
-#. PP Source of the NZB (path or URL)
-#. Where to find the SABnzbd sourcecode
+#. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
 msgid "Source"
 msgstr "Fuente"
 
-#. PP Distribution over servers
-#. Main menu item
+#. PP Distribution over servers - Main menu item
 #: sabnzbd/skintext.py
 msgid "Servers"
 msgstr "Servidores"
@@ -1950,8 +1935,7 @@ msgstr ""
 msgid "Resume jobs with category"
 msgstr ""
 
-#. Prowl priority
-#. Three way switch for duplicates
+#. Prowl priority - Three way switch for duplicates
 #: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Apagado"
@@ -1966,14 +1950,12 @@ msgstr "Muy baja"
 msgid "Moderate"
 msgstr "Moderada"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Normal"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "High"
 msgstr "Alta"
@@ -1983,8 +1965,7 @@ msgstr "Alta"
 msgid "Emergency"
 msgstr "Emergencia"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Low"
 msgstr "Baja"
@@ -2121,8 +2102,7 @@ msgstr "Total"
 msgid "on"
 msgstr "activado"
 
-#. Config: startup parameters of SABnzbd
-#. Notification Script settings
+#. Config: startup parameters of SABnzbd - Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Parameters"
 msgstr "Parametros"
@@ -2228,8 +2208,7 @@ msgstr "Inicio"
 msgid "Config"
 msgstr "Config."
 
-#. Main menu item
-#. History table header
+#. Main menu item - History table header
 #: sabnzbd/skintext.py
 msgid "Status"
 msgstr "Estado"
@@ -2338,8 +2317,7 @@ msgstr "Nueva versión %s disponible en"
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "¿Seguro que deseas detener SABnzbd?"
 
-#. Add NZB to queue (button)
-#. Add NZB to queue (header)
+#. Add NZB to queue (button) - Add NZB to queue (header)
 #: sabnzbd/skintext.py
 msgid "Add"
 msgstr "Añadir"
@@ -2439,14 +2417,12 @@ msgstr "Apagar SABnzbd"
 msgid "Speed Limit"
 msgstr "Límite de velocidad"
 
-#. Queue page table column header
-#. Config->RSS table column header
+#. Queue page table column header - Config->RSS table column header
 #: sabnzbd/skintext.py
 msgid "Order"
 msgstr "Orden"
 
-#. Queue page table column header
-#. Job details page
+#. Queue page table column header - Job details page
 #: sabnzbd/skintext.py
 msgid "Name"
 msgstr "Nombre"
@@ -2560,8 +2536,7 @@ msgstr "Mostrar los Fallidos"
 msgid "Show All"
 msgstr "Mostrar Todo"
 
-#. History table header
-#. Size of the download quota
+#. History table header - Size of the download quota
 #: sabnzbd/skintext.py
 msgid "Size"
 msgstr "Tamaño"
@@ -2662,8 +2637,7 @@ msgstr "+Info"
 msgid "+ Debug"
 msgstr "+Depuración"
 
-#. Status page tab header
-#. Server: amount of connections
+#. Status page tab header - Server: amount of connections
 #: sabnzbd/skintext.py
 msgid "Connections"
 msgstr "Conexiones"
@@ -2698,8 +2672,8 @@ msgstr "Conjunto de ficheros"
 msgid "When"
 msgstr "Cuando"
 
-#. Status page, table column header, type of message
-#. Config->RSS table column header
+#. Status page, table column header, type of message - Config->RSS table
+#. column header
 #: sabnzbd/skintext.py
 msgid "Type"
 msgstr "Tipo"
@@ -3810,8 +3784,7 @@ msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
 msgstr ""
 "Útil si un servidor de noticias tiene más de una dirección IPv4 / IPv6"
 
-#. Caption
-#. Button: Add server
+#. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"
 msgstr "Añadir servidor"
@@ -3902,8 +3875,7 @@ msgstr "Habilitar"
 msgid "Remove Server"
 msgstr "Eliminar servidor"
 
-#. Button: Test server
-#. Wizard step
+#. Button: Test server - Wizard step
 #: sabnzbd/skintext.py
 msgid "Test Server"
 msgstr "Probar Servidor"
@@ -3943,8 +3915,7 @@ msgstr "Añadir planificación"
 msgid "Frequency"
 msgstr "Frecuencia"
 
-#. Config->Scheduling
-#. Job details page, section header
+#. Config->Scheduling - Job details page, section header
 #: sabnzbd/skintext.py
 msgid "Action"
 msgstr "Acción"

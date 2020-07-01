@@ -112,8 +112,7 @@ msgstr "Web-käyttöliittymän käynnistys epäonnistui : "
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s käynnistetty"
 
-#. Notification
-#. Status page, table column header, actual message
+#. Notification - Status page, table column header, actual message
 #: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Warning"
 msgstr "Varoitus"
@@ -178,8 +177,7 @@ msgstr "Testaa ilmoitusta"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Selvitetään osoitetta"
 
-#. No value, used in dropdown menus
-#. Job details page, select no files
+#. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
 msgstr "Ei mitään"
@@ -395,8 +393,7 @@ msgstr "Tuntematon virhe dekoodattaessa %s"
 msgid "Direct Unpack"
 msgstr ""
 
-#. PP status
-#. History: job status
+#. PP status - History: job status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Completed"
 msgstr "Valmistunut"
@@ -425,8 +422,7 @@ msgstr "Vahdittua kansiota %s ei voida lukea"
 msgid "Resuming"
 msgstr "Jatketaan"
 
-#. PP status
-#. Priority pick list
+#. PP status - Priority pick list
 #: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
@@ -531,8 +527,7 @@ msgstr "Sähköpostipohjia ei löydy hakemistosta %s"
 msgid "No recipients given, no email sent"
 msgstr "Vastaanottajaa ei määritelty, sähköpostia ei lähetetty"
 
-#. Error message
-#. Warning message
+#. Error message - Warning message
 #: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
 #: sabnzbd/rss.py
 msgid "Cannot read %s"
@@ -752,8 +747,7 @@ msgstr "Ajetaan skripti"
 msgid "PostProcessing was aborted (%s)"
 msgstr "Jälkikäsittely peruutettiin (%s)"
 
-#. PP phase "script"
-#. Notification Script settings
+#. PP phase "script" - Notification Script settings
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "Script"
 msgstr "Skripti"
@@ -1040,8 +1034,7 @@ msgstr "Wiki"
 msgid "Startup/Shutdown"
 msgstr "Käynnistys/Sammutus"
 
-#. Notification
-#. Config->RSS after adding to queue
+#. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
 msgstr "Lisätty NZB"
@@ -1088,8 +1081,7 @@ msgstr "Prowl viestin lähetys epäonnistui"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Virheellinen vastaus Pushoverilta (%s): %s"
 
-#. Error message
-#. Warning message
+#. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "Pushover viestin lähetys epäonnistui"
@@ -1293,9 +1285,7 @@ msgstr "Tyhjennä historia"
 msgid "Limit Speed"
 msgstr "Nopeusrajoitus"
 
-#. Pause downloading
-#. Four way switch for duplicates
-#. Config->Scheduling
+#. Pause downloading - Four way switch for duplicates - Config->Scheduling
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Pause"
@@ -1305,8 +1295,7 @@ msgstr "Keskeytä"
 msgid "min."
 msgstr "min."
 
-#. Resume downloading
-#. Config->Scheduling
+#. Resume downloading - Config->Scheduling
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Resume"
@@ -1722,8 +1711,7 @@ msgstr "Keskeytä 3:ksi tunniksi"
 msgid "Pause for 6 hours"
 msgstr "Keskeytä 6:ksi tunniksi"
 
-#. Shutdown SABnzbd
-#. Config->Scheduling
+#. Shutdown SABnzbd - Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Shutdown"
 msgstr "Sammuta"
@@ -1751,9 +1739,8 @@ msgstr "Tuntematon toiminto: %s"
 msgid "Schedule for non-existing server %s"
 msgstr "Ajastettu tuntemattomalle palvelimelle %s"
 
-#. Queue status "download"
-#. Post processing pick list
-#. Config->RSS button "download item"
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
 #: sabnzbd/skintext.py
 msgid "Download"
 msgstr "Lataa"
@@ -1763,14 +1750,12 @@ msgstr "Lataa"
 msgid "Join files"
 msgstr "Yhdistä tiedostot"
 
-#. PP Source of the NZB (path or URL)
-#. Where to find the SABnzbd sourcecode
+#. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
 msgid "Source"
 msgstr "Lähde"
 
-#. PP Distribution over servers
-#. Main menu item
+#. PP Distribution over servers - Main menu item
 #: sabnzbd/skintext.py
 msgid "Servers"
 msgstr "Palvelimet"
@@ -1934,8 +1919,7 @@ msgstr ""
 msgid "Resume jobs with category"
 msgstr ""
 
-#. Prowl priority
-#. Three way switch for duplicates
+#. Prowl priority - Three way switch for duplicates
 #: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Ei käytössä"
@@ -1950,14 +1934,12 @@ msgstr "Erittäin vähäinen"
 msgid "Moderate"
 msgstr "Kohtalainen"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Normaali"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "High"
 msgstr "Korkea"
@@ -1967,8 +1949,7 @@ msgstr "Korkea"
 msgid "Emergency"
 msgstr "Hälytys"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Low"
 msgstr "Matala"
@@ -2105,8 +2086,7 @@ msgstr "Yhteensä"
 msgid "on"
 msgstr "käytössä"
 
-#. Config: startup parameters of SABnzbd
-#. Notification Script settings
+#. Config: startup parameters of SABnzbd - Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Parameters"
 msgstr "Parametrit"
@@ -2212,8 +2192,7 @@ msgstr "Alkuun"
 msgid "Config"
 msgstr "Asetukset"
 
-#. Main menu item
-#. History table header
+#. Main menu item - History table header
 #: sabnzbd/skintext.py
 msgid "Status"
 msgstr "Tila"
@@ -2322,8 +2301,7 @@ msgstr "Uusi versio %s saatavilla osoitteesta"
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Oletko varma, että haluat sammuttaa SABnzbdn?"
 
-#. Add NZB to queue (button)
-#. Add NZB to queue (header)
+#. Add NZB to queue (button) - Add NZB to queue (header)
 #: sabnzbd/skintext.py
 msgid "Add"
 msgstr "Lisää"
@@ -2423,14 +2401,12 @@ msgstr "Sammuta SABnzbd"
 msgid "Speed Limit"
 msgstr "Nopeusrajoitus"
 
-#. Queue page table column header
-#. Config->RSS table column header
+#. Queue page table column header - Config->RSS table column header
 #: sabnzbd/skintext.py
 msgid "Order"
 msgstr "Järjestys"
 
-#. Queue page table column header
-#. Job details page
+#. Queue page table column header - Job details page
 #: sabnzbd/skintext.py
 msgid "Name"
 msgstr "Nimi"
@@ -2544,8 +2520,7 @@ msgstr "Näytä epäonnistuneet"
 msgid "Show All"
 msgstr "Näytä kaikki"
 
-#. History table header
-#. Size of the download quota
+#. History table header - Size of the download quota
 #: sabnzbd/skintext.py
 msgid "Size"
 msgstr "Koko"
@@ -2646,8 +2621,7 @@ msgstr "+ Tiedot"
 msgid "+ Debug"
 msgstr "+ Debug"
 
-#. Status page tab header
-#. Server: amount of connections
+#. Status page tab header - Server: amount of connections
 #: sabnzbd/skintext.py
 msgid "Connections"
 msgstr "Yhteydet"
@@ -2682,8 +2656,8 @@ msgstr "Tiedostojoukko"
 msgid "When"
 msgstr "Milloin"
 
-#. Status page, table column header, type of message
-#. Config->RSS table column header
+#. Status page, table column header, type of message - Config->RSS table
+#. column header
 #: sabnzbd/skintext.py
 msgid "Type"
 msgstr "Tyyppi"
@@ -3796,8 +3770,7 @@ msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
 msgstr ""
 "Hyödyllinen jos uutispalvelimella on enemmän kuin yksi IPv4/IPv6 osoite"
 
-#. Caption
-#. Button: Add server
+#. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"
 msgstr "Lisää palvelin"
@@ -3888,8 +3861,7 @@ msgstr "Ota käyttöön"
 msgid "Remove Server"
 msgstr "Poista palvelin"
 
-#. Button: Test server
-#. Wizard step
+#. Button: Test server - Wizard step
 #: sabnzbd/skintext.py
 msgid "Test Server"
 msgstr "Testaa palvelinta"
@@ -3929,8 +3901,7 @@ msgstr "Lisää ajastus"
 msgid "Frequency"
 msgstr "Toisto"
 
-#. Config->Scheduling
-#. Job details page, section header
+#. Config->Scheduling - Job details page, section header
 #: sabnzbd/skintext.py
 msgid "Action"
 msgstr "Toiminto"

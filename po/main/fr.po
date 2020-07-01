@@ -118,8 +118,7 @@ msgstr "Impossible de démarrer l'interface web : "
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s démarré"
 
-#. Notification
-#. Status page, table column header, actual message
+#. Notification - Status page, table column header, actual message
 #: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Warning"
 msgstr "Avertissement"
@@ -184,8 +183,7 @@ msgstr "Test de Notification"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Résolution de l'adresse"
 
-#. No value, used in dropdown menus
-#. Job details page, select no files
+#. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
 msgstr "Aucun"
@@ -412,8 +410,7 @@ msgstr "Erreur inconnue lors du décodage de %s"
 msgid "Direct Unpack"
 msgstr "Décompression Directe"
 
-#. PP status
-#. History: job status
+#. PP status - History: job status
 #: sabnzbd/directunpacker.py, sabnzbd/skintext.py
 msgid "Completed"
 msgstr "Terminé"
@@ -445,8 +442,7 @@ msgstr "Impossible de lire le dossier surveillé %s"
 msgid "Resuming"
 msgstr "Reprise en cours"
 
-#. PP status
-#. Priority pick list
+#. PP status - Priority pick list
 #: sabnzbd/downloader.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Paused"
@@ -554,8 +550,7 @@ msgstr "Impossible de trouver les modèles d'email dans %s"
 msgid "No recipients given, no email sent"
 msgstr "Aucun destinataire déterminé, aucun email envoyé"
 
-#. Error message
-#. Warning message
+#. Error message - Warning message
 #: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
 #: sabnzbd/rss.py
 msgid "Cannot read %s"
@@ -781,8 +776,7 @@ msgstr "Exécution du script"
 msgid "PostProcessing was aborted (%s)"
 msgstr "Post-traitement interrompu (%s)"
 
-#. PP phase "script"
-#. Notification Script settings
+#. PP phase "script" - Notification Script settings
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "Script"
 msgstr "Script"
@@ -1081,8 +1075,7 @@ msgstr "Wiki"
 msgid "Startup/Shutdown"
 msgstr "Démarrage/Arrêt"
 
-#. Notification
-#. Config->RSS after adding to queue
+#. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
 msgstr "NZB ajouté"
@@ -1129,8 +1122,7 @@ msgstr "Echec d'envoi du message Prowl"
 msgid "Bad response from Pushover (%s): %s"
 msgstr "Mauvaise réponse de Pushover (%s) : %s"
 
-#. Error message
-#. Warning message
+#. Error message - Warning message
 #: sabnzbd/notifier.py
 msgid "Failed to send pushover message"
 msgstr "Échec de l'envoi du message Pushover"
@@ -1334,9 +1326,7 @@ msgstr "Vider l'historique"
 msgid "Limit Speed"
 msgstr "Limiter la vitesse"
 
-#. Pause downloading
-#. Four way switch for duplicates
-#. Config->Scheduling
+#. Pause downloading - Four way switch for duplicates - Config->Scheduling
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Pause"
@@ -1346,8 +1336,7 @@ msgstr "Mettre en pause"
 msgid "min."
 msgstr "min."
 
-#. Resume downloading
-#. Config->Scheduling
+#. Resume downloading - Config->Scheduling
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Resume"
@@ -1778,8 +1767,7 @@ msgstr "Mettre en pause pendant 3 heures"
 msgid "Pause for 6 hours"
 msgstr "Mettre en pause pendant 6 heures"
 
-#. Shutdown SABnzbd
-#. Config->Scheduling
+#. Shutdown SABnzbd - Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Shutdown"
 msgstr "Arrêter"
@@ -1807,9 +1795,8 @@ msgstr "Action inconnue : %s"
 msgid "Schedule for non-existing server %s"
 msgstr "Planification pour un serveur non existant %s"
 
-#. Queue status "download"
-#. Post processing pick list
-#. Config->RSS button "download item"
+#. Queue status "download" - Post processing pick list - Config->RSS button
+#. "download item"
 #: sabnzbd/skintext.py
 msgid "Download"
 msgstr "Télécharger"
@@ -1819,14 +1806,12 @@ msgstr "Télécharger"
 msgid "Join files"
 msgstr "Concaténer"
 
-#. PP Source of the NZB (path or URL)
-#. Where to find the SABnzbd sourcecode
+#. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
 msgid "Source"
 msgstr "Source"
 
-#. PP Distribution over servers
-#. Main menu item
+#. PP Distribution over servers - Main menu item
 #: sabnzbd/skintext.py
 msgid "Servers"
 msgstr "Serveurs"
@@ -1990,8 +1975,7 @@ msgstr "Mettre en pause les tâches ayant une catégorie"
 msgid "Resume jobs with category"
 msgstr "Reprendre les tâches ayant une catégorie"
 
-#. Prowl priority
-#. Three way switch for duplicates
+#. Prowl priority - Three way switch for duplicates
 #: sabnzbd/skintext.py
 msgid "Off"
 msgstr "Désactivé"
@@ -2006,14 +1990,12 @@ msgstr "Très basse"
 msgid "Moderate"
 msgstr "Modéré"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Normal"
 msgstr "Normale"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "High"
 msgstr "Haute"
@@ -2023,8 +2005,7 @@ msgstr "Haute"
 msgid "Emergency"
 msgstr "Urgence"
 
-#. Prowl priority
-#. Priority pick list
+#. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Low"
 msgstr "Basse"
@@ -2161,8 +2142,7 @@ msgstr "Total"
 msgid "on"
 msgstr "oui"
 
-#. Config: startup parameters of SABnzbd
-#. Notification Script settings
+#. Config: startup parameters of SABnzbd - Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Parameters"
 msgstr "Paramètres"
@@ -2268,8 +2248,7 @@ msgstr "Accueil"
 msgid "Config"
 msgstr "Configuration"
 
-#. Main menu item
-#. History table header
+#. Main menu item - History table header
 #: sabnzbd/skintext.py
 msgid "Status"
 msgstr "Statut"
@@ -2378,8 +2357,7 @@ msgstr "Une nouvelle version %s est disponible"
 msgid "Are you sure you want to shutdown SABnzbd?"
 msgstr "Etes-vous sûr de vouloir arrêter SABnzbd ?"
 
-#. Add NZB to queue (button)
-#. Add NZB to queue (header)
+#. Add NZB to queue (button) - Add NZB to queue (header)
 #: sabnzbd/skintext.py
 msgid "Add"
 msgstr "Ajouter"
@@ -2479,14 +2457,12 @@ msgstr "Arrêter SABnzbd"
 msgid "Speed Limit"
 msgstr "Vitesse limite"
 
-#. Queue page table column header
-#. Config->RSS table column header
+#. Queue page table column header - Config->RSS table column header
 #: sabnzbd/skintext.py
 msgid "Order"
 msgstr "Ordre"
 
-#. Queue page table column header
-#. Job details page
+#. Queue page table column header - Job details page
 #: sabnzbd/skintext.py
 msgid "Name"
 msgstr "Nom"
@@ -2600,8 +2576,7 @@ msgstr "Afficher les échoués"
 msgid "Show All"
 msgstr "Afficher Tout"
 
-#. History table header
-#. Size of the download quota
+#. History table header - Size of the download quota
 #: sabnzbd/skintext.py
 msgid "Size"
 msgstr "Taille"
@@ -2705,8 +2680,7 @@ msgstr "+ Info"
 msgid "+ Debug"
 msgstr "+ Debug"
 
-#. Status page tab header
-#. Server: amount of connections
+#. Status page tab header - Server: amount of connections
 #: sabnzbd/skintext.py
 msgid "Connections"
 msgstr "Connections"
@@ -2741,8 +2715,8 @@ msgstr "Collection de fichiers"
 msgid "When"
 msgstr "Quand"
 
-#. Status page, table column header, type of message
-#. Config->RSS table column header
+#. Status page, table column header, type of message - Config->RSS table
+#. column header
 #: sabnzbd/skintext.py
 msgid "Type"
 msgstr "Type"
@@ -3898,8 +3872,7 @@ msgstr "Adresse IP la plus rapide, IPv6 de préférence"
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
 msgstr "Utile si un serveur de news a plus d'une adresse IPv4/IPv6"
 
-#. Caption
-#. Button: Add server
+#. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"
 msgstr "Ajouter un serveur"
@@ -3994,8 +3967,7 @@ msgstr "Activer"
 msgid "Remove Server"
 msgstr "Supprimer le serveur"
 
-#. Button: Test server
-#. Wizard step
+#. Button: Test server - Wizard step
 #: sabnzbd/skintext.py
 msgid "Test Server"
 msgstr "Tester le serveur"
@@ -4035,8 +4007,7 @@ msgstr "Ajouter une planification"
 msgid "Frequency"
 msgstr "Fréquence"
 
-#. Config->Scheduling
-#. Job details page, section header
+#. Config->Scheduling - Job details page, section header
 #: sabnzbd/skintext.py
 msgid "Action"
 msgstr "Action"

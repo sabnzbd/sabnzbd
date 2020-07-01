@@ -1,0 +1,24 @@
+[main]
+host = https://www.transifex.com
+
+[sabnzbd-translations.po-main-sabnzbd-pot--develop]
+file_filter = po/main/<lang>.po
+minimum_perc = 0
+source_file = po/main/SABnzbd.pot
+source_lang = en
+type = PO
+
+[sabnzbd-translations.po-email-sabemail-pot--develop]
+file_filter = po/email/<lang>.po
+minimum_perc = 0
+source_file = po/email/SABemail.pot
+source_lang = en
+type = PO
+
+[sabnzbd-translations.po-nsis-sabnsis-pot--develop]
+file_filter = po/nsis/<lang>.po
+minimum_perc = 0
+source_file = po/nsis/SABnsis.pot
+source_lang = en
+type = PO
+
