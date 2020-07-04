@@ -2,7 +2,7 @@ sabyenc3
 cheetah3
 cryptography
 pyopenssl
-feedparser
+feedparser<6.0.0
 configobj
 cherrypy
 portend
