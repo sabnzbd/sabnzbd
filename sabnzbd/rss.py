@@ -26,7 +26,7 @@ import datetime
 import threading
 
 import sabnzbd
-from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, NORMAL_PRIORITY, DUP_PRIORITY
+from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, DUP_PRIORITY
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -685,7 +685,7 @@ def _HandleLink(
     script,
     download,
     star,
-    priority=NORMAL_PRIORITY,
+    priority=DEFAULT_PRIORITY,
     rule=0,
 ):
     """ Process one link """

@@ -569,7 +569,7 @@ class NzbObject(TryList):
         futuretype=False,
         cat=None,
         url=None,
-        priority=NORMAL_PRIORITY,
+        priority=DEFAULT_PRIORITY,
         nzbname=None,
         status=Status.QUEUED,
         nzo_info=None,

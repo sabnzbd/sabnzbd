@@ -38,6 +38,7 @@ from sabnzbd.constants import (
     QUEUE_VERSION,
     FUTURE_Q_FOLDER,
     JOB_ADMIN,
+    DEFAULT_PRIORITY,
     LOW_PRIORITY,
     NORMAL_PRIORITY,
     HIGH_PRIORITY,
@@ -240,7 +241,7 @@ class NzbQueue:
     def set_top_only(self, value):
         self.__top_only = value
 
-    def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=NORMAL_PRIORITY, nzbname=None):
+    def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=DEFAULT_PRIORITY, nzbname=None):
         """ Create and return a placeholder nzo object """
         logging.debug("Creating placeholder NZO")
         future_nzo = NzbObject(
