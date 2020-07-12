@@ -105,7 +105,7 @@ import sabnzbd.nzbstuff as nzbstuff
 import sabnzbd.directunpacker as directunpacker
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
-    NORMAL_PRIORITY,
+    DEFAULT_PRIORITY,
     VALID_ARCHIVES,
     REPAIR_REQUEST,
     QUEUE_FILE_NAME,
@@ -646,7 +646,7 @@ def add_nzbfile(
     script=None,
     cat=None,
     catdir=None,
-    priority=NORMAL_PRIORITY,
+    priority=DEFAULT_PRIORITY,
     nzbname=None,
     nzo_info=None,
     url=None,

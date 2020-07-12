@@ -24,6 +24,7 @@ import datetime
 from sabnzbd import lang
 from sabnzbd import misc
 from sabnzbd.config import ConfigCat
+from sabnzbd.constants import HIGH_PRIORITY, TOP_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY
 from tests.testhelper import *
 
 
@@ -66,13 +67,26 @@ class TestMisc:
         assert misc.cmp(1, 1) == 0
 
     def test_cat_to_opts(self):
-        # Need to create the Default category
+        # Need to create the Default category, as we would in normal instance
         # Otherwise it will try to save the config
-        ConfigCat("*", {})
-        assert ("*", "", "Default", -100) == misc.cat_to_opts("*")
-        assert ("*", "", "Default", -100) == misc.cat_to_opts("Nonsense")
-        assert ("*", 1, "Default", -100) == misc.cat_to_opts("*", pp=1)
-        assert ("*", 1, "test.py", -100) == misc.cat_to_opts("*", pp=1, script="test.py")
+        ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+
+        assert ("*", 3, "None", NORMAL_PRIORITY) == misc.cat_to_opts("*")
+        assert ("*", 3, "None", NORMAL_PRIORITY) == misc.cat_to_opts("Nonsense")
+        assert ("*", 1, "None", NORMAL_PRIORITY) == misc.cat_to_opts("*", pp=1)
+        assert ("*", 1, "test.py", NORMAL_PRIORITY) == misc.cat_to_opts("*", pp=1, script="test.py")
+
+        ConfigCat("movies", {"priority": HIGH_PRIORITY, "script": "test.py"})
+        assert ("movies", 3, "test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies")
+        assert ("movies", 1, "test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies", pp=1)
+        assert ("movies", 1, "not_test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies", pp=1, script="not_test.py")
+        assert ("movies", 3, "test.py", TOP_PRIORITY) == misc.cat_to_opts("movies", priority=TOP_PRIORITY)
+
+        # If the category has DEFAULT_PRIORITY, it should use the priority of the *-category (NORMAL_PRIORITY)
+        # If the script-name is Default for a category, it should use the script of the *-category (None)
+        ConfigCat("software", {"priority": DEFAULT_PRIORITY, "script": "Default"})
+        assert ("software", 3, "None", NORMAL_PRIORITY) == misc.cat_to_opts("software")
+        assert ("software", 3, "None", TOP_PRIORITY) == misc.cat_to_opts("software", priority=TOP_PRIORITY)
 
     def test_wildcard_to_re(self):
         assert "\\\\\\^\\$\\.\\[" == misc.wildcard_to_re("\\^$.[")
