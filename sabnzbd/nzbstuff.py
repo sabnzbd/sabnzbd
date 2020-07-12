@@ -78,6 +78,7 @@ from sabnzbd.filesystem import (
     remove_file,
     get_filepath,
     globber,
+    make_script_path,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
@@ -789,8 +790,8 @@ class NzbObject(TryList):
         self.set_priority(priority)
         self.repair, self.unpack, self.delete = pp_to_opts(pp_tmp)
 
-        # Run user pre-queue script if needed
-        if not reuse and cfg.pre_script():
+        # Run user pre-queue script if set and valid
+        if not reuse and make_script_path(cfg.pre_script()):
             # Call the script
             accept, name, pp, cat_pp, script_pp, priority, group = sabnzbd.newsunpack.pre_queue(self, pp, cat)
 

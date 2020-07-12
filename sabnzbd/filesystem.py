@@ -457,17 +457,17 @@ def fix_unix_encoding(folder):
 
 def make_script_path(script):
     """ Return full script path, if any valid script exists, else None """
-    s_path = None
-    path = sabnzbd.cfg.script_dir.get_path()
-    if path and script:
+    script_path = None
+    script_dir = sabnzbd.cfg.script_dir.get_path()
+    if script_dir and script:
         if script.lower() not in ("none", "default"):
-            s_path = os.path.join(path, script)
-            if not os.path.exists(s_path):
-                s_path = None
+            script_path = os.path.join(script_dir, script)
+            if not os.path.exists(script_path):
+                script_path = None
             else:
                 # Paths to scripts should not be long-path notation
-                s_path = clip_path(s_path)
-    return s_path
+                script_path = clip_path(script_path)
+    return script_path
 
 
 def get_admin_path(name, future):
