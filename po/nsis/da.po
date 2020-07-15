@@ -1,21 +1,21 @@
-# Danish translation for sabnzbd
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
-# This file is distributed under the same license as the sabnzbd package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
-#
+# SABnzbd Translation Template file NSIS
+# Copyright 2011-2020 The SABnzbd-Team
+#   team@sabnzbd.org
+# 
+# Translators:
+# Safihre <safihre@sabnzbd.org>, 2020
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: sabnzbd\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-07 19:13+0000\n"
-"PO-Revision-Date: 2018-11-27 23:30+0000\n"
-"Last-Translator: scootergrisen <scootergrisen@gmail.com>\n"
-"Language-Team: Danish <da@li.org>\n"
+"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"PO-Revision-Date: 2020-06-27 15:56+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Language-Team: Danish (https://www.transifex.com/sabnzbd/teams/111101/da/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:51+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"Language: da\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
@@ -72,35 +72,9 @@ msgid ""
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
 "Du kan ikke overskrive en eksisterende installation. \\n\\nKlik `OK` for at "
-"fjerne den tidligere version eller `Annuller` for at annullere opgraderingen."
+"fjerne den tidligere version eller `Annuller` for at annullere "
+"opgraderingen."
 
 #: NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Dine indstillinger og data vil blive bevaret."
-
-#~ msgid "Go to the SABnzbd Wiki"
-#~ msgstr "Gå til SABnzbd Wiki"
-
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-#~ msgstr ""
-#~ "                  >>>> ADVARSEL <<<<\\r\\n\\r\\nVenligst, se først "
-#~ "produktbemærkningerne eller gå til http://wiki.sabnzbd.org/introducing-0-7-0 "
-#~ "!"
-
-#~ msgid ""
-#~ "This system requires the Microsoft runtime library VC90 to be installed "
-#~ "first. Do you want to do that now?"
-#~ msgstr ""
-#~ "Systemet kræver at Microsoft runtime-biblioteket VC90 skal installeres "
-#~ "først. Vil du gøre det nu?"
-
-#~ msgid "Cannot install without runtime library, retry?"
-#~ msgstr "Kan ikke installere uden runtime-bibliotek, prøv igen?"
-
-#~ msgid "Download error, retry?"
-#~ msgstr "Fejl ved download, prøv igen?"
-
-#~ msgid "Downloading Microsoft runtime installer..."
-#~ msgstr "Downloader Microsoft runtime-installationsfil..."

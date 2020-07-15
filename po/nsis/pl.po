@@ -1,21 +1,21 @@
-# Polish translation for sabnzbd
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
-# This file is distributed under the same license as the sabnzbd package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
-#
+# SABnzbd Translation Template file NSIS
+# Copyright 2011-2020 The SABnzbd-Team
+#   team@sabnzbd.org
+# 
+# Translators:
+# Safihre <safihre@sabnzbd.org>, 2020
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: sabnzbd\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-07 19:13+0000\n"
-"PO-Revision-Date: 2013-05-05 14:50+0000\n"
-"Last-Translator: Tomasz 'Zen' Napierala <tomasz@napierala.org>\n"
-"Language-Team: Polish <pl@li.org>\n"
+"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"PO-Revision-Date: 2020-06-27 15:56+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Language-Team: Polish (https://www.transifex.com/sabnzbd/teams/111101/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:51+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"Language: pl\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
@@ -77,29 +77,3 @@ msgstr ""
 #: NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Twoje ustawienia i dane zostaną zachowane."
-
-#~ msgid ""
-#~ "This system requires the Microsoft runtime library VC90 to be installed "
-#~ "first. Do you want to do that now?"
-#~ msgstr ""
-#~ "Ten system wymaga najpierw zainstalowania bibliotek Microsoft VC90. Czy "
-#~ "chcesz wykonać teraz instalację?"
-
-#~ msgid "Cannot install without runtime library, retry?"
-#~ msgstr "Nie można wykonać instalacji bez bibliotek, spróbować ponownie?"
-
-#~ msgid "Download error, retry?"
-#~ msgstr "Problem z pobieraniem, spróbować ponownie?"
-
-#~ msgid "Downloading Microsoft runtime installer..."
-#~ msgstr "Pobieranie instalatora bibliotek Microsoft..."
-
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-#~ msgstr ""
-#~ "                  >>>> UWAGA <<<<\\r\\n\\r\\nNajpierw przeczytaj informacje "
-#~ "o wydaniu lub odwiedź http://wiki.sabnzbd.org/introducing-0-7-0 !"
-
-#~ msgid "Go to the SABnzbd Wiki"
-#~ msgstr "Idź do wiki SABnzbd"

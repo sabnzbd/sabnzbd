@@ -1,21 +1,21 @@
-# Romanian translation for sabnzbd
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
-# This file is distributed under the same license as the sabnzbd package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
-#
+# SABnzbd Translation Template file NSIS
+# Copyright 2011-2020 The SABnzbd-Team
+#   team@sabnzbd.org
+# 
+# Translators:
+# Safihre <safihre@sabnzbd.org>, 2020
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: sabnzbd\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2020-05-07 19:13+0000\n"
-"PO-Revision-Date: 2013-05-05 14:50+0000\n"
-"Last-Translator: nicusor <Unknown>\n"
-"Language-Team: Romanian <ro@li.org>\n"
+"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"PO-Revision-Date: 2020-06-27 15:56+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Language-Team: Romanian (https://www.transifex.com/sabnzbd/teams/111101/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2020-05-08 04:51+0000\n"
-"X-Generator: Launchpad (build fbdff7602bd10fb883bf7e2ddcc7fd5a16f60398)\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
@@ -71,36 +71,9 @@ msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
-"Nu puteți suprascrie instalarea existentă. \\n\\nClick `OK` pentru a elimina "
-"versiunea anterioară sau `Anulare` pentru a anula actualizarea."
+"Nu puteți suprascrie instalarea existentă. \\n\\nClick `OK` pentru a elimina"
+" versiunea anterioară sau `Anulare` pentru a anula actualizarea."
 
 #: NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Setările şi informaţiile vor fi salvate."
-
-#~ msgid "Download error, retry?"
-#~ msgstr "Eroare descărcare, încerc din nou?"
-
-#~ msgid ""
-#~ "This system requires the Microsoft runtime library VC90 to be installed "
-#~ "first. Do you want to do that now?"
-#~ msgstr ""
-#~ "Acest sistem necesită librăria Microsoft VC90 instalată. Dortiți să faceți "
-#~ "asta acum ?"
-
-#~ msgid "Cannot install without runtime library, retry?"
-#~ msgstr "Nu pot instala fără rutină librărie, încerc din nou?"
-
-#~ msgid "Downloading Microsoft runtime installer..."
-#~ msgstr "Descărcare rutină instalare Microsoft..."
-
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-#~ msgstr ""
-#~ "                  >>>> ATENŢIE <<<<\\r\\n\\r\\nVă rugăm, să verificaţi mai "
-#~ "întâi notele de publicare sau să vizitaţi "
-#~ "http://wiki.sabnzbd.org/introducing-0-7-0 !"
-
-#~ msgid "Go to the SABnzbd Wiki"
-#~ msgstr "Dute la Wiki SABnzbd"
