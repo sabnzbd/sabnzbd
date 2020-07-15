@@ -767,7 +767,8 @@ def parring(nzo, workdir):
 
         # If no luck with SFV, do RAR-check or RAR-rename
         if sfv_check_result is None and cfg.enable_unrar():
-            _, _, rars, _, _ = build_filelists(workdir)
+            # Check for RAR's with a sensible extension
+            _, _, rars, _, _ = build_filelists(workdir, check_rar=False)
             # If there's no RAR's, they might be super-obfuscated
             if not rars:
                 # Returns number of renamed RAR's
