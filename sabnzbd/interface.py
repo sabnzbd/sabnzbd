@@ -2704,6 +2704,7 @@ LIST_NCENTER = (
     "ncenter_cats",
     "ncenter_prio_startup",
     "ncenter_prio_download",
+    "ncenter_prio_pause_resume",
     "ncenter_prio_pp",
     "ncenter_prio_pp",
     "ncenter_prio_complete",
