@@ -286,7 +286,7 @@ class Downloader(Thread):
         # Do not notify when SABnzbd is still starting
         if self.paused and sabnzbd.WEB_DIR:
             logging.info("Resuming")
-            notifier.send_notification("SABnzbd", T("Resuming"), "download")
+            notifier.send_notification("SABnzbd", T("Resuming"), "pause_resume")
         self.paused = False
 
     @NzbQueueLocker
@@ -295,7 +295,7 @@ class Downloader(Thread):
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
-            notifier.send_notification("SABnzbd", T("Paused"), "download")
+            notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
             if self.is_paused():
                 BPSMeter.do.reset()
             if cfg.autodisconnect():

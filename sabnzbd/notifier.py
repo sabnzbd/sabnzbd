@@ -56,6 +56,7 @@ except:
 TT = lambda x: x
 NOTIFICATION = {
     "startup": TT("Startup/Shutdown"),  #: Notification
+    "pause_resume": TT("Pause") + "/" + TT("Resume"),  #: Notification
     "download": TT("Added NZB"),  #: Notification
     "pp": TT("Post-processing started"),  # : Notification
     "complete": TT("Job finished"),  #: Notification

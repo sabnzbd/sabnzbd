@@ -2705,6 +2705,7 @@ LIST_NCENTER = (
     "ncenter_prio_startup",
     "ncenter_prio_download",
     "ncenter_prio_pp",
+    "ncenter_prio_pp",
     "ncenter_prio_complete",
     "ncenter_prio_failed",
     "ncenter_prio_disk_full",
@@ -2719,6 +2720,7 @@ LIST_ACENTER = (
     "acenter_cats",
     "acenter_prio_startup",
     "acenter_prio_download",
+    "acenter_prio_pause_resume",
     "acenter_prio_pp",
     "acenter_prio_complete",
     "acenter_prio_failed",
@@ -2734,6 +2736,7 @@ LIST_NTFOSD = (
     "ntfosd_cats",
     "ntfosd_prio_startup",
     "ntfosd_prio_download",
+    "ntfosd_prio_pause_resume",
     "ntfosd_prio_pp",
     "ntfosd_prio_complete",
     "ntfosd_prio_failed",
@@ -2750,6 +2753,7 @@ LIST_PROWL = (
     "prowl_apikey",
     "prowl_prio_startup",
     "prowl_prio_download",
+    "prowl_prio_pause_resume",
     "prowl_prio_pp",
     "prowl_prio_complete",
     "prowl_prio_failed",
@@ -2768,6 +2772,7 @@ LIST_PUSHOVER = (
     "pushover_device",
     "pushover_prio_startup",
     "pushover_prio_download",
+    "pushover_prio_pause_resume",
     "pushover_prio_pp",
     "pushover_prio_complete",
     "pushover_prio_failed",
@@ -2787,6 +2792,7 @@ LIST_PUSHBULLET = (
     "pushbullet_device",
     "pushbullet_prio_startup",
     "pushbullet_prio_download",
+    "pushbullet_prio_pause_resume",
     "pushbullet_prio_pp",
     "pushbullet_prio_complete",
     "pushbullet_prio_failed",
@@ -2804,6 +2810,7 @@ LIST_NSCRIPT = (
     "nscript_parameters",
     "nscript_prio_startup",
     "nscript_prio_download",
+    "nscript_prio_pause_resume",
     "nscript_prio_pp",
     "nscript_prio_complete",
     "nscript_prio_failed",
@@ -2847,8 +2854,7 @@ class ConfigNotify:
             conf[kw] = config.get_config("ntfosd", kw)()
         for kw in LIST_NSCRIPT:
             conf[kw] = config.get_config("nscript", kw)()
-        conf["notify_keys"] = sabnzbd.constants.NOTIFY_KEYS
-        conf["notify_texts"] = sabnzbd.notifier.NOTIFICATION
+        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),
