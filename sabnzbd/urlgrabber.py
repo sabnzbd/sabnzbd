@@ -273,6 +273,7 @@ class URLGrabber(Thread):
                         nzo_info=nzo_info,
                         url=future_nzo.url,
                         keep=False,
+                        password=future_nzo.password,
                         nzo_id=future_nzo.nzo_id,
                     )
                     # -2==Error/retry, -1==Error, 0==OK, 1==Empty

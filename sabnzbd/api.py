@@ -366,6 +366,7 @@ def _api_addfile(name, output, kwargs):
             cat=cat,
             priority=kwargs.get("priority"),
             nzbname=kwargs.get("nzbname"),
+            password=kwargs.get("password"),
         )
         return report(output, keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
     else:
@@ -410,10 +411,18 @@ def _api_addlocalfile(name, output, kwargs):
                 cat = cat_convert(xcat)
             priority = kwargs.get("priority")
             nzbname = kwargs.get("nzbname")
+            password = kwargs.get("password")
 
             if get_ext(name) in VALID_ARCHIVES + VALID_NZB_FILES:
                 res, nzo_ids = sabnzbd.add_nzbfile(
-                    name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname
+                    name,
+                    pp=pp,
+                    script=script,
+                    cat=cat,
+                    priority=priority,
+                    keep=True,
+                    nzbname=nzbname,
+                    password=password,
                 )
                 return report(output, keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
             else:
@@ -561,9 +570,10 @@ def _api_addurl(name, output, kwargs):
     cat = kwargs.get("cat")
     priority = kwargs.get("priority")
     nzbname = kwargs.get("nzbname", "")
+    password = kwargs.get("password", "")
 
     if name:
-        nzo_id = sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
+        nzo_id = sabnzbd.add_url(name, pp, script, cat, priority, nzbname, password)
         # Reporting a list of NZO's, for compatibility with other add-methods
         return report(output, keyword="", data={"status": True, "nzo_ids": [nzo_id]})
     else:

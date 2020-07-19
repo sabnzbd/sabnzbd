@@ -668,6 +668,7 @@ function ViewModel() {
             mode: "addurl",
             name: $(form.nzbURL).val(),
             nzbname: $('#nzbname').val(),
+            password: $('#password').val(),
             script: $('#modal-add-nzb select[name="Post-processing"]').val(),
             priority: $('#modal-add-nzb select[name="Priority"]').val(),
             pp: $('#modal-add-nzb select[name="Processing"]').val()
@@ -707,6 +708,7 @@ function ViewModel() {
         data.append("name", file);
         data.append("mode", "addfile");
         data.append("nzbname", $('#nzbname').val());
+        data.append("password", $('#password').val());
         data.append("script", $('#modal-add-nzb select[name="Post-processing"]').val())
         data.append("priority", $('#modal-add-nzb select[name="Priority"]').val())
         data.append("apikey", apiKey);
