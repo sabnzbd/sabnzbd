@@ -1032,6 +1032,19 @@ msgstr "Wiki"
 msgid "Startup/Shutdown"
 msgstr "Uruchomienie/Wyłączenie"
 
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "Wstrzymaj"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "Wznów"
+
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
@@ -1283,21 +1296,9 @@ msgstr "Wyczyść historię"
 msgid "Limit Speed"
 msgstr "Ogranicz prędkość"
 
-#. Pause downloading - Four way switch for duplicates - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Pause"
-msgstr "Wstrzymaj"
-
 #: sabnzbd/osxmenu.py
 msgid "min."
 msgstr "min."
-
-#. Resume downloading - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Resume"
-msgstr "Wznów"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py

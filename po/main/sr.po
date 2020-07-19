@@ -1027,6 +1027,19 @@ msgstr "Вики"
 msgid "Startup/Shutdown"
 msgstr "Покретање/Гашење"
 
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "Пауза"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "Настави"
+
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
@@ -1278,21 +1291,9 @@ msgstr "Очисти хронологију"
 msgid "Limit Speed"
 msgstr "Ограничење брзине"
 
-#. Pause downloading - Four way switch for duplicates - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Pause"
-msgstr "Пауза"
-
 #: sabnzbd/osxmenu.py
 msgid "min."
 msgstr "мин."
-
-#. Resume downloading - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Resume"
-msgstr "Настави"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
