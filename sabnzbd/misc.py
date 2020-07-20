@@ -467,7 +467,7 @@ def from_units(val):
     """ Convert K/M/G/T/P notation to float """
     val = str(val).strip().upper()
     if val == "-1":
-        return val
+        return float(val)
     m = RE_UNITS.search(val)
     if m:
         if m.group(2):

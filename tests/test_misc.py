@@ -105,6 +105,7 @@ class TestMisc:
         assert (3010194, True) == misc.convert_version("3.1.1RC14")
 
     def test_from_units(self):
+        assert -1.0 == misc.from_units("-1")
         assert 100.0 == misc.from_units("100")
         assert 1024.0 == misc.from_units("1KB")
         assert 1048576.0 == misc.from_units("1024KB")
