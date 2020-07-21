@@ -145,6 +145,7 @@ def find_file(dirname, filelength, hash16k):
                 return filepath
     return None
 
+
 def entropy(string):
     "Calculates the Shannon entropy of a string"
 
@@ -152,9 +153,10 @@ def entropy(string):
     prob = [float(string.count(c)) / len(string) for c in dict.fromkeys(list(string))]
 
     # calculate the entropy
-    entropy = - sum([p * math.log(p) / math.log(2.0) for p in prob])
+    entropy = -sum([p * math.log(p) / math.log(2.0) for p in prob])
 
     return entropy
+
 
 def is_probably_obfuscated(myinputfilename):
     # Returns boolean if filename is probably obfuscated
@@ -174,10 +176,10 @@ def is_probably_obfuscated(myinputfilename):
 
     capitals = sum(1 for c in filebasename if c.isupper())
     smallletters = sum(1 for c in filebasename if c.lower())
-    spacesdots = sum(1 for c in filebasename if c==" " or c==".")
+    spacesdots = sum(1 for c in filebasename if c == " " or c == ".")
     decimals = sum(1 for c in filebasename if c.isnumeric())
 
-    if capitals >= 2 and smallletters >= 2  and spacesdots >= 1 :
+    if capitals >= 2 and smallletters >= 2 and spacesdots >= 1:
         logging.debug("deobfus: capitals >= 2 and smallletters >= 2  and spacesdots >= 1")
         # useful signs in filebasename, so not obfuscated
         return False
@@ -202,14 +204,12 @@ def is_probably_obfuscated(myinputfilename):
         return False
 
     logging.debug("deobfus: Default ... not obfuscated")
-    return False    # default not obfuscated
-
+    return False  # default not obfuscated
 
 
 def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
-    dummyrun = kwargs.get('dummyrun', None) # do not really rename
+    dummyrun = kwargs.get("dummyrun", None)  # do not really rename
     # Run deofuscate
-
 
     # Search for par2 files
     matches = []
@@ -235,9 +235,9 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
 
     # No matches? Then we try to rename the largest file to the job-name
     if run_renamer:
-        #print_splitter()
+        # print_splitter()
         logging.debug("Trying to see if there are large files to rename")
-        #print_splitter()
+        # print_splitter()
 
         # If there are more larger files, we don't rename
         largest_file = None
@@ -246,7 +246,11 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
                 full_path = os.path.join(root, filename)
                 file_size = os.path.getsize(full_path)
                 # Do we count this file?
-                if is_probably_obfuscated(filename) and file_size > MIN_FILE_SIZE and os.path.splitext(filename)[1].lower() not in EXCLUDED_FILE_EXTS:
+                if (
+                    is_probably_obfuscated(filename)
+                    and file_size > MIN_FILE_SIZE
+                    and os.path.splitext(filename)[1].lower() not in EXCLUDED_FILE_EXTS
+                ):
                     # OK, rename
                     new_name = "%s%s" % (
                         os.path.join(workingdirectory, usefulname),
@@ -260,13 +264,12 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
                     for r in range(3):
                         try:
                             os.rename(full_path, new_name)
-                            logging.debug("Renaming done on run %s!", r+1)
+                            logging.debug("Renaming done on run %s!", r + 1)
                             break
                         except:
                             time.sleep(1)
     else:
-           logging.debug("No par2 files or large files found")
-
+        logging.debug("No par2 files or large files found")
 
 
 if __name__ == "__main__":

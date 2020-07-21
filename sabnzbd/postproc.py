@@ -517,9 +517,10 @@ def process_job(nzo):
                     all_ok = False
 
             if cfg.deobfuscate_final_result():
-                logging.debug("Running deobfuscate on final result for dir %s and job name %s", workdir_complete, nzo.final_name )
+                logging.debug(
+                    "Running deobfuscate on final result for dir %s and job name %s", workdir_complete, nzo.final_name
+                )
                 deobfuscate.deobfuscate(workdir_complete, nzo.final_name)
-
 
             # Run the user script
             script_path = make_script_path(script)
