@@ -21,21 +21,17 @@ Testing SABnzbd deobfuscate util
 
 from sabnzbd.utils.deobfuscate import *
 
-
 class TestItAll:
     def test_is_probably_obfuscated(self):
-        
+
         # obfuscated names
-        assert is_probably_obfuscated('599c1c9e2bdfb5114044bf25152b7eaa.mkv')
-        assert is_probably_obfuscated('/my/blabla/directory/stuff/599c1c9e2bdfb5114044bf25152b7eaa.mkv')
-        assert is_probably_obfuscated('/my/blabla/directory/stuff/afgm.avi')
-        
-        
+        assert is_probably_obfuscated("599c1c9e2bdfb5114044bf25152b7eaa.mkv")
+        assert is_probably_obfuscated("/my/blabla/directory/stuff/599c1c9e2bdfb5114044bf25152b7eaa.mkv")
+        assert is_probably_obfuscated("/my/blabla/directory/stuff/afgm.avi")
+
         # non-obfuscated names:
-        assert not is_probably_obfuscated('/my/blabla/directory/stuff/My Favorite Program S03E04.mkv')
-        assert not is_probably_obfuscated('/my/blabla/directory/stuff/Great Movie (2020).mkv')
+        assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Program S03E04.mkv")
+        assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Movie (2020).mkv")
 
     def test_blbla(self):
         assert True
-
-
