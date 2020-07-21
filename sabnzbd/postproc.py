@@ -86,6 +86,7 @@ import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.utils.rarvolinfo as rarvolinfo
 import sabnzbd.utils.checkdir
+import sabnzbd.utils.deobfuscate as deobfuscate
 
 MAX_FAST_JOB_COUNT = 3
 
@@ -514,6 +515,11 @@ def process_job(nzo):
                 if not ok:
                     nzo.set_unpack_info("Unpack", T("Failed to move files"))
                     all_ok = False
+
+            if cfg.deobfuscate_final_result():
+                logging.debug("Running deobfuscate on final result for dir %s and job name %s", workdir_complete, nzo.final_name )
+                deobfuscate.deobfuscate(workdir_complete, nzo.final_name)
+
 
             # Run the user script
             script_path = make_script_path(script)
