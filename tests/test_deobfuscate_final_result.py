@@ -21,6 +21,7 @@ Testing SABnzbd deobfuscate util
 
 from sabnzbd.utils.deobfuscate import *
 
+
 class TestItAll:
     def test_is_probably_obfuscated(self):
 
@@ -33,5 +34,6 @@ class TestItAll:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Program S03E04.mkv")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Movie (2020).mkv")
 
-    def test_blbla(self):
+    def test_blabla(self):
+        # dummy
         assert True
