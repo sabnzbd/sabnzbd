@@ -2106,21 +2106,25 @@ def scan_password(name):
         # Is it maybe in 'name / password' notation?
         if slash == name.find(" / ") + 1:
             # Remove the extra space after name and before password
-            return name[: slash - 1].strip(". "), name[slash + 2 :]
-        return name[:slash].strip(". "), name[slash + 1 :]
+            return name[: slash - 1].strip(". "), name[slash + 2:]
+        return name[:slash].strip(". "), name[slash + 1:]
 
     # Look for "name password=password"
     pw = name.find("password=")
     if pw >= 0:
-        return name[:pw].strip(". "), name[pw + 9 :]
+        return name[:pw].strip(". "), name[pw + 9:]
 
     # Look for name{{password}}
-    if braces < len(name) and name.endswith("}}"):
-        return name[:braces].strip(". "), name[braces + 2 : len(name) - 2]
+    if braces < len(name) and "}}" in name:
+        closing_braces = name.find("}}")
+        if closing_braces < 0:
+            closing_braces = len(name)
+
+        return name[:braces].strip(". "), name[braces + 2: closing_braces]
 
     # Look again for name/password
     if slash >= 0:
-        return name[:slash].strip(". "), name[slash + 1 :]
+        return name[:slash].strip(". "), name[slash + 1:]
 
     # No password found
     return name, None
