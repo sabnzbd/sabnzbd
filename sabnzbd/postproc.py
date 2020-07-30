@@ -519,7 +519,9 @@ def process_job(nzo):
             if cfg.improve_final_filenames():
                 # Improve the filenames
                 logging.debug(
-                    "Running improve_final_filenames on final result for dir %s and job name %s", workdir_complete, nzo.final_name
+                    "Running improve_final_filenames on final result for dir %s and job name %s",
+                    workdir_complete,
+                    nzo.final_name,
                 )
                 deobfuscate.deobfuscate(workdir_complete, nzo.final_name)
 
