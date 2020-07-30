@@ -58,7 +58,7 @@ from sabnzbd.filesystem import get_unique_filename
 
 # Files to exclude and minimal file size for renaming
 EXCLUDED_FILE_EXTS = (".vob", ".rar", ".par2")
-MIN_FILE_SIZE = 40 * 1024 * 1024
+MIN_FILE_SIZE = 10 * 1024 * 1024
 
 # see: http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
 STRUCT_PACKET_HEADER = struct.Struct(
@@ -113,17 +113,17 @@ def decode_par2(parfile):
 
             # file already exists, skip it
             if os.path.exists(target_path):
-                print("File already exists: %s" % target_name)
+                logging.debug("File already exists: %s" % target_name)
                 continue
 
             # find and rename file
             src_path = find_file(dirname, filelength, hash16k)
             if src_path is not None:
                 os.rename(src_path, target_path)
-                print("Renamed file from %s to %s" % (os.path.basename(src_path), target_name))
+                logging.debug("Renamed file from %s to %s" % (os.path.basename(src_path), target_name))
                 result = True
             else:
-                print("No match found for: %s" % target_name)
+                logging.debug("No match found for: %s" % target_name)
     return result
 
 
@@ -166,7 +166,7 @@ def is_probably_obfuscated(myinputfilename):
     path, filename = os.path.split(myinputfilename)
     filebasename, fileextension = os.path.splitext(filename)  # note: fileextension contains a leading dot!
 
-    logging.debug("deobfus: handling %s", myinputfilename)
+    logging.debug("is_probably_obfuscated: handling %s", myinputfilename)
 
     # ...blabla.H.264/b082fa0beaa644d3aa01045d5b8d0b36.mkv is certainly obfuscated
     if re.findall("^[a-f0-9]{32}$", filebasename):
@@ -191,7 +191,7 @@ def is_probably_obfuscated(myinputfilename):
 
     if decimals > 3 and spacesdots > 1:
         # useful signs in filebasename, so not obfuscated
-        loggin.debug("deobfus: decimals > 3 and spacesdots > 1")
+        logging.debug("deobfus: decimals > 3 and spacesdots > 1")
         return False
 
     # little entropy in the filebasename is a sign of useless names
@@ -208,8 +208,11 @@ def is_probably_obfuscated(myinputfilename):
 
 
 def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
+    # in workingdirectory, check all filenames, and if useful, rename based on usefulname
     dummyrun = kwargs.get("dummyrun", None)  # do not really rename
     # Run deofuscate
+
+    print("SANDER!!!", workingdirectory, usefulname)
 
     # Search for par2 files
     matches = []
@@ -217,6 +220,7 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
         for filename in fnmatch.filter(filenames, "*.par2"):
             matches.append(os.path.join(root, filename))
             print("Found file:", os.path.join(root, filename))
+    logging.debug("SJ par2 part: par2 files matches is %s", matches)
 
     # Found any par2 files we can use?
     run_renamer = True
@@ -226,31 +230,29 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
     # Run par2 from SABnzbd on them
     for par2_file in matches:
         # Analyse data and analyse result
-        print_splitter()
+        # print_splitter()
+        logging.debug("deobfus par2: handling %s", par2_file)
         if decode_par2(par2_file):
-            print("Recursive repair/verify finished.")
+            logging.debug("Recursive repair/verify finished.")
             run_renamer = False
         else:
-            print("Recursive repair/verify did not complete!")
+            logging.debug("Recursive repair/verify did not complete!")
 
     # No matches? Then we try to rename the largest file to the job-name
     if run_renamer:
-        # print_splitter()
         logging.debug("Trying to see if there are large files to rename")
-        # print_splitter()
-
-        # If there are more larger files, we don't rename
-        largest_file = None
         for root, dirnames, filenames in os.walk(workingdirectory):
             for filename in filenames:
+                logging.debug("deob: inspecting %s", filename)
                 full_path = os.path.join(root, filename)
                 file_size = os.path.getsize(full_path)
-                # Do we count this file?
+                # Do we count this file? Criteria: obfuscated, big, OK extension
                 if (
                     is_probably_obfuscated(filename)
                     and file_size > MIN_FILE_SIZE
                     and os.path.splitext(filename)[1].lower() not in EXCLUDED_FILE_EXTS
                 ):
+                    logging.debug("Yes, to be renamed %s", filename)
                     # OK, rename
                     new_name = "%s%s" % (
                         os.path.join(workingdirectory, usefulname),

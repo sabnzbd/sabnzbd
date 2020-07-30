@@ -516,9 +516,10 @@ def process_job(nzo):
                     nzo.set_unpack_info("Unpack", T("Failed to move files"))
                     all_ok = False
 
-            if cfg.deobfuscate_final_result():
+            if cfg.improve_final_filenames():
+                # Improve the filenames
                 logging.debug(
-                    "Running deobfuscate on final result for dir %s and job name %s", workdir_complete, nzo.final_name
+                    "Running improve_final_filenames on final result for dir %s and job name %s", workdir_complete, nzo.final_name
                 )
                 deobfuscate.deobfuscate(workdir_complete, nzo.final_name)
 

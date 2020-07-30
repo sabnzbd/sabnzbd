@@ -20,6 +20,9 @@ Testing SABnzbd deobfuscate util
 """
 
 from sabnzbd.utils.deobfuscate import *
+import os
+import shutil
+import random
 
 
 class TestItAll:
@@ -34,6 +37,26 @@ class TestItAll:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Program S03E04.mkv")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Movie (2020).mkv")
 
-    def test_blabla(self):
-        # dummy
-        assert True
+    def test_rename(self):
+        # Create directory (with random name)
+        dirname = "data/testdir" + str(random.randint(10000, 99999))
+        os.mkdir(dirname)
+
+        # Create a big enough file with a non-useful filename
+        output_file = dirname + "/599c1c9e2bdfb5114044bf25152b7eaa.mkv"
+        with open(output_file, "wb") as myfile:
+            # must be above MIN_SIZE, so ... 15MB
+            myfile.truncate(15 * 1024 * 1024)
+        # Check it exists now:
+        assert os.path.isfile(output_file)
+
+        # and now unleash the magic on that directory:
+        jobname = "My Important Download 2020"
+        # deobfuscate(os.path.abspath(dirname), jobname)
+        deobfuscate(dirname, jobname)
+        # Check if file was renamed
+        assert not os.path.isfile(output_file)
+        assert os.path.isfile(dirname + "/" + jobname + ".mkv")
+
+        # Done. Remove non-empty directory
+        shutil.rmtree(dirname)
