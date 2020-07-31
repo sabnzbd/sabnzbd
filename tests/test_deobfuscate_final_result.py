@@ -39,7 +39,7 @@ class TestItAll:
 
     def test_rename(self):
         # Create directory (with random name)
-        dirname = "data/testdir" + str(random.randint(10000, 99999))
+        dirname = "testdir" + str(random.randint(10000, 99999))
         os.mkdir(dirname)
 
         # Create a big enough file with a non-useful filename
