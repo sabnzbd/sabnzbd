@@ -104,8 +104,7 @@ TRYLIST_LOCK = threading.Lock()
 
 
 class TryList:
-    """ TryList keeps track of which servers have been tried for a specific article
-    """
+    """TryList keeps track of which servers have been tried for a specific article"""
 
     # Pre-define attributes to save memory
     __slots__ = ("try_list", "fetcher_priority")
@@ -279,9 +278,9 @@ class Article(TryList):
         return self.article == other.article
 
     def __hash__(self):
-        """ Required because we implement eq. Articles with the same
-            usenet address can appear in different NZF's. So we make every
-            article object unique, even though it is bad pratice.
+        """Required because we implement eq. Articles with the same
+        usenet address can appear in different NZF's. So we make every
+        article object unique, even though it is bad pratice.
         """
         return id(self)
 
@@ -485,9 +484,9 @@ class NzbFile(TryList):
         return self.bytes == other.bytes and self.decodetable[0] == other.decodetable[0]
 
     def __hash__(self):
-        """ Required because we implement eq. The same file can be spread
-            over multiple NZO's so we make every NZF unique. Even though
-            it's considered bad pratice.
+        """Required because we implement eq. The same file can be spread
+        over multiple NZO's so we make every NZF unique. Even though
+        it's considered bad pratice.
         """
         return id(self)
 
@@ -937,8 +936,8 @@ class NzbObject(TryList):
         return not bool(self.files)
 
     def sort_nzfs(self):
-        """ Sort the files in the NZO, respecting
-            date sorting and unwanted extensions
+        """Sort the files in the NZO, respecting
+        date sorting and unwanted extensions
         """
         if cfg.auto_sort():
             self.files.sort(key=functools.cmp_to_key(nzf_cmp_date))
@@ -1061,8 +1060,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def promote_par2(self, nzf):
-        """ In case of a broken par2 or missing par2, move another
-            of the same set to the top (if we can find it)
+        """In case of a broken par2 or missing par2, move another
+        of the same set to the top (if we can find it)
         """
         setname, vol, block = sabnzbd.par2file.analyse_par2(nzf.filename)
         # Now we need to identify if we have more in this set
@@ -1080,11 +1079,11 @@ class NzbObject(TryList):
                     break
 
     def get_extra_blocks(self, setname, needed_blocks):
-        """ We want par2-files of all sets that are similar to this one
-            So that we also can handle multi-sets with duplicate filenames
-            Returns number of added blocks in case they are available
-            In case of duplicate files for the same set, we might add too
-            little par2 on the first add-run, but that's a risk we need to take.
+        """We want par2-files of all sets that are similar to this one
+        So that we also can handle multi-sets with duplicate filenames
+        Returns number of added blocks in case they are available
+        In case of duplicate files for the same set, we might add too
+        little par2 on the first add-run, but that's a risk we need to take.
         """
         logging.info("Need %s more blocks, checking blocks", needed_blocks)
 
@@ -1388,9 +1387,9 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def add_parfile(self, parfile):
-        """ Add parfile to the files to be downloaded
-            Resets trylist just to be sure
-            Adjust download-size accordingly
+        """Add parfile to the files to be downloaded
+        Resets trylist just to be sure
+        Adjust download-size accordingly
         """
         if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
             parfile.reset_all_try_lists()
@@ -1413,8 +1412,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def prospective_add(self, nzf):
-        """ Add par2 files to compensate for missing articles
-            This fails in case of multi-sets with identical setnames
+        """Add par2 files to compensate for missing articles
+        This fails in case of multi-sets with identical setnames
         """
         # Make sure to also select a parset if it was in the original filename
         original_filename = self.renames.get(nzf.filename, "")
@@ -1447,8 +1446,8 @@ class NzbObject(TryList):
             self.direct_unpacker.abort()
 
     def check_availability_ratio(self, req_ratio=0):
-        """ Determine amount of articles present on servers
-            and return (gross available, nett) bytes
+        """Determine amount of articles present on servers
+        and return (gross available, nett) bytes
         """
         # Few missing articles in RAR-only job might still work
         if self.bad_articles <= MAX_BAD_ARTICLES:
@@ -1479,8 +1478,8 @@ class NzbObject(TryList):
         return enough, ratio
 
     def check_first_article_availability(self):
-        """ Use the first articles to see if
-            it's likely the job will succeed
+        """Use the first articles to see if
+        it's likely the job will succeed
         """
         # Ignore this check on retry
         if not self.reuse:
@@ -1718,8 +1717,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def renamed_file(self, name_set, old_name=None):
-        """ Save renames at various stages (Download/PP)
-            to be used on Retry. Accepts strings and dicts.
+        """Save renames at various stages (Download/PP)
+        to be used on Retry. Accepts strings and dicts.
         """
         if not old_name:
             # Add to dict
@@ -1857,8 +1856,8 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def set_unpack_info(self, key, msg, setname=None, unique=False):
-        """ Builds a dictionary containing the stage name (key) and a message
-            If unique is present, it will only have a single line message
+        """Builds a dictionary containing the stage name (key) and a message
+        If unique is present, it will only have a single line message
         """
         # Add name of the set
         if setname:
@@ -1917,9 +1916,9 @@ class NzbObject(TryList):
                 nzf_ids.remove(nzf_id)
 
     def has_duplicates(self):
-        """ Return (res, series)
-            where "res" is True when this is a duplicate
-            where "series" is True when this is an episode
+        """Return (res, series)
+        where "res" is True when this is a duplicate
+        where "series" is True when this is an episode
         """
 
         no_dupes = cfg.no_dupes()
@@ -2017,8 +2016,8 @@ class NzbObject(TryList):
 
 
 def nzf_get_filename(nzf):
-    """ Return filename, if the filename not set, try the
-        the full subject line instead. Can produce non-ideal results
+    """Return filename, if the filename not set, try the
+    the full subject line instead. Can produce non-ideal results
     """
     name = nzf.filename
     if not name:
@@ -2029,8 +2028,8 @@ def nzf_get_filename(nzf):
 
 
 def nzf_cmp_date(nzf1, nzf2):
-    """ Compare files based on date, but give vol-par files preference.
-        Wrapper needed, because `cmp` function doesn't handle extra parms.
+    """Compare files based on date, but give vol-par files preference.
+    Wrapper needed, because `cmp` function doesn't handle extra parms.
     """
     return nzf_cmp_name(nzf1, nzf2, name=False)
 
@@ -2115,8 +2114,12 @@ def scan_password(name):
         return name[:pw].strip(". "), name[pw + 9 :]
 
     # Look for name{{password}}
-    if braces < len(name) and name.endswith("}}"):
-        return name[:braces].strip(". "), name[braces + 2 : len(name) - 2]
+    if braces < len(name) and "}}" in name:
+        closing_braces = name.find("}}")
+        if closing_braces < 0:
+            closing_braces = len(name)
+
+        return name[:braces].strip(". "), name[braces + 2 : closing_braces]
 
     # Look again for name/password
     if slash >= 0:
