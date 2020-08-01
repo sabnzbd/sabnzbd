@@ -1,16 +1,10 @@
-Release Notes - SABnzbd 3.0.0 RC 2
+Release Notes - SABnzbd 3.0.0
 =========================================================
 
 ## About this new version
 We have been working for months to upgrade the SABnzbd code from Python 2 to Python 3.
 Although it might not sound like a big change, we had to rewrite almost every part of
 the code. We also included a number of new features, listed below.
-
-## Changes since 3.0.0 RC 1
-- Only really run pre-queue-script when it is set.
-- RAR-renamer did not always run on badly named RAR-files.
-- Changes to priority-handling when adding NZB's.
-- Always report API paused status as a boolean.
 
 ## Big changes in 3.0.0
 - Python 3.5 and above are the only supported versions of Python.
@@ -43,9 +37,12 @@ the code. We also included a number of new features, listed below.
 - macOS features such as the menu and notifications now use native code.
 
 ## Bugfixes since 2.3.9
-- Resolved potential security issue in FAT-filesystem check.
+- Resolved potential security issue in FAT-filesystem check and Nice and IONice Parameters.
+  More information: https://github.com/sabnzbd/sabnzbd/security/advisories/GHSA-9x87-96gg-33w2
 - Sample removal did not work if only 1 sample file was present.
 - Crash on badly formatted RSS-feeds or readout during editing.
+- Only really run pre-queue-script when it is set.
+- Always report API `paused` status as a boolean.
 - Automatic aborting of jobs that can't be completed would sometimes not trigger.
 - Windows systems could enter standby state during downloading.
 - Some errors thrown by unrar were not caught.
