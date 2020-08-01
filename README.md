@@ -68,4 +68,3 @@ Conditions:
 - Bugfixes created specifically for a release branch are done there (because they are specific, they're not cherry-picked to `develop`).
 - Bugfixes done on `develop` may be cherry-picked to a release branch.
 - We will not release a 1.0.2 if a 1.1.0 has already been released.
-- Code must be formatted with [black code formatter](https://github.com/psf/black): `black sabnzbd --line-length=120 --target-version=py35`
