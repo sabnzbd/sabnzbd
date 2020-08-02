@@ -1,8 +1,7 @@
-# SAB-Specific
-cheetah3
-cryptography
-sabyenc
-
-# Testing
+# Testing requirements
 selenium
 requests
+pytest
+pyfakefs
+pytest_httpbin
+flaky

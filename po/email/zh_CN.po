@@ -1,21 +1,21 @@
-# Chinese (Simplified) translation for sabnzbd
-# Copyright (c) 2012 Rosetta Contributors and Canonical Ltd 2012
-# This file is distributed under the same license as the sabnzbd package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2012.
-#
+# SABnzbd Translation Template file EMAIL
+# Copyright 2011-2020 The SABnzbd-Team
+#   team@sabnzbd.org
+# 
+# Translators:
+# Safihre <safihre@sabnzbd.org>, 2020
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: sabnzbd\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:01+0000\n"
-"PO-Revision-Date: 2015-10-24 11:05+0000\n"
-"Last-Translator: shypike <Unknown>\n"
-"Language-Team: Chinese (Simplified) <zh_CN@li.org>\n"
+"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"PO-Revision-Date: 2020-06-27 15:56+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Language-Team: Chinese (China) (https://www.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:47+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"Language: zh_CN\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: email/email.tmpl:1
 msgid ""
@@ -30,19 +30,16 @@ msgid ""
 "To: $to\n"
 "From: $from\n"
 "Date: $date\n"
-"Subject: SABnzbd has <!--#if $status then \"completed\" else \"failed\" #--> "
-"job $name\n"
+"Subject: SABnzbd has <!--#if $status then \"completed\" else \"failed\" #--> job $name\n"
 "X-priority: 5\n"
 "X-MS-priority: 5\n"
 "## After this comes the body, the empty line is required!\n"
 "\n"
 "Hi,\n"
 "<!--#if $status #-->\n"
-"SABnzbd has downloaded \"$name\" <!--#if $msgid==\"\" then \"\" else "
-"\"(newzbin #\" + $msgid + \")\"#-->\n"
+"SABnzbd has downloaded \"$name\" <!--#if $msgid==\"\" then \"\" else \"(newzbin #\" + $msgid + \")\"#-->\n"
 "<!--#else#-->\n"
-"SABnzbd has failed to download \"$name\" <!--#if $msgid==\"\" then \"\" else "
-"\"(newzbin #\" + $msgid + \")\"#-->\n"
+"SABnzbd has failed to download \"$name\" <!--#if $msgid==\"\" then \"\" else \"(newzbin #\" + $msgid + \")\"#-->\n"
 "<!--#end if#-->\n"
 "Finished at $end_time\n"
 "Downloaded $size\n"
@@ -82,11 +79,9 @@ msgstr ""
 "\n"
 "Hi,\n"
 "<!--#if $status #-->\n"
-"SABnzbd 已完成 \"$name\" 的下载 <!--#if $msgid==\"\" then \"\" else \"(newzbin #\" "
-"+ $msgid + \")\"#-->\n"
+"SABnzbd 已完成 \"$name\" 的下载 <!--#if $msgid==\"\" then \"\" else \"(newzbin #\" + $msgid + \")\"#-->\n"
 "<!--#else#-->\n"
-"SABnzbd 下载 \"$name\" 失败 <!--#if $msgid==\"\" then \"\" else \"(newzbin #\" + "
-"$msgid + \")\"#-->\n"
+"SABnzbd 下载 \"$name\" 失败 <!--#if $msgid==\"\" then \"\" else \"(newzbin #\" + $msgid + \")\"#-->\n"
 "<!--#end if#-->\n"
 "完成于 $end_time\n"
 "已下载 $size\n"

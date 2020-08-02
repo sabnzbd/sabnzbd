@@ -1,29 +1,25 @@
-# French translation for sabnzbd
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
-# This file is distributed under the same license as the sabnzbd package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
-#
+# SABnzbd Translation Template file NSIS
+# Copyright 2011-2020 The SABnzbd-Team
+#   team@sabnzbd.org
+# 
+# Translators:
+# Safihre <safihre@sabnzbd.org>, 2020
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: sabnzbd\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:01+0000\n"
-"PO-Revision-Date: 2017-03-21 08:58+0000\n"
-"Last-Translator: Fred <88com88@gmail.com>\n"
-"Language-Team: French <fr@li.org>\n"
+"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"PO-Revision-Date: 2020-06-27 15:56+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:49+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Afficher les notes de version"
-
-#: NSIS_Installer.nsi
-msgid "Start SABnzbd"
-msgstr "Démarrer SABnzbd"
 
 #: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
@@ -35,12 +31,21 @@ msgstr "Merci de fermer \"SABnzbd.exe\" avant l'installation"
 
 #: NSIS_Installer.nsi
 msgid ""
-"The installation directory has changed (now in \"Program Files\"). \\nIf you "
-"run SABnzbd as a service, you need to update the service settings."
+"The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
+"reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
+"services or `Cancel` to cancel this upgrade."
 msgstr ""
-"Le répertoire d'installation a changé (maintenant dans \"Program Files\"). \\"
-"nSi vous exécutez SABnzbd en tant que service, vous devez mettre à jour les "
-"paramètres du service."
+"Le service Windows SABnzbd a changé dans SABnzbd 3.0.0. \\nVous allez devoir"
+" réinstaller le service SABnzbd. \\n\\nCliquez sur 'OK' pour supprimer les "
+"services existants ou sur 'Annuler' pour annuler cette mise à niveau."
+
+#: NSIS_Installer.nsi
+msgid ""
+"The installer only supports 64-bit Windows, use the standalone version to "
+"run on 32-bit Windows."
+msgstr ""
+"Le programme d'installation ne prend en charge que Windows 64 bits, utilisez"
+" la version standalone pour l'exécuter sur Windows 32 bits."
 
 #: NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
@@ -68,26 +73,6 @@ msgstr "Supprimer les paramètres"
 
 #: NSIS_Installer.nsi
 msgid ""
-"This system requires the Microsoft runtime library VC90 to be installed "
-"first. Do you want to do that now?"
-msgstr ""
-"Ce système nécessite que la bibliothèque d'exécution Microsoft vc90 soit "
-"installée en premier. Voulez-vous le faire maintenant?"
-
-#: NSIS_Installer.nsi
-msgid "Downloading Microsoft runtime installer..."
-msgstr "Téléchargement de Microsoft runtime installer..."
-
-#: NSIS_Installer.nsi
-msgid "Download error, retry?"
-msgstr "Erreur de téléchargement, réessayer ?"
-
-#: NSIS_Installer.nsi
-msgid "Cannot install without runtime library, retry?"
-msgstr "Impossible d'installer sans moteur d'exécution, réessayer?"
-
-#: NSIS_Installer.nsi
-msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
@@ -98,14 +83,3 @@ msgstr ""
 #: NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Vos paramètres et données seront conservés."
-
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-#~ msgstr ""
-#~ "                  >>>> AVERTISSEMENT <<<<\\r\\n\\r\\nS'il vous plaît, "
-#~ "vérifiez d'abord les notes de version ou consultez "
-#~ "http://wiki.sabnzbd.org/introducing-0-7-0 !"
-
-#~ msgid "Go to the SABnzbd Wiki"
-#~ msgstr "Aller sur le Wiki de SABnzbd"

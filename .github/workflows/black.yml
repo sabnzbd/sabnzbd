@@ -1,0 +1,20 @@
+name: Black Code Formatter
+on: [push, pull_request]
+
+jobs:
+  black:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Black Code Formatter
+      uses: lgeiger/black-action@v1.0.1
+      with:
+          args: >
+            SABnzbd.py
+            sabnzbd
+            scripts
+            tools
+            tests
+            --line-length=120
+            --target-version=py35
+            --check

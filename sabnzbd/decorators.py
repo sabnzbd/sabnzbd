@@ -1,5 +1,5 @@
-#!/usr/bin/python -OO
-# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
+#!/usr/bin/python3 -OO
+# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -28,20 +28,21 @@ from threading import RLock, Condition
 NZBQUEUE_LOCK = RLock()
 DOWNLOADER_CV = Condition(NZBQUEUE_LOCK)
 
+
 def synchronized(lock):
     def wrap(f):
         def call_func(*args, **kw):
-            lock.acquire()
-            try:
+            with lock:
                 return f(*args, **kw)
-            finally:
-                lock.release()
+
         return call_func
+
     return wrap
 
 
 def NzbQueueLocker(func):
     global DOWNLOADER_CV
+
     def call_func(*params, **kparams):
         DOWNLOADER_CV.acquire()
         try:
@@ -49,4 +50,5 @@ def NzbQueueLocker(func):
         finally:
             DOWNLOADER_CV.notify_all()
             DOWNLOADER_CV.release()
+
     return call_func

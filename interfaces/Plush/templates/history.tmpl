@@ -35,7 +35,7 @@
     <tr><td><strong>$T('completed')</strong></td><td>$compl</td></tr>
     <tr class="odd"><td><strong>$T('name')</strong></td><td>$line.name<!--#if $line.action_line#--> - $line.action_line<!--#else if $line.fail_message#--> - <span class="fail_message">$line.fail_message</span><!--#end if#--></td></tr>
     <tr><td><strong>$T('size')</strong></td><td>$line.size</td></tr>
-    <tr class="odd"><td><strong>$T('status')</strong></td><td>$Tx('post-'+$line.status)</td></tr>
+    <tr class="odd"><td><strong>$T('status')</strong></td><td>$T('post-'+$line.status)</td></tr>
 
   <!--#set $oddLine = not False#-->
   <!--#if $line.category#-->
@@ -48,7 +48,7 @@
   <!--#end if#-->
   <!--#for $stage in $line.stage_log#-->
     <!--#set $oddLine = not $oddLine#-->
-    <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$Tx('stage-'+$stage.name.title.lower())</b></td><td>
+    <tr <!--#if $oddLine#-->class="odd"<!--#end if#-->><td><b>$T('stage-'+$stage.name.title.lower())</b></td><td>
     <!--#for $action in $stage.actions#-->
       $action<br/>
     <!--#end for#-->
@@ -89,7 +89,7 @@
     <!--#if $line.retry#-->
       <form action="history/retry_pp" method="post" enctype="multipart/form-data">
         <input type="hidden" value="$line.nzo_id" name="job" />
-        <input type="hidden" name="session" value="$session" />
+        <input type="hidden" name="apikey" value="$apikey" />
         &nbsp;<a href="#" class="retry-nzbfile">$T('button-retry')</a>
       </form>
     <!--#end if#-->
@@ -128,7 +128,7 @@
           <div class="rating_icon_thumbup user_vote up"></div>
           <!--#if $line.rating_user_vote==1#--><b><!--#end if#-->$line.rating_avg_vote_up<!--#if $line.rating_user_vote==1#--></b><!--#end if#-->
           <div class="rating_icon_thumbdown user_vote down"></div>
-          <!--#if $line.rating_user_vote==2#--><b><!--#end if#-->$line.rating_avg_vote_down<!--#if $line.rating_user_vote==2#--></b><!--#end if#-->          
+          <!--#if $line.rating_user_vote==2#--><b><!--#end if#-->$line.rating_avg_vote_down<!--#if $line.rating_user_vote==2#--></b><!--#end if#-->
         </div>
         <div class="rating_flag">
           <a href="#" class="show_flags">$T('report')</a>

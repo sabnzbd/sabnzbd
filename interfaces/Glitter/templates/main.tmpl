@@ -42,14 +42,12 @@
 
         <!-- Make translations available in scripts -->
         <script type="text/javascript">
-            var apiKey = "$session";
+            var apiKey = "$apikey";
             var displayLang = "$active_lang";
             var sabSpeedHistory = [$bytespersec_list];
             var newRelease = "$new_release";
             var newReleaseUrl = "$new_rel_url";
             var glitterIsBeta = ("$version".search(/[develop|Alpha|Beta|RC]/)) > 0;
-            var glitterPreLoadQueue = $preload_queue;
-            var glitterPreLoadHistory = $preload_history;
 
             var glitterTranslate = new Object();
             glitterTranslate.paused = "$T('post-Paused')";
@@ -126,11 +124,11 @@
 
         <!-- Inclusion is faster than external scripts. We load momentJS locale seperatly so failure won't break anything -->
         <script type="text/javascript">
-            <!--#include raw $webdir + "/static/javascripts/jquery.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/jquery-3.5.1.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery-ui.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/jquery.peity.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/moment.min.js"#-->
-            <!--#include raw $webdir + "/static/javascripts/knockout-latest.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/moment-2.26.0.min.js"#-->
+            <!--#include raw $webdir + "/static/javascripts/knockout-3.5.1.min.js"#-->
             <!--#include raw $webdir + "/static/javascripts/knockout-extensions.js"#-->
             <!--#include raw $webdir + "/static/bootstrap/js/bootstrap.min.js"#-->
             <!--#include $webdir + "/static/javascripts/glitter.js"#-->

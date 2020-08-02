@@ -124,7 +124,7 @@ jQuery(document).ready(function($){
 
   case 'Status':
     $('#logging_level').change(function(event){
-      window.location = './change_loglevel?loglevel='+$(event.target).val()+'&session='+apikey;
+      window.location = './change_loglevel?loglevel='+$(event.target).val()+'&apikey='+apikey;
     });
     break;
 
@@ -134,7 +134,7 @@ jQuery(document).ready(function($){
       if (confirm($(this).attr('rel'))) {
         $.ajax({
           type: "POST",
-          url: "../../tapi",
+          url: "../../api",
           data: {mode:'config', name:'set_apikey', apikey: $('#apikey').val()},
           success: function(msg){
             $('#apikey,#session').val(msg);
@@ -147,7 +147,7 @@ jQuery(document).ready(function($){
       if (confirm($(this).attr('rel'))) {
         $.ajax({
           type: "POST",
-          url: "../../tapi",
+          url: "../../api",
           data: {mode:'config', name:'set_nzbkey', apikey: $('#apikey').val()},
           success: function(msg){
             $('#nzbkey,#session').val(msg);
@@ -166,7 +166,7 @@ jQuery(document).ready(function($){
       $(event.target).next('span').addClass('loading');
       $.ajax({
         type: "POST",
-        url: "../../tapi",
+        url: "../../api",
         data: "mode=config&name=test_server&"+ $(event.target).parents('form:first').serialize() +"&apikey="+$('#apikey').val(),
         success: function(msg){
           alert(msg);
@@ -188,7 +188,7 @@ jQuery(document).ready(function($){
 
   case 'Categories':
     $(':button').click(function(event){ // delete category
-      window.location="delete/?name="+$(event.target).attr('name')+'&session='+apikey;
+      window.location="delete/?name="+$(event.target).attr('name')+'&apikey='+apikey;
     });
     break;
 
@@ -196,7 +196,7 @@ jQuery(document).ready(function($){
 
   $('.toggleFeedCheckbox').click(function(){  // enable/disable feed
     window.onbeforeunload = null; // lose data?
-    this.form.action='toggle_rss_feed?session=$session';
+    this.form.action='toggle_rss_feed?apikey=$apikey';
     this.form.submit();
     return false;
   });
@@ -213,9 +213,9 @@ jQuery(document).ready(function($){
     break;
 
   case 'Index Sites':
-    $('#getBookmarks').click(function(){ window.location='getBookmarks?session='+apikey; });
-    $('#hideBookmarks').click(function(){ window.location='hideBookmarks?session='+apikey; });
-    $('#showBookmarks').click(function(){ window.location='showBookmarks?session='+apikey; });
+    $('#getBookmarks').click(function(){ window.location='getBookmarks?apikey='+apikey; });
+    $('#hideBookmarks').click(function(){ window.location='hideBookmarks?apikey='+apikey; });
+    $('#showBookmarks').click(function(){ window.location='showBookmarks?apikey='+apikey; });
     break;
 
   case 'Sorting':

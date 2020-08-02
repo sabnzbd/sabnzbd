@@ -1,5 +1,5 @@
-#!/usr/bin/python -OO
-# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
+#!/usr/bin/python3 -OO
+# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,8 +24,7 @@ import logging
 import re
 
 import sabnzbd
-from sabnzbd.constants import BYTES_FILE_NAME, BYTES_FILE_NAME_OLD, KIBI
-from sabnzbd.encoding import unicoder
+from sabnzbd.constants import BYTES_FILE_NAME, KIBI
 import sabnzbd.cfg as cfg
 
 DAY = float(24 * 60 * 60)
@@ -63,6 +62,8 @@ def this_month(t):
 
 
 _DAYS = (0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
+
 def last_month_day(tm):
     """ Return last day of this month """
     year, month = tm[:2]
@@ -85,22 +86,7 @@ def next_month(t):
     return time.mktime(ntime)
 
 
-def fix_keys(data):
-    """ Convert keys of each dictionary in tuple 'data' to unicode """
-    new_data = []
-    if isinstance(data, list):
-        for n in xrange(len(data)):
-            if isinstance(data[n], dict):
-                new = {}
-                for key in data[n]:
-                    new[unicoder(key)] = data[n][key]
-            else:
-                new = data[n]
-            new_data.append(new)
-    return new_data
-
-
-class BPSMeter(object):
+class BPSMeter:
     do = None
 
     def __init__(self):
@@ -121,31 +107,40 @@ class BPSMeter(object):
         self.timeline_total = {}
 
         self.day_label = time.strftime("%Y-%m-%d")
-        self.end_of_day = tomorrow(t)      # Time that current day will end
-        self.end_of_week = next_week(t)    # Time that current day will end
+        self.end_of_day = tomorrow(t)  # Time that current day will end
+        self.end_of_week = next_week(t)  # Time that current day will end
         self.end_of_month = next_month(t)  # Time that current month will end
-        self.q_day = 1                     # Day of quota reset
-        self.q_period = 'm'                # Daily/Weekly/Monthly quota = d/w/m
-        self.quota = self.left = 0.0       # Quota and remaining quota
-        self.have_quota = False            # Flag for quota active
-        self.q_time = 0L                   # Next reset time for quota
-        self.q_hour = 0                    # Quota reset hour
-        self.q_minute = 0                  # Quota reset minute
-        self.quota_enabled = True          # Scheduled quota enable/disable
+        self.q_day = 1  # Day of quota reset
+        self.q_period = "m"  # Daily/Weekly/Monthly quota = d/w/m
+        self.quota = self.left = 0.0  # Quota and remaining quota
+        self.have_quota = False  # Flag for quota active
+        self.q_time = 0  # Next reset time for quota
+        self.q_hour = 0  # Quota reset hour
+        self.q_minute = 0  # Quota reset minute
+        self.quota_enabled = True  # Scheduled quota enable/disable
         BPSMeter.do = self
 
     def save(self):
         """ Save admin to disk """
-        data = (self.last_update, self.grand_total,
-                self.day_total, self.week_total, self.month_total,
-                self.end_of_day, self.end_of_week, self.end_of_month,
-                self.quota, self.left, self.q_time, self.timeline_total
-               )
+        data = (
+            self.last_update,
+            self.grand_total,
+            self.day_total,
+            self.week_total,
+            self.month_total,
+            self.end_of_day,
+            self.end_of_week,
+            self.end_of_month,
+            self.quota,
+            self.left,
+            self.q_time,
+            self.timeline_total,
+        )
         sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
     def defaults(self):
         """ Get the latest data from the database and assign to a fake server """
-        logging.debug('Setting default BPS meter values')
+        logging.debug("Setting default BPS meter values")
         history_db = sabnzbd.database.HistoryDB()
         grand, month, week = history_db.get_history_size()
         history_db.close()
@@ -154,11 +149,11 @@ class BPSMeter(object):
         self.week_total = {}
         self.day_total = {}
         if grand:
-            self.grand_total['x'] = grand
+            self.grand_total["x"] = grand
         if month:
-            self.month_total['x'] = month
+            self.month_total["x"] = month
         if week:
-            self.week_total['x'] = week
+            self.week_total["x"] = week
         self.quota = self.left = cfg.quota_size.get_float()
 
     def read(self):
@@ -167,24 +162,23 @@ class BPSMeter(object):
         quota = self.left = cfg.quota_size.get_float()  # Quota for this period
         self.have_quota = bool(cfg.quota_size())
         data = sabnzbd.load_admin(BYTES_FILE_NAME)
-        if not data:
-            data = sabnzbd.load_admin(BYTES_FILE_NAME_OLD)
-            data = fix_keys(data)
         try:
-            self.last_update, self.grand_total, \
-                self.day_total, self.week_total, self.month_total, \
-                self.end_of_day, self.end_of_week, self.end_of_month = data[:8]
-            if len(data) >= 11:
-                self.quota, self.left, self.q_time = data[8:11]
-                logging.debug('Read quota q=%s l=%s reset=%s',
-                              self.quota, self.left, self.q_time)
-                if abs(quota - self.quota) > 0.5:
-                    self.change_quota()
-                # Get timeline stats
-                if len(data) == 12:
-                    self.timeline_total = data[11]
-            else:
-                self.quota = self.left = cfg.quota_size.get_float()
+            (
+                self.last_update,
+                self.grand_total,
+                self.day_total,
+                self.week_total,
+                self.month_total,
+                self.end_of_day,
+                self.end_of_week,
+                self.end_of_month,
+                self.quota,
+                self.left,
+                self.q_time,
+                self.timeline_total,
+            ) = data
+            if abs(quota - self.quota) > 0.5:
+                self.change_quota()
             res = self.reset_quota()
         except:
             self.defaults()
@@ -219,25 +213,25 @@ class BPSMeter(object):
 
         if server:
             if server not in self.day_total:
-                self.day_total[server] = 0L
+                self.day_total[server] = 0
             self.day_total[server] += amount
 
             if server not in self.week_total:
-                self.week_total[server] = 0L
+                self.week_total[server] = 0
             self.week_total[server] += amount
 
             if server not in self.month_total:
-                self.month_total[server] = 0L
+                self.month_total[server] = 0
             self.month_total[server] += amount
 
             if server not in self.grand_total:
-                self.grand_total[server] = 0L
+                self.grand_total[server] = 0
             self.grand_total[server] += amount
 
             if server not in self.timeline_total:
                 self.timeline_total[server] = {}
             if self.day_label not in self.timeline_total[server]:
-                self.timeline_total[server][self.day_label]= 0L
+                self.timeline_total[server][self.day_label] = 0
             self.timeline_total[server][self.day_label] += amount
 
             # Quota check
@@ -246,7 +240,7 @@ class BPSMeter(object):
                 if self.left <= 0.0:
                     if sabnzbd.downloader.Downloader.do and not sabnzbd.downloader.Downloader.do.paused:
                         sabnzbd.downloader.Downloader.do.pause()
-                        logging.warning(T('Quota spent, pausing downloading'))
+                        logging.warning(T("Quota spent, pausing downloading"))
 
         # Speedometer
         try:
@@ -281,30 +275,33 @@ class BPSMeter(object):
         self.bps = 0.0
 
     def add_empty_time(self):
-        # Extra zeros, but never more than the maxium!
+        # Extra zeros, but never more than the maximum!
         nr_diffs = min(int(time.time() - self.speed_log_time), self.bps_list_max)
         if nr_diffs > 1:
             self.bps_list.extend([0] * nr_diffs)
 
         # Always trim the list to the max-length
         if len(self.bps_list) > self.bps_list_max:
-            self.bps_list = self.bps_list[len(self.bps_list) - self.bps_list_max:]
+            self.bps_list = self.bps_list[len(self.bps_list) - self.bps_list_max :]
 
     def get_sums(self):
         """ return tuple of grand, month, week, day totals """
-        return (sum([v for v in self.grand_total.values()]),
-                sum([v for v in self.month_total.values()]),
-                sum([v for v in self.week_total.values()]),
-                sum([v for v in self.day_total.values()])
-               )
+        return (
+            sum([v for v in self.grand_total.values()]),
+            sum([v for v in self.month_total.values()]),
+            sum([v for v in self.week_total.values()]),
+            sum([v for v in self.day_total.values()]),
+        )
 
     def amounts(self, server):
         """ Return grand, month, week, day totals for specified server """
-        return self.grand_total.get(server, 0L), \
-               self.month_total.get(server, 0L), \
-               self.week_total.get(server, 0L),  \
-               self.day_total.get(server, 0L), \
-               self.timeline_total.get(server, {})
+        return (
+            self.grand_total.get(server, 0),
+            self.month_total.get(server, 0),
+            self.week_total.get(server, 0),
+            self.day_total.get(server, 0),
+            self.timeline_total.get(server, {}),
+        )
 
     def clear_server(self, server):
         """ Clean counters for specified server """
@@ -358,9 +355,9 @@ class BPSMeter(object):
         """
         if force or (self.have_quota and time.time() > (self.q_time - 50)):
             self.quota = self.left = cfg.quota_size.get_float()
-            logging.info('Quota was reset to %s', self.quota)
+            logging.info("Quota was reset to %s", self.quota)
             if cfg.quota_resume():
-                logging.info('Auto-resume due to quota reset')
+                logging.info("Auto-resume due to quota reset")
                 if sabnzbd.downloader.Downloader.do:
                     sabnzbd.downloader.Downloader.do.resume()
             self.next_reset()
@@ -372,20 +369,24 @@ class BPSMeter(object):
         """ Determine next reset time """
         t = t or time.time()
         tm = time.localtime(t)
-        if self.q_period == 'd':
+        if self.q_period == "d":
             nx = (tm[0], tm[1], tm[2], self.q_hour, self.q_minute, 0, 0, 0, tm[8])
             if (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute):
                 # If today's moment has passed, it will happen tomorrow
                 t = time.mktime(nx) + 24 * 3600
                 tm = time.localtime(t)
-        elif self.q_period == 'w':
-            if self.q_day < tm.tm_wday + 1 or (self.q_day == tm.tm_wday + 1 and (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute)):
+        elif self.q_period == "w":
+            if self.q_day < tm.tm_wday + 1 or (
+                self.q_day == tm.tm_wday + 1 and (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute)
+            ):
                 tm = time.localtime(next_week(t))
             dif = abs(self.q_day - tm.tm_wday - 1)
             t = time.mktime(tm) + dif * 24 * 3600
             tm = time.localtime(t)
-        elif self.q_period == 'm':
-            if self.q_day < tm.tm_mday or (self.q_day == tm.tm_mday and (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute)):
+        elif self.q_period == "m":
+            if self.q_day < tm.tm_mday or (
+                self.q_day == tm.tm_mday and (tm.tm_hour * 60 + tm.tm_min) >= (self.q_hour * 60 + self.q_minute)
+            ):
                 tm = time.localtime(next_month(t))
             day = min(last_month_day(tm), self.q_day)
             tm = (tm[0], tm[1], day, self.q_hour, self.q_minute, 0, 0, 0, tm[8])
@@ -393,7 +394,7 @@ class BPSMeter(object):
             return
         tm = (tm[0], tm[1], tm[2], self.q_hour, self.q_minute, 0, 0, 0, tm[8])
         self.q_time = time.mktime(tm)
-        logging.debug('Will reset quota at %s', tm)
+        logging.debug("Will reset quota at %s", tm)
 
     def change_quota(self, allow_resume=True):
         """ Update quota, potentially pausing downloader """
@@ -401,11 +402,11 @@ class BPSMeter(object):
             # Never set, use last period's size
             per = cfg.quota_period()
             sums = self.get_sums()
-            if per == 'd':
+            if per == "d":
                 self.left = sums[3]
-            elif per == 'w':
+            elif per == "w":
                 self.left = sums[2]
-            elif per == 'm':
+            elif per == "m":
                 self.left = sums[1]
 
         self.have_quota = bool(cfg.quota_size())
@@ -419,7 +420,7 @@ class BPSMeter(object):
                 self.left = quota - self.left
             self.quota = quota
         else:
-            self.quota = self.left = 0L
+            self.quota = self.left = 0
         self.update(0)
         self.next_reset()
         if self.left > 0.5 and allow_resume:
@@ -427,8 +428,9 @@ class BPSMeter(object):
 
     # Pattern = <day#> <hh:mm>
     # The <day> and <hh:mm> part can both be optional
-    __re_day = re.compile(r'^\s*(\d+)[^:]*')
-    __re_hm = re.compile(r'(\d+):(\d+)\s*$')
+    __re_day = re.compile(r"^\s*(\d+)[^:]*")
+    __re_hm = re.compile(r"(\d+):(\d+)\s*$")
+
     def get_quota(self):
         """ If quota active, return check-function, hour, minute """
         if self.have_quota:
@@ -443,10 +445,10 @@ class BPSMeter(object):
             if m:
                 self.q_hour = int(m.group(1))
                 self.q_minute = int(m.group(2))
-            if self.q_period == 'w':
+            if self.q_period == "w":
                 self.q_day = max(1, self.q_day)
                 self.q_day = min(7, self.q_day)
-            elif self.q_period == 'm':
+            elif self.q_period == "m":
                 self.q_day = max(1, self.q_day)
                 self.q_day = min(31, self.q_day)
             else:
@@ -475,12 +477,13 @@ class BPSMeter(object):
 
 def quota_handler():
     """ To be called from scheduler """
-    logging.debug('Checking quota')
+    logging.debug("Checking quota")
     BPSMeter.do.reset_quota()
 
 
 def midnight_action():
     if BPSMeter.do:
         BPSMeter.do.midnight()
+
 
 BPSMeter()

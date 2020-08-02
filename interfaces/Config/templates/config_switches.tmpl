@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configuration/2.3/switches"#-->
+<!--#set global $help_uri="configuration/3.0/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -9,7 +9,8 @@
         </label>
     </div>
     <form action="saveSwitches" method="post" name="fullform" class="fullform" autocomplete="off">
-        <input type="hidden" id="session" name="session" value="$session" />
+        <input type="hidden" id="apikey" name="apikey" value="$apikey" />
+        <input type="hidden" id="ajax" name="ajax" value="1" />
         <div class="section advanced-settings">
             <div class="col2">
                 <h3>$T('swtag-server') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
@@ -133,7 +134,15 @@
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="auto_sort">$T('opt-auto_sort')</label>
-                        <input type="checkbox" name="auto_sort" id="auto_sort" value="1" <!--#if int($auto_sort) > 0 then 'checked="checked"' else ""#--> />
+                        <select name="auto_sort" id="auto_sort">
+                            <option value="">$T('default')</option>
+                            <option value="avg_age asc" <!--#if $auto_sort == "avg_age asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeAsc')</option>
+                            <option value="avg_age desc" <!--#if $auto_sort == "avg_age desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortAgeDesc')</option>
+                            <option value="name asc" <!--#if $auto_sort == "name asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortNameAsc')</option>
+                            <option value="name desc" <!--#if $auto_sort == "name desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortNameDesc')</option>
+                            <option value="size asc" <!--#if $auto_sort == "size asc" then 'selected="selected"' else ""#--> >$T('Glitter-sortSizeAsc')</option>
+                            <option value="size desc" <!--#if $auto_sort == "size desc" then 'selected="selected"' else ""#--> >$T('Glitter-sortSizeDesc')</option>
+                        </select>
                         <span class="desc">$T('explain-auto_sort')</span>
                     </div>
                     <div class="field-pair">
@@ -535,8 +544,8 @@
         // Send request
         \$.ajax({
             type: "GET",
-            url: "../../tapi",
-            data: "mode=set_config_default&session=${session}&output=json&keyword=" + key_container.join('&keyword=')
+            url: "../../api",
+            data: "mode=set_config_default&apikey=${apikey}&output=json&keyword=" + key_container.join('&keyword=')
         }).then(function(data) {
             // Reload page
             document.location = document.location

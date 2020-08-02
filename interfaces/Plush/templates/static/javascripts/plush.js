@@ -43,7 +43,7 @@ jQuery(function($){
         $.ajax({
           headers: {"Cache-Control": "no-cache"},
           type: "POST",
-          url: "tapi",
+          url: "api",
           data: {
             mode:     'addurl',
             name:     $("#addID_input").val(),
@@ -80,7 +80,7 @@ jQuery(function($){
   /*$('#fetch_newzbin_bookmarks').click(function(){
     $.ajax({
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'newzbin', name:'get_bookmarks', apikey: $.plush.apikey},
       success: function(result){
         $.plush.RefreshQueue();
@@ -190,7 +190,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'config', name:'set_speedlimit', value: speedLimit, apikey: $.plush.apikey}
     });
     // Update
@@ -248,7 +248,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'change_complete_action', value: $(this).val(), apikey: $.plush.apikey}
     });
   });
@@ -270,7 +270,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'delete', value:value, del_files:del_files, search: $('#queueSearchBox').val(), apikey: $.plush.apikey},
       success: function(){
         $.colorbox.close();
@@ -291,7 +291,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'retry_all', apikey: $.plush.apikey},
       success: function(){
         $.colorbox.close();
@@ -316,7 +316,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'sort', sort: sort, dir: dir, apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
@@ -331,7 +331,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'config', name:'set_pause', value: minutes, apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
@@ -342,7 +342,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'newzbin', name:'get_bookmarks', apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
@@ -353,7 +353,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'reset_quota', apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
@@ -364,7 +364,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'rss_now', apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
@@ -375,7 +375,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'watched_now', apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
@@ -386,7 +386,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'resume_pp', apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
@@ -557,7 +557,7 @@ jQuery(function($){
       $.ajax({
         headers: {"Cache-Control": "no-cache"},
         type: "POST",
-        url: "tapi",
+        url: "api",
         data: {mode:'resume', apikey: $.plush.apikey}
       });
     } else {
@@ -566,7 +566,7 @@ jQuery(function($){
       $.ajax({
         headers: {"Cache-Control": "no-cache"},
         type: "POST",
-        url: "tapi",
+        url: "api",
         data: {mode:'pause', apikey: $.plush.apikey}
       });
     }
@@ -599,7 +599,7 @@ jQuery(function($){
       $.ajax({
         headers: {"Cache-Control": "no-cache"},
         type: "POST",
-        url: "tapi",
+        url: "api",
         data: {mode:'queue', name:'pause', value: pid, apikey: $.plush.apikey}
       });
     } else {
@@ -607,7 +607,7 @@ jQuery(function($){
       $.ajax({
         headers: {"Cache-Control": "no-cache"},
         type: "POST",
-        url: "tapi",
+        url: "api",
         data: {mode:'queue', name:'resume', value: pid, apikey: $.plush.apikey}
       });
     }
@@ -632,7 +632,7 @@ jQuery(function($){
   $.plush.pendingQueueRefresh = true;
   $.ajax({
     type: "POST",
-    url: "tapi",
+    url: "api",
     data: {mode:'queue', name:'delete', value: delid, apikey: $.plush.apikey},
     success: function(){
       if ( $("#queueTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
@@ -652,7 +652,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'priority', value: nzbid, value2: $(this).val(), apikey: $.plush.apikey},
       success: function(newPos){
         // reposition the nzb if necessary (new position is returned by the API)
@@ -675,7 +675,7 @@ jQuery(function($){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode: cval, value: val, value2: $(this).val(), apikey: $.plush.apikey},
       success: function(resp){
         // each category can define different priority/processing/script -- must be accounted for
@@ -764,7 +764,7 @@ $.plush.queueprevslots = $.plush.queuenoofslots; // for the next refresh
       $.ajax({
         headers: {"Cache-Control": "no-cache"},
         type: "POST",
-        url: "tapi",
+        url: "api",
         data: {mode:'switch', value: row.id, value2: val2, apikey: $.plush.apikey},
         success: function(result){
           // change priority of the nzb if necessary (priority is returned by API)
@@ -850,7 +850,7 @@ $("a","#multiops_inputs").click(function(e){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:$('#multi_status').val(), value: nzo_ids, apikey: $.plush.apikey}
     });
 
@@ -858,7 +858,7 @@ $("a","#multiops_inputs").click(function(e){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode: 'change_cat', value: nzo_ids, value2: $('#multi_cat').val(), apikey: $.plush.apikey}
     });
 
@@ -866,7 +866,7 @@ $("a","#multiops_inputs").click(function(e){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'priority', value: nzo_ids, value2: $('#multi_priority').val(), apikey: $.plush.apikey}
     });
 
@@ -874,7 +874,7 @@ $("a","#multiops_inputs").click(function(e){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode: 'change_opts', value: nzo_ids, value2: $('#multi_pp').val(), apikey: $.plush.apikey}
     });
 
@@ -882,7 +882,7 @@ $("a","#multiops_inputs").click(function(e){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode: 'change_script', value: nzo_ids, value2: $('#multi_script').val(), apikey: $.plush.apikey}
     });
 
@@ -913,7 +913,7 @@ $("a","#multiops_inputs").click(function(e){
   if (!$.plush.confirmDeleteQueue || confirm($.plush.Tconfirmation)){
     $.ajax({
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'delete', value: nzo_ids, apikey: $.plush.apikey},
       success: $.plush.RefreshQueue
     });
@@ -953,7 +953,7 @@ $("a","#multiops_inputs").click(function(e){
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'history', name:'delete', value:value, del_files:del_files, search: $('#historySearchBox').val(), apikey: $.plush.apikey},
       success: function(){
         $.colorbox.close();
@@ -1043,7 +1043,7 @@ $("a","#multiops_inputs").click(function(e){
   $.ajax({
     headers: {"Cache-Control": "no-cache"},
     type: "POST",
-    url: "tapi",
+    url: "api",
     data: {mode:mode, name:'delete', value: delid, del_files: del_files, apikey: $.plush.apikey},
     success: function(){
       if ( $("#historyTable tr:visible").length - 1 < 1 ) { // don't leave stranded on non-page
@@ -1133,7 +1133,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'rating', value: nzo_id, type: videoAudio, setting: $(this).val(), apikey: $.plush.apikey},
       success: $.plush.Refresh
     });
@@ -1145,7 +1145,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'rating', value: nzo_id, type: 'vote', setting: upDown, apikey: $.plush.apikey},
       success: $.plush.Refresh
     });
@@ -1170,7 +1170,7 @@ $.plush.histprevslots = $.plush.histnoofslots; // for the next refresh
     $.ajax({
       headers: {"Cache-Control": "no-cache"},
       type: "POST",
-      url: "tapi",
+      url: "api",
       data: {mode:'queue', name:'rating', value: nzo_id, type: 'flag', setting: flag, detail: _detail, apikey: $.plush.apikey},
       success: $.plush.RefreshHistory
     });

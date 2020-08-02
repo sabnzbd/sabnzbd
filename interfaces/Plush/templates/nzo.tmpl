@@ -4,14 +4,14 @@
 
   <!--#if $varExists('slot')#-->
     <form action="save" method="post" class="nzo_save_form">
-      <input type="hidden" name="session" value="$session">
+      <input type="hidden" name="apikey" value="$apikey">
 
   <input type="text" name="name" size="70" value="$slot.filename_clean" />
   <input type="text" name="password" style="width:200px" size="100" value="$slot.password" placeholder="$T('srv-password')"/>
 
   <div>
   <select name="index"><optgroup label="$T('order')">
-  <!--#for $i in xrange($noofslots)#-->
+  <!--#for $i in range($noofslots)#-->
     <option value=$i <!--#if $i == $index then "selected" else ""#-->>$i</option>
   <!--#end for#-->
   </select>
@@ -49,7 +49,7 @@
 <!--#end if#-->
 
   <form action="bulk_operation" id="bulk_operation">
-  <input type="hidden" name="session" value="$session">
+  <input type="hidden" name="apikey" value="$apikey">
   <input type="hidden" name="action_key" id="action_key" />
 
   <div class="config_nav lang-$active_lang">

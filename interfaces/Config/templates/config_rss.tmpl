@@ -1,5 +1,5 @@
 <!--#set global $pane="RSS"#-->
-<!--#set global $help_uri="configuration/2.3/rss"#-->
+<!--#set global $help_uri="configuration/3.0/rss"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 <div class="colmask">
     <!--#if not $active_feed#-->
@@ -8,7 +8,7 @@
             <a class="main-helplink" href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a>
             <p>$T('explain-RSS')</p>
             <form action="add_rss_feed" method="post" autocomplete="off">
-                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" name="apikey" value="$apikey" />
                 <table class="catTable">
                     <tr>
                         <th>&nbsp;</th>
@@ -38,10 +38,10 @@
     <div class="section">
         <div class="padTable">
             <form action="save_rss_feed" method="post" autocomplete="off">
-                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" name="apikey" value="$apikey" />
                 <table id="subscriptions">
                     <tbody>
-                        <!--#set $feeds = sorted($rss.keys(), cmp=lambda x,y: cmp(x.lower(), y.lower()))#-->
+                        <!--#set $feeds = sorted($rss.keys(), key=lambda x: x.lower())#-->
                         <!--#set $odd = False#-->
                         <!--#for $feed_item in $feeds#-->
                             <!--#set $odd = not $odd#-->
@@ -74,7 +74,7 @@
             <!--#if $feeds#-->
             <br/>
             <form action="rss_now" method="post" autocomplete="off">
-                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" name="apikey" value="$apikey" />
                 <button type="submit" class="btn btn-default readAll"><span class="glyphicon glyphicon-sort"></span> $T('button-rssNow')</button>
             </form>
             <!--#end if#-->
@@ -83,7 +83,7 @@
     <!--#end if#-->
     <div class="section">
         <form action="save_rss_rate" method="post" autocomplete="off">
-            <input type="hidden" name="session" value="$session" />
+            <input type="hidden" name="apikey" value="$apikey" />
             <div class="col1">
                 <fieldset>
                     <div class="field-pair">
@@ -115,7 +115,7 @@
             </div>
             <!--#end if#-->
             <form action="upd_rss_feed" method="post">
-                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="feed" value="$feed" />
                 <input type="hidden" name="uri" value="$rss[$feed]['uris']" />
                 <table class="catTable">
@@ -206,7 +206,7 @@
             </form>
             <!-- add new filter -->
             <form action="upd_rss_filter" method="post">
-                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="index" value="$rss[$feed]['filtercount']" />
                 <input type="hidden" name="feed" value="$feed" />
                 <table class="catTable">
@@ -282,7 +282,7 @@
             <!--#for $filter in $rss[$feed].filters#-->
                 <!--#set $odd = not $odd#-->
                 <form action="upd_rss_filter" method="post" autocomplete="off">
-                    <input type="hidden" name="session" value="$session" />
+                    <input type="hidden" name="apikey" value="$apikey" />
                     <input type="hidden" name="index" value="$fnum" />
                     <input type="hidden" name="feed" value="$feed" />
                     <table class="catTable">
@@ -360,7 +360,7 @@
                 <!--#set $fnum = $fnum+1#-->
             <!--#end for#-->
             <form action="download_rss_feed" method="post">
-                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" name="apikey" value="$apikey" />
                 <input type="hidden" name="feed" value="$feed" />
                 <div class="padding">
                     <button type="button" class="btn btn-default testFeed" rel="$feed"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
@@ -401,7 +401,7 @@
                         <td>
                             <form action="download" method="get">
                                 <input type="hidden" value="$feed" name="feed" />
-                                <input type="hidden" name="session" value="$session" />
+                                <input type="hidden" name="apikey" value="$apikey" />
                                 <input type="hidden" name="url" value="$job['url']" />
                                 <input type="hidden" name="nzbname" value="$job['nzbname']" />
                                 <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
@@ -445,7 +445,7 @@
                         <td>
                             <form action="download" method="get">
                                 <input type="hidden" value="$feed" name="feed" />
-                                <input type="hidden" name="session" value="$session" />
+                                <input type="hidden" name="apikey" value="$apikey" />
                                 <input type="hidden" name="url" value="$job['url']" />
                                 <input type="hidden" name="nzbname" value="$job['nzbname']" />
                                 <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-plus-sign"></span> $T('link-download')</button>
@@ -474,7 +474,7 @@
             <!--#if $downloaded#-->
             <form action="clean_rss_jobs" method="post">
                 <input type="hidden" value="$feed" name="feed" />
-                <input type="hidden" name="session" value="$session" />
+                <input type="hidden" name="apikey" value="$apikey" />
                 <table class="catTable">
                     <thead>
                         <tr>
@@ -544,7 +544,7 @@ function urlencode(str) {
             \$.ajax({
               type: "POST",
               url: "save_rss_feed",
-              data: {feed: whichFeed, uri: newURI, enable: isEnabled, session: "$session" }
+              data: {feed: whichFeed, uri: newURI, enable: isEnabled, apikey: "$apikey" }
             }).done(function( msg ) {
               location.reload();
             });
@@ -560,7 +560,7 @@ function urlencode(str) {
             \$.ajax({
                 type: "POST",
                 url: "del_rss_feed",
-                data: {feed: whichFeed, session: "$session" }
+                data: {feed: whichFeed, apikey: "$apikey" }
             }).done(function( msg ) {
                 // Let us leave!
                 formWasSubmitted = true;
@@ -575,7 +575,7 @@ function urlencode(str) {
         \$.ajax({
             type: "POST",
             url: "toggle_rss_feed",
-            data: {feed: whichFeed, session: "$session" }
+            data: {feed: whichFeed, apikey: "$apikey" }
         }).done(function() {
             // Let us leave!
             formWasSubmitted = true;
@@ -615,7 +615,7 @@ function urlencode(str) {
         \$.ajax({
             type: "POST",
             url: "test_rss_feed",
-            data: {feed: whichFeed, session: "$session" }
+            data: {feed: whichFeed, apikey: "$apikey" }
         }).done(function( msg ) {
             // Let us leave!
             formWasSubmitted = true;

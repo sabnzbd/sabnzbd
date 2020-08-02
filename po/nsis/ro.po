@@ -1,29 +1,25 @@
-# Romanian translation for sabnzbd
-# Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
-# This file is distributed under the same license as the sabnzbd package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
-#
+# SABnzbd Translation Template file NSIS
+# Copyright 2011-2020 The SABnzbd-Team
+#   team@sabnzbd.org
+# 
+# Translators:
+# Safihre <safihre@sabnzbd.org>, 2020
+# 
 msgid ""
 msgstr ""
-"Project-Id-Version: sabnzbd\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2018-12-24 11:01+0000\n"
-"PO-Revision-Date: 2013-05-05 14:50+0000\n"
-"Last-Translator: nicusor <Unknown>\n"
-"Language-Team: Romanian <ro@li.org>\n"
+"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"PO-Revision-Date: 2020-06-27 15:56+0000\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Language-Team: Romanian (https://www.transifex.com/sabnzbd/teams/111101/ro/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2018-12-25 04:49+0000\n"
-"X-Generator: Launchpad (build 18847)\n"
+"Language: ro\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 
 #: NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Arată Notele de Publicare"
-
-#: NSIS_Installer.nsi
-msgid "Start SABnzbd"
-msgstr ""
 
 #: NSIS_Installer.nsi
 msgid "Support the project, Donate!"
@@ -35,8 +31,15 @@ msgstr "Închideţi mai întâi \"SABnzbd.exe\""
 
 #: NSIS_Installer.nsi
 msgid ""
-"The installation directory has changed (now in \"Program Files\"). \\nIf you "
-"run SABnzbd as a service, you need to update the service settings."
+"The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
+"reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
+"services or `Cancel` to cancel this upgrade."
+msgstr ""
+
+#: NSIS_Installer.nsi
+msgid ""
+"The installer only supports 64-bit Windows, use the standalone version to "
+"run on 32-bit Windows."
 msgstr ""
 
 #: NSIS_Installer.nsi
@@ -65,43 +68,12 @@ msgstr "Ştergeţi Setări"
 
 #: NSIS_Installer.nsi
 msgid ""
-"This system requires the Microsoft runtime library VC90 to be installed "
-"first. Do you want to do that now?"
-msgstr ""
-"Acest sistem necesită librăria Microsoft VC90 instalată. Dortiți să faceți "
-"asta acum ?"
-
-#: NSIS_Installer.nsi
-msgid "Downloading Microsoft runtime installer..."
-msgstr "Descărcare rutină instalare Microsoft..."
-
-#: NSIS_Installer.nsi
-msgid "Download error, retry?"
-msgstr "Eroare descărcare, încerc din nou?"
-
-#: NSIS_Installer.nsi
-msgid "Cannot install without runtime library, retry?"
-msgstr "Nu pot instala fără rutină librărie, încerc din nou?"
-
-#: NSIS_Installer.nsi
-msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
-"Nu puteți suprascrie instalarea existentă. \\n\\nClick `OK` pentru a elimina "
-"versiunea anterioară sau `Anulare` pentru a anula actualizarea."
+"Nu puteți suprascrie instalarea existentă. \\n\\nClick `OK` pentru a elimina"
+" versiunea anterioară sau `Anulare` pentru a anula actualizarea."
 
 #: NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Setările şi informaţiile vor fi salvate."
-
-#~ msgid ""
-#~ "                  >>>> WARNING <<<<\\r\\n\\r\\nPlease, first check the "
-#~ "release notes or go to http://wiki.sabnzbd.org/introducing-0-7-0 !"
-#~ msgstr ""
-#~ "                  >>>> ATENŢIE <<<<\\r\\n\\r\\nVă rugăm, să verificaţi mai "
-#~ "întâi notele de publicare sau să vizitaţi "
-#~ "http://wiki.sabnzbd.org/introducing-0-7-0 !"
-
-#~ msgid "Go to the SABnzbd Wiki"
-#~ msgstr "Dute la Wiki SABnzbd"

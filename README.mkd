@@ -1,35 +1,59 @@
-Release Notes - SABnzbd 2.3.9
+Release Notes - SABnzbd 3.0.0
 =========================================================
 
-## Improvements and bug fixes since 2.3.8
-- Duplicate job detection would not compare job names
-- Propagation delay could show even if it was not configured
-- Ignore Samples deleted all files of jobs containing the words Sample/Proof
-- Warning "Unable to stop the unrar process" was shown too often
-- Direct Unpack could hang forever on Unicode downloads
-- Test Download could fail if clicked on the icon instead of the button
-- Series Duplicate detection did not always work with Direct Unpack enabled
-- Adding a job with non-existing category was not set to Default (*) category
-- Only delete completed jobs from history when using History Retention option
-- Renamed Server Load-balancing to Server IP address selection
-- Linux: remove sabnzbd.error.log file at start-up if it grew too large
-- Windows: double-click delay increased to avoid accidental pausing
-- Windows: update MultiPar to v1.3.0.5
-- Windows and macOS: update UnRar to 5.71
+## About this new version
+We have been working for months to upgrade the SABnzbd code from Python 2 to Python 3.
+Although it might not sound like a big change, we had to rewrite almost every part of
+the code. We also included a number of new features, listed below.
 
-## Upgrading from 2.2.x and older
-- Finish queue
-- Stop SABnzbd
-- Install new version
-- Start SABnzbd
+## Big changes in 3.0.0
+- Python 3.5 and above are the only supported versions of Python.
+- Cache handling is greatly improved, resulting in more stable speeds on some systems.
+- Articles failing with CRC errors are now retried on other servers.
+- SFV files, even obfuscated, will be used for renaming when there are no par2 files.
+- Fully obfuscated RAR-sets with no verification files are detected and extracted.
+- Built-in internet bandwidth test.
+- Windows Service support was changed. The service will need to be reinstalled!
+  Documentation: https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
+- The Windows installer is 64-bit only, for 32-bit please use the standalone package.
+
+## Other changes since 2.3.9
+- Files inside an NZB that are fully identical are now skipped automatically.
+- Folders of jobs that failed post-processing are renamed to `_FAILED_`.
+- Blocking of unwanted extensions that are directly inside an NZB.
+- In Python 3 OpenSSL 1.1.1 is used for Windows and macOS, as a result 
+  newsservers manually set to `RC4-MD5` cipher can no longer connect. 
+  Documentation: https://sabnzbd.org/wiki/advanced/ssl-ciphers
+- TLS1.3 support for newsserver connections.
+- SABYenc, par2 and unrar are now required to start downloading.
+- Growl-support was removed.
+- The `smpl` skin was removed.
+- Using the API with `output=text` to add NZB's will report the `nzo_ids` instead of `ok`.
+- Queue-item labels are no longer part of the name but separated in API-property `labels`.
+- API-calls `tapi` and `qstatus` were removed.
+- On Windows only Multipar is available for repair.
+- Linux tray icon support was improved.
+- On Linux special permission bits are removed from files after download.
+- macOS features such as the menu and notifications now use native code.
+
+## Bugfixes since 2.3.9
+- Resolved potential security issue in FAT-filesystem check and Nice and IONice Parameters.
+  More information: https://github.com/sabnzbd/sabnzbd/security/advisories/GHSA-9x87-96gg-33w2
+- Sample removal did not work if only 1 sample file was present.
+- Crash on badly formatted RSS-feeds or readout during editing.
+- Only really run pre-queue-script when it is set.
+- Always report API `paused` status as a boolean.
+- Automatic aborting of jobs that can't be completed would sometimes not trigger.
+- Windows systems could enter standby state during downloading.
+- Some errors thrown by unrar were not caught.
+- Files and sockets were not always closed correctly.
+- Unwanted extension check was overly aggressively deleting folders
 
 ## Upgrade notices
-- When upgrading from 2.2.0 or older the queue will be converted. Job order,
-  settings and data will be preserved, but all jobs will be unpaused and
-  URL's that did not finish fetching before the upgrade will be lost.
-- The organization of the download queue is different from 0.7.x releases.
-  This version will not see the 0.7.x queue, but you can restore the jobs
-  by going to the Status and Interface Settings window and using Queue Repair.
+- When upgrading from 2.x.x or older the queue will be converted. Job order,
+  settings and data will be preserved, but if you decide to go back to 2.x.x
+  your queue cannot be downgraded again. But you can restore the jobs by going
+  to the Status page and running Queue Repair.
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
@@ -41,4 +65,4 @@ Release Notes - SABnzbd 2.3.9
   that automatically verify, repair, extract and clean up posts downloaded
   from Usenet.
 
-  (c) Copyright 2007-2019 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2020 by "The SABnzbd-team" \<team@sabnzbd.org\>

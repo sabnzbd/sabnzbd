@@ -261,7 +261,7 @@ function do_restart() {
     $('.main-restarting .restarting-url').text(urlTotal)
 
     // Initiate restart
-    $.ajax({ url: '../../config/restart?session=' + sabSession,
+    $.ajax({ url: '../../config/restart?apikey=' + sabSession,
         complete: function() {
             // Keep counter of failures
             var failureCounter = 0;
@@ -412,10 +412,11 @@ $(document).ready(function () {
 
     $(checkDisabled).on('change', function() {
         $(this).parent().nextAll().toggleClass('disabled')
+    }).each(function() {
+        if(!$(this).is(':checked')) {
+            $(this).parent().nextAll().addClass('disabled')
+        }
     })
-    if(!$(checkDisabled).is(':checked')) {
-        $(checkDisabled).parent().nextAll().addClass('disabled')
-    }
 
     // Advanced or not?
     $('.advanced-button').on('change', function(event){

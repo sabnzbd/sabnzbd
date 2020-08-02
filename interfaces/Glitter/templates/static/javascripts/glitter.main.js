@@ -65,6 +65,7 @@ function ViewModel() {
     self.statusInfo.downloaddirspeed = ko.observable();
     self.statusInfo.completedir = ko.observable();
     self.statusInfo.completedirspeed = ko.observable();
+    self.statusInfo.internetbandwidth = ko.observable();
 
     /***
         Dynamic functions
@@ -356,19 +357,6 @@ function ViewModel() {
                 self.history.lastUpdate = 0
             }).always(self.setNextUpdate)
             // Do not continue!
-            return;
-        }
-
-        /**
-            Do first load with start-data
-            Only works when the server knows the settings!
-        **/
-        if(glitterPreLoadHistory && self.useGlobalOptions()) {
-            self.updateQueue(glitterPreLoadQueue);
-            self.updateHistory(glitterPreLoadHistory);
-            glitterPreLoadQueue = undefined;
-            glitterPreLoadHistory = undefined;
-            self.setNextUpdate()
             return;
         }
 
@@ -729,7 +717,7 @@ function ViewModel() {
 
         // Add this one
         $.ajax({
-            url: "./tapi",
+            url: "./api",
             type: "POST",
             cache: false,
             processData: false,
@@ -776,6 +764,7 @@ function ViewModel() {
                 self.statusInfo.downloaddirspeed(data.status.downloaddirspeed)
                 self.statusInfo.completedir(data.status.completedir)
                 self.statusInfo.completedirspeed(data.status.completedirspeed)
+                self.statusInfo.internetbandwidth(data.status.internetbandwidth)
                 self.statusInfo.dnslookup(data.status.dnslookup)
                 self.statusInfo.localipv4(data.status.localipv4)
                 self.statusInfo.publicipv4(data.status.publicipv4)

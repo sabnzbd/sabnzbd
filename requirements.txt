@@ -1,0 +1,26 @@
+sabyenc3
+cheetah3
+cryptography
+feedparser
+configobj
+cherrypy
+portend
+chardet
+notify2
+
+# Windows system integration
+pywin32>=227; sys_platform == 'win32'
+
+# macOS system calls
+pyobjc; sys_platform == 'darwin'
+
+# Optional support for *nix tray icon.
+# Note that pygobject depends on pycairo, which requires pkg-config and cairo headers.
+# See https://pycairo.readthedocs.io/en/latest/getting_started.html
+# Uncomment line below or manually install after installing requirements.
+# pygobject>=3.10.2; sys_platform != 'win32' and sys_platform != 'darwin'
+
+# Optional support for system power management on *nix.
+# Requires libdbus-1-dev to be installed.
+# Uncomment line below or manually install after installing requirements.
+# dbus-python; sys_platform != 'win32' and sys_platform != 'darwin'

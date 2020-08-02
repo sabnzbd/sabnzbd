@@ -1,5 +1,5 @@
-#!/usr/bin/python -OO
-# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
+#!/usr/bin/python3 -OO
+# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,12 +19,25 @@
 sabnzbd.sabtraylinux - System tray icon for Linux, inspired from the Windows one
 """
 
-import gtk
-import gobject
+import gi
+from gi.repository import Gtk, GLib
+import logging
+
+try:
+    gi.require_version("XApp", "1.0")
+    from gi.repository import XApp
+
+    if not hasattr(XApp, "StatusIcon"):
+        raise ImportError
+    HAVE_XAPP = True
+    logging.debug("XApp found: %s" % XApp)
+except Exception:
+    HAVE_XAPP = False
+    logging.debug("XApp not available, falling back to Gtk.StatusIcon")
 from time import sleep
 import subprocess
 from threading import Thread
-import logging
+from os.path import abspath
 
 import sabnzbd
 from sabnzbd.panic import launch_a_browser
@@ -33,14 +46,13 @@ import sabnzbd.scheduler as scheduler
 from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
-from sabnzbd.utils.upload import add_local
 
 
 class StatusIcon(Thread):
     sabicons = {
-        'default': 'icons/sabnzbd16_32.ico',
-        'green': 'icons/sabnzbd16_32green.ico',
-        'pause': 'icons/sabnzbd16_32paused.ico'
+        "default": abspath("icons/logo-arrow.svg"),
+        "green": abspath("icons/logo-arrow_green.svg"),
+        "pause": abspath("icons/logo-arrow_gray.svg"),
     }
 
     updatefreq = 1000  # ms
@@ -53,26 +65,36 @@ class StatusIcon(Thread):
         # Wait for translated texts to be loaded
         while not sabnzbd.WEBUI_READY:
             sleep(0.2)
-            logging.debug('language file not loaded, waiting')
+            logging.debug("language file not loaded, waiting")
 
         self.sabpaused = False
-        self.statusicon = gtk.StatusIcon()
-        self.icon = self.sabicons['default']
+        if HAVE_XAPP:
+            self.statusicon = XApp.StatusIcon()
+        else:
+            self.statusicon = Gtk.StatusIcon()
+        self.statusicon.set_name("SABnzbd")
+        self.statusicon.set_visible(True)
+        self.icon = self.sabicons["default"]
         self.refresh_icon()
         self.tooltip = "SABnzbd"
         self.refresh_tooltip()
-        self.statusicon.connect("popup-menu", self.right_click_event)
+        if HAVE_XAPP:
+            self.statusicon.connect("activate", self.right_click_event)
+        else:
+            self.statusicon.connect("popup-menu", self.right_click_event)
 
-        gtk.gdk.threads_init()
-        gtk.gdk.threads_enter()
-        gobject.timeout_add(self.updatefreq, self.run)
-        gtk.main()
+        GLib.timeout_add(self.updatefreq, self.run)
+        Gtk.main()
 
     def refresh_icon(self):
-        self.statusicon.set_from_file(self.icon)
+        if HAVE_XAPP:
+            # icon path must be absolute in XApp
+            self.statusicon.set_icon_name(self.icon)
+        else:
+            self.statusicon.set_from_file(self.icon)
 
     def refresh_tooltip(self):
-        self.statusicon.set_tooltip(self.tooltip)
+        self.statusicon.set_tooltip_text(self.tooltip)
 
     # run this every updatefreq ms
     def run(self):
@@ -81,14 +103,14 @@ class StatusIcon(Thread):
         speed = to_units(bpsnow)
 
         if self.sabpaused:
-            self.tooltip = T('Paused')
-            self.icon = self.sabicons['pause']
+            self.tooltip = T("Paused")
+            self.icon = self.sabicons["pause"]
         elif bytes_left > 0:
-            self.tooltip = "%sB/s %s: %sB (%s)" % (speed, T('Remaining'), mb_left, time_left)
-            self.icon = self.sabicons['green']
+            self.tooltip = "%sB/s %s: %sB (%s)" % (speed, T("Remaining"), mb_left, time_left)
+            self.icon = self.sabicons["green"]
         else:
-            self.tooltip = T('Idle')
-            self.icon = self.sabicons['default']
+            self.tooltip = T("Idle")
+            self.icon = self.sabicons["default"]
 
         self.refresh_icon()
         self.refresh_tooltip()
@@ -96,19 +118,19 @@ class StatusIcon(Thread):
 
     def right_click_event(self, icon, button, time):
         """ menu """
-        menu = gtk.Menu()
+        menu = Gtk.Menu()
 
-        maddnzb = gtk.MenuItem(T("Add NZB"))
-        mshowinterface = gtk.MenuItem(T("Show interface"))
-        mopencomplete = gtk.MenuItem(T("Open complete folder"))
-        mrss = gtk.MenuItem(T("Read all RSS feeds"))
+        maddnzb = Gtk.MenuItem(label=T("Add NZB"))
+        mshowinterface = Gtk.MenuItem(label=T("Show interface"))
+        mopencomplete = Gtk.MenuItem(label=T("Open complete folder"))
+        mrss = Gtk.MenuItem(label=T("Read all RSS feeds"))
 
         if self.sabpaused:
-            mpauseresume = gtk.MenuItem(T("Resume"))
+            mpauseresume = Gtk.MenuItem(label=T("Resume"))
         else:
-            mpauseresume = gtk.MenuItem(T("Pause"))
-        mrestart = gtk.MenuItem(T("Restart"))
-        mshutdown = gtk.MenuItem(T("Shutdown"))
+            mpauseresume = Gtk.MenuItem(label=T("Pause"))
+        mrestart = Gtk.MenuItem(label=T("Restart"))
+        mshutdown = Gtk.MenuItem(label=T("Shutdown"))
 
         maddnzb.connect("activate", self.addnzb)
         mshowinterface.connect("activate", self.browse)
@@ -127,15 +149,15 @@ class StatusIcon(Thread):
         menu.append(mshutdown)
 
         menu.show_all()
-        menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.statusicon)
+        menu.popup(None, None, None, self.statusicon, button, time)
 
     def addnzb(self, icon):
         """ menu handlers """
-        dialog = gtk.FileChooserDialog(title=None, action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                                       buttons=(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        dialog = Gtk.FileChooserDialog(title="SABnzbd - " + T("Add NZB"), action=Gtk.FileChooserAction.OPEN)
+        dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_select_multiple(True)
 
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("*.nzb,*.gz,*.bz2,*.zip,*.rar,*.7z")
         filter.add_pattern("*.nzb")
         filter.add_pattern("*.gz")
@@ -146,9 +168,9 @@ class StatusIcon(Thread):
         dialog.add_filter(filter)
 
         response = dialog.run()
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             for filename in dialog.get_filenames():
-                add_local(filename)
+                sabnzbd.add_nzbfile(filename)
         dialog.destroy()
 
     def opencomplete(self, icon):
@@ -164,11 +186,11 @@ class StatusIcon(Thread):
             self.pause()
 
     def restart(self, icon):
-        self.hover_text = T('Restart')
+        self.hover_text = T("Restart")
         sabnzbd.trigger_restart()
 
     def shutdown(self, icon):
-        self.hover_text = T('Shutdown')
+        self.hover_text = T("Shutdown")
         sabnzbd.shutdown_program()
 
     def pause(self):

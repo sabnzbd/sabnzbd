@@ -63,7 +63,7 @@
         <p><strong>If you encounter an error, please include the log file (click on <span class="glyphicon glyphicon-wrench"></span> ) when contacting us.</strong></p>
         <span class="glyphicon glyphicon-home"></span> <a href="https://forums.sabnzbd.org/viewforum.php?f=11" target="_blank">SABnzbd Forum</a><br />
         <span class="glyphicon glyphicon-plane"></span> <a href="https://github.com/sabnzbd/sabnzbd/" target="_blank">SABnzbd on Github</a><br />
-        <span class="glyphicon glyphicon-globe"></span> <a href="https://translations.launchpad.net/sabnzbd" target="_blank">Translations of SABnzbd</a><br />
+        <span class="glyphicon glyphicon-globe"></span> <a href="https://sabnzbd.org/wiki/translate" target="_blank">Translations of SABnzbd</a><br />
     </div>
 </div>
 
@@ -139,6 +139,15 @@
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
                         </div>
+                        <div class="row">
+                            <div class="col-sm-6">$T('dashboard-internetBandwidth')</div>
+                            <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
+                                <span data-bind="text: statusInfo.internetbandwidth()"></span> MB/s
+                                <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <small>(<span data-bind="text: statusInfo.internetbandwidth()*8"></span> Mbps)</small>
+                            </div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                        </div>
                         <div class="row test-download">
                             <div class="col-sm-6">$T('dashboard-testDownload')</div>
                             <div class="col-sm-6">
@@ -159,7 +168,7 @@
                         </div>
                         <div class="row options-function-box">
                             <div class="col-sm-6">
-                                <a href="./status/showlog?session=$session" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
+                                <a href="./status/showlog?apikey=$apikey" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
                                     <span class="glyphicon glyphicon-file"></span> $T('link-showLog')
                                 </a>
                             </div>
@@ -642,7 +651,7 @@
                     </tbody>
                 </table>
                 <hr/>
-                <p><small>Copyright (C) 2007-2019, The SABnzbd Team &lt;team@sabnzbd.org&gt;<br/>$T('yourRights') </small></p>
+                <p><small>Copyright (C) 2007-2020 The SABnzbd Team &lt;team@sabnzbd.org&gt;<br/>$T('yourRights') </small></p>
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
-#!/usr/bin/python -OO
-# Copyright 2007-2019 The SABnzbd-Team <team@sabnzbd.org>
+#!/usr/bin/python3 -OO
+# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -86,92 +86,90 @@ def init():
             m = int(m)
             h = int(h)
         except:
-            logging.warning(T('Bad schedule %s at %s:%s'), action_name, m, h)
+            logging.warning(T("Bad schedule %s at %s:%s"), action_name, m, h)
             continue
 
         if d.isdigit():
             d = [int(i) for i in d]
         else:
-            d = range(1, 8)
+            d = list(range(1, 8))
 
-        if action_name == 'resume':
+        if action_name == "resume":
             action = scheduled_resume
             arguments = []
-        elif action_name == 'pause':
+        elif action_name == "pause":
             action = sabnzbd.downloader.Downloader.do.pause
             arguments = []
-        elif action_name == 'pause_all':
+        elif action_name == "pause_all":
             action = sabnzbd.pause_all
             arguments = []
-        elif action_name == 'shutdown':
+        elif action_name == "shutdown":
             action = sabnzbd.shutdown_program
             arguments = []
-        elif action_name == 'restart':
+        elif action_name == "restart":
             action = sabnzbd.restart_program
             arguments = []
-        elif action_name == 'pause_post':
+        elif action_name == "pause_post":
             action = pp_pause
-        elif action_name == 'resume_post':
+        elif action_name == "resume_post":
             action = pp_resume
-        elif action_name == 'speedlimit' and arguments != []:
+        elif action_name == "speedlimit" and arguments != []:
             action = sabnzbd.downloader.Downloader.do.limit_speed
-        elif action_name == 'enable_server' and arguments != []:
+        elif action_name == "enable_server" and arguments != []:
             action = sabnzbd.enable_server
-        elif action_name == 'disable_server' and arguments != []:
+        elif action_name == "disable_server" and arguments != []:
             action = sabnzbd.disable_server
-        elif action_name == 'scan_folder':
+        elif action_name == "scan_folder":
             action = sabnzbd.dirscanner.dirscan
-        elif action_name == 'rss_scan':
+        elif action_name == "rss_scan":
             action = rss.run_method
             rss_planned = True
-        elif action_name == 'remove_failed':
+        elif action_name == "remove_failed":
             action = sabnzbd.api.history_remove_failed
-        elif action_name == 'remove_completed':
+        elif action_name == "remove_completed":
             action = sabnzbd.api.history_remove_completed
-        elif action_name == 'enable_quota':
+        elif action_name == "enable_quota":
             action = sabnzbd.bpsmeter.BPSMeter.do.set_status
             arguments = [True]
-        elif action_name == 'disable_quota':
+        elif action_name == "disable_quota":
             action = sabnzbd.bpsmeter.BPSMeter.do.set_status
             arguments = [False]
-        elif action_name == 'pause_all_low':
+        elif action_name == "pause_all_low":
             action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
             arguments = [LOW_PRIORITY]
-        elif action_name == 'pause_all_normal':
+        elif action_name == "pause_all_normal":
             action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
             arguments = [NORMAL_PRIORITY]
-        elif action_name == 'pause_all_high':
+        elif action_name == "pause_all_high":
             action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
             arguments = [HIGH_PRIORITY]
-        elif action_name == 'resume_all_low':
+        elif action_name == "resume_all_low":
             action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
             arguments = [LOW_PRIORITY]
-        elif action_name == 'resume_all_normal':
+        elif action_name == "resume_all_normal":
             action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
             arguments = [NORMAL_PRIORITY]
-        elif action_name == 'resume_all_high':
+        elif action_name == "resume_all_high":
             action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
             arguments = [HIGH_PRIORITY]
-        elif action_name == 'pause_cat':
+        elif action_name == "pause_cat":
             action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_cat
             arguments = [argument_list]
-        elif action_name == 'resume_cat':
+        elif action_name == "resume_cat":
             action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_cat
             arguments = [argument_list]
         else:
-            logging.warning(T('Unknown action: %s'), action_name)
+            logging.warning(T("Unknown action: %s"), action_name)
             continue
 
-        if enabled == '1':
+        if enabled == "1":
             logging.debug("Scheduling %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
-            __SCHED.add_daytime_task(action, action_name, d, None, (h, m),
-                                 kronos.method.sequential, arguments, None)
+            __SCHED.add_daytime_task(action, action_name, d, None, (h, m), kronos.method.sequential, arguments, None)
         else:
             logging.debug("Skipping %s(%s) on days %s at %02d:%02d", action_name, arguments, d, h, m)
 
     # Set Guardian interval to 30 seconds
-    __SCHED.add_interval_task(sched_guardian, "Guardian", 15, 30,
-                                  kronos.method.sequential, None, None)
+    __SCHED.add_interval_task(sched_guardian, "Guardian", 15, 30, kronos.method.sequential, None, None)
 
     # Set RSS check interval
     if not rss_planned:
@@ -179,34 +177,53 @@ def init():
         delay = random.randint(0, interval - 1)
         logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
         sabnzbd.rss.next_run(time.time() + delay * 60)
-        __SCHED.add_interval_task(rss.run_method, "RSS", delay * 60, interval * 60,
-                                      kronos.method.sequential, None, None)
-        __SCHED.add_single_task(rss.run_method, 'RSS', 15, kronos.method.sequential, None, None)
+        __SCHED.add_interval_task(
+            rss.run_method, "RSS", delay * 60, interval * 60, kronos.method.sequential, None, None
+        )
+        __SCHED.add_single_task(rss.run_method, "RSS", 15, kronos.method.sequential, None, None)
 
     if cfg.version_check():
         # Check for new release, once per week on random time
         m = random.randint(0, 59)
         h = random.randint(0, 23)
-        d = (random.randint(1, 7), )
+        d = (random.randint(1, 7),)
 
         logging.debug("Scheduling VersionCheck on day %s at %s:%s", d[0], h, m)
-        __SCHED.add_daytime_task(sabnzbd.misc.check_latest_version, 'VerCheck', d, None, (h, m),
-                                 kronos.method.sequential, [], None)
+        __SCHED.add_daytime_task(
+            sabnzbd.misc.check_latest_version, "VerCheck", d, None, (h, m), kronos.method.sequential, [], None
+        )
 
     action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
     if action:
-        logging.info('Setting schedule for quota check daily at %s:%s', hour, minute)
-        __SCHED.add_daytime_task(action, 'quota_reset', range(1, 8), None, (hour, minute),
-                                 kronos.method.sequential, [], None)
+        logging.info("Setting schedule for quota check daily at %s:%s", hour, minute)
+        __SCHED.add_daytime_task(
+            action, "quota_reset", list(range(1, 8)), None, (hour, minute), kronos.method.sequential, [], None
+        )
 
     if sabnzbd.misc.int_conv(cfg.history_retention()) > 0:
-        logging.info('Setting schedule for midnight auto history-purge')
-        __SCHED.add_daytime_task(sabnzbd.database.midnight_history_purge, 'midnight_history_purge', range(1, 8), None, (0, 0),
-                                kronos.method.sequential, [], None)
+        logging.info("Setting schedule for midnight auto history-purge")
+        __SCHED.add_daytime_task(
+            sabnzbd.database.midnight_history_purge,
+            "midnight_history_purge",
+            list(range(1, 8)),
+            None,
+            (0, 0),
+            kronos.method.sequential,
+            [],
+            None,
+        )
 
-    logging.info('Setting schedule for midnight BPS reset')
-    __SCHED.add_daytime_task(sabnzbd.bpsmeter.midnight_action, 'midnight_bps', range(1, 8), None, (0, 0),
-                             kronos.method.sequential, [], None)
+    logging.info("Setting schedule for midnight BPS reset")
+    __SCHED.add_daytime_task(
+        sabnzbd.bpsmeter.midnight_action,
+        "midnight_bps",
+        list(range(1, 8)),
+        None,
+        (0, 0),
+        kronos.method.sequential,
+        [],
+        None,
+    )
 
     # Subscribe to special schedule changes
     cfg.rss_rate.callback(schedule_guard)
@@ -216,7 +233,7 @@ def start():
     """ Start the scheduler """
     global __SCHED
     if __SCHED:
-        logging.debug('Starting scheduler')
+        logging.debug("Starting scheduler")
         __SCHED.start()
 
 
@@ -241,7 +258,7 @@ def stop():
     """ Stop the scheduler, destroy instance """
     global __SCHED
     if __SCHED:
-        logging.debug('Stopping scheduler')
+        logging.debug("Stopping scheduler")
         try:
             __SCHED.stop()
         except IndexError:
@@ -254,7 +271,7 @@ def abort():
     """ Emergency stop, just set the running attribute false """
     global __SCHED
     if __SCHED:
-        logging.debug('Terminating scheduler')
+        logging.debug("Terminating scheduler")
         __SCHED.running = False
 
 
@@ -284,8 +301,8 @@ def sort_schedules(all_events, now=None):
             except:
                 continue  # Bad schedule, ignore
         action = action.strip()
-        if dd == '*':
-            dd = '1234567'
+        if dd == "*":
+            dd = "1234567"
         if not dd.isdigit():
             continue  # Bad schedule, ignore
         for d in dd:
@@ -299,7 +316,7 @@ def sort_schedules(all_events, now=None):
             if not all_events:
                 break
 
-    events.sort(lambda x, y: x[0] - y[0])
+    events.sort(key=lambda x: x[0])
     return events
 
 
@@ -319,10 +336,10 @@ def analyse(was_paused=False, priority=None):
 
     for ev in sort_schedules(all_events=True):
         if priority is None:
-            logging.debug('Schedule check result = %s', ev)
+            logging.debug("Schedule check result = %s", ev)
 
         # Skip if disabled
-        if ev[4] == '0':
+        if ev[4] == "0":
             continue
 
         action = ev[1]
@@ -330,48 +347,48 @@ def analyse(was_paused=False, priority=None):
             value = ev[2]
         except:
             value = None
-        if action == 'pause':
+        if action == "pause":
             paused = True
-        elif action == 'pause_all':
+        elif action == "pause_all":
             paused_all = True
             PP_PAUSE_EVENT = True
-        elif action == 'resume':
+        elif action == "resume":
             paused = False
             paused_all = False
-        elif action == 'pause_post':
+        elif action == "pause_post":
             pause_post = True
             PP_PAUSE_EVENT = True
-        elif action == 'resume_post':
+        elif action == "resume_post":
             pause_post = False
             PP_PAUSE_EVENT = True
-        elif action == 'speedlimit' and value is not None:
+        elif action == "speedlimit" and value is not None:
             speedlimit = ev[2]
-        elif action == 'pause_all_low':
+        elif action == "pause_all_low":
             pause_low = True
-        elif action == 'pause_all_normal':
+        elif action == "pause_all_normal":
             pause_normal = True
-        elif action == 'pause_all_high':
+        elif action == "pause_all_high":
             pause_high = True
-        elif action == 'resume_all_low':
+        elif action == "resume_all_low":
             pause_low = False
-        elif action == 'resume_all_normal':
+        elif action == "resume_all_normal":
             pause_normal = False
-        elif action == 'resume_all_high':
+        elif action == "resume_all_high":
             pause_high = False
-        elif action == 'enable_quota':
+        elif action == "enable_quota":
             quota = True
-        elif action == 'disable_quota':
+        elif action == "disable_quota":
             quota = False
-        elif action == 'enable_server':
+        elif action == "enable_server":
             try:
                 servers[value] = 1
             except:
-                logging.warning(T('Schedule for non-existing server %s'), value)
-        elif action == 'disable_server':
+                logging.warning(T("Schedule for non-existing server %s"), value)
+        elif action == "disable_server":
             try:
                 servers[value] = 0
             except:
-                logging.warning(T('Schedule for non-existing server %s'), value)
+                logging.warning(T("Schedule for non-existing server %s"), value)
 
     # Special case, a priority was passed, so evaluate only that and return state
     if priority == LOW_PRIORITY:
@@ -399,7 +416,7 @@ def analyse(was_paused=False, priority=None):
 
     for serv in servers:
         try:
-            item = config.get_config('servers', serv)
+            item = config.get_config("servers", serv)
             value = servers[serv]
             if bool(item.enable()) != bool(value):
                 item.enable.set(value)
@@ -410,7 +427,7 @@ def analyse(was_paused=False, priority=None):
 
 
 # Support for single shot pause (=delayed resume)
-__PAUSE_END = None     # Moment when pause will end
+__PAUSE_END = None  # Moment when pause will end
 
 
 def scheduled_resume():
@@ -427,10 +444,10 @@ def __oneshot_resume(when):
     global __PAUSE_END
     if __PAUSE_END is not None and (when > __PAUSE_END - 5) and (when < __PAUSE_END + 55):
         __PAUSE_END = None
-        logging.debug('Resume after pause-interval')
+        logging.debug("Resume after pause-interval")
         sabnzbd.unpause_all()
     else:
-        logging.debug('Ignoring cancelled resume')
+        logging.debug("Ignoring cancelled resume")
 
 
 def plan_resume(interval):
@@ -438,8 +455,8 @@ def plan_resume(interval):
     global __SCHED, __PAUSE_END
     if interval > 0:
         __PAUSE_END = time.time() + (interval * 60)
-        logging.debug('Schedule resume at %s', __PAUSE_END)
-        __SCHED.add_single_task(__oneshot_resume, '', interval * 60, kronos.method.sequential, [__PAUSE_END], None)
+        logging.debug("Schedule resume at %s", __PAUSE_END)
+        __SCHED.add_single_task(__oneshot_resume, "", interval * 60, kronos.method.sequential, [__PAUSE_END], None)
         sabnzbd.downloader.Downloader.do.pause()
     else:
         __PAUSE_END = None
@@ -454,13 +471,13 @@ def pause_int():
     else:
         val = __PAUSE_END - time.time()
         if val < 0:
-            sign = '-'
+            sign = "-"
             val = abs(val)
         else:
-            sign = ''
-        min = int(val / 60L)
-        sec = int(val - min * 60)
-        return "%s%d:%02d" % (sign, min, sec)
+            sign = ""
+        mins = int(val / 60)
+        sec = int(val - mins * 60)
+        return "%s%d:%02d" % (sign, mins, sec)
 
 
 def pause_check():
@@ -468,18 +485,18 @@ def pause_check():
     global __PAUSE_END
     if __PAUSE_END is not None and (__PAUSE_END - time.time()) < 0:
         __PAUSE_END = None
-        logging.debug('Force resume, negative timer')
+        logging.debug("Force resume, negative timer")
         sabnzbd.unpause_all()
 
 
 def plan_server(action, parms, interval):
     """ Plan to re-activate server after 'interval' minutes """
-    __SCHED.add_single_task(action, '', interval * 60, kronos.method.sequential, parms, None)
+    __SCHED.add_single_task(action, "", interval * 60, kronos.method.sequential, parms, None)
 
 
 def force_rss():
     """ Add a one-time RSS scan, one second from now """
-    __SCHED.add_single_task(rss.run_method, 'RSS', 1, kronos.method.sequential, None, None)
+    __SCHED.add_single_task(rss.run_method, "RSS", 1, kronos.method.sequential, None, None)
 
 
 # Scheduler Guarding system

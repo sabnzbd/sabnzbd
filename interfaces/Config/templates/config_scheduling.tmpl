@@ -1,5 +1,5 @@
 <!--#set global $pane="Scheduling"#-->
-<!--#set global $help_uri="configuration/2.3/scheduling"#-->
+<!--#set global $help_uri="configuration/3.0/scheduling"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <%
@@ -18,7 +18,7 @@ else:
             <h3>$T('addSchedule') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
         </div><!-- /col2 -->
         <form action="addSchedule" method="post" autocomplete="off">
-        <input type="hidden" id="session" name="session" value="$session" />
+        <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <div class="col1">
             <fieldset>
                 <div class="field-pair">
@@ -91,7 +91,7 @@ else:
                         <!--#for $schednum, $line in enumerate($schedlines)#-->
                             <!--#set $odd = not $odd#-->
                             <form action="delSchedule" method="post">
-                                <input type="hidden" name="session" value="$session"/>
+                                <input type="hidden" name="apikey" value="$apikey"/>
                                 <input type="hidden" name="line" id="line" value="$line"/>
                                 <div class="field-pair infoTableSeperator <!--#if $odd then "" else " alt"#-->">
                                     <input type="checkbox" name="schedenabled" value="$line" <!--#if int($taskinfo[$schednum][5]) > 0 then 'checked="checked"' else ""#-->>
@@ -137,7 +137,7 @@ else:
         \$.ajax({
             type: "POST",
             url: "toggleSchedule",
-            data: {line: \$(this).val(), session: "$session" }
+            data: {line: \$(this).val(), apikey: "$apikey" }
         }).done(function() {
             // Let us leave!
             formWasSubmitted = true;

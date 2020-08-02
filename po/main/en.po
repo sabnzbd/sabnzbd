@@ -122,3 +122,6 @@ msgstr "Advanced Settings"
 
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 is highest priority, 99 is the lowest priority"
+
+msgid "Filter out sample files (e.g. video samples)."
+msgstr "Filter out sample files (e.g. video samples/proofs)."
