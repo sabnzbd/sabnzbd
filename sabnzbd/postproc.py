@@ -688,7 +688,7 @@ def prepare_extraction_path(nzo):
     complete_dir = sanitize_and_trim_path(complete_dir)
 
     if one_folder:
-        workdir_complete = create_all_dirs(complete_dir, umask=True)
+        workdir_complete = create_all_dirs(complete_dir, apply_umask=True)
     else:
         workdir_complete = get_unique_path(os.path.join(complete_dir, nzo.final_name), create_dir=True)
         marker_file = set_marker(workdir_complete)
