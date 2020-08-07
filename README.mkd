@@ -1,7 +1,11 @@
-Release Notes - SABnzbd 3.0.0
+Release Notes - SABnzbd 3.0.1 RC 1
 =========================================================
 
-## About this new version
+## Bugfixes since 3.0.0
+- Permissions were not set correctly when creating directories.
+- Windows: base SSL certificate bundle was not included.
+
+## About the new major version
 We have been working for months to upgrade the SABnzbd code from Python 2 to Python 3.
 Although it might not sound like a big change, we had to rewrite almost every part of
 the code. We also included a number of new features, listed below.
