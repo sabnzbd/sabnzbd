@@ -549,20 +549,36 @@ DIR_LOCK = threading.RLock()
 
 
 @synchronized(DIR_LOCK)
-def create_all_dirs(path, umask=False):
+def create_all_dirs(path, apply_umask=False):
     """ Create all required path elements and set umask on all
         The umask argument is ignored on Windows
         Return path if elements could be made or exists
     """
     try:
-        # Use custom mask if desired
-        mask = 0o700
-        if umask and sabnzbd.cfg.umask():
-            mask = int(sabnzbd.cfg.umask(), 8)
+        logging.info("Creating directories: %s", path)
+        if sabnzbd.WIN32:
+            os.makedirs(path, exist_ok=True)
+        else:
+            # We need to build the directory recursively so we can
+            # apply permissions to only the newly created folders
+            # We cannot use os.makedirs() to do this as it ignores the mode
+            try:
+                # Try the user permissions setting
+                umask = int(sabnzbd.cfg.umask(), 8) | int("0700", 8)
+            except:
+                # Use default
+                umask = int("0700", 8)
 
-        # Use python functions to create the directory
-        logging.info("Creating directories: %s (mask=%s)", path, mask)
-        os.makedirs(path, mode=mask, exist_ok=True)
+            # Build path from root
+            path_part_combined = "/"
+            for path_part in path.split("/"):
+                if path_part:
+                    path_part_combined = os.path.join(path_part_combined, path_part)
+                    # Only create if it doesn't exist
+                    if not os.path.exists(path_part_combined):
+                        os.mkdir(path_part_combined)
+                        # Try to set permissions, ignore failures
+                        set_chmod(path_part_combined, umask, report=False)
         return path
     except OSError:
         logging.error(T("Failed making (%s)"), clip_path(path), exc_info=True)
@@ -582,7 +598,7 @@ def get_unique_path(dirpath, n=0, create_dir=True):
 
     if not os.path.exists(path):
         if create_dir:
-            return create_all_dirs(path, umask=True)
+            return create_all_dirs(path, apply_umask=True)
         else:
             return path
     else:
@@ -643,7 +659,7 @@ def move_to_path(path, new_path):
             # Cannot rename, try copying
             logging.debug("File could not be renamed, trying copying: %s", path)
             try:
-                create_all_dirs(os.path.dirname(new_path), umask=True)
+                create_all_dirs(os.path.dirname(new_path), apply_umask=True)
                 shutil.copyfile(path, new_path)
                 os.remove(path)
             except:
