@@ -748,11 +748,11 @@ def renamer(old, new):
 
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
-        retries = 15
+        retries = 10
         while retries > 0:
             try:
                 # First we try 3 times with os.rename
-                if retries > 12:
+                if retries > 7:
                     os.rename(old, new)
                 else:
                     # Now we try the back-up method
@@ -765,11 +765,12 @@ def renamer(old, new):
                     # Error 17 - Rename can't move to different disk
                     # Jump to moving with shutil.move
                     retries -= 3
-                elif err.winerror == 32:
+                elif err.winerror == 32 or err.winerror == 5:
                     # Error 32 - Used by another process
+                    # Error 5 - Access is denied (virus scanners)
                     logging.debug("File busy, retrying rename %s to %s", old, new)
                     retries -= 1
-                    # Wait for the other process to finish
+                    # Wait for the other process
                     time.sleep(2)
                 else:
                     raise
