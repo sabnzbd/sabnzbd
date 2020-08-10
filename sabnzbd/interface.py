@@ -252,13 +252,9 @@ def check_login():
     return check_login_cookie()
 
 
-def get_users():
-    users = {cfg.username(): cfg.password()}
-    return users
-
-
-def encrypt_pwd(pwd):
-    return pwd
+def check_basic_auth(_, username, password):
+    """ CherryPy basic authentication validation """
+    return username == cfg.username() and password == cfg.password()
 
 
 def set_auth(conf):
@@ -268,8 +264,7 @@ def set_auth(conf):
             {
                 "tools.auth_basic.on": True,
                 "tools.auth_basic.realm": "SABnzbd",
-                "tools.auth_basic.users": get_users,
-                "tools.auth_basic.encrypt": encrypt_pwd,
+                "tools.auth_basic.checkpassword": check_basic_auth,
             }
         )
         conf.update(
