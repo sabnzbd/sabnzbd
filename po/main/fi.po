@@ -22,7 +22,6 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Web-käyttöliittymän käynnistys epäonnistui"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Web-mallia %s ei löydy, yritetään käyttää oletusmallia"
@@ -43,7 +42,6 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 ohjelmaa... EI löydy!"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -68,7 +66,6 @@ msgstr "unzip-ohjelmaa... EI löydy!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -82,7 +79,6 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP- ja HTTPS-portit eivät voi olla samoja"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -164,6 +160,11 @@ msgstr "Virhe tiedostossa tempfile.mkstemp"
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
 msgstr "Kohteen %s lataaminen epäonnistui"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -428,7 +429,6 @@ msgstr "Jatketaan"
 msgid "Paused"
 msgstr "Keskeytetty"
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -729,14 +729,23 @@ msgstr "m"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "Virhe luotaessa SSL avainta ja sertifikaattia"
 
-#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -1165,6 +1174,7 @@ msgstr "%s => puuttuu kaikilta palvelimilta, hylätään"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Virheellinen NZB tiedosto %s, ohitetaan (syy=%s, rivi=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Tyhjä NZB tiedosto %s"
@@ -1490,7 +1500,6 @@ msgstr "Virhe %s: Syötä kelvollinen käyttäjänimi ja salasana."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Vanhan version jono havaittiin, käytä Tila->Korjaa muuntaaksesi jonon"
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1602,6 +1611,11 @@ msgstr "RAR arkistot varmennettiin onnistuneesti"
 msgid "RAR files failed to verify"
 msgstr "RAR arkistoja ei voitu varmentaa"
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1621,6 +1635,11 @@ msgstr "Järjestelmän valmiustilaan laittaminen epäonnistui"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "Virhe sammutettaessa järjestelmää"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py

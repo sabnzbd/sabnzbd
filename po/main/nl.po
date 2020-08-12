@@ -22,7 +22,6 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Webinterface kan niet gestart worden"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
@@ -46,7 +45,6 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2-programma niet gevonden."
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -70,7 +68,6 @@ msgstr "unzip-programma niet gevonden."
 msgid "Essential modules are missing, downloading cannot start."
 msgstr "Essentiële onderdelen ontbreken, er kan niet gedownload worden."
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -84,7 +81,6 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP- en HTTPS-poort kunnen niet hetzelfde zijn"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -165,6 +161,11 @@ msgstr "Probleem met tempfile.mkstemp"
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
 msgstr "Inlezen van %s mislukt"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -443,7 +444,6 @@ msgstr "Hervatten"
 msgid "Paused"
 msgstr "Gepauzeerd"
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -747,10 +747,14 @@ msgstr "m"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "Fout bij aanmaken SSL-sleutel en -certificaat"
 
-#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -759,6 +763,11 @@ msgstr ""
 "Je wachtwoordenbestand bevat meer dan 30 wachtwoorden, het testen van al "
 "deze wachtwoorden kost heel veel tijd. Zorg ervoor dat je alleen maar "
 "nuttige wachtwoorden in dit bestand zet."
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
+msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
@@ -1192,6 +1201,7 @@ msgstr "%s => ontbreekt op alle servers, overslaan"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Foutief NZB-bestand %s, overslaan (reden=%s, regel=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "NZB-bestand %s is leeg"
@@ -1519,7 +1529,6 @@ msgstr "Fout %s: Je moet een geldige gebruikersnaam en wachtwoord invullen."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Oude wachtrij gevonden, gebruik Status->Reparatie om te converteren"
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1634,6 +1643,11 @@ msgstr "RAR bestanden zijn succesvol geverifieerd"
 msgid "RAR files failed to verify"
 msgstr "RAR bestanden zijn niet verifieerbaar"
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1653,6 +1667,11 @@ msgstr "Kan het systeem niet in standby krijgen"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "Fout bij het afsluiten van het systeem"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py

@@ -18,7 +18,6 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr ""
@@ -38,7 +37,6 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -61,7 +59,6 @@ msgstr ""
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"
 msgstr ""
@@ -71,7 +68,6 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
 msgstr ""
@@ -146,6 +142,11 @@ msgstr ""
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
 msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
@@ -402,7 +403,6 @@ msgstr ""
 msgid "Paused"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -672,12 +672,21 @@ msgstr ""
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
+msgstr ""
+
+#: sabnzbd/misc.py
+msgid "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
 msgstr ""
 
 #. Warning message
 #: sabnzbd/misc.py
-msgid "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
+msgid "Failed to read the password file %s"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -1099,6 +1108,7 @@ msgstr ""
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr ""
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr ""
@@ -1391,7 +1401,6 @@ msgstr ""
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr ""
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid "Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB"
 msgstr ""
@@ -1501,6 +1510,11 @@ msgstr ""
 msgid "RAR files failed to verify"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1519,6 +1533,11 @@ msgstr ""
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
+msgstr ""
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
 msgstr ""
 
 #. Warning message

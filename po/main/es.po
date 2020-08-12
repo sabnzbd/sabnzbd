@@ -22,7 +22,6 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Error al iniciar la interfaz web"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr ""
@@ -45,7 +44,6 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 binario... NO encontrado!"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Su versión UnRAR es %s, recomendamos la versión %s o superior. <br />"
@@ -68,7 +66,6 @@ msgstr "unzip binario... NO encontrado!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -82,7 +79,6 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Los puertos de HTTP y de HTTPS no pueden ser iguales"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -160,6 +156,11 @@ msgstr "Fallo en tempfile.mkstemp"
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
 msgstr "Cargar de %s no se pudo completar."
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -427,7 +428,6 @@ msgstr "Reanudando"
 msgid "Paused"
 msgstr "En pausa"
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -730,14 +730,23 @@ msgstr "m"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "Error al crear la llave SSL y el certificado"
 
-#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -1172,6 +1181,7 @@ msgstr "%s => faltando de todos servidores, desechando"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Fichero NBZ inválido: %s, omitiendo (razón=%s, línea=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Fichero NZB vacío: %s"
@@ -1502,7 +1512,6 @@ msgstr ""
 "Se ha encontrado una cola antigua, utilice Estado->Reparar para convertir la"
 " cola"
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1614,6 +1623,11 @@ msgstr ""
 msgid "RAR files failed to verify"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1633,6 +1647,11 @@ msgstr "Error al suspender el sistema"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "Error al apagarel sistema"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py

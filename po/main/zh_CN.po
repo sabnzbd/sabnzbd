@@ -22,7 +22,6 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "web 界面启动失败"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "无法找到 web 模板: %s，正在尝试标准模板"
@@ -43,7 +42,6 @@ msgstr "SABYenc 模块... 未找到！要求  v%s - https://sabnzbd.org/sabyenc"
 msgid "par2 binary... NOT found!"
 msgstr "par2 可执行程序... *未* 找到!"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "您的 UNRAR 程序版本为 %s，我们建议使用 %s 或更高版本。<br />"
@@ -66,7 +64,6 @@ msgstr "unzip 可执行程序... *未* 找到!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -78,7 +75,6 @@ msgstr "请注意 0.0.0.0 主机名需要 IPv6 地址才能从外部访问"
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP 与 HTTPS 端口不能相同"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -156,6 +152,11 @@ msgstr "tempfile.mkstemp 出错"
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
 msgstr "加载 %s 失败"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -418,7 +419,6 @@ msgstr "恢复中"
 msgid "Paused"
 msgstr "已暂停"
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "设置带宽限制前，您必须设置最大带宽值"
@@ -711,14 +711,23 @@ msgstr "分钟"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "创建 SSL key 及证书出错"
 
-#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -1146,6 +1155,7 @@ msgstr "%s => 所有服务器均缺失，正在舍弃"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "无效 NZB 文件 %s，正在跳过 (原因=%s, 行=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "空 NZB 文件 %s"
@@ -1471,7 +1481,6 @@ msgstr "错误 %s: 您需要提供有效的用户名与密码。"
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "侦测到旧版队列，请使用“状态”→“修复”转换队列"
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1583,6 +1592,11 @@ msgstr "RAR 文件验证成功"
 msgid "RAR files failed to verify"
 msgstr "RAR 文件验证失败"
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1602,6 +1616,11 @@ msgstr "系统待机失败"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "关闭系统时出错"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py

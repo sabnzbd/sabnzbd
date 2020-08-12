@@ -22,7 +22,6 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Kunne ikke starte web-interface"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Kan ikke finde webskabeloner: %s, forsøger med standardskabelon"
@@ -46,7 +45,6 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 binær... IKKE fundet!"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Din Unrar version er %s, vi anbefaler version %s eller højere.<br />"
@@ -69,7 +67,6 @@ msgstr "unzip binær... IKKE fundet!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -83,7 +80,6 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP og HTTPS porte kan ikke være de samme"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -163,6 +159,11 @@ msgstr "Fejl i tempfile.mkstemp"
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
 msgstr "Downloadning af %s mislykkedes"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -429,7 +430,6 @@ msgstr "Genoptager"
 msgid "Paused"
 msgstr "Sat på pause"
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -731,14 +731,23 @@ msgstr "m"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "Fejl ved oprettelse af SSL-nøgle og certifikat"
 
-#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -1170,6 +1179,7 @@ msgstr "%s => mangler fra alle servere, afviser"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Ødelagt NZB fil %s, springer over (årsag=%s, linje=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Tom NZB fil %s"
@@ -1495,7 +1505,6 @@ msgstr "Fejl %s: Du skal angive et gyldigt brugernavn og adgangskode."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Gamle kø opdaget, brug Status->Reparation for at konvertere kø"
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1607,6 +1616,11 @@ msgstr "RAR filer kontrolleres med succes"
 msgid "RAR files failed to verify"
 msgstr "RAR filer kunne ikke bekræfte"
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1626,6 +1640,11 @@ msgstr "Det lykkedes ikke systemet at gå i standby"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "Fejl ved lukning af system"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py

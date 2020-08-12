@@ -22,7 +22,6 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Neuspešno pokretanje web interfejsa"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Немогуће наћи веб модел: %s, програм покушава са стандардним моделом"
@@ -43,7 +42,6 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 program...NIJE pronađen!"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -67,7 +65,6 @@ msgstr "unzip program...NIJE pronađen"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -80,7 +77,6 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP i HTTPS portovi ne mogu biti isti"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -158,6 +154,11 @@ msgstr "Грешка у tempfile.mkstemp"
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
 msgstr "Učitavanje %s neuspešno"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -422,7 +423,6 @@ msgstr "Nastavlja se"
 msgid "Paused"
 msgstr "Паузирано"
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -721,14 +721,23 @@ msgstr "м"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "Грешка креације SSL кључа и сертификата"
 
-#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -1158,6 +1167,7 @@ msgstr "%s => фали на свим серверима, одбацивање"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Неважећи NZB %s, прескакање (разлог=%s, линија=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Празан NZB %s"
@@ -1483,7 +1493,6 @@ msgstr "Грешка %s: Требате да унесете важеће име/
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Стари ред је нађен, употребити Статус->Поправи за претварање реда"
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1595,6 +1604,11 @@ msgstr ""
 msgid "RAR files failed to verify"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1614,6 +1628,11 @@ msgstr "Неуспено постављање система у стању пр�
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "Greška pri gašenju sistema"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py

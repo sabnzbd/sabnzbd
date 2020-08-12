@@ -23,7 +23,6 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "נכשל בהתחלת ממשק רשת"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "מנסה תבנית תקנית ,%s :לא ניתן למצוא תבניות רשת"
@@ -44,7 +43,6 @@ msgstr "%s - https://sabnzbd.org/sabyenc לא נמצא! מצפה אל …SABYenc
 msgid "par2 binary... NOT found!"
 msgstr "!בינארי… לא נמצא par2"
 
-#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ".שלך היא %s אנו ממליצים על גרסה %s או גבוהה יותר UNRAR גרסת<br />"
@@ -67,7 +65,6 @@ msgstr "!בינארי… לא נמצא unzip"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ".פירקנים חיוניים חסרים, הורדה אינה יכולה להתחיל"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -79,7 +76,6 @@ msgstr "עבור גישה חיצונית IPv6 אנא היה מודע ששם המ
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "אינן יכולות להיות אותו דבר HTTPS-ו HTTP פתחות של"
 
-#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -159,6 +155,11 @@ msgstr "tempfile.mkstemp-כישלון ב"
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
 msgstr "נכשלה %s טעינת"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -427,7 +428,6 @@ msgstr "ממשיך"
 msgid "Paused"
 msgstr "מושהה"
 
-#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "אתה חייב לקבוע רוחב פס מרבי לפני שאתה קובע מגבלת רוחב פס"
@@ -725,10 +725,14 @@ msgstr "ד"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "SSL נכשל ביצירה של מפתח ואישור של"
 
-#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -736,6 +740,11 @@ msgid ""
 msgstr ""
 ".קובץ הסיסמאות שלך מכיל יותר מ־30 סיסמאות, בחינת כל הסיסמאות האלו תיקח זמן "
 "רב. נסה לכתוב ברשימה רק סיסמאות שימושיות"
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
+msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
@@ -1164,6 +1173,7 @@ msgstr "חסר מכל השרתים, משליך <= %s"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "מדלג ,%s בלתי תקף NZB קובץ (סיבה=%s שורה=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "%s ריק NZB קובץ"
@@ -1491,7 +1501,6 @@ msgstr ".שגיאה %s: אתה צריך לספק שם משתמש וסיסמה ת
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "תור ישן התגלה, השתמש במעמד->תיקון כדי להמיר את התור"
 
-#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
@@ -1605,6 +1614,11 @@ msgstr "קבצי RAR וודאו בהצלחה"
 msgid "RAR files failed to verify"
 msgstr "נכשלו בוידוא RAR קבצי"
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1624,6 +1638,11 @@ msgstr "נכשל בהיכוננות מערכת"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "שגיאה בזמן כיבוי מערכת"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py
