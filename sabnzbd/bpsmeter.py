@@ -191,12 +191,9 @@ class BPSMeter:
             self.update()
         return res
 
-    def update(self, server=None, amount=0, testtime=None):
+    def update(self, server=None, amount=0):
         """ Update counters for "server" with "amount" bytes """
-        if testtime:
-            t = testtime
-        else:
-            t = time.time()
+        t = time.time()
         if t > self.end_of_day:
             # current day passed. get new end of day
             self.day_label = time.strftime("%Y-%m-%d")
