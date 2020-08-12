@@ -1097,7 +1097,7 @@ def pid_file(pid_path=None, pid_file=None, port=0):
             else:
                 filesystem.remove_file(DIR_PID)
         except:
-            logging.warning("Cannot access PID file %s", DIR_PID)
+            logging.warning(T("Cannot access PID file %s"), DIR_PID)
 
 
 def check_incomplete_vs_complete():

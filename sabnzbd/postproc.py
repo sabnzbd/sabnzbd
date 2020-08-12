@@ -964,7 +964,7 @@ def rar_renamer(nzo, workdir):
                             rarsetname[next_obfuscated_filename] = rarsetname[base_obfuscated_filename]
                             matchcounter += 1
                         except KeyError:
-                            logging.warning("No matching earlier rar file for %s", next_obfuscated_filename)
+                            logging.warning(T("No matching earlier rar file for %s"), next_obfuscated_filename)
                 if matchcounter > 1:
                     logging.info("Deobfuscate: more than one match, so risk on false positive matching.")
 

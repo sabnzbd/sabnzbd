@@ -459,7 +459,7 @@ def upload_file_to_sabnzbd(url, fp):
                 url = "%s&ma_username=%s&ma_password=%s" % (url, username, password)
         get_from_url(url)
     except:
-        logging.error("Failed to upload file: %s", fp)
+        logging.error(T("Failed to upload file: %s"), fp)
         logging.info("Traceback: ", exc_info=True)
 
 
@@ -798,7 +798,7 @@ def get_all_passwords(nzo):
                     )
                 )
         except:
-            logging.warning("Failed to read the passwords file %s", pw_file)
+            logging.warning(T("Failed to read the password file %s"), pw_file)
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
