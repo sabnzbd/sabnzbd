@@ -431,7 +431,7 @@ def check_latest_version():
         url = url_beta
 
     if testver and current < latest:
-        # This is a test version, but user has't seen the
+        # This is a test version, but user hasn't seen the
         # "Final" of this one yet, so show the Final
         sabnzbd.NEW_VERSION = (latest_label, url)
     elif current < latest:
@@ -528,7 +528,7 @@ def caller_name(skip=2):
     parentframe = sys._getframe(skip)
     function_name = parentframe.f_code.co_name
 
-    # Modulename not available in the binaries, we can use the filename instead
+    # Module name is not available in the binaries, we can use the filename instead
     if hasattr(sys, "frozen"):
         module_name = inspect.getfile(parentframe)
     else:
@@ -792,7 +792,7 @@ def get_all_passwords(nzo):
 
             # Check size
             if len(pws) > 30:
-                logging.warning(
+                logging.warning_helpfull(
                     T(
                         "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
                     )

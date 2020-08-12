@@ -1325,11 +1325,11 @@ SPECIAL_BOOL_LIST = (
     "start_paused",
     "no_penalties",
     "fast_fail",
-    "ignore_wrong_unrar",
     "overwrite_files",
     "enable_par_cleanup",
     "queue_complete_pers",
     "api_warnings",
+    "helpfull_warnings",
     "ampm",
     "enable_unrar",
     "enable_unzip",
@@ -1348,7 +1348,6 @@ SPECIAL_BOOL_LIST = (
     "html_login",
     "wait_for_dfolder",
     "max_art_opt",
-    "warn_empty_nzb",
     "enable_bonjour",
     "warn_dupl_jobs",
     "replace_illegal",
@@ -1536,7 +1535,7 @@ class ConfigGeneral:
             cfg.bandwidth_perc.set(bandwidth_perc)
         bandwidth_perc = cfg.bandwidth_perc()
         if bandwidth_perc and not bandwidth_max:
-            logging.warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
+            logging.warning_helpfull(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
 
         config.save_config()
 

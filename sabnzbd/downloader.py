@@ -326,7 +326,7 @@ class Downloader(Thread):
                 if mx:
                     self.bandwidth_limit = mx * self.bandwidth_perc / 100
                 else:
-                    logging.warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
+                    logging.warning_helpfull(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
             else:
                 self.bandwidth_limit = from_units(value)
                 if mx:
