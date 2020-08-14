@@ -86,7 +86,8 @@ import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
 import sabnzbd.utils.rarvolinfo as rarvolinfo
 import sabnzbd.utils.checkdir
-import sabnzbd.utils.deobfuscate as deobfuscate
+import sabnzbd.deobfuscate_filenames as deobfuscate
+
 
 MAX_FAST_JOB_COUNT = 3
 
@@ -516,10 +517,10 @@ def process_job(nzo):
                     nzo.set_unpack_info("Unpack", T("Failed to move files"))
                     all_ok = False
 
-            if cfg.improve_final_filenames():
+            if cfg.deobfuscate_final_filenames():
                 # Improve the filenames
                 logging.debug(
-                    "Running improve_final_filenames on final result for dir %s and job name %s",
+                    "Running deobfuscate on final result for dir %s and job name %s",
                     workdir_complete,
                     nzo.final_name,
                 )

@@ -16,17 +16,18 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-Testing SABnzbd deobfuscate util
+Testing SABnzbd deobfuscate module
 """
 
-from sabnzbd.utils.deobfuscate import *
+from sabnzbd.deobfuscate_filenames import *
 import os
 import shutil
 import random
 
 
-class TestItAll:
+class TestDeobfuscateFinalResult:
     def test_is_probably_obfuscated(self):
+        # Test the base function test_is_probably_obfuscated(), which gives a boolean as RC
 
         # obfuscated names
         assert is_probably_obfuscated("599c1c9e2bdfb5114044bf25152b7eaa.mkv")
@@ -37,8 +38,10 @@ class TestItAll:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Program S03E04.mkv")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Movie (2020).mkv")
 
-    def test_rename(self):
-        # Create directory (with random name)
+    def test_deobfuscate(self):
+        # Full test: a directory with a non-useful named file in it: Test that deobfuscate() works and renames it
+
+        # Create directory (with a random directory name)
         dirname = "testdir" + str(random.randint(10000, 99999))
         os.mkdir(dirname)
 
@@ -50,13 +53,13 @@ class TestItAll:
         # Check it exists now:
         assert os.path.isfile(output_file)
 
-        # and now unleash the magic on that directory:
+        # and now unleash the magic on that directory, with a more useful jobname:
         jobname = "My Important Download 2020"
         # deobfuscate(os.path.abspath(dirname), jobname)
         deobfuscate(dirname, jobname)
         # Check if file was renamed
-        assert not os.path.isfile(output_file)
-        assert os.path.isfile(dirname + "/" + jobname + ".mkv")
+        assert not os.path.isfile(output_file)  # original filename should not be there anymore
+        assert os.path.isfile(dirname + "/" + jobname + ".mkv") # ... it should be renamed to the jobname
 
         # Done. Remove non-empty directory
         shutil.rmtree(dirname)
