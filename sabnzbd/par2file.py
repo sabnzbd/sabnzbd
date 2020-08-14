@@ -33,13 +33,18 @@ PAR_RECOVERY_ID = b"RecvSlic"
 
 
 def is_parfile(filename):
-    """ Check quickly whether file has par2 signature """
-    try:
-        with open(filename, "rb") as f:
-            buf = f.read(8)
-            return buf.startswith(PAR_PKT_ID)
-    except:
-        pass
+    """ Check quickly whether file has par2 signature
+        or if the filename has '.par2' in it
+    """
+    if os.path.exists(filename):
+        try:
+            with open(filename, "rb") as f:
+                buf = f.read(8)
+                return buf.startswith(PAR_PKT_ID)
+        except:
+            pass
+    elif ".par2" in filename.lower():
+        return True
     return False
 
 

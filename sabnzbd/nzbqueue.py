@@ -442,9 +442,11 @@ class NzbQueue:
                     else:
                         self.remove(nzo_id, add_to_history=False, keep_basic=False)
                 elif force_delete:
-                    # Force-remove all trace
+                    # Force-remove all trace and update counters
                     nzo.bytes -= nzf.bytes
                     nzo.bytes_tried -= nzf.bytes - nzf.bytes_left
+                    if nzf.is_par2 or sabnzbd.par2file.is_parfile(nzf.filename):
+                        nzo.bytes_par2 -= nzf.bytes
                     del nzo.files_table[nzf_id]
                     nzo.finished_files.remove(nzf)
             logging.info("Removed NZFs %s from job %s", removed, nzo.final_name)
@@ -781,7 +783,7 @@ class NzbQueue:
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result
-                enough, _ratio = nzo.check_availability_ratio()
+                enough, _ = nzo.check_availability_ratio()
                 if enough:
                     # Enough data present, do real download
                     self.send_back(nzo)

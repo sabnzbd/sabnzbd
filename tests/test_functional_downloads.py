@@ -96,7 +96,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
             except WebDriverException:
                 time.sleep(1)
         else:
-            self.fail("Download did not complete")
+            pytest.fail("Download did not complete")
 
         # Check if the expected file exists on disk
         file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)

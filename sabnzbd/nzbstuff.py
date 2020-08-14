@@ -45,6 +45,7 @@ from sabnzbd.constants import (
     STOP_PRIORITY,
     RENAMES_FILE,
     MAX_BAD_ARTICLES,
+    AVAILABILITY_RATIO_CHECK,
     Status,
     PNFO,
 )
@@ -77,7 +78,6 @@ from sabnzbd.filesystem import (
     renamer,
     remove_file,
     get_filepath,
-    globber,
     make_script_path,
 )
 from sabnzbd.decorators import synchronized
@@ -91,7 +91,6 @@ from sabnzbd.rating import Rating
 # Name patterns
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
 RE_NORMAL_NAME = re.compile(r"\.\w{1,5}$")  # Test reasonably sized extension at the end
-RE_QUICK_PAR2_CHECK = re.compile(r"\.par2\W*", re.I)
 RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
 RE_PROPER = re.compile(r"(^|[\. _-])(PROPER|REAL|REPACK)([\. _-]|$)")
 
@@ -200,7 +199,6 @@ class Article(TryList):
                     for server_check in servers:
                         if log:
                             logging.debug("Article %s | Server: %s | checking", self.article, server.host)
-                        # if (server_check.priority() < found_priority and server_check.priority() < server.priority and not self.server_in_try_list(server_check)):
                         if server_check.active and (server_check.priority < found_priority):
                             if server_check.priority < server.priority:
                                 if not self.server_in_try_list(server_check):
@@ -364,10 +362,11 @@ class NzbFile(TryList):
             first_article.lowest_partnum = True
 
             # For non-par2 files we also use it to do deobfuscate-during-download
-            setname, vol, block = sabnzbd.par2file.analyse_par2(self.filename)
-            if not vol and not block:
+            # And we count how many bytes are available for repair
+            if sabnzbd.par2file.is_parfile(self.filename):
                 self.nzo.first_articles.append(first_article)
                 self.nzo.first_articles_count += 1
+                self.nzo.bytes_par2 += self.bytes
 
             # Any articles left?
             if raw_article_db:
@@ -628,6 +627,7 @@ class NzbObject(TryList):
         self.created = False  # dirprefixes + work_name created
         self.direct_unpacker = None  # Holds the DirectUnpacker instance
         self.bytes = 0  # Original bytesize
+        self.bytes_par2 = 0  # Bytes available for repair
         self.bytes_downloaded = 0  # Downloaded byte
         self.bytes_tried = 0  # Which bytes did we try
         self.bytes_missing = 0  # Bytes missing
@@ -900,7 +900,7 @@ class NzbObject(TryList):
             self.password = self.meta.get("password", [None])[0]
 
         # Set nzo save-delay to minimum 120 seconds
-        self.save_timeout = max(120, min(6.0 * float(self.bytes) / GIGI, 300.0))
+        self.save_timeout = max(120, min(6.0 * self.bytes / GIGI, 300.0))
 
         # In case pre-queue script or duplicate check want to move
         # to history we first need an nzo_id by entering the NzbQueue
@@ -1120,6 +1120,23 @@ class NzbObject(TryList):
         job_can_succeed = True
         nzf = article.nzf
 
+        # Update all statistics
+        self.bytes_tried += article.bytes
+        if not success:
+            # Increase missing bytes counter
+            self.bytes_missing += article.bytes
+
+            # Add extra parfiles when there was a damaged article and not pre-checking
+            if self.extrapars and not self.precheck:
+                self.prospective_add(nzf)
+
+            # Sometimes a few CRC errors are still fine, abort otherwise
+            if self.bad_articles > MAX_BAD_ARTICLES:
+                self.abort_direct_unpacker()
+        else:
+            # Increase counter of actually finished bytes
+            self.bytes_downloaded += article.bytes
+
         # First or regular article?
         if article.lowest_partnum and self.first_articles and article in self.first_articles:
             self.first_articles.remove(article)
@@ -1138,16 +1155,23 @@ class NzbObject(TryList):
         articles_left = nzf.remove_article(article, success)
         file_done = not articles_left
 
-        # Only on fully loaded files we can say if it's really done
+        # Only on fully loaded files we can know if it's really done
         if not nzf.import_finished:
             file_done = False
 
         # File completed, remove and do checks
         if file_done:
             self.remove_nzf(nzf)
-            # Skip check if retry or first articles already deemed it hopeless
-            if job_can_succeed and not self.reuse and cfg.fail_hopeless_jobs():
-                job_can_succeed, _ratio = self.check_availability_ratio(99)
+
+        # Check if we can succeed at the end of every file or every few articles (for giant files)
+        # Skip check if retry or first articles already deemed it hopeless
+        if (
+            (file_done or articles_left % AVAILABILITY_RATIO_CHECK == 0)
+            and job_can_succeed
+            and not self.reuse
+            and cfg.fail_hopeless_jobs()
+        ):
+            job_can_succeed, _ = self.check_availability_ratio()
 
         # Abort the job due to failure
         if not job_can_succeed:
@@ -1158,23 +1182,6 @@ class NzbObject(TryList):
             self.set_unpack_info("Download", self.fail_msg, unique=False)
             logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
             return True, True, True
-
-        if not success:
-            # Add extra parfiles when there was a damaged article and not pre-checking
-            if self.extrapars and not self.precheck:
-                self.prospective_add(nzf)
-
-            # Sometimes a few CRC errors are still fine, so we continue
-            if self.bad_articles > MAX_BAD_ARTICLES:
-                self.abort_direct_unpacker()
-
-            # Increase missing bytes counter
-            self.bytes_missing += article.bytes
-        else:
-            # Increase counter of actually finished bytes
-            self.bytes_downloaded += article.bytes
-        # All the bytes that were tried
-        self.bytes_tried += article.bytes
 
         post_done = False
         if not self.files:
@@ -1241,6 +1248,7 @@ class NzbObject(TryList):
                     filepath = os.path.join(wdir, filename)
                     if sabnzbd.par2file.is_parfile(filepath):
                         self.handle_par2(nzf, filepath)
+                        self.bytes_par2 += nzf.bytes
                     break
 
         # Create an NZF for each remaining existing file
@@ -1265,6 +1273,7 @@ class NzbObject(TryList):
                     # Process par2 files
                     if sabnzbd.par2file.is_parfile(filepath):
                         self.handle_par2(nzf, filepath)
+                        self.bytes_par2 += nzf.bytes
                     logging.info("Existing file %s added to job", filename)
         except:
             logging.error(T("Error importing %s"), self.final_name)
@@ -1441,37 +1450,26 @@ class NzbObject(TryList):
         if self.direct_unpacker:
             self.direct_unpacker.abort()
 
-    def check_availability_ratio(self, req_ratio=0):
-        """Determine amount of articles present on servers
-        and return (gross available, nett) bytes
-        """
-        # Few missing articles in RAR-only job might still work
-        if self.bad_articles <= MAX_BAD_ARTICLES:
-            logging.debug("Download Quality: bad-articles=%s", self.bad_articles)
-            return True, 200
+    def check_availability_ratio(self):
+        """ Determine if we are still meeting the required ratio """
+        # Calculate ratio based on byte-statistics
+        availability_ratio = 100 * (self.bytes - self.bytes_missing) / (self.bytes - self.bytes_par2)
+        logging.debug(
+            "Availability ratio=%.2f, bad articles=%d, total bytes=%d, missing bytes=%d, par2 bytes=%d",
+            availability_ratio,
+            self.bad_articles,
+            self.bytes,
+            self.bytes_missing,
+            self.bytes_par2,
+        )
 
-        # Do the full check
-        need = 0
-        pars = 0
-        short = 0
-        anypars = False
-        for nzf_id in self.files_table:
-            nzf = self.files_table[nzf_id]
-            if nzf.deleted:
-                short += nzf.bytes_left
-            if RE_QUICK_PAR2_CHECK.search(nzf.subject):
-                pars += nzf.bytes
-                anypars = True
-            else:
-                need += nzf.bytes
-        have = need + pars - short
-        ratio = float(have) / float(max(1, need))
-        if anypars:
-            enough = ratio * 100.0 >= (req_ratio or float(cfg.req_completion_rate()))
-        else:
-            enough = have >= need
-        logging.debug("Download Quality: enough=%s, have=%s, need=%s, ratio=%s", enough, have, need, ratio)
-        return enough, ratio
+        # When there is no or little par2, we allow a few bad articles
+        # This way RAR-only jobs might still succeed
+        if self.bad_articles <= MAX_BAD_ARTICLES:
+            return True, cfg.req_completion_rate()
+
+        # Check based on availability ratio
+        return availability_ratio >= cfg.req_completion_rate(), availability_ratio
 
     def check_first_article_availability(self):
         """Use the first articles to see if
@@ -1482,7 +1480,7 @@ class NzbObject(TryList):
             # Ignore undamaged or small downloads
             if self.bad_articles and self.first_articles_count >= 10:
                 # We need a float-division, see if more than 80% is there
-                if (float(self.bad_articles) / self.first_articles_count) >= 0.8:
+                if self.bad_articles / self.first_articles_count >= 0.8:
                     return False
         return True
 
@@ -1756,9 +1754,6 @@ class NzbObject(TryList):
             except:
                 pass
 
-    ## end nzo.Mutators #######################################################
-    ###########################################################################
-
     @property
     def workpath(self):
         """ Return the full path for my job-admin folder """
@@ -2006,6 +2001,10 @@ class NzbObject(TryList):
                 self.bytes_tried += nzf.bytes
             for nzf in self.files:
                 self.bytes_tried += nzf.bytes - nzf.bytes_left
+        if self.bytes_par2 is None:
+            for nzf in self.files + self.finished_files:
+                if sabnzbd.par2file.is_parfile(nzf.filename):
+                    self.bytes_par2 += nzf.bytes
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)
