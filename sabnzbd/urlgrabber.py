@@ -299,7 +299,8 @@ class URLGrabber(Thread):
                 logging.error(T("URLGRABBER CRASHED"), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
-    def fail_to_history(self, nzo, url, msg="", content=False):
+    @staticmethod
+    def fail_to_history(nzo, url, msg="", content=False):
         """ Create History entry for failed URL Fetch
             msg: message to be logged
             content: report in history that cause is a bad NZB file

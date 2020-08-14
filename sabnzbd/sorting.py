@@ -284,7 +284,8 @@ class SeriesSorter:
             # Error Sorting
             return os.path.join(self.original_path, self.original_job_name)
 
-    def get_multi_ep_naming(self, one, two, extras):
+    @staticmethod
+    def get_multi_ep_naming(one, two, extras):
         """ Returns a list of unique values joined into a string and separated by - (ex:01-02-03-04) """
         extra_list = [one]
         extra2_list = [two]

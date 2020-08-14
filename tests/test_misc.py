@@ -29,7 +29,8 @@ from tests.testhelper import *
 
 
 class TestMisc:
-    def assertTime(self, offset, age):
+    @staticmethod
+    def assertTime(offset, age):
         assert offset == misc.calc_age(age, trans=True)
         assert offset == misc.calc_age(age, trans=False)
 

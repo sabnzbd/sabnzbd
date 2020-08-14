@@ -26,7 +26,8 @@ from sabnzbd.config import CFG, define_rss, ConfigCat
 
 
 class TestRSS:
-    def setup_rss(self, feed_name, feed_url):
+    @staticmethod
+    def setup_rss(feed_name, feed_url):
         """ Setup the basic settings to get things going"""
         # Setup the config settings
         CFG["rss"] = {}

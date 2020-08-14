@@ -461,7 +461,8 @@ class BPSMeter:
         if action and not status:
             self.resume()
 
-    def resume(self):
+    @staticmethod
+    def resume():
         """ Resume downloading """
         if cfg.quota_resume() and sabnzbd.downloader.Downloader.do and sabnzbd.downloader.Downloader.do.paused:
             sabnzbd.downloader.Downloader.do.resume()

@@ -151,7 +151,8 @@ class ArticleCache:
             if article.art_id:
                 sabnzbd.remove_data(article.art_id, article.nzf.nzo.workpath)
 
-    def __flush_article_to_disk(self, article, data):
+    @staticmethod
+    def __flush_article_to_disk(article, data):
         nzo = article.nzf.nzo
         if nzo.is_gone():
             # Don't store deleted jobs

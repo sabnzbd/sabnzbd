@@ -187,7 +187,8 @@ class Assembler(Thread):
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)
 
-    def assemble(self, nzf, file_done):
+    @staticmethod
+    def assemble(nzf, file_done):
         """ Assemble a NZF from its table of articles
             1) Partial write: write what we have
             2) Nothing written before: write all
