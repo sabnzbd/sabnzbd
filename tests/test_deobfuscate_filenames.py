@@ -59,7 +59,7 @@ class TestDeobfuscateFinalResult:
         deobfuscate(dirname, jobname)
         # Check if file was renamed
         assert not os.path.isfile(output_file)  # original filename should not be there anymore
-        assert os.path.isfile(dirname + "/" + jobname + ".mkv") # ... it should be renamed to the jobname
+        assert os.path.isfile(dirname + "/" + jobname + ".mkv")  # ... it should be renamed to the jobname
 
         # Done. Remove non-empty directory
         shutil.rmtree(dirname)

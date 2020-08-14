@@ -53,7 +53,7 @@ import hashlib
 import re
 import math
 import logging
-from sabnzbd.filesystem import get_unique_filename # this makes this module SAB specific ...
+from sabnzbd.filesystem import get_unique_filename  # this makes this module SAB specific ...
 
 
 # Files to exclude and minimal file size for renaming
@@ -78,8 +78,6 @@ STRUCT_FILE_DESC_PACKET = struct.Struct(
     "16s"  # MD5 hash of the first 16KiB of the file
     "Q"  # Length of the file
 )
-
-
 
 
 def decode_par2(parfile):
@@ -168,6 +166,7 @@ def is_probably_obfuscated(myinputfilename):
         # exactly 32 hex digits, so:
         return True
 
+    # these are signals for the obfuscation versus non-obfuscation
     capitals = sum(1 for c in filebasename if c.isupper())
     smallletters = sum(1 for c in filebasename if c.lower())
     spacesdots = sum(1 for c in filebasename if c == " " or c == ".")
