@@ -45,7 +45,6 @@ from sabnzbd.constants import (
     STOP_PRIORITY,
     RENAMES_FILE,
     MAX_BAD_ARTICLES,
-    AVAILABILITY_RATIO_CHECK,
     Status,
     PNFO,
 )
@@ -505,6 +504,7 @@ NzbObjectSaver = (
     "bytes_downloaded",
     "bytes_tried",
     "bytes_missing",
+    "bytes_par2",
     "repair",
     "unpack",
     "delete",
@@ -1163,14 +1163,9 @@ class NzbObject(TryList):
         if file_done:
             self.remove_nzf(nzf)
 
-        # Check if we can succeed at the end of every file or every few articles (for giant files)
+        # Check if we can succeed when we have missing articles
         # Skip check if retry or first articles already deemed it hopeless
-        if (
-            (file_done or articles_left % AVAILABILITY_RATIO_CHECK == 0)
-            and job_can_succeed
-            and not self.reuse
-            and cfg.fail_hopeless_jobs()
-        ):
+        if not success and job_can_succeed and not self.reuse and cfg.fail_hopeless_jobs():
             job_can_succeed, _ = self.check_availability_ratio()
 
         # Abort the job due to failure
