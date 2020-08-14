@@ -577,8 +577,9 @@ def create_all_dirs(path, apply_umask=False):
                     # Only create if it doesn't exist
                     if not os.path.exists(path_part_combined):
                         os.mkdir(path_part_combined)
-                        # Try to set permissions, ignore failures
-                        set_chmod(path_part_combined, umask, report=False)
+                        # Try to set permissions if desired, ignore failures
+                        if apply_umask:
+                            set_chmod(path_part_combined, umask, report=False)
         return path
     except OSError:
         logging.error(T("Failed making (%s)"), clip_path(path), exc_info=True)
