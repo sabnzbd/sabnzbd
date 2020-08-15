@@ -236,13 +236,12 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
                 logging.debug("Inspecting %s", filename)
                 full_path = os.path.join(root, filename)
                 file_size = os.path.getsize(full_path)
-                # Do we count this file? Criteria: obfuscated, big, not-excluded extension
+                # Do we need to rename this file? Criteria: big, not-excluded extension, obfuscated
                 if (
-                    is_probably_obfuscated(filename)
-                    and file_size > MIN_FILE_SIZE
+                    file_size > MIN_FILE_SIZE
                     and os.path.splitext(filename)[1].lower() not in EXCLUDED_FILE_EXTS
+                    and is_probably_obfuscated(filename)  # this as last test
                 ):
-                    logging.debug("Yes, to be renamed %s", filename)
                     # OK, rename
                     new_name = "%s%s" % (
                         os.path.join(workingdirectory, usefulname),
@@ -262,18 +261,3 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
                             time.sleep(1)
     else:
         logging.debug("No large files found")
-
-
-if __name__ == "__main__":
-    try:
-        mydir = sys.argv[1]
-        myworkingname = sys.argv[2]
-    except:
-        print("Usage: ", sys.argv[0], " <directory> <useful job name>")
-        sys.exit(1)
-
-    print("Running deobfuscate on ", mydir, "with working name", myworkingname)
-    deobfuscate(mydir, myworkingname)
-
-    # Always exit with success-code
-    sys.exit(0)
