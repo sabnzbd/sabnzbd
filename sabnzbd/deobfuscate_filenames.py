@@ -21,24 +21,8 @@ Deobfuscation post-processing script:
 
 Will check in the completed job folder if maybe there are par2 files,
 for example "rename.par2", and use those to rename the files.
-If there is no "rename.par2" available, it will rename the largest
-file to the job-name in the queue.
-
-NOTES:
- 1) To use this script you need Python installed on your system and
-    select "Add to path" during its installation. Select this folder in
-    Config > Folders > Scripts Folder and select this script for each job
-    you want it used for, or link it to a category in Config > Categories.
- 2) Beware that files on the 'Cleanup List' are removed before
-    scripts are called and if any of them happen to be required by
-    the found par2 file, it will fail.
- 3) If there are multiple larger (>40MB) files, then the script will not
-    rename anything, since it could be a multi-pack.
- 4) If you want to modify this script, make sure to copy it out
-    of this directory, or it will be overwritten when SABnzbd is updated.
- 5) Feedback or bugs in this script can be reported in on our forum:
-    https://forums.sabnzbd.org/viewforum.php?f=9
-
+If there is no "rename.par2" available, it will rename large, not-excluded
+files to the job-name in the queue.
 
 Improved by P1nGu1n
 
@@ -53,8 +37,7 @@ import hashlib
 import re
 import math
 import logging
-from sabnzbd.filesystem import get_unique_filename  # this makes this module SAB specific ...
-
+from sabnzbd.filesystem import get_unique_filename
 
 # Files to exclude and minimal file size for renaming
 EXCLUDED_FILE_EXTS = (".vob", ".rar", ".par2")
@@ -141,7 +124,7 @@ def find_file(dirname, filelength, hash16k):
 
 
 def entropy(string):
-    "Calculates the Shannon entropy of a string"
+    """ Calculates the Shannon entropy of a string """
 
     # get probability of chars in string
     prob = [float(string.count(c)) / len(string) for c in dict.fromkeys(list(string))]
@@ -158,7 +141,7 @@ def is_probably_obfuscated(myinputfilename):
 
     # Find filebasename
     path, filename = os.path.split(myinputfilename)
-    filebasename, fileextension = os.path.splitext(filename)  # note: fileextension contains a leading dot!
+    filebasename, fileextension = os.path.splitext(filename)
 
     # ...blabla.H.264/b082fa0beaa644d3aa01045d5b8d0b36.mkv is certainly obfuscated
     if re.findall("^[a-f0-9]{32}$", filebasename):
@@ -202,9 +185,8 @@ def is_probably_obfuscated(myinputfilename):
 
 
 def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
-    # in workingdirectory, check all filenames, and if useful, rename based on usefulname
+    """ in workingdirectory, check all filenames, and if wanted, rename """
     dummyrun = kwargs.get("dummyrun", None)  # do not really rename
-    # Run deofuscate
 
     # Search for par2 files
     matches = []
