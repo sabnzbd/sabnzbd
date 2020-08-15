@@ -22,6 +22,7 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Pornirea interfeţei-web nereuşită"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Nu se poate găsi şablon web:%s, se încearcă şablon standard"
@@ -42,6 +43,7 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "binar par2 ... Negăsit!"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -66,6 +68,7 @@ msgstr "binar unzip... Negăsit!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -79,6 +82,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "Porturile HTTP și HTTPS nu pot fi aceleași"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -426,6 +430,7 @@ msgstr "Reluare"
 msgid "Paused"
 msgstr "Întrerupt"
 
+#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -735,6 +740,7 @@ msgstr ""
 msgid "Error creating SSL key and certificate"
 msgstr "Eroare la crearea cheiei şi certificatlui SSL"
 
+#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1503,6 +1509,7 @@ msgstr ""
 "Coadă de descărcare veche detectată, utilizează Stare->Reparare pentru a "
 "converti coada"
 
+#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "

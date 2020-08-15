@@ -22,6 +22,7 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Kunne ikke starte web-interface"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Kan ikke finde webskabeloner: %s, forsøger med standardskabelon"
@@ -45,6 +46,7 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2 binær... IKKE fundet!"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr "Din Unrar version er %s, vi anbefaler version %s eller højere.<br />"
@@ -67,6 +69,7 @@ msgstr "unzip binær... IKKE fundet!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ""
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -80,6 +83,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP og HTTPS porte kan ikke være de samme"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -430,6 +434,7 @@ msgstr "Genoptager"
 msgid "Paused"
 msgstr "Sat på pause"
 
+#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -739,6 +744,7 @@ msgstr ""
 msgid "Error creating SSL key and certificate"
 msgstr "Fejl ved oprettelse af SSL-nøgle og certifikat"
 
+#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1505,6 +1511,7 @@ msgstr "Fejl %s: Du skal angive et gyldigt brugernavn og adgangskode."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Gamle kø opdaget, brug Status->Reparation for at konvertere kø"
 
+#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "

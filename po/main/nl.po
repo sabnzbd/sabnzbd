@@ -22,6 +22,7 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Webinterface kan niet gestart worden"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "Websjabloon %s niet te vinden; het standaardsjabloon wordt gebruikt."
@@ -45,6 +46,7 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2-programma niet gevonden."
 
+#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -68,6 +70,7 @@ msgstr "unzip-programma niet gevonden."
 msgid "Essential modules are missing, downloading cannot start."
 msgstr "Essentiële onderdelen ontbreken, er kan niet gedownload worden."
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -81,6 +84,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP- en HTTPS-poort kunnen niet hetzelfde zijn"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -444,6 +448,7 @@ msgstr "Hervatten"
 msgid "Paused"
 msgstr "Gepauzeerd"
 
+#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -755,6 +760,7 @@ msgstr ""
 msgid "Error creating SSL key and certificate"
 msgstr "Fout bij aanmaken SSL-sleutel en -certificaat"
 
+#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1529,6 +1535,7 @@ msgstr "Fout %s: Je moet een geldige gebruikersnaam en wachtwoord invullen."
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "Oude wachtrij gevonden, gebruik Status->Reparatie om te converteren"
 
+#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "

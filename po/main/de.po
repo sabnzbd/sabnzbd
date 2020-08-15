@@ -23,6 +23,7 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "Fehler beim Starten der Weboberfläche."
 
+#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr ""
@@ -48,6 +49,7 @@ msgstr ""
 msgid "par2 binary... NOT found!"
 msgstr "par2-Programmdatei nicht gefunden!"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ""
@@ -71,6 +73,7 @@ msgstr "unzip-Programmdatei nicht gefunden!"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr "Wichtige Module fehlen, herunterladen kann nicht gestartet werden."
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -84,6 +87,7 @@ msgstr ""
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "HTTP und HTTPS Ports dürfen nicht identisch sein!"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -448,6 +452,7 @@ msgstr "Fortgesetzt"
 msgid "Paused"
 msgstr "Angehalten"
 
+#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr ""
@@ -763,6 +768,7 @@ msgstr ""
 msgid "Error creating SSL key and certificate"
 msgstr "Fehler beim Anlegen des SSL-Schlüssels und -Zertifikats."
 
+#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1551,6 +1557,7 @@ msgstr ""
 "Alte Warteschlangen-Version erkannt, über Status->Reparieren ins neue Format"
 " konvertieren"
 
+#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "

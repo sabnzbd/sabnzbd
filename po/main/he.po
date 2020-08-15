@@ -23,6 +23,7 @@ msgstr ""
 msgid "Failed to start web-interface"
 msgstr "נכשל בהתחלת ממשק רשת"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Cannot find web template: %s, trying standard template"
 msgstr "מנסה תבנית תקנית ,%s :לא ניתן למצוא תבניות רשת"
@@ -43,6 +44,7 @@ msgstr "%s - https://sabnzbd.org/sabyenc לא נמצא! מצפה אל …SABYenc
 msgid "par2 binary... NOT found!"
 msgstr "!בינארי… לא נמצא par2"
 
+#. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
 msgstr ".שלך היא %s אנו ממליצים על גרסה %s או גבוהה יותר UNRAR גרסת<br />"
@@ -65,6 +67,7 @@ msgstr "!בינארי… לא נמצא unzip"
 msgid "Essential modules are missing, downloading cannot start."
 msgstr ".פירקנים חיוניים חסרים, הורדה אינה יכולה להתחיל"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "Please be aware the 0.0.0.0 hostname will need an IPv6 address for external "
@@ -76,6 +79,7 @@ msgstr "עבור גישה חיצונית IPv6 אנא היה מודע ששם המ
 msgid "HTTP and HTTPS ports cannot be the same"
 msgstr "אינן יכולות להיות אותו דבר HTTPS-ו HTTP פתחות של"
 
+#. Warning message
 #: SABnzbd.py
 msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
@@ -428,6 +432,7 @@ msgstr "ממשיך"
 msgid "Paused"
 msgstr "מושהה"
 
+#. Warning message
 #: sabnzbd/downloader.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "You must set a maximum bandwidth before you can set a bandwidth limit"
 msgstr "אתה חייב לקבוע רוחב פס מרבי לפני שאתה קובע מגבלת רוחב פס"
@@ -733,6 +738,7 @@ msgstr ""
 msgid "Error creating SSL key and certificate"
 msgstr "SSL נכשל ביצירה של מפתח ואישור של"
 
+#. Warning message
 #: sabnzbd/misc.py
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
@@ -1501,6 +1507,7 @@ msgstr ".שגיאה %s: אתה צריך לספק שם משתמש וסיסמה ת
 msgid "Old queue detected, use Status->Repair to convert the queue"
 msgstr "תור ישן התגלה, השתמש במעמד->תיקון כדי להמיר את התור"
 
+#. Warning message
 #: sabnzbd/postproc.py
 msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
