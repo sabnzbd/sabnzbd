@@ -197,7 +197,7 @@ def is_probably_obfuscated(myinputfilename):
         return False
 
     # If we get here ... let's default to not obfuscated
-    logging.debug("Default ... not obfuscated")
+    logging.debug("Not obfuscated (default)")
     return False  # default not obfuscated
 
 
