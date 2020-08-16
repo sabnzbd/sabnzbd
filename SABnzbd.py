@@ -106,14 +106,14 @@ def guard_loglevel():
     LOG_FLAG = True
 
 
-def warning_helpfull(*args, **kwargs):
+def warning_helpful(*args, **kwargs):
     """ Wrapper to ignore helpfull warnings if desired """
     if sabnzbd.cfg.helpfull_warnings():
         return logging.warning(*args, **kwargs)
     return logging.info(*args, **kwargs)
 
 
-logging.warning_helpfull = warning_helpfull
+logging.warning_helpful = warning_helpful
 
 
 class GUIHandler(logging.Handler):
@@ -290,7 +290,7 @@ def identify_web_template(key, defweb, wdir):
     full_main = real_path(full_dir, DEF_MAIN_TMPL)
 
     if not os.path.exists(full_main):
-        logging.warning_helpfull(T("Cannot find web template: %s, trying standard template"), full_main)
+        logging.warning_helpful(T("Cannot find web template: %s, trying standard template"), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
@@ -436,7 +436,7 @@ def print_modules():
         if sabnzbd.newsunpack.RAR_PROBLEM:
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
-            logging.warning_helpfull(
+            logging.warning_helpful(
                 T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str
             )
         elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
@@ -608,9 +608,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
     if ipv6 and ipv4 and cherryhost == "" and sabnzbd.WIN32:
-        logging.warning_helpfull(
-            T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access")
-        )
+        logging.warning_helpful(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 
     if cherryhost == "localhost" and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         # On the Ubuntu family, localhost leads to problems for CherryPy
@@ -1170,7 +1168,7 @@ def main():
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
-        logging.warning_helpfull(
+        logging.warning_helpful(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
             ),

@@ -220,7 +220,7 @@ class PostProcessor(Thread):
         # First we do a dircheck
         complete_dir = sabnzbd.cfg.complete_dir.get_path()
         if sabnzbd.utils.checkdir.isFAT(complete_dir):
-            logging.warning_helpfull(
+            logging.warning_helpful(
                 T("Completed Download Folder %s is on FAT file system, limiting maximum file size to 4GB")
                 % complete_dir
             )

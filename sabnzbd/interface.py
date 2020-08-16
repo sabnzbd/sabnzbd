@@ -1535,7 +1535,7 @@ class ConfigGeneral:
             cfg.bandwidth_perc.set(bandwidth_perc)
         bandwidth_perc = cfg.bandwidth_perc()
         if bandwidth_perc and not bandwidth_max:
-            logging.warning_helpfull(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
+            logging.warning_helpful(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
 
         config.save_config()
 

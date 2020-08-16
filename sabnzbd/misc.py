@@ -792,7 +792,7 @@ def get_all_passwords(nzo):
 
             # Check size
             if len(pws) > 30:
-                logging.warning_helpfull(
+                logging.warning_helpful(
                     T(
                         "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
                     )
