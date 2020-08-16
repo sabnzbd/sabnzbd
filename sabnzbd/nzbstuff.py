@@ -20,6 +20,7 @@ sabnzbd.nzbstuff - misc
 """
 
 import os
+import pickle
 import time
 import re
 import logging
@@ -554,6 +555,8 @@ NzbObjectSaver = (
     "rating_filtered",
 )
 
+NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
+
 # Lock to prevent errors when saving the NZO data
 NZO_LOCK = threading.RLock()
 
@@ -774,11 +777,7 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, priority, name, password, self.url = get_attrib_file(self.workpath, 7)
-            if name:
-                self.final_name = name
-            if password:
-                self.password = password
+            cat, pp, script, priority = self.load_attribs()
 
         # Determine category and find pp/script values
         self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, priority)
@@ -1877,9 +1876,35 @@ class NzbObject(TryList):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def save_attribs(self):
-        set_attrib_file(
-            self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name, self.password, self.url)
-        )
+        """ Save specific attributes for Retry """
+        attribs = {}
+        for attrib in NzoAttributeSaver:
+            attribs[attrib] = getattr(self, attrib)
+        logging.debug("Saving attributes %s for %s", attribs, self.final_name)
+        sabnzbd.save_data(attribs, ATTRIB_FILE, self.workpath)
+
+    def load_attribs(self):
+        """ Load saved attributes and return them to be parsed """
+        attribs = sabnzbd.load_data(ATTRIB_FILE, self.workpath, remove=False)
+        logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
+
+        # TODO: Remove fallback to old method in SABnzbd 3.2.0
+        if not attribs:
+            cat, pp, script, priority, name, password, self.url = get_attrib_file(self.workpath, 7)
+            if name:
+                self.final_name = name
+            if password:
+                self.password = password
+            return cat, pp, script, priority
+
+        # Only a subset we want to apply directly to the NZO
+        for attrib in ("final_name", "password", "url"):
+            # Only set if it is present and has a value
+            if attribs.get(attrib):
+                setattr(self, attrib, attribs[attrib])
+
+        # Rest is to be used directly in the NZO-init flow
+        return attribs["cat"], attribs["pp"], attribs["script"], attribs["priority"]
 
     @synchronized(NZO_LOCK)
     def build_pos_nzf_table(self, nzf_ids):
@@ -2141,15 +2166,6 @@ def get_attrib_file(path, size):
             return attribs
     except OSError:
         return [None for _ in range(size)]
-
-
-def set_attrib_file(path, attribs):
-    """ Write job's attributes to file """
-    logging.debug("Writing attributes %s to %s", attribs, path)
-    path = os.path.join(path, ATTRIB_FILE)
-    with open(path, "w", encoding="utf-8") as attr_file:
-        for item in attribs:
-            attr_file.write("%s\n" % item)
 
 
 def name_extractor(subject):
