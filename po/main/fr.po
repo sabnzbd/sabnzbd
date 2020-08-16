@@ -174,7 +174,7 @@ msgstr "Echec du chargement de %s"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Cannot access PID file %s"
-msgstr ""
+msgstr "Impossible d'accéder au fichier PID %s"
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -761,7 +761,7 @@ msgstr "m"
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
-msgstr ""
+msgstr "Échec de l'upload du fichier : %s"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -781,7 +781,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Failed to read the password file %s"
-msgstr ""
+msgstr "Échec de lecture du fichier de mot de passe %s"
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
@@ -1674,7 +1674,7 @@ msgstr "Echec lors de la vérification des fichiers RAR"
 #. Warning message
 #: sabnzbd/postproc.py
 msgid "No matching earlier rar file for %s"
-msgstr ""
+msgstr "Aucun fichier rar antérieur correspondant pour %s"
 
 #. Error message
 #: sabnzbd/postproc.py
@@ -1699,7 +1699,7 @@ msgstr "Erreur lors de l'arrêt du système"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
+msgstr "Exception DBus reçue %s"
 
 #. Warning message
 #: sabnzbd/rating.py
