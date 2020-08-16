@@ -1,5 +1,5 @@
-sabyenc3
-cheetah3
+sabyenc3>=4.0.0
+cheetah3>=3.0.0
 cryptography
 feedparser<6.0.0
 configobj

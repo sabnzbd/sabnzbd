@@ -43,10 +43,6 @@ try:
     import portend
     import cryptography
     import chardet
-
-    if Cheetah.Version[0] != "3":
-        print("Sorry, requires Python module Cheetah 3 or higher.")
-        sys.exit(1)
 except ImportError as e:
     print("Not all required Python modules are available, please check requirements.txt")
     print("Missing module:", e.name)
