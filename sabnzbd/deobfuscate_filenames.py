@@ -22,9 +22,9 @@ Deobfuscation post-processing script:
 Will check in the completed job folder if maybe there are par2 files,
 for example "rename.par2", and use those to rename the files.
 If there is no "rename.par2" available, it will rename large, not-excluded
-files to the job-name in the queue if that name is more useful
+files to the job-name in the queue if the filename looks obfuscated
 
-Improved by P1nGu1n
+Based on work by P1nGu1n
 
 """
 
@@ -210,9 +210,9 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
         else:
             logging.debug("Recursive repair/verify did not complete!")
 
-    # No matches? Then we try to rename quailifying files to the job-name
+    # No matches? Then we try to rename qualifying files to the job-name
     if run_renamer:
-        logging.debug("Trying to see if there are quailifying files to be renamed")
+        logging.debug("Trying to see if there are qualifying files to be renamed")
         for root, dirnames, filenames in os.walk(workingdirectory):
             for filename in filenames:
                 logging.debug("Inspecting %s", filename)
@@ -229,9 +229,9 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
                         os.path.join(workingdirectory, usefulname),
                         os.path.splitext(filename)[1].lower(),
                     )
-                    # make sure the filename is unique
+                    # make sure the new filename is unique
                     new_name = get_unique_filename(new_name)
-                    logging.debug("Renaming %s to %s", full_path, new_name)
+                    logging.info("Renaming %s to %s", full_path, new_name)
 
                     # Rename, with retries for Windows
                     for r in range(3):
@@ -242,4 +242,4 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
                         except:
                             time.sleep(1)
     else:
-        logging.debug("No large files found")
+        logging.debug("No qualifying files found")
