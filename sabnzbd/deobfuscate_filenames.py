@@ -22,7 +22,7 @@ Deobfuscation post-processing script:
 Will check in the completed job folder if maybe there are par2 files,
 for example "rename.par2", and use those to rename the files.
 If there is no "rename.par2" available, it will rename large, not-excluded
-files to the job-name in the queue.
+files to the job-name in the queue if that name is more useful
 
 Improved by P1nGu1n
 
@@ -136,8 +136,8 @@ def entropy(string):
 
 
 def is_probably_obfuscated(myinputfilename):
-    # Returns boolean if filename is probably obfuscated
-    # myinputfilename can be a plain file name, or a full path
+    """ Returns boolean if filename is probably obfuscated
+    myinputfilename can be a plain file name, or a full path """
 
     # Find filebasename
     path, filename = os.path.split(myinputfilename)
@@ -210,9 +210,9 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
         else:
             logging.debug("Recursive repair/verify did not complete!")
 
-    # No matches? Then we try to rename the largest file to the job-name
+    # No matches? Then we try to rename quailifying files to the job-name
     if run_renamer:
-        logging.debug("Trying to see if there are large files to be renamed")
+        logging.debug("Trying to see if there are quailifying files to be renamed")
         for root, dirnames, filenames in os.walk(workingdirectory):
             for filename in filenames:
                 logging.debug("Inspecting %s", filename)
@@ -222,7 +222,7 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
                 if (
                     file_size > MIN_FILE_SIZE
                     and os.path.splitext(filename)[1].lower() not in EXCLUDED_FILE_EXTS
-                    and is_probably_obfuscated(filename)  # this as last test
+                    and is_probably_obfuscated(filename)  # this as last test to avoid unnecessary analysis
                 ):
                     # OK, rename
                     new_name = "%s%s" % (
@@ -237,7 +237,7 @@ def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
                     for r in range(3):
                         try:
                             os.rename(full_path, new_name)
-                            logging.debug("Renaming done on run %s!", r + 1)
+                            logging.debug("Renaming succeeded on run %s", r + 1)
                             break
                         except:
                             time.sleep(1)
