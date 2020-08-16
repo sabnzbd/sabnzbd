@@ -171,7 +171,7 @@ def send_notify_osd(title, message):
     # Wrap notify2.init to prevent blocking in dbus
     # when there's no active notification daemon
     try:
-        _NTFOSD = _NTFOSD or notify2.init("icon-summary-body")
+        _NTFOSD = _NTFOSD or notify2.init("SABnzbd")
     except:
         _NTFOSD = False
 
