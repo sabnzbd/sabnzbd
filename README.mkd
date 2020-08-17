@@ -1,7 +1,8 @@
-Release Notes - SABnzbd 3.0.1 RC 1
+Release Notes - SABnzbd 3.0.1
 =========================================================
 
 ## Bugfixes since 3.0.0
+- Basic Authentication resulted in crash. 
 - Permissions were not set correctly when creating directories.
 - Windows: base SSL certificate bundle was not included.
 
