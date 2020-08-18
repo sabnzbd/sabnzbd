@@ -24,6 +24,7 @@ if sys.hexversion < 0x03050000:
 
 import logging
 import logging.handlers
+import importlib.util
 import traceback
 import getopt
 import signal
@@ -36,18 +37,12 @@ import re
 
 try:
     import Cheetah
-
-    if Cheetah.Version[0] != "3":
-        raise ValueError
     import feedparser
     import configobj
     import cherrypy
     import portend
     import cryptography
     import chardet
-except ValueError:
-    print("Sorry, requires Python module Cheetah 3 or higher.")
-    sys.exit(1)
 except ImportError as e:
     print("Not all required Python modules are available, please check requirements.txt")
     print("Missing module:", e.name)
@@ -1168,12 +1163,14 @@ def main():
     # SSL Information
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
 
-    # Load (extra) certificates in the binary distributions
-    if hasattr(sys, "frozen") and (sabnzbd.WIN32 or sabnzbd.DARWIN):
-        # The certifi package brings the latest certificates on build
-        # This will cause the create_default_context to load it automatically
-        os.environ["SSL_CERT_FILE"] = os.path.join(sabnzbd.DIR_PROG, "cacert.pem")
-        logging.info("Loaded additional certificates from %s", os.environ["SSL_CERT_FILE"])
+    # Load (extra) certificates if supplied by certifi
+    # This is optional and provided in the binaries
+    if importlib.util.find_spec("certifi") is not None:
+        import certifi
+
+        os.environ["SSL_CERT_FILE"] = certifi.where()
+        logging.info("Certifi version: %s", certifi.__version__)
+        logging.info("Loaded additional certificates from: %s", os.environ["SSL_CERT_FILE"])
 
     # Extra startup info
     if sabnzbd.cfg.log_level() > 1:

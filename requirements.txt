@@ -1,8 +1,9 @@
-sabyenc3
-cheetah3
+sabyenc3>=4.0.0
+cheetah3>=3.0.0
 cryptography
 feedparser
 configobj
+cheroot<8.4.3
 cherrypy
 portend
 chardet
