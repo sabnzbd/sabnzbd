@@ -768,22 +768,25 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
 
     @set_config({"umask": "0777"})
     def test_permissions_777(self):
-        self._permissions_runner("/test_base777", "/test_base777/se 1/ep 1", "0700")
+        self._permissions_runner("/test_base777")
+        self._permissions_runner("/test_base777_nomask", apply_umask=False)
 
     @set_config({"umask": "0770"})
     def test_permissions_770(self):
-        self._permissions_runner("/test_base770", "/test_base770/se 1/ep 1", "0700")
+        self._permissions_runner("/test_base770")
+        self._permissions_runner("/test_base770_nomask", apply_umask=False)
 
     @set_config({"umask": "0600"})
     def test_permissions_600(self):
-        self._permissions_runner("/test_base600", "/test_base600/se 1/ep 1", "0700")
+        self._permissions_runner("/test_base600")
+        self._permissions_runner("/test_base600_nomask", apply_umask=False)
 
     @set_config({"umask": "0700"})
     def test_permissions_450(self):
         with pytest.raises(OSError):
-            self._permissions_runner("/test_base_450", "/test_base_450/se 1/ep 1", "0450")
+            self._permissions_runner("/test_base450", perms_base="0450")
 
-    def _permissions_runner(self, test_base, new_dir, perms_base):
+    def _permissions_runner(self, test_base, perms_base="0700", apply_umask=True):
         # Create base directory and set the base permissions
         perms_base_int = int(perms_base, 8)
         self.fs.create_dir(test_base, perms_base_int)
@@ -791,11 +794,18 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
         self.assert_dir_perms(test_base, perms_base_int)
 
         # Create directories with permissions
-        filesystem.create_all_dirs(new_dir, apply_umask=True)
+        new_dir = os.path.join(test_base, "se 1", "ep1")
+        filesystem.create_all_dirs(new_dir, apply_umask=apply_umask)
 
         # If permissions needed to be set, verify the new folder has the
         # right permissions and verify the base didn't change
-        perms_test_int = int(cfg.umask(), 8) | int("0700", 8)
+        if apply_umask:
+            perms_test_int = int(cfg.umask(), 8) | int("0700", 8)
+        else:
+            # Get the current umask, since os.mkdir masks that out
+            cur_umask = os.umask(0)
+            os.umask(cur_umask)
+            perms_test_int = int("0777", 8) & ~cur_umask
         self.assert_dir_perms(new_dir, perms_test_int)
         self.assert_dir_perms(test_base, perms_base_int)
 
