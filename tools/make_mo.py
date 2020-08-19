@@ -281,26 +281,25 @@ if os.path.exists(tl):
         TOOL = [tl]
 
 result = True
-if len(sys.argv) > 1 and sys.argv[1] == "all":
+if len(sys.argv) > 1 and sys.argv[1] == "nsis":
     print("NSIS MO file")
     result = result and process_po_folder(DOMAIN_N, PON_DIR)
 
     print("Patch NSIS script")
     patch_nsis()
+else:
+    print("Email MO files")
+    result = result and process_po_folder(DOMAIN_E, POE_DIR)
 
-print("Email MO files")
-result = result and process_po_folder(DOMAIN_E, POE_DIR)
+    print("Create email templates from MO files")
+    make_templates()
 
-print("Create email templates from MO files")
-make_templates()
+    print("Main program MO files")
+    # -n option added to remove all newlines from the translations
+    result = result and process_po_folder(DOMAIN, PO_DIR, "-n")
 
-
-print("Main program MO files")
-# -n option added to remove all newlines from the translations
-result = result and process_po_folder(DOMAIN, PO_DIR, "-n")
-
-print("Remove temporary templates")
-remove_mo_files()
+    print("Remove temporary templates")
+    remove_mo_files()
 
 print()
 if result:
