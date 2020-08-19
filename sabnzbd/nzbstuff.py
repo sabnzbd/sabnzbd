@@ -479,8 +479,15 @@ class NzbFile(TryList):
         self.md5 = None
 
     def __eq__(self, other):
-        """ Assume it's the same file if the bytes and first article are the same """
-        return self.bytes == other.bytes and self.decodetable[0] == other.decodetable[0]
+        """ Assume it's the same file if the numer bytes and first article
+            are the same or if there are no articles left, use the filenames
+        """
+        if self.bytes == other.bytes:
+            if self.decodetable and other.decodetable:
+                return self.decodetable[0] == other.decodetable[0]
+            # Fallback to filename comparison
+            return self.filename == other.filename
+        return False
 
     def __hash__(self):
         """Required because we implement eq. The same file can be spread
