@@ -1899,7 +1899,8 @@ class NzbObject(TryList):
         if not attribs:
             cat, pp, script, priority, name, password, self.url = get_attrib_file(self.workpath, 7)
             if name:
-                self.final_name = name
+                # Could be converted to integer due to the logic in get_attrib_file
+                self.final_name = str(name)
             if password:
                 self.password = password
             return cat, pp, script, priority
