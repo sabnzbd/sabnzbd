@@ -2030,6 +2030,7 @@ class NzbObject(TryList):
             for nzf in self.files:
                 self.bytes_tried += nzf.bytes - nzf.bytes_left
         if self.bytes_par2 is None:
+            self.bytes_par2 = 0
             for nzf in self.files + self.finished_files:
                 if sabnzbd.par2file.is_parfile(nzf.filename):
                     self.bytes_par2 += nzf.bytes
