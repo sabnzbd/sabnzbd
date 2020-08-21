@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 3.0.1
+Release Notes - SABnzbd 3.0.2 RC 1
 =========================================================
+
+## Bugfixes since 3.0.1
+- Priority was not parsed correctly if supplied as through the API.
+- Permissions were still not set correctly when creating directories.
+- Jobs with numeric names could crash post-processing.
+- Jobs with missing articles could result in crash.
+- Windows: crash if the virus scanner removed the certificate bundle.
 
 ## Bugfixes since 3.0.0
 - Basic Authentication resulted in crash. 
