@@ -277,6 +277,7 @@ no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 require_modern_tls = OptionBool("misc", "require_modern_tls", False)
 num_decoders = OptionNumber("misc", "num_decoders", 3)
+deobfuscate_final_filenames = OptionBool("misc", "deobfuscate_final_filenames", False)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])

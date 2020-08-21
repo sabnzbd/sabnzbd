@@ -1356,6 +1356,7 @@ SPECIAL_BOOL_LIST = (
     "api_logging",
     "x_frame_options",
     "require_modern_tls",
+    "deobfuscate_final_filenames",
 )
 SPECIAL_VALUE_LIST = (
     "size_limit",
