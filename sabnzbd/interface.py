@@ -1230,6 +1230,7 @@ SWITCH_LIST = (
     "pre_script",
     "pause_on_pwrar",
     "sfv_check",
+    "deobfuscate_final_filenames",
     "folder_rename",
     "load_balancing",
     "quota_size",
@@ -1356,7 +1357,6 @@ SPECIAL_BOOL_LIST = (
     "api_logging",
     "x_frame_options",
     "require_modern_tls",
-    "deobfuscate_final_filenames",
 )
 SPECIAL_VALUE_LIST = (
     "size_limit",

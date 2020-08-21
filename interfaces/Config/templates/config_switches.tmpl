@@ -237,6 +237,11 @@
                         <input type="checkbox" name="ignore_samples" id="ignore_samples" value="1" <!--#if int($ignore_samples) > 0 then 'checked="checked"' else ""#--> />
                         <span class="desc">$T('explain-ignore_samples') $T('igsam-del').</span>
                     </div>
+                    <div class="field-pair">
+                        <label class="config" for="deobfuscate_final_filenames">$T('opt-deobfuscate_final_filenames')</label>
+                        <input type="checkbox" name="deobfuscate_final_filenames" id="deobfuscate_final_filenames" value="1" <!--#if int($deobfuscate_final_filenames) > 0 then 'checked="checked"' else ""#--> />
+                        <span class="desc">$T('explain-deobfuscate_final_filenames')</span>
+                    </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="enable_meta">$T('opt-enable_meta')</label>
                         <input type="checkbox" name="enable_meta" id="enable_meta" value="1" <!--#if int($enable_meta) > 0 then 'checked="checked"' else ""#--> />
