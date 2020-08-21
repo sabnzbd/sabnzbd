@@ -561,13 +561,10 @@ def create_all_dirs(path, apply_umask=False):
         else:
             # We need to build the directory recursively so we can
             # apply permissions to only the newly created folders
-            # We cannot use os.makedirs() to do this as it ignores the mode
-            try:
-                # Try the user permissions setting
-                umask = int(sabnzbd.cfg.umask(), 8) | int("0700", 8)
-            except:
-                # Use default
-                umask = int("0700", 8)
+            # We cannot use os.makedirs() as it could ignore the mode
+            umask = sabnzbd.cfg.umask()
+            if umask:
+                umask = int(umask, 8) | int("0700", 8)
 
             # Build path from root
             path_part_combined = "/"
@@ -578,7 +575,7 @@ def create_all_dirs(path, apply_umask=False):
                     if not os.path.exists(path_part_combined):
                         os.mkdir(path_part_combined)
                         # Try to set permissions if desired, ignore failures
-                        if apply_umask:
+                        if umask and apply_umask:
                             set_chmod(path_part_combined, umask, report=False)
         return path
     except OSError:

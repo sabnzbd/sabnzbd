@@ -786,6 +786,13 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
         with pytest.raises(OSError):
             self._permissions_runner("/test_base450", perms_base="0450")
 
+    @set_config({"umask": ""})
+    def test_no_umask(self):
+        self._permissions_runner("/test_base_perm700", perms_base="0700")
+        self._permissions_runner("/test_base_perm750", perms_base="0750")
+        self._permissions_runner("/test_base_perm777", perms_base="0777")
+        self._permissions_runner("/test_base_perm600", perms_base="0600")
+
     def _permissions_runner(self, test_base, perms_base="0700", apply_umask=True):
         # Create base directory and set the base permissions
         perms_base_int = int(perms_base, 8)
@@ -799,7 +806,7 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
 
         # If permissions needed to be set, verify the new folder has the
         # right permissions and verify the base didn't change
-        if apply_umask:
+        if apply_umask and cfg.umask():
             perms_test_int = int(cfg.umask(), 8) | int("0700", 8)
         else:
             # Get the current umask, since os.mkdir masks that out
