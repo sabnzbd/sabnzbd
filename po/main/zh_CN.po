@@ -87,6 +87,11 @@ msgstr "SABnzbd 以 %s 编码启动了，正常应该是 UTF-8。会导致下载
 
 #. Warning message
 #: SABnzbd.py
+msgid "Could not load additional certificates from certifi package"
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "由于缺少 CERT 及 KEY 文件，已禁用 HTTPS"
 

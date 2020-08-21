@@ -94,6 +94,11 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid "Could not load additional certificates from certifi package"
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS fejlede på grund af manglende CERT og KEY filer"
 
