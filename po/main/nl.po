@@ -97,7 +97,7 @@ msgstr ""
 #. Warning message
 #: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
-msgstr ""
+msgstr "Extra certificaten uit het certifi pakket konden niet geladen worden"
 
 #. Warning message
 #: SABnzbd.py
@@ -174,7 +174,7 @@ msgstr "Inlezen van %s mislukt"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Cannot access PID file %s"
-msgstr ""
+msgstr "Kan het PID bestand %s niet benaderen"
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
@@ -758,7 +758,7 @@ msgstr "m"
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
-msgstr ""
+msgstr "Kon het volgende bestand niet uploaden: %s"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -778,7 +778,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Failed to read the password file %s"
-msgstr ""
+msgstr "Kan het wachtwoord bestand niet uitlezen %s"
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
@@ -1658,7 +1658,7 @@ msgstr "RAR bestanden zijn niet verifieerbaar"
 #. Warning message
 #: sabnzbd/postproc.py
 msgid "No matching earlier rar file for %s"
-msgstr ""
+msgstr "Geen voorgaand rar-bestand gevonden bij %s"
 
 #. Error message
 #: sabnzbd/postproc.py
@@ -1683,7 +1683,7 @@ msgstr "Fout bij het afsluiten van het systeem"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
+msgstr "DBus foutmelding %s "
 
 #. Warning message
 #: sabnzbd/rating.py
