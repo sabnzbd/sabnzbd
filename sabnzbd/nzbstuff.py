@@ -717,7 +717,7 @@ class NzbObject(TryList):
             self.final_name = self.final_name.replace(".", " ")
 
         # Check against identical checksum or series/season/episode
-        if (not reuse) and nzb and dup_check and priority != REPAIR_PRIORITY:
+        if (not reuse) and nzb and dup_check and self.priority != REPAIR_PRIORITY:
             duplicate, series = self.has_duplicates()
         else:
             duplicate = series = 0
@@ -789,10 +789,10 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, priority = self.load_attribs()
+            cat, pp, script = self.load_attribs()
 
         # Determine category and find pp/script values
-        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, priority)
+        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, self.priority)
         self.set_priority(priority)
         self.repair, self.unpack, self.delete = pp_to_opts(pp_tmp)
 
@@ -1912,22 +1912,22 @@ class NzbObject(TryList):
 
         # TODO: Remove fallback to old method in SABnzbd 3.2.0
         if not attribs:
-            cat, pp, script, priority, name, password, self.url = get_attrib_file(self.workpath, 7)
+            cat, pp, script, self.priority, name, password, self.url = get_attrib_file(self.workpath, 7)
             if name:
                 # Could be converted to integer due to the logic in get_attrib_file
                 self.final_name = str(name)
             if password:
                 self.password = password
-            return cat, pp, script, priority
+            return cat, pp, script
 
         # Only a subset we want to apply directly to the NZO
-        for attrib in ("final_name", "password", "url"):
+        for attrib in ("final_name", "priority", "password", "url"):
             # Only set if it is present and has a value
             if attribs.get(attrib):
                 setattr(self, attrib, attribs[attrib])
 
         # Rest is to be used directly in the NZO-init flow
-        return attribs["cat"], attribs["pp"], attribs["script"], attribs["priority"]
+        return attribs["cat"], attribs["pp"], attribs["script"]
 
     @synchronized(NZO_LOCK)
     def build_pos_nzf_table(self, nzf_ids):
