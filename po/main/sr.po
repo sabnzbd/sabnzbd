@@ -3590,6 +3590,16 @@ msgid "Delete after download"
 msgstr "Обриши после преузимања"
 
 #: sabnzbd/skintext.py
+msgid "Deobfuscate final filenames"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"If filenames of (large) files in the final folder look obfuscated or "
+"meaningless they will be renamed to the job name."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
 msgstr ""
 
