@@ -28,110 +28,57 @@ Based on work by P1nGu1n
 
 """
 
-import os
-import sys
-import time
-import fnmatch
-import struct
 import hashlib
-import re
-import math
 import logging
-from sabnzbd.filesystem import get_unique_filename
+import math
+import os
+import re
+
+from sabnzbd.filesystem import get_unique_filename, globber_full, renamer, get_ext
+from sabnzbd.par2file import is_parfile, parse_par2_file
 
 # Files to exclude and minimal file size for renaming
 EXCLUDED_FILE_EXTS = (".vob", ".rar", ".par2")
 MIN_FILE_SIZE = 10 * 1024 * 1024
 
-# see: http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
-STRUCT_PACKET_HEADER = struct.Struct(
-    "<"
-    "8s"  # Magic sequence
-    "Q"  # Length of the entire packet (including header), must be multiple of 4
-    "16s"  # MD5 Hash of packet
-    "16s"  # Recovery Set ID
-    "16s"  # Packet type
-)
-
-PACKET_TYPE_FILE_DESC = "PAR 2.0\x00FileDesc"
-STRUCT_FILE_DESC_PACKET = struct.Struct(
-    "<"
-    "16s"  # File ID
-    "16s"  # MD5 hash of the entire file
-    "16s"  # MD5 hash of the first 16KiB of the file
-    "Q"  # Length of the file
-)
-
 
 def decode_par2(parfile):
-    result = False
+    """ Parse a par2 file and rename files listed in the par2 to their real name """
+    # Check if really a par2 file
+    if not is_parfile(parfile):
+        logging.info("Par2 file %s was not really a par2 file")
+        return False
+
+    # Parse the par2 file
+    md5of16k = {}
+    parse_par2_file(parfile, md5of16k)
+
+    # Parse all files in the folder
     dirname = os.path.dirname(parfile)
-    with open(parfile, "rb") as parfileToDecode:
-        while True:
-            header = parfileToDecode.read(STRUCT_PACKET_HEADER.size)
-            if not header:
-                break  # file fully read
-
-            (_, packetLength, _, _, packet_type) = STRUCT_PACKET_HEADER.unpack(header)
-            body_length = packetLength - STRUCT_PACKET_HEADER.size
-
-            # only process File Description packets
-            if packet_type != PACKET_TYPE_FILE_DESC:
-                # skip this packet
-                parfileToDecode.seek(body_length, os.SEEK_CUR)
-                continue
-
-            chunck = parfileToDecode.read(STRUCT_FILE_DESC_PACKET.size)
-            (_, _, hash16k, filelength) = STRUCT_FILE_DESC_PACKET.unpack(chunck)
-
-            # filename makes up for the rest of the packet, padded with null characters
-            target_name = parfileToDecode.read(body_length - STRUCT_FILE_DESC_PACKET.size).rstrip(b"\0")
-            target_path = os.path.join(dirname, target_name)
-
-            # file already exists, skip it
-            if os.path.exists(target_path):
-                logging.debug("File already exists: %s" % target_name)
-                continue
-
-            # find and rename file
-            src_path = find_file(dirname, filelength, hash16k)
-            if src_path is not None:
-                os.rename(src_path, target_path)
-                logging.debug("Renamed file from %s to %s" % (os.path.basename(src_path), target_name))
-                result = True
-            else:
-                logging.debug("No match found for: %s" % target_name)
-    return result
-
-
-def find_file(dirname, filelength, hash16k):
+    result = False
     for fn in os.listdir(dirname):
         filepath = os.path.join(dirname, fn)
+        # Only check files
+        if os.path.isfile(filepath):
+            with open(filepath, "rb") as fileToMatch:
+                first16k_data = fileToMatch.read(16384)
 
-        # check if the size matches as an indication
-        if os.path.getsize(filepath) != filelength:
-            continue
-
-        with open(filepath, "rb") as fileToMatch:
-            data = fileToMatch.read(16 * 1024)
-            m = hashlib.md5()
-            m.update(data)
-
-            # compare hash to confirm the match
-            if m.digest() == hash16k:
-                return filepath
-    return None
+            # Check if we have this hash
+            file_md5of16k = hashlib.md5(first16k_data).digest()
+            if file_md5of16k in md5of16k:
+                new_path = os.path.join(dirname, md5of16k[file_md5of16k])
+                # Make sure it's a unique name
+                renamer(filepath, get_unique_filename(new_path))
+                result = True
+    return result
 
 
 def entropy(string):
     """ Calculates the Shannon entropy of a string """
-
     # get probability of chars in string
     prob = [float(string.count(c)) / len(string) for c in dict.fromkeys(list(string))]
-
     # calculate the entropy
     entropy = -sum([p * math.log(p) / math.log(2.0) for p in prob])
-
     return entropy
 
 
@@ -184,62 +131,48 @@ def is_probably_obfuscated(myinputfilename):
     return False  # default not obfuscated
 
 
-def deobfuscate(workingdirectory, usefulname, *args, **kwargs):
-    """ in workingdirectory, check all filenames, and if wanted, rename """
-    dummyrun = kwargs.get("dummyrun", None)  # do not really rename
+def deobfuscate(workingdirectory, usefulname):
+    """ In workingdirectory, check all filenames, and if wanted, rename """
 
     # Search for par2 files
-    matches = []
-    for root, dirnames, filenames in os.walk(workingdirectory):
-        for filename in fnmatch.filter(filenames, "*.par2"):
-            matches.append(os.path.join(root, filename))
-    logging.debug("par2 files matches is %s", matches)
+    par2_files = globber_full(workingdirectory, "*.par2")
 
     # Found any par2 files we can use?
     run_renamer = True
-    if not matches:
-        logging.debug("No par2 files found to process.")
+    if not par2_files:
+        logging.debug("No par2 files found to process, running renamer.")
+    else:
+        # Run par2 from SABnzbd on them
+        for par2_file in par2_files:
+            # Analyse data and analyse result
+            logging.debug("Deobfuste par2: handling %s", par2_file)
+            if decode_par2(par2_file):
+                logging.debug("Deobfuste par2 repair/verify finished.")
+                run_renamer = False
+            else:
+                logging.debug("Deobfuste par2 repair/verify did not find anything to rename.")
 
-    # Run par2 from SABnzbd on them
-    for par2_file in matches:
-        # Analyse data and analyse result
-        logging.debug("deobfus par2: handling %s", par2_file)
-        if decode_par2(par2_file):
-            logging.debug("Recursive repair/verify finished.")
-            run_renamer = False
-        else:
-            logging.debug("Recursive repair/verify did not complete!")
-
-    # No matches? Then we try to rename qualifying files to the job-name
+    # No par2 files? Then we try to rename qualifying files to the job-name
     if run_renamer:
-        logging.debug("Trying to see if there are qualifying files to be renamed")
+        logging.debug("Trying to see if there are qualifying files to be deobfusted")
         for root, dirnames, filenames in os.walk(workingdirectory):
             for filename in filenames:
-                logging.debug("Inspecting %s", filename)
+                logging.debug("Deobfuste inspecting %s", filename)
                 full_path = os.path.join(root, filename)
                 file_size = os.path.getsize(full_path)
-                # Do we need to rename this file? Criteria: big, not-excluded extension, obfuscated
+                # Do we need to rename this file?
+                # Criteria: big, not-excluded extension, obfuscated
                 if (
                     file_size > MIN_FILE_SIZE
-                    and os.path.splitext(filename)[1].lower() not in EXCLUDED_FILE_EXTS
+                    and get_ext(filename) not in EXCLUDED_FILE_EXTS
                     and is_probably_obfuscated(filename)  # this as last test to avoid unnecessary analysis
                 ):
                     # OK, rename
-                    new_name = "%s%s" % (
-                        os.path.join(workingdirectory, usefulname),
-                        os.path.splitext(filename)[1].lower(),
+                    new_name = get_unique_filename(
+                        "%s%s" % (os.path.join(workingdirectory, usefulname), get_ext(filename))
                     )
-                    # make sure the new filename is unique
-                    new_name = get_unique_filename(new_name)
-                    logging.info("Renaming %s to %s", full_path, new_name)
-
-                    # Rename, with retries for Windows
-                    for r in range(3):
-                        try:
-                            os.rename(full_path, new_name)
-                            logging.debug("Renaming succeeded on run %s", r + 1)
-                            break
-                        except:
-                            time.sleep(1)
+                    logging.info("Deobfuscate renaming %s to %s", filename, new_name)
+                    # Rename and make sure the new filename is unique
+                    renamer(full_path, new_name)
     else:
-        logging.debug("No qualifying files found")
+        logging.info("No qualifying files found to deobfuscate")

@@ -19,10 +19,11 @@
 Testing SABnzbd deobfuscate module
 """
 
-from sabnzbd.deobfuscate_filenames import *
-import os
-import shutil
 import random
+import shutil
+
+from sabnzbd.deobfuscate_filenames import *
+from tests.testhelper import *
 
 
 class TestDeobfuscateFinalResult:
@@ -42,7 +43,7 @@ class TestDeobfuscateFinalResult:
         # Full test: a directory with a non-useful named file in it: Test that deobfuscate() works and renames it
 
         # Create directory (with a random directory name)
-        dirname = "testdir" + str(random.randint(10000, 99999))
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
         os.mkdir(dirname)
 
         # Create a big enough file with a non-useful filename
@@ -55,11 +56,30 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that directory, with a more useful jobname:
         jobname = "My Important Download 2020"
-        # deobfuscate(os.path.abspath(dirname), jobname)
         deobfuscate(dirname, jobname)
         # Check if file was renamed
-        assert not os.path.isfile(output_file)  # original filename should not be there anymore
-        assert os.path.isfile(dirname + "/" + jobname + ".mkv")  # ... it should be renamed to the jobname
+        assert not os.path.exists(output_file)  # original filename should not be there anymore
+        assert os.path.exists(os.path.join(dirname, jobname + ".mkv"))  # ... it should be renamed to the jobname
 
         # Done. Remove non-empty directory
         shutil.rmtree(dirname)
+
+    def test_deobfuscate_par2(self):
+        # Simple test to see if the par2 file is picked up
+        test_dir = os.path.join(SAB_DATA_DIR, "deobfuscate_filenames")
+        test_input = os.path.join(test_dir, "E0CcYdGDFbeCAsT3LoID")
+        test_output = os.path.join(test_dir, "random.bin")
+
+        # Check if it is there
+        assert os.path.exists(test_input)
+
+        # Run deobfuscate
+        deobfuscate(test_dir, "doesnt_matter")
+
+        # Should now be renamed to the filename in the par2 file
+        assert not os.path.exists(test_input)
+        assert os.path.exists(test_output)
+
+        # Rename back
+        os.rename(test_output, test_input)
+        assert os.path.exists(test_input)

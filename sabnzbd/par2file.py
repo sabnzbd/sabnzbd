@@ -18,11 +18,12 @@
 """
 sabnzbd.par2file - All par2-related functionality
 """
-import os
-import logging
-import re
 import hashlib
+import logging
+import os
+import re
 import struct
+
 from sabnzbd.encoding import correct_unknown_encoding
 
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[\+\-](\d*)\.par2", re.I)
@@ -81,9 +82,11 @@ def analyse_par2(name, filepath=None):
     return setname, vol, block
 
 
-def parse_par2_file(nzf, fname):
+def parse_par2_file(fname, md5of16k):
     """ Get the hash table and the first-16k hash table from a PAR2 file
         Return as dictionary, indexed on names or hashes for the first-16 table
+        The input md5of16k is modified in place and thus not returned!
+
         For a full description of the par2 specification, visit:
         http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
     """
@@ -97,9 +100,9 @@ def parse_par2_file(nzf, fname):
                 name, filehash, hash16k = parse_par2_file_packet(f, header)
                 if name:
                     table[name] = filehash
-                    if hash16k not in nzf.nzo.md5of16k:
-                        nzf.nzo.md5of16k[hash16k] = name
-                    elif nzf.nzo.md5of16k[hash16k] != name:
+                    if hash16k not in md5of16k:
+                        md5of16k[hash16k] = name
+                    elif md5of16k[hash16k] != name:
                         # Not unique and not already linked to this file
                         # Remove to avoid false-renames
                         duplicates16k.append(hash16k)
@@ -118,8 +121,8 @@ def parse_par2_file(nzf, fname):
     # Have to remove duplicates at the end to make sure
     # no trace is left in case of multi-duplicates
     for hash16k in duplicates16k:
-        if hash16k in nzf.nzo.md5of16k:
-            old_name = nzf.nzo.md5of16k.pop(hash16k)
+        if hash16k in md5of16k:
+            old_name = md5of16k.pop(hash16k)
             logging.debug("Par2-16k signature of %s not unique, discarding", old_name)
 
     return table

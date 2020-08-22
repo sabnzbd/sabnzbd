@@ -1023,7 +1023,7 @@ class NzbObject(TryList):
         nzf.set_par2(setname, vol, block)
 
         # Parse the file contents for hashes
-        pack = sabnzbd.par2file.parse_par2_file(nzf, filepath)
+        pack = sabnzbd.par2file.parse_par2_file(filepath, nzf.nzo.md5of16k)
 
         # If we couldn't parse it, we ignore it
         if pack:
