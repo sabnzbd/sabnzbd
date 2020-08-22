@@ -103,6 +103,8 @@ msgstr ""
 #: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
 msgstr ""
+"Impossible de charger les certificats supplémentaires à partir du package "
+"certifi"
 
 #. Warning message
 #: SABnzbd.py
@@ -3723,13 +3725,15 @@ msgstr "Supprimer après téléchargement"
 
 #: sabnzbd/skintext.py
 msgid "Deobfuscate final filenames"
-msgstr ""
+msgstr "Désobfusquer les noms de fichiers finaux"
 
 #: sabnzbd/skintext.py
 msgid ""
 "If filenames of (large) files in the final folder look obfuscated or "
 "meaningless they will be renamed to the job name."
 msgstr ""
+"Si les noms de fichiers (volumineux) dans le dossier final semblent obscurs "
+"ou dénués de sens, ils seront renommés avec le nom de la tâche."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
