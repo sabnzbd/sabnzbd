@@ -1,11 +1,61 @@
 """
 tests.test_nzbstuff - Testing functions in nzbstuff.py
 """
-
 import sabnzbd.nzbstuff as nzbstuff
+from sabnzbd.config import ConfigCat
+from sabnzbd.constants import NORMAL_PRIORITY
+from sabnzbd.filesystem import globber
+
+from tests.testhelper import *
 
 
-class TestNzbstuff:
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestNZO:
+    @set_config({"download_dir": SAB_CACHE_DIR})
+    def test_nzo_basic(self):
+        # Need to create the Default category, as we would in normal instance
+        # Otherwise it will try to save the config
+        def_cat = ConfigCat("*", {"pp": 3, "script": "None", "priority": NORMAL_PRIORITY})
+
+        # Create empty object, normally used to grab URL's
+        nzo = nzbstuff.NzbObject("test_basic")
+        assert nzo.work_name == "test_basic"
+        assert not nzo.files
+        assert not nzo.created
+
+        # Create NZB-file to import
+        nzb_path = create_nzb("basic_rar5")
+        with open(nzb_path, "r") as nzb_data_fp:
+            nzb_data = nzb_data_fp.read()
+        # Remove the created NZB-file
+        os.remove(nzb_path)
+
+        # Very basic test of NZO creation with data
+        nzo = nzbstuff.NzbObject("test_basic_data", nzb=nzb_data)
+        assert nzo.final_name == "test_basic_data"
+        assert nzo.files
+        assert nzo.files[0].filename == "testfile.rar"
+        assert nzo.bytes == 120
+        assert nzo.files[0].bytes == 120
+
+        # work_name can be trimmed in Windows due to max-path-length
+        assert "test_basic_data".startswith(nzo.work_name)
+        assert os.path.exists(nzo.workpath)
+
+        # Check if there's an nzf file and the backed-up nzb
+        assert globber(nzo.workpath, "*.nzb.gz")
+        assert globber(nzo.workpath, "SABnzbd_nzf*")
+
+        # Should have picked up the default category settings
+        assert nzo.cat == "*"
+        assert nzo.script == def_cat.script() == "None"
+        assert nzo.priority == def_cat.priority() == NORMAL_PRIORITY
+        assert nzo.repair and nzo.unpack and nzo.delete
+
+        # TODO: More checks!
+
+
+class TestScanPassword:
     def test_scan_passwords(self):
         file_names = {
             "my_awesome_nzb_file{{password}}": "password",

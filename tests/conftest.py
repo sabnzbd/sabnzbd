@@ -30,7 +30,25 @@ from tests.testhelper import *
 
 
 @pytest.fixture(scope="session")
-def start_sabnzbd_and_selenium(request):
+def clean_cache_dir(request):
+    # Remove cache if already there
+    if os.path.isdir(SAB_CACHE_DIR):
+        shutil.rmtree(SAB_CACHE_DIR)
+
+    yield request
+
+    # Remove cache dir with retries in case it's still running
+    for x in range(10):
+        try:
+            shutil.rmtree(SAB_CACHE_DIR)
+            break
+        except OSError:
+            print("Unable to remove cache dir (try %d)" % x)
+            time.sleep(1)
+
+
+@pytest.fixture(scope="session")
+def start_sabnzbd_and_selenium(clean_cache_dir):
     # Remove cache if already there
     if os.path.isdir(SAB_CACHE_DIR):
         shutil.rmtree(SAB_CACHE_DIR)
@@ -79,7 +97,7 @@ def start_sabnzbd_and_selenium(request):
 
     # Start the driver and pass it on to all the classes
     driver = webdriver.Chrome(options=driver_options)
-    for item in request.node.items:
+    for item in clean_cache_dir.node.items:
         parent_class = item.getparent(pytest.Class)
         parent_class.obj.driver = driver
 
@@ -127,15 +145,6 @@ def shutdown_sabnzbd():
         get_url_result("shutdown")
     except requests.ConnectionError:
         pass
-
-    # Takes a second to shutdown
-    for x in range(10):
-        try:
-            shutil.rmtree(SAB_CACHE_DIR)
-            break
-        except OSError:
-            print("Unable to remove cache dir (try %d)" % x)
-            time.sleep(1)
 
 
 def start_sabnews():
