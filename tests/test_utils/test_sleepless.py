@@ -59,3 +59,17 @@ class TestSleepless:
         sleepless.allow_sleep()
         assert not self.check_msg_in_assertions()
         assert sleepless.assertion_id is None
+
+    def test_sleepless_multi_call(self):
+        # If we set it twice, is it still cleared with one call
+        assert not self.check_msg_in_assertions()
+        assert sleepless.assertion_id is None
+
+        sleepless.keep_awake(self.sleep_msg)
+        time.sleep(2)
+        sleepless.keep_awake(self.sleep_msg)
+        assert self.check_msg_in_assertions()
+
+        sleepless.allow_sleep()
+        assert not self.check_msg_in_assertions()
+        assert sleepless.assertion_id is None
