@@ -45,12 +45,16 @@ def keep_awake(reason):
         Multiple calls allowed.
     """
     global assertion_id
-    kIOPMAssertionTypeNoIdleSleep = "PreventUserIdleSystemSleep"
-    kIOPMAssertionLevelOn = 255
-    errcode, assertion_id = IOPMAssertionCreateWithName(
-        kIOPMAssertionTypeNoIdleSleep, kIOPMAssertionLevelOn, reason, None
-    )
-    return errcode == 0
+
+    # Each assertion needs to be released, so make sure to only set it once
+    if not assertion_id:
+        kIOPMAssertionTypeNoIdleSleep = "NoIdleSleepAssertion"
+        kIOPMAssertionLevelOn = 255
+        errcode, assertion_id = IOPMAssertionCreateWithName(
+            kIOPMAssertionTypeNoIdleSleep, kIOPMAssertionLevelOn, reason, None
+        )
+        return errcode == 0
+    return True
 
 
 def allow_sleep():
