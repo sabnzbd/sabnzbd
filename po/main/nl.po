@@ -780,6 +780,16 @@ msgstr ""
 msgid "Failed to read the password file %s"
 msgstr "Kan het wachtwoord bestand niet uitlezen %s"
 
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr "[%s] Het commando in build_command is ongedefinieerd"
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
+msgstr "Python-script '%s' heeft geen uitvoerpermissie (+x)"
+
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
 msgstr "Script uitvoeren"
@@ -1035,16 +1045,6 @@ msgstr "Controleren van extra bestanden"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "Checking"
 msgstr "Controleren"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "[%s] The command in build_command is undefined."
-msgstr "[%s] Het commando in build_command is ongedefinieerd"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr "Python-script '%s' heeft geen uitvoerpermissie (+x)"
 
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"

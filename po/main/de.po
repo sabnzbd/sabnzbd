@@ -788,6 +788,16 @@ msgstr ""
 msgid "Failed to read the password file %s"
 msgstr ""
 
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr "[%s] Der Befehl in build_command ist nicht definiert."
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
+msgstr "Dem Pythonskript \"%s\" fehlen die Ausführungsrechte (+x)"
+
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
 msgstr "Ausführen des Skripts"
@@ -1047,16 +1057,6 @@ msgstr "Überprüfe zusätzliche Dateien"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "Checking"
 msgstr "Wird überprüft"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "[%s] The command in build_command is undefined."
-msgstr "[%s] Der Befehl in build_command ist nicht definiert."
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr "Dem Pythonskript \"%s\" fehlen die Ausführungsrechte (+x)"
 
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"

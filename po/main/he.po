@@ -757,6 +757,16 @@ msgstr ""
 msgid "Failed to read the password file %s"
 msgstr "נכשל בקריאת קובץ הסיסמה %s"
 
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr "אינה מוגדרת build_command הפקודה ב [%s]"
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
+msgstr "(+x) אין ערכת הרשאות ביצוע \"%s\" לתסריט פייתון"
+
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
 msgstr "מריץ תסריט"
@@ -1008,16 +1018,6 @@ msgstr "בודק קבצי תוספת"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "Checking"
 msgstr "בודק"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "[%s] The command in build_command is undefined."
-msgstr "אינה מוגדרת build_command הפקודה ב [%s]"
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr "(+x) אין ערכת הרשאות ביצוע \"%s\" לתסריט פייתון"
 
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
