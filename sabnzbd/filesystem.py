@@ -524,10 +524,10 @@ def set_permissions(path, recursive=True):
 
 
 def userxbit(filename):
-    # Returns boolean if the x-bit for user is set on the given file
-    # This is a workaround: os.access(filename, os.X_OK) does not work on certain mounted file systems
-    # Does not work on Windows, but it is not called on Windows
-
+    """ Returns boolean if the x-bit for user is set on the given file.
+        This is a workaround: os.access(filename, os.X_OK) does not work
+        on certain mounted file systems. Does not work at all on Windows.
+    """
     # rwx rwx rwx
     # 876 543 210      # we want bit 6 from the right, counting from 0
     userxbit = 1 << 6  # bit 6
