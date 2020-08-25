@@ -21,6 +21,7 @@ tests.test_misc - Testing functions in misc.py
 
 import datetime
 import subprocess
+import sys
 import tempfile
 from unittest import mock
 
@@ -220,68 +221,70 @@ class TestMisc:
 
 
 class TestBuildAndRunCommand:
+    # Path should exist
+    script_path = os.path.join(SAB_BASE_DIR, "test_misc.py")
+
     def test_none_check(self):
         with pytest.raises(IOError):
             misc.build_and_run_command([None])
 
-    @set_platform("win32")
     @mock.patch("subprocess.Popen")
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows tests")
     def test_win(self, mock_subproc_popen):
         # Needed for priority check
         import win32process
 
         misc.build_and_run_command(["test.cmd", "input 1"])
-        assert mock_subproc_popen.call_args.args[0] == ["test.cmd", "input 1"]
-        assert mock_subproc_popen.call_args.kwargs["creationflags"] == win32process.NORMAL_PRIORITY_CLASS
+        assert mock_subproc_popen.call_args[0][0] == ["test.cmd", "input 1"]
+        assert mock_subproc_popen.call_args[1]["creationflags"] == win32process.NORMAL_PRIORITY_CLASS
 
         misc.build_and_run_command(["test.py", "input 1"])
-        assert mock_subproc_popen.call_args.args[0] == ["python.exe", "test.py", "input 1"]
-        assert mock_subproc_popen.call_args.kwargs["creationflags"] == win32process.NORMAL_PRIORITY_CLASS
+        assert mock_subproc_popen.call_args[0][0] == ["python.exe", "test.py", "input 1"]
+        assert mock_subproc_popen.call_args[1]["creationflags"] == win32process.NORMAL_PRIORITY_CLASS
 
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         misc.build_and_run_command(["UnRar.exe", "\\\\?\\C:\\path\\"])
-        assert mock_subproc_popen.call_args.args[0] == ["UnRar.exe", "\\\\?\\C:\\path\\"]
+        assert mock_subproc_popen.call_args[0][0] == ["UnRar.exe", "\\\\?\\C:\\path\\"]
         misc.build_and_run_command(["UnRar.exe", "\\\\?\\C:\\path\\"], flatten_command=True)
-        assert mock_subproc_popen.call_args.args[0] == '"UnRar.exe" "\\\\?\\C:\\path\\"'
+        assert mock_subproc_popen.call_args[0][0] == '"UnRar.exe" "\\\\?\\C:\\path\\"'
 
+    @mock.patch("sabnzbd.misc.userxbit")
     @mock.patch("subprocess.Popen")
-    def test_std_override(self, mock_subproc_popen):
-        misc.build_and_run_command(["test.py"], stderr=subprocess.DEVNULL)
-        assert mock_subproc_popen.call_args.kwargs["stderr"] == subprocess.DEVNULL
+    def test_std_override(self, mock_subproc_popen, userxbit):
+        userxbit.return_value = True
+        misc.build_and_run_command([self.script_path], stderr=subprocess.DEVNULL)
+        assert mock_subproc_popen.call_args[1]["stderr"] == subprocess.DEVNULL
 
     @set_platform("linux")
     @set_config({"nice": "--adjustment=-7", "ionice": "-t -n9 -c7"})
     @mock.patch("sabnzbd.misc.userxbit")
     @mock.patch("subprocess.Popen")
     def test_linux_features(self, mock_subproc_popen, userxbit):
-        # Path should exist
-        script_path = os.path.join(SAB_BASE_DIR, "test_misc.py")
-
         # Should break on no-execute permissions
         userxbit.return_value = False
         with pytest.raises(IOError):
-            misc.build_and_run_command([script_path, "input 1"])
+            misc.build_and_run_command([self.script_path, "input 1"])
         userxbit.return_value = True
 
         # Check if python-call is added if not supplied by shebang
         temp_file_fd, temp_file_path = tempfile.mkstemp(suffix=".py")
         os.close(temp_file_fd)
         misc.build_and_run_command([temp_file_path, "input 1"])
-        assert mock_subproc_popen.call_args.args[0] == ["python", temp_file_path, "input 1"]
+        assert mock_subproc_popen.call_args[0][0] == ["python", temp_file_path, "input 1"]
         os.remove(temp_file_path)
 
         # Have to fake these for it to work
         newsunpack.IONICE_COMMAND = "ionice"
         newsunpack.NICE_COMMAND = "nice"
         userxbit.return_value = True
-        misc.build_and_run_command([script_path, "input 1"])
-        assert mock_subproc_popen.call_args.args[0] == [
+        misc.build_and_run_command([self.script_path, "input 1"])
+        assert mock_subproc_popen.call_args[0][0] == [
             "nice",
             "--adjustment=-7",
             "ionice",
             "-t",
             "-n9",
             "-c7",
-            script_path,
+            self.script_path,
             "input 1",
         ]
