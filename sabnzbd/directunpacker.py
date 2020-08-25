@@ -23,17 +23,15 @@ import os
 import re
 import time
 import threading
-import subprocess
 import logging
-from subprocess import Popen
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, format_time_string
+from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
 from sabnzbd.filesystem import clip_path, long_path, remove_all, real_path, remove_file
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
-from sabnzbd.newsunpack import build_command, EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
+from sabnzbd.newsunpack import EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
 from sabnzbd.postproc import prepare_extraction_path
 from sabnzbd.utils.rarfile import RarFile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
@@ -77,9 +75,8 @@ class DirectUnpacker(threading.Thread):
         pass
 
     def reset_active(self):
-        # make sure the process and filehandles are closed nicely:
+        # make sure the process and file handlers are closed nicely:
         try:
-            # Creation was done via "self.active_instance = Popen()", so:
             if self.active_instance:
                 self.active_instance.stdout.close()
                 self.active_instance.stdin.close()
@@ -87,6 +84,7 @@ class DirectUnpacker(threading.Thread):
         except:
             logging.debug("Exception in reset_active()", exc_info=True)
             pass
+
         self.active_instance = None
         self.cur_setname = None
         self.cur_volume = 0
@@ -411,19 +409,10 @@ class DirectUnpacker(threading.Thread):
 
         # Let's start from the first one!
         self.cur_volume = 1
-        stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
-        logging.debug("Running unrar for DirectUnpack %s", command)
+
         # Need to disable buffer to have direct feedback
-        self.active_instance = Popen(
-            command,
-            shell=False,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            startupinfo=stup,
-            creationflags=creationflags,
-            bufsize=0,
-        )
+        self.active_instance = build_and_run_command(command, flatten_command=True, bufsize=0)
+
         # Add to runners
         ACTIVE_UNPACKERS.append(self)
 

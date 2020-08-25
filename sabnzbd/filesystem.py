@@ -523,6 +523,20 @@ def set_permissions(path, recursive=True):
             set_chmod(path, umask_file, report)
 
 
+def userxbit(filename):
+    # Returns boolean if the x-bit for user is set on the given file
+    # This is a workaround: os.access(filename, os.X_OK) does not work on certain mounted file systems
+    # Does not work on Windows, but it is not called on Windows
+
+    # rwx rwx rwx
+    # 876 543 210      # we want bit 6 from the right, counting from 0
+    userxbit = 1 << 6  # bit 6
+    rwxbits = os.stat(filename)[0]  # the first element of os.stat() is "mode"
+    # do logical AND, check if it is not 0:
+    xbitset = (rwxbits & userxbit) > 0
+    return xbitset
+
+
 def clip_path(path):
     r""" Remove \\?\ or \\?\UNC\ prefix from Windows path """
     if sabnzbd.WIN32 and path and "?" in path:

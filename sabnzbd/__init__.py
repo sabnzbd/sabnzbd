@@ -24,7 +24,6 @@ import datetime
 import tempfile
 import pickle
 import gzip
-import subprocess
 import time
 import socket
 import cherrypy
@@ -857,19 +856,10 @@ def run_script(script):
     script_path = filesystem.make_script_path(script)
     if script_path:
         try:
-            stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command([script_path])
-            logging.info("Spawning external command %s", command)
-            subprocess.Popen(
-                command,
-                shell=need_shell,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                startupinfo=stup,
-                creationflags=creationflags,
-            )
+            script_output = misc.run_command([script_path])
+            logging.info("Output of queue-complete script %s: \n%s", script, script_output)
         except:
-            logging.debug("Failed script %s, Traceback: ", script, exc_info=True)
+            logging.info("Failed queue-complete script %s, Traceback: ", script, exc_info=True)
 
 
 def empty_queues():

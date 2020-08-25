@@ -36,6 +36,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT,
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
+from sabnzbd.filesystem import get_ext, userxbit
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]{0,1})", re.I)
@@ -45,6 +46,20 @@ RE_IP6 = re.compile(r"inet6\s+(addr:\s*){0,1}([0-9a-f:]+)", re.I)
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
+
+if sabnzbd.WIN32:
+    try:
+        import win32process
+
+        # Define scheduling priorities
+        WIN_SCHED_PRIOS = {
+            1: win32process.IDLE_PRIORITY_CLASS,
+            2: win32process.BELOW_NORMAL_PRIORITY_CLASS,
+            3: win32process.NORMAL_PRIORITY_CLASS,
+            4: win32process.ABOVE_NORMAL_PRIORITY_CLASS,
+        }
+    except ImportError:
+        pass
 
 
 def time_format(fmt):
@@ -641,7 +656,7 @@ def get_windows_memory():
 
 def get_darwin_memory():
     """ Use system-call to extract total memory on macOS """
-    system_output = sabnzbd.newsunpack.run_simple(["sysctl", "hw.memsize"])
+    system_output = run_command(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
 
 
@@ -864,17 +879,7 @@ def ip_extract():
         for item in info:
             ips.append(item[4][0])
     else:
-        p = subprocess.Popen(
-            program,
-            shell=False,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            startupinfo=None,
-            creationflags=0,
-        )
-        output = platform_btou(p.stdout.read())
-        p.wait()
+        output = run_command(program)
         for line in output.split("\n"):
             m = RE_IP4.search(line)
             if not (m and m.group(2)):
@@ -919,3 +924,71 @@ def nntp_to_msg(text):
     else:
         lines = text.split(b"\r\n")
         return ubtou(lines[0])
+
+
+def build_and_run_command(command, flatten_command=False, **kwargs):
+    """ Builds and then runs command with nessecary flags and optional
+        IONice and Nice commands. Optional Popen arguments can be supplied.
+        On Windows we need to run our own list2cmdline for Unrar.
+        Returns the Popen-instance.
+    """
+    # command[0] should be set, and thus not None
+    if not command[0]:
+        logging.error(T("[%s] The command in build_command is undefined."), caller_name())
+        raise IOError
+
+    if not sabnzbd.WIN32:
+        if command[0].endswith(".py"):
+            with open(command[0], "r") as script_file:
+                if not userxbit(command[0]):
+                    # Inform user that Python scripts need x-bit and then stop
+                    logging.error(T('Python script "%s" does not have execute (+x) permission set'), command[0])
+                    raise IOError
+                elif script_file.read(2) != "#!":
+                    # No shebang (#!) defined, add default python
+                    command.insert(0, "python")
+
+        if sabnzbd.newsunpack.IONICE_COMMAND and cfg.ionice():
+            ionice = cfg.ionice().split()
+            command = ionice + command
+            command.insert(0, sabnzbd.newsunpack.IONICE_COMMAND)
+        if sabnzbd.newsunpack.NICE_COMMAND and cfg.nice():
+            nice = cfg.nice().split()
+            command = nice + command
+            command.insert(0, sabnzbd.newsunpack.NICE_COMMAND)
+        need_shell = False
+        creationflags = 0
+    else:
+        # For Windows we always need to add python interpreter
+        if command[0].endswith(".py"):
+            command.insert(0, "python")
+
+        need_shell = get_ext(command[0]) not in (".exe", ".com")
+        creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
+
+        if need_shell or flatten_command:
+            command = sabnzbd.newsunpack.list2cmdline(command)
+
+    # Set the basic Popen arguments
+    popen_kwargs = {
+        "shell": need_shell,
+        "stdin": subprocess.PIPE,
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "creationflags": creationflags,
+    }
+    # Update with the supplied ones
+    popen_kwargs.update(kwargs)
+
+    # Run the command
+    logging.info("[%s] Running external command: %s", caller_name(), command)
+    logging.debug("Popen arguments: %s", popen_kwargs)
+    return subprocess.Popen(command, **popen_kwargs)
+
+
+def run_command(cmd):
+    """ Run simple external command and return output as a string. """
+    with build_and_run_command(cmd) as p:
+        txt = platform_btou(p.stdout.read())
+        p.wait()
+    return txt

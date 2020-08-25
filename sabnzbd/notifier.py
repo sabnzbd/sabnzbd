@@ -30,8 +30,10 @@ from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
+from sabnzbd.encoding import platform_btou
 from sabnzbd.filesystem import make_script_path
-from sabnzbd.newsunpack import external_script
+from sabnzbd.misc import build_and_run_command
+from sabnzbd.newsunpack import create_env
 
 if sabnzbd.FOUNDATION:
     import Foundation
@@ -346,10 +348,11 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     """ Run user's notification script """
     if test:
         script = test.get("nscript_script")
-        parameters = test.get("nscript_parameters")
+        nscript_parameters = test.get("nscript_parameters")
     else:
         script = sabnzbd.cfg.nscript_script()
-        parameters = sabnzbd.cfg.nscript_parameters()
+        nscript_parameters = sabnzbd.cfg.nscript_parameters()
+    nscript_parameters = nscript_parameters.split()
     if not script:
         return T("Cannot send, missing required data")
     title = "SABnzbd: " + T(NOTIFICATION.get(gtype, "other"))
@@ -357,12 +360,20 @@ def send_nscript(title, msg, gtype, force=False, test=None):
     if force or check_classes(gtype, "nscript"):
         script_path = make_script_path(script)
         if script_path:
-            output, ret = external_script(script_path, gtype, title, msg, parameters)
+            ret = -1
+            output = None
+            try:
+                p = build_and_run_command([script_path, gtype, title, msg] + nscript_parameters, env=create_env())
+                output = platform_btou(p.stdout.read())
+                ret = p.wait()
+            except:
+                logging.info("Failed script %s, Traceback: ", script, exc_info=True)
+
             if ret:
                 logging.error(T('Script returned exit code %s and output "%s"'), ret, output)
                 return T('Script returned exit code %s and output "%s"') % (ret, output)
             else:
-                logging.info("Successfully executed notification script " + script_path)
+                logging.info("Successfully executed notification script %s", script_path)
         else:
             return T('Notification script "%s" does not exist') % script_path
     return ""

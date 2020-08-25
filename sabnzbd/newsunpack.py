@@ -28,12 +28,20 @@ import time
 import zlib
 import shutil
 import functools
-from subprocess import Popen
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.misc import format_time_string, find_on_path, int_conv, get_all_passwords, calc_age, cmp, caller_name
+from sabnzbd.misc import (
+    format_time_string,
+    find_on_path,
+    int_conv,
+    get_all_passwords,
+    calc_age,
+    cmp,
+    run_command,
+    build_and_run_command,
+)
 from sabnzbd.filesystem import (
     make_script_path,
     real_path,
@@ -51,23 +59,6 @@ from sabnzbd.filesystem import (
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
-
-if sabnzbd.WIN32:
-    try:
-        import win32api
-        import win32con
-        import win32process
-
-        # Define scheduling priorities
-        WIN_SCHED_PRIOS = {
-            1: win32process.IDLE_PRIORITY_CLASS,
-            2: win32process.BELOW_NORMAL_PRIORITY_CLASS,
-            3: win32process.NORMAL_PRIORITY_CLASS,
-            4: win32process.ABOVE_NORMAL_PRIORITY_CLASS,
-        }
-    except ImportError:
-        pass
-
 
 # Regex globals
 RAR_RE = re.compile(r"\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
@@ -200,31 +191,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     }
 
     try:
-        stup, need_shell, command, creationflags = build_command(command)
-        env = create_env(nzo, extra_env_fields)
-
-        logging.info(
-            "Running external script %s(%s, %s, %s, %s, %s, %s, %s, %s)",
-            extern_proc,
-            complete_dir,
-            nzo.filename,
-            nicename,
-            "",
-            nzo.cat,
-            nzo.group,
-            status,
-            failure_url,
-        )
-        p = Popen(
-            command,
-            shell=need_shell,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            startupinfo=stup,
-            env=env,
-            creationflags=creationflags,
-        )
+        p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
 
         # Follow the output, so we can abort it
         proc = p.stdout
@@ -254,33 +221,6 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
         return "Cannot run script %s\r\n" % extern_proc, -1
 
     output = "\n".join(lines)
-    ret = p.wait()
-    return output, ret
-
-
-def external_script(script, p1, p2, p3=None, p4=None):
-    """ Run a user script with two parameters, return console output and exit value """
-    command = [script, p1, p2, p3, p4]
-
-    try:
-        stup, need_shell, command, creationflags = build_command(command)
-        env = create_env()
-        logging.info("Running user script %s(%s, %s)", script, p1, p2)
-        p = Popen(
-            command,
-            shell=need_shell,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            startupinfo=stup,
-            env=env,
-            creationflags=creationflags,
-        )
-    except:
-        logging.debug("Failed script %s, Traceback: ", script, exc_info=True)
-        return "Cannot run script %s\r\n" % script, -1
-
-    output = platform_btou(p.stdout.read())
     ret = p.wait()
     return output, ret
 
@@ -742,20 +682,9 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     if cfg.ignore_unrar_dates():
         command.insert(3, "-tsm-")
 
-    stup, need_shell, command, creationflags = build_command(command, flatten_command=True)
-
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
-    logging.debug("Running unrar %s", command)
-    p = Popen(
-        command,
-        shell=need_shell,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        startupinfo=stup,
-        creationflags=creationflags,
-    )
+    p = build_and_run_command(command, flatten_command=True)
 
     proc = p.stdout
     if p.stdin:
@@ -988,23 +917,10 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
     if one_folder or cfg.flat_unpack():
         command.insert(3, "-j")  # Unpack without folders
 
-    stup, need_shell, command, creationflags = build_command(command)
-    logging.debug("Starting unzip: %s", command)
-    p = Popen(
-        command,
-        shell=need_shell,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        startupinfo=stup,
-        creationflags=creationflags,
-    )
-
+    p = build_and_run_command(command)
     output = platform_btou(p.stdout.read())
-    logging.debug("unzip output: \n%s", output)
-
     ret = p.wait()
-
+    logging.debug("unzip output: \n%s", output)
     return ret
 
 
@@ -1127,19 +1043,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
     orig_dir_content = listdir_full(extraction_path)
 
     command = [SEVEN_COMMAND, method, "-y", overwrite, parm, case, password, "-o%s" % extraction_path, name]
-
-    stup, need_shell, command, creationflags = build_command(command)
-    logging.debug("Starting 7za: %s", command)
-    p = Popen(
-        command,
-        shell=need_shell,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        startupinfo=stup,
-        creationflags=creationflags,
-    )
-
+    p = build_and_run_command(command)
     output = platform_btou(p.stdout.read())
     logging.debug("7za output: %s", output)
 
@@ -1335,7 +1239,7 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
     # Or the one that complains about basepath
     # Only if we're not doing multicore
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
-        par2text = run_simple([command[0], "-h"])
+        par2text = run_command([command[0], "-h"])
         if "No data skipping" in par2text:
             logging.info("Detected par2cmdline version that skips blocks, adding -N parameter")
             command.insert(2, "-N")
@@ -1344,24 +1248,13 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
             command.insert(2, "-B")
             command.insert(3, parfolder)
 
-    stup, need_shell, command, creationflags = build_command(command)
-
     # par2multicore wants to see \\.\ paths on Windows
     # See: https://github.com/sabnzbd/sabnzbd/pull/771
     if sabnzbd.WIN32:
         command = [clip_path(x) if x.startswith("\\\\?\\") else x for x in command]
 
     # Run the external command
-    logging.info("Starting par2: %s", command)
-    p = Popen(
-        command,
-        shell=need_shell,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        startupinfo=stup,
-        creationflags=creationflags,
-    )
+    p = build_and_run_command(command)
     proc = p.stdout
 
     if p.stdin:
@@ -1671,26 +1564,14 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
         wildcard = setname + "*"
     command.append(os.path.join(parfolder, wildcard))
 
-    stup, need_shell, command, creationflags = build_command(command)
-    logging.info("Starting MultiPar: %s", command)
-
-    lines = []
-    p = Popen(
-        command,
-        shell=need_shell,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        startupinfo=stup,
-        creationflags=creationflags,
-    )
-
+    # Run MultiPar
+    p = build_and_run_command(command)
     proc = p.stdout
-
     if p.stdin:
         p.stdin.close()
 
     # Set up our variables
+    lines = []
     datafiles = []
     renames = {}
     reconstructed = []
@@ -2087,73 +1968,6 @@ def create_env(nzo=None, extra_env_fields={}):
     return env
 
 
-def userxbit(filename):
-    # Returns boolean if the x-bit for user is set on the given file
-    # This is a workaround: os.access(filename, os.X_OK) does not work on certain mounted file systems
-    # Does not work on Windows, but it is not called on Windows
-
-    # rwx rwx rwx
-    # 876 543 210      # we want bit 6 from the right, counting from 0
-    userxbit = 1 << 6  # bit 6
-    rwxbits = os.stat(filename)[0]  # the first element of os.stat() is "mode"
-    # do logical AND, check if it is not 0:
-    xbitset = (rwxbits & userxbit) > 0
-    return xbitset
-
-
-def build_command(command, flatten_command=False):
-    """ Prepare list from running an external program
-        On Windows we need to run our own list2cmdline for Unrar
-    """
-    # command[0] should be set, and thus not None
-    if not command[0]:
-        logging.error(T("[%s] The command in build_command is undefined."), caller_name())
-        raise IOError
-
-    if not sabnzbd.WIN32:
-        if command[0].endswith(".py"):
-            with open(command[0], "r") as script_file:
-                if not userxbit(command[0]):
-                    # Inform user that Python scripts need x-bit and then stop
-                    logging.error(T('Python script "%s" does not have execute (+x) permission set'), command[0])
-                    raise IOError
-                elif script_file.read(2) != "#!":
-                    # No shebang (#!) defined, add default python
-                    command.insert(0, "python")
-
-        if IONICE_COMMAND and cfg.ionice().strip():
-            lst = cfg.ionice().split()
-            lst.reverse()
-            for arg in lst:
-                command.insert(0, arg)
-            command.insert(0, IONICE_COMMAND)
-        if NICE_COMMAND and cfg.nice().strip():
-            lst = cfg.nice().split()
-            lst.reverse()
-            for arg in lst:
-                command.insert(0, arg)
-            command.insert(0, NICE_COMMAND)
-        need_shell = False
-        stup = None
-        creationflags = 0
-
-    else:
-        # For Windows we always need to add python interpreter
-        if command[0].endswith(".py"):
-            command.insert(0, "python")
-
-        need_shell = os.path.splitext(command[0])[1].lower() not in (".exe", ".com")
-        stup = subprocess.STARTUPINFO()
-        stup.dwFlags = win32process.STARTF_USESHOWWINDOW
-        stup.wShowWindow = win32con.SW_HIDE
-        creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
-
-        if need_shell or flatten_command:
-            command = list2cmdline(command)
-
-    return stup, need_shell, command, creationflags
-
-
 def rar_volumelist(rarfile_path, password, known_volumes):
     """ Extract volumes that are part of this rarset
         and merge them with existing list, removing duplicates
@@ -2317,7 +2131,7 @@ def unrar_check(rar):
     original = ""
     if rar:
         try:
-            version = run_simple(rar)
+            version = run_command(rar)
         except:
             return version, original
         original = "Alexander Roshal" in version
@@ -2332,7 +2146,7 @@ def unrar_check(rar):
 def par2_mt_check(par2_path):
     """ Detect if we have multicore par2 variants """
     try:
-        par2_version = run_simple([par2_path, "-h"])
+        par2_version = run_command([par2_path, "-h"])
         # Look for a threads option
         if "-t<" in par2_version:
             return True
@@ -2546,19 +2360,7 @@ def pre_queue(nzo, pp, cat):
         }
 
         try:
-            stup, need_shell, command, creationflags = build_command(command)
-            env = create_env(nzo, extra_env_fields)
-            logging.info("Running pre-queue script %s", command)
-            p = Popen(
-                command,
-                shell=need_shell,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                startupinfo=stup,
-                env=env,
-                creationflags=creationflags,
-            )
+            p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
         except:
             logging.debug("Failed script %s, Traceback: ", script_path, exc_info=True)
             return values
@@ -2611,20 +2413,8 @@ class SevenZip:
         names = []
         # Future extension: use '-sccUTF-8' to get names in UTF8 encoding
         command = [SEVEN_COMMAND, "l", "-p", "-y", "-slt", self.path]
-        stup, need_shell, command, creationflags = build_command(command)
+        output = run_command(command)
 
-        p = Popen(
-            command,
-            shell=need_shell,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            startupinfo=stup,
-            creationflags=creationflags,
-        )
-
-        output = platform_btou(p.stdout.read())
-        _ = p.wait()
         re_path = re.compile("^Path = (.+)")
         for line in output.split("\n"):
             m = re_path.search(line)
@@ -2638,30 +2428,12 @@ class SevenZip:
     def read(self, name):
         """ Read named file from 7Zip and return data """
         command = [SEVEN_COMMAND, "e", "-p", "-y", "-so", self.path, name]
-        stup, need_shell, command, creationflags = build_command(command)
-
         # Ignore diagnostic output, otherwise it will be appended to content
-        p = Popen(
-            command,
-            shell=need_shell,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-            startupinfo=stup,
-            creationflags=creationflags,
-        )
+        p = build_and_run_command(command, stderr=subprocess.DEVNULL)
         output = platform_btou(p.stdout.read())
-        _ = p.wait()
+        p.wait()
         return output
 
     def close(self):
         """ Close file """
         pass
-
-
-def run_simple(cmd):
-    """ Run simple external command and return output """
-    with Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE) as p:
-        txt = platform_btou(p.stdout.read())
-        p.wait()
-    return txt

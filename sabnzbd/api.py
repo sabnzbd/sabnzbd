@@ -68,7 +68,7 @@ from sabnzbd.misc import (
     calc_age,
     opts_to_pp,
 )
-from sabnzbd.filesystem import diskspace, get_ext, globber_full, clip_path, remove_all
+from sabnzbd.filesystem import diskspace, get_ext, globber_full, clip_path, remove_all, userxbit
 from sabnzbd.encoding import xml_name
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -76,7 +76,6 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
-from sabnzbd.newsunpack import userxbit
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
