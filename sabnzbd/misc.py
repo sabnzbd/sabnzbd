@@ -956,22 +956,17 @@ def build_and_run_command(command, flatten_command=False, **kwargs):
             nice = cfg.nice().split()
             command = nice + command
             command.insert(0, sabnzbd.newsunpack.NICE_COMMAND)
-        need_shell = False
         creationflags = 0
     else:
         # For Windows we always need to add python interpreter
         if command[0].endswith(".py"):
-            command.insert(0, "python")
-
-        need_shell = get_ext(command[0]) not in (".exe", ".com")
-        creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
-
-        if need_shell or flatten_command:
+            command.insert(0, "python.exe")
+        if flatten_command:
             command = sabnzbd.newsunpack.list2cmdline(command)
+        creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
 
     # Set the basic Popen arguments
     popen_kwargs = {
-        "shell": need_shell,
         "stdin": subprocess.PIPE,
         "stdout": subprocess.PIPE,
         "stderr": subprocess.STDOUT,
