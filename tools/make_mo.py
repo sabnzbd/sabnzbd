@@ -265,6 +265,8 @@ def patch_nsis():
 
     # Force writing of unicode to process Chinese and Hebrew
     with open(NSIS + ".tmp", "w", encoding="utf-8") as dst:
+        # Add UTF-8 BOM manually, so NSIS picks the translations up correctly
+        dst.write("\ufeff")
         for line in new:
             dst.write(line)
 
