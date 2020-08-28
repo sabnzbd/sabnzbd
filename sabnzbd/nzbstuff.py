@@ -1345,8 +1345,9 @@ class NzbObject(TryList):
                 labels.append(T("WAIT %s sec") % dif)
 
         # Propagation delay label
-        if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
-            wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time()) / 60 + 0.5)
+        propagation_delay = float(cfg.propagation_delay() * 60)
+        if propagation_delay and self.avg_stamp + propagation_delay > time.time() and self.priority != TOP_PRIORITY:
+            wait_time = int((self.avg_stamp + propagation_delay - time.time()) / 60 + 0.5)
             labels.append(T("PROPAGATING %s min") % wait_time)  # Queue indicator while waiting for propagation of post
 
         return labels
