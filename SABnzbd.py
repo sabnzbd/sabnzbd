@@ -1714,9 +1714,7 @@ if __name__ == "__main__":
         # This code is made with trial-and-error, please improve!
         class startApp(Thread):
             def run(self):
-                logging.info("[osx] sabApp Starting - starting main thread")
                 main()
-                logging.info("[osx] sabApp Stopping - main thread quit ")
                 AppHelper.stopEventLoop()
 
         sabApp = startApp()
