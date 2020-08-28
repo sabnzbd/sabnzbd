@@ -31,8 +31,8 @@ import sabnzbd.utils.apireg as ar
 
 class TestAPIReg:
     def test_set_get_connection_info_user(self):
-        """ Test the saving of the URL in USER-registery
-            We can't test the SYSTEM one.
+        """Test the saving of the URL in USER-registery
+        We can't test the SYSTEM one.
         """
 
         test_url = "sab_test:8080"

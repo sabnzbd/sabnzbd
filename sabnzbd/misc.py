@@ -71,9 +71,9 @@ def time_format(fmt):
 
 
 def calc_age(date, trans=False):
-    """ Calculate the age difference between now and date.
-        Value is returned as either days, hours, or minutes.
-        When 'trans' is True, time symbols will be translated.
+    """Calculate the age difference between now and date.
+    Value is returned as either days, hours, or minutes.
+    When 'trans' is True, time symbols will be translated.
     """
     if trans:
         d = T("d")  # : Single letter abbreviation of day
@@ -146,9 +146,9 @@ def name_to_cat(fname, cat=None):
 
 
 def cat_to_opts(cat, pp=None, script=None, priority=None):
-    """ Derive options from category, if options not already defined.
-        Specified options have priority over category-options.
-        If no valid category is given, special category '*' will supply default values
+    """Derive options from category, if options not already defined.
+    Specified options have priority over category-options.
+    If no valid category is given, special category '*' will supply default values
     """
     def_cat = config.get_categories("*")
     cat = safe_lower(cat)
@@ -230,10 +230,10 @@ def wildcard_to_re(text):
 
 
 def cat_convert(cat):
-    """ Convert indexer's category/group-name to user categories.
-        If no match found, but indexer-cat equals user-cat, then return user-cat
-        If no match found, but the indexer-cat starts with the user-cat, return user-cat
-        If no match found, return None
+    """Convert indexer's category/group-name to user categories.
+    If no match found, but indexer-cat equals user-cat, then return user-cat
+    If no match found, but the indexer-cat starts with the user-cat, return user-cat
+    If no match found, return None
     """
     if cat and cat.lower() != "none":
         cats = config.get_ordered_categories()
@@ -270,8 +270,8 @@ def cat_convert(cat):
 
 
 def windows_variant():
-    """ Determine Windows variant
-        Return vista_plus, x64
+    """Determine Windows variant
+    Return vista_plus, x64
     """
     from win32api import GetVersionEx
     from win32con import VER_PLATFORM_WIN32_NT
@@ -375,26 +375,26 @@ def convert_version(text):
 
 
 def check_latest_version():
-    """ Do an online check for the latest version
+    """Do an online check for the latest version
 
-        Perform an online version check
-        Syntax of online version file:
-            <current-final-release>
-            <url-of-current-final-release>
-            <latest-alpha/beta-or-rc>
-            <url-of-latest-alpha/beta/rc-release>
-        The latter two lines are only present when an alpha/beta/rc is available.
-        Formula for the version numbers (line 1 and 3).
-            <major>.<minor>.<bugfix>[rc|beta|alpha]<cand>
+    Perform an online version check
+    Syntax of online version file:
+        <current-final-release>
+        <url-of-current-final-release>
+        <latest-alpha/beta-or-rc>
+        <url-of-latest-alpha/beta/rc-release>
+    The latter two lines are only present when an alpha/beta/rc is available.
+    Formula for the version numbers (line 1 and 3).
+        <major>.<minor>.<bugfix>[rc|beta|alpha]<cand>
 
-        The <cand> value for a final version is assumned to be 99.
-        The <cand> value for the beta/rc version is 1..98, with RC getting
-        a boost of 80 and Beta of 40.
-        This is done to signal alpha/beta/rc users of availability of the final
-        version (which is implicitly 99).
-        People will only be informed to upgrade to a higher alpha/beta/rc version, if
-        they are already using an alpha/beta/rc.
-        RC's are valued higher than Beta's, which are valued higher than Alpha's.
+    The <cand> value for a final version is assumned to be 99.
+    The <cand> value for the beta/rc version is 1..98, with RC getting
+    a boost of 80 and Beta of 40.
+    This is done to signal alpha/beta/rc users of availability of the final
+    version (which is implicitly 99).
+    People will only be informed to upgrade to a higher alpha/beta/rc version, if
+    they are already using an alpha/beta/rc.
+    RC's are valued higher than Beta's, which are valued higher than Alpha's.
     """
 
     if not cfg.version_check():
@@ -503,8 +503,8 @@ def from_units(val):
 
 
 def to_units(val, postfix=""):
-    """ Convert number to K/M/G/T/P notation
-        Show single decimal for M and higher
+    """Convert number to K/M/G/T/P notation
+    Show single decimal for M and higher
     """
     dec_limit = 1
     if val < 0:
@@ -533,8 +533,8 @@ def to_units(val, postfix=""):
 
 def caller_name(skip=2):
     """Get a name of a caller in the format module.method
-       Originally used: https://gist.github.com/techtonik/2151727
-       Adapted for speed by using sys calls directly
+    Originally used: https://gist.github.com/techtonik/2151727
+    Adapted for speed by using sys calls directly
     """
     # Only do the tracing on Debug (function is always called)
     if cfg.log_level() != 2:
@@ -591,9 +591,9 @@ def split_host(srv):
 
 
 def get_cache_limit():
-    """ Depending on OS, calculate cache limits.
-        In ArticleCache it will make sure we stay
-        within system limits for 32/64 bit
+    """Depending on OS, calculate cache limits.
+    In ArticleCache it will make sure we stay
+    within system limits for 32/64 bit
     """
     # Calculate, if possible
     try:
@@ -890,8 +890,8 @@ def ip_extract():
 
 
 def get_base_url(url):
-    """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
-        But also api.althub.co.za -> althub.co.za
+    """Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
+    But also api.althub.co.za -> althub.co.za
     """
     url_host = urllib.parse.urlparse(url).hostname
     if url_host:
@@ -927,10 +927,10 @@ def nntp_to_msg(text):
 
 
 def build_and_run_command(command, flatten_command=False, **kwargs):
-    """ Builds and then runs command with nessecary flags and optional
-        IONice and Nice commands. Optional Popen arguments can be supplied.
-        On Windows we need to run our own list2cmdline for Unrar.
-        Returns the Popen-instance.
+    """Builds and then runs command with nessecary flags and optional
+    IONice and Nice commands. Optional Popen arguments can be supplied.
+    On Windows we need to run our own list2cmdline for Unrar.
+    Returns the Popen-instance.
     """
     # command[0] should be set, and thus not None
     if not command[0]:

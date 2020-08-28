@@ -93,9 +93,9 @@ _DEVICES = (
 
 
 def replace_win_devices(name):
-    """ Remove reserved Windows device names from a name.
-        aux.txt ==> _aux.txt
-        txt.aux ==> txt.aux
+    """Remove reserved Windows device names from a name.
+    aux.txt ==> _aux.txt
+    txt.aux ==> txt.aux
     """
     if name:
         lname = name.lower()
@@ -112,8 +112,8 @@ def replace_win_devices(name):
 
 
 def has_win_device(p):
-    """ Return True if filename part contains forbidden name
-        Before and after sanitizing
+    """Return True if filename part contains forbidden name
+    Before and after sanitizing
     """
     p = os.path.split(p)[1].lower()
     for dev in _DEVICES:
@@ -129,8 +129,8 @@ CH_LEGAL_WIN = "++{}!@#'+-"
 
 
 def sanitize_filename(name):
-    """ Return filename with illegal chars converted to legal ones
-        and with the par2 extension always in lowercase
+    """Return filename with illegal chars converted to legal ones
+    and with the par2 extension always in lowercase
     """
     if not name:
         return name
@@ -168,8 +168,8 @@ def sanitize_filename(name):
 
 
 def sanitize_foldername(name):
-    """ Return foldername with dodgy chars converted to safe ones
-        Remove any leading and trailing dot and space characters
+    """Return foldername with dodgy chars converted to safe ones
+    Remove any leading and trailing dot and space characters
     """
     if not name:
         return name
@@ -233,8 +233,7 @@ def sanitize_and_trim_path(path):
 
 
 def sanitize_files_in_folder(folder):
-    """ Sanitize each file in the folder, return list of new names
-    """
+    """Sanitize each file in the folder, return list of new names"""
     lst = []
     for root, _, files in os.walk(folder):
         for file_ in files:
@@ -251,16 +250,16 @@ def sanitize_files_in_folder(folder):
 
 
 def is_obfuscated_filename(filename):
-    """ Check if this file has an extension, if not, it's
-        probably obfuscated and we don't use it
+    """Check if this file has an extension, if not, it's
+    probably obfuscated and we don't use it
     """
     return len(get_ext(filename)) < 2
 
 
 def real_path(loc, path):
-    """ When 'path' is relative, return normalized join of 'loc' and 'path'
-        When 'path' is absolute, return normalized path
-        A path starting with ~ will be located in the user's Home folder
+    """When 'path' is relative, return normalized join of 'loc' and 'path'
+    When 'path' is absolute, return normalized path
+    A path starting with ~ will be located in the user's Home folder
     """
     # The Windows part is a bit convoluted because
     # C: and C:\ are 2 different things
@@ -292,12 +291,12 @@ def real_path(loc, path):
 
 
 def create_real_path(name, loc, path, umask=False, writable=True):
-    """ When 'path' is relative, create join of 'loc' and 'path'
-        When 'path' is absolute, create normalized path
-        'name' is used for logging.
-        Optional 'umask' will be applied.
-        'writable' means that an existing folder should be writable
-        Returns ('success', 'full path', 'error_msg')
+    """When 'path' is relative, create join of 'loc' and 'path'
+    When 'path' is absolute, create normalized path
+    'name' is used for logging.
+    Optional 'umask' will be applied.
+    'writable' means that an existing folder should be writable
+    Returns ('success', 'full path', 'error_msg')
     """
     if path:
         my_dir = real_path(loc, path)
@@ -320,9 +319,9 @@ def create_real_path(name, loc, path, umask=False, writable=True):
 
 
 def same_file(a, b):
-    """ Return 0 if A and B have nothing in common
-        return 1 if A and B are actually the same path
-        return 2 if B is a subfolder of A
+    """Return 0 if A and B have nothing in common
+    return 1 if A and B are actually the same path
+    return 2 if B is a subfolder of A
     """
     if sabnzbd.WIN32 or sabnzbd.DARWIN:
         a = clip_path(a.lower())
@@ -349,7 +348,7 @@ def same_file(a, b):
 
 
 def is_archive(path):
-    """ Check if file in path is an ZIP, RAR or 7z file
+    """Check if file in path is an ZIP, RAR or 7z file
     :param path: path to file
     :return: (zf, status, expected_extension)
             status: -1==Error/Retry, 0==OK, 1==Ignore
@@ -383,8 +382,8 @@ def is_archive(path):
 
 
 def check_mount(path):
-    """ Return False if volume isn't mounted on Linux or OSX
-        Retry 6 times with an interval of 1 sec.
+    """Return False if volume isn't mounted on Linux or OSX
+    Retry 6 times with an interval of 1 sec.
     """
     if sabnzbd.DARWIN:
         m = re.search(r"^(/Volumes/[^/]+)", path, re.I)
@@ -403,8 +402,8 @@ def check_mount(path):
 
 
 def safe_fnmatch(f, pattern):
-    """ fnmatch will fail if the pattern contains any of it's
-        key characters, like [, ] or !.
+    """fnmatch will fail if the pattern contains any of it's
+    key characters, like [, ] or !.
     """
     try:
         return fnmatch.fnmatch(f, pattern)
@@ -440,9 +439,9 @@ def trim_win_path(path):
 
 
 def fix_unix_encoding(folder):
-    """ Fix bad name encoding for Unix systems
-        This happens for example when files are created
-        on Windows but unpacked/repaired on linux
+    """Fix bad name encoding for Unix systems
+    This happens for example when files are created
+    on Windows but unpacked/repaired on linux
     """
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         for root, dirs, files in os.walk(folder):
@@ -471,8 +470,8 @@ def make_script_path(script):
 
 
 def get_admin_path(name, future):
-    """ Return news-style full path to job-admin folder of names job
-        or else the old cache path
+    """Return news-style full path to job-admin folder of names job
+    or else the old cache path
     """
     if future:
         return os.path.join(sabnzbd.cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)
@@ -524,9 +523,9 @@ def set_permissions(path, recursive=True):
 
 
 def userxbit(filename):
-    """ Returns boolean if the x-bit for user is set on the given file.
-        This is a workaround: os.access(filename, os.X_OK) does not work
-        on certain mounted file systems. Does not work at all on Windows.
+    """Returns boolean if the x-bit for user is set on the given file.
+    This is a workaround: os.access(filename, os.X_OK) does not work
+    on certain mounted file systems. Does not work at all on Windows.
     """
     # rwx rwx rwx
     # 876 543 210      # we want bit 6 from the right, counting from 0
@@ -564,9 +563,9 @@ DIR_LOCK = threading.RLock()
 
 @synchronized(DIR_LOCK)
 def create_all_dirs(path, apply_umask=False):
-    """ Create all required path elements and set umask on all
-        The umask argument is ignored on Windows
-        Return path if elements could be made or exists
+    """Create all required path elements and set umask on all
+    The umask argument is ignored on Windows
+    Return path if elements could be made or exists
     """
     try:
         logging.info("Creating directories: %s", path)
@@ -619,8 +618,8 @@ def get_unique_path(dirpath, n=0, create_dir=True):
 
 @synchronized(DIR_LOCK)
 def get_unique_filename(path):
-    """ Check if path is unique.
-        If not, add number like: "/path/name.NUM.ext".
+    """Check if path is unique.
+    If not, add number like: "/path/name.NUM.ext".
     """
     num = 1
     new_path, fname = os.path.split(path)
@@ -648,8 +647,8 @@ def listdir_full(input_dir, recursive=True):
 
 @synchronized(DIR_LOCK)
 def move_to_path(path, new_path):
-    """ Move a file to a new path, optionally give unique filename
-        Return (ok, new_path)
+    """Move a file to a new path, optionally give unique filename
+    Return (ok, new_path)
     """
     ok = True
     overwrite = sabnzbd.cfg.overwrite_files()

@@ -189,9 +189,9 @@ class Assembler(Thread):
 
     @staticmethod
     def assemble(nzf, file_done):
-        """ Assemble a NZF from its table of articles
-            1) Partial write: write what we have
-            2) Nothing written before: write all
+        """Assemble a NZF from its table of articles
+        1) Partial write: write what we have
+        2) Nothing written before: write all
         """
         # New hash-object needed?
         if not nzf.md5:
@@ -233,8 +233,8 @@ class Assembler(Thread):
 
 
 def file_has_articles(nzf):
-    """ Do a quick check to see if any articles are present for this file.
-        Destructive: only to be used to differentiate between unknown encoding and no articles.
+    """Do a quick check to see if any articles are present for this file.
+    Destructive: only to be used to differentiate between unknown encoding and no articles.
     """
     has = False
     for article in nzf.decodetable:
@@ -421,8 +421,8 @@ def rating_filtered(rating, filename, abort):
 
 
 def remove_warning_label(msg):
-    """ Standardize errors by removing obsolete
-        "WARNING:" part in all languages """
+    """Standardize errors by removing obsolete
+    "WARNING:" part in all languages"""
     if ":" in msg:
         return msg.split(":")[1].strip()
     return msg

@@ -54,13 +54,13 @@ class Option:
     """ Basic option class, basic fields """
 
     def __init__(self, section, keyword, default_val=None, add=True, protect=False):
-        """ Basic option
-            `section`     : single section or comma-separated list of sections
-                            a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
-            `keyword`     : keyword in the (last) section
-            `default_val` : value returned when no value has been set
-            `callback`    : procedure to call when value is successfully changed
-            `protect`     : Do not allow setting via the API (specifically set_dict)
+        """Basic option
+        `section`     : single section or comma-separated list of sections
+                        a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
+        `keyword`     : keyword in the (last) section
+        `default_val` : value returned when no value has been set
+        `callback`    : procedure to call when value is successfully changed
+        `protect`     : Do not allow setting via the API (specifically set_dict)
         """
         self.__sections = section.split(",")
         self.__keyword = keyword
@@ -230,10 +230,10 @@ class OptionDir(Option):
         self.__root = root
 
     def set(self, value, create=False):
-        """ Set new dir value, validate and create if needed
-            Return None when directory is accepted
-            Return error-string when not accepted, value will not be changed
-            'create' means try to create (but don't set permanent create flag)
+        """Set new dir value, validate and create if needed
+        Return None when directory is accepted
+        Return error-string when not accepted, value will not be changed
+        'create' means try to create (but don't set permanent create flag)
         """
         error = None
         if value and (value != self.get() or create):
@@ -533,8 +533,8 @@ class OptionFilters(Option):
         self.set(lst)
 
     def update(self, pos, value):
-        """ Update filter 'pos' definition, value is a list
-            Append if 'pos' outside list
+        """Update filter 'pos' definition, value is a list
+        Append if 'pos' outside list
         """
         lst = self.get()
         try:
@@ -637,8 +637,8 @@ class ConfigRSS:
 
 
 def get_dconfig(section, keyword, nested=False):
-    """ Return a config values dictionary,
-        Single item or slices based on 'section', 'keyword'
+    """Return a config values dictionary,
+    Single item or slices based on 'section', 'keyword'
     """
     data = {}
     if not section:
@@ -712,15 +712,15 @@ def delete(section, keyword):
 ##############################################################################
 @synchronized(SAVE_CONFIG_LOCK)
 def read_config(path):
-    """ Read the complete INI file and check its version number
-        if OK, pass values to config-database
+    """Read the complete INI file and check its version number
+    if OK, pass values to config-database
     """
     return _read_config(path)
 
 
 def _read_config(path, try_backup=False):
-    """ Read the complete INI file and check its version number
-        if OK, pass values to config-database
+    """Read the complete INI file and check its version number
+    if OK, pass values to config-database
     """
     global CFG, database, modified
 
@@ -873,8 +873,8 @@ def save_config(force=False):
 
 
 def define_servers():
-    """ Define servers listed in the Setup file
-        return a list of ConfigServer instances
+    """Define servers listed in the Setup file
+    return a list of ConfigServer instances
     """
     global CFG
     try:
@@ -901,8 +901,8 @@ def get_servers():
 
 
 def define_categories():
-    """ Define categories listed in the Setup file
-        return a list of ConfigCat instances
+    """Define categories listed in the Setup file
+    return a list of ConfigCat instances
     """
     global CFG, categories
     try:
@@ -913,9 +913,9 @@ def define_categories():
 
 
 def get_categories(cat=0):
-    """ Return link to categories section.
-        This section will always contain special category '*'
-        When 'cat' is given, a link to that category or to '*' is returned
+    """Return link to categories section.
+    This section will always contain special category '*'
+    When 'cat' is given, a link to that category or to '*' is returned
     """
     global database
     if "categories" not in database:
@@ -942,8 +942,8 @@ def get_categories(cat=0):
 
 
 def get_ordered_categories():
-    """ Return list-copy of categories section that's ordered
-        by user's ordering including Default-category
+    """Return list-copy of categories section that's ordered
+    by user's ordering including Default-category
     """
     database_cats = get_categories()
 
@@ -961,8 +961,8 @@ def get_ordered_categories():
 
 
 def define_rss():
-    """ Define rss-feeds listed in the Setup file
-        return a list of ConfigRSS instances
+    """Define rss-feeds listed in the Setup file
+    return a list of ConfigRSS instances
     """
     global CFG
     try:
@@ -1033,8 +1033,8 @@ def encode_password(pw):
 
 
 def decode_password(pw, name):
-    """ Decode hexadecimal encoded password
-        but only decode when prefixed
+    """Decode hexadecimal encoded password
+    but only decode when prefixed
     """
     decPW = ""
     if pw and pw.startswith(__PW_PREFIX):
@@ -1102,8 +1102,8 @@ def validate_no_unc(root, value, default):
 
 
 def validate_safedir(root, value, default):
-    """ Allow only when queues are empty and no UNC
-        On Windows path should be small
+    """Allow only when queues are empty and no UNC
+    On Windows path should be small
     """
     if sabnzbd.WIN32 and value and len(real_path(root, value)) >= MAX_WIN_DFOLDER:
         return T("Error: Path length should be below %s.") % MAX_WIN_DFOLDER, None
@@ -1122,8 +1122,8 @@ def validate_notempty(root, value, default):
 
 
 def validate_single_tag(value):
-    """ Don't split single indexer tags like "TV > HD"
-        into ['TV', '>', 'HD']
+    """Don't split single indexer tags like "TV > HD"
+    into ['TV', '>', 'HD']
     """
     if len(value) == 3:
         if value[1] == ">":

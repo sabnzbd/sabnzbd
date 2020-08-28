@@ -128,9 +128,9 @@ def notdefault(item):
 
 
 def convert_filter(text):
-    """ Return compiled regex.
-        If string starts with re: it's a real regex
-        else quote all regex specials, replace '*' by '.*'
+    """Return compiled regex.
+    If string starts with re: it's a real regex
+    else quote all regex specials, replace '*' by '.*'
     """
     text = text.strip().lower()
     if text.startswith("re:"):
@@ -145,8 +145,8 @@ def convert_filter(text):
 
 
 def remove_obsolete(jobs, new_jobs):
-    """ Expire G/B links that are not in new_jobs (mark them 'X')
-        Expired links older than 3 days are removed from 'jobs'
+    """Expire G/B links that are not in new_jobs (mark them 'X')
+    Expired links older than 3 days are removed from 'jobs'
     """
     now = time.time()
     limit = now - 259200  # 3days (3x24x3600)
@@ -625,8 +625,8 @@ class RSSQueue:
                     self.jobs[feed][item]["status"] = "D-"
 
     def check_duplicate(self, title):
-        """ Check if this title was in this or other feeds
-            Return matching feed name
+        """Check if this title was in this or other feeds
+        Return matching feed name
         """
         title = title.lower()
         for fd in self.jobs:
@@ -638,8 +638,8 @@ class RSSQueue:
 
 
 def patch_feedparser():
-    """ Apply options that work for SABnzbd
-        Add additional parsing of attributes
+    """Apply options that work for SABnzbd
+    Add additional parsing of attributes
     """
     feedparser.SANITIZE_HTML = 0
     feedparser.PARSE_MICROFORMATS = 0
@@ -728,8 +728,8 @@ def _HandleLink(
 
 
 def _get_link(entry):
-    """ Retrieve the post link from this entry
-        Returns (link, category, size)
+    """Retrieve the post link from this entry
+    Returns (link, category, size)
     """
     size = 0
     age = datetime.datetime.now()
@@ -809,8 +809,8 @@ def special_rss_site(url):
 
 
 def ep_match(season, episode, expr, title=None):
-    """ Return True if season, episode is at or above expected
-        Optionally `title` can be matched
+    """Return True if season, episode is at or above expected
+    Optionally `title` can be matched
     """
     m = _RE_SP.search(expr)
     if m:

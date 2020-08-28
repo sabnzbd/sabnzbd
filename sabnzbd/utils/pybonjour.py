@@ -802,7 +802,9 @@ def _length_and_void_p_to_string(length, void_p):
 ################################################################################
 
 
-def DNSServiceProcessResult(sdRef,):
+def DNSServiceProcessResult(
+    sdRef,
+):
 
     """
 

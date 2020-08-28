@@ -113,8 +113,8 @@ logging.warning_helpful = warning_helpful
 
 
 class GUIHandler(logging.Handler):
-    """ Logging handler collects the last warnings/errors/exceptions
-        to be displayed in the web-gui
+    """Logging handler collects the last warnings/errors/exceptions
+    to be displayed in the web-gui
     """
 
     def __init__(self, size):
@@ -507,8 +507,8 @@ def check_resolve(host):
 
 
 def get_webhost(cherryhost, cherryport, https_port):
-    """ Determine the webhost address and port,
-        return (host, port, browserhost)
+    """Determine the webhost address and port,
+    return (host, port, browserhost)
     """
     if cherryhost == "0.0.0.0" and not check_resolve("127.0.0.1"):
         cherryhost = ""
@@ -679,8 +679,8 @@ def find_free_port(host, currentport):
 
 
 def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
-    """ Check for a running instance of sabnzbd on this port
-        allow_browser==True|None will launch the browser, False will not.
+    """Check for a running instance of sabnzbd on this port
+    allow_browser==True|None will launch the browser, False will not.
     """
     if allow_browser is None:
         allow_browser = True
@@ -702,10 +702,10 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
 
 
 def evaluate_inipath(path):
-    """ Derive INI file path from a partial path.
-        Full file path: if file does not exist the name must contain a dot
-        but not a leading dot.
-        foldername is enough, the standard name will be appended.
+    """Derive INI file path from a partial path.
+    Full file path: if file does not exist the name must contain a dot
+    but not a leading dot.
+    foldername is enough, the standard name will be appended.
     """
     path = os.path.normpath(os.path.abspath(path))
     inipath = os.path.join(path, DEF_INI_FILE)
@@ -722,9 +722,9 @@ def evaluate_inipath(path):
 
 
 def commandline_handler():
-    """ Split win32-service commands are true parameters
-        Returns:
-            service, sab_opts, serv_opts, upload_nzbs
+    """Split win32-service commands are true parameters
+    Returns:
+        service, sab_opts, serv_opts, upload_nzbs
     """
     service = ""
     sab_opts = []
@@ -1648,9 +1648,9 @@ https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
 
 
 def handle_windows_service():
-    """ Handle everything for Windows Service
-        Returns True when any service commands were detected or
-        when we have started as a service.
+    """Handle everything for Windows Service
+    Returns True when any service commands were detected or
+    when we have started as a service.
     """
     # Detect if running as Windows Service (only Vista and above!)
     # Adapted from https://stackoverflow.com/a/55248281/5235502

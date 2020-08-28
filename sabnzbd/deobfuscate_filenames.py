@@ -83,8 +83,8 @@ def entropy(string):
 
 
 def is_probably_obfuscated(myinputfilename):
-    """ Returns boolean if filename is probably obfuscated
-    myinputfilename can be a plain file name, or a full path """
+    """Returns boolean if filename is probably obfuscated
+    myinputfilename can be a plain file name, or a full path"""
 
     # Find filebasename
     path, filename = os.path.split(myinputfilename)

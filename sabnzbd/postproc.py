@@ -485,7 +485,9 @@ def process_job(nzo):
                     newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
                 except:
                     logging.error(
-                        T('Error renaming "%s" to "%s"'), clip_path(tmp_workdir_complete), clip_path(workdir_complete),
+                        T('Error renaming "%s" to "%s"'),
+                        clip_path(tmp_workdir_complete),
+                        clip_path(workdir_complete),
                     )
                     logging.info("Traceback: ", exc_info=True)
                     # Better disable sorting because filenames are all off now
@@ -662,9 +664,9 @@ def process_job(nzo):
 
 
 def prepare_extraction_path(nzo):
-    """ Based on the information that we have, generate
-        the extraction path and create the directory.
-        Separated so it can be called from DirectUnpacker
+    """Based on the information that we have, generate
+    the extraction path and create the directory.
+    Separated so it can be called from DirectUnpacker
     """
     one_folder = False
     marker_file = None
@@ -796,8 +798,8 @@ def parring(nzo, workdir):
 
 
 def try_sfv_check(nzo, workdir):
-    """ Attempt to verify set using SFV file
-        Return None if no SFV-sets, True/False based on verification
+    """Attempt to verify set using SFV file
+    Return None if no SFV-sets, True/False based on verification
     """
     # Get list of SFV names
     sfvs = globber_full(workdir, "*.sfv")
@@ -828,10 +830,10 @@ def try_sfv_check(nzo, workdir):
 
 
 def try_rar_check(nzo, rars):
-    """ Attempt to verify set using the RARs
-        Return True if verified, False when failed
-        When setname is '', all RAR files will be used, otherwise only the matching one
-        If no RAR's are found, returns True
+    """Attempt to verify set using the RARs
+    Return True if verified, False when failed
+    When setname is '', all RAR files will be used, otherwise only the matching one
+    If no RAR's are found, returns True
     """
     # Sort for better processing
     rars.sort(key=functools.cmp_to_key(rar_sort))
@@ -1000,8 +1002,8 @@ def handle_empty_queue():
 
 
 def cleanup_list(wdir, skip_nzb):
-    """ Remove all files whose extension matches the cleanup list,
-        optionally ignoring the nzb extension
+    """Remove all files whose extension matches the cleanup list,
+    optionally ignoring the nzb extension
     """
     if cfg.cleanup_list():
         try:
@@ -1026,17 +1028,17 @@ def cleanup_list(wdir, skip_nzb):
 
 
 def prefix(path, pre):
-    """ Apply prefix to last part of path
-        '/my/path' and 'hi_' will give '/my/hi_path'
+    """Apply prefix to last part of path
+    '/my/path' and 'hi_' will give '/my/hi_path'
     """
     p, d = os.path.split(path)
     return os.path.join(p, pre + d)
 
 
 def nzb_redirect(wdir, nzbname, pp, script, cat, priority):
-    """ Check if this job contains only NZB files,
-        if so send to queue and remove if on clean-up list
-        Returns list of processed NZB's
+    """Check if this job contains only NZB files,
+    if so send to queue and remove if on clean-up list
+    Returns list of processed NZB's
     """
     files = listdir_full(wdir)
 
@@ -1098,8 +1100,8 @@ def get_last_line(txt):
 
 
 def remove_samples(path):
-    """ Remove all files that match the sample pattern
-        Skip deleting if it matches all files or there is only 1 file
+    """Remove all files that match the sample pattern
+    Skip deleting if it matches all files or there is only 1 file
     """
     files_to_delete = []
     nr_files = 0
@@ -1123,9 +1125,9 @@ def remove_samples(path):
 
 
 def rename_and_collapse_folder(oldpath, newpath, files):
-    """ Rename folder, collapsing when there's just a single subfolder
-        oldpath --> newpath OR oldpath/subfolder --> newpath
-        Modify list of filenames accordingly
+    """Rename folder, collapsing when there's just a single subfolder
+    oldpath --> newpath OR oldpath/subfolder --> newpath
+    Modify list of filenames accordingly
     """
     orgpath = oldpath
     items = globber(oldpath)

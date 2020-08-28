@@ -141,12 +141,12 @@ def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
 
 
 def check_access(access_type=4):
-    """ Check if external address is allowed given access_type:
-        1=nzb
-        2=api
-        3=full_api
-        4=webui
-        5=webui with login for external
+    """Check if external address is allowed given access_type:
+    1=nzb
+    2=api
+    3=full_api
+    4=webui
+    5=webui with login for external
     """
     referrer = cherrypy.request.remote.ip
 
@@ -162,9 +162,9 @@ def check_access(access_type=4):
 
 
 def check_hostname():
-    """ Check if hostname is allowed, to mitigate DNS-rebinding attack.
-        Similar to CVE-2019-5702, we need to add protection even
-        if only allowed to be accessed via localhost.
+    """Check if hostname is allowed, to mitigate DNS-rebinding attack.
+    Similar to CVE-2019-5702, we need to add protection even
+    if only allowed to be accessed via localhost.
     """
     # If login is enabled, no API-key can be deducted
     if cfg.username() and cfg.password():
@@ -202,10 +202,10 @@ COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 
 
 def set_login_cookie(remove=False, remember_me=False):
-    """ We try to set a cookie as unique as possible
-        to the current user. Based on it's IP and the
-        current process ID of the SAB instance and a random
-        number, so cookies cannot be re-used
+    """We try to set a cookie as unique as possible
+    to the current user. Based on it's IP and the
+    current process ID of the SAB instance and a random
+    number, so cookies cannot be re-used
     """
     salt = randint(1, 1000)
     cookie_str = utob(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET)
@@ -268,15 +268,18 @@ def set_auth(conf):
             }
         )
         conf.update(
-            {"/api": {"tools.auth_basic.on": False}, "%s/api" % cfg.url_base(): {"tools.auth_basic.on": False},}
+            {
+                "/api": {"tools.auth_basic.on": False},
+                "%s/api" % cfg.url_base(): {"tools.auth_basic.on": False},
+            }
         )
     else:
         conf.update({"tools.auth_basic.on": False})
 
 
 def check_apikey(kwargs):
-    """ Check API-key or NZB-key
-        Return None when OK, otherwise an error message
+    """Check API-key or NZB-key
+    Return None when OK, otherwise an error message
     """
     mode = kwargs.get("mode", "")
     name = kwargs.get("name", "")
@@ -919,8 +922,8 @@ class QueuePage:
 
     @secured_expose(check_api_key=True)
     def change_queue_complete_action(self, **kwargs):
-        """ Action or script to be performed once the queue has been completed
-            Scripts are prefixed with 'script_'
+        """Action or script to be performed once the queue has been completed
+        Scripts are prefixed with 'script_'
         """
         action = kwargs.get("action")
         sabnzbd.change_queue_complete_action(action)
@@ -1821,8 +1824,8 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def upd_rss_feed(self, **kwargs):
-        """ Update Feed level attributes,
-            legacy version: ignores 'enable' parameter
+        """Update Feed level attributes,
+        legacy version: ignores 'enable' parameter
         """
         if kwargs.get("enable") is not None:
             del kwargs["enable"]

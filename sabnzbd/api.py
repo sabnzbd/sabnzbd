@@ -1003,10 +1003,10 @@ def api_level(cmd, name):
 
 
 def report(output, error=None, keyword="value", data=None):
-    """ Report message in json, xml or plain text
-        If error is set, only an status/error report is made.
-        If no error and no data, only a status report is made.
-        Else, a data report is made (optional 'keyword' for outer XML section).
+    """Report message in json, xml or plain text
+    If error is set, only an status/error report is made.
+    If no error and no data, only a status report is made.
+    Else, a data report is made (optional 'keyword' for outer XML section).
     """
     if output == "json":
         content = "application/json;charset=UTF-8"
@@ -1050,10 +1050,10 @@ def report(output, error=None, keyword="value", data=None):
 
 
 class xml_factory:
-    """ Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
-        Current limitations:
-            In Two tiered lists hard-coded name of "item": <cat_list><item> </item></cat_list>
-            In Three tiered lists hard-coded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
+    """Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
+    Current limitations:
+        In Two tiered lists hard-coded name of "item": <cat_list><item> </item></cat_list>
+        In Three tiered lists hard-coded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
     """
 
     def __init__(self):
@@ -1417,8 +1417,7 @@ def fast_queue():
 
 
 def build_file_list(nzo_id):
-    """ Build file lists for specified job
-    """
+    """Build file lists for specified job"""
     jobs = []
     nzo = NzbQueue.do.get_nzo(nzo_id)
     if nzo:
@@ -1549,9 +1548,9 @@ _SKIN_CACHE = {}  # Stores pre-translated acronyms
 
 
 def Ttemplate(txt):
-    """ Translation function for Skin texts
-        This special is to be used in interface.py for template processing
-        to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
+    """Translation function for Skin texts
+    This special is to be used in interface.py for template processing
+    to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
     """
     global _SKIN_CACHE
     if txt in _SKIN_CACHE:
@@ -1897,8 +1896,8 @@ def list_scripts(default=False, none=True):
 
 
 def list_cats(default=True):
-    """ Return list of (ordered) categories,
-        when default==False use '*' for Default category
+    """Return list of (ordered) categories,
+    when default==False use '*' for Default category
     """
     lst = [cat["name"] for cat in config.get_ordered_categories()]
     if default:

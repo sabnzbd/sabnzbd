@@ -276,10 +276,10 @@ def abort():
 
 
 def sort_schedules(all_events, now=None):
-    """ Sort the schedules, based on order of happening from now
-        `all_events=True`: Return an event for each active day
-        `all_events=False`: Return only first occurring event of the week
-        `now` : for testing: simulated localtime()
+    """Sort the schedules, based on order of happening from now
+    `all_events=True`: Return an event for each active day
+    `all_events=False`: Return only first occurring event of the week
+    `now` : for testing: simulated localtime()
     """
 
     day_min = 24 * 60
@@ -321,8 +321,8 @@ def sort_schedules(all_events, now=None):
 
 
 def analyse(was_paused=False, priority=None):
-    """ Determine what pause/resume state we would have now.
-        'priority': evaluate only effect for given priority, return True for paused
+    """Determine what pause/resume state we would have now.
+    'priority': evaluate only effect for given priority, return True for paused
     """
     global PP_PAUSE_EVENT
     PP_PAUSE_EVENT = False
@@ -438,8 +438,8 @@ def scheduled_resume():
 
 
 def __oneshot_resume(when):
-    """ Called by delayed resume schedule
-        Only resumes if call comes at the planned time
+    """Called by delayed resume schedule
+    Only resumes if call comes at the planned time
     """
     global __PAUSE_END
     if __PAUSE_END is not None and (when > __PAUSE_END - 5) and (when < __PAUSE_END + 55):

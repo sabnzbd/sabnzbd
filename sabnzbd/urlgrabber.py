@@ -301,9 +301,9 @@ class URLGrabber(Thread):
 
     @staticmethod
     def fail_to_history(nzo, url, msg="", content=False):
-        """ Create History entry for failed URL Fetch
-            msg: message to be logged
-            content: report in history that cause is a bad NZB file
+        """Create History entry for failed URL Fetch
+        msg: message to be logged
+        content: report in history that cause is a bad NZB file
         """
         # Remove the "Trying to fetch" part
         if url:
@@ -358,8 +358,8 @@ def _build_request(url):
 
 
 def _analyse(fetch_request, future_nzo):
-    """ Analyze response of indexer
-        returns fetch_request|None, error-message|None, retry, wait-seconds, data
+    """Analyze response of indexer
+    returns fetch_request|None, error-message|None, retry, wait-seconds, data
     """
     data = None
     if not fetch_request or fetch_request.code != 200:

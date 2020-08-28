@@ -323,9 +323,9 @@ class DirectUnpacker(threading.Thread):
         self.killed = True
 
     def have_next_volume(self):
-        """ Check if next volume of set is available, start
-            from the end of the list where latest completed files are
-            Make sure that files are 100% written to disk by checking md5sum
+        """Check if next volume of set is available, start
+        from the end of the list where latest completed files are
+        Make sure that files are 100% written to disk by checking md5sum
         """
         for nzf_search in reversed(self.nzo.finished_files):
             if nzf_search.setname == self.cur_setname and nzf_search.vol == (self.cur_volume + 1) and nzf_search.md5sum:
@@ -333,8 +333,8 @@ class DirectUnpacker(threading.Thread):
         return False
 
     def wait_for_next_volume(self):
-        """ Wait for the correct volume to appear
-            But stop if it was killed or the NZB is done
+        """Wait for the correct volume to appear
+        But stop if it was killed or the NZB is done
         """
         while not self.have_next_volume() and not self.killed and self.nzo.files:
             with self.next_file_lock:
@@ -492,8 +492,8 @@ class DirectUnpacker(threading.Thread):
 
 
 def analyze_rar_filename(filename):
-    """ Extract volume number and setname from rar-filenames
-        Both ".part01.rar" and ".r01"
+    """Extract volume number and setname from rar-filenames
+    Both ".part01.rar" and ".r01"
     """
     m = RAR_NR.search(filename)
     if m:
@@ -516,8 +516,8 @@ def abort_all():
 
 
 def test_disk_performance():
-    """ Test the incomplete-dir performance and enable
-        Direct Unpack if good enough (> 40MB/s)
+    """Test the incomplete-dir performance and enable
+    Direct Unpack if good enough (> 40MB/s)
     """
     if diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()) > 40:
         cfg.direct_unpack.set(True)

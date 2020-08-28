@@ -72,10 +72,10 @@ class NzbQueue:
         NzbQueue.do = self
 
     def read_queue(self, repair):
-        """ Read queue from disk, supporting repair modes
-            0 = no repairs
-            1 = use existing queue, add missing "incomplete" folders
-            2 = Discard all queue admin, reconstruct from "incomplete" folders
+        """Read queue from disk, supporting repair modes
+        0 = no repairs
+        1 = use existing queue, add missing "incomplete" folders
+        2 = Discard all queue admin, reconstruct from "incomplete" folders
         """
         nzo_ids = []
         if repair < 2:
@@ -132,10 +132,10 @@ class NzbQueue:
 
     @NzbQueueLocker
     def scan_jobs(self, all_jobs=False, action=True):
-        """ Scan "incomplete" for missing folders,
-            'all' is True: Include active folders
-            'action' is True, do the recovery action
-            returns list of orphaned folders
+        """Scan "incomplete" for missing folders,
+        'all' is True: Include active folders
+        'action' is True, do the recovery action
+        returns list of orphaned folders
         """
         result = []
         # Folders from the download queue
@@ -374,9 +374,9 @@ class NzbQueue:
 
     @NzbQueueLocker
     def remove(self, nzo_id, add_to_history=True, cleanup=True, delete_all_data=True):
-        """ Remove NZO from queue.
-            It can be added to history directly.
-            Or, we do some clean-up, sometimes leaving some data.
+        """Remove NZO from queue.
+        It can be added to history directly.
+        Or, we do some clean-up, sometimes leaving some data.
         """
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table.pop(nzo_id)
@@ -579,8 +579,8 @@ class NzbQueue:
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
 
     def sort_queue(self, field, reverse=None):
-        """ Sort queue by field: "name", "size" or "avg_age"
-            Direction is specified as "desc"/True or "asc"/False
+        """Sort queue by field: "name", "size" or "avg_age"
+        Direction is specified as "desc"/True or "asc"/False
         """
         if isinstance(reverse, str):
             if reverse.lower() == "desc":
@@ -700,8 +700,8 @@ class NzbQueue:
             nzo.reset_all_try_lists()
 
     def has_forced_items(self):
-        """ Check if the queue contains any Forced
-            Priority items to download while paused
+        """Check if the queue contains any Forced
+        Priority items to download while paused
         """
         for nzo in self.__nzo_list:
             if nzo.priority == TOP_PRIORITY and nzo.status not in (Status.PAUSED, Status.GRABBING):
@@ -709,8 +709,8 @@ class NzbQueue:
         return False
 
     def get_article(self, server, servers):
-        """ Get next article for jobs in the queue
-            Not locked for performance, since it only reads the queue
+        """Get next article for jobs in the queue
+        Not locked for performance, since it only reads the queue
         """
         # Pre-calculate propagation delay
         propagtion_delay = float(cfg.propagation_delay() * 60)
@@ -732,8 +732,8 @@ class NzbQueue:
                         return
 
     def register_article(self, article, success=True):
-        """ Register the articles we tried
-            Not locked for performance, since it only modifies individual NZOs
+        """Register the articles we tried
+        Not locked for performance, since it only modifies individual NZOs
         """
         nzf = article.nzf
         nzo = nzf.nzo
@@ -795,8 +795,8 @@ class NzbQueue:
             Assembler.do.process((nzo, None, None))
 
     def actives(self, grabs=True):
-        """ Return amount of non-paused jobs, optionally with 'grabbing' items
-            Not locked for performance, only reads the queue
+        """Return amount of non-paused jobs, optionally with 'grabbing' items
+        Not locked for performance, only reads the queue
         """
         n = 0
         for nzo in self.__nzo_list:
@@ -808,9 +808,9 @@ class NzbQueue:
         return n
 
     def queue_info(self, search=None, start=0, limit=0):
-        """ Return list of queued jobs,
-            optionally filtered by 'search' and limited by start and limit.
-            Not locked for performance, only reads the queue
+        """Return list of queued jobs,
+        optionally filtered by 'search' and limited by start and limit.
+        Not locked for performance, only reads the queue
         """
         if search:
             search = search.lower()
@@ -841,8 +841,8 @@ class NzbQueue:
         return QNFO(bytes_total, bytes_left, bytes_left_previous_page, pnfo_list, q_size, n)
 
     def remaining(self):
-        """ Return bytes left in the queue by non-paused items
-            Not locked for performance, only reads the queue
+        """Return bytes left in the queue by non-paused items
+        Not locked for performance, only reads the queue
         """
         bytes_left = 0
         for nzo in self.__nzo_list:

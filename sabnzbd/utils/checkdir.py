@@ -18,9 +18,9 @@ def getcmdoutput(cmd):
 
 
 def isFAT(check_dir):
-    """ Check if "check_dir" is on FAT. FAT considered harmful (for big files)
-        Works for Linux, Windows, MacOS
-        NB: On Windows, full path with drive letter is needed!
+    """Check if "check_dir" is on FAT. FAT considered harmful (for big files)
+    Works for Linux, Windows, MacOS
+    NB: On Windows, full path with drive letter is needed!
     """
     if not (os.path.isdir(check_dir) or os.path.isfile(check_dir)):
         # Not a dir, not a file ... so not FAT:
@@ -71,12 +71,12 @@ def isFAT(check_dir):
             # MacOS formerly known as OSX
             """
             MacOS needs a two-step approach:
-            
+
             # First: directory => device
             server:~ sander$ df /Volumes/CARTUNES/Tuna/
             Filesystem   512-blocks      Used Available Capacity iused ifree %iused  Mounted on
             /dev/disk9s1  120815744 108840000  11975744    91%       0     0  100%   /Volumes/CARTUNES
-            
+
             # Then: device => filesystem type
             server:~ sander$ mount | grep /dev/disk9s1
             /dev/disk9s1 on /Volumes/CARTUNES (msdos, local, nodev, nosuid, noowners)

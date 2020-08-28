@@ -169,10 +169,10 @@ def process_nzb_archive_file(
     password=None,
     nzo_id=None,
 ):
-    """ Analyse ZIP file and create job(s).
-        Accepts ZIP files with ONLY nzb/nfo/folder files in it.
-        returns (status, nzo_ids)
-            status: -1==Error, 0==OK, 1==Ignore
+    """Analyse ZIP file and create job(s).
+    Accepts ZIP files with ONLY nzb/nfo/folder files in it.
+    returns (status, nzo_ids)
+        status: -1==Error, 0==OK, 1==Ignore
     """
     nzo_ids = []
     if catdir is None:
@@ -270,10 +270,10 @@ def process_single_nzb(
     password=None,
     nzo_id=None,
 ):
-    """ Analyze file and create a job from it
-        Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
-        returns (status, nzo_ids)
-            status: -2==Error/retry, -1==Error, 0==OK
+    """Analyze file and create a job from it
+    Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
+    returns (status, nzo_ids)
+        status: -2==Error/retry, -1==Error, 0==OK
     """
     nzo_ids = []
     if catdir is None:

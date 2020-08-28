@@ -531,8 +531,8 @@ def guard_language():
 
 
 def set_https_verification(value):
-    """ Set HTTPS-verification state while returning current setting
-        False = disable verification
+    """Set HTTPS-verification state while returning current setting
+    False = disable verification
     """
     prev = ssl._create_default_https_context == ssl.create_default_context
     if value:
@@ -660,8 +660,8 @@ def add_nzbfile(
     password=None,
     nzo_id=None,
 ):
-    """ Add file, either a single NZB-file or an archive.
-        All other parameters are passed to the NZO-creation.
+    """Add file, either a single NZB-file or an archive.
+    All other parameters are passed to the NZO-creation.
     """
     if pp == "-1":
         pp = None
@@ -815,9 +815,9 @@ def restart_program():
 
 
 def change_queue_complete_action(action, new=True):
-    """ Action or script to be performed once the queue has been completed
-        Scripts are prefixed with 'script_'
-        When "new" is False, check whether non-script actions are acceptable
+    """Action or script to be performed once the queue has been completed
+    Scripts are prefixed with 'script_'
+    When "new" is False, check whether non-script actions are acceptable
     """
     global QUEUECOMPLETE, QUEUECOMPLETEACTION, QUEUECOMPLETEARG
 
@@ -896,8 +896,8 @@ def keep_awake():
 
 
 def get_new_id(prefix, folder, check_list=None):
-    """ Return unique prefixed admin identifier within folder
-        optionally making sure that id is not in the check_list.
+    """Return unique prefixed admin identifier within folder
+    optionally making sure that id is not in the check_list.
     """
     for n in range(100):
         try:
@@ -1020,8 +1020,8 @@ def check_repair_request():
 
 
 def check_all_tasks():
-    """ Check every task and restart safe ones, else restart program
-        Return True when everything is under control
+    """Check every task and restart safe ones, else restart program
+    Return True when everything is under control
     """
     if __SHUTTING_DOWN__ or not __INITIALIZED__:
         return True

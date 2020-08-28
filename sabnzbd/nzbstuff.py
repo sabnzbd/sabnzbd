@@ -479,8 +479,8 @@ class NzbFile(TryList):
         self.md5 = None
 
     def __eq__(self, other):
-        """ Assume it's the same file if the numer bytes and first article
-            are the same or if there are no articles left, use the filenames
+        """Assume it's the same file if the numer bytes and first article
+        are the same or if there are no articles left, use the filenames
         """
         if self.bytes == other.bytes:
             if self.decodetable and other.decodetable:

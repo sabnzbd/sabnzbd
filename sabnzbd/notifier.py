@@ -102,8 +102,8 @@ def get_prio(gtype, section):
 
 
 def check_cat(section, job_cat, keyword=None):
-    """ Check if `job_cat` is enabled in `section`.
-        * = All, if no other categories selected.
+    """Check if `job_cat` is enabled in `section`.
+    * = All, if no other categories selected.
     """
     if not job_cat:
         return True

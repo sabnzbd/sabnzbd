@@ -115,7 +115,14 @@ def find_programs(curdir):
         if not sabnzbd.newsunpack.PAR2_COMMAND:
             sabnzbd.newsunpack.PAR2_COMMAND = find_on_path("par2")
         if not sabnzbd.newsunpack.RAR_COMMAND:
-            sabnzbd.newsunpack.RAR_COMMAND = find_on_path(("unrar", "rar", "unrar3", "rar3",))
+            sabnzbd.newsunpack.RAR_COMMAND = find_on_path(
+                (
+                    "unrar",
+                    "rar",
+                    "unrar3",
+                    "rar3",
+                )
+            )
         sabnzbd.newsunpack.NICE_COMMAND = find_on_path("nice")
         sabnzbd.newsunpack.IONICE_COMMAND = find_on_path("ionice")
         if not sabnzbd.newsunpack.ZIP_COMMAND:
@@ -374,8 +381,8 @@ def get_seq_number(name):
 
 
 def file_join(nzo, workdir, workdir_complete, delete, joinables):
-    """ Join and joinable files in 'workdir' to 'workdir_complete' and
-        when successful, delete originals
+    """Join and joinable files in 'workdir' to 'workdir_complete' and
+    when successful, delete originals
     """
     newfiles = []
     bufsize = 24 * 1024 * 1024
@@ -465,9 +472,9 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 # (Un)Rar Functions
 ##############################################################################
 def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
-    """ Unpack multiple sets 'rars' of RAR files from 'workdir' to 'workdir_complete.
-        When 'delete' is set, originals will be deleted.
-        When 'one_folder' is set, all files will be in a single folder
+    """Unpack multiple sets 'rars' of RAR files from 'workdir' to 'workdir_complete.
+    When 'delete' is set, originals will be deleted.
+    When 'one_folder' is set, all files will be in a single folder
     """
     newfiles = extracted_files = []
     rar_sets = {}
@@ -588,9 +595,9 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
 
 
 def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path):
-    """ Unpack single rar set 'rarfile' to 'extraction_path',
-        with password tries
-        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
+    """Unpack single rar set 'rarfile' to 'extraction_path',
+    with password tries
+    Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
     """
     fail = 0
     new_files = None
@@ -615,8 +622,8 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
 
 
 def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password):
-    """ Unpack single rar set 'rarfile_path' to 'extraction_path'
-        Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
+    """Unpack single rar set 'rarfile_path' to 'extraction_path'
+    Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
     start = time.time()
 
@@ -850,8 +857,8 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 # (Un)Zip Functions
 ##############################################################################
 def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
-    """ Unpack multiple sets 'zips' of ZIP files from 'workdir' to 'workdir_complete.
-        When 'delete' is ste, originals will be deleted.
+    """Unpack multiple sets 'zips' of ZIP files from 'workdir' to 'workdir_complete.
+    When 'delete' is ste, originals will be deleted.
     """
 
     try:
@@ -928,8 +935,8 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
 # 7Zip Functions
 ##############################################################################
 def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
-    """ Unpack multiple sets '7z' of 7Zip files from 'workdir' to 'workdir_complete.
-        When 'delete' is set, originals will be deleted.
+    """Unpack multiple sets '7z' of 7Zip files from 'workdir' to 'workdir_complete.
+    When 'delete' is set, originals will be deleted.
     """
     i = 0
     unseven_failed = False
@@ -976,8 +983,8 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
 
 
 def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete):
-    """ Unpack single set 'sevenset' to 'extraction_path', with password tries
-        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
+    """Unpack single set 'sevenset' to 'extraction_path', with password tries
+    Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
     # Before we start, make sure the 7z binary SEVEN_COMMAND is defined
     if not SEVEN_COMMAND:
@@ -1009,8 +1016,8 @@ def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete
 
 
 def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete, password):
-    """ Unpack single 7Z set 'sevenset' to 'extraction_path'
-        Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
+    """Unpack single 7Z set 'sevenset' to 'extraction_path'
+    Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, message
     """
     if one_folder:
         method = "e"  # Unpack without folders
@@ -1909,9 +1916,9 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
 
 
 def create_env(nzo=None, extra_env_fields={}):
-    """ Modify the environment for pp-scripts with extra information
-        OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
-        other: return None
+    """Modify the environment for pp-scripts with extra information
+    OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
+    other: return None
     """
     env = os.environ.copy()
 
@@ -1969,8 +1976,8 @@ def create_env(nzo=None, extra_env_fields={}):
 
 
 def rar_volumelist(rarfile_path, password, known_volumes):
-    """ Extract volumes that are part of this rarset
-        and merge them with existing list, removing duplicates
+    """Extract volumes that are part of this rarset
+    and merge them with existing list, removing duplicates
     """
     # UnRar is required to read some RAR files
     # RarFile can fail in special cases
@@ -2014,9 +2021,9 @@ def rar_sort(a, b):
 
 
 def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=True):
-    """ Build filelists, if workdir_complete has files, ignore workdir.
-        Optionally scan both directories.
-        Optionally test content to establish RAR-ness
+    """Build filelists, if workdir_complete has files, ignore workdir.
+    Optionally scan both directories.
+    Optionally test content to establish RAR-ness
     """
     sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
 
@@ -2123,9 +2130,9 @@ def quick_check_set(set, nzo):
 
 
 def unrar_check(rar):
-    """ Return version number of unrar, where "5.01" returns 501
-        Also return whether an original version is found
-        (version, original)
+    """Return version number of unrar, where "5.01" returns 501
+    Also return whether an original version is found
+    (version, original)
     """
     version = 0
     original = ""
@@ -2323,8 +2330,8 @@ def analyse_show(name):
 
 
 def pre_queue(nzo, pp, cat):
-    """ Run pre-queue script (if any) and process results.
-        pp and cat are supplied seperate since they can change.
+    """Run pre-queue script (if any) and process results.
+    pp and cat are supplied seperate since they can change.
     """
 
     def fix(p):

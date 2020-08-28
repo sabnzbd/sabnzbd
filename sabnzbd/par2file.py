@@ -34,8 +34,8 @@ PAR_RECOVERY_ID = b"RecvSlic"
 
 
 def is_parfile(filename):
-    """ Check quickly whether file has par2 signature
-        or if the filename has '.par2' in it
+    """Check quickly whether file has par2 signature
+    or if the filename has '.par2' in it
     """
     if os.path.exists(filename):
         try:
@@ -50,9 +50,9 @@ def is_parfile(filename):
 
 
 def analyse_par2(name, filepath=None):
-    """ Check if file is a par2-file and determine vol/block
-        return setname, vol, block
-        setname is empty when not a par2 file
+    """Check if file is a par2-file and determine vol/block
+    return setname, vol, block
+    setname is empty when not a par2 file
     """
     name = name.strip()
     vol = block = 0
@@ -83,12 +83,12 @@ def analyse_par2(name, filepath=None):
 
 
 def parse_par2_file(fname, md5of16k):
-    """ Get the hash table and the first-16k hash table from a PAR2 file
-        Return as dictionary, indexed on names or hashes for the first-16 table
-        The input md5of16k is modified in place and thus not returned!
+    """Get the hash table and the first-16k hash table from a PAR2 file
+    Return as dictionary, indexed on names or hashes for the first-16 table
+    The input md5of16k is modified in place and thus not returned!
 
-        For a full description of the par2 specification, visit:
-        http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
+    For a full description of the par2 specification, visit:
+    http://parchive.sourceforge.net/docs/specifications/parity-volume-spec/article-spec.html
     """
     table = {}
     duplicates16k = []

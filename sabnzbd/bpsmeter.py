@@ -321,9 +321,9 @@ class BPSMeter:
         return self.bps_list[::refresh_rate]
 
     def get_stable_speed(self, timespan=10):
-        """ See if there is a stable speed the last <timespan> seconds
-            None: indicates it can't determine yet
-            False: the speed was not stable during <timespan>
+        """See if there is a stable speed the last <timespan> seconds
+        None: indicates it can't determine yet
+        False: the speed was not stable during <timespan>
         """
         if len(self.bps_list) < timespan:
             return None
@@ -347,8 +347,8 @@ class BPSMeter:
         return None
 
     def reset_quota(self, force=False):
-        """ Check if it's time to reset the quota, optionally resuming
-            Return True, when still paused
+        """Check if it's time to reset the quota, optionally resuming
+        Return True, when still paused
         """
         if force or (self.have_quota and time.time() > (self.q_time - 50)):
             self.quota = self.left = cfg.quota_size.get_float()

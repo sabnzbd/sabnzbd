@@ -104,9 +104,9 @@ class TestExtractPot:
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Fails for now due to PyObjC problem")
 class TestDaemonizing(SABnzbdBaseTest):
     def test_daemonizing(self):
-        """ Simple test to see if daemon-mode still works.
-            Also test removal of large "sabnzbd.error.log"
-            We inherit from SABnzbdBaseTest so we can use it's clean-up logic!
+        """Simple test to see if daemon-mode still works.
+        Also test removal of large "sabnzbd.error.log"
+        We inherit from SABnzbdBaseTest so we can use it's clean-up logic!
         """
         daemon_host = "localhost"
         daemon_port = 23456

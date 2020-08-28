@@ -61,10 +61,10 @@ def convert_search(search):
 
 
 class HistoryDB:
-    """ Class to access the History database
-        Each class-instance will create an access channel that
-        can be used in one thread.
-        Each thread needs its own class-instance!
+    """Class to access the History database
+    Each class-instance will create an access channel that
+    can be used in one thread.
+    Each thread needs its own class-instance!
     """
 
     # These class attributes will be accessed directly because
@@ -363,8 +363,8 @@ class HistoryDB:
         return total > 0
 
     def get_history_size(self):
-        """ Returns the total size of the history and
-            amounts downloaded in the last month and week
+        """Returns the total size of the history and
+        amounts downloaded in the last month and week
         """
         # Total Size of the history
         total = 0
@@ -526,8 +526,8 @@ def build_history_info(
 
 
 def unpack_history_info(item):
-    """ Expands the single line stage_log from the DB
-        into a python dictionary for use in the history display
+    """Expands the single line stage_log from the DB
+    into a python dictionary for use in the history display
     """
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lst = item["stage_log"]

@@ -42,9 +42,9 @@ def ubtou(str_in):
 
 
 def platform_btou(str_in):
-    """ Return Unicode, if not already Unicode, decode with locale encoding.
-        NOTE: Used for POpen because universal_newlines/text parameter doesn't
-        always work! We cannot use encoding-parameter because it's Python 3.7+
+    """Return Unicode, if not already Unicode, decode with locale encoding.
+    NOTE: Used for POpen because universal_newlines/text parameter doesn't
+    always work! We cannot use encoding-parameter because it's Python 3.7+
     """
     if isinstance(str_in, bytes):
         try:
@@ -56,10 +56,10 @@ def platform_btou(str_in):
 
 
 def correct_unknown_encoding(str_or_bytes_in):
-    """ Files created on Windows but unpacked/repaired on
-        linux can result in invalid filenames. Try to fix this
-        encoding by going to bytes and then back to unicode again.
-        Last resort we use chardet package
+    """Files created on Windows but unpacked/repaired on
+    linux can result in invalid filenames. Try to fix this
+    encoding by going to bytes and then back to unicode again.
+    Last resort we use chardet package
     """
     # If already string, back to bytes
     if not isinstance(str_or_bytes_in, bytes):

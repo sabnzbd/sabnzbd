@@ -42,8 +42,8 @@ class TestRSS:
         ConfigCat("movies", {})
 
     def test_rss_newznab_parser(self):
-        """ Test basic RSS-parsing of custom elements
-            Harder to test in functional test
+        """Test basic RSS-parsing of custom elements
+        Harder to test in functional test
         """
         feed_name = "TestFeedNewznab"
         self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_newznab_test.xml")
