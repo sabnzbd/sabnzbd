@@ -65,7 +65,7 @@ from sabnzbd.filesystem import (
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
-    TOP_PRIORITY,
+    FORCE_PRIORITY,
     POSTPROC_QUEUE_FILE_NAME,
     POSTPROC_QUEUE_VERSION,
     sample_match,
@@ -785,7 +785,7 @@ def parring(nzo, workdir):
 
     if re_add:
         logging.info("Re-added %s to queue", job_name)
-        if nzo.priority != TOP_PRIORITY:
+        if nzo.priority != FORCE_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
         nzo.status = Status.FETCHING
         sabnzbd.nzbqueue.NzbQueue.do.add(nzo)

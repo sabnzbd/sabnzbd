@@ -36,7 +36,7 @@ from sabnzbd.constants import (
     ATTRIB_FILE,
     JOB_ADMIN,
     REPAIR_PRIORITY,
-    TOP_PRIORITY,
+    FORCE_PRIORITY,
     HIGH_PRIORITY,
     NORMAL_PRIORITY,
     LOW_PRIORITY,
@@ -1305,7 +1305,7 @@ class NzbObject(TryList):
         value = int_conv(value)
         if value in (
             REPAIR_PRIORITY,
-            TOP_PRIORITY,
+            FORCE_PRIORITY,
             HIGH_PRIORITY,
             NORMAL_PRIORITY,
             LOW_PRIORITY,
@@ -1345,7 +1345,7 @@ class NzbObject(TryList):
 
         # Propagation delay label
         propagation_delay = float(cfg.propagation_delay() * 60)
-        if propagation_delay and self.avg_stamp + propagation_delay > time.time() and self.priority != TOP_PRIORITY:
+        if propagation_delay and self.avg_stamp + propagation_delay > time.time() and self.priority != FORCE_PRIORITY:
             wait_time = int((self.avg_stamp + propagation_delay - time.time()) / 60 + 0.5)
             labels.append(T("PROPAGATING %s min") % wait_time)  # Queue indicator while waiting for propagation of post
 

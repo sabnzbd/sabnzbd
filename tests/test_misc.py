@@ -29,7 +29,7 @@ from sabnzbd import lang
 from sabnzbd import misc
 from sabnzbd import newsunpack
 from sabnzbd.config import ConfigCat
-from sabnzbd.constants import HIGH_PRIORITY, TOP_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY
+from sabnzbd.constants import HIGH_PRIORITY, FORCE_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY
 from tests.testhelper import *
 
 
@@ -86,13 +86,13 @@ class TestMisc:
         assert ("movies", 3, "test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies")
         assert ("movies", 1, "test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies", pp=1)
         assert ("movies", 1, "not_test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies", pp=1, script="not_test.py")
-        assert ("movies", 3, "test.py", TOP_PRIORITY) == misc.cat_to_opts("movies", priority=TOP_PRIORITY)
+        assert ("movies", 3, "test.py", FORCE_PRIORITY) == misc.cat_to_opts("movies", priority=FORCE_PRIORITY)
 
         # If the category has DEFAULT_PRIORITY, it should use the priority of the *-category (NORMAL_PRIORITY)
         # If the script-name is Default for a category, it should use the script of the *-category (None)
         ConfigCat("software", {"priority": DEFAULT_PRIORITY, "script": "Default"})
         assert ("software", 3, "None", NORMAL_PRIORITY) == misc.cat_to_opts("software")
-        assert ("software", 3, "None", TOP_PRIORITY) == misc.cat_to_opts("software", priority=TOP_PRIORITY)
+        assert ("software", 3, "None", FORCE_PRIORITY) == misc.cat_to_opts("software", priority=FORCE_PRIORITY)
 
     def test_wildcard_to_re(self):
         assert "\\\\\\^\\$\\.\\[" == misc.wildcard_to_re("\\^$.[")

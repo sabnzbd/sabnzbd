@@ -42,7 +42,7 @@ from sabnzbd.constants import (
     LOW_PRIORITY,
     NORMAL_PRIORITY,
     HIGH_PRIORITY,
-    TOP_PRIORITY,
+    FORCE_PRIORITY,
     REPAIR_PRIORITY,
     STOP_PRIORITY,
     VERIFIED_FILE,
@@ -635,7 +635,7 @@ class NzbQueue:
 
             if nzo_id_pos1 != -1:
                 del self.__nzo_list[nzo_id_pos1]
-                if priority == TOP_PRIORITY:
+                if priority == FORCE_PRIORITY:
                     # A top priority item (usually a completed download fetching pars)
                     # is added to the top of the queue
                     self.__nzo_list.insert(0, nzo)
@@ -704,7 +704,7 @@ class NzbQueue:
         Priority items to download while paused
         """
         for nzo in self.__nzo_list:
-            if nzo.priority == TOP_PRIORITY and nzo.status not in (Status.PAUSED, Status.GRABBING):
+            if nzo.priority == FORCE_PRIORITY and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 return True
         return False
 
@@ -716,11 +716,11 @@ class NzbQueue:
         propagation_delay = float(cfg.propagation_delay() * 60)
         for nzo in self.__nzo_list:
             # Not when queue paused and not a forced item
-            if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == TOP_PRIORITY:
+            if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == FORCE_PRIORITY:
                 # Check if past propagation delay, or forced
                 if (
                     not propagation_delay
-                    or nzo.priority == TOP_PRIORITY
+                    or nzo.priority == FORCE_PRIORITY
                     or (nzo.avg_stamp + propagation_delay) < time.time()
                 ):
                     if not nzo.server_in_try_list(server):
@@ -822,7 +822,7 @@ class NzbQueue:
         n = 0
 
         for nzo in self.__nzo_list:
-            if nzo.status not in (Status.PAUSED, Status.CHECKING) or nzo.priority == TOP_PRIORITY:
+            if nzo.status not in (Status.PAUSED, Status.CHECKING) or nzo.priority == FORCE_PRIORITY:
                 b_left = nzo.remaining
                 bytes_total += nzo.bytes
                 bytes_left += b_left
@@ -947,7 +947,7 @@ def _nzo_size_cmp(nzo1, nzo2):
 
 def sort_queue_function(nzo_list, method, reverse):
     ultra_high_priority = [nzo for nzo in nzo_list if nzo.priority == REPAIR_PRIORITY]
-    super_high_priority = [nzo for nzo in nzo_list if nzo.priority == TOP_PRIORITY]
+    super_high_priority = [nzo for nzo in nzo_list if nzo.priority == FORCE_PRIORITY]
     high_priority = [nzo for nzo in nzo_list if nzo.priority == HIGH_PRIORITY]
     normal_priority = [nzo for nzo in nzo_list if nzo.priority == NORMAL_PRIORITY]
     low_priority = [nzo for nzo in nzo_list if nzo.priority == LOW_PRIORITY]

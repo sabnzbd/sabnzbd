@@ -41,7 +41,7 @@ from sabnzbd.constants import (
     VALID_ARCHIVES,
     VALID_NZB_FILES,
     Status,
-    TOP_PRIORITY,
+    FORCE_PRIORITY,
     REPAIR_PRIORITY,
     HIGH_PRIORITY,
     NORMAL_PRIORITY,
@@ -1299,7 +1299,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
 
     datestart = datetime.datetime.now()
     priorities = {
-        TOP_PRIORITY: "Force",
+        FORCE_PRIORITY: "Force",
         REPAIR_PRIORITY: "Repair",
         HIGH_PRIORITY: "High",
         NORMAL_PRIORITY: "Normal",
@@ -1361,7 +1361,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
                 slot["status"] = Status.DOWNLOADING
         else:
             # Ensure compatibility of API status
-            if status == Status.DELETED or priority == TOP_PRIORITY:
+            if status == Status.DELETED or priority == FORCE_PRIORITY:
                 status = Status.DOWNLOADING
             slot["status"] = "%s" % status
 
@@ -1370,7 +1370,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
             or Downloader.do.postproc
             or is_propagating
             or status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
-        ) and priority != TOP_PRIORITY:
+        ) and priority != FORCE_PRIORITY:
             slot["timeleft"] = "0:00:00"
             slot["eta"] = "unknown"
         else:
