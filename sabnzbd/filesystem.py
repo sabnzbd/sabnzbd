@@ -271,6 +271,9 @@ def real_path(loc, path):
         if not sabnzbd.WIN32 and path.startswith("~/"):
             path = path.replace("~", os.environ.get("HOME", sabnzbd.DIR_HOME), 1)
         if sabnzbd.WIN32:
+            # The Windows-functions work differently on long-path
+            # So we bring it back to normal and make it long-path at the end
+            loc = clip_path(loc)
             path = path.replace("/", "\\")
             if len(path) > 1 and path[0].isalpha() and path[1] == ":":
                 if len(path) == 2 or path[2] != "\\":
