@@ -29,7 +29,7 @@ from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_Q
 
 # Operations on lists and dicts are atomic, but for
 # the bytes counter we do need a lock
-ARTICLE_LOCK = threading.Lock()
+ARTICLE_LOCK = threading.RLock()
 
 
 class ArticleCache:
@@ -116,6 +116,7 @@ class ArticleCache:
             # No data saved in memory, direct to disk
             self.__flush_article_to_disk(article, data)
 
+    @synchronized(ARTICLE_LOCK)
     def load_article(self, article):
         """ Load the data of the article """
         data = None
@@ -138,6 +139,7 @@ class ArticleCache:
             article, data = self.__article_table.popitem()
             self.__flush_article_to_disk(article, data)
 
+    @synchronized(ARTICLE_LOCK)
     def purge_articles(self, articles):
         """ Remove all saved articles, from memory and disk """
         logging.debug("Purging %s articles from the cache/disk", len(articles))
