@@ -710,15 +710,15 @@ class NzbQueue:
             Not locked for performance, since it only reads the queue
         """
         # Pre-calculate propagation delay
-        propagtion_delay = float(cfg.propagation_delay() * 60)
+        propagation_delay = float(cfg.propagation_delay() * 60)
         for nzo in self.__nzo_list:
             # Not when queue paused and not a forced item
             if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == TOP_PRIORITY:
                 # Check if past propagation delay, or forced
                 if (
-                    not propagtion_delay
+                    not propagation_delay
                     or nzo.priority == TOP_PRIORITY
-                    or (nzo.avg_stamp + propagtion_delay) < time.time()
+                    or (nzo.avg_stamp + propagation_delay) < time.time()
                 ):
                     if not nzo.server_in_try_list(server):
                         article = nzo.get_article(server, servers)

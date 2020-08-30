@@ -1168,9 +1168,14 @@ def main():
     if importlib.util.find_spec("certifi") is not None:
         import certifi
 
-        os.environ["SSL_CERT_FILE"] = certifi.where()
-        logging.info("Certifi version: %s", certifi.__version__)
-        logging.info("Loaded additional certificates from: %s", os.environ["SSL_CERT_FILE"])
+        try:
+            os.environ["SSL_CERT_FILE"] = certifi.where()
+            logging.info("Certifi version: %s", certifi.__version__)
+            logging.info("Loaded additional certificates from: %s", os.environ["SSL_CERT_FILE"])
+        except:
+            # Sometimes the certificate file is blocked
+            logging.warning(T("Could not load additional certificates from certifi package"))
+            logging.info("Traceback: ", exc_info=True)
 
     # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
@@ -1698,9 +1703,7 @@ if __name__ == "__main__":
         # This code is made with trial-and-error, please improve!
         class startApp(Thread):
             def run(self):
-                logging.info("[osx] sabApp Starting - starting main thread")
                 main()
-                logging.info("[osx] sabApp Stopping - main thread quit ")
                 AppHelper.stopEventLoop()
 
         sabApp = startApp()

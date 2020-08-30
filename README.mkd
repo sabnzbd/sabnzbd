@@ -1,5 +1,17 @@
-Release Notes - SABnzbd 3.0.1
+Release Notes - SABnzbd 3.0.2
 =========================================================
+
+## Bugfixes since 3.0.1
+- Priority was not parsed correctly if supplied as through the API.
+- API-call `addfile` could fail if `name` and `nzbfile` were used.
+- Permissions were still not set correctly when creating directories.
+- Propagation delay label was shown even if no delay was activated.
+- Reading RSS feed with no categories set could result in crash.
+- Jobs with numeric names could crash post-processing.
+- Jobs with missing articles could result in crash.
+- macOS: changed the power assertion to `NoIdleSleep`.
+- Windows: end-of-queue-script did not run on Windows.
+- Windows: crash if the virus scanner removed the certificate bundle.
 
 ## Bugfixes since 3.0.0
 - Basic Authentication resulted in crash. 

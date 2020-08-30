@@ -1,5 +1,5 @@
 *******************************************
-*** This is SABnzbd 3.0.1               ***
+*** This is SABnzbd                     ***
 *******************************************
 
 SABnzbd is an open-source cross-platform binary newsreader.

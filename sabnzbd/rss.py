@@ -791,7 +791,7 @@ def _get_link(entry):
             except AttributeError:
                 try:  # nzb.su
                     category = entry.tags[0]["term"]
-                except (AttributeError, KeyError):
+                except (AttributeError, IndexError, KeyError):
                     try:
                         category = entry.description
                     except AttributeError:

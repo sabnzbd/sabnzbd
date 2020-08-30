@@ -20,6 +20,7 @@ sabnzbd.nzbstuff - misc
 """
 
 import os
+import pickle
 import time
 import re
 import logging
@@ -481,8 +482,15 @@ class NzbFile(TryList):
         self.md5 = None
 
     def __eq__(self, other):
-        """ Assume it's the same file if the bytes and first article are the same """
-        return self.bytes == other.bytes and self.decodetable[0] == other.decodetable[0]
+        """ Assume it's the same file if the numer bytes and first article
+            are the same or if there are no articles left, use the filenames
+        """
+        if self.bytes == other.bytes:
+            if self.decodetable and other.decodetable:
+                return self.decodetable[0] == other.decodetable[0]
+            # Fallback to filename comparison
+            return self.filename == other.filename
+        return False
 
     def __hash__(self):
         """ Required because we implement eq. The same file can be spread
@@ -555,6 +563,8 @@ NzbObjectSaver = (
     "renames",
     "rating_filtered",
 )
+
+NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
 
 # Lock to prevent errors when saving the NZO data
 NZO_LOCK = threading.RLock()
@@ -707,7 +717,7 @@ class NzbObject(TryList):
             self.final_name = self.final_name.replace(".", " ")
 
         # Check against identical checksum or series/season/episode
-        if (not reuse) and nzb and dup_check and priority != REPAIR_PRIORITY:
+        if (not reuse) and nzb and dup_check and self.priority != REPAIR_PRIORITY:
             duplicate, series = self.has_duplicates()
         else:
             duplicate = series = 0
@@ -779,14 +789,10 @@ class NzbObject(TryList):
 
         # Pickup backed-up attributes when re-using
         if reuse:
-            cat, pp, script, priority, name, password, self.url = get_attrib_file(self.workpath, 7)
-            if name:
-                self.final_name = name
-            if password:
-                self.password = password
+            cat, pp, script = self.load_attribs()
 
         # Determine category and find pp/script values
-        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, priority)
+        self.cat, pp_tmp, self.script, priority = cat_to_opts(cat, pp, script, self.priority)
         self.set_priority(priority)
         self.repair, self.unpack, self.delete = pp_to_opts(pp_tmp)
 
@@ -1339,8 +1345,9 @@ class NzbObject(TryList):
                 labels.append(T("WAIT %s sec") % dif)
 
         # Propagation delay label
-        if (self.avg_stamp + float(cfg.propagation_delay() * 60)) > time.time() and self.priority != TOP_PRIORITY:
-            wait_time = int((self.avg_stamp + float(cfg.propagation_delay() * 60) - time.time()) / 60 + 0.5)
+        propagation_delay = float(cfg.propagation_delay() * 60)
+        if propagation_delay and self.avg_stamp + propagation_delay > time.time() and self.priority != TOP_PRIORITY:
+            wait_time = int((self.avg_stamp + propagation_delay - time.time()) / 60 + 0.5)
             labels.append(T("PROPAGATING %s min") % wait_time)  # Queue indicator while waiting for propagation of post
 
         return labels
@@ -1892,9 +1899,36 @@ class NzbObject(TryList):
             sabnzbd.save_data(self, self.nzo_id, self.workpath)
 
     def save_attribs(self):
-        set_attrib_file(
-            self.workpath, (self.cat, self.pp, self.script, self.priority, self.final_name, self.password, self.url)
-        )
+        """ Save specific attributes for Retry """
+        attribs = {}
+        for attrib in NzoAttributeSaver:
+            attribs[attrib] = getattr(self, attrib)
+        logging.debug("Saving attributes %s for %s", attribs, self.final_name)
+        sabnzbd.save_data(attribs, ATTRIB_FILE, self.workpath)
+
+    def load_attribs(self):
+        """ Load saved attributes and return them to be parsed """
+        attribs = sabnzbd.load_data(ATTRIB_FILE, self.workpath, remove=False)
+        logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
+
+        # TODO: Remove fallback to old method in SABnzbd 3.2.0
+        if not attribs:
+            cat, pp, script, self.priority, name, password, self.url = get_attrib_file(self.workpath, 7)
+            if name:
+                # Could be converted to integer due to the logic in get_attrib_file
+                self.final_name = str(name)
+            if password:
+                self.password = password
+            return cat, pp, script
+
+        # Only a subset we want to apply directly to the NZO
+        for attrib in ("final_name", "priority", "password", "url"):
+            # Only set if it is present and has a value
+            if attribs.get(attrib):
+                setattr(self, attrib, attribs[attrib])
+
+        # Rest is to be used directly in the NZO-init flow
+        return attribs["cat"], attribs["pp"], attribs["script"]
 
     @synchronized(NZO_LOCK)
     def build_pos_nzf_table(self, nzf_ids):
@@ -2148,15 +2182,6 @@ def get_attrib_file(path, size):
             return attribs
     except OSError:
         return [None for _ in range(size)]
-
-
-def set_attrib_file(path, attribs):
-    """ Write job's attributes to file """
-    logging.debug("Writing attributes %s to %s", attribs, path)
-    path = os.path.join(path, ATTRIB_FILE)
-    with open(path, "w", encoding="utf-8") as attr_file:
-        for item in attribs:
-            attr_file.write("%s\n" % item)
 
 
 def name_extractor(subject):
