@@ -406,11 +406,14 @@ def _get_rar_version(xfile):
 
 def is_rarfile(xfile):
     """Check quickly whether file is rar archive."""
-    rar_ver = _get_rar_version(xfile)
-    if rar_ver:
-        return "RAR%d" % rar_ver
-    else:
-        return None
+    # SABnzbd-edit: try/except
+    try:
+        rar_ver = _get_rar_version(xfile)
+        if rar_ver:
+            return "RAR%d" % rar_ver
+    except:
+        pass
+    return None
 
 
 class Error(Exception):
