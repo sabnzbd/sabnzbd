@@ -722,19 +722,21 @@ def prepare_extraction_path(nzo):
 
 def parring(nzo, workdir):
     """ Perform par processing. Returns: (par_error, re_add) """
-    job_name = nzo.final_name
-    notifier.send_notification(T("Post-processing"), job_name, "pp", nzo.cat)
-    logging.info("Starting verification and repair of %s", job_name)
+    logging.info("Starting verification and repair of %s", nzo.final_name)
+    par_error = False
+    re_add = False
 
     # Get verification status of sets
     verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
 
-    re_add = False
-    par_error = False
-    single = len(nzo.extrapars) == 1
+    # If all were verified successfully, we skip the rest of the checks
+    if verified and all(verified.values()):
+        logging.info("Skipping repair, all sets previously verified: %s", verified)
+        return par_error, re_add
 
     if nzo.extrapars:
         # Need to make a copy because it can change during iteration
+        single = len(nzo.extrapars) == 1
         for setname in list(nzo.extrapars):
             if cfg.ignore_samples() and RE_SAMPLE.search(setname.lower()):
                 continue
@@ -761,8 +763,8 @@ def parring(nzo, workdir):
 
     elif not verified.get("", False):
         # No par2-sets found, skipped if already tried before
-        logging.info("No par2 sets for %s", job_name)
-        nzo.set_unpack_info("Repair", T("[%s] No par2 sets") % job_name)
+        logging.info("No par2 sets for %s", nzo.final_name)
+        nzo.set_unpack_info("Repair", T("[%s] No par2 sets") % nzo.final_name)
 
         # Try SFV-based verification and rename
         sfv_check_result = None
@@ -787,7 +789,7 @@ def parring(nzo, workdir):
         verified[""] = not par_error
 
     if re_add:
-        logging.info("Re-added %s to queue", job_name)
+        logging.info("Re-added %s to queue", nzo.final_name)
         if nzo.priority != FORCE_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
         nzo.status = Status.FETCHING
@@ -796,7 +798,7 @@ def parring(nzo, workdir):
 
     sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
-    logging.info("Verification and repair finished for %s", job_name)
+    logging.info("Verification and repair finished for %s", nzo.final_name)
     return par_error, re_add
 
 
