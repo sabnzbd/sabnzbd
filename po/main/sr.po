@@ -1520,6 +1520,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Неуспешно преузимање - није на вашем серверу"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Пост-процесирање"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Премештање"
 
@@ -1579,10 +1583,6 @@ msgstr "Преузимање завршено"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Немогуће креирање фасцикле %s"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Пост-процесирање"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"

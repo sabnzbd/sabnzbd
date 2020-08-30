@@ -1525,6 +1525,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Nerladdning misslyckades - Inte på din server eller servrar"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Efterbehandling"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Flyttar"
 
@@ -1584,10 +1588,6 @@ msgstr "Hämtningen slutfördes"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Kan inte skapa slutgiltig mapp %s"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Efterbehandling"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"

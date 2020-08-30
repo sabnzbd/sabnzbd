@@ -1559,6 +1559,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Download mislukt - Niet meer op je server(s)"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Nabewerking"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Verplaatsen"
 
@@ -1618,10 +1622,6 @@ msgstr "Download voltooid"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Kan bestemmingsmap %s niet maken"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Nabewerking"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"

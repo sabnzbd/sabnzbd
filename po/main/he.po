@@ -1530,6 +1530,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "הורדה נכשלה - לא בשרת(ים) שלך"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "בתר־עיבוד"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "מעביר"
 
@@ -1589,10 +1593,6 @@ msgstr "הורדה הושלמה"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "%s לא יכול ליצור תיקייה סופית"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "בתר־עיבוד"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"

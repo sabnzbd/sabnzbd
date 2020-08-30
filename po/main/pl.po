@@ -1529,6 +1529,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Pobieranie nieudane - Dane niedostępne na skonfigurowanych serwerach"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Przetwarzanie końcowe"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Przenoszenie"
 
@@ -1588,10 +1592,6 @@ msgstr "Zakończono pobieranie"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Nie można utworzyć ostatecznego katalogu %s"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Przetwarzanie końcowe"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"

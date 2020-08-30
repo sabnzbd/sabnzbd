@@ -1531,6 +1531,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "O download falhou - Não está em seu(s) servidor(s)"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Pós-processamento"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Movendo"
 
@@ -1590,10 +1594,6 @@ msgstr "Download concluído"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Não é possível criar a pasta final %s"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Pós-processamento"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"

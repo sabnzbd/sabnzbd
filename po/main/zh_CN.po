@@ -1508,6 +1508,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "下载失败 - 不在该服务器上"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "后期处理"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "正在移动"
 
@@ -1567,10 +1571,6 @@ msgstr "下载完成"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "无法创建最终文件夹 %s"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "后期处理"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"

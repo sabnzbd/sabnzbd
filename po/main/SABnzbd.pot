@@ -1426,6 +1426,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr ""
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr ""
 
@@ -1484,10 +1488,6 @@ msgstr ""
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
-msgstr ""
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
 msgstr ""
 
 #: sabnzbd/postproc.py

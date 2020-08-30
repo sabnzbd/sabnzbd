@@ -1530,6 +1530,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Descărcare euată, - Nu este pe serverul(ele) dumneavoastră"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Post-procesare"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Mutare"
 
@@ -1589,10 +1593,6 @@ msgstr "Descărcare terminată"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Nu pot crea dosar final %s"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Post-procesare"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"

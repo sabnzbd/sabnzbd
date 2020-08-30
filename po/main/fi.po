@@ -1527,6 +1527,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Lataus epäonnistui - Ei ole palvelimilla"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Jälkikäsittely"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Siirretään"
 
@@ -1586,10 +1590,6 @@ msgstr "Lataus valmistui"
 #: sabnzbd/postproc.py
 msgid "Cannot create final folder %s"
 msgstr "Ei voitu luoda lopullista kansiota %s"
-
-#: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Jälkikäsittely"
 
 #: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
