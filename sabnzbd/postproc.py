@@ -372,6 +372,9 @@ def process_job(nzo):
         # Set complete dir to workdir in case we need to abort
         workdir_complete = workdir
 
+        # Send post-processing notification
+        notifier.send_notification(T("Post-processing"), nzo.final_name, "pp", nzo.cat)
+
         # Par processing, if enabled
         if all_ok and flag_repair:
             par_error, re_add = parring(nzo, workdir)
