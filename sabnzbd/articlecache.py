@@ -39,7 +39,6 @@ class ArticleCache:
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__article_list = []  # List of buffered articles
         self.__article_table = {}  # Dict of buffered articles
 
         # Limit for the decoder is based on the total available cache
@@ -55,7 +54,7 @@ class ArticleCache:
         ArticleCache.do = self
 
     def cache_info(self):
-        return ANFO(len(self.__article_list), abs(self.__cache_size), self.__cache_limit_org)
+        return ANFO(len(self.__article_table), abs(self.__cache_size), self.__cache_limit_org)
 
     def new_limit(self, limit):
         """ Called when cache limit changes """
@@ -108,7 +107,6 @@ class ArticleCache:
             self.reserve_space(data_size)
             if self.space_left():
                 # Add new article to the cache
-                self.__article_list.append(article)
                 self.__article_table[article] = data
             else:
                 # Return the space and save to disk
@@ -123,9 +121,8 @@ class ArticleCache:
         data = None
         nzo = article.nzf.nzo
 
-        if article in self.__article_list:
+        if article in self.__article_table:
             data = self.__article_table.pop(article)
-            self.__article_list.remove(article)
             self.free_reserved_space(len(data))
         elif article.art_id:
             data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True, do_pickle=False, silent=True)
@@ -135,17 +132,17 @@ class ArticleCache:
 
     @synchronized(ARTICLE_LOCK)
     def flush_articles(self):
+        logging.debug("Saving %s cached articles to disk", len(self.__article_table))
         self.__cache_size = 0
-        while self.__article_list:
-            article = self.__article_list.pop(0)
-            data = self.__article_table.pop(article)
+        while self.__article_table:
+            article, data = self.__article_table.popitem()
             self.__flush_article_to_disk(article, data)
 
     def purge_articles(self, articles):
         """ Remove all saved articles, from memory and disk """
+        logging.debug("Purging %s articles from the cache/disk", len(articles))
         for article in articles:
-            if article in self.__article_list:
-                self.__article_list.remove(article)
+            if article in self.__article_table:
                 data = self.__article_table.pop(article)
                 self.free_reserved_space(len(data))
             if article.art_id:
