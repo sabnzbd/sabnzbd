@@ -1121,6 +1121,13 @@ def validate_notempty(root, value, default):
         return None, default
 
 
+def validate_strip_right_slash(value):
+    """Strips the right slash"""
+    if value:
+        return None, value.rstrip("/")
+    return None, value
+
+
 def validate_single_tag(value):
     """Don't split single indexer tags like "TV > HD"
     into ['TV', '>', 'HD']

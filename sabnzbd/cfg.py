@@ -34,6 +34,7 @@ from sabnzbd.config import (
     create_api_key,
     validate_notempty,
     clean_nice_ionice_parameters,
+    validate_strip_right_slash,
 )
 from sabnzbd.constants import (
     DEF_HOST,
@@ -290,7 +291,7 @@ history_limit = OptionNumber("misc", "history_limit", 10, 0)
 wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, 1, 60)
 marker_file = OptionStr("misc", "nomedia_marker", "")
 ipv6_servers = OptionNumber("misc", "ipv6_servers", 1, 0, 2)
-url_base = OptionStr("misc", "url_base", "/sabnzbd")
+url_base = OptionStr("misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 
