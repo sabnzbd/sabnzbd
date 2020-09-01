@@ -642,7 +642,7 @@ def patch_feedparser():
     Add additional parsing of attributes
     """
     feedparser.SANITIZE_HTML = 0
-    feedparser.PARSE_MICROFORMATS = 0
+    feedparser.RESOLVE_RELATIVE_URIS = 0
 
     # Support both feedparser 5 and 6
     try:
