@@ -644,12 +644,25 @@ def patch_feedparser():
     feedparser.SANITIZE_HTML = 0
     feedparser.PARSE_MICROFORMATS = 0
 
+    # Support both feedparser 5 and 6
+    try:
+        feedparser_mixin = feedparser._FeedParserMixin
+        feedparser_parse_date = feedparser._parse_date
+    except AttributeError:
+        feedparser_mixin = feedparser.mixin._FeedParserMixin
+        feedparser_parse_date = feedparser.datetimes._parse_date
+
     # Add our own namespace
-    feedparser._FeedParserMixin.namespaces["http://www.newznab.com/DTD/2010/feeds/attributes/"] = "newznab"
+    feedparser_mixin.namespaces["http://www.newznab.com/DTD/2010/feeds/attributes/"] = "newznab"
 
     # Add parsers for the namespace
     def _start_newznab_attr(self, attrsD):
-        context = self._getContext()
+        # Support both feedparser 5 and 6
+        try:
+            context = self._getContext()
+        except AttributeError:
+            context = self._get_context()
+
         # Add the dict
         if "newznab" not in context:
             context["newznab"] = {}
@@ -659,14 +672,14 @@ def patch_feedparser():
             context["newznab"][attrsD["name"]] = attrsD["value"]
             # Try to get date-object
             if attrsD["name"] == "usenetdate":
-                context["newznab"][attrsD["name"] + "_parsed"] = feedparser._parse_date(attrsD["value"])
+                context["newznab"][attrsD["name"] + "_parsed"] = feedparser_parse_date(attrsD["value"])
         except KeyError:
             pass
 
-    feedparser._FeedParserMixin._start_newznab_attr = _start_newznab_attr
-    feedparser._FeedParserMixin._start_nZEDb_attr = _start_newznab_attr
-    feedparser._FeedParserMixin._start_nzedb_attr = _start_newznab_attr
-    feedparser._FeedParserMixin._start_nntmux_attr = _start_newznab_attr
+    feedparser_mixin._start_newznab_attr = _start_newznab_attr
+    feedparser_mixin._start_nZEDb_attr = _start_newznab_attr
+    feedparser_mixin._start_nzedb_attr = _start_newznab_attr
+    feedparser_mixin._start_nntmux_attr = _start_newznab_attr
 
 
 def _HandleLink(
