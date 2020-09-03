@@ -573,7 +573,10 @@ def create_all_dirs(path, apply_umask=False):
     try:
         logging.info("Creating directories: %s", path)
         if sabnzbd.WIN32:
-            os.makedirs(path, exist_ok=True)
+            # On Windows it can fail on UNC-paths in long-path notation
+            # https://bugs.python.org/issue41705
+            if not os.path.exists(path):
+                os.makedirs(path)
         else:
             # We need to build the directory recursively so we can
             # apply permissions to only the newly created folders
