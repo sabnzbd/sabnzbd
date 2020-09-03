@@ -2138,7 +2138,7 @@ def unrar_check(rar):
     original = ""
     if rar:
         try:
-            version = run_command(rar)
+            version = run_command([rar])
         except:
             return version, original
         original = "Alexander Roshal" in version
