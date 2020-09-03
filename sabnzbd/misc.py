@@ -50,6 +50,7 @@ HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
 if sabnzbd.WIN32:
     try:
         import win32process
+        import win32con
 
         # Define scheduling priorities
         WIN_SCHED_PRIOS = {
@@ -957,12 +958,17 @@ def build_and_run_command(command, flatten_command=False, **kwargs):
             command = nice + command
             command.insert(0, sabnzbd.newsunpack.NICE_COMMAND)
         creationflags = 0
+        startupinfo = None
     else:
         # For Windows we always need to add python interpreter
         if command[0].endswith(".py"):
             command.insert(0, "python.exe")
         if flatten_command:
             command = sabnzbd.newsunpack.list2cmdline(command)
+        # On some Windows platforms we need to supress a quick pop-up of the command window
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = win32con.SW_HIDE
         creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
 
     # Set the basic Popen arguments
@@ -970,6 +976,7 @@ def build_and_run_command(command, flatten_command=False, **kwargs):
         "stdin": subprocess.PIPE,
         "stdout": subprocess.PIPE,
         "stderr": subprocess.STDOUT,
+        "startupinfo": startupinfo,
         "creationflags": creationflags,
     }
     # Update with the supplied ones

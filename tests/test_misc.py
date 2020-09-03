@@ -231,16 +231,21 @@ class TestBuildAndRunCommand:
     @mock.patch("subprocess.Popen")
     @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows tests")
     def test_win(self, mock_subproc_popen):
-        # Needed for priority check
+        # Needed for priority and startupinfo check
         import win32process
+        import win32con
 
         misc.build_and_run_command(["test.cmd", "input 1"])
         assert mock_subproc_popen.call_args[0][0] == ["test.cmd", "input 1"]
         assert mock_subproc_popen.call_args[1]["creationflags"] == win32process.NORMAL_PRIORITY_CLASS
+        assert mock_subproc_popen.call_args[1]["startupinfo"].dwFlags == win32process.STARTF_USESHOWWINDOW
+        assert mock_subproc_popen.call_args[1]["startupinfo"].wShowWindow == win32con.SW_HIDE
 
         misc.build_and_run_command(["test.py", "input 1"])
         assert mock_subproc_popen.call_args[0][0] == ["python.exe", "test.py", "input 1"]
         assert mock_subproc_popen.call_args[1]["creationflags"] == win32process.NORMAL_PRIORITY_CLASS
+        assert mock_subproc_popen.call_args[1]["startupinfo"].dwFlags == win32process.STARTF_USESHOWWINDOW
+        assert mock_subproc_popen.call_args[1]["startupinfo"].wShowWindow == win32con.SW_HIDE
 
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         misc.build_and_run_command(["UnRar.exe", "\\\\?\\C:\\path\\"])
