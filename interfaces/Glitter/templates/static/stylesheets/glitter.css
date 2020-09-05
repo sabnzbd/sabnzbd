@@ -852,18 +852,24 @@ tr.queue-item>td:first-child>a {
 
 .multioperations-selector .add-nzb-inputbox {
     width: 20%;
+    float: left;
+}
+
+.multioperations-selector .add-nzb-inputbox select {
+    display: inline-block;
+    width: calc(100% - 30px);
+    margin: 5px 0px 5px 2px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small {
     width: 80px;
     float: right;
     padding-left: 0;
-    padding-top: 2px;
+    padding-top: 12px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small .label {
-    vertical-align: text-bottom;
-    margin-left: 2px;
+    margin-left: 5px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small span {
@@ -884,7 +890,7 @@ tr.queue-item>td:first-child>a {
 
 .multioperations-selector .add-nzb-inputbox-options {
     width: auto;
-    padding-right: 6px;
+    padding-right: 7px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small label[for="multiedit-pause"],
