@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2011-2020 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.1.0-develop\n"
@@ -221,14 +221,14 @@ msgstr "Błąd krytyczny w module składającym"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 
@@ -238,7 +238,7 @@ msgstr "Przerwano, wykryto szyfrowanie"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
 "UWAGA: Plik z niepożądanym rozszerzeniem wewnątrz pliku RAR \"%s\". "
 "Niepożądany plik to %s "
@@ -253,12 +253,12 @@ msgstr "Przerwano, wykryto niepożądane rozszerzenie"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
+msgid "Paused job \"%s\" because of rating (%s)"
 msgstr "UWAGA: Zadanie \"%s\" zostało wstrzymane z powodu oceny (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
+msgid "Aborted job \"%s\" because of rating (%s)"
 msgstr "UWAGA: Zadanie \"%s\" zostało przerwane z powodu oceny (%s)"
 
 #: sabnzbd/assembler.py

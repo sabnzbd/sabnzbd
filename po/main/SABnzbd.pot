@@ -211,12 +211,12 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
+msgid "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
+msgid "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
 msgstr ""
 
 #: sabnzbd/assembler.py
@@ -225,7 +225,7 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
 
 #: sabnzbd/assembler.py
@@ -238,12 +238,12 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
+msgid "Paused job \"%s\" because of rating (%s)"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
+msgid "Aborted job \"%s\" because of rating (%s)"
 msgstr ""
 
 #: sabnzbd/assembler.py

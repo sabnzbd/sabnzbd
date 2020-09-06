@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2011-2020 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.1.0-develop\n"
@@ -230,7 +230,7 @@ msgstr "Onherstelbare fout in de Assembler"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 "WAARSCHUWING: Download \"%s\" is gepauzeerd vanwege een versleuteld RAR "
@@ -239,7 +239,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 "WAARSCHUWING: Download \"%s\" is afgebroken vanwege een versleuteld RAR "
@@ -251,7 +251,7 @@ msgstr "Afgebroken, versleuteling ontdekt"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
 "WAARSCHUWING: Ongewenste extensie ontdekt in \"%s\". Het ongewenste bestand "
 "is \"%s\" "
@@ -266,12 +266,12 @@ msgstr "Afgebroken, ongewenste extensie ontdekt"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
+msgid "Paused job \"%s\" because of rating (%s)"
 msgstr "WAARSCHUWING: Download '%s' gepauzeerd vanwege rating (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
+msgid "Aborted job \"%s\" because of rating (%s)"
 msgstr "WAARSCHUWING: Download '%s' afgebroken vanwege rating (%s)"
 
 #: sabnzbd/assembler.py

@@ -1,11 +1,11 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2011-2020 The SABnzbd-Team
 #   team@sabnzbd.org
-# 
+#
 # Translators:
 # N S <reloxx@interia.pl>, 2020
 # Safihre <safihre@sabnzbd.org>, 2020
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.1.0-develop\n"
@@ -235,7 +235,7 @@ msgstr "Schwerer Fehler im Assembler"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 "ACHTUNG: \"%s\" wurde angehalten, da es ein verschlüsseltes RAR Archiv "
@@ -244,7 +244,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
 "passwords were tried)"
 msgstr ""
 "ACHTUNG: \"%s\" wurde abgebrochen, da es ein verschlüsseltes RAR Archiv "
@@ -256,7 +256,7 @@ msgstr "Abgebrochen, Verschlüsselung vorhanden"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
 "WARNUNG: Unerwünschter Typ \"%s\" in RAR Datei. Unerwünschte Datei ist %s "
 
@@ -270,12 +270,12 @@ msgstr "Abgebrochen, unerwünschte Dateieindung gefunden"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
+msgid "Paused job \"%s\" because of rating (%s)"
 msgstr "WARNUNG: Aufgabe \"%s\" aufgrund der Bewertung (%s) pausiert."
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
+msgid "Aborted job \"%s\" because of rating (%s)"
 msgstr "Warnung: Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
 
 #: sabnzbd/assembler.py
