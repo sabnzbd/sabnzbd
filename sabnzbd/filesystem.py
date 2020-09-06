@@ -197,6 +197,9 @@ def sanitize_foldername(name):
     if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
 
+    if len(name) >= sabnzbd.cfg.max_foldername_length():
+        name = name[: sabnzbd.cfg.max_foldername_length()]
+
     # And finally, make sure it doesn't end in a dot
     if name != "." and name != "..":
         name = name.rstrip(".")

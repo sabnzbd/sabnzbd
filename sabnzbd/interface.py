@@ -1368,6 +1368,7 @@ SPECIAL_VALUE_LIST = (
     "max_url_retries",
     "req_completion_rate",
     "wait_ext_drive",
+    "max_foldername_length",
     "show_sysload",
     "url_base",
     "direct_unpack_threads",

@@ -45,6 +45,7 @@ from sabnzbd.constants import (
     DEF_NZBBACK_DIR,
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
+    DEF_FOLDER_MAX,
 )
 
 ##############################################################################
@@ -289,6 +290,7 @@ size_limit = OptionStr("misc", "size_limit", "0")
 show_sysload = OptionNumber("misc", "show_sysload", 2, 0, 2)
 history_limit = OptionNumber("misc", "history_limit", 10, 0)
 wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, 1, 60)
+max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, 20, 65000)
 marker_file = OptionStr("misc", "nomedia_marker", "")
 ipv6_servers = OptionNumber("misc", "ipv6_servers", 1, 0, 2)
 url_base = OptionStr("misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash)

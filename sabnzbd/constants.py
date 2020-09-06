@@ -37,6 +37,10 @@ QNFO = namedtuple("QNFO", "bytes bytes_left bytes_left_previous_page list q_size
 
 ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 
+# Leave some space for "_UNPACK_" which we append during post-proc
+# Or, when extra ".1", ".2" etc. are added for identically named jobs
+DEF_FOLDER_MAX = 256 - 10
+
 GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
