@@ -831,6 +831,11 @@ class NzbObject(TryList):
         else:
             accept = 1
 
+        # Pause if requested by the NZB-adding or the pre-queue script
+        if self.priority == PAUSED_PRIORITY:
+            self.pause()
+            self.priority = NORMAL_PRIORITY
+
         # Pause job when above size limit
         limit = cfg.size_limit.get_int()
         if not reuse and abs(limit) > 0.5 and self.bytes > limit:
@@ -883,10 +888,6 @@ class NzbObject(TryList):
                     logging.debug("Unwanted extension ... aborting")
                     self.fail_msg = T("Aborted, unwanted extension detected")
                     accept = 2
-
-        if self.priority == PAUSED_PRIORITY:
-            self.pause()
-            self.priority = NORMAL_PRIORITY
 
         if reuse:
             self.check_existing_files(work_dir)
