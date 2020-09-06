@@ -20,7 +20,6 @@ sabnzbd.nzbstuff - misc
 """
 
 import os
-import pickle
 import time
 import re
 import logging
@@ -892,10 +891,8 @@ class NzbObject(TryList):
         if reuse:
             self.check_existing_files(work_dir)
 
-        if cfg.auto_sort():
-            self.files.sort(key=functools.cmp_to_key(nzf_cmp_date))
-        else:
-            self.files.sort(key=functools.cmp_to_key(nzf_cmp_name))
+        # Sort the files in the queue
+        self.sort_nzfs()
 
         # Copy meta fields to nzo_info, if not already set
         for kw in self.meta:
@@ -939,24 +936,20 @@ class NzbObject(TryList):
         return not bool(self.files)
 
     def sort_nzfs(self):
-        """Sort the files in the NZO, respecting
-        date sorting and unwanted extensions
+        """Sort the files in the NZO based on name and type
+        and then optimize for unwanted extensions search.
         """
-        if cfg.auto_sort():
-            self.files.sort(key=functools.cmp_to_key(nzf_cmp_date))
-        else:
-            self.files.sort(key=functools.cmp_to_key(nzf_cmp_name))
+        self.files.sort(key=functools.cmp_to_key(nzf_cmp_name))
 
         # In the hunt for Unwanted Extensions:
         # The file with the unwanted extension often is in the first or the last rar file
         # So put the last rar immediately after the first rar file so that it gets detected early
-        if cfg.unwanted_extensions() and not cfg.auto_sort():
+        if cfg.unwanted_extensions():
             # ... only useful if there are unwanted extensions defined and there is no sorting on date
             logging.debug("Unwanted Extension: putting last rar after first rar")
-            nzfposcounter = firstrarpos = lastrarpos = 0
-            for nzf in self.files:
-                nzfposcounter += 1
-                if ".rar" in str(nzf):
+            firstrarpos = lastrarpos = 0
+            for nzfposcounter, nzf in enumerate(self.files):
+                if RE_RAR.search(nzf.filename.lower()):
                     # a NZF found with '.rar' in the name
                     if firstrarpos == 0:
                         # this is the first .rar found, so remember this position
@@ -967,10 +960,11 @@ class NzbObject(TryList):
             if firstrarpos != lastrarpos:
                 # at least two different .rar's found
                 logging.debug("Unwanted Extension: First rar at %s, Last rar at %s", firstrarpos, lastrarpos)
-                logging.debug("Unwanted Extension: Last rar is %s", str(lastrarnzf))
+                logging.debug("Unwanted Extension: Last rar is %s", lastrarnzf.filename)
                 try:
-                    self.files.remove(lastrarnzf)  # first remove. NB: remove() does searches for lastrarnzf
-                    self.files.insert(firstrarpos, lastrarnzf)  # ... and only then add after position firstrarpos
+                    # Remove and add it back after the position of the first rar
+                    self.files.remove(lastrarnzf)
+                    self.files.insert(firstrarpos + 1, lastrarnzf)
                 except:
                     logging.debug("The lastrar swap did not go well")
 
@@ -2041,39 +2035,20 @@ class NzbObject(TryList):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)
 
 
-def nzf_get_filename(nzf):
-    """Return filename, if the filename not set, try the
-    the full subject line instead. Can produce non-ideal results
-    """
-    name = nzf.filename
-    if not name:
-        name = nzf.subject
-    if not name:
-        name = ""
-    return name.lower()
-
-
-def nzf_cmp_date(nzf1, nzf2):
-    """Compare files based on date, but give vol-par files preference.
-    Wrapper needed, because `cmp` function doesn't handle extra parms.
-    """
-    return nzf_cmp_name(nzf1, nzf2, name=False)
-
-
-def nzf_cmp_name(nzf1, nzf2, name=True):
+def nzf_cmp_name(nzf1, nzf2):
     # The comparison will sort .par2 files to the top of the queue followed by .rar files,
     # they will then be sorted by name.
-    name1 = nzf_get_filename(nzf1)
-    name2 = nzf_get_filename(nzf2)
+    nzf1_name = nzf1.filename.lower()
+    nzf2_name = nzf2.filename.lower()
 
     # Determine vol-pars
-    is_par1 = ".vol" in name1 and ".par2" in name1
-    is_par2 = ".vol" in name2 and ".par2" in name2
+    is_par1 = ".vol" in nzf1_name and ".par2" in nzf1_name
+    is_par2 = ".vol" in nzf2_name and ".par2" in nzf2_name
 
     # mini-par2 in front
-    if not is_par1 and name1.endswith(".par2"):
+    if not is_par1 and nzf1_name.endswith(".par2"):
         return -1
-    if not is_par2 and name2.endswith(".par2"):
+    if not is_par2 and nzf2_name.endswith(".par2"):
         return 1
 
     # vol-pars go to the back
@@ -2082,23 +2057,19 @@ def nzf_cmp_name(nzf1, nzf2, name=True):
     if is_par2 and not is_par1:
         return -1
 
-    if name:
-        # Prioritize .rar files above any other type of file (other than vol-par)
-        m1 = RE_RAR.search(name1)
-        m2 = RE_RAR.search(name2)
-        if m1 and not (is_par2 or m2):
-            return -1
-        elif m2 and not (is_par1 or m1):
-            return 1
-        # Force .rar to come before 'r00'
-        if m1 and m1.group(1) == ".rar":
-            name1 = name1.replace(".rar", ".r//")
-        if m2 and m2.group(1) == ".rar":
-            name2 = name2.replace(".rar", ".r//")
-        return cmp(name1, name2)
-    else:
-        # Do date comparison
-        return cmp(nzf1.date, nzf2.date)
+    # Prioritize .rar files above any other type of file (other than vol-par)
+    m1 = RE_RAR.search(nzf1_name)
+    m2 = RE_RAR.search(nzf2_name)
+    if m1 and not (is_par2 or m2):
+        return -1
+    elif m2 and not (is_par1 or m1):
+        return 1
+    # Force .rar to come before 'r00'
+    if m1 and m1.group(1) == ".rar":
+        nzf1_name = nzf1_name.replace(".rar", ".r//")
+    if m2 and m2.group(1) == ".rar":
+        nzf2_name = nzf2_name.replace(".rar", ".r//")
+    return cmp(nzf1_name, nzf2_name)
 
 
 def create_work_name(name):
