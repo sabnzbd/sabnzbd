@@ -1,11 +1,11 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2011-2020 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
 # ION, 2020
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.1.0-develop\n"
@@ -224,20 +224,16 @@ msgstr "Assembler-שגיאה חמורה ב"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"Paused job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
+"were tried)"
 msgstr ""
-"(מוצפן (במקרה שסופקה, כל הסיסמאות נוסו RAR בגלל קובץ \"%s\" אזהרה: השהה את "
-"העבודה"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
+" were tried)"
 msgstr ""
-"(מוצפן (במקרה שסופקה, כל הסיסמאות נוסו RAR בגלל קובץ \"%s\" אזהרה: ביטל את "
-"העבודה"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -246,7 +242,7 @@ msgstr "בוטל, הצפנה התגלתה"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr "%s קובץ בלתי רצוי הוא .RAR סיומת בלתי רצויה בקובץ \"%s\"-אזהרה: ב "
+msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -259,12 +255,12 @@ msgstr "בוטל, סיומת בלתי רצויה התגלתה"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "(%s) בגלל דירוג \"%s\" אזהרה: עבודה מושהת"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "(%s) בגלל דירוג \"%s\" אזהרה: עבודה בוטלה"
+msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"

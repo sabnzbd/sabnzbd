@@ -1,10 +1,10 @@
 # SABnzbd Translation Template file MAIN
 # Copyright 2011-2020 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.1.0-develop\n"
@@ -229,15 +229,15 @@ msgstr "Vakava virhe kohteessa Assembler"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"Paused job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
+"were tried)"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
+" were tried)"
 msgstr ""
 
 #: sabnzbd/assembler.py
@@ -248,8 +248,6 @@ msgstr "Peruutettu, salattu arkisto tunnistettu"
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
-"Varoitus: Latauksessa \"%s\" ei toivottu tiedostopääte RAR arkistossa. Ei "
-"toivottu tiedosto on %s "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -262,12 +260,12 @@ msgstr "Peruutettu, ei toivottu tiedostopääte havaittu"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr "VAROITUS : Keskeytetty lataus \"%s\", koska luokituksena (%s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr "VAROITUS : Peruutettiin lataus \"%s\", koska luokituksena on (%s)"
+msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
