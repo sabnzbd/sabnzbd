@@ -233,6 +233,8 @@ msgid ""
 "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
 "were tried)"
 msgstr ""
+"Download \"%s\" is gepauzeerd vanwege een versleuteld RAR bestand (indien "
+"aanwezig, zijn alle wachtwoorden geprobeerd)"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -240,6 +242,8 @@ msgid ""
 "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
 " were tried)"
 msgstr ""
+"Download \"%s\" is afgebroken vanwege een versleuteld RAR bestand (indien "
+"aanwezig, zijn alle wachtwoorden geprobeerd)."
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -248,7 +252,7 @@ msgstr "Afgebroken, versleuteling ontdekt"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr ""
+msgstr "Ongewenste extensie ontdekt in \"%s\". Het ongewenste bestand is \"%s\" "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -261,12 +265,12 @@ msgstr "Afgebroken, ongewenste extensie ontdekt"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Download '%s' gepauzeerd vanwege rating (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Download '%s' afgebroken vanwege rating (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
@@ -3082,7 +3086,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "History Retention"
-msgstr "Geschiedenis Bewaren"
+msgstr "Geschiedenis bewaren"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3521,7 +3525,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "On failure, try alternative NZB"
-msgstr "Bij mislukking: probeer alternatieve NZB"
+msgstr "Bij mislukte download: probeer alternatieve NZB"
 
 #: sabnzbd/skintext.py
 msgid "Some servers provide an alternative NZB when a download fails."
@@ -3673,13 +3677,16 @@ msgstr "Verwijderen na download"
 
 #: sabnzbd/skintext.py
 msgid "Deobfuscate final filenames"
-msgstr ""
+msgstr "Verbeter bestandsnamen van voltooide downloads"
 
 #: sabnzbd/skintext.py
 msgid ""
 "If filenames of (large) files in the final folder look obfuscated or "
 "meaningless they will be renamed to the job name."
 msgstr ""
+"Als bestandsnamen van (grote) bestanden na een voltooide download onlogisch "
+"of verhaspelt lijken (obfuscated), worden ze vervangen door de naam van de "
+"download."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"

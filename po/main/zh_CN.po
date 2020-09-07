@@ -223,14 +223,14 @@ msgstr "Assembler 出现致命错误"
 msgid ""
 "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
 "were tried)"
-msgstr ""
+msgstr "\"%s\" 任务已暂停，因其包含加密 RAR 文件 (已尝试所有的密码，如果提供了的话)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
 "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
 " were tried)"
-msgstr ""
+msgstr "\"%s\" 任务已终止，因其包含加密 RAR 文件 (已尝试所有的密码，如果提供了的话)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -239,7 +239,7 @@ msgstr "已中止，发现加密文件"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr ""
+msgstr "RAR 文件“%s”中出现不需要的扩展名。不需要的文件名为 %s "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -252,12 +252,12 @@ msgstr "已中止，侦测到不需要的扩展名"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "任务“%s”已暂停，由于评分过低 (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "任务“%s”已中止，由于评分过低 (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"

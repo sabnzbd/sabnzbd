@@ -238,6 +238,8 @@ msgid ""
 "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
 "were tried)"
 msgstr ""
+"\"%s\" wurde angehalten, da es ein verschlüsseltes RAR Archiv enthält (falls"
+" unterstützt, wurden alle Passwörter ausprobiert)"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -245,6 +247,8 @@ msgid ""
 "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
 " were tried)"
 msgstr ""
+" \"%s\" wurde abgebrochen, da es ein verschlüsseltes RAR Archiv enthält "
+"(falls unterstützt, wurden alle Passwörter ausprobiert)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -253,7 +257,7 @@ msgstr "Abgebrochen, Verschlüsselung vorhanden"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr ""
+msgstr "Unerwünschter Typ \"%s\" in RAR Datei. Unerwünschte Datei ist %s "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -266,12 +270,12 @@ msgstr "Abgebrochen, unerwünschte Dateieindung gefunden"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Aufgabe \"%s\" aufgrund der Bewertung (%s) pausiert."
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"

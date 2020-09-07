@@ -3,14 +3,14 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
 # Ester Molla Aragones <moarages@gmail.com>, 2020
+# Safihre <safihre@sabnzbd.org>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Ester Molla Aragones <moarages@gmail.com>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/sabnzbd/teams/111101/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -237,6 +237,8 @@ msgid ""
 "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
 "were tried)"
 msgstr ""
+"Se ha pausado la tarea \"%s\" debido al archivo codificado RAR (se han "
+"probado todas las contraseñas, si se han suministrado)"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -244,6 +246,8 @@ msgid ""
 "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
 " were tried)"
 msgstr ""
+"Se ha cancelado la tarea \"%s\" debido al archivo codificado RAR (se han "
+"probado todas las contraseñas, si se han suministrado)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -253,6 +257,8 @@ msgstr "Abortado, detectamos cifrados"
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
+"Se ha encontrado una extensión no deseada en el fichero RAR \"%s\". El "
+"fichero no deseado es %s "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -265,12 +271,12 @@ msgstr "Se interrumpió la acción porque se detectó una extensión no deseada"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Se ha pausado el trabajo \"%s\" debido a su puntuación (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Se ha abortado el trabajo \"%s\" debido a su puntuación (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"

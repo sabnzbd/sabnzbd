@@ -3,14 +3,14 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
 # Fred L <88com88@gmail.com>, 2020
+# Safihre <safihre@sabnzbd.org>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Fred L <88com88@gmail.com>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -240,6 +240,8 @@ msgid ""
 "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
 "were tried)"
 msgstr ""
+"La tâche \"%s\" a été mise en pause à cause d'un fichier RAR chiffré (tous "
+"les mots de passe fournis ont été essayés)"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -247,6 +249,8 @@ msgid ""
 "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
 " were tried)"
 msgstr ""
+"La tâche \"%s\" a été abandonnée à cause d'un fichier RAR chiffré (tous les "
+"mots de passe fournis ont été essayés)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -256,6 +260,8 @@ msgstr "Interrompu, cryptage détecté"
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
+"Le fichier RAR \"%s\" contient une extension indésirable. Le fichier "
+"indésirable est %s "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -268,12 +274,12 @@ msgstr "Interrompu, extension indésirable détectée"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Tâche \"%s\" mise en pause à cause du classement (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Tâche \"%s\" annulée à cause du classement (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"

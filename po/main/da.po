@@ -231,6 +231,8 @@ msgid ""
 "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
 "were tried)"
 msgstr ""
+"Pauset job \"%s\" på grund af krypterede RAR fil (hvis oplyst, alle "
+"adgangskoder blev forsøgt)"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -238,6 +240,8 @@ msgid ""
 "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
 " were tried)"
 msgstr ""
+"Afbrudt job \"%s\" på grund af krypterede RAR fil (hvis oplyst, alle "
+"adgangskoder blev forsøgt)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -246,7 +250,7 @@ msgstr "Afbrudt, kryptering registreret"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr ""
+msgstr "I \"%s\" uønsket extension i RAR fil. Uønsket fil er \"%s\" "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -259,12 +263,12 @@ msgstr "Afbrudt, uønsket extension fundet"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Pause job \"%s\" på grund af rating (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Afbrudt job \"%s\" på grund af rating (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
