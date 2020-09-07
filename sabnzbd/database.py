@@ -342,11 +342,11 @@ class HistoryDB:
         if series and season and episode:
             pattern = "%s/%s/%s" % (series, season, episode)
             res = self.execute(
-                "select count(*) from History WHERE series = ? AND STATUS != ?", (pattern, Status.FAILED)
+                """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (pattern, Status.FAILED)
             )
             if res:
                 try:
-                    total = self.c.fetchone().get("count(*)")
+                    total = self.c.fetchone().get("COUNT(*)")
                 except AttributeError:
                     pass
         return total > 0
@@ -355,12 +355,12 @@ class HistoryDB:
         """ Check whether this name or md5sum is already in History """
         total = 0
         res = self.execute(
-            "select count(*) from History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND md5sum = ? AND STATUS != ?",
+            """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND md5sum = ? AND STATUS != ?""",
             (name, md5sum, Status.FAILED),
         )
         if res:
             try:
-                total = self.c.fetchone().get("count(*)")
+                total = self.c.fetchone().get("COUNT(*)")
             except AttributeError:
                 pass
         return total > 0
@@ -405,7 +405,7 @@ class HistoryDB:
         """ Return decompressed log file """
         data = ""
         t = (nzo_id,)
-        if self.execute("SELECT script_log FROM history WHERE nzo_id = ?", t):
+        if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", t):
             try:
                 data = ubtou(zlib.decompress(self.c.fetchone().get("script_log")))
             except:
@@ -416,7 +416,7 @@ class HistoryDB:
         """ Return name of the job `nzo_id` """
         t = (nzo_id,)
         name = ""
-        if self.execute("SELECT name FROM history WHERE nzo_id = ?", t):
+        if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
             try:
                 name = self.c.fetchone().get("name")
             except AttributeError:
@@ -427,7 +427,7 @@ class HistoryDB:
         """ Return the `incomplete` path of the job `nzo_id` if it is still there """
         t = (nzo_id,)
         path = ""
-        if self.execute("SELECT path FROM history WHERE nzo_id = ?", t):
+        if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
             try:
                 path = self.c.fetchone().get("path")
             except AttributeError:
@@ -439,7 +439,7 @@ class HistoryDB:
     def get_other(self, nzo_id):
         """ Return additional data for job `nzo_id` """
         t = (nzo_id,)
-        if self.execute("SELECT * FROM history WHERE nzo_id = ?", t):
+        if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", t):
             try:
                 items = self.c.fetchone()
                 dtype = items.get("report")
@@ -541,7 +541,7 @@ def unpack_history_info(item):
             logging.error(T("Invalid stage logging in history for %s") + " (\\r\\n)", item["name"])
             logging.debug("Lines: %s", lst)
             lines = []
-        lst = [None for x in STAGES]
+        lst = [None for _ in STAGES]
         for line in lines:
             stage = {}
             try:
