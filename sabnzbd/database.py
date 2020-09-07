@@ -354,7 +354,10 @@ class HistoryDB:
     def have_name_or_md5sum(self, name, md5sum):
         """ Check whether this name or md5sum is already in History """
         total = 0
-        res = self.execute("select count(*) from History WHERE md5sum = ? AND STATUS != ?", (md5sum, Status.FAILED))
+        res = self.execute(
+            "select count(*) from History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND md5sum = ? AND STATUS != ?",
+            (name, md5sum, Status.FAILED),
+        )
         if res:
             try:
                 total = self.c.fetchone().get("count(*)")
