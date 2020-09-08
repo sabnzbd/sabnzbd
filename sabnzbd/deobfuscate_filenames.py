@@ -82,8 +82,8 @@ def entropy(string):
     return entropy
 
 
-def is_probably_obfuscated(myinputfilename):
-    """Returns boolean if filename is probably obfuscated
+def is_probably_obfuscated(myinputfilename) -> object:
+    """Returns boolean if filename is likely obfuscated. Default: True
     myinputfilename can be a plain file name, or a full path"""
 
     # Find filebasename
@@ -97,38 +97,49 @@ def is_probably_obfuscated(myinputfilename):
         return True
 
     # these are signals for the obfuscation versus non-obfuscation
-    capitals = sum(1 for c in filebasename if c.isupper())
-    smallletters = sum(1 for c in filebasename if c.lower())
-    spacesdots = sum(1 for c in filebasename if c == " " or c == ".")
     decimals = sum(1 for c in filebasename if c.isnumeric())
+    upperchars = sum(1 for c in filebasename if c.isupper())
+    lowerchars = sum(1 for c in filebasename if c.islower())
+    spacesdots = sum(1 for c in filebasename if c == " " or c == ".")
 
-    if capitals >= 2 and smallletters >= 2 and spacesdots >= 1:
-        logging.debug("Not obfuscated: capitals >= 2 and smallletters >= 2  and spacesdots >= 1")
+    # Example: "Great Distro"
+    if upperchars >= 2 and lowerchars >= 2 and spacesdots >= 1:
+        logging.debug("Not obfuscated: upperchars >= 2 and lowerchars >= 2  and spacesdots >= 1")
         # useful signs in filebasename, so not obfuscated
         return False
 
-    if spacesdots > 3:
+    # Example: "this is a download"
+    if spacesdots >= 3:
         # useful signs in filebasename, so not obfuscated
-        logging.debug("Not obfuscated: spacesdots > 3")
+        logging.debug("Not obfuscated: spacesdots >= 3")
         return False
 
-    if decimals > 3 and spacesdots > 1:
+    # Example: "Beast 2020"
+    if (upperchars + lowerchars >= 4) and decimals > 3 and spacesdots > 1:
         # useful signs in filebasename, so not obfuscated
-        logging.debug("Not obfuscated: decimals > 3 and spacesdots > 1")
+        logging.debug("Not obfuscated: (upperchars + lowerchars >= 4) and decimals > 3 and spacesdots > 1")
         return False
 
+    # Example: "Catullus", starts with a capital, and most letters are lower case
+    if filebasename[0].isupper() and lowerchars > 2 and upperchars / lowerchars < 0.3:
+        return False
+
+    # Almost last resort
+    """
     # little entropy in the filebasename is a sign of useless names
     if entropy(filebasename) < 3.5:
         logging.debug("Obfuscated: entropy < 3.5")
         return True
+
     # high entropy in the filebasename is a sign of useful name, so not obfuscated
     if entropy(filebasename) > 4.0:
         logging.debug("Not obfuscated: entropy > 4.0")
         return False
+    """
 
-    # If we get here ... let's default to not obfuscated
-    logging.debug("Not obfuscated (default)")
-    return False  # default not obfuscated
+    # If we get here, no trigger for a clear name was found, so let's default to obfuscated
+    logging.debug("Obfuscated (default)")
+    return True  # default not obfuscated
 
 
 def deobfuscate(workingdirectory, usefulname):
