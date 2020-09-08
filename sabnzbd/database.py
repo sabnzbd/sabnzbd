@@ -355,7 +355,7 @@ class HistoryDB:
         """ Check whether this name or md5sum is already in History """
         total = 0
         res = self.execute(
-            """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND md5sum = ? AND STATUS != ?""",
+            """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != ?""",
             (name, md5sum, Status.FAILED),
         )
         if res:
