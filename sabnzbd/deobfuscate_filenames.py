@@ -82,7 +82,7 @@ def entropy(string):
     return entropy
 
 
-def is_probably_obfuscated(myinputfilename) -> object:
+def is_probably_obfuscated(myinputfilename):
     """Returns boolean if filename is likely obfuscated. Default: True
     myinputfilename can be a plain file name, or a full path"""
 
@@ -156,19 +156,19 @@ def deobfuscate(workingdirectory, usefulname):
         # Run par2 from SABnzbd on them
         for par2_file in par2_files:
             # Analyse data and analyse result
-            logging.debug("Deobfuste par2: handling %s", par2_file)
+            logging.debug("Deobfuscate par2: handling %s", par2_file)
             if decode_par2(par2_file):
-                logging.debug("Deobfuste par2 repair/verify finished.")
+                logging.debug("Deobfuscate par2 repair/verify finished.")
                 run_renamer = False
             else:
-                logging.debug("Deobfuste par2 repair/verify did not find anything to rename.")
+                logging.debug("Deobfuscate par2 repair/verify did not find anything to rename.")
 
     # No par2 files? Then we try to rename qualifying files to the job-name
     if run_renamer:
-        logging.debug("Trying to see if there are qualifying files to be deobfusted")
+        logging.debug("Trying to see if there are qualifying files to be deobfuscated")
         for root, dirnames, filenames in os.walk(workingdirectory):
             for filename in filenames:
-                logging.debug("Deobfuste inspecting %s", filename)
+                logging.debug("Deobfuscate inspecting %s", filename)
                 full_path = os.path.join(root, filename)
                 file_size = os.path.getsize(full_path)
                 # Do we need to rename this file?
