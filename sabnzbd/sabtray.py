@@ -113,7 +113,7 @@ class SABTrayThread(SysTrayIconThread):
             else:
                 self.hover_text = self.txt_idle
                 self.icon = self.sabicons["default"]
-
+            self.hover_text = "SABnzbd %s\n%s" % (sabnzbd.__version__, self.hover_text)
             self.refresh_icon()
             self.counter = 0
 

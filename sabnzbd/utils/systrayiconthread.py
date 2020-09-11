@@ -10,13 +10,10 @@ import os
 import pywintypes
 import win32api
 import win32con
+import win32gui
 import win32gui_struct
 import timer
 
-try:
-    import winxpgui as win32gui
-except ImportError:
-    import win32gui
 from threading import Thread
 from time import sleep
 
