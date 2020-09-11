@@ -42,10 +42,8 @@ from sabnzbd.constants import (
     VALID_NZB_FILES,
     Status,
     FORCE_PRIORITY,
-    REPAIR_PRIORITY,
-    HIGH_PRIORITY,
     NORMAL_PRIORITY,
-    LOW_PRIORITY,
+    INTERFACE_PRIORITIES,
     KIBI,
     MEBI,
     GIGI,
@@ -1298,13 +1296,6 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     )
 
     datestart = datetime.datetime.now()
-    priorities = {
-        FORCE_PRIORITY: "Force",
-        REPAIR_PRIORITY: "Repair",
-        HIGH_PRIORITY: "High",
-        NORMAL_PRIORITY: "Normal",
-        LOW_PRIORITY: "Low",
-    }
     limit = int_conv(limit)
     start = int_conv(start)
 
@@ -1335,7 +1326,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot["index"] = n
         slot["nzo_id"] = str(nzo_id)
         slot["unpackopts"] = str(opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
-        slot["priority"] = priorities[priority] if priority >= LOW_PRIORITY else priorities[NORMAL_PRIORITY]
+        slot["priority"] = INTERFACE_PRIORITIES.get(priority, NORMAL_PRIORITY)
         slot["script"] = pnfo.script if pnfo.script else "None"
         slot["filename"] = pnfo.filename
         slot["labels"] = pnfo.labels

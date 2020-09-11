@@ -106,6 +106,14 @@ PAUSED_PRIORITY = -2
 DUP_PRIORITY = -3
 STOP_PRIORITY = -4
 
+INTERFACE_PRIORITIES = {
+    FORCE_PRIORITY: "Force",
+    REPAIR_PRIORITY: "Repair",
+    HIGH_PRIORITY: "High",
+    NORMAL_PRIORITY: "Normal",
+    LOW_PRIORITY: "Low",
+}
+
 STAGES = {"Source": 0, "Download": 1, "Servers": 2, "Repair": 3, "Filejoin": 4, "Unpack": 5, "Script": 6}
 
 VALID_ARCHIVES = (".zip", ".rar", ".7z")
