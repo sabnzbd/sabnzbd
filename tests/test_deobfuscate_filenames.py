@@ -34,10 +34,25 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("599c1c9e2bdfb5114044bf25152b7eaa.mkv")
         assert is_probably_obfuscated("/my/blabla/directory/stuff/599c1c9e2bdfb5114044bf25152b7eaa.mkv")
         assert is_probably_obfuscated("/my/blabla/directory/stuff/afgm.avi")
-
+        assert is_probably_obfuscated("/my/blabla/directory/stuff/afgm2020.avi")
+        assert is_probably_obfuscated("MUGNjK3zi65TtN.mkv")
+        assert is_probably_obfuscated("T306077.avi")
+        assert is_probably_obfuscated("bar10nmbkkjjdfr.mkv")
+        assert is_probably_obfuscated("4rFF-fdtd480p.bin")
+        assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q.bin")
+        assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q")  # no ext
+        assert is_probably_obfuscated("greatdistro.iso")
+        #
         # non-obfuscated names:
-        assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Program S03E04.mkv")
-        assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Movie (2020).mkv")
+        assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Distro S03E04.iso")
+        assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Distro (2020).iso")
+        assert not is_probably_obfuscated("/my/blabla/directory/stuff/GreatDistro2020.iso")
+        assert not is_probably_obfuscated("Catullus.avi")
+        assert not is_probably_obfuscated("Der.Mechaniker.HDRip.XviD-SG.avi")
+        assert not is_probably_obfuscated("Bonjour.1969.FRENCH.BRRiP.XviD.AC3-HuSh.avi")
+        assert not is_probably_obfuscated("Bonjour.1969.avi")
+        assert not is_probably_obfuscated("Lorem Ipsum.avi")
+        assert not is_probably_obfuscated("Lorem Ipsum")  # no ext
 
     def test_deobfuscate(self):
         # Full test: a directory with a non-useful named file in it: Test that deobfuscate() works and renames it
