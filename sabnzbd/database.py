@@ -34,7 +34,7 @@ from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.misc import int_conv, caller_name, opts_to_pp
-from sabnzbd.filesystem import remove_file
+from sabnzbd.filesystem import remove_file, clip_path
 
 DB_LOCK = threading.RLock()
 
@@ -275,9 +275,9 @@ class HistoryDB:
                     save=True,
                 )
 
-    def add_history_db(self, nzo, storage="", path="", postproc_time=0, script_output="", script_line=""):
+    def add_history_db(self, nzo, storage="", postproc_time=0, script_output="", script_line=""):
         """ Add a new job entry to the database """
-        t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line, series_info=True)
+        t = build_history_info(nzo, storage, postproc_time, script_output, script_line, series_info=True)
 
         self.execute(
             """INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
@@ -464,13 +464,9 @@ def dict_factory(cursor, row):
 _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 
 
-def build_history_info(
-    nzo, storage="", downpath="", postproc_time=0, script_output="", script_line="", series_info=False
-):
+def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output="", script_line="", series_info=False):
     """ Collects all the information needed for the database """
     completed = int(time.time())
-    if not downpath:
-        downpath = nzo.downpath
     pp = _PP_LOOKUP.get(opts_to_pp(*nzo.repair_opts), "X")
 
     if script_output:
@@ -510,8 +506,8 @@ def build_history_info(
         nzo.url,
         nzo.status,
         nzo.nzo_id,
-        storage,
-        downpath,
+        clip_path(workdir_complete),
+        clip_path(nzo.downpath),
         script_output,
         script_line,
         download_time,
