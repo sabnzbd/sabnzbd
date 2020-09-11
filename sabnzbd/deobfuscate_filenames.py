@@ -73,15 +73,6 @@ def decode_par2(parfile):
     return result
 
 
-def entropy(string):
-    """ Calculates the Shannon entropy of a string """
-    # get probability of chars in string
-    prob = [float(string.count(c)) / len(string) for c in dict.fromkeys(list(string))]
-    # calculate the entropy
-    entropy = -sum([p * math.log(p) / math.log(2.0) for p in prob])
-    return entropy
-
-
 def is_probably_obfuscated(myinputfilename):
     """Returns boolean if filename is likely obfuscated. Default: True
     myinputfilename can be a plain file name, or a full path"""
@@ -105,37 +96,22 @@ def is_probably_obfuscated(myinputfilename):
     # Example: "Great Distro"
     if upperchars >= 2 and lowerchars >= 2 and spacesdots >= 1:
         logging.debug("Not obfuscated: upperchars >= 2 and lowerchars >= 2  and spacesdots >= 1")
-        # useful signs in filebasename, so not obfuscated
         return False
 
     # Example: "this is a download"
     if spacesdots >= 3:
-        # useful signs in filebasename, so not obfuscated
         logging.debug("Not obfuscated: spacesdots >= 3")
         return False
 
     # Example: "Beast 2020"
-    if (upperchars + lowerchars >= 4) and decimals > 3 and spacesdots > 1:
-        # useful signs in filebasename, so not obfuscated
+    if (upperchars + lowerchars >= 4) and decimals > 3 and spacesdots >= 1:
         logging.debug("Not obfuscated: (upperchars + lowerchars >= 4) and decimals > 3 and spacesdots > 1")
         return False
 
     # Example: "Catullus", starts with a capital, and most letters are lower case
-    if filebasename[0].isupper() and lowerchars > 2 and upperchars / lowerchars < 0.3:
+    if filebasename[0].isupper() and lowerchars > 2 and upperchars / lowerchars <= 0.25:
+        logging.debug("Not obfuscated: starts with a capital, and most letters are lower case")
         return False
-
-    # Almost last resort
-    """
-    # little entropy in the filebasename is a sign of useless names
-    if entropy(filebasename) < 3.5:
-        logging.debug("Obfuscated: entropy < 3.5")
-        return True
-
-    # high entropy in the filebasename is a sign of useful name, so not obfuscated
-    if entropy(filebasename) > 4.0:
-        logging.debug("Not obfuscated: entropy > 4.0")
-        return False
-    """
 
     # If we get here, no trigger for a clear name was found, so let's default to obfuscated
     logging.debug("Obfuscated (default)")

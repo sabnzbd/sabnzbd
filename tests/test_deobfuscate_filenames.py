@@ -41,6 +41,7 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("4rFF-fdtd480p.bin")
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q.bin")
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q")  # no ext
+        assert is_probably_obfuscated("greatdistro.iso")
         #
         # non-obfuscated names:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Distro S03E04.iso")
@@ -49,6 +50,7 @@ class TestDeobfuscateFinalResult:
         assert not is_probably_obfuscated("Catullus.avi")
         assert not is_probably_obfuscated("Der.Mechaniker.HDRip.XviD-SG.avi")
         assert not is_probably_obfuscated("Bonjour.1969.FRENCH.BRRiP.XviD.AC3-HuSh.avi")
+        assert not is_probably_obfuscated("Bonjour.1969.avi")
         assert not is_probably_obfuscated("Lorem Ipsum.avi")
         assert not is_probably_obfuscated("Lorem Ipsum")  # no ext
 
