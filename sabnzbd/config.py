@@ -25,6 +25,7 @@ import re
 import shutil
 import threading
 import uuid
+from typing import List, Dict, Union
 from urllib.parse import urlparse
 
 import configobj
@@ -912,7 +913,7 @@ def define_categories():
         pass
 
 
-def get_categories(cat=0):
+def get_categories() -> Dict[str, ConfigCat]:
     """Return link to categories section.
     This section will always contain special category '*'
     When 'cat' is given, a link to that category or to '*' is returned
@@ -933,15 +934,19 @@ def get_categories(cat=0):
 
         # Save config for future use
         save_config(True)
-    if not isinstance(cat, int):
-        try:
-            cats = cats[cat]
-        except KeyError:
-            cats = cats["*"]
     return cats
 
 
-def get_ordered_categories():
+def get_category(cat: str = "*") -> ConfigCat:
+    """Get one specific category or if not found the default one"""
+    cats = get_categories()
+    try:
+        return cats[cat]
+    except KeyError:
+        return cats["*"]
+
+
+def get_ordered_categories() -> List[Dict]:
     """Return list-copy of categories section that's ordered
     by user's ordering including Default-category
     """

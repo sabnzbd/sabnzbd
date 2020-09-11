@@ -29,6 +29,7 @@ import time
 import fnmatch
 import stat
 import zipfile
+from typing import Union, List, Tuple, Any, Dict
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -37,7 +38,7 @@ from sabnzbd.encoding import correct_unknown_encoding
 from sabnzbd.utils import rarfile
 
 
-def get_ext(filename):
+def get_ext(filename: str) -> str:
     """ Return lowercased file extension """
     try:
         return os.path.splitext(filename)[1].lower()
@@ -45,7 +46,7 @@ def get_ext(filename):
         return ""
 
 
-def get_filename(path):
+def get_filename(path: str) -> str:
     """ Return path without the file extension """
     try:
         return os.path.split(path)[1]
@@ -53,12 +54,12 @@ def get_filename(path):
         return ""
 
 
-def setname_from_path(path):
+def setname_from_path(path: str) -> str:
     """ Get the setname from a path """
     return os.path.splitext(os.path.basename(path))[0]
 
 
-def is_writable(path):
+def is_writable(path: str) -> bool:
     """ Return True is file is writable (also when non-existent) """
     if os.path.isfile(path):
         return bool(os.stat(path).st_mode & stat.S_IWUSR)
@@ -92,7 +93,7 @@ _DEVICES = (
 )
 
 
-def replace_win_devices(name):
+def replace_win_devices(name: str) -> str:
     """Remove reserved Windows device names from a name.
     aux.txt ==> _aux.txt
     txt.aux ==> txt.aux
@@ -111,13 +112,13 @@ def replace_win_devices(name):
     return name
 
 
-def has_win_device(p):
+def has_win_device(filename: str) -> bool:
     """Return True if filename part contains forbidden name
     Before and after sanitizing
     """
-    p = os.path.split(p)[1].lower()
+    filename = os.path.split(filename)[1].lower()
     for dev in _DEVICES:
-        if p == dev or p.startswith(dev + ".") or p.startswith("_" + dev + "."):
+        if filename == dev or filename.startswith(dev + ".") or filename.startswith("_" + dev + "."):
             return True
     return False
 
@@ -128,7 +129,7 @@ CH_ILLEGAL_WIN = '\\/<>?*|"\t:'
 CH_LEGAL_WIN = "++{}!@#'+-"
 
 
-def sanitize_filename(name):
+def sanitize_filename(name: str) -> str:
     """Return filename with illegal chars converted to legal ones
     and with the par2 extension always in lowercase
     """
@@ -167,7 +168,7 @@ def sanitize_filename(name):
     return name + ext
 
 
-def sanitize_foldername(name):
+def sanitize_foldername(name: str) -> str:
     """Return foldername with dodgy chars converted to safe ones
     Remove any leading and trailing dot and space characters
     """
@@ -209,7 +210,7 @@ def sanitize_foldername(name):
     return name
 
 
-def sanitize_and_trim_path(path):
+def sanitize_and_trim_path(path: str) -> str:
     """ Remove illegal characters and trim element size """
     path = path.strip()
     new_path = ""
@@ -252,14 +253,14 @@ def sanitize_files_in_folder(folder):
     return lst
 
 
-def is_obfuscated_filename(filename):
+def is_obfuscated_filename(filename: str) -> bool:
     """Check if this file has an extension, if not, it's
     probably obfuscated and we don't use it
     """
     return len(get_ext(filename)) < 2
 
 
-def real_path(loc, path):
+def real_path(loc: str, path: str) -> str:
     """When 'path' is relative, return normalized join of 'loc' and 'path'
     When 'path' is absolute, return normalized path
     A path starting with ~ will be located in the user's Home folder
@@ -296,7 +297,9 @@ def real_path(loc, path):
     return long_path(os.path.normpath(os.path.abspath(path)))
 
 
-def create_real_path(name, loc, path, umask=False, writable=True):
+def create_real_path(
+    name: str, loc: str, path: str, umask: bool = False, writable: bool = True
+) -> Tuple[bool, str, Union[str, None]]:
     """When 'path' is relative, create join of 'loc' and 'path'
     When 'path' is absolute, create normalized path
     'name' is used for logging.
@@ -324,7 +327,7 @@ def create_real_path(name, loc, path, umask=False, writable=True):
         return False, path, None
 
 
-def same_file(a, b):
+def same_file(a: str, b: str) -> int:
     """Return 0 if A and B have nothing in common
     return 1 if A and B are actually the same path
     return 2 if B is a subfolder of A
@@ -353,7 +356,7 @@ def same_file(a, b):
             return is_subfolder
 
 
-def is_archive(path):
+def is_archive(path: str) -> Tuple[int, Any, str]:
     """Check if file in path is an ZIP, RAR or 7z file
     :param path: path to file
     :return: (zf, status, expected_extension)
@@ -387,7 +390,7 @@ def is_archive(path):
         return 1, None, ""
 
 
-def check_mount(path):
+def check_mount(path: str) -> bool:
     """Return False if volume isn't mounted on Linux or macOS
     Retry 6 times with an interval of 1 sec.
     """
@@ -407,7 +410,7 @@ def check_mount(path):
     return not m
 
 
-def safe_fnmatch(f, pattern):
+def safe_fnmatch(f: str, pattern: str) -> bool:
     """fnmatch will fail if the pattern contains any of it's
     key characters, like [, ] or !.
     """
@@ -417,7 +420,7 @@ def safe_fnmatch(f, pattern):
         return False
 
 
-def globber(path, pattern="*"):
+def globber(path: str, pattern: str = "*") -> List[str]:
     """ Return matching base file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
@@ -425,7 +428,7 @@ def globber(path, pattern="*"):
     return []
 
 
-def globber_full(path, pattern="*"):
+def globber_full(path: str, pattern: str = "*") -> List[str]:
     """ Return matching full file/folder names in folder `path` """
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
@@ -433,7 +436,7 @@ def globber_full(path, pattern="*"):
     return []
 
 
-def trim_win_path(path):
+def trim_win_path(path: str) -> str:
     """ Make sure Windows path stays below 70 by trimming last part """
     if sabnzbd.WIN32 and len(path) > 69:
         path, folder = os.path.split(path)
@@ -444,7 +447,7 @@ def trim_win_path(path):
     return path
 
 
-def fix_unix_encoding(folder):
+def fix_unix_encoding(folder: str):
     """Fix bad name encoding for Unix systems
     This happens for example when files are created
     on Windows but unpacked/repaired on linux
@@ -460,7 +463,7 @@ def fix_unix_encoding(folder):
                         logging.info("Cannot correct name of %s", os.path.join(root, name))
 
 
-def make_script_path(script):
+def make_script_path(script: str) -> Union[str, None]:
     """ Return full script path, if any valid script exists, else None """
     script_path = None
     script_dir = sabnzbd.cfg.script_dir.get_path()
@@ -475,7 +478,7 @@ def make_script_path(script):
     return script_path
 
 
-def get_admin_path(name, future):
+def get_admin_path(name: str, future: bool):
     """Return news-style full path to job-admin folder of names job
     or else the old cache path
     """
@@ -485,7 +488,7 @@ def get_admin_path(name, future):
         return os.path.join(os.path.join(sabnzbd.cfg.download_dir.get_path(), name), JOB_ADMIN)
 
 
-def set_chmod(path, permissions, report):
+def set_chmod(path: str, permissions: int, report: bool):
     """ Set 'permissions' on 'path', report any errors when 'report' is True """
     try:
         logging.debug("Applying permissions %s (octal) to %s", oct(permissions), path)
@@ -497,7 +500,7 @@ def set_chmod(path, permissions, report):
             logging.info("Traceback: ", exc_info=True)
 
 
-def set_permissions(path, recursive=True):
+def set_permissions(path: str, recursive: bool = True):
     """ Give folder tree and its files their proper permissions """
     if not sabnzbd.WIN32:
         umask = sabnzbd.cfg.umask()
@@ -528,7 +531,7 @@ def set_permissions(path, recursive=True):
             set_chmod(path, umask_file, report)
 
 
-def userxbit(filename):
+def userxbit(filename: str) -> bool:
     """Returns boolean if the x-bit for user is set on the given file.
     This is a workaround: os.access(filename, os.X_OK) does not work
     on certain mounted file systems. Does not work at all on Windows.
@@ -542,14 +545,14 @@ def userxbit(filename):
     return xbitset
 
 
-def clip_path(path):
+def clip_path(path: str) -> str:
     r""" Remove \\?\ or \\?\UNC\ prefix from Windows path """
     if sabnzbd.WIN32 and path and "?" in path:
         path = path.replace("\\\\?\\UNC\\", "\\\\", 1).replace("\\\\?\\", "", 1)
     return path
 
 
-def long_path(path):
+def long_path(path: str) -> str:
     """ For Windows, convert to long style path; others, return same path """
     if sabnzbd.WIN32 and path and not path.startswith("\\\\?\\"):
         if path.startswith("\\\\"):
@@ -568,7 +571,7 @@ DIR_LOCK = threading.RLock()
 
 
 @synchronized(DIR_LOCK)
-def create_all_dirs(path, apply_umask=False):
+def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
     """Create all required path elements and set umask on all
     The umask argument is ignored on Windows
     Return path if elements could be made or exists
@@ -606,7 +609,7 @@ def create_all_dirs(path, apply_umask=False):
 
 
 @synchronized(DIR_LOCK)
-def get_unique_path(dirpath, n=0, create_dir=True):
+def get_unique_path(dirpath: str, n: int = 0, create_dir: bool = True) -> str:
     """ Determine a unique folder or filename """
 
     if not check_mount(dirpath):
@@ -626,7 +629,7 @@ def get_unique_path(dirpath, n=0, create_dir=True):
 
 
 @synchronized(DIR_LOCK)
-def get_unique_filename(path):
+def get_unique_filename(path: str) -> str:
     """Check if path is unique.
     If not, add number like: "/path/name.NUM.ext".
     """
@@ -641,7 +644,7 @@ def get_unique_filename(path):
 
 
 @synchronized(DIR_LOCK)
-def listdir_full(input_dir, recursive=True):
+def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
     """ List all files in dirs and sub-dirs """
     filelist = []
     for root, dirs, files in os.walk(input_dir):
@@ -655,7 +658,7 @@ def listdir_full(input_dir, recursive=True):
 
 
 @synchronized(DIR_LOCK)
-def move_to_path(path, new_path):
+def move_to_path(path: str, new_path: str) -> Tuple[bool, Union[str, None]]:
     """Move a file to a new path, optionally give unique filename
     Return (ok, new_path)
     """
@@ -695,7 +698,7 @@ def move_to_path(path, new_path):
 
 
 @synchronized(DIR_LOCK)
-def cleanup_empty_directories(path):
+def cleanup_empty_directories(path: str):
     """ Remove all empty folders inside (and including) 'path' """
     path = os.path.normpath(path)
     while 1:
@@ -719,7 +722,7 @@ def cleanup_empty_directories(path):
 
 
 @synchronized(DIR_LOCK)
-def get_filepath(path, nzo, filename):
+def get_filepath(path: str, nzo, filename: str):
     """ Create unique filepath """
     # This procedure is only used by the Assembler thread
     # It does no umask setting
@@ -756,7 +759,7 @@ def get_filepath(path, nzo, filename):
 
 
 @synchronized(DIR_LOCK)
-def renamer(old, new):
+def renamer(old: str, new: str):
     """ Rename file/folder with retries for Win32 """
     # Sanitize last part of new name
     path, name = os.path.split(new)
@@ -799,14 +802,14 @@ def renamer(old, new):
         shutil.move(old, new)
 
 
-def remove_file(path):
+def remove_file(path: str):
     """ Wrapper function so any file removal is logged """
     logging.debug("[%s] Deleting file %s", sabnzbd.misc.caller_name(), path)
     os.remove(path)
 
 
 @synchronized(DIR_LOCK)
-def remove_dir(path):
+def remove_dir(path: str):
     """ Remove directory with retries for Win32 """
     logging.debug("[%s] Removing dir %s", sabnzbd.misc.caller_name(), path)
     if sabnzbd.WIN32:
@@ -829,7 +832,7 @@ def remove_dir(path):
 
 
 @synchronized(DIR_LOCK)
-def remove_all(path, pattern="*", keep_folder=False, recursive=False):
+def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursive: bool = False):
     """ Remove folder and all its content (optionally recursive) """
     if path and os.path.exists(path):
         # Fast-remove the whole tree if recursive
@@ -863,7 +866,7 @@ def remove_all(path, pattern="*", keep_folder=False, recursive=False):
 ##############################################################################
 # Diskfree
 ##############################################################################
-def find_dir(p):
+def find_dir(p: str) -> str:
     """ Return first folder level that exists in this path """
     x = "x"
     while x and not os.path.exists(p):
@@ -879,7 +882,7 @@ if sabnzbd.WIN32:
     except:
         pass
 
-    def diskspace_base(_dir):
+    def diskspace_base(_dir: str) -> Tuple[float, float]:
         """ Return amount of free and used diskspace in GBytes """
         _dir = find_dir(_dir)
         try:
@@ -893,7 +896,7 @@ else:
     try:
         os.statvfs
         # posix diskfree
-        def diskspace_base(_dir):
+        def diskspace_base(_dir: str) -> Tuple[float, float]:
             """ Return amount of free and used diskspace in GBytes """
             _dir = find_dir(_dir)
             try:
@@ -912,18 +915,18 @@ else:
 
     except ImportError:
 
-        def diskspace_base(_dir):
+        def diskspace_base(_dir: str) -> Tuple[float, float]:
             return 20.0, 10.0
 
 
 # Store all results to speed things up
 __DIRS_CHECKED = []
 __DISKS_SAME = None
-__LAST_DISK_RESULT = {"download_dir": [], "complete_dir": []}
+__LAST_DISK_RESULT = {"download_dir": (0.0, 0.0), "complete_dir": (0.0, 0.0)}
 __LAST_DISK_CALL = 0
 
 
-def diskspace(force=False):
+def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
     """ Wrapper to cache results """
     global __DIRS_CHECKED, __DISKS_SAME, __LAST_DISK_RESULT, __LAST_DISK_CALL
 

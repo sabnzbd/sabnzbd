@@ -31,6 +31,7 @@ import sys
 import re
 import ssl
 from threading import Lock, Thread
+from typing import Any
 
 ##############################################################################
 # Determine platform flags
@@ -975,7 +976,7 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
     return data
 
 
-def remove_data(_id, path):
+def remove_data(_id: str, path: str):
     """ Remove admin file """
     path = os.path.join(path, _id)
     try:
@@ -985,13 +986,13 @@ def remove_data(_id, path):
         logging.debug("Failed to remove %s", path)
 
 
-def save_admin(data, data_id):
+def save_admin(data: Any, data_id: str):
     """ Save data in admin folder in specified format """
     logging.debug("[%s] Saving data for %s", misc.caller_name(), data_id)
     save_data(data, data_id, cfg.admin_dir.get_path())
 
 
-def load_admin(data_id, remove=False, silent=False):
+def load_admin(data_id: str, remove=False, silent=False) -> Any:
     """ Read data in admin folder in specified format """
     logging.debug("[%s] Loading data for %s", misc.caller_name(), data_id)
     return load_data(data_id, cfg.admin_dir.get_path(), remove=remove, silent=silent)
