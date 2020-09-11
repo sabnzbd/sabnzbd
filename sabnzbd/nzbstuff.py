@@ -27,6 +27,7 @@ import datetime
 import threading
 import functools
 import difflib
+from typing import List, Dict, Any, Union
 
 # SABnzbd modules
 import sabnzbd
@@ -108,7 +109,7 @@ class TryList:
     __slots__ = ("try_list", "fetcher_priority")
 
     def __init__(self):
-        self.try_list = []
+        self.try_list: List[sabnzbd.downloader.Server] = []
         self.fetcher_priority = 0
 
     def server_in_try_list(self, server):
@@ -152,15 +153,15 @@ class Article(TryList):
 
     def __init__(self, article, article_bytes, nzf):
         TryList.__init__(self)
-        self.fetcher = None
-        self.article = article
+        self.fetcher: Union[sabnzbd.downloader.Server, None] = None
+        self.article: str = article
         self.art_id = None
         self.bytes = article_bytes
         self.lowest_partnum = False
         self.tries = 0  # Try count
         self.decoded = False
         self.on_disk = False
-        self.nzf = nzf
+        self.nzf: NzbFile = nzf
 
     def get_article(self, server, servers):
         """ Return article when appropriate for specified server """
@@ -323,7 +324,7 @@ class NzbFile(TryList):
         """ Setup object """
         TryList.__init__(self)
 
-        self.date = date
+        self.date: datetime.datetime = date
         self.subject = subject
         self.type = None
         self.filename = name_extractor(subject)
@@ -337,13 +338,13 @@ class NzbFile(TryList):
         self.setname = None
 
         # Articles are removed from "articles" after being fetched
-        self.articles = []
-        self.decodetable = []
+        self.articles: List[Article] = []
+        self.decodetable: List[Article] = []
 
-        self.bytes = file_bytes
-        self.bytes_left = file_bytes
+        self.bytes: int = file_bytes
+        self.bytes_left: int = file_bytes
 
-        self.nzo = nzo
+        self.nzo: NzbObject = nzo
         self.nzf_id = sabnzbd.get_new_id("nzf", nzo.workpath)
         self.deleted = False
         self.valid = False
@@ -617,6 +618,7 @@ class NzbObject(TryList):
         else:
             r, u, d = pp_to_opts(pp)
 
+        self.priority: int = NORMAL_PRIORITY
         self.set_priority(priority)  # Parse priority of input
         self.repair = r  # True if we want to repair this set
         self.unpack = u  # True if we want to unpack this set
@@ -634,34 +636,36 @@ class NzbObject(TryList):
         self.meta = {}
         self.servercount = {}  # Dict to keep bytes per server
         self.created = False  # dirprefixes + work_name created
-        self.direct_unpacker = None  # Holds the DirectUnpacker instance
-        self.bytes = 0  # Original bytesize
-        self.bytes_par2 = 0  # Bytes available for repair
-        self.bytes_downloaded = 0  # Downloaded byte
-        self.bytes_tried = 0  # Which bytes did we try
-        self.bytes_missing = 0  # Bytes missing
-        self.bad_articles = 0  # How many bad (non-recoverable) articles
+        self.direct_unpacker: Union[
+            sabnzbd.directunpacker.DirectUnpacker, None
+        ] = None  # Holds the DirectUnpacker instance
+        self.bytes: int = 0  # Original bytesize
+        self.bytes_par2: int = 0  # Bytes available for repair
+        self.bytes_downloaded: int = 0  # Downloaded byte
+        self.bytes_tried: int = 0  # Which bytes did we try
+        self.bytes_missing: int = 0  # Bytes missing
+        self.bad_articles: int = 0  # How many bad (non-recoverable) articles
 
-        self.partable = {}  # Holds one parfile-name for each set
-        self.extrapars = {}  # Holds the extra parfile names for all sets
+        self.partable: Dict[str, NzbFile] = {}  # Holds one parfile-name for each set
+        self.extrapars: Dict[str, List[NzbFile]] = {}  # Holds the extra parfile names for all sets
         self.md5packs = {}  # Holds the md5pack for each set (name: hash)
         self.md5of16k = {}  # Holds the md5s of the first-16k of all files in the NZB (hash: name)
 
-        self.files = []  # List of all NZFs
-        self.files_table = {}  # Dictionary of NZFs indexed using NZF_ID
-        self.renames = {}  # Dictionary of all renamed files
+        self.files: List[NzbFile] = []  # List of all NZFs
+        self.files_table: Dict[str, NzbFile] = {}  # Dictionary of NZFs indexed using NZF_ID
+        self.renames: Dict[str, str] = {}  # Dictionary of all renamed files
 
-        self.finished_files = []  # List of all finished NZFs
+        self.finished_files: List[NzbFile] = []  # List of all finished NZFs
 
         # The current status of the nzo eg:
         # Queued, Downloading, Repairing, Unpacking, Failed, Complete
-        self.status = status
+        self.status: Status = status
         self.avg_bps_freq = 0
         self.avg_bps_total = 0
 
-        self.first_articles = []
+        self.first_articles: List[Article] = []
         self.first_articles_count = 0
-        self.saved_articles = []
+        self.saved_articles: List[Article] = []
 
         self.nzo_id = None
 
@@ -684,11 +688,11 @@ class NzbObject(TryList):
         # Store one line responses for filejoin/par2/unrar/unzip here for history display
         self.action_line = ""
         # Store the results from various filejoin/par2/unrar/unzip stages
-        self.unpack_info = {}
+        self.unpack_info: Dict[str, List[str]] = {}
         # Stores one line containing the last failure
         self.fail_msg = ""
         # Stores various info about the nzo to be
-        self.nzo_info = nzo_info or {}
+        self.nzo_info: Dict[str, Any] = nzo_info or {}
 
         # Temporary store for custom foldername - needs to be stored because of url fetching
         self.custom_name = nzbname
@@ -926,7 +930,7 @@ class NzbObject(TryList):
             self.servercount[serverid] = bytes_received
 
     @synchronized(NZO_LOCK)
-    def remove_nzf(self, nzf):
+    def remove_nzf(self, nzf: NzbFile) -> bool:
         if nzf in self.files:
             self.files.remove(nzf)
         if nzf not in self.finished_files:
@@ -974,7 +978,7 @@ class NzbObject(TryList):
         self.reset_try_list()
 
     @synchronized(NZO_LOCK)
-    def postpone_pars(self, nzf, parset):
+    def postpone_pars(self, nzf: NzbFile, parset: str):
         """ Move all vol-par files matching 'parset' to the extrapars table """
         # Create new extrapars if it didn't already exist
         # For example if created when the first par2 file was missing
@@ -1056,7 +1060,7 @@ class NzbObject(TryList):
             nzf.filename = get_filename(new_fname)
 
     @synchronized(NZO_LOCK)
-    def promote_par2(self, nzf):
+    def promote_par2(self, nzf: NzbFile):
         """In case of a broken par2 or missing par2, move another
         of the same set to the top (if we can find it)
         """
@@ -1291,7 +1295,7 @@ class NzbObject(TryList):
         if not self.unpack:
             self.abort_direct_unpacker()
 
-    def set_priority(self, value):
+    def set_priority(self, value: Any):
         """ Check if this is a valid priority """
         # When unknown (0 is a known one), set to DEFAULT
         if value == "" or value is None:
@@ -1845,7 +1849,7 @@ class NzbObject(TryList):
             self.direct_unpacker.get_formatted_stats() if self.direct_unpacker else 0,
         )
 
-    def get_nzf_by_id(self, nzf_id):
+    def get_nzf_by_id(self, nzf_id: str) -> NzbFile:
         if nzf_id in self.files_table:
             return self.files_table[nzf_id]
 

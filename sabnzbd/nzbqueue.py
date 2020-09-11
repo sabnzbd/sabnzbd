@@ -24,9 +24,10 @@ import logging
 import time
 import datetime
 import functools
+from typing import List, Dict, Union, Tuple
 
 import sabnzbd
-from sabnzbd.nzbstuff import NzbObject
+from sabnzbd.nzbstuff import NzbObject, Article
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp, safe_lower
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file
 from sabnzbd.nzbparser import process_single_nzb
@@ -65,9 +66,9 @@ class NzbQueue:
     do = None
 
     def __init__(self):
-        self.__top_only = cfg.top_only()
-        self.__nzo_list = []
-        self.__nzo_table = {}
+        self.__top_only: bool = cfg.top_only()
+        self.__nzo_list: List[NzbObject] = []
+        self.__nzo_table: Dict[str, NzbObject] = {}
 
         NzbQueue.do = self
 
@@ -204,7 +205,7 @@ class NzbQueue:
         return nzo_id
 
     @NzbQueueLocker
-    def send_back(self, nzo):
+    def send_back(self, nzo: NzbObject):
         """ Send back job to queue after successful pre-check """
         try:
             nzb_path = globber_full(nzo.workpath, "*.gz")[0]
@@ -212,15 +213,13 @@ class NzbQueue:
             logging.info("Failed to find NZB file after pre-check (%s)", nzo.nzo_id)
             return
 
-        # Need to remove it first, otherwise it might still be downloading
-        self.remove(nzo, add_to_history=False, cleanup=False)
         res, nzo_ids = process_single_nzb(nzo.filename, nzb_path, keep=True, reuse=nzo.downpath, nzo_id=nzo.nzo_id)
         if res == 0 and nzo_ids:
             # Reset reuse flag to make pause/abort on encryption possible
             self.__nzo_table[nzo_ids[0]].reuse = None
 
     @NzbQueueLocker
-    def save(self, save_nzo=None):
+    def save(self, save_nzo: Union[NzbObject, None, bool] = None):
         """ Save queue, all nzo's or just the specified one """
         logging.info("Saving queue")
 
@@ -258,7 +257,7 @@ class NzbQueue:
         self.add(future_nzo)
         return future_nzo
 
-    def change_opts(self, nzo_ids, pp):
+    def change_opts(self, nzo_ids: str, pp: int) -> int:
         result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
             if nzo_id in self.__nzo_table:
@@ -266,7 +265,7 @@ class NzbQueue:
                 result += 1
         return result
 
-    def change_script(self, nzo_ids, script):
+    def change_script(self, nzo_ids: str, script: str) -> int:
         result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
             if nzo_id in self.__nzo_table:
@@ -275,7 +274,7 @@ class NzbQueue:
                 result += 1
         return result
 
-    def change_cat(self, nzo_ids, cat, explicit_priority=None):
+    def change_cat(self, nzo_ids: str, cat: str, explicit_priority=None):
         result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
             if nzo_id in self.__nzo_table:
@@ -290,7 +289,7 @@ class NzbQueue:
                 result += 1
         return result
 
-    def change_name(self, nzo_id, name, password=None):
+    def change_name(self, nzo_id: str, name: str, password: str = None):
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             logging.info("Renaming %s to %s", nzo.final_name, name)
@@ -306,14 +305,14 @@ class NzbQueue:
         else:
             return False
 
-    def get_nzo(self, nzo_id):
+    def get_nzo(self, nzo_id) -> Union[NzbObject, None]:
         if nzo_id in self.__nzo_table:
             return self.__nzo_table[nzo_id]
         else:
             return None
 
     @NzbQueueLocker
-    def add(self, nzo, save=True, quiet=False):
+    def add(self, nzo: NzbObject, save=True, quiet=False) -> str:
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.get_new_id("nzo", nzo.workpath, self.__nzo_table)
 
@@ -373,7 +372,7 @@ class NzbQueue:
         return nzo.nzo_id
 
     @NzbQueueLocker
-    def remove(self, nzo_id, add_to_history=True, cleanup=True, delete_all_data=True):
+    def remove(self, nzo_id: str, add_to_history=True, cleanup=True, delete_all_data=True):
         """Remove NZO from queue.
         It can be added to history directly.
         Or, we do some clean-up, sometimes leaving some data.
@@ -403,7 +402,7 @@ class NzbQueue:
         return None
 
     @NzbQueueLocker
-    def remove_multiple(self, nzo_ids, delete_all_data=True):
+    def remove_multiple(self, nzo_ids: List[str], delete_all_data=True) -> List[str]:
         removed = []
         for nzo_id in nzo_ids:
             if self.remove(nzo_id, add_to_history=False, delete_all_data=delete_all_data):
@@ -417,7 +416,7 @@ class NzbQueue:
         return removed
 
     @NzbQueueLocker
-    def remove_all(self, search=None):
+    def remove_all(self, search: str = "") -> List[str]:
         """ Remove NZO's that match the search-pattern """
         nzo_ids = []
         search = safe_lower(search)
@@ -426,7 +425,7 @@ class NzbQueue:
                 nzo_ids.append(nzo_id)
         return self.remove_multiple(nzo_ids)
 
-    def remove_nzf(self, nzo_id, nzf_id, force_delete=False):
+    def remove_nzf(self, nzo_id: str, nzf_id: str, force_delete=False) -> List[str]:
         removed = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -452,14 +451,14 @@ class NzbQueue:
             logging.info("Removed NZFs %s from job %s", removed, nzo.final_name)
         return removed
 
-    def pause_multiple_nzo(self, nzo_ids):
+    def pause_multiple_nzo(self, nzo_ids: List[str]) -> List[str]:
         handled = []
         for nzo_id in nzo_ids:
             self.pause_nzo(nzo_id)
             handled.append(nzo_id)
         return handled
 
-    def pause_nzo(self, nzo_id):
+    def pause_nzo(self, nzo_id: str) -> List[str]:
         handled = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -468,7 +467,7 @@ class NzbQueue:
             handled.append(nzo_id)
         return handled
 
-    def resume_multiple_nzo(self, nzo_ids):
+    def resume_multiple_nzo(self, nzo_ids: List[str]) -> List[str]:
         handled = []
         for nzo_id in nzo_ids:
             self.resume_nzo(nzo_id)
@@ -476,7 +475,7 @@ class NzbQueue:
         return handled
 
     @NzbQueueLocker
-    def resume_nzo(self, nzo_id):
+    def resume_nzo(self, nzo_id: str) -> List[str]:
         handled = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -487,7 +486,7 @@ class NzbQueue:
         return handled
 
     @NzbQueueLocker
-    def switch(self, item_id_1, item_id_2):
+    def switch(self, item_id_1: str, item_id_2: str) -> Tuple[int, int]:
         try:
             # Allow an index as second parameter, easier for some skins
             i = int(item_id_2)
@@ -687,7 +686,7 @@ class NzbQueue:
             return -1
 
     @staticmethod
-    def reset_try_lists(article, article_reset=True):
+    def reset_try_lists(article: Article, article_reset=True):
         """ Let article get new fetcher and reset trylists """
         article.fetcher = None
         if article_reset:
@@ -708,7 +707,9 @@ class NzbQueue:
                 return True
         return False
 
-    def get_article(self, server, servers):
+    def get_article(
+        self, server: sabnzbd.downloader.Server, servers: List[sabnzbd.downloader.Server]
+    ) -> Union[Article, None]:
         """Get next article for jobs in the queue
         Not locked for performance, since it only reads the queue
         """
@@ -731,7 +732,7 @@ class NzbQueue:
                     if self.__top_only:
                         return
 
-    def register_article(self, article, success=True):
+    def register_article(self, article: Article, success=True):
         """Register the articles we tried
         Not locked for performance, since it only modifies individual NZOs
         """
@@ -774,7 +775,7 @@ class NzbQueue:
             if post_done:
                 self.end_job(nzo)
 
-    def end_job(self, nzo):
+    def end_job(self, nzo: NzbObject):
         """ Send NZO to the post-processing queue """
         logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
 
@@ -794,7 +795,7 @@ class NzbQueue:
                     pass
             Assembler.do.process((nzo, None, None))
 
-    def actives(self, grabs=True):
+    def actives(self, grabs=True) -> int:
         """Return amount of non-paused jobs, optionally with 'grabbing' items
         Not locked for performance, only reads the queue
         """
@@ -883,25 +884,25 @@ class NzbQueue:
         for nzo in empty:
             self.end_job(nzo)
 
-    def pause_on_prio(self, priority):
+    def pause_on_prio(self, priority: int):
         for nzo in self.__nzo_list:
             if nzo.priority == priority:
                 nzo.pause()
 
     @NzbQueueLocker
-    def resume_on_prio(self, priority):
+    def resume_on_prio(self, priority: int):
         for nzo in self.__nzo_list:
             if nzo.priority == priority:
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
 
-    def pause_on_cat(self, cat):
+    def pause_on_cat(self, cat: str):
         for nzo in self.__nzo_list:
             if nzo.cat == cat:
                 nzo.pause()
 
     @NzbQueueLocker
-    def resume_on_cat(self, cat):
+    def resume_on_cat(self, cat: str):
         for nzo in self.__nzo_list:
             if nzo.cat == cat:
                 # Don't use nzo.resume() to avoid resetting job warning flags
@@ -922,7 +923,7 @@ class NzbQueue:
         return "<NzbQueue>"
 
 
-def _nzo_date_cmp(nzo1, nzo2):
+def _nzo_date_cmp(nzo1: NzbObject, nzo2: NzbObject):
     avg_date1 = nzo1.avg_date
     avg_date2 = nzo2.avg_date
 
@@ -945,7 +946,7 @@ def _nzo_size_cmp(nzo1, nzo2):
     return cmp(nzo1.bytes, nzo2.bytes)
 
 
-def sort_queue_function(nzo_list, method, reverse):
+def sort_queue_function(nzo_list: List[NzbObject], method, reverse: bool) -> List[NzbObject]:
     ultra_high_priority = [nzo for nzo in nzo_list if nzo.priority == REPAIR_PRIORITY]
     super_high_priority = [nzo for nzo in nzo_list if nzo.priority == FORCE_PRIORITY]
     high_priority = [nzo for nzo in nzo_list if nzo.priority == HIGH_PRIORITY]

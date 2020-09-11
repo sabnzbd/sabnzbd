@@ -1407,7 +1407,7 @@ def fast_queue():
     return paused, bytes_left, bpsnow, time_left
 
 
-def build_file_list(nzo_id):
+def build_file_list(nzo_id: str):
     """Build file lists for specified job"""
     jobs = []
     nzo = NzbQueue.do.get_nzo(nzo_id)

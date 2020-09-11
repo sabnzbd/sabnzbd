@@ -30,13 +30,14 @@ import time
 import datetime
 import inspect
 import ctypes
+from typing import Union, Tuple, Any
 
 import sabnzbd
 from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import get_ext, userxbit
+from sabnzbd.filesystem import userxbit
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]{0,1})", re.I)
@@ -71,7 +72,7 @@ def time_format(fmt):
         return fmt
 
 
-def calc_age(date, trans=False):
+def calc_age(date: datetime.datetime, trans=False) -> str:
     """Calculate the age difference between now and date.
     Value is returned as either days, hours, or minutes.
     When 'trans' is True, time symbols will be translated.
@@ -105,7 +106,7 @@ def calc_age(date, trans=False):
     return age
 
 
-def monthrange(start, finish):
+def monthrange(start: datetime.datetime, finish: datetime.datetime):
     """ Calculate months between 2 dates, used in the Config template """
     months = (finish.year - start.year) * 12 + finish.month + 1
     for i in range(start.month, months):
@@ -114,7 +115,7 @@ def monthrange(start, finish):
         yield datetime.date(int(year), int(month), 1)
 
 
-def safe_lower(txt):
+def safe_lower(txt: Any) -> str:
     """ Return lowercased string. Return '' for None """
     if txt:
         return txt.lower()
@@ -146,20 +147,19 @@ def name_to_cat(fname, cat=None):
     return fname, cat
 
 
-def cat_to_opts(cat, pp=None, script=None, priority=None):
+def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str, int]:
     """Derive options from category, if options not already defined.
     Specified options have priority over category-options.
     If no valid category is given, special category '*' will supply default values
     """
-    def_cat = config.get_categories("*")
+    def_cat = config.get_category()
     cat = safe_lower(cat)
     if cat in ("", "none", "default"):
         cat = "*"
-    try:
-        my_cat = config.get_categories()[cat]
-    except KeyError:
+    my_cat = config.get_category(cat)
+    # Ignore the input category if we don't know it
+    if my_cat == def_cat:
         cat = "*"
-        my_cat = def_cat
 
     if pp is None:
         pp = my_cat.pp()
@@ -176,11 +176,11 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
 
-    logging.debug("Cat->Attrib cat=%s pp=%s script=%s prio=%s", cat, pp, script, priority)
+    logging.debug("Parsing category %s to attributes: pp=%s script=%s prio=%s", cat, pp, script, priority)
     return cat, pp, script, priority
 
 
-def pp_to_opts(pp):
+def pp_to_opts(pp: int) -> Tuple[bool, bool, bool]:
     """ Convert numeric processing options to (repair, unpack, delete) """
     # Convert the pp to an int
     pp = sabnzbd.interface.int_conv(pp)
@@ -193,10 +193,8 @@ def pp_to_opts(pp):
     return True, True, True
 
 
-def opts_to_pp(repair, unpack, delete):
+def opts_to_pp(repair: bool, unpack: bool, delete: bool) -> int:
     """ Convert (repair, unpack, delete) to numeric process options """
-    if repair is None:
-        return None
     pp = 0
     if repair:
         pp = 1
@@ -345,7 +343,7 @@ def set_serv_parms(service, args):
     return True
 
 
-def get_from_url(url):
+def get_from_url(url: str) -> Union[str, None]:
     """ Retrieve URL and return content """
     try:
         req = urllib.request.Request(url)
@@ -479,7 +477,7 @@ def upload_file_to_sabnzbd(url, fp):
         logging.info("Traceback: ", exc_info=True)
 
 
-def from_units(val):
+def from_units(val: str) -> float:
     """ Convert K/M/G/T/P notation to float """
     val = str(val).strip().upper()
     if val == "-1":
@@ -503,7 +501,7 @@ def from_units(val):
         return 0.0
 
 
-def to_units(val, postfix=""):
+def to_units(val: Union[int, float], postfix="") -> str:
     """Convert number to K/M/G/T/P notation
     Show single decimal for M and higher
     """
@@ -749,7 +747,7 @@ def format_time_string(seconds):
     return " ".join(completestr)
 
 
-def int_conv(value):
+def int_conv(value: Any) -> int:
     """ Safe conversion to int (can handle None) """
     try:
         value = int(value)

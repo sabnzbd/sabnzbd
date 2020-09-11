@@ -21,6 +21,7 @@ sabnzbd.directunpacker
 
 import os
 import re
+import subprocess
 import time
 import threading
 import logging
@@ -29,6 +30,7 @@ import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
 from sabnzbd.filesystem import clip_path, long_path, remove_all, real_path, remove_file
+from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
 from sabnzbd.newsunpack import EXTRACTFROM_RE, EXTRACTED_RE, rar_volumelist
@@ -49,13 +51,13 @@ class DirectUnpacker(threading.Thread):
     def __init__(self, nzo):
         threading.Thread.__init__(self)
 
-        self.nzo = nzo
-        self.active_instance = None
+        self.nzo: NzbObject = nzo
+        self.active_instance: subprocess.Popen = None
         self.killed = False
         self.next_file_lock = threading.Condition(threading.RLock())
 
         self.unpack_dir_info = None
-        self.rarfile_nzf = None
+        self.rarfile_nzf: NzbFile = None
         self.cur_setname = None
         self.cur_volume = 0
         self.total_volumes = {}
