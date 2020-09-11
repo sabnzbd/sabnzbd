@@ -27,6 +27,7 @@ from nntplib import NNTPPermanentError
 import socket
 import random
 import sys
+from typing import List, Dict
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
@@ -202,8 +203,8 @@ class Downloader(Thread):
         self.read_fds = {}
         self.write_fds = {}
 
-        self.servers = []
-        self.server_dict = {}  # For faster lookups, but is not updated later!
+        self.servers: List[Server] = []
+        self.server_dict: Dict[str, Server] = {}  # For faster lookups, but is not updated later!
         self.server_nr = 0
         self._timers = {}
 

@@ -23,12 +23,14 @@ import logging
 import hashlib
 import queue
 from threading import Thread
+from typing import Tuple, List
 
 import sabnzbd
 from sabnzbd.constants import SABYENC_VERSION_REQUIRED
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.downloader import Downloader
 from sabnzbd.nzbqueue import NzbQueue
+from sabnzbd.nzbstuff import Article
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import match_str
 
@@ -116,7 +118,7 @@ class DecoderWorker(Thread):
         Thread.__init__(self)
         logging.debug("Initializing decoder %s", self.name)
 
-        self.decoder_queue = decoder_queue
+        self.decoder_queue: queue.Queue[Tuple[Article, List[bytes]]] = decoder_queue
 
     def stop(self):
         # Put multiple to stop all decoders

@@ -283,7 +283,7 @@ class NewsWrapper:
     )
 
     def __init__(self, server, thrdnum, block=False):
-        self.server = server
+        self.server: sabnzbd.downloader.Server = server
         self.thrdnum = thrdnum
         self.blocking = block
 
@@ -292,7 +292,7 @@ class NewsWrapper:
         self.data = []
         self.last_line = ""
 
-        self.nntp = None
+        self.nntp: NNTP = None
         self.recv = None
 
         self.connected = False

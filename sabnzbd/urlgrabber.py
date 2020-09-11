@@ -30,6 +30,7 @@ import urllib.parse
 from http.client import IncompleteRead
 from threading import Thread
 import base64
+from typing import Tuple
 
 import sabnzbd
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
@@ -65,7 +66,7 @@ class URLGrabber(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        self.queue = queue.Queue()
+        self.queue: queue.Queue[Tuple[str, sabnzbd.nzbstuff.NzbObject]] = queue.Queue()
         for tup in NzbQueue.do.get_urls():
             url, nzo = tup
             self.queue.put((url, nzo))

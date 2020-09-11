@@ -21,12 +21,13 @@ sabnzbd.postproc - threaded post-processing of jobs
 
 import os
 import logging
-import sabnzbd
 import functools
 import time
 import re
 import queue
+from typing import List
 
+import sabnzbd
 from sabnzbd.newsunpack import (
     unpack_magic,
     par2_repair,
@@ -105,16 +106,14 @@ class PostProcessor(Thread):
         Thread.__init__(self)
 
         # This history queue is simply used to log what active items to display in the web_ui
+        self.history_queue: List[sabnzbd.nzbstuff.NzbObject] = []
         self.load()
 
-        if self.history_queue is None:
-            self.history_queue = []
-
         # Fast-queue for jobs already finished by DirectUnpack
-        self.fast_queue = queue.Queue()
+        self.fast_queue: queue.Queue[sabnzbd.nzbstuff.NzbObject] = queue.Queue()
 
         # Regular queue for jobs that might need more attention
-        self.slow_queue = queue.Queue()
+        self.slow_queue: queue.Queue[sabnzbd.nzbstuff.NzbObject] = queue.Queue()
 
         # Load all old jobs
         for nzo in self.history_queue:
@@ -136,7 +135,6 @@ class PostProcessor(Thread):
 
     def load(self):
         """ Save postproc queue """
-        self.history_queue = []
         logging.info("Loading postproc queue")
         data = sabnzbd.load_admin(POSTPROC_QUEUE_FILE_NAME)
         if data is None:
