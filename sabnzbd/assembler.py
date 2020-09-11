@@ -26,7 +26,6 @@ import re
 from threading import Thread
 from time import sleep
 import hashlib
-from typing import Tuple
 
 import sabnzbd
 from sabnzbd.misc import get_all_passwords
@@ -35,7 +34,6 @@ from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.articlecache import ArticleCache
 from sabnzbd.postproc import PostProcessor
-from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
@@ -47,7 +45,7 @@ class Assembler(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        self.queue: queue.Queue[Tuple[NzbObject, NzbFile, bool]] = queue.Queue()
+        self.queue = queue.Queue()
         Assembler.do = self
 
     def stop(self):

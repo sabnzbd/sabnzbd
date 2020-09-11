@@ -22,27 +22,26 @@ sabnzbd.encoding - Unicode/byte translation functions
 import locale
 import chardet
 from xml.sax.saxutils import escape
-from typing import Union
 
 
 CODEPAGE = locale.getpreferredencoding()
 
 
-def utob(str_in: Union[str, bytes]) -> bytes:
+def utob(str_in):
     """ Shorthand for converting UTF-8 to bytes """
     if isinstance(str_in, bytes):
         return str_in
     return str_in.encode("utf-8")
 
 
-def ubtou(str_in: Union[str, bytes]) -> str:
+def ubtou(str_in):
     """ Shorthand for converting unicode bytes to UTF-8 """
     if not isinstance(str_in, bytes):
         return str_in
     return str_in.decode("utf-8")
 
 
-def platform_btou(str_in: Union[str, bytes]) -> str:
+def platform_btou(str_in):
     """Return Unicode, if not already Unicode, decode with locale encoding.
     NOTE: Used for POpen because universal_newlines/text parameter doesn't
     always work! We cannot use encoding-parameter because it's Python 3.7+
@@ -56,7 +55,7 @@ def platform_btou(str_in: Union[str, bytes]) -> str:
         return str_in
 
 
-def correct_unknown_encoding(str_or_bytes_in: Union[str, bytes]) -> str:
+def correct_unknown_encoding(str_or_bytes_in):
     """Files created on Windows but unpacked/repaired on
     linux can result in invalid filenames. Try to fix this
     encoding by going to bytes and then back to unicode again.

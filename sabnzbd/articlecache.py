@@ -22,7 +22,6 @@ sabnzbd.articlecache - Article cache handling
 import logging
 import threading
 import struct
-from typing import Dict
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -40,7 +39,7 @@ class ArticleCache:
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__article_table: Dict[sabnzbd.nzbstuff.Article, bytes] = {}  # Dict of buffered articles
+        self.__article_table = {}  # Dict of buffered articles
 
         # Limit for the decoder is based on the total available cache
         # so it can be larger on memory-rich systems

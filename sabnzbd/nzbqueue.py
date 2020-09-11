@@ -24,7 +24,6 @@ import logging
 import time
 import datetime
 import functools
-from typing import List, Dict
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject
@@ -66,9 +65,9 @@ class NzbQueue:
     do = None
 
     def __init__(self):
-        self.__top_only: bool = cfg.top_only()
-        self.__nzo_list: List[NzbObject] = []
-        self.__nzo_table: Dict[str, NzbObject] = {}
+        self.__top_only = cfg.top_only()
+        self.__nzo_list = []
+        self.__nzo_table = {}
 
         NzbQueue.do = self
 
