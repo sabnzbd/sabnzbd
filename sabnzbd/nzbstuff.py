@@ -1123,7 +1123,9 @@ class NzbObject(TryList):
         nzf = article.nzf
 
         # Update all statistics
-        self.bytes_tried += article.bytes
+        # Ignore bytes from par2 files that were postponed
+        if nzf in self.files:
+            self.bytes_tried += article.bytes
         if not success:
             # Increase missing bytes counter
             self.bytes_missing += article.bytes
