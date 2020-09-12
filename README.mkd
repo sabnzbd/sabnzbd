@@ -1,5 +1,20 @@
-Release Notes - SABnzbd 3.1.0 Beta 1
+Release Notes - SABnzbd 3.1.0 Beta 2
 =========================================================
+
+## Changes and bugfixes since 3.1.0 Beta 1
+- Post-processing could lock the application.
+- Improved detection for Deobfuscate final filenames.
+- Paused priority of pre-queue script was ignored.
+- Multi-edit layout was displayed wrongly.
+- Jobs with only par2-files would result in a crash.
+- Downloaded bytes could show as exceeding the total bytes of a job.
+- Restore limit on length of foldernames (`max_foldername_length`).
+- Duplicate Detection did not check filenames in History.
+- Show warning that Pyton 3.5 support will be dropped after 3.1.0.
+- Linux: false-positive warning about UnRar version was shown.
+- Windows: could fail to create folders on some network shares.
+- Windows: external processes would show in popup window.
+- Windows: show version in tray icon tooltip.
 
 ## Changes since 3.0.2
 - Added option to automatically deobfuscate final filenames: after unpacking, 
