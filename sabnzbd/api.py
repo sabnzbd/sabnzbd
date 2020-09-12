@@ -1743,8 +1743,11 @@ def build_history(start=0, limit=0, search=None, failed_only=0, categories=None)
     # Add the postproc items to the top of the history
     items = get_active_history(postproc_queue, items)
 
-    # Unreverse the queue
+    # Un-reverse the queue
     items.reverse()
+
+    # Global check if rating is enabled
+    rating_enabled = cfg.rating_enable()
 
     for item in items:
         item["size"] = to_units(item["bytes"], "B")
@@ -1753,26 +1756,22 @@ def build_history(start=0, limit=0, search=None, failed_only=0, categories=None)
             item["loaded"] = False
 
         path = item.get("path", "")
-
         item["retry"] = int_conv(item.get("status") == Status.FAILED and path and os.path.exists(path))
         # Retry of failed URL-fetch
         if item["report"] == "future":
             item["retry"] = True
 
-        if Rating.do:
+        if rating_enabled:
             rating = Rating.do.get_rating_by_nzo(item["nzo_id"])
-        else:
-            rating = None
-
-        item["has_rating"] = rating is not None
-        if rating:
-            item["rating_avg_video"] = rating.avg_video
-            item["rating_avg_audio"] = rating.avg_audio
-            item["rating_avg_vote_up"] = rating.avg_vote_up
-            item["rating_avg_vote_down"] = rating.avg_vote_down
-            item["rating_user_video"] = rating.user_video
-            item["rating_user_audio"] = rating.user_audio
-            item["rating_user_vote"] = rating.user_vote
+            item["has_rating"] = rating is not None
+            if rating:
+                item["rating_avg_video"] = rating.avg_video
+                item["rating_avg_audio"] = rating.avg_audio
+                item["rating_avg_vote_up"] = rating.avg_vote_up
+                item["rating_avg_vote_down"] = rating.avg_vote_down
+                item["rating_user_video"] = rating.user_video
+                item["rating_user_audio"] = rating.user_audio
+                item["rating_user_vote"] = rating.user_vote
 
     total_items += postproc_queue_size
     fetched_items = len(items)
