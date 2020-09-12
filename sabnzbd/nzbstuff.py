@@ -1451,8 +1451,13 @@ class NzbObject(TryList):
 
     def check_availability_ratio(self):
         """ Determine if we are still meeting the required ratio """
-        # Calculate ratio based on byte-statistics
-        availability_ratio = 100 * (self.bytes - self.bytes_missing) / (self.bytes - self.bytes_par2)
+        availability_ratio = req_ratio = cfg.req_completion_rate()
+
+        # Rare case where the NZB only consists of par2 files
+        if self.bytes > self.bytes_par2:
+            # Calculate ratio based on byte-statistics
+            availability_ratio = 100 * (self.bytes - self.bytes_missing) / (self.bytes - self.bytes_par2)
+
         logging.debug(
             "Availability ratio=%.2f, bad articles=%d, total bytes=%d, missing bytes=%d, par2 bytes=%d",
             availability_ratio,
@@ -1465,10 +1470,10 @@ class NzbObject(TryList):
         # When there is no or little par2, we allow a few bad articles
         # This way RAR-only jobs might still succeed
         if self.bad_articles <= MAX_BAD_ARTICLES:
-            return True, cfg.req_completion_rate()
+            return True, req_ratio
 
         # Check based on availability ratio
-        return availability_ratio >= cfg.req_completion_rate(), availability_ratio
+        return availability_ratio >= req_ratio, availability_ratio
 
     def check_first_article_availability(self):
         """Use the first articles to see if
