@@ -80,8 +80,6 @@ from sabnzbd.api import (
     retry_job,
     build_header,
     build_history,
-    format_bytes,
-    report,
     del_hist_job,
     Ttemplate,
     build_queue_header,
@@ -812,8 +810,8 @@ class NzoPage:
                         "filename": nzf.filename if nzf.filename else nzf.subject,
                         "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
                         "mb": "%.2f" % (nzf.bytes / MEBI),
-                        "size": format_bytes(nzf.bytes),
-                        "sizeleft": format_bytes(nzf.bytes_left),
+                        "size": to_units(nzf.bytes, "B"),
+                        "sizeleft": to_units(nzf.bytes_left, "B"),
                         "nzf_id": nzf.nzf_id,
                         "age": calc_age(nzf.date),
                         "checked": checked,
@@ -1045,7 +1043,7 @@ class HistoryPage:
         )
 
         history["lines"], history["fetched"], history["noofslots"] = build_history(
-            limit=limit, start=start, search=search, failed_only=failed_only
+            start=start, limit=limit, search=search, failed_only=failed_only
         )
 
         if search:

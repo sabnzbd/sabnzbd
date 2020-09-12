@@ -498,7 +498,7 @@ def _api_history(name, output, kwargs):
     limit = int_conv(kwargs.get("limit"))
     last_history_update = int_conv(kwargs.get("last_history_update", 0))
     search = kwargs.get("search")
-    failed_only = kwargs.get("failed_only")
+    failed_only = int_conv(kwargs.get("failed_only"))
     categories = kwargs.get("category")
 
     # Do we need to send anything?
@@ -542,7 +542,7 @@ def _api_history(name, output, kwargs):
             to_units(day),
         )
         history["slots"], fetched_items, history["noofslots"] = build_history(
-            start=start, limit=limit, search=search, failed_only=failed_only, categories=categories, output=output
+            start=start, limit=limit, search=search, failed_only=failed_only, categories=categories
         )
         history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
         history["version"] = sabnzbd.__version__
@@ -1334,8 +1334,8 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot["cat"] = pnfo.category if pnfo.category else "None"
         slot["mbleft"] = "%.2f" % mbleft
         slot["mb"] = "%.2f" % mb
-        slot["size"] = format_bytes(bytes_total)
-        slot["sizeleft"] = format_bytes(bytesleft)
+        slot["size"] = to_units(bytes_total, "B")
+        slot["sizeleft"] = to_units(bytesleft, "B")
         slot["percentage"] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else "0"
         slot["mbmissing"] = "%.2f" % (pnfo.bytes_missing / MEBI)
         slot["direct_unpack"] = pnfo.direct_unpack
@@ -1632,7 +1632,7 @@ def build_header(webdir="", output=None, trans_functions=True):
 
     anfo = ArticleCache.do.cache_info()
     header["cache_art"] = str(anfo.article_sum)
-    header["cache_size"] = format_bytes(anfo.cache_size)
+    header["cache_size"] = to_units(anfo.cache_size, "B")
     header["cache_max"] = str(anfo.cache_limit)
 
     return header
@@ -1653,8 +1653,8 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     header["speed"] = to_units(bytespersec)
     header["mbleft"] = "%.2f" % (bytesleft / MEBI)
     header["mb"] = "%.2f" % (bytes_total / MEBI)
-    header["sizeleft"] = format_bytes(bytesleft)
-    header["size"] = format_bytes(bytes_total)
+    header["sizeleft"] = to_units(bytesleft, "B")
+    header["size"] = to_units(bytes_total, "B")
     header["noofslots_total"] = qnfo.q_fullsize
 
     if Downloader.do.paused or Downloader.do.postproc:
@@ -1676,50 +1676,48 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
-def build_history(start=None, limit=None, search=None, failed_only=0, categories=None, output=None):
-    limit = int_conv(limit)
+def build_history(start=0, limit=0, search=None, failed_only=0, categories=None):
+    """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
-    start = int_conv(start)
-    failed_only = int_conv(failed_only)
-
-    def matches_search(text, search_text):
-        # Replace * with .* and ' ' with .
-        search_text = search_text.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
-        try:
-            re_search = re.compile(search_text, re.I)
-        except:
-            logging.error(T("Failed to compile regex for search term: %s"), search_text)
-            return False
-        return re_search.search(text)
 
     # Grab any items that are active or queued in postproc
-    queue = PostProcessor.do.get_queue()
+    postproc_queue = PostProcessor.do.get_queue()
 
-    # Filter out any items that don't match the search
-    if search:
-        queue = [nzo for nzo in queue if matches_search(nzo.final_name, search)]
+    # Filter out any items that don't match the search term or category
+    if postproc_queue:
+        # It would be more efficient to iterate only once, but we accept the penalty for code clarity
+        if isinstance(search, list):
+            postproc_queue = [nzo for nzo in postproc_queue if nzo.cat in categories]
+
+        if isinstance(search, str):
+            # Replace * with .* and ' ' with .
+            search_text = search.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
+            try:
+                re_search = re.compile(search_text, re.I)
+                postproc_queue = [nzo for nzo in postproc_queue if re_search.search(nzo.final_name)]
+            except:
+                logging.error(T("Failed to compile regex for search term: %s"), search_text)
 
     # Multi-page support for postproc items
-    full_queue_size = len(queue)
-    if start > full_queue_size:
+    postproc_queue_size = len(postproc_queue)
+    if start > postproc_queue_size:
         # On a page where we shouldn't show postproc items
-        queue = []
-        h_limit = limit
+        postproc_queue = []
+        database_history_limit = limit
     else:
         try:
             if limit:
-                queue = queue[start : start + limit]
+                postproc_queue = postproc_queue[start : start + limit]
             else:
-                queue = queue[start:]
+                postproc_queue = postproc_queue[start:]
         except:
             pass
         # Remove the amount of postproc items from the db request for history items
-        h_limit = max(limit - len(queue), 0)
+        database_history_limit = max(limit - len(postproc_queue), 0)
+    database_history_start = max(start - postproc_queue_size, 0)
 
-    h_start = max(start - full_queue_size, 0)
-
-    # Aquire the db instance
+    # Acquire the db instance
     try:
         history_db = sabnzbd.get_db_connection()
         close_db = False
@@ -1729,23 +1727,27 @@ def build_history(start=None, limit=None, search=None, failed_only=0, categories
         close_db = True
 
     # Fetch history items
-    if not h_limit:
-        items, fetched_items, total_items = history_db.fetch_history(h_start, 1, search, failed_only, categories)
+    if not database_history_limit:
+        items, fetched_items, total_items = history_db.fetch_history(
+            database_history_start, 1, search, failed_only, categories
+        )
         items = []
     else:
-        items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only, categories)
+        items, fetched_items, total_items = history_db.fetch_history(
+            database_history_start, database_history_limit, search, failed_only, categories
+        )
 
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
 
     # Add the postproc items to the top of the history
-    items = get_active_history(queue, items)
+    items = get_active_history(postproc_queue, items)
 
     # Unreverse the queue
     items.reverse()
 
     for item in items:
-        item["size"] = format_bytes(item["bytes"])
+        item["size"] = to_units(item["bytes"], "B")
 
         if "loaded" not in item:
             item["loaded"] = False
@@ -1772,7 +1774,7 @@ def build_history(start=None, limit=None, search=None, failed_only=0, categories
             item["rating_user_audio"] = rating.user_audio
             item["rating_user_vote"] = rating.user_vote
 
-    total_items += full_queue_size
+    total_items += postproc_queue_size
     fetched_items = len(items)
 
     if close_db:
@@ -1781,15 +1783,9 @@ def build_history(start=None, limit=None, search=None, failed_only=0, categories
     return items, fetched_items, total_items
 
 
-def get_active_history(queue=None, items=None):
+def get_active_history(queue, items):
     """ Get the currently in progress and active history queue. """
-    if items is None:
-        items = []
-    if queue is None:
-        queue = PostProcessor.do.get_queue()
-
     for nzo in queue:
-        history = build_history_info(nzo)
         item = {}
         (
             item["completed"],
@@ -1810,33 +1806,24 @@ def get_active_history(queue=None, items=None):
             item["postproc_time"],
             item["stage_log"],
             item["downloaded"],
-            item["completeness"],
             item["fail_message"],
             item["url_info"],
             item["bytes"],
             _,
             _,
             item["password"],
-        ) = history
+        ) = build_history_info(nzo)
         item["action_line"] = nzo.action_line
         item = unpack_history_info(item)
 
         item["loaded"] = nzo.pp_active
         if item["bytes"]:
-            item["size"] = format_bytes(item["bytes"])
+            item["size"] = to_units(item["bytes"], "B")
         else:
             item["size"] = ""
         items.append(item)
 
     return items
-
-
-def format_bytes(bytes_string):
-    b = to_units(bytes_string)
-    if b == "":
-        return b
-    else:
-        return b + "B"
 
 
 def calc_timeleft(bytesleft, bps):

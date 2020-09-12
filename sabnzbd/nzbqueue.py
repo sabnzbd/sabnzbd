@@ -145,7 +145,7 @@ class NzbQueue:
             registered = [nzo.work_name for nzo in self.__nzo_list]
 
         # Retryable folders from History
-        items = sabnzbd.api.build_history(output=True)[0]
+        items = sabnzbd.api.build_history()[0]
         # Anything waiting or active or retryable is a known item
         registered.extend(
             [

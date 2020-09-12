@@ -282,8 +282,8 @@ class HistoryDB:
         self.execute(
             """INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
             url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-            downloaded, completeness, fail_message, url_info, bytes, series, md5sum, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            downloaded, fail_message, url_info, bytes, series, md5sum, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             t,
             save=True,
         )
@@ -474,7 +474,6 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
         script_output = sqlite3.Binary(zlib.compress(utob(script_output)))
 
     download_time = nzo.nzo_info.get("download_time", 0)
-    completeness = 0
     url_info = nzo.nzo_info.get("details", "") or nzo.nzo_info.get("more_info", "")
 
     # Get the dictionary containing the stages and their unpack process
@@ -514,7 +513,6 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
         postproc_time,
         stage_log,
         nzo.bytes_downloaded,
-        completeness,
         nzo.fail_msg,
         url_info,
         nzo.bytes_downloaded,
