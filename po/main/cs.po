@@ -76,7 +76,7 @@ msgstr ""
 #. Error message
 #: SABnzbd.py
 msgid "HTTP and HTTPS ports cannot be the same"
-msgstr ""
+msgstr "HTTP a HTTPS porty nemohou být stejné"
 
 #. Warning message
 #: SABnzbd.py
@@ -93,21 +93,21 @@ msgstr ""
 #. Warning message
 #: SABnzbd.py
 msgid "Disabled HTTPS because of missing CERT and KEY files"
-msgstr ""
+msgstr "HTTPS vypnuto z důvodu chybějících CERT a KEY souborů"
 
 #. Warning message
 #: SABnzbd.py
 msgid "Disabled HTTPS because of invalid CERT and KEY files"
-msgstr ""
+msgstr "HTTPS vypnuto z důvodu nevalidních CERT a KEY souborů"
 
 #. Error message
 #: SABnzbd.py
 msgid "Failed to start web-interface: "
-msgstr ""
+msgstr "Nepodařilo se spustit webové rozhraní:"
 
 #: SABnzbd.py
 msgid "SABnzbd %s started"
-msgstr ""
+msgstr "SABnzbd %s spustěno"
 
 #. Notification - Status page, table column header, actual message
 #: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
@@ -121,12 +121,12 @@ msgstr "Chyba"
 
 #: SABnzbd.py, sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
-msgstr ""
+msgstr "Vypnutí SABnzbd dokončeno"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Signal %s caught, saving and exiting..."
-msgstr ""
+msgstr "Zachycen signál %s, ukládám a ukončuji..."
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -140,12 +140,12 @@ msgstr ""
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Saving %s failed"
-msgstr ""
+msgstr "Ukládání %s selhalo"
 
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Cannot create temp file for %s"
-msgstr ""
+msgstr "Nelze vytvořit dočasný soubor pro %s"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -173,16 +173,16 @@ msgstr ""
 
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "Test Notification"
-msgstr ""
+msgstr "Otestovat notifikace"
 
 #: sabnzbd/api.py
 msgid "&nbsp;Resolving address"
-msgstr ""
+msgstr "Překládám adresu"
 
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
-msgstr ""
+msgstr "Žádný"
 
 #. Default value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
@@ -295,7 +295,7 @@ msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "keywords"
-msgstr ""
+msgstr "klíčová slova"
 
 #. Warning message
 #: sabnzbd/bpsmeter.py
@@ -304,11 +304,11 @@ msgstr ""
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
-msgstr ""
+msgstr "%s není validní emailová adresa"
 
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
-msgstr ""
+msgstr "Adresa serveru je vyžadována"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -1039,7 +1039,7 @@ msgstr ""
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
 msgid "Added NZB"
-msgstr ""
+msgstr "NZB přidáno"
 
 #: sabnzbd/notifier.py
 msgid "Post-processing started"
@@ -1119,7 +1119,7 @@ msgstr ""
 #. Error message
 #: sabnzbd/nzbparser.py
 msgid "Error while adding %s, removing"
-msgstr ""
+msgstr "Chyba při přidávání %s, odstraněno"
 
 #. Error message
 #: sabnzbd/nzbparser.py
@@ -1190,7 +1190,7 @@ msgstr ""
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
-msgstr ""
+msgstr "Zrušeno, nelze dokončit"
 
 #. Error message
 #: sabnzbd/nzbstuff.py
@@ -1658,31 +1658,31 @@ msgstr ""
 #. Queue page button or entry box
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for"
-msgstr ""
+msgstr "Pozastavit na"
 
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for 5 minutes"
-msgstr ""
+msgstr "Pozastavit na 5 minut"
 
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for 15 minutes"
-msgstr ""
+msgstr "Pozastavit na 15 minut"
 
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for 30 minutes"
-msgstr ""
+msgstr "Pozastavit na 30 minut"
 
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for 1 hour"
-msgstr ""
+msgstr "Pozastavit na 1 hodinu"
 
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for 3 hours"
-msgstr ""
+msgstr "Pozastavit na 3 hodiny"
 
 #: sabnzbd/sabtray.py, sabnzbd/skintext.py
 msgid "Pause for 6 hours"
-msgstr ""
+msgstr "Pozastavit na 6 hodin"
 
 #. Shutdown SABnzbd - Config->Scheduling
 #: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
@@ -1695,7 +1695,7 @@ msgstr "Zbývá"
 
 #: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
 msgid "Add NZB"
-msgstr ""
+msgstr "Přidat NZB"
 
 #. Warning message
 #: sabnzbd/scheduler.py
@@ -1815,7 +1815,7 @@ msgstr ""
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
 msgid "Pause All"
-msgstr ""
+msgstr "Pozastavit vše"
 
 #. #: Config->Scheduler
 #: sabnzbd/skintext.py
@@ -1845,17 +1845,17 @@ msgstr ""
 #. Config->Scheduler
 #: sabnzbd/skintext.py
 msgid "Pause low prioirty jobs"
-msgstr ""
+msgstr "Pozastavit úkoly s nízkou prioritou"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
 msgid "Pause normal prioirty jobs"
-msgstr ""
+msgstr "Pozastavit úkoly s normální prioritou"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
 msgid "Pause high prioirty jobs"
-msgstr ""
+msgstr "Pozastavit úkoly s vysokou prioritou"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
@@ -1885,7 +1885,7 @@ msgstr ""
 #. Config->Scheduler
 #: sabnzbd/skintext.py
 msgid "Pause jobs with category"
-msgstr ""
+msgstr "Pozastavit úkoly v kategorii"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2256,7 +2256,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "PAUSED"
-msgstr ""
+msgstr "POZASTAVENO"
 
 #: sabnzbd/skintext.py
 msgid "Cached %s articles (%s)"
@@ -2277,12 +2277,12 @@ msgstr ""
 #. Add NZB to queue (button) - Add NZB to queue (header)
 #: sabnzbd/skintext.py
 msgid "Add"
-msgstr ""
+msgstr "Přidat"
 
 #. Add NZB file to queue (header
 #: sabnzbd/skintext.py
 msgid "Add File"
-msgstr ""
+msgstr "Přidat soubor"
 
 #. Job category
 #: sabnzbd/skintext.py
@@ -2342,7 +2342,7 @@ msgstr ""
 #. Add NZB Dialog
 #: sabnzbd/skintext.py
 msgid "Enter URL"
-msgstr ""
+msgstr "Zadejte URL"
 
 #. Queue page selection menu
 #: sabnzbd/skintext.py
@@ -2650,15 +2650,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Local IPv4 address"
-msgstr ""
+msgstr "Lokální IPv4 adresa"
 
 #: sabnzbd/skintext.py
 msgid "Public IPv4 address"
-msgstr ""
+msgstr "Veřejná IPv4 adresa"
 
 #: sabnzbd/skintext.py
 msgid "IPv6 address"
-msgstr ""
+msgstr "IPv6 adresa"
 
 #: sabnzbd/skintext.py
 msgid "Nameserver / DNS Lookup"
@@ -3014,6 +3014,8 @@ msgid ""
 "Help us translate SABnzbd in your language! <br/>Add untranslated texts or "
 "improved existing translations here:"
 msgstr ""
+"Pomozte nám přeložit SABnzbd do vaší řeči! <br/> Doplňte chybějící texty "
+"nebo vylepšete existující překlad:"
 
 #: sabnzbd/skintext.py
 msgid "This key will give 3rd party programs full access to SABnzbd."
@@ -3061,7 +3063,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Add NZB files "
-msgstr ""
+msgstr "Přidat NZB soubory"
 
 #: sabnzbd/skintext.py
 msgid "API (no Config)"
@@ -3658,7 +3660,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Server IP address selection"
-msgstr ""
+msgstr "Výběr IP adresy serveru"
 
 #: sabnzbd/skintext.py
 msgid "First IP address"
@@ -3666,11 +3668,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Randomly selected IP address"
-msgstr ""
+msgstr "Náhodně vybraná IP adresa"
 
 #: sabnzbd/skintext.py
 msgid "Quickest IP address, preferring IPv6"
-msgstr ""
+msgstr "Nejrychlejší IP adresa, preferuj IPv6"
 
 #: sabnzbd/skintext.py
 msgid "Useful if a newsserver has more than one IPv4/IPv6 address"
@@ -3679,7 +3681,7 @@ msgstr ""
 #. Caption - Button: Add server
 #: sabnzbd/skintext.py
 msgid "Add Server"
-msgstr ""
+msgstr "Přidat server"
 
 #. User defined name for server
 #: sabnzbd/skintext.py
@@ -4148,7 +4150,7 @@ msgstr ""
 #. Notification Scriptsettings
 #: sabnzbd/skintext.py
 msgid "Executes a custom script"
-msgstr ""
+msgstr "Spustit vlastní skript"
 
 #. Notification Scriptsettings
 #: sabnzbd/skintext.py
@@ -4557,7 +4559,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Rename"
-msgstr ""
+msgstr "Přejmenovat"
 
 #: sabnzbd/skintext.py
 msgid "Queue repair"
@@ -4585,11 +4587,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
-msgstr ""
+msgstr "Získat NZB z URL"
 
 #: sabnzbd/skintext.py
 msgid "Upload NZB"
-msgstr ""
+msgstr "Nahrát NZB"
 
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"
@@ -4639,7 +4641,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Custom"
-msgstr ""
+msgstr "Vlastní"
 
 #: sabnzbd/skintext.py
 msgid "Compact layout"
@@ -4969,7 +4971,7 @@ msgstr ""
 #. Error message
 #: sabnzbd/sorting.py
 msgid "Failed to rename: %s to %s"
-msgstr ""
+msgstr "Nezdařilo se přejmenovat: %s na %s"
 
 #. Error message
 #: sabnzbd/sorting.py
