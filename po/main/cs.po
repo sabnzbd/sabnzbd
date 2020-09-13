@@ -2402,7 +2402,7 @@ msgstr ""
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Retry"
-msgstr ""
+msgstr "Opakovat"
 
 #. Queue end-of-queue selection box
 #: sabnzbd/skintext.py
@@ -2432,7 +2432,7 @@ msgstr ""
 #. Retry all failed jobs dialog box
 #: sabnzbd/skintext.py
 msgid "Retry all failed jobs"
-msgstr ""
+msgstr "Opakovat všechny nedokončené úkoly"
 
 #. Queue page button
 #: sabnzbd/skintext.py
@@ -2530,12 +2530,12 @@ msgstr ""
 #. Retry all failed jobs in History
 #: sabnzbd/skintext.py
 msgid "Retry all failed"
-msgstr ""
+msgstr "Opakovat všechny nedokončené"
 
 #. Retry all button for Retry All Failed Jobs
 #: sabnzbd/skintext.py
 msgid "Retry All"
-msgstr ""
+msgstr "Opakovat všechny"
 
 #: sabnzbd/skintext.py
 msgid "Virus/spam"
@@ -4583,7 +4583,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Retry all"
-msgstr ""
+msgstr "Opakovat vše"
 
 #: sabnzbd/skintext.py
 msgid "Fetch NZB from URL"
@@ -4792,7 +4792,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Retry all failed jobs in History?"
-msgstr ""
+msgstr "Opakovat všechny nedokončené úkoly z historie?"
 
 #: sabnzbd/skintext.py
 msgid "Purge"
