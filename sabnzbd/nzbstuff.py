@@ -1898,16 +1898,6 @@ class NzbObject(TryList):
         attribs = sabnzbd.load_data(ATTRIB_FILE, self.workpath, remove=False)
         logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
 
-        # TODO: Remove fallback to old method in SABnzbd 3.2.0
-        if not attribs:
-            cat, pp, script, self.priority, name, password, self.url = get_attrib_file(self.workpath, 7)
-            if name:
-                # Could be converted to integer due to the logic in get_attrib_file
-                self.final_name = str(name)
-            if password:
-                self.password = password
-            return cat, pp, script
-
         # Only a subset we want to apply directly to the NZO
         for attrib in ("final_name", "priority", "password", "url"):
             # Only set if it is present and has a value
