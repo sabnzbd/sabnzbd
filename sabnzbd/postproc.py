@@ -488,7 +488,9 @@ def process_job(nzo):
                     newfiles = rename_and_collapse_folder(tmp_workdir_complete, workdir_complete, newfiles)
                 except:
                     logging.error(
-                        T('Error renaming "%s" to "%s"'), clip_path(tmp_workdir_complete), clip_path(workdir_complete),
+                        T('Error renaming "%s" to "%s"'),
+                        clip_path(tmp_workdir_complete),
+                        clip_path(workdir_complete),
                     )
                     logging.info("Traceback: ", exc_info=True)
                     # Better disable sorting because filenames are all off now
