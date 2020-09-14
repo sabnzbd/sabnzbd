@@ -515,7 +515,7 @@ def process_job(nzo):
 
             if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list:
                 # deobfuscate the filenames
-                logging.info("Running deobfuscate on directory %s", workdir_complete)
+                logging.info("Running deobfuscate")
                 deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
 
             # Run the user script
