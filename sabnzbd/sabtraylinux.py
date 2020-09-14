@@ -76,7 +76,7 @@ class StatusIcon(Thread):
         self.statusicon.set_visible(True)
         self.icon = self.sabicons["default"]
         self.refresh_icon()
-        self.tooltip = "SABnzbd"
+        self.tooltip = "SABnzbd %s" % sabnzbd.__version__
         self.refresh_tooltip()
         if HAVE_XAPP:
             self.statusicon.connect("activate", self.right_click_event)
@@ -113,6 +113,7 @@ class StatusIcon(Thread):
             self.icon = self.sabicons["default"]
 
         self.refresh_icon()
+        self.tooltip = "SABnzbd %s\n%s" % (sabnzbd.__version__, self.tooltip)
         self.refresh_tooltip()
         return 1
 
