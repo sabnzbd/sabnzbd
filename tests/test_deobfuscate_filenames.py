@@ -62,7 +62,7 @@ class TestDeobfuscateFinalResult:
         os.mkdir(dirname)
 
         # Create a big enough file with a non-useful filename
-        output_file = dirname + "/599c1c9e2bdfb5114044bf25152b7eaa.mkv"
+        output_file = os.path.join(dirname, "599c1c9e2bdfb5114044bf25152b7eaa.mkv")
         with open(output_file, "wb") as myfile:
             # must be above MIN_SIZE, so ... 15MB
             myfile.truncate(15 * 1024 * 1024)
@@ -71,7 +71,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that directory, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate(dirname, jobname)
+        deobfuscate_dir(dirname, jobname)
         # Check if file was renamed
         assert not os.path.exists(output_file)  # original filename should not be there anymore
         assert os.path.exists(os.path.join(dirname, jobname + ".mkv"))  # ... it should be renamed to the jobname
@@ -89,7 +89,7 @@ class TestDeobfuscateFinalResult:
         assert os.path.exists(test_input)
 
         # Run deobfuscate
-        deobfuscate(test_dir, "doesnt_matter")
+        deobfuscate_dir(test_dir, "doesnt_matter")
 
         # Should now be renamed to the filename in the par2 file
         assert not os.path.exists(test_input)

@@ -118,11 +118,20 @@ def is_probably_obfuscated(myinputfilename):
     return True  # default not obfuscated
 
 
-def deobfuscate(workingdirectory, usefulname):
-    """ In workingdirectory, check all filenames, and if wanted, rename """
+def deobfuscate_dir(workingdirectory, usefulname):
+    """ In workingdirectory, check all filenames, and if wanted, deobfuscate """
+    
+    list_of_files = []
+    for (dirpath, dirnames, filenames) in os.walk(workingdirectory):
+        list_of_files += [os.path.join(dirpath, file) for file in filenames]
+    deobfuscate_list(list_of_files, usefulname)
+
+def deobfuscate_list(filelist, usefulname):
+    """ Check all files in filelist, and if wanted, deobfuscate """
 
     # Search for par2 files
-    par2_files = globber_full(workingdirectory, "*.par2")
+    #par2_files = globber_full(workingdirectory, "*.par2")
+    par2_files = [f for f in filelist if f.endswith('.par2')]
 
     # Found any par2 files we can use?
     run_renamer = True
@@ -142,24 +151,25 @@ def deobfuscate(workingdirectory, usefulname):
     # No par2 files? Then we try to rename qualifying files to the job-name
     if run_renamer:
         logging.debug("Trying to see if there are qualifying files to be deobfuscated")
-        for root, dirnames, filenames in os.walk(workingdirectory):
-            for filename in filenames:
-                logging.debug("Deobfuscate inspecting %s", filename)
-                full_path = os.path.join(root, filename)
-                file_size = os.path.getsize(full_path)
-                # Do we need to rename this file?
-                # Criteria: big, not-excluded extension, obfuscated
-                if (
-                    file_size > MIN_FILE_SIZE
-                    and get_ext(filename) not in EXCLUDED_FILE_EXTS
-                    and is_probably_obfuscated(filename)  # this as last test to avoid unnecessary analysis
-                ):
-                    # OK, rename
-                    new_name = get_unique_filename(
-                        "%s%s" % (os.path.join(workingdirectory, usefulname), get_ext(filename))
-                    )
-                    logging.info("Deobfuscate renaming %s to %s", filename, new_name)
-                    # Rename and make sure the new filename is unique
-                    renamer(full_path, new_name)
+        #for root, dirnames, filenames in os.walk(workingdirectory):
+        for filename in filelist:
+            logging.debug("Deobfuscate inspecting %s", filename)
+            #full_path = os.path.join(root, filename)
+            file_size = os.path.getsize(filename)
+            # Do we need to rename this file?
+            # Criteria: big, not-excluded extension, obfuscated
+            if (
+                file_size > MIN_FILE_SIZE
+                and get_ext(filename) not in EXCLUDED_FILE_EXTS
+                and is_probably_obfuscated(filename)  # this as last test to avoid unnecessary analysis
+            ):
+                # OK, rename
+                path, file = os.path.split(filename)
+                new_name = get_unique_filename(
+                    "%s%s" % (os.path.join(path, usefulname), get_ext(filename))
+                )
+                logging.info("Deobfuscate renaming %s to %s", filename, new_name)
+                # Rename and make sure the new filename is unique
+                renamer(filename, new_name)
     else:
         logging.info("No qualifying files found to deobfuscate")
