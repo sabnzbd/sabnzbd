@@ -60,47 +60,9 @@ class TestDeobfuscateFinalResult:
         assert not is_probably_obfuscated("Lorem Ipsum.avi")
         assert not is_probably_obfuscated("Lorem Ipsum")  # no ext
 
-    def test_deobfuscate_dir(self):
-        # Full test: a directory with non-useful named files in it: Test that deobfuscate() works and renames them
-
-        # Create directory (with a random directory name)
-        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
-        os.mkdir(dirname)
-
-        # Create a big enough file with a non-useful filename
-        output_file1 = os.path.join(dirname, "111c1c9e2bdfb5114044bf25152b7eaa.bla")
-        create_big_file(output_file1)
-        assert os.path.isfile(output_file1)
-
-        # ... and another one
-        output_file2 = os.path.join(dirname, "333c1c9e2bdfb5114044bf25152b7eaa.bla")
-        create_big_file(output_file2)
-        assert os.path.isfile(output_file2)
-
-        # and a useful filename ... so that should not get renamed
-        output_file3 = os.path.join(dirname, "This Great Download 2020.bla")
-        create_big_file(output_file3)
-        assert os.path.isfile(output_file3)
-
-        # and now unleash the magic on that directory, with a more useful jobname:
-        jobname = "My Important Download 2020"
-        deobfuscate_dir(dirname, jobname)
-
-        # Check original files:
-        assert not os.path.exists(output_file1)  # original filename should not be there anymore
-        assert not os.path.exists(output_file2)  # original filename should not be there anymore
-        assert os.path.exists(output_file3)  # original filename should still be there
-
-        # Check the renaming
-        assert os.path.exists(os.path.join(dirname, jobname + ".bla"))  # ... it should be renamed to the jobname
-        assert os.path.exists(os.path.join(dirname, jobname + ".1.bla"))  # ... it should be renamed to the jobname
-
-        # Done. Remove (non-empty) directory
-        shutil.rmtree(dirname)
-
     def test_deobfuscate_filelist(self):
         # Full test: a filelist with a non-useful named file in it: Test that deobfuscate() works and renames it
-        # ... but not the files that are NOT in the filelist (although in same directory)
+        # ... but not the files that are NOT in the filelist (although in the same directory)
 
         # Create directory (with a random directory name)
         dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
@@ -111,17 +73,22 @@ class TestDeobfuscateFinalResult:
         create_big_file(output_file1)
         assert os.path.isfile(output_file1)
 
-        # create the filelist, with only one file
-        myfilelist = [output_file1]
-
-        # Create some extra files ... that will not be in the list
-        output_file2 = os.path.join(dirname, "333c1c9e2bdfb5114044bf25152b7eaa.bla")
+        # and another one
+        output_file2 = os.path.join(dirname, "222c1c9e2bdfb5114044bf25152b7eaa.bla")
         create_big_file(output_file2)
         assert os.path.isfile(output_file2)
 
-        output_file3 = os.path.join(dirname, "This Great Download 2020.bla")
+        # create the filelist, with just the above files
+        myfilelist = [output_file1, output_file2]
+
+        # Create some extra files ... that will not be in the list
+        output_file3 = os.path.join(dirname, "333c1c9e2bdfb5114044bf25152b7eaa.bla")
         create_big_file(output_file3)
         assert os.path.isfile(output_file3)
+
+        output_file4 = os.path.join(dirname, "This Great Download 2020.bla")
+        create_big_file(output_file4)
+        assert os.path.isfile(output_file4)
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
@@ -129,12 +96,13 @@ class TestDeobfuscateFinalResult:
 
         # Check original files:
         assert not os.path.exists(output_file1)  # original filename should not be there anymore
-        assert os.path.exists(output_file2)  # but this one should still be there
-        assert os.path.exists(output_file3)  # and this one too
+        assert not os.path.exists(output_file2)  # original filename should not be there anymore
+        assert os.path.exists(output_file3)  # but this one should still be there
+        assert os.path.exists(output_file4)  # and this one too
 
         # Check the renaming
         assert os.path.exists(os.path.join(dirname, jobname + ".bla"))  # ... it should be renamed to the jobname
-        assert not os.path.exists(os.path.join(dirname, jobname + ".1.bla"))  # should not be there
+        assert os.path.exists(os.path.join(dirname, jobname + ".1.bla"))  # should not be there
 
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
@@ -148,8 +116,11 @@ class TestDeobfuscateFinalResult:
         # Check if it is there
         assert os.path.exists(test_input)
 
+        list_of_files = []
+        for (dirpath, dirnames, filenames) in os.walk(test_dir):
+            list_of_files += [os.path.join(dirpath, file) for file in filenames]
         # Run deobfuscate
-        deobfuscate_dir(test_dir, "doesnt_matter")
+        deobfuscate_list(list_of_files, "doesnt_matter")
 
         # Should now be renamed to the filename in the par2 file
         assert not os.path.exists(test_input)
