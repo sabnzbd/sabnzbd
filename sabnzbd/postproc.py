@@ -515,10 +515,10 @@ def process_job(nzo):
                     nzo.set_unpack_info("Unpack", T("Failed to move files"))
                     all_ok = False
 
-            if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list and not one_folder:
+            if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list:
                 # deobfuscate the filenames
-                logging.info("Running deobfuscate on directory %s", workdir_complete)
-                deobfuscate.deobfuscate(workdir_complete, nzo.final_name)
+                logging.info("Running deobfuscate")
+                deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
 
             # Run the user script
             script_path = make_script_path(script)
