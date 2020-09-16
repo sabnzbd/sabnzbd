@@ -121,6 +121,9 @@ def is_probably_obfuscated(myinputfilename):
 def deobfuscate_list(filelist, usefulname):
     """ Check all files in filelist, and if wanted, deobfuscate """
 
+    # to be sure, only keep really exsiting files:
+    filelist = [f for f in filelist if os.path.exists(f)]
+
     # Search for par2 files in the filelist
     par2_files = [f for f in filelist if f.endswith(".par2")]
 

@@ -60,9 +60,38 @@ class TestDeobfuscateFinalResult:
         assert not is_probably_obfuscated("Lorem Ipsum.avi")
         assert not is_probably_obfuscated("Lorem Ipsum")  # no ext
 
-    def test_deobfuscate_filelist(self):
-        # Full test: a filelist with a non-useful named file in it: Test that deobfuscate() works and renames it
-        # ... but not the files that are NOT in the filelist (although in the same directory)
+    def test_deobfuscate_filelist_lite(self):
+        # ligthweight test of deobfuscating: with just one file
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        # Create a big enough file with a non-useful, obfuscated filename
+        output_file1 = os.path.join(dirname, "111c1c9e2bdfb5114044bf25152b7eaa.bla")
+        create_big_file(output_file1)
+        assert os.path.isfile(output_file1)
+
+        # create the filelist, with just the above file
+        myfilelist = [output_file1]
+
+        # and now unleash the magic on that filelist, with a more useful jobname:
+        jobname = "My Important Download 2020"
+        deobfuscate_list(myfilelist, jobname)
+
+        # Check original files:
+        assert not os.path.isfile(output_file1)  # original filename should not be there anymore
+
+        # Check the renaming
+        assert os.path.isfile(os.path.join(dirname, jobname + ".bla"))  # ... it should be renamed to the jobname
+
+        # Done. Remove (non-empty) directory
+        shutil.rmtree(dirname)
+
+
+    def test_deobfuscate_filelist_full(self):
+        # Full test, with a combinantion of files: Test that deobfuscate() works and renames correctly
+        # ... but only the files that are in the filelist
 
         # Create directory (with a random directory name)
         dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
@@ -95,17 +124,35 @@ class TestDeobfuscateFinalResult:
         deobfuscate_list(myfilelist, jobname)
 
         # Check original files:
-        assert not os.path.exists(output_file1)  # original filename should not be there anymore
-        assert not os.path.exists(output_file2)  # original filename should not be there anymore
-        assert os.path.exists(output_file3)  # but this one should still be there
-        assert os.path.exists(output_file4)  # and this one too
+        assert not os.path.isfile(output_file1)  # original filename should not be there anymore
+        assert not os.path.isfile(output_file2)  # original filename should not be there anymore
+        assert os.path.isfile(output_file3)  # but this one should still be there
+        assert os.path.isfile(output_file4)  # and this one too
 
         # Check the renaming
-        assert os.path.exists(os.path.join(dirname, jobname + ".bla"))  # ... it should be renamed to the jobname
-        assert os.path.exists(os.path.join(dirname, jobname + ".1.bla"))  # should not be there
+        assert os.path.isfile(os.path.join(dirname, jobname + ".bla"))  # ... it should be renamed to the jobname
+        assert os.path.isfile(os.path.join(dirname, jobname + ".1.bla"))  # should not be there
 
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
+
+    def test_deobfuscate_filelist_nasty_tests(self):
+        # check no problems with nasty use cases
+
+        # non existing file
+        myfilelist = ['/bla/bla/notthere.bin']
+        jobname = "My Important Download 2020"
+        deobfuscate_list(myfilelist, jobname)
+
+        # Create directory with a directory name to could be renamed
+        dirname = os.path.join(SAB_DATA_DIR, "333c1c9e2bdfb5114044bf25152b7eaa.bla")
+        os.mkdir(dirname)
+        myfilelist = [dirname]
+        jobname = "My Important Download 2020"
+        deobfuscate_list(myfilelist, jobname)
+        assert os.path.exists(dirname)
+        shutil.rmtree(dirname)
+
 
     def test_deobfuscate_par2(self):
         # Simple test to see if the par2 file is picked up
