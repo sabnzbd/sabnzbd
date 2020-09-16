@@ -75,7 +75,7 @@ def decode_par2(parfile):
 
 def is_probably_obfuscated(myinputfilename):
     """Returns boolean if filename is likely obfuscated. Default: True
-    myinputfilename can be a plain file name, or a full path"""
+    myinputfilename (string) can be a plain file name, or a full path"""
 
     # Find filebasename
     path, filename = os.path.split(myinputfilename)

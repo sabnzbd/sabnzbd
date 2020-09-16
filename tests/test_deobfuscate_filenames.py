@@ -68,7 +68,7 @@ class TestDeobfuscateFinalResult:
         os.mkdir(dirname)
 
         # Create a big enough file with a non-useful, obfuscated filename
-        output_file1 = os.path.join(dirname, "111c1c9e2bdfb5114044bf25152b7eaa.bla")
+        output_file1 = os.path.join(dirname, "111c1c9e2bdfb5114044bf25152b7eab.bla")
         create_big_file(output_file1)
         assert os.path.isfile(output_file1)
 
