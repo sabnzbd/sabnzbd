@@ -104,7 +104,7 @@ def is_probably_obfuscated(myinputfilename):
         return False
 
     # Example: "Beast 2020"
-    if (upperchars + lowerchars >= 4) and decimals > 3 and spacesdots >= 1:
+    if (upperchars + lowerchars >= 4) and decimals >= 4 and spacesdots >= 1:
         logging.debug("Not obfuscated: (upperchars + lowerchars >= 4) and decimals > 3 and spacesdots > 1")
         return False
 

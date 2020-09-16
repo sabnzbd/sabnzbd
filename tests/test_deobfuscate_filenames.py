@@ -137,7 +137,7 @@ class TestDeobfuscateFinalResult:
         shutil.rmtree(dirname)
 
     def test_deobfuscate_filelist_nasty_tests(self):
-        # check no problems with nasty use cases
+        # check no problems occur with nasty use cases
 
         # non existing file
         myfilelist = ['/bla/bla/notthere.bin']
