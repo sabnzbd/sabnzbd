@@ -88,7 +88,6 @@ class TestDeobfuscateFinalResult:
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
 
-
     def test_deobfuscate_filelist_full(self):
         # Full test, with a combinantion of files: Test that deobfuscate() works and renames correctly
         # ... but only the files that are in the filelist
@@ -136,11 +135,43 @@ class TestDeobfuscateFinalResult:
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
 
+    def test_deobfuscate_filelist_subdir(self):
+        # test of deobfuscating with sub directories
+
+        # Create directory with subdirs
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+        subdirname = os.path.join(dirname, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(subdirname)
+        subsubdirname = os.path.join(subdirname, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(subsubdirname)
+
+        # Create a big enough file with a non-useful, obfuscated filename
+        output_file1 = os.path.join(subsubdirname, "111c1c9e2bdfb5114044bf25152b7eab.bla")
+        create_big_file(output_file1)
+        assert os.path.isfile(output_file1)
+
+        # create the filelist, with just the above file
+        myfilelist = [output_file1]
+
+        # and now unleash the magic on that filelist, with a more useful jobname:
+        jobname = "My Important Download 2020"
+        deobfuscate_list(myfilelist, jobname)
+
+        # Check original files:
+        assert not os.path.isfile(output_file1)  # original filename should not be there anymore
+
+        # Check the renaming
+        assert os.path.isfile(os.path.join(subsubdirname, jobname + ".bla"))  # ... it should be renamed to the jobname
+
+        # Done. Remove (non-empty) directory
+        shutil.rmtree(dirname)
+
     def test_deobfuscate_filelist_nasty_tests(self):
         # check no problems occur with nasty use cases
 
         # non existing file
-        myfilelist = ['/bla/bla/notthere.bin']
+        myfilelist = ["/bla/bla/notthere.bin"]
         jobname = "My Important Download 2020"
         deobfuscate_list(myfilelist, jobname)
 
@@ -152,7 +183,6 @@ class TestDeobfuscateFinalResult:
         deobfuscate_list(myfilelist, jobname)
         assert os.path.exists(dirname)
         shutil.rmtree(dirname)
-
 
     def test_deobfuscate_par2(self):
         # Simple test to see if the par2 file is picked up
