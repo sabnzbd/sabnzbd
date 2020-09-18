@@ -600,6 +600,10 @@ msgid "&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and th
 msgstr ""
 
 #: sabnzbd/interface.py
+msgid "The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr ""
 

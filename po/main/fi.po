@@ -654,6 +654,12 @@ msgstr ""
 "href=\"..\">Päivitä</a></strong><br />"
 
 #: sabnzbd/interface.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr "Varoitus: LOCALHOST on hämärä, käytä numeerista IP-osoitetta."
 

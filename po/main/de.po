@@ -678,6 +678,12 @@ msgstr ""
 "href=\"..\">Aktualisieren</a></strong><br />"
 
 #: sabnzbd/interface.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr ""
 "Warnung: localhost ist mehrdeutig. Verwenden Sie eine numerische IP-Adresse."
