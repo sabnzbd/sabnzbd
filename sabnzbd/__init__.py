@@ -1091,14 +1091,17 @@ def pid_file(pid_path=None, pid_file=None, port=0):
 
 
 def check_incomplete_vs_complete():
-    """ Make sure "incomplete" and "complete" are not identical """
+    """Make sure download_dir and complete_dir are not identical
+    or that download_dir is not a subfolder of complete_dir"""
     complete = cfg.complete_dir.get_path()
     if filesystem.same_file(cfg.download_dir.get_path(), complete):
-        if filesystem.real_path("X", cfg.download_dir()) == cfg.download_dir():
-            # Abs path, so set an abs path too
+        if filesystem.real_path("X", cfg.download_dir()) == filesystem.long_path(cfg.download_dir()):
+            # Abs path, so set download_dir as an abs path inside the complete_dir
             cfg.download_dir.set(os.path.join(complete, "incomplete"))
         else:
             cfg.download_dir.set("incomplete")
+        return False
+    return True
 
 
 def wait_for_download_folder():

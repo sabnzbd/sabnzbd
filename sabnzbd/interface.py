@@ -1201,7 +1201,11 @@ class ConfigFolders:
                     # return sabnzbd.api.report('json', error=msg)
                     return badParameterResponse(msg, kwargs.get("ajax"))
 
-        sabnzbd.check_incomplete_vs_complete()
+        if not sabnzbd.check_incomplete_vs_complete():
+            return badParameterResponse(
+                T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
+                kwargs.get("ajax"),
+            )
         config.save_config()
         if kwargs.get("ajax"):
             return sabnzbd.api.report("json")
