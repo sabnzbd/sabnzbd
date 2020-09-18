@@ -38,7 +38,7 @@ from sabnzbd.filesystem import get_unique_filename, globber_full, renamer, get_e
 from sabnzbd.par2file import is_parfile, parse_par2_file
 
 # Files to exclude and minimal file size for renaming
-EXCLUDED_FILE_EXTS = (".vob", ".rar", ".par2")
+EXCLUDED_FILE_EXTS = (".vob", ".rar", ".par2", ".mts", ".m2ts", ".cpi", ".clpi", ".mpl", ".mpls", ".bdm", ".bdmv")
 MIN_FILE_SIZE = 10 * 1024 * 1024
 
 
