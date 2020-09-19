@@ -3,14 +3,14 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Fred L <88com88@gmail.com>, 2020
 # Safihre <safihre@sabnzbd.org>, 2020
+# Fred L <88com88@gmail.com>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2020\n"
 "Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -685,6 +685,8 @@ msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
+"Le dossier des téléchargements terminés ne peut pas être le même dossier que"
+" les téléchargements temporaires, ni être l'un de ses sous-dossiers"
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
