@@ -4116,7 +4116,7 @@ msgstr "!התראה נשלחה"
 msgid "Enable NotifyOSD"
 msgstr "NotifyOSD אפשר"
 
-#. Header for OSX Notfication Center section
+#. Header for macOS Notfication Center section
 #: sabnzbd/skintext.py
 msgid "Notification Center"
 msgstr "מרכז ההתראות"

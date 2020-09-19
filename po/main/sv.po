@@ -4111,7 +4111,7 @@ msgstr "Notis skickad!"
 msgid "Enable NotifyOSD"
 msgstr "Aktivera NotifyOSD"
 
-#. Header for OSX Notfication Center section
+#. Header for macOS Notfication Center section
 #: sabnzbd/skintext.py
 msgid "Notification Center"
 msgstr "Meddelandecenter"

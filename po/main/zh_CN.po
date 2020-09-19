@@ -4043,7 +4043,7 @@ msgstr "通知已发送!"
 msgid "Enable NotifyOSD"
 msgstr "启用NotifyOSD"
 
-#. Header for OSX Notfication Center section
+#. Header for macOS Notfication Center section
 #: sabnzbd/skintext.py
 msgid "Notification Center"
 msgstr "通知中心"
