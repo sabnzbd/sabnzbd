@@ -43,7 +43,6 @@ import sabnzbd
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.api as api
 import sabnzbd.scheduler as scheduler
-from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
 
@@ -196,7 +195,7 @@ class StatusIcon(Thread):
 
     def pause(self):
         scheduler.plan_resume(0)
-        Downloader.do.pause()
+        sabnzbd.Downloader.pause()
 
     def resume(self):
         scheduler.plan_resume(0)

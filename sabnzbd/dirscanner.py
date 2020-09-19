@@ -89,7 +89,6 @@ class DirScanner(threading.Thread):
         self.trigger = False
         cfg.dirscan_dir.callback(self.newdir)
         cfg.dirscan_speed.callback(self.newspeed)
-        DirScanner.do = self
 
     def newdir(self):
         """ We're notified of a dir change """
@@ -213,9 +212,3 @@ class DirScanner(threading.Thread):
                     if os.path.isdir(dpath) and dd.lower() in cats:
                         run_dir(dpath, dd.lower())
             self.busy = False
-
-
-def dirscan():
-    """ Wrapper required for scheduler """
-    logging.info("Scheduled or manual watched folder scan")
-    DirScanner.do.scan()

@@ -118,7 +118,6 @@ class BPSMeter:
         self.q_hour = 0  # Quota reset hour
         self.q_minute = 0  # Quota reset minute
         self.quota_enabled = True  # Scheduled quota enable/disable
-        BPSMeter.do = self
 
     def save(self):
         """ Save admin to disk """
@@ -235,8 +234,8 @@ class BPSMeter:
             if self.have_quota and self.quota_enabled:
                 self.left -= amount
                 if self.left <= 0.0:
-                    if sabnzbd.downloader.Downloader.do and not sabnzbd.downloader.Downloader.do.paused:
-                        sabnzbd.downloader.Downloader.do.pause()
+                    if sabnzbd.Downloader.do and not sabnzbd.Downloader.paused:
+                        sabnzbd.Downloader.pause()
                         logging.warning(T("Quota spent, pausing downloading"))
 
         # Speedometer
@@ -355,8 +354,8 @@ class BPSMeter:
             logging.info("Quota was reset to %s", self.quota)
             if cfg.quota_resume():
                 logging.info("Auto-resume due to quota reset")
-                if sabnzbd.downloader.Downloader.do:
-                    sabnzbd.downloader.Downloader.do.resume()
+                if sabnzbd.Downloader.do:
+                    sabnzbd.Downloader.resume()
             self.next_reset()
             return False
         else:
@@ -464,8 +463,8 @@ class BPSMeter:
     @staticmethod
     def resume():
         """ Resume downloading """
-        if cfg.quota_resume() and sabnzbd.downloader.Downloader.do and sabnzbd.downloader.Downloader.do.paused:
-            sabnzbd.downloader.Downloader.do.resume()
+        if cfg.quota_resume() and sabnzbd.Downloader.paused:
+            sabnzbd.Downloader.resume()
 
     def midnight(self):
         """ Midnight action: dummy update for all servers """
@@ -476,12 +475,4 @@ class BPSMeter:
 def quota_handler():
     """ To be called from scheduler """
     logging.debug("Checking quota")
-    BPSMeter.do.reset_quota()
-
-
-def midnight_action():
-    if BPSMeter.do:
-        BPSMeter.do.midnight()
-
-
-BPSMeter()
+    sabnzbd.BPSMeter.reset_quota()

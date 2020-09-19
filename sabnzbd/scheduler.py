@@ -30,7 +30,6 @@ import sabnzbd.dirscanner
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.postproc import PostProcessor
 from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 
@@ -47,11 +46,11 @@ def schedule_guard():
 
 
 def pp_pause():
-    PostProcessor.do.paused = True
+    sabnzbd.PostProcessor.paused = True
 
 
 def pp_resume():
-    PostProcessor.do.paused = False
+    sabnzbd.PostProcessor.paused = False
 
 
 def pp_pause_event():
@@ -98,7 +97,7 @@ def init():
             action = scheduled_resume
             arguments = []
         elif action_name == "pause":
-            action = sabnzbd.downloader.Downloader.do.pause
+            action = sabnzbd.Downloader.pause
             arguments = []
         elif action_name == "pause_all":
             action = sabnzbd.pause_all
@@ -114,7 +113,7 @@ def init():
         elif action_name == "resume_post":
             action = pp_resume
         elif action_name == "speedlimit" and arguments != []:
-            action = sabnzbd.downloader.Downloader.do.limit_speed
+            action = sabnzbd.Downloader.limit_speed
         elif action_name == "enable_server" and arguments != []:
             action = sabnzbd.enable_server
         elif action_name == "disable_server" and arguments != []:
@@ -129,34 +128,34 @@ def init():
         elif action_name == "remove_completed":
             action = sabnzbd.api.history_remove_completed
         elif action_name == "enable_quota":
-            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
+            action = sabnzbd.BPSMeter.set_status
             arguments = [True]
         elif action_name == "disable_quota":
-            action = sabnzbd.bpsmeter.BPSMeter.do.set_status
+            action = sabnzbd.BPSMeter.set_status
             arguments = [False]
         elif action_name == "pause_all_low":
-            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            action = sabnzbd.NzbQueue.pause_on_prio
             arguments = [LOW_PRIORITY]
         elif action_name == "pause_all_normal":
-            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            action = sabnzbd.NzbQueue.pause_on_prio
             arguments = [NORMAL_PRIORITY]
         elif action_name == "pause_all_high":
-            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_prio
+            action = sabnzbd.NzbQueue.pause_on_prio
             arguments = [HIGH_PRIORITY]
         elif action_name == "resume_all_low":
-            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            action = sabnzbd.NzbQueue.resume_on_prio
             arguments = [LOW_PRIORITY]
         elif action_name == "resume_all_normal":
-            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            action = sabnzbd.NzbQueue.resume_on_prio
             arguments = [NORMAL_PRIORITY]
         elif action_name == "resume_all_high":
-            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_prio
+            action = sabnzbd.NzbQueue.resume_on_prio
             arguments = [HIGH_PRIORITY]
         elif action_name == "pause_cat":
-            action = sabnzbd.nzbqueue.NzbQueue.do.pause_on_cat
+            action = sabnzbd.NzbQueue.pause_on_cat
             arguments = [argument_list]
         elif action_name == "resume_cat":
-            action = sabnzbd.nzbqueue.NzbQueue.do.resume_on_cat
+            action = sabnzbd.NzbQueue.resume_on_cat
             arguments = [argument_list]
         else:
             logging.warning(T("Unknown action: %s"), action_name)
@@ -193,7 +192,7 @@ def init():
             sabnzbd.misc.check_latest_version, "VerCheck", d, None, (h, m), kronos.method.sequential, [], None
         )
 
-    action, hour, minute = sabnzbd.bpsmeter.BPSMeter.do.get_quota()
+    action, hour, minute = sabnzbd.BPSMeter.get_quota()
     if action:
         logging.info("Setting schedule for quota check daily at %s:%s", hour, minute)
         __SCHED.add_daytime_task(
@@ -215,7 +214,7 @@ def init():
 
     logging.info("Setting schedule for midnight BPS reset")
     __SCHED.add_daytime_task(
-        sabnzbd.bpsmeter.midnight_action,
+        sabnzbd.BPSMeter.midnight,
         "midnight_bps",
         list(range(1, 8)),
         None,
@@ -248,7 +247,7 @@ def restart(force=False):
             SCHEDULE_GUARD_FLAG = False
             stop()
 
-            analyse(sabnzbd.downloader.Downloader.do.paused)
+            analyse(sabnzbd.Downloader.paused)
 
             init()
             start()
@@ -406,13 +405,13 @@ def analyse(was_paused=False, priority=None):
             sabnzbd.pause_all()
         else:
             sabnzbd.unpause_all()
-        sabnzbd.downloader.Downloader.do.set_paused_state(paused or paused_all)
+        sabnzbd.Downloader.set_paused_state(paused or paused_all)
 
-    PostProcessor.do.paused = pause_post
+    sabnzbd.PostProcessor.paused = pause_post
     if speedlimit is not None:
-        sabnzbd.downloader.Downloader.do.limit_speed(speedlimit)
+        sabnzbd.Downloader.limit_speed(speedlimit)
 
-    sabnzbd.bpsmeter.BPSMeter.do.set_status(quota, action=False)
+    sabnzbd.BPSMeter.set_status(quota, action=False)
 
     for serv in servers:
         try:
@@ -420,7 +419,7 @@ def analyse(was_paused=False, priority=None):
             value = servers[serv]
             if bool(item.enable()) != bool(value):
                 item.enable.set(value)
-                sabnzbd.downloader.Downloader.do.init_server(serv, serv)
+                sabnzbd.Downloader.init_server(serv, serv)
         except:
             pass
     config.save_config()
@@ -457,7 +456,7 @@ def plan_resume(interval):
         __PAUSE_END = time.time() + (interval * 60)
         logging.debug("Schedule resume at %s", __PAUSE_END)
         __SCHED.add_single_task(__oneshot_resume, "", interval * 60, kronos.method.sequential, [__PAUSE_END], None)
-        sabnzbd.downloader.Downloader.do.pause()
+        sabnzbd.Downloader.pause()
     else:
         __PAUSE_END = None
         sabnzbd.unpause_all()

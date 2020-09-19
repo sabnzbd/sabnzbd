@@ -35,7 +35,6 @@ from sabnzbd.newswrapper import NewsWrapper, request_server_info
 import sabnzbd.notifier as notifier
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.scheduler
 from sabnzbd.misc import from_units, nntp_to_msg, int_conv
 from sabnzbd.utils.happyeyeballs import happyeyeballs
@@ -80,10 +79,10 @@ class Server:
         self.restart = False
         self.displayname = displayname
         self.host = host
-        self.port = port
+        self.port: int = port
         self.timeout = timeout
         self.threads = threads
-        self.priority = priority
+        self.priority: int = priority
         self.ssl = ssl
         self.ssl_verify = ssl_verify
         self.ssl_ciphers = ssl_ciphers
@@ -211,8 +210,6 @@ class Downloader(Thread):
         for server in config.get_servers():
             self.init_server(None, server)
 
-        Downloader.do = self
-
     def init_server(self, oldserver, newserver):
         """Setup or re-setup single server
         When oldserver is defined and in use, delay startup.
@@ -298,7 +295,7 @@ class Downloader(Thread):
             logging.info("Pausing")
             notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
             if self.is_paused():
-                BPSMeter.do.reset()
+                sabnzbd.BPSMeter.reset()
             if cfg.autodisconnect():
                 self.disconnect()
 
@@ -358,7 +355,7 @@ class Downloader(Thread):
         if not self.paused:
             return False
         else:
-            if sabnzbd.nzbqueue.NzbQueue.do.has_forced_items():
+            if sabnzbd.NzbQueue.has_forced_items():
                 return False
             else:
                 return True
@@ -404,7 +401,7 @@ class Downloader(Thread):
             # Make sure server address resolution is refreshed
             server.info = None
 
-            sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
+            sabnzbd.NzbQueue.reset_all_try_lists()
 
     def decode(self, article, raw_data):
         """Decode article and check the status of
@@ -413,23 +410,21 @@ class Downloader(Thread):
         # Handle broken articles directly
         if not raw_data:
             if not article.search_new_server():
-                sabnzbd.nzbqueue.NzbQueue.do.register_article(article, success=False)
+                sabnzbd.NzbQueue.register_article(article, success=False)
             return
 
         # Send to decoder-queue
-        sabnzbd.decoder.Decoder.do.process(article, raw_data)
+        sabnzbd.Decoder.process(article, raw_data)
 
         # See if we need to delay because the queues are full
         logged = False
-        while not self.shutdown and (
-            sabnzbd.decoder.Decoder.do.queue_full() or sabnzbd.assembler.Assembler.do.queue_full()
-        ):
+        while not self.shutdown and (sabnzbd.Decoder.queue_full() or sabnzbd.Assembler.queue_full()):
             if not logged:
                 # Only log once, to not waste any CPU-cycles
                 logging.debug(
                     "Delaying - Decoder queue: %s - Assembler queue: %s",
-                    sabnzbd.decoder.Decoder.do.decoder_queue.qsize(),
-                    sabnzbd.assembler.Assembler.do.queue.qsize(),
+                    sabnzbd.Decoder.decoder_queue.qsize(),
+                    sabnzbd.Assembler.queue.qsize(),
                 )
                 logged = True
             time.sleep(0.05)
@@ -444,7 +439,7 @@ class Downloader(Thread):
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
 
         # Kick BPS-Meter to check quota
-        BPSMeter.do.update()
+        sabnzbd.BPSMeter.update()
 
         while 1:
             for server in self.servers:
@@ -464,7 +459,7 @@ class Downloader(Thread):
                         if newid:
                             self.init_server(None, newid)
                         self.__restart -= 1
-                        sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
+                        sabnzbd.NzbQueue.reset_all_try_lists()
                         # Have to leave this loop, because we removed element
                         break
                     else:
@@ -486,12 +481,12 @@ class Downloader(Thread):
 
                     if not server.info:
                         # Only request info if there's stuff in the queue
-                        if not sabnzbd.nzbqueue.NzbQueue.do.is_empty():
+                        if not sabnzbd.NzbQueue.is_empty():
                             self.maybe_block_server(server)
                             request_server_info(server)
                         break
 
-                    article = sabnzbd.nzbqueue.NzbQueue.do.get_article(server, self.servers)
+                    article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
                     if not article:
                         break
@@ -563,26 +558,26 @@ class Downloader(Thread):
                 # Need to initialize the check during first 20 seconds
                 if self.can_be_slowed is None or self.can_be_slowed_timer:
                     # Wait for stable speed to start testing
-                    if not self.can_be_slowed_timer and BPSMeter.do.get_stable_speed(timespan=10):
+                    if not self.can_be_slowed_timer and sabnzbd.BPSMeter.get_stable_speed(timespan=10):
                         self.can_be_slowed_timer = time.time()
 
                     # Check 10 seconds after enabling slowdown
                     if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
                         # Now let's check if it was stable in the last 10 seconds
-                        self.can_be_slowed = BPSMeter.do.get_stable_speed(timespan=10)
+                        self.can_be_slowed = sabnzbd.BPSMeter.get_stable_speed(timespan=10)
                         self.can_be_slowed_timer = 0
                         logging.debug("Downloader-slowdown: %r", self.can_be_slowed)
 
             else:
                 read, write, error = ([], [], [])
 
-                BPSMeter.do.reset()
+                sabnzbd.BPSMeter.reset()
 
                 time.sleep(1.0)
 
                 DOWNLOADER_CV.acquire()
                 while (
-                    (sabnzbd.nzbqueue.NzbQueue.do.is_empty() or self.is_paused() or self.postproc)
+                    (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.postproc)
                     and not self.shutdown
                     and not self.__restart
                 ):
@@ -603,7 +598,7 @@ class Downloader(Thread):
                     self.write_fds.pop(fileno)
 
             if not read:
-                BPSMeter.do.update()
+                sabnzbd.BPSMeter.update()
                 continue
 
             for selected in read:
@@ -620,7 +615,7 @@ class Downloader(Thread):
                     bytes_received, done, skip = (0, False, False)
 
                 if skip:
-                    BPSMeter.do.update()
+                    sabnzbd.BPSMeter.update()
                     continue
 
                 if bytes_received < 1:
@@ -630,12 +625,12 @@ class Downloader(Thread):
                 else:
                     if self.bandwidth_limit:
                         limit = self.bandwidth_limit
-                        if bytes_received + BPSMeter.do.bps > limit:
-                            while BPSMeter.do.bps > limit:
+                        if bytes_received + sabnzbd.BPSMeter.bps > limit:
+                            while sabnzbd.BPSMeter.bps > limit:
                                 time.sleep(0.05)
-                                BPSMeter.do.update()
-                    BPSMeter.do.update(server.id, bytes_received)
-                    nzo.update_download_stats(BPSMeter.do.bps, server.id, bytes_received)
+                                sabnzbd.BPSMeter.update()
+                    sabnzbd.BPSMeter.update(server.id, bytes_received)
+                    nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, bytes_received)
 
                 if not done and nw.status_code != 222:
                     if not nw.connected or nw.status_code == 480:
@@ -717,7 +712,7 @@ class Downloader(Thread):
                                     server.active = False
                                     if penalty and (block or server.optional):
                                         self.plan_server(server, penalty)
-                                    sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
+                                    sabnzbd.NzbQueue.reset_all_try_lists()
                                 self.__reset_nw(nw, None, warn=False, send_quit=True)
                             continue
                         except:
@@ -824,7 +819,7 @@ class Downloader(Thread):
                 self.decode(article, None)
             else:
                 # Allow all servers to iterate over each nzo/nzf again
-                sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(article)
+                sabnzbd.NzbQueue.reset_try_lists(article)
 
         if destroy:
             nw.terminate(quit=send_quit)
@@ -947,12 +942,12 @@ class Downloader(Thread):
 def stop():
     DOWNLOADER_CV.acquire()
     try:
-        Downloader.do.stop()
+        sabnzbd.Downloader.stop()
     finally:
         DOWNLOADER_CV.notify_all()
         DOWNLOADER_CV.release()
     try:
-        Downloader.do.join()
+        sabnzbd.Downloader.join()
     except:
         pass
 

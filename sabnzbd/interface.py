@@ -33,12 +33,11 @@ import functools
 from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
+from Cheetah.Template import Template
 
 import sabnzbd
 import sabnzbd.rss
 import sabnzbd.scheduler as scheduler
-
-from Cheetah.Template import Template
 from sabnzbd.misc import (
     to_units,
     from_units,
@@ -52,24 +51,17 @@ from sabnzbd.misc import (
 )
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
 from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import xml_name, utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
-from sabnzbd.downloader import Downloader
-from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.decoder import SABYENC_ENABLED
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
-
 from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
-
 from sabnzbd.lang import list_languages
-
 from sabnzbd.api import (
     list_scripts,
     list_cats,
@@ -408,7 +400,7 @@ class MainPage:
                 )
             )
 
-            bytespersec_list = BPSMeter.do.get_bps_list()
+            bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
             info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])
 
             template = Template(
@@ -432,7 +424,7 @@ class MainPage:
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
         scheduler.plan_resume(0)
-        Downloader.do.pause()
+        sabnzbd.Downloader.pause()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
@@ -723,7 +715,7 @@ class NzoPage:
                 nzo_id = a
                 break
 
-        nzo = NzbQueue.do.get_nzo(nzo_id)
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
         if nzo_id and nzo:
             info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header()
 
@@ -762,7 +754,7 @@ class NzoPage:
         n = 0
         for pnfo in pnfo_list:
             if pnfo.nzo_id == nzo_id:
-                nzo = NzbQueue.do.get_nzo(nzo_id)
+                nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
                 repair = pnfo.repair
                 unpack = pnfo.unpack
                 delete = pnfo.delete
@@ -795,7 +787,7 @@ class NzoPage:
 
     def nzo_files(self, info, nzo_id):
         active = []
-        nzo = NzbQueue.do.get_nzo(nzo_id)
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
         if nzo:
             pnfo = nzo.gather_info(full=True)
             info["nzo_id"] = pnfo.nzo_id
@@ -831,15 +823,15 @@ class NzoPage:
         script = kwargs.get("script", None)
         cat = kwargs.get("cat", None)
         priority = kwargs.get("priority", None)
-        nzo = NzbQueue.do.get_nzo(nzo_id)
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
 
         if index is not None:
-            NzbQueue.do.switch(nzo_id, index)
+            sabnzbd.NzbQueue.switch(nzo_id, index)
         if name is not None:
-            NzbQueue.do.change_name(nzo_id, name, password)
+            sabnzbd.NzbQueue.change_name(nzo_id, name, password)
 
         if cat is not None and nzo.cat is not cat and not (nzo.cat == "*" and cat == "Default"):
-            NzbQueue.do.change_cat(nzo_id, cat, priority)
+            sabnzbd.NzbQueue.change_cat(nzo_id, cat, priority)
             # Category changed, so make sure "Default" attributes aren't set again
             if script == "Default":
                 script = None
@@ -849,11 +841,11 @@ class NzoPage:
                 pp = None
 
         if script is not None and nzo.script != script:
-            NzbQueue.do.change_script(nzo_id, script)
+            sabnzbd.NzbQueue.change_script(nzo_id, script)
         if pp is not None and nzo.pp != pp:
-            NzbQueue.do.change_opts(nzo_id, pp)
+            sabnzbd.NzbQueue.change_opts(nzo_id, pp)
         if priority is not None and nzo.priority != int(priority):
-            NzbQueue.do.set_priority(nzo_id, priority)
+            sabnzbd.NzbQueue.set_priority(nzo_id, priority)
 
         raise Raiser(urllib.parse.urljoin(self.__root, "../queue/"))
 
@@ -862,7 +854,7 @@ class NzoPage:
         if kwargs["action_key"] == "Delete":
             for key in kwargs:
                 if kwargs[key] == "on":
-                    NzbQueue.do.remove_nzf(nzo_id, key, force_delete=True)
+                    sabnzbd.NzbQueue.remove_nzf(nzo_id, key, force_delete=True)
 
         elif kwargs["action_key"] in ("Top", "Up", "Down", "Bottom"):
             nzf_ids = []
@@ -871,15 +863,15 @@ class NzoPage:
                     nzf_ids.append(key)
             size = int_conv(kwargs.get("action_size", 1))
             if kwargs["action_key"] == "Top":
-                NzbQueue.do.move_top_bulk(nzo_id, nzf_ids)
+                sabnzbd.NzbQueue.move_top_bulk(nzo_id, nzf_ids)
             elif kwargs["action_key"] == "Up":
-                NzbQueue.do.move_up_bulk(nzo_id, nzf_ids, size)
+                sabnzbd.NzbQueue.move_up_bulk(nzo_id, nzf_ids, size)
             elif kwargs["action_key"] == "Down":
-                NzbQueue.do.move_down_bulk(nzo_id, nzf_ids, size)
+                sabnzbd.NzbQueue.move_down_bulk(nzo_id, nzf_ids, size)
             elif kwargs["action_key"] == "Bottom":
-                NzbQueue.do.move_bottom_bulk(nzo_id, nzf_ids)
+                sabnzbd.NzbQueue.move_bottom_bulk(nzo_id, nzf_ids)
 
-        if NzbQueue.do.get_nzo(nzo_id):
+        if sabnzbd.NzbQueue.get_nzo(nzo_id):
             url = urllib.parse.urljoin(self.__root, nzo_id)
         else:
             url = urllib.parse.urljoin(self.__root, "../queue")
@@ -910,12 +902,12 @@ class QueuePage:
         uid = kwargs.get("uid")
         del_files = int_conv(kwargs.get("del_files"))
         if uid:
-            NzbQueue.do.remove(uid, add_to_history=False, delete_all_data=del_files)
+            sabnzbd.NzbQueue.remove(uid, add_to_history=False, delete_all_data=del_files)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def purge(self, **kwargs):
-        NzbQueue.do.remove_all(kwargs.get("search"))
+        sabnzbd.NzbQueue.remove_all(kwargs.get("search"))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -932,7 +924,7 @@ class QueuePage:
         uid1 = kwargs.get("uid1")
         uid2 = kwargs.get("uid2")
         if uid1 and uid2:
-            NzbQueue.do.switch(uid1, uid2)
+            sabnzbd.NzbQueue.switch(uid1, uid2)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -940,7 +932,7 @@ class QueuePage:
         nzo_id = kwargs.get("nzo_id")
         pp = kwargs.get("pp", "")
         if nzo_id and pp and pp.isdigit():
-            NzbQueue.do.change_opts(nzo_id, int(pp))
+            sabnzbd.NzbQueue.change_opts(nzo_id, int(pp))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -950,7 +942,7 @@ class QueuePage:
         if nzo_id and script:
             if script == "None":
                 script = None
-            NzbQueue.do.change_script(nzo_id, script)
+            sabnzbd.NzbQueue.change_script(nzo_id, script)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -960,7 +952,7 @@ class QueuePage:
         if nzo_id and cat:
             if cat == "None":
                 cat = None
-            NzbQueue.do.change_cat(nzo_id, cat)
+            sabnzbd.NzbQueue.change_cat(nzo_id, cat)
 
         raise queueRaiser(self.__root, kwargs)
 
@@ -972,7 +964,7 @@ class QueuePage:
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
         scheduler.plan_resume(0)
-        Downloader.do.pause()
+        sabnzbd.Downloader.pause()
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -984,33 +976,33 @@ class QueuePage:
     @secured_expose(check_api_key=True)
     def pause_nzo(self, **kwargs):
         uid = kwargs.get("uid", "")
-        NzbQueue.do.pause_multiple_nzo(uid.split(","))
+        sabnzbd.NzbQueue.pause_multiple_nzo(uid.split(","))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def resume_nzo(self, **kwargs):
         uid = kwargs.get("uid", "")
-        NzbQueue.do.resume_multiple_nzo(uid.split(","))
+        sabnzbd.NzbQueue.resume_multiple_nzo(uid.split(","))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def set_priority(self, **kwargs):
-        NzbQueue.do.set_priority(kwargs.get("nzo_id"), kwargs.get("priority"))
+        sabnzbd.NzbQueue.set_priority(kwargs.get("nzo_id"), kwargs.get("priority"))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def sort_by_avg_age(self, **kwargs):
-        NzbQueue.do.sort_queue("avg_age", kwargs.get("dir"))
+        sabnzbd.NzbQueue.sort_queue("avg_age", kwargs.get("dir"))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def sort_by_name(self, **kwargs):
-        NzbQueue.do.sort_queue("name", kwargs.get("dir"))
+        sabnzbd.NzbQueue.sort_queue("name", kwargs.get("dir"))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def sort_by_size(self, **kwargs):
-        NzbQueue.do.sort_queue("size", kwargs.get("dir"))
+        sabnzbd.NzbQueue.sort_queue("size", kwargs.get("dir"))
         raise queueRaiser(self.__root, kwargs)
 
 
@@ -1034,7 +1026,7 @@ class HistoryPage:
         history["rating_enable"] = bool(cfg.rating_enable())
 
         postfix = T("B")  # : Abbreviation for bytes, as in GB
-        grand, month, week, day = BPSMeter.do.get_sums()
+        grand, month, week, day = sabnzbd.BPSMeter.get_sums()
         history["total_size"], history["month_size"], history["week_size"], history["day_size"] = (
             to_units(grand, postfix=postfix),
             to_units(month, postfix=postfix),
@@ -1113,7 +1105,7 @@ class ConfigPage:
 
         conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
-        conf["have_sabyenc"] = SABYENC_ENABLED
+        conf["have_sabyenc"] = sabnzbd.decoder.SABYENC_ENABLED
         conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
@@ -1124,7 +1116,7 @@ class ConfigPage:
             new[svr] = {}
         conf["servers"] = new
 
-        conf["folders"] = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
+        conf["folders"] = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
@@ -1589,7 +1581,7 @@ class ConfigServer:
         )
         for svr in server_names:
             new.append(servers[svr].get_dict(safe=True))
-            t, m, w, d, timeline = BPSMeter.do.amounts(svr)
+            t, m, w, d, timeline = sabnzbd.BPSMeter.amounts(svr)
             if t:
                 new[-1]["amounts"] = to_units(t), to_units(m), to_units(w), to_units(d), timeline
         conf["servers"] = new
@@ -1626,7 +1618,7 @@ class ConfigServer:
     def clrServer(self, **kwargs):
         server = kwargs.get("server")
         if server:
-            BPSMeter.do.clear_server(server)
+            sabnzbd.BPSMeter.clear_server(server)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1637,7 +1629,7 @@ class ConfigServer:
             if svr:
                 svr.enable.set(not svr.enable())
                 config.save_config()
-                Downloader.do.update_server(server, server)
+                sabnzbd.Downloader.update_server(server, server)
         raise Raiser(self.__root)
 
 
@@ -1715,7 +1707,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         config.ConfigServer(server, kwargs)
 
     config.save_config()
-    Downloader.do.update_server(old_server, server)
+    sabnzbd.Downloader.update_server(old_server, server)
     if root:
         if ajax:
             return sabnzbd.api.report("json")
@@ -2420,12 +2412,12 @@ class Status:
 
     @secured_expose(check_api_key=True)
     def reset_quota(self, **kwargs):
-        BPSMeter.do.reset_quota(force=True)
+        sabnzbd.BPSMeter.reset_quota(force=True)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
     def disconnect(self, **kwargs):
-        Downloader.do.disconnect()
+        sabnzbd.Downloader.disconnect()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
@@ -2487,7 +2479,7 @@ class Status:
 
     @secured_expose(check_api_key=True)
     def unblock_server(self, **kwargs):
-        Downloader.do.unblock(kwargs.get("server"))
+        sabnzbd.Downloader.unblock(kwargs.get("server"))
         # Short sleep so that UI shows new server status
         time.sleep(1.0)
         raise Raiser(self.__root)
@@ -2550,7 +2542,7 @@ def orphan_delete(kwargs):
 
 
 def orphan_delete_all():
-    paths = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
+    paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     for path in paths:
         kwargs = {"name": path}
         orphan_delete(kwargs)
@@ -2561,11 +2553,11 @@ def orphan_add(kwargs):
     if path:
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         logging.info("Re-adding orphaned job %s", path)
-        NzbQueue.do.repair_job(path, None, None)
+        sabnzbd.NzbQueue.repair_job(path, None, None)
 
 
 def orphan_add_all():
-    paths = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
+    paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     for path in paths:
         kwargs = {"name": path}
         orphan_add(kwargs)

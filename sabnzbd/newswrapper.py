@@ -50,7 +50,7 @@ def _retrieve_info(server):
     else:
         server.bad_cons = 0
     (server.info, server.request) = (info, False)
-    sabnzbd.downloader.Downloader.do.wakeup()
+    sabnzbd.Downloader.wakeup()
 
 
 def request_server_info(server):
