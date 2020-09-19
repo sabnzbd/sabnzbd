@@ -24,7 +24,7 @@ import logging
 import time
 import datetime
 import functools
-from typing import List, Dict, Union, Tuple
+from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject, Article
@@ -54,7 +54,7 @@ from sabnzbd.constants import (
 )
 
 import sabnzbd.cfg as cfg
-import sabnzbd.downloader
+from sabnzbd.downloader import Server
 from sabnzbd.assembler import file_has_articles
 import sabnzbd.notifier as notifier
 
@@ -205,12 +205,12 @@ class NzbQueue:
     def send_back(self, nzo: NzbObject):
         """ Send back job to queue after successful pre-check """
         try:
-            nzb_path = globber_full(nzo.workpath, "*.gz")[0]
+            nzb_path = globber_full(nzo.admin_path, "*.gz")[0]
         except:
             logging.info("Failed to find NZB file after pre-check (%s)", nzo.nzo_id)
             return
 
-        res, nzo_ids = process_single_nzb(nzo.filename, nzb_path, keep=True, reuse=nzo.downpath, nzo_id=nzo.nzo_id)
+        res, nzo_ids = process_single_nzb(nzo.filename, nzb_path, keep=True, reuse=nzo.download_path, nzo_id=nzo.nzo_id)
         if res == 0 and nzo_ids:
             # Reset reuse flag to make pause/abort on encryption possible
             self.__nzo_table[nzo_ids[0]].reuse = None
@@ -230,7 +230,7 @@ class NzbQueue:
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
                     else:
-                        sabnzbd.save_data(nzo, nzo.nzo_id, nzo.workpath)
+                        sabnzbd.save_data(nzo, nzo.nzo_id, nzo.admin_path)
 
         sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
@@ -302,7 +302,7 @@ class NzbQueue:
         else:
             return False
 
-    def get_nzo(self, nzo_id) -> Union[NzbObject, None]:
+    def get_nzo(self, nzo_id) -> Optional[NzbObject]:
         if nzo_id in self.__nzo_table:
             return self.__nzo_table[nzo_id]
         else:
@@ -311,7 +311,7 @@ class NzbQueue:
     @NzbQueueLocker
     def add(self, nzo: NzbObject, save=True, quiet=False) -> str:
         if not nzo.nzo_id:
-            nzo.nzo_id = sabnzbd.get_new_id("nzo", nzo.workpath, self.__nzo_table)
+            nzo.nzo_id = sabnzbd.get_new_id("nzo", nzo.admin_path, self.__nzo_table)
 
         # If no files are to be downloaded anymore, send to postproc
         if not nzo.files and not nzo.futuretype:
@@ -704,9 +704,7 @@ class NzbQueue:
                 return True
         return False
 
-    def get_article(
-        self, server: sabnzbd.downloader.Server, servers: List[sabnzbd.downloader.Server]
-    ) -> Union[Article, None]:
+    def get_article(self, server: Server, servers: List[Server]) -> Optional[Article]:
         """Get next article for jobs in the queue
         Not locked for performance, since it only reads the queue
         """

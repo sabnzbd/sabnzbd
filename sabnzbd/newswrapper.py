@@ -26,11 +26,12 @@ from nntplib import NNTPPermanentError
 import time
 import logging
 import ssl
+from typing import List, Optional
 
 import sabnzbd
-from sabnzbd.constants import *
-from sabnzbd.encoding import utob
 import sabnzbd.cfg
+from sabnzbd.constants import DEF_TIMEOUT
+from sabnzbd.encoding import utob
 from sabnzbd.misc import nntp_to_msg, probablyipv4, probablyipv6
 
 # Set pre-defined socket timeout
@@ -139,7 +140,7 @@ class NNTP:
     def __init__(self, host, port, info, sslenabled, nw, block=False, write_fds=None):
         self.host = host
         self.port = port
-        self.nw = nw
+        self.nw: NewsWrapper = nw
         self.blocking = block
         self.error_msg = None
 
@@ -165,18 +166,18 @@ class NNTP:
                     ctx.options |= ssl.OP_NO_SSLv2 | ssl.OP_NO_SSLv3 | ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
 
                 # Only verify hostname when we're strict
-                if nw.server.ssl_verify < 2:
+                if self.nw.server.ssl_verify < 2:
                     ctx.check_hostname = False
                 # Certificates optional
-                if nw.server.ssl_verify == 0:
+                if self.nw.server.ssl_verify == 0:
                     ctx.verify_mode = ssl.CERT_NONE
 
                 # Did the user set a custom cipher-string?
-                if nw.server.ssl_ciphers:
+                if self.nw.server.ssl_ciphers:
                     # At their own risk, socket will error out in case it was invalid
-                    ctx.set_ciphers(nw.server.ssl_ciphers)
+                    ctx.set_ciphers(self.nw.server.ssl_ciphers)
 
-                self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=str(nw.server.host))
+                self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=self.nw.server.host)
             else:
                 # Use a regular wrapper, no certificate validation
                 self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=sabnzbd.cfg.ssl_ciphers())
@@ -288,11 +289,11 @@ class NewsWrapper:
         self.blocking = block
 
         self.timeout = None
-        self.article = None
-        self.data = []
+        self.article: Optional[sabnzbd.nzbstuff.Article] = None
+        self.data: List[bytes] = []
         self.last_line = ""
 
-        self.nntp: NNTP = None
+        self.nntp: Optional[NNTP] = None
         self.recv = None
 
         self.connected = False
@@ -430,16 +431,16 @@ class NewsWrapper:
         # Official end-of-article is ".\r\n" but sometimes it can get lost between 2 chunks
         chunk_len = len(chunk)
         if chunk[-5:] == b"\r\n.\r\n":
-            return (chunk_len, True, False)
+            return chunk_len, True, False
         elif chunk_len < 5 and len(self.data) > 1:
             # We need to make sure the end is not split over 2 chunks
             # This is faster than join()
             combine_chunk = self.data[-2][-5:] + chunk
             if combine_chunk[-5:] == b"\r\n.\r\n":
-                return (chunk_len, True, False)
+                return chunk_len, True, False
 
         # Still in middle of data, so continue!
-        return (chunk_len, False, False)
+        return chunk_len, False, False
 
     def soft_reset(self):
         self.timeout = None

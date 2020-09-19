@@ -39,6 +39,7 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
+from sabnzbd.nzbstuff import NzbObject
 
 RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
@@ -147,7 +148,7 @@ def move_to_parent_folder(workdir):
 class Sorter:
     """ Generic Sorter class """
 
-    def __init__(self, nzo, cat):
+    def __init__(self, nzo: NzbObject, cat):
         self.sorter = None
         self.type = None
         self.sort_file = False
@@ -231,7 +232,7 @@ class Sorter:
 class SeriesSorter:
     """ Methods for Series Sorting """
 
-    def __init__(self, nzo, job_name, path, cat):
+    def __init__(self, nzo: NzbObject, job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
@@ -570,7 +571,7 @@ def check_for_sequence(regex, files):
 class MovieSorter:
     """ Methods for Generic Sorting """
 
-    def __init__(self, nzo, job_name, path, cat):
+    def __init__(self, nzo: NzbObject, job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
@@ -784,7 +785,7 @@ class MovieSorter:
 class DateSorter:
     """ Methods for Date Sorting """
 
-    def __init__(self, nzo, job_name, path, cat):
+    def __init__(self, nzo: NzbObject, job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
@@ -1001,7 +1002,7 @@ def path_subst(path, mapping):
     return "".join(newpath)
 
 
-def get_titles(nzo, match, name, titleing=False):
+def get_titles(nzo: NzbObject, match, name, titleing=False):
     """The title will be the part before the match
     Clean it up and title() it
 
@@ -1082,12 +1083,12 @@ def replace_word(word_input, one, two):
     regex = re.compile(r"\W(%s)(\W|$)" % one, re.I)
     matches = regex.findall(word_input)
     if matches:
-        for unused in matches:
+        for _ in matches:
             word_input = word_input.replace(one, two)
     return word_input
 
 
-def get_descriptions(nzo, match, name):
+def get_descriptions(nzo: NzbObject, match, name):
     """If present, get a description from the nzb name.
     A description has to be after the matched item, separated either
     like ' - Description' or '_-_Description'

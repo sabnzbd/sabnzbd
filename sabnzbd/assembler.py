@@ -180,7 +180,7 @@ class Assembler(Thread):
                 sabnzbd.PostProcessor.process(nzo)
 
     @staticmethod
-    def assemble(nzf, file_done):
+    def assemble(nzf: NzbFile, file_done):
         """Assemble a NZF from its table of articles
         1) Partial write: write what we have
         2) Nothing written before: write all
@@ -224,7 +224,7 @@ class Assembler(Thread):
             nzf.md5sum = nzf.md5.digest()
 
 
-def file_has_articles(nzf):
+def file_has_articles(nzf: NzbFile):
     """Do a quick check to see if any articles are present for this file.
     Destructive: only to be used to differentiate between unknown encoding and no articles.
     """
@@ -241,7 +241,7 @@ RE_SUBS = re.compile(r"\W+sub|subs|subpack|subtitle|subtitles(?![a-z])", re.I)
 SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 
 
-def is_cloaked(nzo, path, names):
+def is_cloaked(nzo: NzbObject, path, names):
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = os.path.splitext(get_filename(path.lower()))[0]
     for name in names:
@@ -270,7 +270,7 @@ def is_cloaked(nzo, path, names):
     return False
 
 
-def check_encrypted_and_unwanted_files(nzo, filepath):
+def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath):
     """ Combines check for unwanted and encrypted files to save on CPU and IO """
     encrypted = False
     unwanted = None

@@ -15,9 +15,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Imported to be referenced from other files directly
-from sabnzbd.version import __version__, __baseline__
-
 import os
 import logging
 import datetime
@@ -74,12 +71,15 @@ elif os.name == "posix":
         except:
             pass
 
+# Imported to be referenced from other files directly
+from sabnzbd.version import __version__, __baseline__
+
 # Now we can import safely
 import sabnzbd.misc as misc
 import sabnzbd.filesystem as filesystem
 import sabnzbd.powersup as powersup
-import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
+import sabnzbd.emailer as emailer
 import sabnzbd.encoding as encoding
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -87,8 +87,9 @@ import sabnzbd.database
 import sabnzbd.lang as lang
 import sabnzbd.nzbparser as nzbparser
 import sabnzbd.nzbstuff
-import sabnzbd.emailer
 import sabnzbd.getipaddress
+import sabnzbd.newsunpack
+import sabnzbd.par2file
 import sabnzbd.api
 import sabnzbd.interface
 import sabnzbd.zconfig
@@ -103,6 +104,7 @@ import sabnzbd.assembler
 import sabnzbd.rating
 import sabnzbd.articlecache
 import sabnzbd.bpsmeter
+import sabnzbd.scheduler as scheduler
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
     DEFAULT_PRIORITY,
@@ -191,7 +193,6 @@ __SHUTTING_DOWN__ = False
 # Signal Handler
 ##############################################################################
 def sig_handler(signum=None, frame=None):
-    global SABSTOP, WINTRAY
     if sabnzbd.WIN32 and signum is not None and DAEMON and signum == 5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
@@ -208,7 +209,7 @@ def sig_handler(signum=None, frame=None):
                 time.sleep(0.5)
         else:
             pid_file()
-        SABSTOP = True
+        sabnzbd.SABSTOP = True
         os._exit(0)
 
 
@@ -226,13 +227,11 @@ def get_db_connection(thread_index=0):
 
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0):
-    global __INITIALIZED__, __SHUTTING_DOWN__, LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG, DIR_INTERFACES, DARWIN, RESTART_REQ
-
-    if __INITIALIZED__:
+def initialize(pause_downloader=False, clean_up=False, evaluate_schedules=False, repair=0):
+    if sabnzbd.__INITIALIZED__:
         return False
 
-    __SHUTTING_DOWN__ = False
+    sabnzbd.__SHUTTING_DOWN__ = False
 
     # Set global database connection for Web-UI threads
     cherrypy.engine.subscribe("start_thread", get_db_connection)
@@ -341,7 +340,7 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     sabnzbd.NzbQueue.read_queue(repair)
 
     scheduler.init()
-    if evalSched:
+    if evaluate_schedules:
         scheduler.analyse(pause_downloader)
 
     # Set cache limit
@@ -350,16 +349,14 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
     logging.info("All processes started")
-    RESTART_REQ = False
-    __INITIALIZED__ = True
+    sabnzbd.RESTART_REQ = False
+    sabnzbd.__INITIALIZED__ = True
     return True
 
 
 @synchronized(INIT_LOCK)
 def start():
-    global __INITIALIZED__
-
-    if __INITIALIZED__:
+    if sabnzbd.__INITIALIZED__:
         logging.debug("Starting postprocessor")
         sabnzbd.PostProcessor.start()
 
@@ -385,11 +382,9 @@ def start():
 
 @synchronized(INIT_LOCK)
 def halt():
-    global __INITIALIZED__, __SHUTTING_DOWN__
-
-    if __INITIALIZED__:
+    if sabnzbd.__INITIALIZED__:
         logging.info("SABnzbd shutting down...")
-        __SHUTTING_DOWN__ = True
+        sabnzbd.__SHUTTING_DOWN__ = True
 
         # Stop the windows tray icon
         if sabnzbd.WINTRAY:
@@ -459,7 +454,7 @@ def halt():
 
         logging.info("All processes stopped")
 
-        __INITIALIZED__ = False
+        sabnzbd.__INITIALIZED__ = False
 
 
 def trigger_restart(timeout=None):
@@ -499,7 +494,6 @@ def new_limit():
 
 def guard_restart():
     """ Callback for config options requiring a restart """
-    global RESTART_REQ
     sabnzbd.RESTART_REQ = True
 
 
@@ -592,16 +586,14 @@ def save_state():
 
 def pause_all():
     """ Pause all activities than cause disk access """
-    global PAUSED_ALL
-    PAUSED_ALL = True
+    sabnzbd.PAUSED_ALL = True
     sabnzbd.Downloader.pause()
     logging.debug("PAUSED_ALL active")
 
 
 def unpause_all():
     """ Resume all activities """
-    global PAUSED_ALL
-    PAUSED_ALL = False
+    sabnzbd.PAUSED_ALL = False
     sabnzbd.Downloader.resume()
     logging.debug("PAUSED_ALL inactive")
 
@@ -822,8 +814,6 @@ def change_queue_complete_action(action, new=True):
     Scripts are prefixed with 'script_'
     When "new" is False, check whether non-script actions are acceptable
     """
-    global QUEUECOMPLETE, QUEUECOMPLETEACTION, QUEUECOMPLETEARG
-
     _action = None
     _argument = None
     if "script_" in action:
@@ -849,9 +839,9 @@ def change_queue_complete_action(action, new=True):
         config.save_config()
 
     # keep the name of the action for matching the current select in queue.tmpl
-    QUEUECOMPLETE = action
-    QUEUECOMPLETEACTION = _action
-    QUEUECOMPLETEARG = _argument
+    sabnzbd.QUEUECOMPLETE = action
+    sabnzbd.QUEUECOMPLETEACTION = _action
+    sabnzbd.QUEUECOMPLETEARG = _argument
 
 
 def run_script(script):
@@ -863,12 +853,6 @@ def run_script(script):
             logging.info("Output of queue-complete script %s: \n%s", script, script_output)
         except:
             logging.info("Failed queue-complete script %s, Traceback: ", script, exc_info=True)
-
-
-def empty_queues():
-    """ Return True if queues empty or non-existent """
-    global __INITIALIZED__
-    return (not __INITIALIZED__) or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty())
 
 
 def keep_awake():
@@ -1075,22 +1059,21 @@ def check_all_tasks():
 
 def pid_file(pid_path=None, pid_file=None, port=0):
     """ Create or remove pid file """
-    global DIR_PID
     if not sabnzbd.WIN32:
         if pid_path and pid_path.startswith("/"):
-            DIR_PID = os.path.join(pid_path, "sabnzbd-%d.pid" % port)
+            sabnzbd.DIR_PID = os.path.join(pid_path, "sabnzbd-%d.pid" % port)
         elif pid_file and pid_file.startswith("/"):
-            DIR_PID = pid_file
+            sabnzbd.DIR_PID = pid_file
 
-    if DIR_PID:
+    if sabnzbd.DIR_PID:
         try:
             if port:
-                with open(DIR_PID, "w") as f:
+                with open(sabnzbd.DIR_PID, "w") as f:
                     f.write("%d\n" % os.getpid())
             else:
-                filesystem.remove_file(DIR_PID)
+                filesystem.remove_file(sabnzbd.DIR_PID)
         except:
-            logging.warning(T("Cannot access PID file %s"), DIR_PID)
+            logging.warning(T("Cannot access PID file %s"), sabnzbd.DIR_PID)
 
 
 def check_incomplete_vs_complete():

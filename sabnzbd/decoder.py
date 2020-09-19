@@ -26,9 +26,9 @@ from threading import Thread
 from typing import Tuple, List
 
 import sabnzbd
+import sabnzbd.cfg as cfg
 from sabnzbd.constants import SABYENC_VERSION_REQUIRED
 from sabnzbd.nzbstuff import Article
-import sabnzbd.cfg as cfg
 from sabnzbd.misc import match_str
 
 # Check for correct SABYenc version
@@ -97,7 +97,7 @@ class Decoder:
             except:
                 pass
 
-    def process(self, article, raw_data):
+    def process(self, article: Article, raw_data: List[bytes]):
         # We use reported article-size, just like sabyenc does
         sabnzbd.ArticleCache.reserve_space(article.bytes)
         self.decoder_queue.put((article, raw_data))
@@ -222,7 +222,7 @@ class DecoderWorker(Thread):
             sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode(article, raw_data):
+def decode(article: Article, raw_data: List[bytes]):
     # Let SABYenc do all the heavy lifting
     decoded_data, yenc_filename, crc, crc_expected, crc_correct = sabyenc3.decode_usenet_chunks(raw_data, article.bytes)
 
@@ -249,7 +249,7 @@ def decode(article, raw_data):
     return decoded_data
 
 
-def search_new_server(article):
+def search_new_server(article: Article):
     """ Shorthand for searching new server or else increasing bad_articles """
     # Continue to the next one if we found new server
     if not article.search_new_server():

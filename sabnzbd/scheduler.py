@@ -22,9 +22,10 @@ sabnzbd.scheduler - Event Scheduler
 import random
 import logging
 import time
+from typing import Optional
 
 import sabnzbd.utils.kronos as kronos
-import sabnzbd.rss as rss
+import sabnzbd.rss
 import sabnzbd.downloader
 import sabnzbd.dirscanner
 import sabnzbd.misc
@@ -33,7 +34,7 @@ import sabnzbd.cfg as cfg
 from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 
-__SCHED = None  # Global pointer to Scheduler instance
+__SCHED: Optional[kronos.ThreadedScheduler] = None  # Global pointer to Scheduler instance
 
 SCHEDULE_GUARD_FLAG = False
 PP_PAUSE_EVENT = False
@@ -177,9 +178,9 @@ def init():
         logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
         sabnzbd.rss.next_run(time.time() + delay * 60)
         __SCHED.add_interval_task(
-            rss.run_method, "RSS", delay * 60, interval * 60, kronos.method.sequential, None, None
+            sabnzbd.rss.run_method, "RSS", delay * 60, interval * 60, kronos.method.sequential, None, None
         )
-        __SCHED.add_single_task(rss.run_method, "RSS", 15, kronos.method.sequential, None, None)
+        __SCHED.add_single_task(sabnzbd.rss.run_method, "RSS", 15, kronos.method.sequential, None, None)
 
     if cfg.version_check():
         # Check for new release, once per week on random time
@@ -495,7 +496,7 @@ def plan_server(action, parms, interval):
 
 def force_rss():
     """ Add a one-time RSS scan, one second from now """
-    __SCHED.add_single_task(rss.run_method, "RSS", 1, kronos.method.sequential, None, None)
+    __SCHED.add_single_task(sabnzbd.rss.run_method, "RSS", 1, kronos.method.sequential, None, None)
 
 
 # Scheduler Guarding system

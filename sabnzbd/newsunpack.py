@@ -56,6 +56,7 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
+from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -167,7 +168,7 @@ ENV_NZO_FIELDS = [
 ]
 
 
-def external_processing(extern_proc, nzo, complete_dir, nicename, status):
+def external_processing(extern_proc, nzo: NzbObject, complete_dir, nicename, status):
     """ Run a user postproc script, return console output and exit value """
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
@@ -184,7 +185,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     ]
 
     # Add path to original NZB
-    nzb_paths = globber_full(nzo.workpath, "*.gz")
+    nzb_paths = globber_full(nzo.admin_path, "*.gz")
 
     # Fields not in the NZO directly
     extra_env_fields = {
@@ -232,7 +233,9 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     return output, ret
 
 
-def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0):
+def unpack_magic(
+    nzo: NzbObject, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0
+):
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete' """
     if depth > 5:
         logging.warning(T("Unpack nesting too deep [%s]"), nzo.final_name)
@@ -380,7 +383,7 @@ def get_seq_number(name):
         return 0
 
 
-def file_join(nzo, workdir, workdir_complete, delete, joinables):
+def file_join(nzo: NzbObject, workdir, workdir_complete, delete, joinables):
     """Join and joinable files in 'workdir' to 'workdir_complete' and
     when successful, delete originals
     """
@@ -471,7 +474,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 ##############################################################################
 # (Un)Rar Functions
 ##############################################################################
-def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
+def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, rars):
     """Unpack multiple sets 'rars' of RAR files from 'workdir' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     When 'one_folder' is set, all files will be in a single folder
@@ -594,7 +597,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
     return fail, extracted_files
 
 
-def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path):
+def rar_extract(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extraction_path):
     """Unpack single rar set 'rarfile' to 'extraction_path',
     with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
@@ -621,7 +624,7 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
     return fail, new_files, rars
 
 
-def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password):
+def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extraction_path, password):
     """Unpack single rar set 'rarfile_path' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
@@ -856,7 +859,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 ##############################################################################
 # (Un)Zip Functions
 ##############################################################################
-def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
+def unzip(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, zips):
     """Unpack multiple sets 'zips' of ZIP files from 'workdir' to 'workdir_complete.
     When 'delete' is ste, originals will be deleted.
     """
@@ -934,7 +937,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
 ##############################################################################
 # 7Zip Functions
 ##############################################################################
-def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
+def unseven(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, sevens):
     """Unpack multiple sets '7z' of 7Zip files from 'workdir' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
@@ -982,7 +985,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
     return unseven_failed, new_files
 
 
-def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete):
+def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_folder, delete):
     """Unpack single set 'sevenset' to 'extraction_path', with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
@@ -1089,7 +1092,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 ##############################################################################
 # PAR2 Functions
 ##############################################################################
-def par2_repair(parfile_nzf, nzo, workdir, setname, single):
+def par2_repair(parfile_nzf: NzbFile, nzo: NzbObject, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
     # Check if file exists, otherwise see if another is done
     parfile_path = os.path.join(workdir, parfile_nzf.filename)
@@ -1215,7 +1218,7 @@ _RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
 _RE_LOADED_PAR2 = re.compile(r"Loaded (\d+) new packets")
 
 
-def PAR_Verify(parfile, nzo, setname, joinables, single=False):
+def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
     """ Run par2 on par-set """
     used_joinables = []
     used_for_repair = []
@@ -1536,7 +1539,7 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
 _RE_FILENAME = re.compile(r'"([^"]+)"')
 
 
-def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
+def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
     """ Run par2 on par-set """
     parfolder = os.path.split(parfile)[0]
     used_joinables = []
@@ -2103,7 +2106,7 @@ def quick_check_set(set, nzo):
             if nzf.md5sum == md5pack[file]:
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
-                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file))
+                    renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
                     renames[file] = nzf.filename
                     nzf.filename = file
                     result &= True
@@ -2206,7 +2209,7 @@ def is_sfv_file(myfile):
     return sfv_info_line_counter >= 1
 
 
-def sfv_check(sfvs, nzo, workdir):
+def sfv_check(sfvs, nzo: NzbObject, workdir):
     """ Verify files using SFV files """
     # Update status
     nzo.status = Status.VERIFYING
@@ -2263,7 +2266,7 @@ def sfv_check(sfvs, nzo, workdir):
             if nzf.filename in calculated_crc32 and calculated_crc32[nzf.filename] == sfv_parse_results[file]:
                 try:
                     logging.debug("SFV-check will rename %s to %s", nzf.filename, file)
-                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file))
+                    renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
                     renames[file] = nzf.filename
                     nzf.filename = file
                     result &= True
@@ -2329,7 +2332,7 @@ def analyse_show(name):
     return show_name, info.get("season_num", ""), info.get("episode_num", ""), info.get("ep_name", "")
 
 
-def pre_queue(nzo, pp, cat):
+def pre_queue(nzo: NzbObject, pp, cat):
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied seperate since they can change.
     """

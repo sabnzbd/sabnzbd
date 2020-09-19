@@ -23,6 +23,7 @@ import logging
 import os
 import re
 import struct
+from typing import Dict, Optional, Tuple
 
 from sabnzbd.encoding import correct_unknown_encoding
 
@@ -82,7 +83,7 @@ def analyse_par2(name, filepath=None):
     return setname, vol, block
 
 
-def parse_par2_file(fname, md5of16k):
+def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
     """Get the hash table and the first-16k hash table from a PAR2 file
     Return as dictionary, indexed on names or hashes for the first-16 table
     The input md5of16k is modified in place and thus not returned!
@@ -128,7 +129,7 @@ def parse_par2_file(fname, md5of16k):
     return table
 
 
-def parse_par2_file_packet(f, header):
+def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], Optional[bytes]]:
     """ Look up and analyze a FileDesc package """
 
     nothing = None, None, None
