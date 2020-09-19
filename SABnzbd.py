@@ -1529,7 +1529,7 @@ def main():
             # Shutdown
             sabnzbd.shutdown_program()
 
-            if sabnzbd.downloader.Downloader.do.paused:
+            if sabnzbd.Downloader.paused:
                 sabnzbd.RESTART_ARGS.append("-p")
             if autorestarted:
                 sabnzbd.RESTART_ARGS.append("--autorestarted")

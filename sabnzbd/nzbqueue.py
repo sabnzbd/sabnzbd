@@ -55,9 +55,8 @@ from sabnzbd.constants import (
 
 import sabnzbd.cfg as cfg
 import sabnzbd.downloader
-from sabnzbd.assembler import Assembler, file_has_articles
+from sabnzbd.assembler import file_has_articles
 import sabnzbd.notifier as notifier
-from sabnzbd.bpsmeter import BPSMeter
 
 
 class NzbQueue:
@@ -69,8 +68,6 @@ class NzbQueue:
         self.__top_only: bool = cfg.top_only()
         self.__nzo_list: List[NzbObject] = []
         self.__nzo_table: Dict[str, NzbObject] = {}
-
-        NzbQueue.do = self
 
     def read_queue(self, repair):
         """Read queue from disk, supporting repair modes
@@ -411,7 +408,7 @@ class NzbQueue:
         # Any files left? Otherwise let's disconnect
         if self.actives(grabs=False) == 0 and cfg.autodisconnect():
             # This was the last job, close server connections
-            sabnzbd.downloader.Downloader.do.disconnect()
+            sabnzbd.Downloader.disconnect()
 
         return removed
 
@@ -754,7 +751,7 @@ class NzbQueue:
                     # Only start decoding if we have a filename and type
                     # The type is only set if sabyenc could decode the article
                     if nzf.filename and nzf.type:
-                        Assembler.do.process((nzo, nzf, file_done))
+                        sabnzbd.Assembler.process((nzo, nzf, file_done))
                     elif nzf.filename.lower().endswith(".par2"):
                         # Broken par2 file, try to get another one
                         nzo.promote_par2(nzf)
@@ -765,7 +762,7 @@ class NzbQueue:
             # Save bookkeeping in case of crash
             if file_done and (nzo.next_save is None or time.time() > nzo.next_save):
                 nzo.save_to_disk()
-                BPSMeter.do.save()
+                sabnzbd.BPSMeter.save()
                 if nzo.save_timeout is None:
                     nzo.next_save = None
                 else:
@@ -793,7 +790,7 @@ class NzbQueue:
                 else:
                     # Not enough data, let postprocessor show it as failed
                     pass
-            Assembler.do.process((nzo, None, None))
+            sabnzbd.Assembler.process((nzo, None, None))
 
     def actives(self, grabs=True) -> int:
         """Return amount of non-paused jobs, optionally with 'grabbing' items
@@ -869,10 +866,10 @@ class NzbQueue:
 
             # Stall prevention by checking if all servers are in the trylist
             # This is a CPU-cheaper alternative to prevent stalling
-            if len(nzo.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
+            if len(nzo.try_list) == sabnzbd.Downloader.server_nr:
                 # Maybe the NZF's need a reset too?
                 for nzf in nzo.files:
-                    if len(nzf.try_list) == sabnzbd.downloader.Downloader.do.server_nr:
+                    if len(nzf.try_list) == sabnzbd.Downloader.server_nr:
                         # We do not want to reset all article trylists, they are good
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()

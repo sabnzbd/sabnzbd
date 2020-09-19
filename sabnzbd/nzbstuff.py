@@ -85,8 +85,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.nzbparser
 from sabnzbd.database import HistoryDB
-from sabnzbd.articlecache import ArticleCache
-from sabnzbd.rating import Rating
 
 # Name patterns
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
@@ -112,7 +110,7 @@ class TryList:
         self.try_list: List[sabnzbd.downloader.Server] = []
         self.fetcher_priority = 0
 
-    def server_in_try_list(self, server):
+    def server_in_try_list(self, server: sabnzbd.downloader.Server):
         """ Return whether specified server has been tried """
         with TRYLIST_LOCK:
             return server in self.try_list
@@ -135,8 +133,8 @@ class TryList:
     def __setstate__(self, servers_ids):
         self.try_list = []
         for server_id in servers_ids:
-            if server_id in sabnzbd.downloader.Downloader.do.server_dict:
-                self.add_to_try_list(sabnzbd.downloader.Downloader.do.server_dict[server_id])
+            if server_id in sabnzbd.Downloader.server_dict:
+                self.add_to_try_list(sabnzbd.Downloader.server_dict[server_id])
 
 
 ##############################################################################
@@ -238,12 +236,12 @@ class Article(TryList):
     def search_new_server(self):
         # Search new server
         self.add_to_try_list(self.fetcher)
-        for server in sabnzbd.downloader.Downloader.do.servers:
+        for server in sabnzbd.Downloader.servers:
             if server.active and not self.server_in_try_list(server):
                 if server.priority >= self.fetcher.priority:
                     self.tries = 0
                     # Allow all servers for this nzo and nzf again (but not for this article)
-                    sabnzbd.nzbqueue.NzbQueue.do.reset_try_lists(self, article_reset=False)
+                    sabnzbd.NzbQueue.reset_try_lists(self, article_reset=False)
                     return True
 
         logging.info(T("%s => missing from all servers, discarding") % self)
@@ -915,8 +913,8 @@ class NzbObject(TryList):
         if accept == 2:
             self.deleted = True
             self.status = Status.FAILED
-            sabnzbd.NzbQueue.do.add(self, quiet=True)
-            sabnzbd.NzbQueue.do.end_job(self)
+            sabnzbd.NzbQueue.add(self, quiet=True)
+            sabnzbd.NzbQueue.end_job(self)
             # Raise error, so it's not added
             raise TypeError
 
@@ -1576,7 +1574,7 @@ class NzbObject(TryList):
                         if not nzf.import_finished:
                             # Only load NZF when it's a primary server
                             # or when it's a backup server without active primaries
-                            if sabnzbd.highest_server(server):
+                            if sabnzbd.Downloader.highest_server(server):
                                 nzf.finish_import()
                                 # Still not finished? Something went wrong...
                                 if not nzf.import_finished and not self.is_gone():
@@ -1598,7 +1596,7 @@ class NzbObject(TryList):
 
         # If cleanup emptied the active files list, end this job
         if nzf_remove_list and not self.files:
-            sabnzbd.NzbQueue.do.end_job(self)
+            sabnzbd.NzbQueue.end_job(self)
 
         if not article:
             # No articles for this server, block for next time
@@ -1758,7 +1756,7 @@ class NzbObject(TryList):
                 fields = {}
                 for k in rating_types:
                     fields[k] = _get_first_meta(k)
-                Rating.do.add_rating(_get_first_meta("id"), self.nzo_id, fields)
+                sabnzbd.Rating.add_rating(_get_first_meta("id"), self.nzo_id, fields)
             except:
                 pass
 
@@ -1798,7 +1796,7 @@ class NzbObject(TryList):
         self.abort_direct_unpacker()
 
         # Remove all cached files
-        ArticleCache.do.purge_articles(self.saved_articles)
+        sabnzbd.ArticleCache.purge_articles(self.saved_articles)
 
         # Delete all, or just basic files
         if self.futuretype:

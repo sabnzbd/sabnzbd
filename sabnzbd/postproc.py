@@ -75,7 +75,6 @@ from sabnzbd.constants import (
     VERIFIED_FILE,
 )
 from sabnzbd.nzbparser import process_single_nzb
-from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
 import sabnzbd.downloader
 import sabnzbd.config as config
@@ -126,7 +125,6 @@ class PostProcessor(Thread):
         self.__stop = False
         self.__busy = False
         self.paused = False
-        PostProcessor.do = self
 
     def save(self):
         """ Save postproc queue """
@@ -162,7 +160,7 @@ class PostProcessor(Thread):
                     nzo.work_name = ""  # Mark as deleted job
                 break
 
-    def process(self, nzo):
+    def process(self, nzo: sabnzbd.nzbstuff.NzbObject):
         """ Push on finished job in the queue """
         if nzo not in self.history_queue:
             self.history_queue.append(nzo)
@@ -273,7 +271,7 @@ class PostProcessor(Thread):
 
             # Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
-                sabnzbd.downloader.Downloader.do.wait_for_postproc()
+                sabnzbd.Downloader.wait_for_postproc()
 
             self.__busy = True
 
@@ -292,7 +290,7 @@ class PostProcessor(Thread):
             check_eoq = True
 
             # Allow download to proceed
-            sabnzbd.downloader.Downloader.do.resume_from_postproc()
+            sabnzbd.Downloader.resume_from_postproc()
 
 
 def process_job(nzo):
@@ -381,9 +379,9 @@ def process_job(nzo):
                 return False
 
         # If we don't need extra par2, we can disconnect
-        if sabnzbd.nzbqueue.NzbQueue.do.actives(grabs=False) == 0 and cfg.autodisconnect():
+        if sabnzbd.NzbQueue.actives(grabs=False) == 0 and cfg.autodisconnect():
             # This was the last job, close server connections
-            sabnzbd.downloader.Downloader.do.disconnect()
+            sabnzbd.Downloader.disconnect()
 
         # Sanitize the resulting files
         if sabnzbd.WIN32:
@@ -591,13 +589,13 @@ def process_job(nzo):
         # Update indexer with results
         if cfg.rating_enable():
             if nzo.encrypted > 0:
-                Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)
+                sabnzbd.Rating.update_auto_flag(nzo.nzo_id, sabnzbd.Rating.FLAG_ENCRYPTED)
             if empty:
-                hosts = [s.host for s in sabnzbd.downloader.Downloader.do.nzo_servers(nzo)]
+                hosts = [s.host for s in sabnzbd.Downloader.nzo_servers(nzo)]
                 if not hosts:
                     hosts = [None]
                 for host in hosts:
-                    Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)
+                    sabnzbd.Rating.update_auto_flag(nzo.nzo_id, sabnzbd.Rating.FLAG_EXPIRED, host)
 
     except:
         logging.error(T("Post Processing Failed for %s (%s)"), filename, T("see logfile"))
@@ -791,8 +789,8 @@ def parring(nzo, workdir):
         if nzo.priority != FORCE_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
         nzo.status = Status.FETCHING
-        sabnzbd.nzbqueue.NzbQueue.do.add(nzo)
-        sabnzbd.downloader.Downloader.do.resume_from_postproc()
+        sabnzbd.NzbQueue.add(nzo)
+        sabnzbd.Downloader.resume_from_postproc()
 
     sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
 
@@ -988,7 +986,7 @@ def rar_renamer(nzo, workdir):
 
 def handle_empty_queue():
     """ Check if empty queue calls for action """
-    if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
+    if sabnzbd.NzbQueue.actives() == 0:
         sabnzbd.save_state()
         notifier.send_notification("SABnzbd", T("Queue finished"), "queue_done")
 

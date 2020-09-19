@@ -52,8 +52,6 @@ class ArticleCache:
         if sabnzbd.DARWIN or sabnzbd.WIN64 or (struct.calcsize("P") * 8) == 64:
             self.__cache_upper_limit = 4 * GIGI
 
-        ArticleCache.do = self
-
     def cache_info(self):
         return ANFO(len(self.__article_table), abs(self.__cache_size), self.__cache_limit_org)
 
@@ -171,7 +169,3 @@ class ArticleCache:
         # Save data, but don't complain when destination folder is missing
         # because this flush may come after completion of the NZO.
         sabnzbd.save_data(data, article.get_art_id(), nzo.workpath, do_pickle=False, silent=True)
-
-
-# Create the instance
-ArticleCache()

@@ -36,8 +36,6 @@ import sabnzbd
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
-from sabnzbd.nzbqueue import NzbQueue
-from sabnzbd.postproc import PostProcessor
 import sabnzbd.cfg as cfg
 import sabnzbd.emailer as emailer
 import sabnzbd.notifier as notifier
@@ -67,11 +65,10 @@ class URLGrabber(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.queue: queue.Queue[Tuple[str, sabnzbd.nzbstuff.NzbObject]] = queue.Queue()
-        for tup in NzbQueue.do.get_urls():
+        for tup in sabnzbd.NzbQueue.get_urls():
             url, nzo = tup
             self.queue.put((url, nzo))
         self.shutdown = False
-        URLGrabber.do = self
 
     def add(self, url, future_nzo, when=None):
         """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
@@ -330,8 +327,8 @@ class URLGrabber(Thread):
         nzo.cat, _, nzo.script, _ = misc.cat_to_opts(nzo.cat, script=nzo.script)
 
         # Add to history and run script if desired
-        NzbQueue.do.remove(nzo.nzo_id, add_to_history=False)
-        PostProcessor.do.process(nzo)
+        sabnzbd.NzbQueue.remove(nzo.nzo_id, add_to_history=False)
+        sabnzbd.PostProcessor.process(nzo)
 
 
 def _build_request(url):

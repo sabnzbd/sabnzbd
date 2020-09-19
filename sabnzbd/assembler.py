@@ -33,13 +33,10 @@ from sabnzbd.misc import get_all_passwords
 from sabnzbd.filesystem import set_permissions, clip_path, has_win_device, diskspace, get_filename, get_ext
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
-from sabnzbd.articlecache import ArticleCache
-from sabnzbd.postproc import PostProcessor
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
-from sabnzbd.rating import Rating
 
 
 class Assembler(Thread):
@@ -48,7 +45,6 @@ class Assembler(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.queue: queue.Queue[Tuple[NzbObject, NzbFile, bool]] = queue.Queue()
-        Assembler.do = self
 
     def stop(self):
         self.process(None)
@@ -76,10 +72,10 @@ class Assembler(Thread):
                     and diskspace(force=True)["download_dir"][1] < (cfg.download_free.get_float() + nzf.bytes) / GIGI
                 ):
                     # Only warn and email once
-                    if not sabnzbd.downloader.Downloader.do.paused:
+                    if not sabnzbd.Downloader.paused:
                         logging.warning(T("Too little diskspace forcing PAUSE"))
                         # Pause downloader, but don't save, since the disk is almost full!
-                        sabnzbd.downloader.Downloader.do.pause()
+                        sabnzbd.Downloader.pause()
                         sabnzbd.emailer.diskfull_mail()
                         # Abort all direct unpackers, just to be sure
                         sabnzbd.directunpacker.abort_all()
@@ -102,7 +98,7 @@ class Assembler(Thread):
                             # Log traceback
                             logging.info("Traceback: ", exc_info=True)
                             # Pause without saving
-                            sabnzbd.downloader.Downloader.do.pause()
+                            sabnzbd.Downloader.pause()
                         continue
                     except:
                         logging.error(T("Fatal error in Assembler"), exc_info=True)
@@ -137,7 +133,7 @@ class Assembler(Thread):
                                     nzo.final_name,
                                 )
                                 nzo.fail_msg = T("Aborted, encryption detected")
-                                sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+                                sabnzbd.NzbQueue.end_job(nzo)
 
                         if unwanted_file:
                             logging.warning(
@@ -153,7 +149,7 @@ class Assembler(Thread):
                             if cfg.action_on_unwanted_extensions() == 2:
                                 logging.debug("Unwanted extension ... aborting")
                                 nzo.fail_msg = T("Aborted, unwanted extension detected")
-                                sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+                                sabnzbd.NzbQueue.end_job(nzo)
 
                         # Add to direct unpack
                         nzo.add_to_direct_unpacker(nzf)
@@ -177,11 +173,11 @@ class Assembler(Thread):
                             reason,
                         )
                         nzo.fail_msg = T("Aborted, rating filter matched (%s)") % reason
-                        sabnzbd.nzbqueue.NzbQueue.do.end_job(nzo)
+                        sabnzbd.NzbQueue.end_job(nzo)
 
             else:
-                sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
-                PostProcessor.do.process(nzo)
+                sabnzbd.NzbQueue.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
+                sabnzbd.PostProcessor.process(nzo)
 
     @staticmethod
     def assemble(nzf, file_done):
@@ -205,7 +201,7 @@ class Assembler(Thread):
 
                 # Write all decoded articles
                 if article.decoded:
-                    data = ArticleCache.do.load_article(article)
+                    data = sabnzbd.ArticleCache.load_article(article)
                     # Could be empty in case nzo was deleted
                     if data:
                         fout.write(data)
@@ -235,7 +231,7 @@ def file_has_articles(nzf):
     has = False
     for article in nzf.decodetable:
         sleep(0.01)
-        data = ArticleCache.do.load_article(article)
+        data = sabnzbd.ArticleCache.load_article(article)
         if data:
             has = True
     return has
@@ -369,8 +365,8 @@ def check_encrypted_and_unwanted_files(nzo, filepath):
 
 
 def nzo_filtered_by_rating(nzo):
-    if Rating.do and cfg.rating_enable() and cfg.rating_filter_enable() and (nzo.rating_filtered < 2):
-        rating = Rating.do.get_rating_by_nzo(nzo.nzo_id)
+    if cfg.rating_enable() and cfg.rating_filter_enable() and (nzo.rating_filtered < 2):
+        rating = sabnzbd.Rating.get_rating_by_nzo(nzo.nzo_id)
         if rating is not None:
             nzo.rating_filtered = 1
             reason = rating_filtered(rating, nzo.filename.lower(), True)

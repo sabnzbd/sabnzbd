@@ -27,9 +27,6 @@ from typing import Tuple, List
 
 import sabnzbd
 from sabnzbd.constants import SABYENC_VERSION_REQUIRED
-from sabnzbd.articlecache import ArticleCache
-from sabnzbd.downloader import Downloader
-from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.nzbstuff import Article
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import match_str
@@ -75,7 +72,6 @@ class Decoder:
         self.decoder_workers = []
         for i in range(cfg.num_decoders()):
             self.decoder_workers.append(DecoderWorker(self.decoder_queue))
-        Decoder.do = self
 
     def start(self):
         for decoder_worker in self.decoder_workers:
@@ -103,12 +99,12 @@ class Decoder:
 
     def process(self, article, raw_data):
         # We use reported article-size, just like sabyenc does
-        ArticleCache.do.reserve_space(article.bytes)
+        sabnzbd.ArticleCache.reserve_space(article.bytes)
         self.decoder_queue.put((article, raw_data))
 
     def queue_full(self):
         # Check if the queue size exceeds the limits
-        return self.decoder_queue.qsize() >= ArticleCache.do.decoder_cache_article_limit
+        return self.decoder_queue.qsize() >= sabnzbd.ArticleCache.decoder_cache_article_limit
 
 
 class DecoderWorker(Thread):
@@ -138,7 +134,7 @@ class DecoderWorker(Thread):
             art_id = article.article
 
             # Free space in the decoder-queue
-            ArticleCache.do.free_reserved_space(article.bytes)
+            sabnzbd.ArticleCache.free_reserved_space(article.bytes)
 
             # Keeping track
             decoded_data = None
@@ -157,12 +153,12 @@ class DecoderWorker(Thread):
             except MemoryError:
                 logging.warning(T("Decoder failure: Out of memory"))
                 logging.info("Decoder-Queue: %d", self.decoder_queue.qsize())
-                logging.info("Cache: %d, %d, %d", *ArticleCache.do.cache_info())
+                logging.info("Cache: %d, %d, %d", *sabnzbd.ArticleCache.cache_info())
                 logging.info("Traceback: ", exc_info=True)
-                Downloader.do.pause()
+                sabnzbd.Downloader.pause()
 
                 # This article should be fetched again
-                NzbQueue.do.reset_try_lists(article)
+                sabnzbd.NzbQueue.reset_try_lists(article)
                 continue
 
             except CrcError:
@@ -195,7 +191,7 @@ class DecoderWorker(Thread):
                             logme = T("UUencode detected, only yEnc encoding is supported [%s]") % nzo.final_name
                             logging.error(logme)
                             nzo.fail_msg = logme
-                            NzbQueue.do.end_job(nzo)
+                            sabnzbd.NzbQueue.end_job(nzo)
                             break
 
                 # Pre-check, proper article found so just register
@@ -221,9 +217,9 @@ class DecoderWorker(Thread):
             if decoded_data:
                 # If the data needs to be written to disk due to full cache, this will be slow
                 # Causing the decoder-queue to fill up and delay the downloader
-                ArticleCache.do.save_article(article, decoded_data)
+                sabnzbd.ArticleCache.save_article(article, decoded_data)
 
-            NzbQueue.do.register_article(article, article_success)
+            sabnzbd.NzbQueue.register_article(article, article_success)
 
 
 def decode(article, raw_data):

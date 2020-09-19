@@ -113,7 +113,6 @@ class Rating(Thread):
     do = None
 
     def __init__(self):
-        Rating.do = self
         self.shutdown = False
         self.queue = OrderedSetQueue()
         try:

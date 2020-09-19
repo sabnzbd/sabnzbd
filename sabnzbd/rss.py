@@ -232,7 +232,6 @@ class RSSQueue:
 
         uris = feeds.uri()
         defCat = feeds.cat()
-        import sabnzbd.api
 
         if not notdefault(defCat) or defCat not in sabnzbd.api.list_cats(default=False):
             defCat = None
