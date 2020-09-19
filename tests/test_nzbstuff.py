@@ -40,11 +40,11 @@ class TestNZO:
 
         # work_name can be trimmed in Windows due to max-path-length
         assert "test_basic_data".startswith(nzo.work_name)
-        assert os.path.exists(nzo.workpath)
+        assert os.path.exists(nzo.admin_path)
 
         # Check if there's an nzf file and the backed-up nzb
-        assert globber(nzo.workpath, "*.nzb.gz")
-        assert globber(nzo.workpath, "SABnzbd_nzf*")
+        assert globber(nzo.admin_path, "*.nzb.gz")
+        assert globber(nzo.admin_path, "SABnzbd_nzf*")
 
         # Should have picked up the default category settings
         assert nzo.cat == "*"

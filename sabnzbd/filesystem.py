@@ -29,7 +29,7 @@ import time
 import fnmatch
 import stat
 import zipfile
-from typing import Union, List, Tuple, Any, Dict
+from typing import Union, List, Tuple, Any, Dict, Optional
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
@@ -299,7 +299,7 @@ def real_path(loc: str, path: str) -> str:
 
 def create_real_path(
     name: str, loc: str, path: str, umask: bool = False, writable: bool = True
-) -> Tuple[bool, str, Union[str, None]]:
+) -> Tuple[bool, str, Optional[str]]:
     """When 'path' is relative, create join of 'loc' and 'path'
     When 'path' is absolute, create normalized path
     'name' is used for logging.
@@ -463,7 +463,7 @@ def fix_unix_encoding(folder: str):
                         logging.info("Cannot correct name of %s", os.path.join(root, name))
 
 
-def make_script_path(script: str) -> Union[str, None]:
+def make_script_path(script: str) -> Optional[str]:
     """ Return full script path, if any valid script exists, else None """
     script_path = None
     script_dir = sabnzbd.cfg.script_dir.get_path()
@@ -658,7 +658,7 @@ def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
 
 
 @synchronized(DIR_LOCK)
-def move_to_path(path: str, new_path: str) -> Tuple[bool, Union[str, None]]:
+def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
     """Move a file to a new path, optionally give unique filename
     Return (ok, new_path)
     """

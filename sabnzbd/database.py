@@ -506,7 +506,7 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
         nzo.status,
         nzo.nzo_id,
         clip_path(workdir_complete),
-        clip_path(nzo.downpath),
+        clip_path(nzo.download_path),
         script_output,
         script_line,
         download_time,

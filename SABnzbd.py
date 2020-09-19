@@ -1232,7 +1232,7 @@ def main():
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
 
-    sabnzbd.initialize(pause, clean_up, evalSched=True, repair=repair)
+    sabnzbd.initialize(pause, clean_up, evaluate_schedules=True, repair=repair)
 
     os.chdir(sabnzbd.DIR_PROG)
 

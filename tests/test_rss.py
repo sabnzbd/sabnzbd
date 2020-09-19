@@ -20,9 +20,10 @@ tests.test_misc - Testing functions in misc.py
 """
 import datetime
 import time
+import configobj
 
 import sabnzbd.rss as rss
-from sabnzbd.config import CFG, define_rss, ConfigCat
+import sabnzbd.config
 
 
 class TestRSS:
@@ -30,16 +31,18 @@ class TestRSS:
     def setup_rss(feed_name, feed_url):
         """ Setup the basic settings to get things going"""
         # Setup the config settings
+        CFG = configobj.ConfigObj()
         CFG["rss"] = {}
         CFG["rss"][feed_name] = {}
         CFG["rss"][feed_name]["uri"] = feed_url
-        define_rss()
+        sabnzbd.config.CFG = CFG
+        sabnzbd.config.define_rss()
 
         # Need to create the Default category
         # Otherwise it will try to save the config
-        ConfigCat("*", {})
-        ConfigCat("tv", {})
-        ConfigCat("movies", {})
+        sabnzbd.config.ConfigCat("*", {})
+        sabnzbd.config.ConfigCat("tv", {})
+        sabnzbd.config.ConfigCat("movies", {})
 
     def test_rss_newznab_parser(self):
         """Test basic RSS-parsing of custom elements

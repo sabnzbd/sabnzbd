@@ -32,7 +32,7 @@ from typing import List, Dict
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.newswrapper import NewsWrapper, request_server_info
-import sabnzbd.notifier as notifier
+import sabnzbd.notifier
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.scheduler
@@ -162,7 +162,7 @@ class Server:
         self.idle_threads = []
 
     def __repr__(self):
-        return "%s:%s" % (self.host, self.port)
+        return "<%s:%s>" % (self.host, self.port)
 
 
 class Downloader(Thread):
@@ -199,8 +199,8 @@ class Downloader(Thread):
 
         self.force_disconnect = False
 
-        self.read_fds = {}
-        self.write_fds = {}
+        self.read_fds: Dict[int, NewsWrapper] = {}
+        self.write_fds: Dict[int, NewsWrapper] = {}
 
         self.servers: List[Server] = []
         self.server_dict: Dict[str, Server] = {}  # For faster lookups, but is not updated later!
@@ -272,8 +272,6 @@ class Downloader(Thread):
         # Update server-count
         self.server_nr = len(self.servers)
 
-        return
-
     @NzbQueueLocker
     def set_paused_state(self, state):
         """ Set downloader to specified paused state """
@@ -284,7 +282,7 @@ class Downloader(Thread):
         # Do not notify when SABnzbd is still starting
         if self.paused and sabnzbd.WEB_DIR:
             logging.info("Resuming")
-            notifier.send_notification("SABnzbd", T("Resuming"), "pause_resume")
+            sabnzbd.notifier.send_notification("SABnzbd", T("Resuming"), "pause_resume")
         self.paused = False
 
     @NzbQueueLocker
@@ -293,7 +291,7 @@ class Downloader(Thread):
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
-            notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
+            sabnzbd.notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
             if self.is_paused():
                 sabnzbd.BPSMeter.reset()
             if cfg.autodisconnect():
@@ -360,7 +358,7 @@ class Downloader(Thread):
             else:
                 return True
 
-    def highest_server(self, me):
+    def highest_server(self, me: Server):
         """Return True when this server has the highest priority of the active ones
         0 is the highest priority
         """
@@ -829,7 +827,7 @@ class Downloader(Thread):
         # Empty SSL info, it might change on next connect
         server.ssl_info = ""
 
-    def __request_article(self, nw):
+    def __request_article(self, nw: NewsWrapper):
         try:
             nzo = nw.article.nzf.nzo
             if nw.server.send_group and nzo.group != nw.group:
@@ -936,7 +934,7 @@ class Downloader(Thread):
 
     def stop(self):
         self.shutdown = True
-        notifier.send_notification("SABnzbd", T("Shutting down"), "startup")
+        sabnzbd.notifier.send_notification("SABnzbd", T("Shutting down"), "startup")
 
 
 def stop():
