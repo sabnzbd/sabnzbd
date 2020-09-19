@@ -17,8 +17,8 @@
 
 import sys
 
-if sys.hexversion < 0x03050000:
-    print("Sorry, requires Python 3.5 or above")
+if sys.hexversion < 0x03060000:
+    print("Sorry, requires Python 3.6 or above")
     print("You can read more at: https://sabnzbd.org/python3")
     sys.exit(1)
 
@@ -1170,10 +1170,6 @@ def main():
             ),
             sabnzbd.encoding.CODEPAGE,
         )
-
-    # TODO: Remove after 3.1.0
-    if sys.hexversion < 0x03060000:
-        logging.warning_helpful("Python 3.5 is end-of-life. SABnzbd 3.2.0 will only run on Python 3.6 and above.")
 
     # SSL Information
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)

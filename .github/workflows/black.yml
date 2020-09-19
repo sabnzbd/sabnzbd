@@ -16,5 +16,5 @@ jobs:
             tools
             tests
             --line-length=120
-            --target-version=py35
+            --target-version=py36
             --check
