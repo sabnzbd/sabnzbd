@@ -1,20 +1,11 @@
-Release Notes - SABnzbd 3.1.0 Beta 2
+Release Notes - SABnzbd 3.1.0 Release Candidate 1
 =========================================================
 
-## Changes and bugfixes since 3.1.0 Beta 1
-- Post-processing could lock the application.
-- Improved detection for Deobfuscate final filenames.
-- Paused priority of pre-queue script was ignored.
-- Multi-edit layout was displayed wrongly.
-- Jobs with only par2-files would result in a crash.
-- Downloaded bytes could show as exceeding the total bytes of a job.
-- Restore limit on length of foldernames (`max_foldername_length`).
-- Duplicate Detection did not check filenames in History.
-- Show warning that Pyton 3.5 support will be dropped after 3.1.0.
-- Linux: false-positive warning about UnRar version was shown.
-- Windows: could fail to create folders on some network shares.
-- Windows: external processes would show in popup window.
-- Windows: show version in tray icon tooltip.
+## Changes and bugfixes since 3.1.0 Beta 2
+- Deobfuscate final filenames can now be used when job folders are disabled.
+- Deobfuscate final filenames will ignore blu-ray disc files.
+- Clear error if Complete Folder is set as a subfolder of the Temporary Folder.
+- Filtering of history by category would not filter jobs in post-processing.
 
 ## Changes since 3.0.2
 - Added option to automatically deobfuscate final filenames: after unpacking, 
@@ -26,7 +17,9 @@ Release Notes - SABnzbd 3.1.0 Beta 2
 - Redesigned job availability-check to be more efficient and reliable.
 - Skip repair on Retry if all sets were previously successfully verified.
 - Passwords included in the filename no longer have to be at the end.
+- Restore limit on length of foldernames (`max_foldername_length`).
 - Added password input box on the Add NZB screen. 
+- Show warning that Pyton 3.5 support will be dropped after 3.1.0.
 - Windows/macOS: update UnRar to 5.91 and MultiPar to 1.3.1.0.
 - Windows: retry `Access Denied` when renaming files on Windows. 
 
@@ -35,7 +28,11 @@ Release Notes - SABnzbd 3.1.0 Beta 2
 - On HTTP-redirects the scheme/hostname/port were ignored when behind a proxy.
 - Strip slash of the end of `url_base` as it could break other code.
 - Unpacking with a relative folder set for a category could fail.
+- Paused priority of pre-queue script was ignored.
+- Duplicate Detection did not check filenames in History.
+- Downloaded bytes could show as exceeding the total bytes of a job.
 - Windows: non-Latin languages were displayed incorrectly in the installer.
+- Windows: could fail to create folders on some network shares.
 
 ## Upgrade notices
 - Jobs that failed on versions before 3.1.x, will throw an error about the 
