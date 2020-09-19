@@ -1917,7 +1917,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
 
 def create_env(nzo=None, extra_env_fields={}):
     """Modify the environment for pp-scripts with extra information
-    OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
+    macOS: Return copy of environment without PYTHONPATH and PYTHONHOME
     other: return None
     """
     env = os.environ.copy()

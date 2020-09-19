@@ -144,7 +144,7 @@ def sanitize_filename(name):
         legal += CH_LEGAL_WIN
 
     if ":" in name and sabnzbd.DARWIN:
-        # Compensate for the foolish way par2 on OSX handles a colon character
+        # Compensate for the foolish way par2 on macOS handles a colon character
         name = name[name.rfind(":") + 1 :]
 
     lst = []
@@ -388,7 +388,7 @@ def is_archive(path):
 
 
 def check_mount(path):
-    """Return False if volume isn't mounted on Linux or OSX
+    """Return False if volume isn't mounted on Linux or macOS
     Retry 6 times with an interval of 1 sec.
     """
     if sabnzbd.DARWIN:

@@ -869,7 +869,7 @@ def empty_queues():
 
 
 def keep_awake():
-    """ If we still have work to do, keep Windows/OSX system awake """
+    """ If we still have work to do, keep Windows/macOS system awake """
     if KERNEL32 or FOUNDATION:
         if sabnzbd.cfg.keep_awake():
             ES_CONTINUOUS = 0x80000000

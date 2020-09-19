@@ -696,7 +696,7 @@ SKIN_TEXT = {
     "opt-ncenter_enable": TT("Notification Center"),
     "opt-acenter_enable": TT("Enable Windows Notifications"),
     "testNotify": TT("Test Notification"),
-    "section-NC": TT("Notification Center"),  #: Header for OSX Notfication Center section
+    "section-NC": TT("Notification Center"),  #: Header for macOS Notfication Center section
     "section-AC": TT("Windows Notifications"),
     "section-OSD": TT("NotifyOSD"),  #: Header for Ubuntu's NotifyOSD notifications section
     "section-Prowl": TT("Prowl"),  #: Header for Prowl notification section

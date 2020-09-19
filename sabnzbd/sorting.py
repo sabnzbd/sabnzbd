@@ -1165,7 +1165,7 @@ def strip_folders(path):
         """ Strip all leading/trailing underscores also dots for Windows """
         x = x.strip().strip("_")
         if sabnzbd.WIN32:
-            # OSX and Linux should keep dots, because leading dots are significant
+            # macOS and Linux should keep dots, because leading dots are significant
             # while Windows cannot handle trailing dots
             x = x.strip(".")
         x = x.strip()

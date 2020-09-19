@@ -1,8 +1,7 @@
 sabyenc3>=4.0.0
 cheetah3>=3.0.0
 cryptography
-feedparser<6.0.0; python_version == '3.5'
-feedparser>=6.0.0; python_version > '3.5'
+feedparser>=6.0.0
 configobj
 cheroot<8.4.3
 cherrypy

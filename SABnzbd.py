@@ -614,7 +614,7 @@ def get_webhost(cherryhost, cherryport, https_port):
             if ips[0] != "127.0.0.1":
                 browserhost = "127.0.0.1"
 
-    # This is to please Chrome on OSX
+    # This is to please Chrome on macOS
     if cherryhost == "localhost" and sabnzbd.DARWIN:
         cherryhost = "127.0.0.1"
         browserhost = "localhost"
@@ -731,7 +731,7 @@ def commandline_handler():
     serv_opts = [os.path.normpath(os.path.abspath(sys.argv[0]))]
     upload_nzbs = []
 
-    # OSX binary: get rid of the weird -psn_0_123456 parameter
+    # macOS binary: get rid of the weird -psn_0_123456 parameter
     for arg in sys.argv:
         if arg.startswith("-psn_"):
             sys.argv.remove(arg)
@@ -1536,7 +1536,7 @@ def main():
             sys.argv = sabnzbd.RESTART_ARGS
 
             os.chdir(org_dir)
-            # If OSX frozen restart of app instead of embedded python
+            # If macOS frozen restart of app instead of embedded python
             if hasattr(sys, "frozen") and sabnzbd.DARWIN:
                 # [[NSProcessInfo processInfo] processIdentifier]]
                 # logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
@@ -1704,7 +1704,7 @@ if __name__ == "__main__":
 
     elif sabnzbd.DARWIN and sabnzbd.FOUNDATION:
 
-        # OSX binary runner
+        # macOS binary runner
         from threading import Thread
         from PyObjCTools import AppHelper
         from AppKit import NSApplication

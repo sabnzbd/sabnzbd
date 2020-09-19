@@ -34,15 +34,6 @@ Release Notes - SABnzbd 3.1.0 Release Candidate 1
 - Windows: non-Latin languages were displayed incorrectly in the installer.
 - Windows: could fail to create folders on some network shares.
 
-## Upgrade notices
-- Jobs that failed on versions before 3.1.x, will throw an error about the 
-  attribute file failing to load when they are retried on 3.1.0+. This error 
-  can be ignored.
-- When upgrading from 2.x.x or older the queue will be converted. Job order,
-  settings and data will be preserved, but if you decide to go back to 2.x.x
-  your queue cannot be downgraded again. But you can restore the jobs by going
-  to the Status page and running Queue Repair.
-
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
 

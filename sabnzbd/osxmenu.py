@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-sabnzbd.osxmenu - OSX Top Menu
+sabnzbd.osxmenu - macOS Top Menu
 """
 
 import objc
@@ -802,7 +802,7 @@ class SABnzbdDelegate(NSObject):
         # logging.info('[osx] file open')
         # logging.info('[osx] file : %s' % (filenames))
         for filename in filenames:
-            logging.info("[osx] receiving from OSX : %s", filename)
+            logging.info("[osx] receiving from macOS : %s", filename)
             if os.path.exists(filename):
                 if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
                     sabnzbd.add_nzbfile(filename, keep=True)

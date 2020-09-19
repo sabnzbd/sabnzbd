@@ -75,12 +75,12 @@ def win_shutdown():
 
 
 ##############################################################################
-# Power management for OSX
+# Power management for macOS
 ##############################################################################
 
 
 def osx_shutdown():
-    """ Shutdown OSX system, never returns """
+    """ Shutdown macOS system, never returns """
     try:
         subprocess.call(["osascript", "-e", 'tell app "System Events" to shut down'])
     except:
@@ -90,7 +90,7 @@ def osx_shutdown():
 
 
 def osx_standby():
-    """ Make OSX system sleep, returns after wakeup """
+    """ Make macOS system sleep, returns after wakeup """
     try:
         subprocess.call(["osascript", "-e", 'tell app "System Events" to sleep'])
         time.sleep(10)
@@ -100,7 +100,7 @@ def osx_standby():
 
 
 def osx_hibernate():
-    """ Make OSX system sleep, returns after wakeup """
+    """ Make macOS system sleep, returns after wakeup """
     osx_standby()
 
 

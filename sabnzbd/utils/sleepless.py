@@ -17,7 +17,7 @@
 
 
 """
-sabnzbd.utils.sleepless - Keep macOS (OSX) awake by setting power assertions
+sabnzbd.utils.sleepless - Keep macOS awake by setting power assertions
 """
 
 
