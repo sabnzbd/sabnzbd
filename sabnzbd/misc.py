@@ -30,7 +30,7 @@ import time
 import datetime
 import inspect
 import ctypes
-from typing import Union, Tuple, Any
+from typing import Union, Tuple, Any, Optional
 
 import sabnzbd
 from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
@@ -343,7 +343,7 @@ def set_serv_parms(service, args):
     return True
 
 
-def get_from_url(url: str) -> Union[str, None]:
+def get_from_url(url: str) -> Optional[str]:
     """ Retrieve URL and return content """
     try:
         req = urllib.request.Request(url)

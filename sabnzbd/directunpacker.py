@@ -25,6 +25,7 @@ import subprocess
 import time
 import threading
 import logging
+from typing import Optional
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -48,16 +49,16 @@ RAR_NR = re.compile(r"(.*?)(\.part(\d*).rar|\.r(\d*))$", re.IGNORECASE)
 
 
 class DirectUnpacker(threading.Thread):
-    def __init__(self, nzo):
+    def __init__(self, nzo: NzbObject):
         threading.Thread.__init__(self)
 
         self.nzo: NzbObject = nzo
-        self.active_instance: subprocess.Popen = None
+        self.active_instance: Optional[subprocess.Popen] = None
         self.killed = False
         self.next_file_lock = threading.Condition(threading.RLock())
 
         self.unpack_dir_info = None
-        self.rarfile_nzf: NzbFile = None
+        self.rarfile_nzf: Optional[NzbFile] = None
         self.cur_setname = None
         self.cur_volume = 0
         self.total_volumes = {}
@@ -123,7 +124,7 @@ class DirectUnpacker(threading.Thread):
             self.total_volumes = {}
 
     @synchronized(START_STOP_LOCK)
-    def add(self, nzf):
+    def add(self, nzf: NzbFile):
         """ Add jobs and start instance of DirectUnpack """
         if not cfg.direct_unpack_tested():
             test_disk_performance()
@@ -227,7 +228,7 @@ class DirectUnpacker(threading.Thread):
                 ACTIVE_UNPACKERS.remove(self)
 
                 # Add to success
-                rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
+                rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
                 self.success_sets[self.cur_setname] = (
                     rar_volumelist(rarfile_path, self.nzo.password, rarfiles),
                     extracted,
@@ -377,7 +378,7 @@ class DirectUnpacker(threading.Thread):
             return
 
         # Generate command
-        rarfile_path = os.path.join(self.nzo.downpath, self.rarfile_nzf.filename)
+        rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
         if sabnzbd.WIN32:
             # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
             # See: https://github.com/sabnzbd/sabnzbd/issues/1043
@@ -464,7 +465,7 @@ class DirectUnpacker(threading.Thread):
                     # RarFile can fail for mysterious reasons
                     try:
                         rar_contents = RarFile(
-                            os.path.join(self.nzo.downpath, rarfile_nzf.filename), single_file_check=True
+                            os.path.join(self.nzo.download_path, rarfile_nzf.filename), single_file_check=True
                         ).filelist()
                         for rm_file in rar_contents:
                             # Flat-unpack, so remove foldername from RarFile output

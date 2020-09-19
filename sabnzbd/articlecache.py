@@ -22,11 +22,12 @@ sabnzbd.articlecache - Article cache handling
 import logging
 import threading
 import struct
-from typing import Dict
+from typing import Dict, List
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE
+from sabnzbd.nzbstuff import Article
 
 # Operations on the article table are handled via try/except.
 # The counters need to be made atomic to ensure consistency.
@@ -40,7 +41,7 @@ class ArticleCache:
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__article_table: Dict[sabnzbd.nzbstuff.Article, bytes] = {}  # Dict of buffered articles
+        self.__article_table: Dict[Article, bytes] = {}  # Dict of buffered articles
 
         # Limit for the decoder is based on the total available cache
         # so it can be larger on memory-rich systems
@@ -83,7 +84,7 @@ class ArticleCache:
         """ Is there space left in the set limit? """
         return self.__cache_size < self.__cache_limit
 
-    def save_article(self, article, data):
+    def save_article(self, article: Article, data: bytes):
         """ Save article in cache, either memory or disk """
         nzo = article.nzf.nzo
         if nzo.is_gone():
@@ -115,7 +116,7 @@ class ArticleCache:
             # No data saved in memory, direct to disk
             self.__flush_article_to_disk(article, data)
 
-    def load_article(self, article):
+    def load_article(self, article: Article):
         """ Load the data of the article """
         data = None
         nzo = article.nzf.nzo
@@ -130,7 +131,7 @@ class ArticleCache:
                 logging.debug("Failed to load %s from cache, probably already deleted", article)
                 return data
         elif article.art_id:
-            data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True, do_pickle=False, silent=True)
+            data = sabnzbd.load_data(article.art_id, nzo.admin_path, remove=True, do_pickle=False, silent=True)
         nzo.remove_saved_article(article)
         return data
 
@@ -145,7 +146,7 @@ class ArticleCache:
                 # Could fail if already deleted by purge_articles or load_data
                 logging.debug("Failed to flush item from cache, probably already deleted or written to disk")
 
-    def purge_articles(self, articles):
+    def purge_articles(self, articles: List[Article]):
         """ Remove all saved articles, from memory and disk """
         logging.debug("Purging %s articles from the cache/disk", len(articles))
         for article in articles:
@@ -157,10 +158,10 @@ class ArticleCache:
                     # Could fail if already deleted by flush_articles or load_data
                     logging.debug("Failed to flush %s from cache, probably already deleted or written to disk", article)
             elif article.art_id:
-                sabnzbd.remove_data(article.art_id, article.nzf.nzo.workpath)
+                sabnzbd.remove_data(article.art_id, article.nzf.nzo.admin_path)
 
     @staticmethod
-    def __flush_article_to_disk(article, data):
+    def __flush_article_to_disk(article: Article, data):
         nzo = article.nzf.nzo
         if nzo.is_gone():
             # Don't store deleted jobs
@@ -168,4 +169,4 @@ class ArticleCache:
 
         # Save data, but don't complain when destination folder is missing
         # because this flush may come after completion of the NZO.
-        sabnzbd.save_data(data, article.get_art_id(), nzo.workpath, do_pickle=False, silent=True)
+        sabnzbd.save_data(data, article.get_art_id(), nzo.admin_path, do_pickle=False, silent=True)

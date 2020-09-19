@@ -25,7 +25,7 @@ import re
 import shutil
 import threading
 import uuid
-from typing import List, Dict, Union
+from typing import List, Dict
 from urllib.parse import urlparse
 
 import configobj
@@ -39,7 +39,7 @@ CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()
 
 
-CFG = {}  # Holds INI structure
+CFG: configobj.ConfigObj  # Holds INI structure
 # during re-write this variable is global
 # to allow direct access to INI structure
 
@@ -1112,7 +1112,7 @@ def validate_safedir(root, value, default):
     """
     if sabnzbd.WIN32 and value and len(real_path(root, value)) >= MAX_WIN_DFOLDER:
         return T("Error: Path length should be below %s.") % MAX_WIN_DFOLDER, None
-    if sabnzbd.empty_queues():
+    if sabnzbd.__INITIALIZED__ and sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty():
         return validate_no_unc(root, value, default)
     else:
         return T("Error: Queue not empty, cannot change folder."), None

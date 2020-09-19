@@ -40,7 +40,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.emailer as emailer
 import sabnzbd.notifier as notifier
 from sabnzbd.encoding import ubtou, utob
-
+from sabnzbd.nzbstuff import NzbObject
 
 _RARTING_FIELDS = (
     "x-rating-id",
@@ -64,13 +64,13 @@ class URLGrabber(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        self.queue: queue.Queue[Tuple[str, sabnzbd.nzbstuff.NzbObject]] = queue.Queue()
+        self.queue: queue.Queue[Tuple[str, NzbObject]] = queue.Queue()
         for tup in sabnzbd.NzbQueue.get_urls():
             url, nzo = tup
             self.queue.put((url, nzo))
         self.shutdown = False
 
-    def add(self, url, future_nzo, when=None):
+    def add(self, url, future_nzo: NzbObject, when=None):
         """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
         if future_nzo and when:
             # Always increase counter
@@ -298,7 +298,7 @@ class URLGrabber(Thread):
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
     @staticmethod
-    def fail_to_history(nzo, url, msg="", content=False):
+    def fail_to_history(nzo: NzbObject, url, msg="", content=False):
         """Create History entry for failed URL Fetch
         msg: message to be logged
         content: report in history that cause is a bad NZB file

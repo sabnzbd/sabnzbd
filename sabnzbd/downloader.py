@@ -162,7 +162,7 @@ class Server:
         self.idle_threads = []
 
     def __repr__(self):
-        return "%s:%s" % (self.host, self.port)
+        return "<%s:%s>" % (self.host, self.port)
 
 
 class Downloader(Thread):
@@ -199,8 +199,8 @@ class Downloader(Thread):
 
         self.force_disconnect = False
 
-        self.read_fds = {}
-        self.write_fds = {}
+        self.read_fds: Dict[int, NewsWrapper] = {}
+        self.write_fds: Dict[int, NewsWrapper] = {}
 
         self.servers: List[Server] = []
         self.server_dict: Dict[str, Server] = {}  # For faster lookups, but is not updated later!
@@ -271,8 +271,6 @@ class Downloader(Thread):
 
         # Update server-count
         self.server_nr = len(self.servers)
-
-        return
 
     @NzbQueueLocker
     def set_paused_state(self, state):
@@ -360,7 +358,7 @@ class Downloader(Thread):
             else:
                 return True
 
-    def highest_server(self, me):
+    def highest_server(self, me: Server):
         """Return True when this server has the highest priority of the active ones
         0 is the highest priority
         """
@@ -829,7 +827,7 @@ class Downloader(Thread):
         # Empty SSL info, it might change on next connect
         server.ssl_info = ""
 
-    def __request_article(self, nw):
+    def __request_article(self, nw: NewsWrapper):
         try:
             nzo = nw.article.nzf.nzo
             if nw.server.send_group and nzo.group != nw.group:

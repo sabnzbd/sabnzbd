@@ -63,6 +63,7 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
+from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
@@ -105,14 +106,14 @@ class PostProcessor(Thread):
         Thread.__init__(self)
 
         # This history queue is simply used to log what active items to display in the web_ui
-        self.history_queue: List[sabnzbd.nzbstuff.NzbObject] = []
+        self.history_queue: List[NzbObject] = []
         self.load()
 
         # Fast-queue for jobs already finished by DirectUnpack
-        self.fast_queue: queue.Queue[sabnzbd.nzbstuff.NzbObject] = queue.Queue()
+        self.fast_queue: queue.Queue[NzbObject] = queue.Queue()
 
         # Regular queue for jobs that might need more attention
-        self.slow_queue: queue.Queue[sabnzbd.nzbstuff.NzbObject] = queue.Queue()
+        self.slow_queue: queue.Queue[NzbObject] = queue.Queue()
 
         # Load all old jobs
         for nzo in self.history_queue:
@@ -142,7 +143,7 @@ class PostProcessor(Thread):
             if POSTPROC_QUEUE_VERSION != version:
                 logging.warning(T("Old queue detected, use Status->Repair to convert the queue"))
             elif isinstance(history_queue, list):
-                self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.downpath)]
+                self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.download_path)]
         except:
             logging.info("Corrupt %s file, discarding", POSTPROC_QUEUE_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
@@ -160,7 +161,7 @@ class PostProcessor(Thread):
                     nzo.work_name = ""  # Mark as deleted job
                 break
 
-    def process(self, nzo: sabnzbd.nzbstuff.NzbObject):
+    def process(self, nzo: NzbObject):
         """ Push on finished job in the queue """
         if nzo not in self.history_queue:
             self.history_queue.append(nzo)
@@ -210,7 +211,7 @@ class PostProcessor(Thread):
         """ Return download path for given nzo_id or None when not found """
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
-                return nzo.downpath
+                return nzo.download_path
         return None
 
     def run(self):
@@ -332,7 +333,7 @@ def process_job(nzo):
 
     try:
         # Get the folder containing the download result
-        workdir = nzo.downpath
+        workdir = nzo.download_path
         tmp_workdir_complete = None
 
         # if no files are present (except __admin__), fail the job
@@ -662,7 +663,7 @@ def process_job(nzo):
     return True
 
 
-def prepare_extraction_path(nzo):
+def prepare_extraction_path(nzo: NzbObject):
     """Based on the information that we have, generate
     the extraction path and create the directory.
     Separated so it can be called from DirectUnpacker
@@ -716,14 +717,14 @@ def prepare_extraction_path(nzo):
     return tmp_workdir_complete, workdir_complete, file_sorter, one_folder, marker_file
 
 
-def parring(nzo, workdir):
+def parring(nzo: NzbObject, workdir: str):
     """ Perform par processing. Returns: (par_error, re_add) """
     logging.info("Starting verification and repair of %s", nzo.final_name)
     par_error = False
     re_add = False
 
     # Get verification status of sets
-    verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
+    verified = sabnzbd.load_data(VERIFIED_FILE, nzo.admin_path, remove=False) or {}
 
     # If all were verified successfully, we skip the rest of the checks
     if verified and all(verified.values()):
@@ -742,7 +743,7 @@ def parring(nzo, workdir):
                 parfile_nzf = nzo.partable[setname]
 
                 # Check if file maybe wasn't deleted and if we maybe have more files in the parset
-                if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or nzo.extrapars[setname]:
+                if os.path.exists(os.path.join(nzo.download_path, parfile_nzf.filename)) or nzo.extrapars[setname]:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
 
                     # Was it aborted?
@@ -792,13 +793,13 @@ def parring(nzo, workdir):
         sabnzbd.NzbQueue.add(nzo)
         sabnzbd.Downloader.resume_from_postproc()
 
-    sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
+    sabnzbd.save_data(verified, VERIFIED_FILE, nzo.admin_path)
 
     logging.info("Verification and repair finished for %s", nzo.final_name)
     return par_error, re_add
 
 
-def try_sfv_check(nzo, workdir):
+def try_sfv_check(nzo: NzbObject, workdir):
     """Attempt to verify set using SFV file
     Return None if no SFV-sets, True/False based on verification
     """
@@ -830,7 +831,7 @@ def try_sfv_check(nzo, workdir):
     return True
 
 
-def try_rar_check(nzo, rars):
+def try_rar_check(nzo: NzbObject, rars):
     """Attempt to verify set using the RARs
     Return True if verified, False when failed
     When setname is '', all RAR files will be used, otherwise only the matching one
@@ -875,7 +876,7 @@ def try_rar_check(nzo, rars):
         return True
 
 
-def rar_renamer(nzo, workdir):
+def rar_renamer(nzo: NzbObject, workdir):
     """ Deobfuscate rar file names: Use header and content information to give RAR-files decent names """
     nzo.status = Status.VERIFYING
     nzo.set_unpack_info("Repair", T("Trying RAR-based verification"))
