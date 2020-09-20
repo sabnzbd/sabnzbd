@@ -55,7 +55,7 @@ class TestNZO:
         # TODO: More checks!
 
 
-class TestScanPassword:
+class TestNZBStuffHelpers:
     def test_scan_passwords(self):
         file_names = {
             "my_awesome_nzb_file{{password}}": "password",
@@ -77,3 +77,20 @@ class TestScanPassword:
 
         for file_name, clean_file_name in file_names.items():
             assert nzbstuff.scan_password(file_name)[0] == clean_file_name
+
+    def test_create_work_name(self):
+        # Only test stuff specific for create_work_name
+        # The sanitizing is already tested in tests for sanitize_foldername
+        file_names = {
+            "my_awesome_nzb_file.pAr2.nZb": "my_awesome_nzb_file",
+            "my_awesome_nzb_file.....pAr2.nZb": "my_awesome_nzb_file",
+            "my_awesome_nzb_file....par2..": "my_awesome_nzb_file",
+            " my_awesome_nzb_file  .pAr.nZb": "my_awesome_nzb_file",
+            "with.extension.and.period.par2.": "with.extension.and.period",
+            "nothing.in.here": "nothing.in.here",
+            "  just.space  ": "just.space",
+            "http://test.par2  ": "http://test.par2",
+        }
+
+        for file_name, clean_file_name in file_names.items():
+            assert nzbstuff.create_work_name(file_name) == clean_file_name
