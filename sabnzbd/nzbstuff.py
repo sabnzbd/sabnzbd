@@ -2070,16 +2070,16 @@ def nzf_cmp_name(nzf1, nzf2):
 
 
 def create_work_name(name):
-    """ Remove ".nzb" and ".par(2)" and sanitize """
-    strip_ext = [".nzb", ".par", ".par2"]
-    name = sanitize_foldername(name.strip())
+    """ Remove ".nzb" and ".par(2)" and sanitize, skip URL's """
     if name.find("://") < 0:
-        name_base, ext = os.path.splitext(name)
         # In case it was one of these, there might be more
-        while ext.lower() in strip_ext:
+        # Need to remove any invalid characters before starting
+        name_base, ext = os.path.splitext(sanitize_foldername(name))
+        while ext.lower() in (".nzb", ".par", ".par2"):
             name = name_base
             name_base, ext = os.path.splitext(name)
-        return name.strip()
+        # And make sure we remove invalid characters again
+        return sanitize_foldername(name)
     else:
         return name.strip()
 
