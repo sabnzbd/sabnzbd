@@ -1976,8 +1976,9 @@ def create_env(nzo=None, extra_env_fields={}):
 
 
 def rar_volumelist(rarfile_path, password, known_volumes):
-    """Extract volumes that are part of this rarset
-    and merge them with existing list, removing duplicates
+    """List volumes that are part of this rarset
+    and merge them with parsed paths list, removing duplicates.
+    We assume RarFile is right and use parsed paths as backup.
     """
     # UnRar is required to read some RAR files
     # RarFile can fail in special cases
@@ -1996,12 +1997,12 @@ def rar_volumelist(rarfile_path, password, known_volumes):
         zf_volumes = []
 
     # Remove duplicates
-    known_volumes_base = [os.path.basename(vol) for vol in known_volumes]
-    for zf_volume in zf_volumes:
-        if os.path.basename(zf_volume) not in known_volumes_base:
+    zf_volumes_base = [os.path.basename(vol) for vol in zf_volumes]
+    for known_volume in known_volumes:
+        if os.path.basename(known_volume) not in zf_volumes_base:
             # Long-path notation just to be sure
-            known_volumes.append(long_path(zf_volume))
-    return known_volumes
+            zf_volumes.append(long_path(known_volume))
+    return zf_volumes
 
 
 # Sort the various RAR filename formats properly :\
