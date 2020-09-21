@@ -91,7 +91,7 @@ msgstr ""
 #. Warning message
 #: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
-msgstr ""
+msgstr "לא היה ניתן לטעון תעודות נוספות מחבילת תעודות"
 
 #. Warning message
 #: SABnzbd.py
@@ -227,13 +227,14 @@ msgid ""
 "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
 "were tried)"
 msgstr ""
+"העבודה \"%s\" הושהתה בגלל קובץ RAR מוצפן (במקרה שסיסמאות סופקו, כולן נוסו)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
 "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
 " were tried)"
-msgstr ""
+msgstr "העבודה \"%s\" בוטלה בגלל קובץ RAR מוצפן (במקרה שסיסמאות סופקו, כולן נוסו)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -242,7 +243,7 @@ msgstr "בוטל, הצפנה התגלתה"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr ""
+msgstr "בעבודה \"%s\" יש סיומת בלתי רצויה בתוך קובץ RAR. הקובץ הבלתי רצוי הוא %s"
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -255,12 +256,12 @@ msgstr "בוטל, סיומת בלתי רצויה התגלתה"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "העבודה \"%s\" הושהתה בגלל דירוג (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "העבודה \"%s\" בוטלה בגלל דירוג (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
@@ -652,6 +653,8 @@ msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
+"תיקיית ההורדות השלמות אינה יכולה להיות אותה תיקייה או תת־תיקייה של תיקיית "
+"ההורדות הזמניות"
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -3611,13 +3614,15 @@ msgstr "מחק לאחר הורדה"
 
 #: sabnzbd/skintext.py
 msgid "Deobfuscate final filenames"
-msgstr ""
+msgstr "בטל ערפול של שמות קובץ סופיים"
 
 #: sabnzbd/skintext.py
 msgid ""
 "If filenames of (large) files in the final folder look obfuscated or "
 "meaningless they will be renamed to the job name."
 msgstr ""
+"אם שמות קבצים של קבצים (גדולים) בתיקייה הסופית נראים מעורפלים או חסרי "
+"משמעות, שמותיהם ישונו אל שם העבודה."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
