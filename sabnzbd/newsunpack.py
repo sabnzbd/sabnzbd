@@ -653,10 +653,12 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
     if sabnzbd.WIN32:
         # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
+        # The -scf forces the output to be UTF8
         command = [
             "%s" % RAR_COMMAND,
             action,
             "-idp",
+            "-scf",
             overwrite,
             rename,
             "-ai",
@@ -666,7 +668,8 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
         ]
 
     elif RAR_PROBLEM:
-        # Use only oldest options (specifically no "-or")
+        # Use only oldest options, specifically no "-or" or "-scf"
+        # Luckily platform_btou has a fallback for non-UTF-8
         command = [
             "%s" % RAR_COMMAND,
             action,
@@ -678,10 +681,12 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
         ]
     else:
         # Don't use "-ai" (not needed for non-Windows)
+        # The -scf forces the output to be UTF8
         command = [
             "%s" % RAR_COMMAND,
             action,
             "-idp",
+            "-scf",
             overwrite,
             rename,
             password_command,
@@ -1549,9 +1554,10 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
     nzo.status = Status.VERIFYING
     start = time.time()
 
-    # Caching of verification implemented by adding:
+    # Caching of verification implemented by adding -vs/-vd
+    # Force output of utf-8 by adding -uo
     # But not really required due to prospective-par2
-    command = [str(MULTIPAR_COMMAND), "r", "-vs2", "-vd%s" % parfolder, parfile]
+    command = [str(MULTIPAR_COMMAND), "r", "-uo", "-vs2", "-vd%s" % parfolder, parfile]
 
     # Check if there are maybe par2cmdline/par2tbb commands supplied
     if "-t" in cfg.par_option() or "-p" in cfg.par_option():
@@ -1586,7 +1592,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
     renames = {}
     reconstructed = []
 
-    linebuf = ""
+    linebuf = b""
     finished = 0
     readd = False
 
@@ -1602,17 +1608,17 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
     # Loop over the output, whee
     while 1:
-        char = platform_btou(proc.read(1))
+        char = proc.read(1)
         if not char:
             break
 
         # Line not complete yet
-        if char not in ("\n", "\r"):
+        if char not in (b"\n", b"\r"):
             linebuf += char
             continue
 
-        line = linebuf.strip()
-        linebuf = ""
+        line = ubtou(linebuf).strip()
+        linebuf = b""
 
         # Check if we should still continue
         if not nzo.pp_active:

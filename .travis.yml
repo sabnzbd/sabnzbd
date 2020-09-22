@@ -3,15 +3,19 @@ matrix:
   # On Linux we test all supported Python versions
   # On macOS we only test the semi-recent version that is included
   - os: linux
+    dist: focal
     language: python
     python: "3.6"
   - os: linux
+    dist: focal
     language: python
     python: "3.7"
   - os: linux
+    dist: focal
     language: python
     python: "3.8"
   - os: linux
+    dist: focal
     language: python
     python: "3.9-dev"
   - os: osx
