@@ -164,8 +164,8 @@ class DirectUnpacker(threading.Thread):
 
     def run(self):
         # Input and output
-        linebuf = ""
-        last_volume_linebuf = ""
+        linebuf = b""
+        last_volume_linebuf = b""
         unrar_log = []
         rarfiles = []
         extracted = []
@@ -177,7 +177,7 @@ class DirectUnpacker(threading.Thread):
             with START_STOP_LOCK:
                 if not self.active_instance or not self.active_instance.stdout:
                     break
-                char = platform_btou(self.active_instance.stdout.read(1))
+                char = self.active_instance.stdout.read(1)
 
             if not char:
                 # End of program
@@ -187,33 +187,34 @@ class DirectUnpacker(threading.Thread):
             # Error? Let PP-handle it
             if linebuf.endswith(
                 (
-                    "ERROR: ",
-                    "Cannot create",
-                    "in the encrypted file",
-                    "CRC failed",
-                    "checksum failed",
-                    "You need to start extraction from a previous volume",
-                    "password is incorrect",
-                    "Incorrect password",
-                    "Write error",
-                    "checksum error",
-                    "Cannot open",
-                    "start extraction from a previous volume",
-                    "Unexpected end of archive",
+                    b"ERROR: ",
+                    b"Cannot create",
+                    b"in the encrypted file",
+                    b"CRC failed",
+                    b"checksum failed",
+                    b"You need to start extraction from a previous volume",
+                    b"password is incorrect",
+                    b"Incorrect password",
+                    b"Write error",
+                    b"checksum error",
+                    b"Cannot open",
+                    b"start extraction from a previous volume",
+                    b"Unexpected end of archive",
                 )
             ):
-                logging.info("Error in DirectUnpack of %s: %s", self.cur_setname, linebuf.strip())
+                logging.info("Error in DirectUnpack of %s: %s", self.cur_setname, platform_btou(linebuf.strip()))
                 self.abort()
 
-            if linebuf.endswith("\n"):
+            if linebuf.endswith(b"\n"):
+                linebuf_encoded = platform_btou(linebuf.strip())
                 # List files we used
-                if linebuf.startswith("Extracting from"):
-                    filename = re.search(EXTRACTFROM_RE, linebuf.strip()).group(1)
+                if linebuf.startswith(b"Extracting from"):
+                    filename = re.search(EXTRACTFROM_RE, linebuf_encoded).group(1)
                     if filename not in rarfiles:
                         rarfiles.append(filename)
 
                 # List files we extracted
-                m = re.search(EXTRACTED_RE, linebuf)
+                m = re.search(EXTRACTED_RE, linebuf_encoded)
                 if m:
                     # In case of flat-unpack, UnRar still prints the whole path (?!)
                     unpacked_file = m.group(2)
@@ -222,7 +223,7 @@ class DirectUnpacker(threading.Thread):
                     extracted.append(real_path(self.unpack_dir_info[0], unpacked_file))
 
             # Did we reach the end?
-            if linebuf.endswith("All OK"):
+            if linebuf.endswith(b"All OK"):
                 # Stop timer and finish
                 self.unpack_time += time.time() - start_time
                 ACTIVE_UNPACKERS.remove(self)
@@ -242,9 +243,9 @@ class DirectUnpacker(threading.Thread):
                 self.nzo.set_unpack_info("Unpack", msg, self.cur_setname)
 
                 # Write current log and clear
-                unrar_log.append(linebuf.strip())
-                linebuf = ""
-                last_volume_linebuf = ""
+                unrar_log.append(platform_btou(linebuf.strip()))
+                linebuf = b""
+                last_volume_linebuf = b""
                 logging.debug("DirectUnpack Unrar output %s", "\n".join(unrar_log))
                 unrar_log = []
                 rarfiles = []
@@ -269,7 +270,7 @@ class DirectUnpacker(threading.Thread):
                     self.killed = True
                     break
 
-            if linebuf.endswith("[C]ontinue, [Q]uit "):
+            if linebuf.endswith(b"[C]ontinue, [Q]uit "):
                 # Stop timer
                 self.unpack_time += time.time() - start_time
 
@@ -302,19 +303,19 @@ class DirectUnpacker(threading.Thread):
                             logging.info("DirectUnpack failed due to missing files %s", self.cur_setname)
                             self.abort()
                         else:
-                            logging.debug('Duplicate output line detected: "%s"', last_volume_linebuf)
+                            logging.debug('Duplicate output line detected: "%s"', platform_btou(last_volume_linebuf))
                             self.duplicate_lines += 1
                     else:
                         self.duplicate_lines = 0
                     last_volume_linebuf = linebuf
 
             # Show the log
-            if linebuf.endswith("\n"):
-                unrar_log.append(linebuf.strip())
-                linebuf = ""
+            if linebuf.endswith(b"\n"):
+                unrar_log.append(platform_btou(linebuf.strip()))
+                linebuf = b""
 
         # Add last line
-        unrar_log.append(linebuf.strip())
+        unrar_log.append(platform_btou(linebuf.strip()))
         logging.debug("DirectUnpack Unrar output %s", "\n".join(unrar_log))
 
         # Make more space
@@ -382,25 +383,28 @@ class DirectUnpacker(threading.Thread):
         if sabnzbd.WIN32:
             # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
             # See: https://github.com/sabnzbd/sabnzbd/issues/1043
+            # The -scf forces the output to be UTF8
             command = [
                 "%s" % sabnzbd.newsunpack.RAR_COMMAND,
                 action,
                 "-vp",
                 "-idp",
+                "-scf",
                 "-o+",
                 "-ai",
                 password_command,
                 "%s" % clip_path(rarfile_path),
                 "%s\\" % long_path(extraction_path),
             ]
-
         else:
             # Don't use "-ai" (not needed for non-Windows)
+            # The -scf forces the output to be UTF8
             command = [
                 "%s" % sabnzbd.newsunpack.RAR_COMMAND,
                 action,
                 "-vp",
                 "-idp",
+                "-scf",
                 "-o+",
                 password_command,
                 "%s" % rarfile_path,

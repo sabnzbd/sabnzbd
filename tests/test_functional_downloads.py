@@ -127,7 +127,6 @@ class TestDownloadFlow(SABnzbdBaseTest):
         self.is_server_configured()
         self.add_test_nzb("obfuscated_single_rar_set", "100k.bin")
 
-    @pytest.mark.xfail(reason="https://github.com/sabnzbd/sabnzbd/issues/1509")
     def test_download_unicode_rar(self):
         self.is_server_configured()
         self.add_test_nzb("unicode_rar", "我喜欢编程.bin")
