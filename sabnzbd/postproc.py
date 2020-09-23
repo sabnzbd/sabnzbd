@@ -99,8 +99,6 @@ RE_SAMPLE = re.compile(sample_match, re.I)
 class PostProcessor(Thread):
     """ PostProcessor thread, designed as Singleton """
 
-    do = None  # Link to instance of the thread
-
     def __init__(self):
         """ Initialize PostProcessor thread """
         Thread.__init__(self)

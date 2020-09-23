@@ -65,8 +65,6 @@ class DirScanner(threading.Thread):
     subsequent scans, unless changed.
     """
 
-    do = None  # Access to instance of DirScanner
-
     def __init__(self):
         threading.Thread.__init__(self)
 

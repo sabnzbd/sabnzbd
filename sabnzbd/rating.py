@@ -110,8 +110,6 @@ class Rating(Thread):
     CHANGED_USER_FLAG = 0x08
     CHANGED_AUTO_FLAG = 0x10
 
-    do = None
-
     def __init__(self):
         self.shutdown = False
         self.queue = OrderedSetQueue()

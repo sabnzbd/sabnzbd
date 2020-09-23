@@ -87,8 +87,6 @@ def next_month(t):
 
 
 class BPSMeter:
-    do = None
-
     def __init__(self):
         t = time.time()
         self.start_time = t

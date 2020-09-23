@@ -35,8 +35,6 @@ ARTICLE_COUNTER_LOCK = threading.RLock()
 
 
 class ArticleCache:
-    do = None
-
     def __init__(self):
         self.__cache_limit_org = 0
         self.__cache_limit = 0

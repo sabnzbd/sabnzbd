@@ -60,8 +60,6 @@ _RARTING_FIELDS = (
 
 
 class URLGrabber(Thread):
-    do = None  # Link to instance of the thread
-
     def __init__(self):
         Thread.__init__(self)
         self.queue: queue.Queue[Tuple[str, NzbObject]] = queue.Queue()

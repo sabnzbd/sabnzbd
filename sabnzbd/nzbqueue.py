@@ -62,8 +62,6 @@ import sabnzbd.notifier as notifier
 class NzbQueue:
     """ Singleton NzbQueue """
 
-    do = None
-
     def __init__(self):
         self.__top_only: bool = cfg.top_only()
         self.__nzo_list: List[NzbObject] = []

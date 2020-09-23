@@ -40,8 +40,6 @@ import sabnzbd.utils.rarfile as rarfile
 
 
 class Assembler(Thread):
-    do = None  # Link to the instance of this method
-
     def __init__(self):
         Thread.__init__(self)
         self.queue: queue.Queue[Tuple[NzbObject, NzbFile, bool]] = queue.Queue()

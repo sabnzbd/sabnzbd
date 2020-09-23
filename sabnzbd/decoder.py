@@ -61,8 +61,6 @@ class BadYenc(Exception):
 class Decoder:
     """ Implement thread-like coordinator for the decoders """
 
-    do = None
-
     def __init__(self):
         logging.debug("Initializing decoders")
         # Initialize queue and servers

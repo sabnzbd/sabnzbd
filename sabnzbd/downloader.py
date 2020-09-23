@@ -168,8 +168,6 @@ class Server:
 class Downloader(Thread):
     """ Singleton Downloader Thread """
 
-    do = None
-
     def __init__(self, paused=False):
         Thread.__init__(self)
 
