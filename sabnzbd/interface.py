@@ -1018,16 +1018,13 @@ class QueuePage:
 class HistoryPage:
     def __init__(self, root):
         self.__root = root
-        self.__failed_only = False
 
     @secured_expose
     def index(self, **kwargs):
         start = int_conv(kwargs.get("start"))
         limit = int_conv(kwargs.get("limit"))
         search = kwargs.get("search")
-        failed_only = kwargs.get("failed_only")
-        if failed_only is None:
-            failed_only = self.__failed_only
+        failed_only = int_conv(kwargs.get("failed_only"))
 
         history = build_header()
         history["failed_only"] = failed_only
