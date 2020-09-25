@@ -25,6 +25,7 @@ Generic Sorting - Sorting large files by a custom matching
 import os
 import logging
 import re
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.filesystem import (
@@ -148,7 +149,7 @@ def move_to_parent_folder(workdir):
 class Sorter:
     """ Generic Sorter class """
 
-    def __init__(self, nzo: NzbObject, cat):
+    def __init__(self, nzo: Optional[NzbObject], cat):
         self.sorter = None
         self.type = None
         self.sort_file = False
@@ -232,7 +233,7 @@ class Sorter:
 class SeriesSorter:
     """ Methods for Series Sorting """
 
-    def __init__(self, nzo: NzbObject, job_name, path, cat):
+    def __init__(self, nzo: Optional[NzbObject], job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
@@ -571,7 +572,7 @@ def check_for_sequence(regex, files):
 class MovieSorter:
     """ Methods for Generic Sorting """
 
-    def __init__(self, nzo: NzbObject, job_name, path, cat):
+    def __init__(self, nzo: Optional[NzbObject], job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
@@ -785,7 +786,7 @@ class MovieSorter:
 class DateSorter:
     """ Methods for Date Sorting """
 
-    def __init__(self, nzo: NzbObject, job_name, path, cat):
+    def __init__(self, nzo: Optional[NzbObject], job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
