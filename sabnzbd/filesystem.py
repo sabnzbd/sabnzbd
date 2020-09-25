@@ -441,17 +441,6 @@ def globber_full(path: str, pattern: str = "*") -> List[str]:
     return []
 
 
-def trim_win_path(path: str) -> str:
-    """ Make sure Windows path stays below 70 by trimming last part """
-    if sabnzbd.WIN32 and len(path) > 69:
-        path, folder = os.path.split(path)
-        maxlen = 69 - len(path)
-        if len(folder) > maxlen:
-            folder = folder[:maxlen]
-        path = os.path.join(path, folder).rstrip(". ")
-    return path
-
-
 def fix_unix_encoding(folder: str):
     """Fix bad name encoding for Unix systems
     This happens for example when files are created

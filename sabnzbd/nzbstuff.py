@@ -68,7 +68,6 @@ from sabnzbd.filesystem import (
     sanitize_filename,
     set_permissions,
     long_path,
-    trim_win_path,
     fix_unix_encoding,
     is_obfuscated_filename,
     get_ext,
@@ -724,9 +723,8 @@ class NzbObject(TryList):
         if reuse and os.path.exists(reuse):
             work_dir = long_path(reuse)
         else:
-            # Determine "incomplete" folder and trim path on Windows to prevent long-path unrar errors
-            work_dir = long_path(os.path.join(cfg.download_dir.get_path(), self.work_name))
-            work_dir = trim_win_path(work_dir)
+            # Determine "incomplete" folder
+            work_dir = os.path.join(cfg.download_dir.get_path(), self.work_name)
             work_dir = get_unique_path(work_dir, create_dir=True)
             set_permissions(work_dir)
 
