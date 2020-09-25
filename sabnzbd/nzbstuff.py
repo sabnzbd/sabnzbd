@@ -1900,6 +1900,10 @@ class NzbObject(TryList):
         attribs = sabnzbd.load_data(ATTRIB_FILE, self.workpath, remove=False)
         logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
 
+        # If attributes file somehow does not exists
+        if not attribs:
+            return None, None, None
+
         # Only a subset we want to apply directly to the NZO
         for attrib in ("final_name", "priority", "password", "url"):
             # Only set if it is present and has a value
