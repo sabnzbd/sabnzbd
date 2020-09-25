@@ -84,11 +84,13 @@ msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
 msgstr ""
+"SABnzbd spuštěno s kódováním %s, zatímco doporučené je UTF-8. Očekávejte "
+"problémy se jmény souborů a adresářů při stahování."
 
 #. Warning message
 #: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
-msgstr ""
+msgstr "Nezdařilo se nahrát dodatečné certifikáty z balíku certifi."
 
 #. Warning message
 #: SABnzbd.py
@@ -131,11 +133,11 @@ msgstr "Zachycen signál %s, ukládám a ukončuji..."
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
-msgstr ""
+msgstr "Neopravitelná chyba při ukládání  stavového souboru"
 
 #: sabnzbd/__init__.py
 msgid "Trying to fetch NZB from %s"
-msgstr ""
+msgstr "Zkouším stáhnout NZB z %s"
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -150,12 +152,12 @@ msgstr "Nelze vytvořit dočasný soubor pro %s"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Trying to set status of non-existing server %s"
-msgstr ""
+msgstr "Zkouším aktualizovat stav neexistujícího serveru %s"
 
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Failure in tempfile.mkstemp"
-msgstr ""
+msgstr "Chyba v tempfile.mkstemp"
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -169,7 +171,7 @@ msgstr "Nelze přistoupit k PID souboru %s"
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
-msgstr ""
+msgstr "Email funční"
 
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "Test Notification"
@@ -304,7 +306,7 @@ msgstr "klíčová slova"
 #. Warning message
 #: sabnzbd/bpsmeter.py
 msgid "Quota spent, pausing downloading"
-msgstr ""
+msgstr "Kvóta přesažena, pozastavuji stahování"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
@@ -317,7 +319,7 @@ msgstr "Adresa serveru je vyžadována"
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
-msgstr ""
+msgstr "Konfigurace uzamčena, nelze uložit nastavení"
 
 #. Error message
 #: sabnzbd/config.py
@@ -344,7 +346,7 @@ msgstr "%s není hodnota v osmičkové soustavě"
 
 #: sabnzbd/config.py
 msgid "UNC path \"%s\" not allowed here"
-msgstr ""
+msgstr "UNC cesta \"%s\" zde není povolena"
 
 #: sabnzbd/config.py
 msgid "Error: Path length should be below %s."
@@ -416,6 +418,8 @@ msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
 msgstr ""
+"Úkol se začne rozbalovat během stahování pro redukci času post-procesingu. "
+"Funguje pouze pro úkoly, které nepotřebují opravu."
 
 #. Error message
 #: sabnzbd/dirscanner.py
@@ -485,7 +489,7 @@ msgstr ""
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
-msgstr ""
+msgstr "Vypínání"
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -513,11 +517,11 @@ msgstr ""
 
 #: sabnzbd/emailer.py
 msgid "Failed to send e-mail"
-msgstr ""
+msgstr "Nezdařilo se odeslat e-mail"
 
 #: sabnzbd/emailer.py
 msgid "Failed to close mail connection"
-msgstr ""
+msgstr "Nezdařilo se uzavřít spojení pro mail"
 
 #: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
 msgid "Cannot send, missing required data"
@@ -530,7 +534,7 @@ msgstr ""
 
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
-msgstr ""
+msgstr "Nebyli zadáni přijemci, žádný email neodeslán"
 
 #. Error message - Warning message
 #: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
@@ -559,7 +563,7 @@ msgstr ""
 #. Error message
 #: sabnzbd/filesystem.py, sabnzbd/sorting.py
 msgid "Cannot create directory %s"
-msgstr ""
+msgstr "Nelze vytvořit adresář %s"
 
 #: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
@@ -568,7 +572,7 @@ msgstr ""
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Cannot change permissions of %s"
-msgstr ""
+msgstr "Nelze změnit oprávnění adresáře %s"
 
 #. Error message
 #: sabnzbd/filesystem.py
@@ -586,7 +590,7 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "User logged in to the web interface"
-msgstr ""
+msgstr "Uživatel přihlášen do webového rozhraní"
 
 #. Notification
 #: sabnzbd/interface.py, sabnzbd/notifier.py
@@ -613,7 +617,7 @@ msgstr ""
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
-msgstr ""
+msgstr "Přihlášené selhalo, zkontrolujte jméno a heslo."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -643,7 +647,7 @@ msgstr ""
 
 #: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
-msgstr ""
+msgstr "Adresa serveru \"%s:%s\" není správná."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
@@ -697,7 +701,7 @@ msgstr ""
 
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "ERROR:"
-msgstr ""
+msgstr "CHYBA:"
 
 #: sabnzbd/interface.py
 msgid "Back"
@@ -709,15 +713,15 @@ msgstr ""
 
 #: sabnzbd/misc.py
 msgid "d"
-msgstr ""
+msgstr "d"
 
 #: sabnzbd/misc.py
 msgid "h"
-msgstr ""
+msgstr "h"
 
 #: sabnzbd/misc.py
 msgid "m"
-msgstr ""
+msgstr "m"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -755,16 +759,16 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
-msgstr ""
+msgstr "Běžící skript"
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "PostProcessing was aborted (%s)"
-msgstr ""
+msgstr "Post-procesing byl přerušen (%s)"
 
 #. PP phase "script" - Notification Script settings
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
 msgid "Script"
-msgstr ""
+msgstr "Skript"
 
 #. Warning message
 #: sabnzbd/newsunpack.py
@@ -785,34 +789,34 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Error \"%s\" while joining files"
-msgstr ""
+msgstr "[%s] Chyba \"%s\" během spojování souborů"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "Error \"%s\" while running file_join on %s"
-msgstr ""
+msgstr "Chyba \"%s\" v průběhu file_join pro %s"
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Joined %s files"
-msgstr ""
+msgstr "[%s] Spojeno %s souborů"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, %s"
-msgstr ""
+msgstr "Rozbalení selhalo, %s"
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Error \"%s\" while unpacking RAR files"
-msgstr ""
+msgstr "[%s] Chyba \"%s\" během rozbalování RAR souborů"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "Error \"%s\" while running rar_unpack on %s"
-msgstr ""
+msgstr "Chyba \"%s\" v průběhu rar_unpack pro %s"
 
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Deleting %s failed!"
-msgstr ""
+msgstr "Mazání %s selhalo!"
 
 #: sabnzbd/newsunpack.py
 msgid "Trying unrar with password \"%s\""
