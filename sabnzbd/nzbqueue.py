@@ -770,10 +770,9 @@ class NzbQueue:
 
     def end_job(self, nzo: NzbObject):
         """ Send NZO to the post-processing queue """
-        logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
-
         # Notify assembler to call postprocessor
         if not nzo.deleted:
+            logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
             nzo.deleted = True
             if nzo.precheck:
                 nzo.save_to_disk()

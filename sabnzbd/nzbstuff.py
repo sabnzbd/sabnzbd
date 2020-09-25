@@ -1890,7 +1890,7 @@ class NzbObject(TryList):
         for attrib in NzoAttributeSaver:
             attribs[attrib] = getattr(self, attrib)
         logging.debug("Saving attributes %s for %s", attribs, self.final_name)
-        sabnzbd.save_data(attribs, ATTRIB_FILE, self.admin_path)
+        sabnzbd.save_data(attribs, ATTRIB_FILE, self.admin_path, silent=True)
 
     def load_attribs(self):
         """ Load saved attributes and return them to be parsed """
