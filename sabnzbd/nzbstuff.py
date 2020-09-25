@@ -78,6 +78,7 @@ from sabnzbd.filesystem import (
     remove_file,
     get_filepath,
     make_script_path,
+    globber,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
@@ -1202,12 +1203,12 @@ class NzbObject(TryList):
             # and this function is called from file_has_articles
             pass
 
-    def check_existing_files(self, wdir):
+    def check_existing_files(self, wdir: str):
         """ Check if downloaded files already exits, for these set NZF to complete """
         fix_unix_encoding(wdir)
 
-        # Get a list of already present files
-        files = [f for f in os.listdir(wdir) if os.path.isfile(f)]
+        # Get a list of already present files, ignore folders
+        files = globber(wdir, "*.*")
 
         # Substitute renamed files
         renames = sabnzbd.load_data(RENAMES_FILE, self.admin_path, remove=True)
@@ -1231,6 +1232,7 @@ class NzbObject(TryList):
             for nzf in nzfs:
                 subject = sanitize_filename(name_extractor(nzf.subject))
                 if (nzf.filename == filename) or (subject == filename) or (filename in subject):
+                    logging.info("Existing file %s matched to file %s of %s", filename, nzf.filename, self.final_name)
                     nzf.filename = filename
                     nzf.bytes_left = 0
                     self.remove_nzf(nzf)
@@ -1253,25 +1255,25 @@ class NzbObject(TryList):
             for filename in files:
                 # Create NZO's using basic information
                 filepath = os.path.join(wdir, filename)
-                if os.path.exists(filepath):
-                    tup = os.stat(filepath)
-                    tm = datetime.datetime.fromtimestamp(tup.st_mtime)
-                    nzf = NzbFile(tm, filename, [], tup.st_size, self)
-                    self.files.append(nzf)
-                    self.files_table[nzf.nzf_id] = nzf
-                    nzf.filename = filename
-                    self.remove_nzf(nzf)
+                logging.info("Existing file %s added to %s", filename, self.final_name)
+                tup = os.stat(filepath)
+                tm = datetime.datetime.fromtimestamp(tup.st_mtime)
+                nzf = NzbFile(tm, filename, [], tup.st_size, self)
+                self.files.append(nzf)
+                self.files_table[nzf.nzf_id] = nzf
+                nzf.filename = filename
+                self.remove_nzf(nzf)
 
-                    # Set bytes correctly
-                    self.bytes += nzf.bytes
-                    self.bytes_tried += nzf.bytes
-                    self.bytes_downloaded += nzf.bytes
+                # Set bytes correctly
+                self.bytes += nzf.bytes
+                self.bytes_tried += nzf.bytes
+                self.bytes_downloaded += nzf.bytes
 
-                    # Process par2 files
-                    if sabnzbd.par2file.is_parfile(filepath):
-                        self.handle_par2(nzf, filepath)
-                        self.bytes_par2 += nzf.bytes
-                    logging.info("Existing file %s added to job", filename)
+                # Process par2 files
+                if sabnzbd.par2file.is_parfile(filepath):
+                    self.handle_par2(nzf, filepath)
+                    self.bytes_par2 += nzf.bytes
+
         except:
             logging.error(T("Error importing %s"), self.final_name)
             logging.info("Traceback: ", exc_info=True)
