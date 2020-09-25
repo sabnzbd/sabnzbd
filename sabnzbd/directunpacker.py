@@ -30,7 +30,7 @@ from typing import Optional
 import sabnzbd
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
-from sabnzbd.filesystem import clip_path, long_path, remove_all, real_path, remove_file
+from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
@@ -381,7 +381,7 @@ class DirectUnpacker(threading.Thread):
         # Generate command
         rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
         if sabnzbd.WIN32:
-            # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
+            # For Unrar to support long-path, we need to circumvent Python's list2cmdline
             # See: https://github.com/sabnzbd/sabnzbd/issues/1043
             # The -scf forces the output to be UTF8
             command = [
@@ -393,7 +393,7 @@ class DirectUnpacker(threading.Thread):
                 "-o+",
                 "-ai",
                 password_command,
-                "%s" % clip_path(rarfile_path),
+                rarfile_path,
                 "%s\\" % long_path(extraction_path),
             ]
         else:

@@ -651,7 +651,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
         rename = "-or"  # Auto renaming
 
     if sabnzbd.WIN32:
-        # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
+        # For Unrar to support long-path, we need to circumvent Python's list2cmdline
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
         # The -scf forces the output to be UTF8
         command = [
@@ -663,7 +663,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
             rename,
             "-ai",
             password_command,
-            "%s" % clip_path(rarfile_path),
+            rarfile_path,
             "%s\\" % long_path(extraction_path),
         ]
 
