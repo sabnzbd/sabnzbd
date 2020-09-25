@@ -1892,10 +1892,14 @@ class NzbObject(TryList):
         logging.debug("Saving attributes %s for %s", attribs, self.final_name)
         sabnzbd.save_data(attribs, ATTRIB_FILE, self.admin_path, silent=True)
 
-    def load_attribs(self):
+    def load_attribs(self) -> Tuple[Optional[str], Optional[int], Optional[str]]:
         """ Load saved attributes and return them to be parsed """
         attribs = sabnzbd.load_data(ATTRIB_FILE, self.admin_path, remove=False)
         logging.debug("Loaded attributes %s for %s", attribs, self.final_name)
+
+        # If attributes file somehow does not exists
+        if not attribs:
+            return None, None, None
 
         # Only a subset we want to apply directly to the NZO
         for attrib in ("final_name", "priority", "password", "url"):
