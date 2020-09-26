@@ -31,6 +31,11 @@ import stat
 import zipfile
 from typing import Union, List, Tuple, Any, Dict, Optional
 
+try:
+    import win32api
+except ImportError:
+    pass
+
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
@@ -866,57 +871,37 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-def find_dir(p: str) -> str:
-    """ Return first folder level that exists in this path """
+def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
+    """ Return amount of free and used diskspace in GBytes """
+    # Find first folder level that exists in the path
     x = "x"
-    while x and not os.path.exists(p):
-        p, x = os.path.split(p)
-    return p
+    while x and not os.path.exists(dir_to_check):
+        dir_to_check, x = os.path.split(dir_to_check)
 
-
-if sabnzbd.WIN32:
-    # windows diskfree
-    try:
-        # Careful here, because win32api test hasn't been done yet!
-        import win32api
-    except:
-        pass
-
-    def diskspace_base(_dir: str) -> Tuple[float, float]:
-        """ Return amount of free and used diskspace in GBytes """
-        _dir = find_dir(_dir)
+    if sabnzbd.WIN32:
+        # windows diskfree
         try:
-            available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(_dir)
+            available, disk_size, total_free = win32api.GetDiskFreeSpaceEx(dir_to_check)
             return disk_size / GIGI, available / GIGI
         except:
             return 0.0, 0.0
-
-
-else:
-    try:
-        os.statvfs
+    elif hasattr(os, "statvfs"):
         # posix diskfree
-        def diskspace_base(_dir: str) -> Tuple[float, float]:
-            """ Return amount of free and used diskspace in GBytes """
-            _dir = find_dir(_dir)
-            try:
-                s = os.statvfs(_dir)
-                if s.f_blocks < 0:
-                    disk_size = float(sys.maxsize) * float(s.f_frsize)
-                else:
-                    disk_size = float(s.f_blocks) * float(s.f_frsize)
-                if s.f_bavail < 0:
-                    available = float(sys.maxsize) * float(s.f_frsize)
-                else:
-                    available = float(s.f_bavail) * float(s.f_frsize)
-                return disk_size / GIGI, available / GIGI
-            except:
-                return 0.0, 0.0
-
-    except ImportError:
-
-        def diskspace_base(_dir: str) -> Tuple[float, float]:
-            return 20.0, 10.0
+        try:
+            s = os.statvfs(dir_to_check)
+            if s.f_blocks < 0:
+                disk_size = float(sys.maxsize) * float(s.f_frsize)
+            else:
+                disk_size = float(s.f_blocks) * float(s.f_frsize)
+            if s.f_bavail < 0:
+                available = float(sys.maxsize) * float(s.f_frsize)
+            else:
+                available = float(s.f_bavail) * float(s.f_frsize)
+            return disk_size / GIGI, available / GIGI
+        except:
+            return 0.0, 0.0
+    else:
+        return 20.0, 10.0
 
 
 # Store all results to speed things up
