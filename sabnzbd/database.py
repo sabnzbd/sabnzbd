@@ -26,6 +26,7 @@ import logging
 import sys
 import threading
 import sqlite3
+from typing import Union, Dict
 
 import sabnzbd
 import sabnzbd.cfg
@@ -84,7 +85,7 @@ class HistoryDB:
         """ Create a connection to the database """
         create_table = not os.path.exists(HistoryDB.db_path)
         self.con = sqlite3.connect(HistoryDB.db_path)
-        self.con.row_factory = dict_factory
+        self.con.row_factory = sqlite3.Row
         self.c = self.con.cursor()
         if create_table:
             self.create_history_db()
@@ -453,14 +454,6 @@ class HistoryDB:
         return "", "", "", "", ""
 
 
-def dict_factory(cursor, row):
-    """ Return a dictionary for the current database position """
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
-
-
 _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 
 
@@ -522,44 +515,42 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
     )
 
 
-def unpack_history_info(item):
+def unpack_history_info(item: Union[Dict, sqlite3.Row]):
     """Expands the single line stage_log from the DB
     into a python dictionary for use in the history display
     """
+    # Convert result to dictionary
+    if isinstance(item, sqlite3.Row):
+        item = dict(item)
+
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lst = item["stage_log"]
     if lst:
+        parsed_stage_log = []
         try:
-            lines = lst.split("\r\n")
+            all_stages_lines = lst.split("\r\n")
         except:
-            logging.error(T("Invalid stage logging in history for %s") + " (\\r\\n)", item["name"])
+            logging.error(T("Invalid stage logging in history for %s"), item["name"])
             logging.debug("Lines: %s", lst)
-            lines = []
-        lst = [None for _ in STAGES]
-        for line in lines:
-            stage = {}
+            all_stages_lines = []
+
+        for stage_lines in all_stages_lines:
             try:
-                key, logs = line.split(":::")
+                key, logs = stage_lines.split(":::")
             except:
-                logging.debug('Missing key:::logs "%s"', line)
-                key = line
-                logs = ""
-            stage["name"] = key
-            stage["actions"] = []
+                logging.info('Missing key:::logs "%s"', stage_lines)
+                continue
+            stage = {"name": key, "actions": []}
             try:
-                logs = logs.split(";")
+                stage["actions"] = logs.split(";")
             except:
-                logging.error(T("Invalid stage logging in history for %s") + " (;)", item["name"])
+                logging.error(T("Invalid stage logging in history for %s"), item["name"])
                 logging.debug("Logs: %s", logs)
-                logs = []
-            for log in logs:
-                stage["actions"].append(log)
-            try:
-                lst[STAGES[key]] = stage
-            except KeyError:
-                lst.append(stage)
-        # Remove unused stages
-        item["stage_log"] = [x for x in lst if x is not None]
+            parsed_stage_log.append(stage)
+
+        # Sort it so it is more logical
+        parsed_stage_log.sort(key=lambda stage_log: STAGES.get(stage_log["name"], 100))
+        item["stage_log"] = parsed_stage_log
 
     if item["script_log"]:
         item["script_log"] = ""

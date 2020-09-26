@@ -314,6 +314,7 @@ class URLGrabber(Thread):
             msg = T("URL Fetching failed; %s") % msg
 
         # Mark as failed
+        nzo.set_unpack_info("Source", msg)
         nzo.status = Status.FAILED
         nzo.fail_msg = msg
 

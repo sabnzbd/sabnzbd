@@ -344,7 +344,7 @@ def process_job(nzo):
                 empty = True
             emsg += " - https://sabnzbd.org/not-complete"
             nzo.fail_msg = emsg
-            nzo.set_unpack_info("Fail", emsg)
+            nzo.set_unpack_info("Download", emsg)
             nzo.status = Status.FAILED
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
