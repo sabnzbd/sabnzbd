@@ -1,5 +1,13 @@
-Release Notes - SABnzbd 3.1.0 Release Candidate 1
+Release Notes - SABnzbd 3.1.0 Release Candidate 2
 =========================================================
+
+## Changes and bugfixes since 3.1.0 Release Candidate 1
+- Failing RSS-feeds would result in tracebacks, they now show a warning.
+- Existing files were not parsed when retrying a job.
+- Reading attributes when retrying a job could result in crash.
+- Temporary Folder with unicode characters could result in duplicate unpacking.
+- Plush skin would only show failed jobs.
+- Windows: Folders could end in a period, breaking Windows Explorer.
 
 ## Changes and bugfixes since 3.1.0 Beta 2
 - Deobfuscate final filenames can now be used when job folders are disabled.
