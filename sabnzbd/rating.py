@@ -114,7 +114,9 @@ class Rating(Thread):
         self.ratings = {}
         self.nzo_indexer_map = {}
         try:
-            self.version, self.ratings, self.nzo_indexer_map = sabnzbd.load_admin(RATING_FILE_NAME)
+            rating_data = sabnzbd.load_admin(RATING_FILE_NAME)
+            if rating_data:
+                self.version, self.ratings, self.nzo_indexer_map = rating_data
         except:
             logging.info("Corrupt %s file, discarding", RATING_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
