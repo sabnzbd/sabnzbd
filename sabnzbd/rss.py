@@ -196,6 +196,7 @@ class RSSReader:
         feedparser.USER_AGENT = "SABnzbd/%s" % sabnzbd.__version__
 
         # Read the RSS feed
+        msg = ""
         entries = []
         if readout:
             all_entries = []

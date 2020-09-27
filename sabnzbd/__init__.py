@@ -374,6 +374,7 @@ def start():
         logging.debug("Starting dirscanner")
         sabnzbd.DirScanner.start()
 
+        logging.debug("Starting rating")
         sabnzbd.Rating.start()
 
         logging.debug("Starting urlgrabber")
@@ -396,31 +397,18 @@ def halt():
 
         logging.debug("Stopping RSSReader")
         sabnzbd.RSSReader.stop()
-        try:
-            sabnzbd.RSSReader.join()
-        except:
-            pass
 
         logging.debug("Stopping URLGrabber")
         sabnzbd.URLGrabber.stop()
-        try:
-            sabnzbd.URLGrabber.join()
-        except:
-            pass
+        sabnzbd.URLGrabber.join()
 
         logging.debug("Stopping rating")
         sabnzbd.Rating.stop()
-        try:
-            sabnzbd.Rating.join()
-        except:
-            pass
+        sabnzbd.Rating.join()
 
         logging.debug("Stopping dirscanner")
         sabnzbd.DirScanner.stop()
-        try:
-            sabnzbd.DirScanner.join()
-        except:
-            pass
+        sabnzbd.DirScanner.join()
 
         # Stop Required Objects
         logging.debug("Stopping downloader")
@@ -433,17 +421,11 @@ def halt():
 
         logging.debug("Stopping assembler")
         sabnzbd.Assembler.stop()
-        try:
-            sabnzbd.Assembler.join()
-        except:
-            pass
+        sabnzbd.Assembler.join()
 
         logging.debug("Stopping postprocessor")
         sabnzbd.PostProcessor.stop()
-        try:
-            sabnzbd.PostProcessor.join()
-        except:
-            pass
+        sabnzbd.PostProcessor.join()
 
         # Save State
         try:
