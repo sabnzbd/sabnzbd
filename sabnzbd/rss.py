@@ -24,6 +24,7 @@ import logging
 import time
 import datetime
 import threading
+import urllib.parse
 
 import sabnzbd
 from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, DUP_PRIORITY
@@ -195,44 +196,47 @@ class RSSReader:
         feedparser.USER_AGENT = "SABnzbd/%s" % sabnzbd.__version__
 
         # Read the RSS feed
-        msg = None
-        entries = None
+        entries = []
         if readout:
             all_entries = []
             for uri in uris:
-                uri = uri.replace(" ", "%20")
+                msg = ""
+                feed_parsed = {}
+                uri = uri.replace(" ", "%20").replace("feed://", "http://")
                 logging.debug("Running feedparser on %s", uri)
-                feed_parsed = feedparser.parse(uri.replace("feed://", "http://"))
-                logging.debug("Done parsing %s", uri)
-
-                if not feed_parsed:
-                    msg = T("Failed to retrieve RSS from %s: %s") % (uri, "?")
-                    logging.info(msg)
+                try:
+                    feed_parsed = feedparser.parse(uri)
+                except Exception as feedparser_exc:
+                    # Feedparser 5 would catch all errors, while 6 just throws them back at us
+                    feed_parsed["bozo_exception"] = feedparser_exc
+                logging.debug("Finished parsing %s", uri)
 
                 status = feed_parsed.get("status", 999)
                 if status in (401, 402, 403):
                     msg = T("Do not have valid authentication for feed %s") % uri
-                    logging.info(msg)
-
-                if 500 <= status <= 599:
+                elif 500 <= status <= 599:
                     msg = T("Server side error (server code %s); could not get %s on %s") % (status, feed, uri)
-                    logging.info(msg)
 
-                entries = feed_parsed.get("entries")
+                entries = feed_parsed.get("entries", [])
+                if not entries and "feed" in feed_parsed and "error" in feed_parsed["feed"]:
+                    msg = T("Failed to retrieve RSS from %s: %s") % (uri, feed_parsed["feed"]["error"])
+
+                # Exception was thrown
                 if "bozo_exception" in feed_parsed and not entries:
                     msg = str(feed_parsed["bozo_exception"])
                     if "CERTIFICATE_VERIFY_FAILED" in msg:
                         msg = T("Server %s uses an untrusted HTTPS certificate") % get_base_url(uri)
                         msg += " - https://sabnzbd.org/certificate-errors"
-                        logging.error(msg)
                     elif "href" in feed_parsed and feed_parsed["href"] != uri and "login" in feed_parsed["href"]:
                         # Redirect to login page!
                         msg = T("Do not have valid authentication for feed %s") % uri
                     else:
                         msg = T("Failed to retrieve RSS from %s: %s") % (uri, msg)
-                    logging.info(msg)
 
-                if not entries and not msg:
+                if msg:
+                    # We need to escape any "%20" that could be in the warning due to the URL's
+                    logging.warning_helpful(urllib.parse.unquote(msg))
+                elif not entries:
                     msg = T("RSS Feed %s was empty") % uri
                     logging.info(msg)
                 all_entries.extend(entries)
