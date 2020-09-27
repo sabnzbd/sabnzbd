@@ -122,7 +122,7 @@ def init():
         elif action_name == "scan_folder":
             action = sabnzbd.DirScanner.scan
         elif action_name == "rss_scan":
-            action = sabnzbd.rss.run_method
+            action = sabnzbd.RSSReader.run
             rss_planned = True
         elif action_name == "remove_failed":
             action = sabnzbd.api.history_remove_failed
