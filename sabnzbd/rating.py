@@ -84,6 +84,10 @@ class NzbRating:
         self.avg_encrypted_confirm = False
 
 
+# TODO: Can be removed in version 3.3.0, needed for backwards compatibility
+NzbRatingV2 = NzbRating
+
+
 class Rating(Thread):
     VERSION = 2
 
