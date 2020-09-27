@@ -184,7 +184,11 @@ class DirectUnpacker(threading.Thread):
                 break
             linebuf += char
 
-            # Error? Let PP-handle it
+            # Continue if it's not a space or end of line
+            if char not in (b" ", b"\n"):
+                continue
+
+            # Error? Let PP-handle this job
             if linebuf.endswith(
                 (
                     b"ERROR: ",
