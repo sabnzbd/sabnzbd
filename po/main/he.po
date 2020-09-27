@@ -1686,10 +1686,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "\"%s\" לא נכון RSS תיאור הזנת"
 
 #: sabnzbd/rss.py
-msgid "Failed to retrieve RSS from %s: %s"
-msgstr "%s: %s מן RSS נכשל באחזור"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "%s אין אימות תקף עבור ההזנה"
 
@@ -1697,10 +1693,15 @@ msgstr "%s אין אימות תקף עבור ההזנה"
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr "%s על %s שגיאה צדדית של שרת (קוד שרת %s); לא היה ניתן להשיג את"
 
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "%s: %s מן RSS נכשל באחזור"
+
 #: sabnzbd/rss.py, sabnzbd/urlgrabber.py
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "בלתי מהימן HTTPS משתמש באישור %s השרת"
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "הייתה ריקה %s RSS הזנת"

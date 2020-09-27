@@ -1665,10 +1665,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "RSS feed 描述不正确 \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Failed to retrieve RSS from %s: %s"
-msgstr "无法检索 %s 的 RSS: %s"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "feed %s 无有效的身份认证凭据"
 
@@ -1676,10 +1672,15 @@ msgstr "feed %s 无有效的身份认证凭据"
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr "服务器端错误 (服务器代码 %s)；无法获取 %s （服务器 %s）"
 
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "无法检索 %s 的 RSS: %s"
+
 #: sabnzbd/rss.py, sabnzbd/urlgrabber.py
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "服务器 %s 使用的 HTTPS 证书不受信任"
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS Feed %s 为空"

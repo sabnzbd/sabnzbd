@@ -1684,10 +1684,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Nieprawidłowy opis kanału RSS \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Failed to retrieve RSS from %s: %s"
-msgstr "Nie udało się pobrać RSS z %s: %s"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "Brak poprawnego uwierzytelnienia dla kanału %s"
 
@@ -1695,10 +1691,15 @@ msgstr "Brak poprawnego uwierzytelnienia dla kanału %s"
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr "Błąd po stronie serwera (kod: %s); nie udało się pobrać %s z %s"
 
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "Nie udało się pobrać RSS z %s: %s"
+
 #: sabnzbd/rss.py, sabnzbd/urlgrabber.py
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Serwer %s używa niezaufanego certyfikatu HTTPS"
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "Kanał RSS %s był pusty"

@@ -1682,10 +1682,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Virheellinen RSS syötteen kuvaus \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Failed to retrieve RSS from %s: %s"
-msgstr "RSS noutaminen epäonnistui kohteesta %s: %s"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "Ei ole käyttöoikeutta syötteeseen %s"
 
@@ -1693,10 +1689,15 @@ msgstr "Ei ole käyttöoikeutta syötteeseen %s"
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr "Palvelinpään virhe (virhekoodi %s); ei voitu noutaa %s kohteesta %s"
 
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "RSS noutaminen epäonnistui kohteesta %s: %s"
+
 #: sabnzbd/rss.py, sabnzbd/urlgrabber.py
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Palvelin %s käyttää epäluotettavaa HTTPS sertifikaattia"
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS syöte %s oli tyhjä"

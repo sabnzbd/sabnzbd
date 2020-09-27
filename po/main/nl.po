@@ -1716,10 +1716,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Foutieve RSS-feed definitie \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Failed to retrieve RSS from %s: %s"
-msgstr "Kan RSS-feed \"%s\" niet lezen vanwege: \"%s\""
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "Geen geldige inlog gegevens beschikbaar voor RSS-feed %s"
 
@@ -1727,10 +1723,15 @@ msgstr "Geen geldige inlog gegevens beschikbaar voor RSS-feed %s"
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr "Server fout (code is %s); kon geen %s van %s krijgen"
 
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "Kan RSS-feed \"%s\" niet lezen vanwege: \"%s\""
+
 #: sabnzbd/rss.py, sabnzbd/urlgrabber.py
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Server %s gebruikt een onbetrouwbaar HTTPS-certificaat"
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-feed %s is leeg"
