@@ -126,6 +126,7 @@ NzbQueue: sabnzbd.nzbqueue.NzbQueue
 URLGrabber: sabnzbd.urlgrabber.URLGrabber
 DirScanner: sabnzbd.dirscanner.DirScanner
 BPSMeter: sabnzbd.bpsmeter.BPSMeter
+RSSReader: sabnzbd.rss.RSSReader
 
 # Regular constants
 START = datetime.datetime.now()
@@ -325,8 +326,6 @@ def initialize(pause_downloader=False, clean_up=False, evaluate_schedules=False,
         pause_downloader = True
 
     # Initialize threads
-    rss.init()
-
     sabnzbd.ArticleCache = sabnzbd.articlecache.ArticleCache()
     sabnzbd.BPSMeter = sabnzbd.bpsmeter.BPSMeter()
     sabnzbd.NzbQueue = sabnzbd.nzbqueue.NzbQueue()
@@ -337,6 +336,7 @@ def initialize(pause_downloader=False, clean_up=False, evaluate_schedules=False,
     sabnzbd.DirScanner = sabnzbd.dirscanner.DirScanner()
     sabnzbd.Rating = sabnzbd.rating.Rating()
     sabnzbd.URLGrabber = sabnzbd.urlgrabber.URLGrabber()
+    sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
     sabnzbd.NzbQueue.read_queue(repair)
 
     scheduler.init()
@@ -394,7 +394,12 @@ def halt():
 
         sabnzbd.directunpacker.abort_all()
 
-        rss.stop()
+        logging.debug("Stopping RSSReader")
+        sabnzbd.RSSReader.stop()
+        try:
+            sabnzbd.RSSReader.join()
+        except:
+            pass
 
         logging.debug("Stopping URLGrabber")
         sabnzbd.URLGrabber.stop()
@@ -578,10 +583,10 @@ def save_state():
     sabnzbd.ArticleCache.flush_articles()
     sabnzbd.NzbQueue.save()
     sabnzbd.BPSMeter.save()
-    rss.save()
     sabnzbd.Rating.save()
     sabnzbd.DirScanner.save()
     sabnzbd.PostProcessor.save()
+    sabnzbd.RSSReader.save()
 
 
 def pause_all():

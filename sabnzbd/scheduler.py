@@ -176,11 +176,11 @@ def init():
         interval = cfg.rss_rate()
         delay = random.randint(0, interval - 1)
         logging.debug("Scheduling RSS interval task every %s min (delay=%s)", interval, delay)
-        sabnzbd.rss.next_run(time.time() + delay * 60)
+        sabnzbd.RSSReader.next_run = time.time() + delay * 60
         __SCHED.add_interval_task(
-            sabnzbd.rss.run_method, "RSS", delay * 60, interval * 60, kronos.method.sequential, None, None
+            sabnzbd.RSSReader.run, "RSS", delay * 60, interval * 60, kronos.method.sequential, None, None
         )
-        __SCHED.add_single_task(sabnzbd.rss.run_method, "RSS", 15, kronos.method.sequential, None, None)
+        __SCHED.add_single_task(sabnzbd.RSSReader.run, "RSS", 15, kronos.method.sequential, None, None)
 
     if cfg.version_check():
         # Check for new release, once per week on random time
@@ -496,7 +496,7 @@ def plan_server(action, parms, interval):
 
 def force_rss():
     """ Add a one-time RSS scan, one second from now """
-    __SCHED.add_single_task(sabnzbd.rss.run_method, "RSS", 1, kronos.method.sequential, None, None)
+    __SCHED.add_single_task(sabnzbd.RSSReader.run, "RSS", 1, kronos.method.sequential, None, None)
 
 
 # Scheduler Guarding system

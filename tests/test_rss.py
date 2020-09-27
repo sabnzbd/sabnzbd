@@ -52,7 +52,7 @@ class TestRSS:
         self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_newznab_test.xml")
 
         # Start the RSS reader
-        rss_obj = rss.RSSQueue()
+        rss_obj = rss.RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
@@ -79,7 +79,7 @@ class TestRSS:
         self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_nzedb_test.xml")
 
         # Start the RSS reader
-        rss_obj = rss.RSSQueue()
+        rss_obj = rss.RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?

@@ -1759,7 +1759,7 @@ class ConfigRss:
         active_feed = kwargs.get("feed", "")
         conf["active_feed"] = active_feed
         conf["rss"] = rss
-        conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.rss.next_run()))
+        conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.RSSReader.next_run))
 
         if active_feed:
             readout = bool(self.__refresh_readout)
@@ -1769,7 +1769,7 @@ class ConfigRss:
                 self.__refresh_force = False
                 self.__refresh_ignore = False
             if self.__evaluate:
-                msg = sabnzbd.rss.run_feed(
+                msg = sabnzbd.RSSReader.run_feed(
                     active_feed,
                     download=self.__refresh_download,
                     force=self.__refresh_force,
@@ -1780,7 +1780,7 @@ class ConfigRss:
                 msg = ""
             self.__evaluate = False
             if readout:
-                sabnzbd.rss.save()
+                sabnzbd.RSSReader.save()
                 self.__last_msg = msg
             else:
                 msg = self.__last_msg
@@ -1883,7 +1883,7 @@ class ConfigRss:
                 config.ConfigRSS(feed, kwargs)
                 # Clear out any existing reference to this feed name
                 # Otherwise first-run detection can fail
-                sabnzbd.rss.clear_feed(feed)
+                sabnzbd.RSSReader.clear_feed(feed)
                 config.save_config()
                 self.__refresh_readout = feed
                 self.__refresh_download = False
@@ -1939,7 +1939,7 @@ class ConfigRss:
         kwargs["section"] = "rss"
         kwargs["keyword"] = kwargs.get("feed")
         del_from_section(kwargs)
-        sabnzbd.rss.clear_feed(kwargs.get("feed"))
+        sabnzbd.RSSReader.clear_feed(kwargs.get("feed"))
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1975,7 +1975,7 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
         """ Remove processed RSS jobs from UI """
-        sabnzbd.rss.clear_downloaded(kwargs["feed"])
+        sabnzbd.RSSReader.clear_downloaded(kwargs["feed"])
         self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
@@ -2010,7 +2010,7 @@ class ConfigRss:
         feed = kwargs.get("feed")
         url = kwargs.get("url")
         nzbname = kwargs.get("nzbname")
-        att = sabnzbd.rss.lookup_url(feed, url)
+        att = sabnzbd.RSSReader.lookup_url(feed, url)
         if att:
             pp = att.get("pp")
             cat = att.get("cat")
@@ -2020,7 +2020,7 @@ class ConfigRss:
             if url:
                 sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
-            sabnzbd.rss.flag_downloaded(feed, url)
+            sabnzbd.RSSReader.flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -2655,7 +2655,7 @@ def GetRssLog(feed):
 
         return job
 
-    jobs = list(sabnzbd.rss.show_result(feed).values())
+    jobs = sabnzbd.RSSReader.show_result(feed).values()
     good, bad, done = ([], [], [])
     for job in jobs:
         if job["status"][0] == "G":
