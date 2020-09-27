@@ -120,9 +120,9 @@ def init():
         elif action_name == "disable_server" and arguments != []:
             action = sabnzbd.disable_server
         elif action_name == "scan_folder":
-            action = sabnzbd.dirscanner.dirscan
+            action = sabnzbd.DirScanner.scan
         elif action_name == "rss_scan":
-            action = rss.run_method
+            action = sabnzbd.rss.run_method
             rss_planned = True
         elif action_name == "remove_failed":
             action = sabnzbd.api.history_remove_failed
@@ -239,7 +239,7 @@ def start():
 
 def restart(force=False):
     """ Stop and start scheduler """
-    global __PARMS, SCHEDULE_GUARD_FLAG
+    global SCHEDULE_GUARD_FLAG
 
     if force:
         SCHEDULE_GUARD_FLAG = True
