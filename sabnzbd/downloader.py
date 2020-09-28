@@ -35,7 +35,6 @@ from sabnzbd.newswrapper import NewsWrapper, request_server_info
 import sabnzbd.notifier
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.scheduler
 from sabnzbd.misc import from_units, nntp_to_msg, int_conv
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
@@ -869,7 +868,7 @@ class Downloader(Thread):
         stamp = time.time() + 60.0 * interval
         self._timers[server.id].append(stamp)
         if interval:
-            sabnzbd.scheduler.plan_server(self.trigger_server, [server.id, stamp], interval)
+            sabnzbd.Scheduler.plan_server(self.trigger_server, [server.id, stamp], interval)
 
     @synchronized(TIMER_LOCK)
     def trigger_server(self, server_id, timestamp):

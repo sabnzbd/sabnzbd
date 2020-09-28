@@ -25,7 +25,7 @@ import functools
 import time
 import re
 import queue
-from typing import List
+from typing import List, Optional
 
 import sabnzbd
 from sabnzbd.newsunpack import (
@@ -108,10 +108,10 @@ class PostProcessor(Thread):
         self.load()
 
         # Fast-queue for jobs already finished by DirectUnpack
-        self.fast_queue: queue.Queue[NzbObject] = queue.Queue()
+        self.fast_queue: queue.Queue[Optional[NzbObject]] = queue.Queue()
 
         # Regular queue for jobs that might need more attention
-        self.slow_queue: queue.Queue[NzbObject] = queue.Queue()
+        self.slow_queue: queue.Queue[Optional[NzbObject]] = queue.Queue()
 
         # Load all old jobs
         for nzo in self.history_queue:
@@ -174,7 +174,7 @@ class PostProcessor(Thread):
         self.save()
         sabnzbd.history_updated()
 
-    def remove(self, nzo):
+    def remove(self, nzo: NzbObject):
         """ Remove given nzo from the queue """
         try:
             self.history_queue.remove(nzo)
@@ -293,7 +293,7 @@ class PostProcessor(Thread):
             sabnzbd.Downloader.resume_from_postproc()
 
 
-def process_job(nzo):
+def process_job(nzo: NzbObject):
     """ Process one job """
     start = time.time()
 

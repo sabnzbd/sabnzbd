@@ -127,6 +127,7 @@ URLGrabber: sabnzbd.urlgrabber.URLGrabber
 DirScanner: sabnzbd.dirscanner.DirScanner
 BPSMeter: sabnzbd.bpsmeter.BPSMeter
 RSSReader: sabnzbd.rss.RSSReader
+Scheduler: sabnzbd.scheduler.Scheduler
 
 # Regular constants
 START = datetime.datetime.now()
@@ -228,7 +229,7 @@ def get_db_connection(thread_index=0):
 
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader=False, clean_up=False, evaluate_schedules=False, repair=0):
+def initialize(pause_downloader=False, clean_up=False, repair=0):
     if sabnzbd.__INITIALIZED__:
         return False
 
@@ -290,25 +291,12 @@ def initialize(pause_downloader=False, clean_up=False, evaluate_schedules=False,
     lang.set_language(cfg.language())
     sabnzbd.api.clear_trans_cache()
 
+    # Set end-of-queue action
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
-    # One time conversion "speedlimit" in schedules.
-    if not cfg.sched_converted():
-        schedules = cfg.schedules()
-        newsched = []
-        for sched in schedules:
-            if "speedlimit" in sched:
-                newsched.append(re.sub(r"(speedlimit \d+)$", r"\1K", sched))
-            else:
-                newsched.append(sched)
-        cfg.schedules.set(newsched)
-        cfg.sched_converted.set(1)
-
-    # Second time schedule conversion
-    if cfg.sched_converted() != 2:
-        cfg.schedules.set(["%s %s" % (1, schedule) for schedule in cfg.schedules()])
-        cfg.sched_converted.set(2)
-        config.save_config()
+    # Set cache limit
+    if not cfg.cache_limit():
+        cfg.cache_limit.set(misc.get_cache_limit())
 
     # Convert auto-sort
     if cfg.auto_sort() == "0":
@@ -337,21 +325,16 @@ def initialize(pause_downloader=False, clean_up=False, evaluate_schedules=False,
     sabnzbd.Rating = sabnzbd.rating.Rating()
     sabnzbd.URLGrabber = sabnzbd.urlgrabber.URLGrabber()
     sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
+    sabnzbd.Scheduler = sabnzbd.scheduler.Scheduler()
+
+    # Run startup tasks
     sabnzbd.NzbQueue.read_queue(repair)
-
-    scheduler.init()
-    if evaluate_schedules:
-        scheduler.analyse(pause_downloader)
-
-    # Set cache limit
-    if not cfg.cache_limit() or (cfg.cache_limit() in ("200M", "450M") and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
-        cfg.cache_limit.set(misc.get_cache_limit())
+    sabnzbd.Scheduler.analyse(pause_downloader)
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
     logging.info("All processes started")
     sabnzbd.RESTART_REQ = False
     sabnzbd.__INITIALIZED__ = True
-    return True
 
 
 @synchronized(INIT_LOCK)
@@ -369,7 +352,8 @@ def start():
         logging.debug("Starting decoders")
         sabnzbd.Decoder.start()
 
-        scheduler.start()
+        logging.debug("Starting scheduler")
+        sabnzbd.Scheduler.start()
 
         logging.debug("Starting dirscanner")
         sabnzbd.DirScanner.start()
@@ -452,7 +436,8 @@ def halt():
         # Since all warm-restarts have been removed, it's not longer
         # needed to stop the scheduler.
         # We must tell the scheduler to deactivate.
-        scheduler.abort()
+        logging.debug("Terminating scheduler")
+        sabnzbd.Scheduler.abort()
 
         logging.info("All processes stopped")
 
@@ -520,7 +505,7 @@ def guard_quota_size():
 
 def guard_quota_dp():
     """ Callback for change of quota_day or quota_period """
-    scheduler.restart(force=True)
+    sabnzbd.Scheduler.restart()
 
 
 def guard_language():
@@ -1045,13 +1030,13 @@ def check_all_tasks():
     if not sabnzbd.Rating.is_alive():
         logging.info("Restarting crashed rating")
         sabnzbd.Rating.__init__()
-    if not sabnzbd.scheduler.sched_check():
+    if not sabnzbd.Scheduler.is_alive():
         logging.info("Restarting crashed scheduler")
-        sabnzbd.scheduler.init()
+        sabnzbd.Scheduler.restart()
         sabnzbd.Downloader.unblock_all()
 
     # Check one-shot pause
-    sabnzbd.scheduler.pause_check()
+    sabnzbd.Scheduler.pause_check()
 
     # Check (and terminate) idle jobs
     sabnzbd.NzbQueue.stop_idle_jobs()

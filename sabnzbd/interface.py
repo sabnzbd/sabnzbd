@@ -37,7 +37,6 @@ from Cheetah.Template import Template
 
 import sabnzbd
 import sabnzbd.rss
-import sabnzbd.scheduler as scheduler
 from sabnzbd.misc import (
     to_units,
     from_units,
@@ -76,11 +75,6 @@ from sabnzbd.api import (
     Ttemplate,
     build_queue_header,
 )
-
-##############################################################################
-# Global constants
-##############################################################################
-
 
 ##############################################################################
 # Security functions
@@ -423,13 +417,13 @@ class MainPage:
 
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.Downloader.pause()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
     def resume(self, **kwargs):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.unpause_all()
         raise Raiser(self.__root)
 
@@ -963,13 +957,13 @@ class QueuePage:
 
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.Downloader.pause()
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def resume(self, **kwargs):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.unpause_all()
         raise queueRaiser(self.__root, kwargs)
 
@@ -1811,7 +1805,7 @@ class ConfigRss:
         """ Save changed RSS automatic readout rate """
         cfg.rss_rate.set(kwargs.get("rss_rate"))
         config.save_config()
-        scheduler.restart()
+        sabnzbd.Scheduler.restart()
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -2026,7 +2020,7 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def rss_now(self, *args, **kwargs):
         """ Run an automatic RSS run now """
-        scheduler.force_rss()
+        sabnzbd.Scheduler.force_rss()
         raise rssRaiser(self.__root, kwargs)
 
 
@@ -2105,7 +2099,7 @@ class ConfigScheduling:
         snum = 1
         conf["schedlines"] = []
         conf["taskinfo"] = []
-        for ev in scheduler.sort_schedules(all_events=False):
+        for ev in sabnzbd.scheduler.sort_schedules(all_events=False):
             line = ev[3]
             conf["schedlines"].append(line)
             try:
@@ -2221,7 +2215,7 @@ class ConfigScheduling:
                 cfg.schedules.set(sched)
 
         config.save_config()
-        scheduler.restart(force=True)
+        sabnzbd.Scheduler.restart()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -2232,7 +2226,7 @@ class ConfigScheduling:
             schedules.remove(line)
             cfg.schedules.set(schedules)
             config.save_config()
-            scheduler.restart(force=True)
+            sabnzbd.Scheduler.restart()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -2249,7 +2243,7 @@ class ConfigScheduling:
                     break
             cfg.schedules.set(schedules)
             config.save_config()
-            scheduler.restart(force=True)
+            sabnzbd.Scheduler.restart()
         raise Raiser(self.__root)
 
 

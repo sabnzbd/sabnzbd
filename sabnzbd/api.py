@@ -50,7 +50,6 @@ from sabnzbd.constants import (
 )
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.scheduler as scheduler
 from sabnzbd.skintext import SKIN_TEXT
 from sabnzbd.utils.pathbrowser import folders_at_path
 from sabnzbd.utils.getperformance import getcpu
@@ -574,14 +573,14 @@ def _api_addurl(name, output, kwargs):
 
 def _api_pause(name, output, kwargs):
     """ API: accepts output """
-    scheduler.plan_resume(0)
+    sabnzbd.Scheduler.plan_resume(0)
     sabnzbd.Downloader.pause()
     return report(output)
 
 
 def _api_resume(name, output, kwargs):
     """ API: accepts output """
-    scheduler.plan_resume(0)
+    sabnzbd.Scheduler.plan_resume(0)
     sabnzbd.unpause_all()
     return report(output)
 
@@ -705,7 +704,7 @@ def _api_pause_pp(name, output, kwargs):
 def _api_rss_now(name, output, kwargs):
     """ API: accepts output """
     # Run RSS scan async, because it can take a long time
-    scheduler.force_rss()
+    sabnzbd.Scheduler.force_rss()
     return report(output)
 
 
@@ -843,7 +842,7 @@ def _api_config_set_colorscheme(output, kwargs):
 def _api_config_set_pause(output, kwargs):
     """ API: accepts output, value(=pause interval) """
     value = kwargs.get("value")
-    scheduler.plan_resume(int_conv(value))
+    sabnzbd.Scheduler.plan_resume(int_conv(value))
     return report(output)
 
 
@@ -1597,14 +1596,14 @@ def build_header(webdir="", output=None, trans_functions=True):
         header["darwin"] = sabnzbd.DARWIN
 
         header["power_options"] = sabnzbd.WIN32 or sabnzbd.DARWIN or sabnzbd.LINUX_POWER
-        header["pp_pause_event"] = sabnzbd.scheduler.pp_pause_event()
+        header["pp_pause_event"] = sabnzbd.Scheduler.pp_pause_event
 
         header["apikey"] = cfg.api_key()
         header["new_release"], header["new_rel_url"] = sabnzbd.NEW_VERSION
 
     header["version"] = sabnzbd.__version__
     header["paused"] = bool(sabnzbd.Downloader.paused or sabnzbd.Downloader.postproc)
-    header["pause_int"] = scheduler.pause_int()
+    header["pause_int"] = sabnzbd.Scheduler.pause_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
     header["diskspace1"] = "%.2f" % diskspace_info["download_dir"][1]

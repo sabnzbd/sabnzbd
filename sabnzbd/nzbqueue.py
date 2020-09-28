@@ -322,7 +322,7 @@ class NzbQueue:
         if nzo.nzo_id:
             nzo.deleted = False
             priority = nzo.priority
-            if sabnzbd.scheduler.analyse(False, priority):
+            if sabnzbd.Scheduler.analyse(False, priority):
                 nzo.status = Status.PAUSED
 
             self.__nzo_table[nzo.nzo_id] = nzo
@@ -615,7 +615,7 @@ class NzbQueue:
                 return nzo_id_pos1
 
             nzo.set_priority(priority)
-            if sabnzbd.scheduler.analyse(False, priority) and nzo.status in (
+            if sabnzbd.Scheduler.analyse(False, priority) and nzo.status in (
                 Status.CHECKING,
                 Status.DOWNLOADING,
                 Status.QUEUED,

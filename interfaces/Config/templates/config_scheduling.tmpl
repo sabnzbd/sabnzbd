@@ -50,7 +50,7 @@ else:
                     <select name="action" id="action">
                         <optgroup label="$T('sch-action')">
                             <!--#for $action in $actions#-->
-                                <option value="$action" data-action="" data-noarg="<!--#if $action is 'speedlimit' then 0 else 1#-->">$actions_lng[$action]</option>
+                                <option value="$action" data-action="" data-noarg="<!--#if $action == 'speedlimit' then 0 else 1#-->">$actions_lng[$action]</option>
                             <!--#end for#-->
                         </optgroup>
                         <optgroup label="$T('cmenu-servers')">

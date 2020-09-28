@@ -22,6 +22,7 @@ sabnzbd.bpsmeter - bpsmeter
 import time
 import logging
 import re
+from typing import List, Dict
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, KIBI
@@ -94,20 +95,20 @@ class BPSMeter:
         self.speed_log_time = t
         self.last_update = t
         self.bps = 0.0
-        self.bps_list = []
+        self.bps_list: List[int] = []
         self.bps_list_max = 275
 
-        self.day_total = {}
-        self.week_total = {}
-        self.month_total = {}
-        self.grand_total = {}
+        self.day_total: Dict[str, int] = {}
+        self.week_total: Dict[str, int] = {}
+        self.month_total: Dict[str, int] = {}
+        self.grand_total: Dict[str, int] = {}
 
-        self.timeline_total = {}
+        self.timeline_total: Dict[str, Dict[str, int]] = {}
 
-        self.day_label = time.strftime("%Y-%m-%d")
-        self.end_of_day = tomorrow(t)  # Time that current day will end
-        self.end_of_week = next_week(t)  # Time that current day will end
-        self.end_of_month = next_month(t)  # Time that current month will end
+        self.day_label: str = time.strftime("%Y-%m-%d")
+        self.end_of_day: float = tomorrow(t)  # Time that current day will end
+        self.end_of_week: float = next_week(t)  # Time that current day will end
+        self.end_of_month: float = next_month(t)  # Time that current month will end
         self.q_day = 1  # Day of quota reset
         self.q_period = "m"  # Daily/Weekly/Monthly quota = d/w/m
         self.quota = self.left = 0.0  # Quota and remaining quota
@@ -119,21 +120,23 @@ class BPSMeter:
 
     def save(self):
         """ Save admin to disk """
-        data = (
-            self.last_update,
-            self.grand_total,
-            self.day_total,
-            self.week_total,
-            self.month_total,
-            self.end_of_day,
-            self.end_of_week,
-            self.end_of_month,
-            self.quota,
-            self.left,
-            self.q_time,
-            self.timeline_total,
+        sabnzbd.save_admin(
+            (
+                self.last_update,
+                self.grand_total,
+                self.day_total,
+                self.week_total,
+                self.month_total,
+                self.end_of_day,
+                self.end_of_week,
+                self.end_of_month,
+                self.quota,
+                self.left,
+                self.q_time,
+                self.timeline_total,
+            ),
+            BYTES_FILE_NAME,
         )
-        sabnzbd.save_admin(data, BYTES_FILE_NAME)
 
     def defaults(self):
         """ Get the latest data from the database and assign to a fake server """

@@ -42,7 +42,6 @@ from os.path import abspath
 import sabnzbd
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.api as api
-import sabnzbd.scheduler as scheduler
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
 
@@ -194,12 +193,12 @@ class StatusIcon(Thread):
         sabnzbd.shutdown_program()
 
     def pause(self):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.Downloader.pause()
 
     def resume(self):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.unpause_all()
 
     def rss(self, icon):
-        scheduler.force_rss()
+        sabnzbd.Scheduler.force_rss()

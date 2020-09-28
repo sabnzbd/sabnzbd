@@ -42,7 +42,6 @@ import sabnzbd.notifier as notifier
 
 from sabnzbd.api import fast_queue
 import sabnzbd.config as config
-import sabnzbd.scheduler as scheduler
 import sabnzbd.downloader
 
 status_icons = {
@@ -507,8 +506,8 @@ class SABnzbdDelegate(NSObject):
 
             if paused:
                 self.state = T("Paused")
-                if sabnzbd.scheduler.pause_int() != "0":
-                    self.setMenuTitle_("\n\n%s\n" % (sabnzbd.scheduler.pause_int()))
+                if sabnzbd.Scheduler.pause_int() != "0":
+                    self.setMenuTitle_("\n\n%s\n" % (sabnzbd.Scheduler.pause_int()))
                 else:
                     self.setMenuTitle_("")
             elif bytes_left > 0:
@@ -750,18 +749,18 @@ class SABnzbdDelegate(NSObject):
         minutes = int(sender.representedObject())
         # logging.info("[osx] pause for %s" % (minutes))
         if minutes:
-            scheduler.plan_resume(minutes)
+            sabnzbd.Scheduler.plan_resume(minutes)
         else:
             sabnzbd.Downloader.pause()
 
     def resumeAction_(self, sender):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
 
     def watchedFolderAction_(self, sender):
         sabnzbd.DirScanner.scan()
 
     def rssAction_(self, sender):
-        scheduler.force_rss()
+        sabnzbd.Scheduler.force_rss()
 
     def openFolderAction_(self, sender):
         folder2open = sender.representedObject()

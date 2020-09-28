@@ -26,7 +26,6 @@ from time import sleep
 import sabnzbd
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.api as api
-import sabnzbd.scheduler as scheduler
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
 
@@ -144,7 +143,7 @@ class SABTrayThread(SysTrayIconThread):
 
     def pausefor(self, minutes):
         """ Need function for each pause-timer """
-        scheduler.plan_resume(minutes)
+        sabnzbd.Scheduler.plan_resume(minutes)
 
     def pausefor5min(self, icon):
         self.pausefor(5)
@@ -171,7 +170,7 @@ class SABTrayThread(SysTrayIconThread):
 
     def rss(self, icon):
         self.hover_text = T("Read all RSS feeds")
-        scheduler.force_rss()
+        sabnzbd.Scheduler.force_rss()
 
     def nologin(self, icon):
         sabnzbd.cfg.username.set("")
@@ -192,9 +191,9 @@ class SABTrayThread(SysTrayIconThread):
         sabnzbd.shutdown_program()
 
     def pause(self):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.Downloader.pause()
 
     def resume(self):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.unpause_all()

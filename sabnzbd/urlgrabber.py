@@ -84,14 +84,11 @@ class URLGrabber(Thread):
         self.queue.put((url, future_nzo))
 
     def stop(self):
-        logging.info("URLGrabber shutting down")
         self.shutdown = True
         self.add(None, None)
 
     def run(self):
-        logging.info("URLGrabber starting up")
         self.shutdown = False
-
         while not self.shutdown:
             (url, future_nzo) = self.queue.get()
 

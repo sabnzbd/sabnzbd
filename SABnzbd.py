@@ -69,7 +69,6 @@ from sabnzbd.misc import (
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
-import sabnzbd.scheduler as scheduler
 import sabnzbd.config as config
 import sabnzbd.cfg
 import sabnzbd.downloader
@@ -1232,7 +1231,7 @@ def main():
     if autobrowser is not None:
         sabnzbd.cfg.autobrowser.set(autobrowser)
 
-    sabnzbd.initialize(pause, clean_up, evaluate_schedules=True, repair=repair)
+    sabnzbd.initialize(pause, clean_up, repair=repair)
 
     os.chdir(sabnzbd.DIR_PROG)
 
@@ -1512,7 +1511,7 @@ def main():
             # Keep OS awake (if needed)
             sabnzbd.keep_awake()
             # Restart scheduler (if needed)
-            scheduler.restart()
+            sabnzbd.Scheduler.restart(plan_restart=False)
             # Save config (if needed)
             config.save_config()
             # Check the threads
