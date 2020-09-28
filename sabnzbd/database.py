@@ -99,7 +99,7 @@ class HistoryDB:
         self.execute("PRAGMA user_version;")
         try:
             version = self.c.fetchone()["user_version"]
-        except TypeError:
+        except IndexError:
             version = 0
         if version < 1:
             # Add any missing columns added since first DB version
@@ -221,7 +221,7 @@ class HistoryDB:
             """SELECT path FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED)
         )
         if fetch_ok:
-            return [item.get("path") for item in self.c.fetchall()]
+            return [item["path"] for item in self.c.fetchall()]
         else:
             return []
 
@@ -310,8 +310,8 @@ class HistoryDB:
         total_items = -1
         if res:
             try:
-                total_items = self.c.fetchone().get("COUNT(*)")
-            except AttributeError:
+                total_items = self.c.fetchone()["COUNT(*)"]
+            except IndexError:
                 pass
 
         if not start:
@@ -347,8 +347,8 @@ class HistoryDB:
             )
             if res:
                 try:
-                    total = self.c.fetchone().get("COUNT(*)")
-                except AttributeError:
+                    total = self.c.fetchone()["COUNT(*)"]
+                except IndexError:
                     pass
         return total > 0
 
@@ -361,8 +361,8 @@ class HistoryDB:
         )
         if res:
             try:
-                total = self.c.fetchone().get("COUNT(*)")
-            except AttributeError:
+                total = self.c.fetchone()["COUNT(*)"]
+            except IndexError:
                 pass
         return total > 0
 
@@ -374,8 +374,8 @@ class HistoryDB:
         total = 0
         if self.execute("""SELECT sum(bytes) FROM history"""):
             try:
-                total = self.c.fetchone().get("sum(bytes)")
-            except AttributeError:
+                total = self.c.fetchone()["sum(bytes)"]
+            except IndexError:
                 pass
 
         # Amount downloaded this month
@@ -386,8 +386,8 @@ class HistoryDB:
         month = 0
         if self.execute("""SELECT sum(bytes) FROM history WHERE completed > ?""", (month_timest,)):
             try:
-                month = self.c.fetchone().get("sum(bytes)")
-            except AttributeError:
+                month = self.c.fetchone()["sum(bytes)"]
+            except IndexError:
                 pass
 
         # Amount downloaded this week
@@ -396,8 +396,8 @@ class HistoryDB:
         week = 0
         if self.execute("""SELECT sum(bytes) FROM history WHERE completed > ?""", (week_timest,)):
             try:
-                week = self.c.fetchone().get("sum(bytes)")
-            except AttributeError:
+                week = self.c.fetchone()["sum(bytes)"]
+            except IndexError:
                 pass
 
         return total, month, week
@@ -408,7 +408,7 @@ class HistoryDB:
         t = (nzo_id,)
         if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", t):
             try:
-                data = ubtou(zlib.decompress(self.c.fetchone().get("script_log")))
+                data = ubtou(zlib.decompress(self.c.fetchone()["script_log"]))
             except:
                 pass
         return data
@@ -419,8 +419,8 @@ class HistoryDB:
         name = ""
         if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
             try:
-                name = self.c.fetchone().get("name")
-            except AttributeError:
+                name = self.c.fetchone()["name"]
+            except IndexError:
                 pass
         return name
 
@@ -430,7 +430,7 @@ class HistoryDB:
         path = ""
         if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
             try:
-                path = self.c.fetchone().get("path")
+                path = self.c.fetchone()["path"]
             except AttributeError:
                 pass
         if os.path.exists(path):
@@ -442,13 +442,8 @@ class HistoryDB:
         t = (nzo_id,)
         if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", t):
             try:
-                items = self.c.fetchone()
-                dtype = items.get("report")
-                url = items.get("url")
-                pp = items.get("pp")
-                script = items.get("script")
-                cat = items.get("category")
-                return dtype, url, pp, script, cat
+                item = self.c.fetchone()
+                return item["report"], item["url"], item["pp"], item["script"], item["category"]
             except (AttributeError, IndexError):
                 pass
         return "", "", "", "", ""
