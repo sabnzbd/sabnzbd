@@ -277,9 +277,8 @@ class PostProcessor(Thread):
             process_job(nzo)
 
             if nzo.to_be_removed:
-                history_db = database.HistoryDB()
-                history_db.remove_history(nzo.nzo_id)
-                history_db.close()
+                with database.HistoryDB() as history_db:
+                    history_db.remove_history(nzo.nzo_id)
                 nzo.purge_data()
 
             # Processing done
@@ -648,15 +647,13 @@ def process_job(nzo):
     # Log the overall time taken for postprocessing
     postproc_time = int(time.time() - start)
 
-    # Create the history DB instance
-    history_db = database.HistoryDB()
-    # Add the nzo to the database. Only the path, script and time taken is passed
-    # Other information is obtained from the nzo
-    history_db.add_history_db(nzo, workdir_complete, postproc_time, script_log, script_line)
-    # Purge items
-    history_db.auto_history_purge()
-    # The connection is only used once, so close it here
-    history_db.close()
+    with database.HistoryDB() as history_db:
+        # Add the nzo to the database. Only the path, script and time taken is passed
+        # Other information is obtained from the nzo
+        history_db.add_history_db(nzo, workdir_complete, postproc_time, script_log, script_line)
+        # Purge items
+        history_db.auto_history_purge()
+
     sabnzbd.history_updated()
     return True
 

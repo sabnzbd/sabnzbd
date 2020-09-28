@@ -383,12 +383,10 @@ class NzbQueue:
             self.__nzo_list.remove(nzo)
 
             if add_to_history:
-                # Create the history DB instance
-                history_db = database.HistoryDB()
-                # Add the nzo to the database. Only the path, script and time taken is passed
-                # Other information is obtained from the nzo
-                history_db.add_history_db(nzo)
-                history_db.close()
+                with database.HistoryDB() as history_db:
+                    # Add the nzo to the database. Only the path, script and time taken is passed
+                    # Other information is obtained from the nzo
+                    history_db.add_history_db(nzo)
                 sabnzbd.history_updated()
             elif cleanup:
                 nzo.purge_data(delete_all_data=delete_all_data)

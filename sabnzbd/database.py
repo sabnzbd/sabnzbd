@@ -448,6 +448,14 @@ class HistoryDB:
                 pass
         return "", "", "", "", ""
 
+    def __enter__(self):
+        """ For context manager support """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """ For context manager support, ignore any exception """
+        self.close()
+
 
 _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 
@@ -557,6 +565,5 @@ def unpack_history_info(item: Union[Dict, sqlite3.Row]):
 
 def midnight_history_purge():
     logging.info("Scheduled history purge")
-    history_db = HistoryDB()
-    history_db.auto_history_purge()
-    history_db.close()
+    with HistoryDB() as history_db:
+        history_db.auto_history_purge()

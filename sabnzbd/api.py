@@ -1916,15 +1916,13 @@ def del_from_section(kwargs):
 def history_remove_failed():
     """ Remove all failed jobs from history, including files """
     logging.info("Scheduled removal of all failed jobs")
-    history_db = HistoryDB()
-    del_job_files(history_db.get_failed_paths())
-    history_db.remove_failed()
-    history_db.close()
+    with HistoryDB() as history_db:
+        del_job_files(history_db.get_failed_paths())
+        history_db.remove_failed()
 
 
 def history_remove_completed():
     """ Remove all completed jobs from history """
     logging.info("Scheduled removal of all completed jobs")
-    history_db = HistoryDB()
-    history_db.remove_completed()
-    history_db.close()
+    with HistoryDB() as history_db:
+        history_db.remove_completed()
