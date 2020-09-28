@@ -5,12 +5,13 @@
 # Translators:
 # N S <reloxx@interia.pl>, 2020
 # Safihre <safihre@sabnzbd.org>, 2020
+# C E <githubce@eiselt.ch>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: C E <githubce@eiselt.ch>, 2020\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -100,7 +101,7 @@ msgstr ""
 #. Warning message
 #: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
-msgstr ""
+msgstr "Konnte weitere Zertifikate vom Paket certifi nicht laden."
 
 #. Warning message
 #: SABnzbd.py
@@ -682,6 +683,8 @@ msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
+"Der \"Abgeschlossene Downloads\"-Ordner darf kein Unterordner des "
+"\"Temporäre Downloads\"-Ordners sein."
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -1685,7 +1688,7 @@ msgstr "RAR-Datei konnten nicht überprüft werden"
 #. Warning message
 #: sabnzbd/postproc.py
 msgid "No matching earlier rar file for %s"
-msgstr ""
+msgstr "Keine zugehörige frühere RAR-Datei für %s"
 
 #. Error message
 #: sabnzbd/postproc.py
@@ -1710,7 +1713,7 @@ msgstr "Fehler beim Herunterfahren des Systems"
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Received a DBus exception %s"
-msgstr ""
+msgstr "DBus-Ausnahmefehler empfangen %s "
 
 #. Warning message
 #: sabnzbd/rating.py
@@ -3725,13 +3728,15 @@ msgstr "Nach dem Download löschen"
 
 #: sabnzbd/skintext.py
 msgid "Deobfuscate final filenames"
-msgstr ""
+msgstr "Entschleiere finale Dateinamen"
 
 #: sabnzbd/skintext.py
 msgid ""
 "If filenames of (large) files in the final folder look obfuscated or "
 "meaningless they will be renamed to the job name."
 msgstr ""
+"Dateinamen von (großen) Dateien im Zielordner werden in den Auftragsnamen "
+"umbenannt, wenn sie verschleiert oder bedeutungslos aussehen."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
