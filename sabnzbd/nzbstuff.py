@@ -911,7 +911,6 @@ class NzbObject(TryList):
         # to history we first need an nzo_id by entering the NzbQueue
         if accept == 2:
             self.deleted = True
-            self.status = Status.FAILED
             sabnzbd.NzbQueue.do.add(self, quiet=True)
             sabnzbd.NzbQueue.do.end_job(self)
             # Raise error, so it's not added
@@ -1174,8 +1173,6 @@ class NzbObject(TryList):
 
         # Abort the job due to failure
         if not job_can_succeed:
-            # Set the nzo status to return "Queued"
-            self.status = Status.QUEUED
             self.set_download_report()
             self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
             self.set_unpack_info("Download", self.fail_msg, unique=False)
@@ -1185,8 +1182,6 @@ class NzbObject(TryList):
         post_done = False
         if not self.files:
             post_done = True
-            # set the nzo status to return "Queued"
-            self.status = Status.QUEUED
             self.set_download_report()
 
         return articles_left, file_done, post_done
