@@ -200,6 +200,7 @@ def external_processing(extern_proc, nzo: NzbObject, complete_dir, nicename, sta
 
     try:
         p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
+        sabnzbd.PostProcessor.external_process = p
 
         # Follow the output, so we can abort it
         proc = p.stdout
@@ -216,14 +217,6 @@ def external_processing(extern_proc, nzo: NzbObject, complete_dir, nicename, sta
 
             # Show current line in history
             nzo.set_action_line(T("Running script"), line)
-
-            # Check if we should still continue
-            if not nzo.pp_active:
-                p.kill()
-                lines.append(T("PostProcessing was aborted (%s)") % T("Script"))
-                # Print at least what we got
-                output = "\n".join(lines)
-                return output, 1
     except:
         logging.debug("Failed script %s, Traceback: ", extern_proc, exc_info=True)
         return "Cannot run script %s\r\n" % extern_proc, -1
@@ -537,10 +530,6 @@ def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, ra
                 fail, newfiles, rars = rar_extract(
                     rarpath, len(rar_sets[rar_set]), one_folder, nzo, rar_set, extraction_path
                 )
-                # Was it aborted?
-                if not nzo.pp_active:
-                    fail = True
-                    break
                 success = not fail
             except:
                 success = False
@@ -700,6 +689,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     p = build_and_run_command(command, flatten_command=True)
+    sabnzbd.PostProcessor.external_process = p
 
     proc = p.stdout
     if p.stdin:
@@ -719,15 +709,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname,
         line = platform_btou(proc.readline())
         if not line:
             break
-
-        # Check if we should still continue
-        if not nzo.pp_active:
-            p.kill()
-            msg = T("PostProcessing was aborted (%s)") % T("Unpack")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            nzo.status = Status.FAILED
-            return fail, (), ()
 
         line = line.strip()
         lines.append(line)
@@ -1059,6 +1040,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 
     command = [SEVEN_COMMAND, method, "-y", overwrite, parm, case, password, "-o%s" % extraction_path, name]
     p = build_and_run_command(command)
+    sabnzbd.PostProcessor.external_process = p
     output = platform_btou(p.stdout.read())
     logging.debug("7za output: %s", output)
 
@@ -1270,6 +1252,7 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
     # Run the external command
     p = build_and_run_command(command)
+    sabnzbd.PostProcessor.external_process = p
     proc = p.stdout
 
     if p.stdin:
@@ -1304,16 +1287,6 @@ def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
         line = linebuf.strip()
         linebuf = ""
-
-        # Check if we should still continue
-        if not nzo.pp_active:
-            p.kill()
-            msg = T("PostProcessing was aborted (%s)") % T("Repair")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Repair", msg, setname)
-            nzo.status = Status.FAILED
-            readd = False
-            break
 
         # Skip empty lines
         if line == "":
@@ -1582,6 +1555,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
     # Run MultiPar
     p = build_and_run_command(command)
+    sabnzbd.PostProcessor.external_process = p
     proc = p.stdout
     if p.stdin:
         p.stdin.close()
@@ -1619,16 +1593,6 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
 
         line = ubtou(linebuf).strip()
         linebuf = b""
-
-        # Check if we should still continue
-        if not nzo.pp_active:
-            p.kill()
-            msg = T("PostProcessing was aborted (%s)") % T("Repair")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Repair", msg, setname)
-            nzo.status = Status.FAILED
-            readd = False
-            break
 
         # Skip empty lines
         if line == "":

@@ -22,6 +22,7 @@ sabnzbd.postproc - threaded post-processing of jobs
 import os
 import logging
 import functools
+import subprocess
 import time
 import re
 import queue
@@ -117,6 +118,9 @@ class PostProcessor(Thread):
         for nzo in self.history_queue:
             self.process(nzo)
 
+        # So we can always cancel external processes
+        self.external_process: Optional[subprocess.Popen] = None
+
         # Counter to not only process fast-jobs
         self.__fast_job_count = 0
 
@@ -196,6 +200,12 @@ class PostProcessor(Thread):
                 nzo.abort_direct_unpacker()
                 if nzo.pp_active:
                     nzo.pp_active = False
+                    try:
+                        # Try to kill any external running process
+                        self.external_process.kill()
+                        logging.info("Killed external process %s", self.external_process.args[0])
+                    except:
+                        pass
                 return True
         return None
 
@@ -287,6 +297,7 @@ class PostProcessor(Thread):
             nzo.pp_active = False
 
             self.remove(nzo)
+            self.external_process = None
             check_eoq = True
 
             # Allow download to proceed
@@ -323,10 +334,8 @@ def process_job(nzo: NzbObject):
     # Get the NZB name
     filename = nzo.final_name
 
-    # Download-processes can mark job as failed
+    # Download-processes can mark job as failed, skip all steps
     if nzo.fail_msg:
-        nzo.status = Status.FAILED
-        nzo.save_attribs()
         all_ok = False
         par_error = True
         unpack_error = 1
@@ -513,7 +522,7 @@ def process_job(nzo: NzbObject):
                     all_ok = False
 
             if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list:
-                # deobfuscate the filenames
+                # Deobfuscate the filenames
                 logging.info("Running deobfuscate")
                 deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
 
@@ -602,7 +611,7 @@ def process_job(nzo: NzbObject):
         logging.error(T("Post Processing Failed for %s (%s)"), filename, T("see logfile"))
         logging.info("Traceback: ", exc_info=True)
 
-        nzo.fail_msg = T("PostProcessing was aborted (%s)") % T("see logfile")
+        nzo.fail_msg = T("Post-processing was aborted")
         notifier.send_notification(T("Download Failed"), filename, "failed", nzo.cat)
         nzo.status = Status.FAILED
         par_error = True
@@ -638,6 +647,11 @@ def process_job(nzo: NzbObject):
     # Use automatic retry link on par2 errors and encrypted/bad RARs
     if par_error or unpack_error in (2, 3):
         try_alt_nzb(nzo)
+
+    # Check if it was aborted
+    if not nzo.pp_active:
+        nzo.fail_msg = T("Post-processing was aborted")
+        all_ok = False
 
     # Show final status in history
     if all_ok:
@@ -743,13 +757,6 @@ def parring(nzo: NzbObject, workdir: str):
                 # Check if file maybe wasn't deleted and if we maybe have more files in the parset
                 if os.path.exists(os.path.join(nzo.download_path, parfile_nzf.filename)) or nzo.extrapars[setname]:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
-
-                    # Was it aborted?
-                    if not nzo.pp_active:
-                        re_add = False
-                        par_error = True
-                        break
-
                     re_add = re_add or need_re_add
                     verified[setname] = res
                 else:
