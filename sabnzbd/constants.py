@@ -152,7 +152,7 @@ class Status:
     GRABBING = "Grabbing"  # Q:  Getting an NZB from an external site
     MOVING = "Moving"  # PP: Files are being moved
     PAUSED = "Paused"  # Q:  Job is paused
-    QUEUED = "Queued"  # Q:  Job is waiting for its turn to download
+    QUEUED = "Queued"  # Q:  Job is waiting for its turn to download or post-process
     QUICK_CHECK = "QuickCheck"  # PP: QuickCheck verification is running
     REPAIRING = "Repairing"  # PP: Job is being repaired (by par2)
     RUNNING = "Running"  # PP: User's post processing script is running

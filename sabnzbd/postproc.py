@@ -161,6 +161,8 @@ class PostProcessor(Thread):
 
     def process(self, nzo: NzbObject):
         """ Push on finished job in the queue """
+        # Make sure we return the status "Waiting"
+        nzo.status = Status.QUEUED
         if nzo not in self.history_queue:
             self.history_queue.append(nzo)
 
@@ -321,7 +323,8 @@ def process_job(nzo):
     # Get the NZB name
     filename = nzo.final_name
 
-    if nzo.fail_msg:  # Special case: aborted due to too many missing data
+    # Download-processes can mark job as failed
+    if nzo.fail_msg:
         nzo.status = Status.FAILED
         nzo.save_attribs()
         all_ok = False
