@@ -25,7 +25,6 @@ import time
 import socket
 import cherrypy
 import sys
-import re
 import ssl
 from threading import Lock, Thread
 from typing import Any
@@ -294,10 +293,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Set end-of-queue action
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
-    # Set cache limit
-    if not cfg.cache_limit():
-        cfg.cache_limit.set(misc.get_cache_limit())
-
     # Convert auto-sort
     if cfg.auto_sort() == "0":
         cfg.auto_sort.set("")
@@ -330,6 +325,10 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     # Run startup tasks
     sabnzbd.NzbQueue.read_queue(repair)
     sabnzbd.Scheduler.analyse(pause_downloader)
+
+    # Set cache limit for new users
+    if not cfg.cache_limit():
+        cfg.cache_limit.set(misc.get_cache_limit())
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
     logging.info("All processes started")

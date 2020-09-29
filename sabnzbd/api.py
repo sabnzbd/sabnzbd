@@ -71,6 +71,7 @@ from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
 import sabnzbd.emailer
+import sabnzbd.sorting
 
 ##############################################################################
 # API error messages

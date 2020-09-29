@@ -30,11 +30,10 @@ Based on work by P1nGu1n
 
 import hashlib
 import logging
-import math
 import os
 import re
 
-from sabnzbd.filesystem import get_unique_filename, globber_full, renamer, get_ext
+from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
 from sabnzbd.par2file import is_parfile, parse_par2_file
 
 # Files to exclude and minimal file size for renaming

@@ -234,7 +234,7 @@ class BPSMeter:
             if self.have_quota and self.quota_enabled:
                 self.left -= amount
                 if self.left <= 0.0:
-                    if sabnzbd.Downloader.do and not sabnzbd.Downloader.paused:
+                    if not sabnzbd.Downloader.paused:
                         sabnzbd.Downloader.pause()
                         logging.warning(T("Quota spent, pausing downloading"))
 
@@ -354,8 +354,7 @@ class BPSMeter:
             logging.info("Quota was reset to %s", self.quota)
             if cfg.quota_resume():
                 logging.info("Auto-resume due to quota reset")
-                if sabnzbd.Downloader.do:
-                    sabnzbd.Downloader.resume()
+                sabnzbd.Downloader.resume()
             self.next_reset()
             return False
         else:
