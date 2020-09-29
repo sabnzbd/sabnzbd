@@ -769,15 +769,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Покретање скрипта"
 
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr "Пост-процесирање је заустављено (%s)"
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr "Скрипт"
-
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
@@ -838,11 +829,6 @@ msgstr "Neuspešno raspakivanje, arhiva zahteva lozinku"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Распакивање"
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
-msgstr "Распакуј"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -1571,6 +1557,10 @@ msgid "see logfile"
 msgstr "видети извештај"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr "Неуспешно преузимање"
 
@@ -1779,6 +1769,16 @@ msgstr "Преузми"
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr "Прилепити датотеке"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "Распакуј"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "Скрипт"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py

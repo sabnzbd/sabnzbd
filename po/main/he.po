@@ -776,15 +776,6 @@ msgstr "(+x) אין ערכת הרשאות ביצוע \"%s\" לתסריט פיי�
 msgid "Running script"
 msgstr "מריץ תסריט"
 
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr "(%s) בתר־עיבוד בוטל"
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr "תסריט"
-
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
@@ -845,11 +836,6 @@ msgstr "פריקה נכשלה, ארכיון דורש סיסמה"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "פורק"
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
-msgstr "פרוק"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -1582,6 +1568,10 @@ msgid "see logfile"
 msgstr "ראה קובץ יומן"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr "הורדה נכשלה"
 
@@ -1790,6 +1780,16 @@ msgstr "הורדה"
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr "אחד קבצים"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "פרוק"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "תסריט"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py

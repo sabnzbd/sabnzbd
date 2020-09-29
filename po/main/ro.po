@@ -775,15 +775,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Rulare script"
 
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr "Post-Procesarea a fost abandonată (%s)"
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr "Script"
-
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
@@ -844,11 +835,6 @@ msgstr "Dezarhivare nereuşită, arhiva necesită o parolă"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Dezarhivare"
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
-msgstr "Dezarhivează"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -1581,6 +1567,10 @@ msgid "see logfile"
 msgstr "vezi fişier jurnal"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr "Descărcarea a eșuat"
 
@@ -1789,6 +1779,16 @@ msgstr "Descarcă"
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr "Uneşte fişierele"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "Dezarhivează"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "Script"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py

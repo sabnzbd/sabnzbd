@@ -814,15 +814,6 @@ msgstr ""
 msgid "Running script"
 msgstr "Exécution du script"
 
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr "Post-traitement interrompu (%s)"
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr "Script"
-
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
@@ -883,11 +874,6 @@ msgstr "Échec de l'extraction, l'archive nécessite un mot de passe"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Extraction"
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
-msgstr "Décompresser"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -1637,6 +1623,10 @@ msgid "see logfile"
 msgstr "voir le journal"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr "Échec du téléchargement"
 
@@ -1848,6 +1838,16 @@ msgstr "Télécharger"
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr "Concaténer"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "Décompresser"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "Script"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py

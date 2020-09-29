@@ -761,15 +761,6 @@ msgstr "Python 脚本 \"%s\" 不具有执行 (+x) 权限"
 msgid "Running script"
 msgstr "正在执行脚本"
 
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr "后期处理已中止 (%s)"
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr "脚本"
-
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
@@ -830,11 +821,6 @@ msgstr "解压失败，压缩文件需要密码"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "正在解压"
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
-msgstr "解压"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -1561,6 +1547,10 @@ msgid "see logfile"
 msgstr "查看日志文件"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr "下载失败"
 
@@ -1769,6 +1759,16 @@ msgstr "下载"
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr "合并文件"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "解压"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "脚本"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py

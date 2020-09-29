@@ -674,6 +674,8 @@ msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
+"De Map voor verwerkte downloads mag niet een map in de Tijdelijke download "
+"map zijn."
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -798,15 +800,6 @@ msgstr "Python-script '%s' heeft geen uitvoerpermissie (+x)"
 msgid "Running script"
 msgstr "Script uitvoeren"
 
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr "Nabewerking is afgebroken (%s)"
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr "Script"
-
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
@@ -866,11 +859,6 @@ msgstr "Uitpakken mislukt, archief vereist wachtwoord"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
-msgstr "Uitpakken"
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
 msgstr "Uitpakken"
 
 #: sabnzbd/newsunpack.py
@@ -1610,6 +1598,10 @@ msgid "see logfile"
 msgstr "zie logbestand"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr "Download mislukt"
 
@@ -1820,6 +1812,16 @@ msgstr "Download"
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr "Samenvoegen"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "Uitpakken"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "Script"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py

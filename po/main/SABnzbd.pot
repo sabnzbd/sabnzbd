@@ -718,15 +718,6 @@ msgstr ""
 msgid "Running script"
 msgstr ""
 
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr ""
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr ""
-
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Unpack nesting too deep [%s]"
@@ -786,11 +777,6 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
-msgstr ""
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
 msgstr ""
 
 #: sabnzbd/newsunpack.py
@@ -1477,6 +1463,10 @@ msgid "see logfile"
 msgstr ""
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr ""
 
@@ -1681,6 +1671,16 @@ msgstr ""
 #. PP phase "filejoin"
 #: sabnzbd/skintext.py
 msgid "Join files"
+msgstr ""
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr ""
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
 msgstr ""
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
