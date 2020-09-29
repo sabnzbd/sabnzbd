@@ -1655,7 +1655,8 @@ def handle_windows_service():
     """
     # Detect if running as Windows Service (only Vista and above!)
     # Adapted from https://stackoverflow.com/a/55248281/5235502
-    if win32ts.ProcessIdToSessionId(win32api.GetCurrentProcessId()) == 0:
+    # Only works when run from the exe-files
+    if hasattr(sys, "frozen") and win32ts.ProcessIdToSessionId(win32api.GetCurrentProcessId()) == 0:
         servicemanager.Initialize()
         servicemanager.PrepareToHostSingle(SABnzbd)
         servicemanager.StartServiceCtrlDispatcher()
