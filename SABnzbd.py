@@ -34,6 +34,7 @@ import subprocess
 import ssl
 import time
 import re
+from typing import List, Dict, Any
 
 try:
     import Cheetah
@@ -119,28 +120,25 @@ class GUIHandler(logging.Handler):
     def __init__(self, size):
         """ Initializes the handler """
         logging.Handler.__init__(self)
-        self.size = size
-        self.store = []
+        self._size: int = size
+        self.store: List[Dict[str, Any]] = []
 
-    def emit(self, record):
+    def emit(self, record: logging.LogRecord):
         """ Emit a record by adding it to our private queue """
-        if record.levelname == "WARNING":
-            sabnzbd.LAST_WARNING = record.msg % record.args
+        parsed_msg = record.msg % record.args
+        if record.levelno == logging.WARNING:
+            sabnzbd.notifier.send_notification(T("Warning"), parsed_msg, "warning")
         else:
-            sabnzbd.LAST_ERROR = record.msg % record.args
+            sabnzbd.notifier.send_notification(T("Error"), parsed_msg, "error")
+        # Append traceback, if available
+        warning = {"type": record.levelname, "text": parsed_msg, "time": int(time.time())}
+        if record.exc_info:
+            warning["text"] = "%s\n%s" % (warning["text"], traceback.format_exc())
 
-        if len(self.store) >= self.size:
-            # Loose the oldest record
+        # Loose the oldest record
+        if len(self.store) >= self._size:
             self.store.pop(0)
-        try:
-            # Append traceback, if available
-            warning = {"type": record.levelname, "text": record.msg % record.args, "time": int(time.time())}
-            if record.exc_info:
-                warning["text"] = "%s\n%s" % (warning["text"], traceback.format_exc())
-            self.store.append(warning)
-        except UnicodeDecodeError:
-            # Catch elusive Unicode conversion problems
-            pass
+        self.store.append(warning)
 
     def clear(self):
         self.store = []
@@ -1486,15 +1484,6 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
-        if sabnzbd.LAST_WARNING:
-            msg = sabnzbd.LAST_WARNING
-            sabnzbd.LAST_WARNING = None
-            sabnzbd.notifier.send_notification(T("Warning"), msg, "warning")
-        if sabnzbd.LAST_ERROR:
-            msg = sabnzbd.LAST_ERROR
-            sabnzbd.LAST_ERROR = None
-            sabnzbd.notifier.send_notification(T("Error"), msg, "error")
-
         time.sleep(3)
 
         # Check for loglevel changes

@@ -171,8 +171,6 @@ PAUSED_ALL = False
 TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
 WEBUI_READY = False
-LAST_WARNING = None
-LAST_ERROR = None
 EXTERNAL_IPV6 = False
 LAST_HISTORY_UPDATE = 1
 
