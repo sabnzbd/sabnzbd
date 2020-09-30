@@ -327,7 +327,6 @@ def get_user_profile_paths(vista_plus):
     if sabnzbd.DAEMON:
         # In daemon mode, do not try to access the user profile
         # just assume that everything defaults to the program dir
-        sabnzbd.DIR_APPDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_LCLDATA = sabnzbd.DIR_PROG
         sabnzbd.DIR_HOME = sabnzbd.DIR_PROG
         if sabnzbd.WIN32:
@@ -341,8 +340,6 @@ def get_user_profile_paths(vista_plus):
         try:
             from win32com.shell import shell, shellcon
 
-            path = shell.SHGetFolderPath(0, shellcon.CSIDL_APPDATA, None, 0)
-            sabnzbd.DIR_APPDATA = os.path.join(path, DEF_WORKDIR)
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
             sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
             sabnzbd.DIR_HOME = os.environ["USERPROFILE"]
@@ -351,18 +348,16 @@ def get_user_profile_paths(vista_plus):
                 if vista_plus:
                     root = os.environ["AppData"]
                     user = os.environ["USERPROFILE"]
-                    sabnzbd.DIR_APPDATA = "%s\\%s" % (root.replace("\\Roaming", "\\Local"), DEF_WORKDIR)
+                    sabnzbd.DIR_LCLDATA = "%s\\%s" % (root.replace("\\Roaming", "\\Local"), DEF_WORKDIR)
                     sabnzbd.DIR_HOME = user
                 else:
                     root = os.environ["USERPROFILE"]
-                    sabnzbd.DIR_APPDATA = "%s\\%s" % (root, DEF_WORKDIR)
+                    sabnzbd.DIR_LCLDATA = "%s\\%s" % (root, DEF_WORKDIR)
                     sabnzbd.DIR_HOME = root
-                sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
             except:
                 pass
 
         # Long-path everything
-        sabnzbd.DIR_APPDATA = long_path(sabnzbd.DIR_APPDATA)
         sabnzbd.DIR_LCLDATA = long_path(sabnzbd.DIR_LCLDATA)
         sabnzbd.DIR_HOME = long_path(sabnzbd.DIR_HOME)
         return
@@ -370,16 +365,14 @@ def get_user_profile_paths(vista_plus):
     elif sabnzbd.DARWIN:
         home = os.environ.get("HOME")
         if home:
-            sabnzbd.DIR_APPDATA = "%s/Library/Application Support/SABnzbd" % home
-            sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+            sabnzbd.DIR_LCLDATA = "%s/Library/Application Support/SABnzbd" % home
             sabnzbd.DIR_HOME = home
             return
     else:
         # Unix/Linux
         home = os.environ.get("HOME")
         if home:
-            sabnzbd.DIR_APPDATA = "%s/.%s" % (home, DEF_WORKDIR)
-            sabnzbd.DIR_LCLDATA = sabnzbd.DIR_APPDATA
+            sabnzbd.DIR_LCLDATA = "%s/.%s" % (home, DEF_WORKDIR)
             sabnzbd.DIR_HOME = home
             return
 
