@@ -1599,7 +1599,7 @@ msgstr "zie logbestand"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
-msgstr ""
+msgstr "Nabewerking is afgebroken"
 
 #: sabnzbd/postproc.py
 msgid "Download Failed"

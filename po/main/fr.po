@@ -1624,7 +1624,7 @@ msgstr "voir le journal"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
-msgstr ""
+msgstr "Le post-traitement a été interrompu"
 
 #: sabnzbd/postproc.py
 msgid "Download Failed"
