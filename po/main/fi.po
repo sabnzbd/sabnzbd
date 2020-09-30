@@ -17,6 +17,16 @@ msgstr ""
 "Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#. Notification - Status page, table column header, actual message
+#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Warning"
+msgstr "Varoitus"
+
+#. Notification
+#: SABnzbd.py, sabnzbd/notifier.py
+msgid "Error"
+msgstr "Virhe"
+
 #. Error message
 #: SABnzbd.py
 msgid "Failed to start web-interface"
@@ -116,16 +126,6 @@ msgstr "Web-käyttöliittymän käynnistys epäonnistui : "
 #: SABnzbd.py
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s käynnistetty"
-
-#. Notification - Status page, table column header, actual message
-#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
-msgid "Warning"
-msgstr "Varoitus"
-
-#. Notification
-#: SABnzbd.py, sabnzbd/notifier.py
-msgid "Error"
-msgstr "Virhe"
 
 #: SABnzbd.py, sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
