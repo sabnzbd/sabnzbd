@@ -24,11 +24,7 @@ class TestNZO:
         assert not nzo.created
 
         # Create NZB-file to import
-        nzb_path = create_nzb("basic_rar5")
-        with open(nzb_path, "r") as nzb_data_fp:
-            nzb_data = nzb_data_fp.read()
-        # Remove the created NZB-file
-        os.remove(nzb_path)
+        nzb_data = create_and_read_nzb("basic_rar5")
 
         # Very basic test of NZO creation with data
         nzo = nzbstuff.NzbObject("test_basic_data", nzb=nzb_data)

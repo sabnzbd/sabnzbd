@@ -3,5 +3,6 @@ selenium
 requests
 pytest
 pyfakefs
-pytest_httpbin
+pytest-httpbin
+pytest-httpserver
 flaky

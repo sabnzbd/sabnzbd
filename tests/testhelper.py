@@ -120,6 +120,17 @@ def create_nzb(nzb_dir):
     return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full)
 
 
+def create_and_read_nzb(nzbdir):
+    """ Create NZB, return data and delete file """
+    # Create NZB-file to import
+    nzb_path = create_nzb(nzbdir)
+    with open(nzb_path, "r") as nzb_data_fp:
+        nzb_data = nzb_data_fp.read()
+    # Remove the created NZB-file
+    os.remove(nzb_path)
+    return nzb_data
+
+
 @pytest.mark.usefixtures("start_sabnzbd_and_selenium")
 class SABnzbdBaseTest:
     def no_page_crash(self):

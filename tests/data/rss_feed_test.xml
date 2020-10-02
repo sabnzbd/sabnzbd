@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+   <channel>
+      <title>Copied from NZBIndex RSS feed - THANK YOU!</title>
+      <description>Copied from NZBIndex RSS feed - THANK YOU!</description>
+      <link>https://nzbindex.nl/</link>
+      <item>
+         <title>reftestnzb chinese chars in resulting file 2b5683434096 [03/10] - "chinese-chars.par2" yEnc  40656</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/161828561</guid>
+         <enclosure url="NZB_URL" length="60116639" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Wed, 06 Feb 2019 20:53:50 +0000</pubDate>
+         <size>60116639</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>88</total_parts>
+         <available_parts>88</available_parts>
+         <complete>1</complete>
+         <files>10</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto a1eecce5 2019-02-01 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/160588232</guid>
+         <enclosure url="NZB_URL" length="118834743" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Fri, 01 Feb 2019 10:11:02 +0000</pubDate>
+         <size>118834743</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 1000MB auto e780326c 2019-01-28 [33/40] - "mytestpost-1GB.par2" yEnc  47708</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/159737534</guid>
+         <enclosure url="NZB_URL" length="1202927128" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Mon, 28 Jan 2019 22:37:32 +0000</pubDate>
+         <size>1202927128</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>1678</total_parts>
+         <available_parts>1678</available_parts>
+         <complete>1</complete>
+         <files>40</files>
+      </item>
+      <item>
+         <title>reftestnzb 1000MB auto 7fd8cda6 2019-01-28 [01/40] - "mytestpost-1GB.part01.rar" yEnc  34603008</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/159737527</guid>
+         <enclosure url="NZB_URL" length="71092581" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Mon, 28 Jan 2019 22:23:41 +0000</pubDate>
+         <size>71092581</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>147</total_parts>
+         <available_parts>99</available_parts>
+         <complete>0</complete>
+         <files>3</files>
+      </item>
+      <item>
+         <title>reftestnzb 1000MB auto 60c9ef60 2019-01-28 [01/40] - "mytestpost-1GB.part01.rar" yEnc  34603008</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/159737533</guid>
+         <enclosure url="NZB_URL" length="60689177" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Mon, 28 Jan 2019 22:23:05 +0000</pubDate>
+         <size>60689177</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>98</total_parts>
+         <available_parts>84</available_parts>
+         <complete>0</complete>
+         <files>2</files>
+      </item>
+      <item>
+         <title>reftestnzb 1000MB auto 8c901413 2019-01-28 [33/40] - "testfile-par2-stuff.par2" yEnc  47580</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/159737531</guid>
+         <enclosure url="NZB_URL" length="111105829" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Mon, 28 Jan 2019 21:51:27 +0000</pubDate>
+         <size>111105829</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>157</total_parts>
+         <available_parts>157</available_parts>
+         <complete>1</complete>
+         <files>8</files>
+      </item>
+      <item>
+         <title>reftestnzb 1000MB auto 8c901413 2019-01-28 [01/40] - "testfile-1GB.part01.rar" yEnc  34603008</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/159737528</guid>
+         <enclosure url="NZB_URL" length="1091705517" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Mon, 28 Jan 2019 21:48:05 +0000</pubDate>
+         <size>1091705517</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>1521</total_parts>
+         <available_parts>1521</available_parts>
+         <complete>1</complete>
+         <files>32</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 05a19e3d 2019-01-15 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/156768379</guid>
+         <enclosure url="NZB_URL" length="118832821" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Tue, 15 Jan 2019 10:11:03 +0000</pubDate>
+         <size>118832821</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 896799d4 2018-12-30 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/151591056</guid>
+         <enclosure url="NZB_URL" length="118827085" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Sat, 29 Dec 2018 23:00:04 +0000</pubDate>
+         <size>118827085</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 1000MB nonauto 60d38836 2018-12-26 [102/109] - "mytestpost.par2" yEnc  64436</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/151014889</guid>
+         <enclosure url="NZB_URL" length="1175359330" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Wed, 26 Dec 2018 12:40:23 +0000</pubDate>
+         <size>1175359330</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>1655</total_parts>
+         <available_parts>1655</available_parts>
+         <complete>1</complete>
+         <files>109</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 480d78a6 2018-12-24 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/150801768</guid>
+         <enclosure url="NZB_URL" length="118835884" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Mon, 24 Dec 2018 20:25:03 +0000</pubDate>
+         <size>118835884</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 211d6830 2018-12-23 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/150630723</guid>
+         <enclosure url="NZB_URL" length="118829928" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Sun, 23 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118829928</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 0d34123b 2018-12-22 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/150451690</guid>
+         <enclosure url="NZB_URL" length="118843457" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Sat, 22 Dec 2018 20:25:03 +0000</pubDate>
+         <size>118843457</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 6bf10e7f 2018-12-21 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/150294775</guid>
+         <enclosure url="NZB_URL" length="118841640" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Fri, 21 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118841640</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 5b708b33 2018-12-20 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/150087842</guid>
+         <enclosure url="NZB_URL" length="118825994" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Thu, 20 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118825994</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto bfd71122 2018-12-19 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/149908623</guid>
+         <enclosure url="NZB_URL" length="118834202" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Wed, 19 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118834202</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 149f9fa2 2018-12-18 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/149733916</guid>
+         <enclosure url="NZB_URL" length="118840895" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Tue, 18 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118840895</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 096b27ae 2018-12-17 [01/19] - "mytestpost.part01.rar" yEnc  10485760</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/149543121</guid>
+         <enclosure url="NZB_URL" length="27889406" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Mon, 17 Dec 2018 20:25:01 +0000</pubDate>
+         <size>27889406</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>45</total_parts>
+         <available_parts>39</available_parts>
+         <complete>0</complete>
+         <files>3</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 1b8e7a3a 2018-12-15 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/149156974</guid>
+         <enclosure url="NZB_URL" length="118836902" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Sat, 15 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118836902</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 0476e713 2018-12-14 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/148946022</guid>
+         <enclosure url="NZB_URL" length="118836626" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Fri, 14 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118836626</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 042567b4 2018-12-13 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/148741846</guid>
+         <enclosure url="NZB_URL" length="118837115" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Thu, 13 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118837115</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto f1045703 2018-12-12 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/148550950</guid>
+         <enclosure url="NZB_URL" length="118838924" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Wed, 12 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118838924</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 3dce88a4 2018-12-09 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/148052768</guid>
+         <enclosure url="NZB_URL" length="118836927" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Sun, 09 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118836927</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto ad224e8d 2018-12-08 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/147882265</guid>
+         <enclosure url="NZB_URL" length="118841369" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Sat, 08 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118841369</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+      <item>
+         <title>reftestnzb 100MB auto 46e46fd3 2018-12-07 [12/19] - "mytestpost.par2" yEnc  42648</title>
+         <link>NZB_URL</link>
+         <guid>https://nzbindex.nl/collection/147702961</guid>
+         <enclosure url="NZB_URL" length="118836479" type="application/x-nzb" />
+         <author>blablamannetje &lt;blabla@example.com&gt;</author>
+         <pubDate>Fri, 07 Dec 2018 20:25:02 +0000</pubDate>
+         <size>118836479</size>
+         <groups>
+            <groups>alt.binaries.test</groups>
+         </groups>
+         <total_parts>172</total_parts>
+         <available_parts>172</available_parts>
+         <complete>1</complete>
+         <files>19</files>
+      </item>
+   </channel>
+</rss>
