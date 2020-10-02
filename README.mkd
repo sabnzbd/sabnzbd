@@ -1,5 +1,9 @@
-Release Notes - SABnzbd 3.1.0 Release Candidate 2
+Release Notes - SABnzbd 3.1.0 Release Candidate 3
 =========================================================
+
+## Changes and bugfixes since 3.1.0 Release Candidate 2
+- Jobs in post-processing could be left in the "Waiting"-status.
+- Notify users of `Deobfuscate.py` that it is now part of SABnzbd.
 
 ## Changes and bugfixes since 3.1.0 Release Candidate 1
 - Failing RSS-feeds would result in tracebacks, they now show a warning.
