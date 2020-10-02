@@ -99,6 +99,15 @@ class TestExtractPot:
         assert (cur_time - os.path.getmtime("po/main/SABnzbd.pot")) < 30
         assert (cur_time - os.path.getmtime("po/email/SABemail.pot")) < 30
 
+        # Reset the translation updates
+        try:
+            lang_command = "git checkout @ -- %s/../po/main/SABnzbd.pot" % SAB_BASE_DIR
+            subprocess.Popen(lang_command.split()).communicate(timeout=30)
+            lang_command = "git checkout @ -- %s/../po/email/SABemail.pot" % SAB_BASE_DIR
+            subprocess.Popen(lang_command.split()).communicate(timeout=30)
+        except:
+            pass
+
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Skipping on Windows")
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Fails for now due to PyObjC problem")
