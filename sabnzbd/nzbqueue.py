@@ -316,47 +316,45 @@ class NzbQueue:
             self.end_job(nzo)
             return nzo.nzo_id
 
-        # Reset try_lists
+        # Reset try_lists, markers and evaluate the scheduling settings
         nzo.reset_try_list()
+        nzo.deleted = False
+        priority = nzo.priority
+        if sabnzbd.Scheduler.analyse(False, priority):
+            nzo.status = Status.PAUSED
 
-        if nzo.nzo_id:
-            nzo.deleted = False
-            priority = nzo.priority
-            if sabnzbd.Scheduler.analyse(False, priority):
-                nzo.status = Status.PAUSED
-
-            self.__nzo_table[nzo.nzo_id] = nzo
-            if priority > HIGH_PRIORITY:
-                # Top and repair priority items are added to the top of the queue
-                self.__nzo_list.insert(0, nzo)
-            elif priority == LOW_PRIORITY:
-                self.__nzo_list.append(nzo)
-            else:
-                # for high priority we need to add the item at the bottom
-                # of any other high priority items above the normal priority
-                # for normal priority we need to add the item at the bottom
-                # of the normal priority items above the low priority
-                if self.__nzo_list:
-                    pos = 0
-                    added = False
-                    for position in self.__nzo_list:
-                        if position.priority < priority:
-                            self.__nzo_list.insert(pos, nzo)
-                            added = True
-                            break
-                        pos += 1
-                    if not added:
-                        # if there are no other items classed as a lower priority
-                        # then it will be added to the bottom of the queue
-                        self.__nzo_list.append(nzo)
-                else:
-                    # if the queue is empty then simple append the item to the bottom
+        self.__nzo_table[nzo.nzo_id] = nzo
+        if priority > HIGH_PRIORITY:
+            # Top and repair priority items are added to the top of the queue
+            self.__nzo_list.insert(0, nzo)
+        elif priority == LOW_PRIORITY:
+            self.__nzo_list.append(nzo)
+        else:
+            # for high priority we need to add the item at the bottom
+            # of any other high priority items above the normal priority
+            # for normal priority we need to add the item at the bottom
+            # of the normal priority items above the low priority
+            if self.__nzo_list:
+                pos = 0
+                added = False
+                for position in self.__nzo_list:
+                    if position.priority < priority:
+                        self.__nzo_list.insert(pos, nzo)
+                        added = True
+                        break
+                    pos += 1
+                if not added:
+                    # if there are no other items classed as a lower priority
+                    # then it will be added to the bottom of the queue
                     self.__nzo_list.append(nzo)
-            if save:
-                self.save(nzo)
+            else:
+                # if the queue is empty then simple append the item to the bottom
+                self.__nzo_list.append(nzo)
+        if save:
+            self.save(nzo)
 
-            if not (quiet or nzo.status == Status.FETCHING):
-                notifier.send_notification(T("NZB added to queue"), nzo.filename, "download", nzo.cat)
+        if not (quiet or nzo.status == Status.FETCHING):
+            notifier.send_notification(T("NZB added to queue"), nzo.filename, "download", nzo.cat)
 
         if not quiet and cfg.auto_sort():
             try:

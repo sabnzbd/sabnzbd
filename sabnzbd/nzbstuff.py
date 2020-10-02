@@ -907,7 +907,6 @@ class NzbObject(TryList):
         # In case pre-queue script or duplicate check want to move
         # to history we first need an nzo_id by entering the NzbQueue
         if accept == 2:
-            self.deleted = True
             sabnzbd.NzbQueue.add(self, quiet=True)
             sabnzbd.NzbQueue.end_job(self)
             # Raise error, so it's not added
