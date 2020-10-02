@@ -4,12 +4,13 @@
 # 
 # Translators:
 # Pavel C <quoing_transifex@mess.cz>, 2020
+# Safihre <safihre@sabnzbd.org>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Czech (https://www.transifex.com/sabnzbd/teams/111101/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -267,7 +268,7 @@ msgstr "Zrušený úkol \"%s\" kvůli hodnocení (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
-msgstr "Zrušeno, zachyceno hodnotícím filtrem"
+msgstr "Zrušeno, zachyceno hodnotícím filtrem (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -1167,7 +1168,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Nesprávný NZB soubor, přeskakuji (důvod=%s,řádek=%s)"
+msgstr "Nesprávný NZB soubor %s, přeskakuji (důvod=%s, řádek=%s)"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
