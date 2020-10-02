@@ -2680,7 +2680,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Local IPv4 address"
-msgstr "Lokální IPv4 adresa"
+msgstr "Místní IPv4 adresa"
 
 #: sabnzbd/skintext.py
 msgid "Public IPv4 address"
@@ -2692,7 +2692,7 @@ msgstr "IPv6 adresa"
 
 #: sabnzbd/skintext.py
 msgid "Nameserver / DNS Lookup"
-msgstr ""
+msgstr "DNS server / DNS dotazy"
 
 #: sabnzbd/skintext.py
 msgid "CPU Model"
@@ -2701,15 +2701,15 @@ msgstr ""
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"
-msgstr ""
+msgstr "Výkon systému (Pystone)"
 
 #: sabnzbd/skintext.py
 msgid "Download folder speed"
-msgstr ""
+msgstr "Rychlost složky pro download"
 
 #: sabnzbd/skintext.py
 msgid "Complete folder speed"
-msgstr ""
+msgstr "Rychlost složko pro dokončené"
 
 #: sabnzbd/skintext.py
 msgid "Writing speed"
@@ -2721,7 +2721,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Internet Bandwidth"
-msgstr ""
+msgstr "Rychlost internetu"
 
 #: sabnzbd/skintext.py
 msgid "Click on Repeat test button below to determine"
@@ -2733,7 +2733,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Test download"
-msgstr ""
+msgstr "Otestovat rychlost stahování"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2748,7 +2748,7 @@ msgstr ""
 #. Main config page, how much cache is in use
 #: sabnzbd/skintext.py
 msgid "Used cache"
-msgstr ""
+msgstr "Využití cache"
 
 #: sabnzbd/skintext.py
 msgid ""
