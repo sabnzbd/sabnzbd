@@ -322,7 +322,7 @@ class URLGrabber(Thread):
         nzo.cat, _, nzo.script, _ = misc.cat_to_opts(nzo.cat, script=nzo.script)
 
         # Add to history and run script if desired
-        sabnzbd.NzbQueue.remove(nzo.nzo_id, add_to_history=False)
+        sabnzbd.NzbQueue.remove(nzo.nzo_id)
         sabnzbd.PostProcessor.process(nzo)
 
 

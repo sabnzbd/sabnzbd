@@ -245,6 +245,10 @@ class PostProcessor(Thread):
                 time.sleep(5)
                 continue
 
+            # Set NzbObject object to None so references from this thread do not keep the
+            # object alive until the next job is added to post-processing (see #1472)
+            nzo = None
+
             # Something in the fast queue?
             try:
                 # Every few fast-jobs we should check allow a

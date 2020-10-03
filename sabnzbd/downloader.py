@@ -601,9 +601,6 @@ class Downloader(Thread):
                 article = nw.article
                 server = nw.server
 
-                if article:
-                    nzo = article.nzf.nzo
-
                 try:
                     bytes_received, done, skip = nw.recv_chunk()
                 except:
@@ -625,7 +622,7 @@ class Downloader(Thread):
                                 time.sleep(0.05)
                                 sabnzbd.BPSMeter.update()
                     sabnzbd.BPSMeter.update(server.id, bytes_received)
-                    nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, bytes_received)
+                    article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, bytes_received)
 
                 if not done and nw.status_code != 222:
                     if not nw.connected or nw.status_code == 480:
@@ -747,7 +744,7 @@ class Downloader(Thread):
                         nw.clear_data()
 
                     elif nw.status_code == 500:
-                        if nzo.precheck:
+                        if article.nzf.nzo.precheck:
                             # Assume "STAT" command is not supported
                             server.have_stat = False
                             logging.debug("Server %s does not support STAT", server.host)
