@@ -23,7 +23,7 @@ import logging
 import hashlib
 import queue
 from threading import Thread
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -85,7 +85,7 @@ class Decoder:
     def stop(self):
         # Put multiple to stop all decoders
         for _ in self.decoder_workers:
-            self.decoder_queue.put(None)
+            self.decoder_queue.put((None, None))
 
     def join(self):
         # Wait for all decoders to finish
@@ -112,22 +112,18 @@ class DecoderWorker(Thread):
         Thread.__init__(self)
         logging.debug("Initializing decoder %s", self.name)
 
-        self.decoder_queue: queue.Queue[Tuple[Article, List[bytes]]] = decoder_queue
-
-    def stop(self):
-        # Put multiple to stop all decoders
-        self.decoder_queue.put(None)
-        self.decoder_queue.put(None)
+        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[List[bytes]]]] = decoder_queue
 
     def run(self):
         while 1:
-            # Let's get to work!
-            art_tup = self.decoder_queue.get()
-            if not art_tup:
+            # Set Article and NzbObject objects to None so references from this
+            # thread do not keep the parent objects alive (see #1472)
+            raw_data = article = nzo = None
+            article, raw_data = self.decoder_queue.get()
+            if not article:
                 logging.info("Shutting down decoder %s", self.name)
                 break
 
-            article, raw_data = art_tup
             nzo = article.nzf.nzo
             art_id = article.article
 

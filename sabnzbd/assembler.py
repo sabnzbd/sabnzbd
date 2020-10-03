@@ -26,7 +26,7 @@ import re
 from threading import Thread
 from time import sleep
 import hashlib
-from typing import Tuple
+from typing import Tuple, Optional
 
 import sabnzbd
 from sabnzbd.misc import get_all_passwords
@@ -42,25 +42,26 @@ import sabnzbd.utils.rarfile as rarfile
 class Assembler(Thread):
     def __init__(self):
         Thread.__init__(self)
-        self.queue: queue.Queue[Tuple[NzbObject, NzbFile, bool]] = queue.Queue()
+        self.queue: queue.Queue[Tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]] = queue.Queue()
 
     def stop(self):
-        self.process(None)
+        self.queue.put((None, None, None))
 
-    def process(self, job):
-        self.queue.put(job)
+    def process(self, nzo: NzbObject, nzf: Optional[NzbFile] = None, file_done: Optional[bool] = None):
+        self.queue.put((nzo, nzf, file_done))
 
     def queue_full(self):
         return self.queue.qsize() >= MAX_ASSEMBLER_QUEUE
 
     def run(self):
         while 1:
-            job = self.queue.get()
-            if not job:
+            # Set NzbObject and NzbFile objects to None so references
+            # from this thread do not keep the objects alive (see #1472)
+            nzo = nzf = None
+            nzo, nzf, file_done = self.queue.get()
+            if not nzo:
                 logging.info("Shutting down")
                 break
-
-            nzo, nzf, file_done = job
 
             if nzf:
                 # Check if enough disk space is free after each file is done
@@ -174,7 +175,7 @@ class Assembler(Thread):
                         sabnzbd.NzbQueue.end_job(nzo)
 
             else:
-                sabnzbd.NzbQueue.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
+                sabnzbd.NzbQueue.remove(nzo.nzo_id, cleanup=False)
                 sabnzbd.PostProcessor.process(nzo)
 
     @staticmethod

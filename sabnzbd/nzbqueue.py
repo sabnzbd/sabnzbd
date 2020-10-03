@@ -365,7 +365,7 @@ class NzbQueue:
         return nzo.nzo_id
 
     @NzbQueueLocker
-    def remove(self, nzo_id: str, add_to_history=True, cleanup=True, delete_all_data=True):
+    def remove(self, nzo_id: str, cleanup=True, delete_all_data=True):
         """Remove NZO from queue.
         It can be added to history directly.
         Or, we do some clean-up, sometimes leaving some data.
@@ -380,13 +380,7 @@ class NzbQueue:
                 nzo.status = Status.DELETED
             self.__nzo_list.remove(nzo)
 
-            if add_to_history:
-                with database.HistoryDB() as history_db:
-                    # Add the nzo to the database. Only the path, script and time taken is passed
-                    # Other information is obtained from the nzo
-                    history_db.add_history_db(nzo)
-                sabnzbd.history_updated()
-            elif cleanup:
+            if cleanup:
                 nzo.purge_data(delete_all_data=delete_all_data)
             self.save(False)
             return nzo_id
@@ -396,7 +390,7 @@ class NzbQueue:
     def remove_multiple(self, nzo_ids: List[str], delete_all_data=True) -> List[str]:
         removed = []
         for nzo_id in nzo_ids:
-            if self.remove(nzo_id, add_to_history=False, delete_all_data=delete_all_data):
+            if self.remove(nzo_id, delete_all_data=delete_all_data):
                 removed.append(nzo_id)
 
         # Any files left? Otherwise let's disconnect
@@ -430,7 +424,7 @@ class NzbQueue:
                     if nzo.finished_files:
                         self.end_job(nzo)
                     else:
-                        self.remove(nzo_id, add_to_history=False, keep_basic=False)
+                        self.remove(nzo_id)
                 elif force_delete:
                     # Force-remove all trace and update counters
                     nzo.bytes -= nzf.bytes
@@ -743,7 +737,7 @@ class NzbQueue:
                     # Only start decoding if we have a filename and type
                     # The type is only set if sabyenc could decode the article
                     if nzf.filename and nzf.type:
-                        sabnzbd.Assembler.process((nzo, nzf, file_done))
+                        sabnzbd.Assembler.process(nzo, nzf, file_done)
                     elif nzf.filename.lower().endswith(".par2"):
                         # Broken par2 file, try to get another one
                         nzo.promote_par2(nzf)
@@ -781,7 +775,7 @@ class NzbQueue:
                 else:
                     # Not enough data, let postprocessor show it as failed
                     pass
-            sabnzbd.Assembler.process((nzo, None, None))
+            sabnzbd.Assembler.process(nzo)
 
     def actives(self, grabs=True) -> int:
         """Return amount of non-paused jobs, optionally with 'grabbing' items
