@@ -90,7 +90,7 @@ class URLGrabber(Thread):
         self.shutdown = False
         while not self.shutdown:
             # Set NzbObject object to None so reference from this thread
-            # does not keep the object alive in the future (see #1472)
+            # does not keep the object alive in the future (see #1628)
             future_nzo = None
             url, future_nzo = self.queue.get()
 

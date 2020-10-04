@@ -56,7 +56,7 @@ class Assembler(Thread):
     def run(self):
         while 1:
             # Set NzbObject and NzbFile objects to None so references
-            # from this thread do not keep the objects alive (see #1472)
+            # from this thread do not keep the objects alive (see #1628)
             nzo = nzf = None
             nzo, nzf, file_done = self.queue.get()
             if not nzo:
