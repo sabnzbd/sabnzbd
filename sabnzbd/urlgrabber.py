@@ -27,10 +27,10 @@ import queue
 import urllib.request
 import urllib.error
 import urllib.parse
-from http.client import IncompleteRead
+from http.client import IncompleteRead, HTTPResponse
 from threading import Thread
 import base64
-from typing import Tuple
+from typing import Tuple, Optional
 
 import sabnzbd
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
@@ -62,13 +62,12 @@ _RARTING_FIELDS = (
 class URLGrabber(Thread):
     def __init__(self):
         Thread.__init__(self)
-        self.queue: queue.Queue[Tuple[str, NzbObject]] = queue.Queue()
-        for tup in sabnzbd.NzbQueue.get_urls():
-            url, nzo = tup
-            self.queue.put((url, nzo))
+        self.queue: queue.Queue[Tuple[Optional[str], Optional[NzbObject]]] = queue.Queue()
+        for url_nzo_tup in sabnzbd.NzbQueue.get_urls():
+            self.queue.put(url_nzo_tup)
         self.shutdown = False
 
-    def add(self, url, future_nzo: NzbObject, when=None):
+    def add(self, url: str, future_nzo: NzbObject, when=None):
         """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
         if future_nzo and when:
             # Always increase counter
@@ -85,12 +84,15 @@ class URLGrabber(Thread):
 
     def stop(self):
         self.shutdown = True
-        self.add(None, None)
+        self.queue.put((None, None))
 
     def run(self):
         self.shutdown = False
         while not self.shutdown:
-            (url, future_nzo) = self.queue.get()
+            # Set NzbObject object to None so reference from this thread
+            # does not keep the object alive in the future (see #1472)
+            future_nzo = None
+            url, future_nzo = self.queue.get()
 
             if not url:
                 # stop signal, go test self.shutdown
@@ -293,7 +295,7 @@ class URLGrabber(Thread):
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
     @staticmethod
-    def fail_to_history(nzo: NzbObject, url, msg="", content=False):
+    def fail_to_history(nzo: NzbObject, url: str, msg="", content=False):
         """Create History entry for failed URL Fetch
         msg: message to be logged
         content: report in history that cause is a bad NZB file
@@ -326,7 +328,7 @@ class URLGrabber(Thread):
         sabnzbd.PostProcessor.process(nzo)
 
 
-def _build_request(url):
+def _build_request(url: str) -> HTTPResponse:
     # Detect basic auth
     # Adapted from python-feedparser
     user_passwd = None
@@ -350,7 +352,7 @@ def _build_request(url):
     return urllib.request.urlopen(req)
 
 
-def _analyse(fetch_request, future_nzo):
+def _analyse(fetch_request: HTTPResponse, future_nzo: NzbObject):
     """Analyze response of indexer
     returns fetch_request|None, error-message|None, retry, wait-seconds, data
     """
