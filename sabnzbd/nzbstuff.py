@@ -912,26 +912,6 @@ class NzbObject(TryList):
             # Raise error, so it's not added
             raise TypeError
 
-    def clear_object_references(self):
-        """Clear all object references to child objects so we
-        all be removed by the garbage collector (see #1472)"""
-        # Remove (circular) references from NzbFile objects
-        # Sub-lists need to be cleared individually
-        for setname in self.extrapars:
-            self.extrapars[setname].clear()
-        self.extrapars.clear()
-        self.partable.clear()
-        self.files.clear()
-        self.files_table.clear()
-        self.finished_files.clear()
-
-        # Clear articles, as they have references to NzbFile objects
-        self.saved_articles.clear()
-
-        # Need to clear the DirectUnpacker-NzbObject reference. If we don't,
-        # the NzbObject is kept in memory due to a reference from the stopped Thread.
-        self.direct_unpacker = None
-
     def update_download_stats(self, bps, serverid, bytes_received):
         if bps:
             self.avg_bps_total += bps / 1024
@@ -1815,7 +1795,6 @@ class NzbObject(TryList):
             sabnzbd.remove_data(self.nzo_id, self.admin_path)
         elif delete_all_data:
             remove_all(self.download_path, recursive=True)
-            self.clear_object_references()
         else:
             # We remove any saved articles and save the renames file
             remove_all(self.download_path, "SABnzbd_nz?_*", keep_folder=True)

@@ -66,7 +66,10 @@ class TestDownloadFlow(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element_by_css_selector, ".btn.btn-success").click()
         self.no_page_crash()
 
-    def add_test_nzb(self, nzb_dir, file_output):
+    def download_nzb(self, nzb_dir, file_output):
+        # Verify if the server was setup before we start
+        self.is_server_configured()
+
         # Create NZB
         nzb_path = create_nzb(nzb_dir)
 
@@ -102,31 +105,29 @@ class TestDownloadFlow(SABnzbdBaseTest):
         file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
         assert os.path.exists(file_to_find)
 
+        # Verify if the garbage collection works (see #1472)
+        gc_results = get_api_result("gc_stats")["value"]
+        if gc_results:
+            pytest.fail(f"Objects were left in memory after the job finished! {gc_results}")
+
     def test_download_basic_rar5(self):
-        self.is_server_configured()
-        self.add_test_nzb("basic_rar5", "testfile.bin")
+        self.download_nzb("basic_rar5", "testfile.bin")
 
     def test_download_zip(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_zip", "testfile.bin")
+        self.download_nzb("test_zip", "testfile.bin")
 
     def test_download_7zip(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_7zip", "testfile.bin")
+        self.download_nzb("test_7zip", "testfile.bin")
 
     def test_download_passworded(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_passworded{{secret}}", "testfile.bin")
+        self.download_nzb("test_passworded{{secret}}", "testfile.bin")
 
     def test_download_unicode_made_on_windows(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_win_unicode", "frènch_german_demö.bin")
+        self.download_nzb("test_win_unicode", "frènch_german_demö.bin")
 
     def test_download_fully_obfuscated(self):
         # This is also covered by a unit test but added to test full flow
-        self.is_server_configured()
-        self.add_test_nzb("obfuscated_single_rar_set", "100k.bin")
+        self.download_nzb("obfuscated_single_rar_set", "100k.bin")
 
     def test_download_unicode_rar(self):
-        self.is_server_configured()
-        self.add_test_nzb("unicode_rar", "我喜欢编程.bin")
+        self.download_nzb("unicode_rar", "我喜欢编程.bin")
