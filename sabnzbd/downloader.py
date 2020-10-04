@@ -161,7 +161,7 @@ class Server:
         self.idle_threads = []
 
     def __repr__(self):
-        return "<%s:%s>" % (self.host, self.port)
+        return "<Server: %s:%s>" % (self.host, self.port)
 
 
 class Downloader(Thread):
