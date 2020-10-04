@@ -261,6 +261,9 @@ class NNTP:
             logging.info(msg)
             self.nw.server.warning = msg
 
+    def __repr__(self):
+        return "<NNTP: %s:%s>" % (self.host, self.port)
+
 
 class NewsWrapper:
     # Pre-define attributes to save memory
@@ -482,3 +485,11 @@ class NewsWrapper:
             except:
                 pass
         del self.nntp
+
+    def __repr__(self):
+        return "<NewsWrapper: server=%s:%s, thread=%s, connected=%s>" % (
+            self.server.host,
+            self.server.port,
+            self.thrdnum,
+            self.connected,
+        )

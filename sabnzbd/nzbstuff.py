@@ -1662,7 +1662,7 @@ class NzbObject(TryList):
                         self.files[pos + 1] = nzf
                         self.files[pos] = tmp_nzf
 
-    def verify_nzf_filename(self, nzf: NzbFile, yenc_filename=None):
+    def verify_nzf_filename(self, nzf: NzbFile, yenc_filename: Optional[str] = None):
         """ Get filename from par2-info or from yenc """
         # Already done?
         if nzf.filename_checked:
