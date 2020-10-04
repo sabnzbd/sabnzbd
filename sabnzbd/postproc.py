@@ -246,7 +246,7 @@ class PostProcessor(Thread):
                 continue
 
             # Set NzbObject object to None so references from this thread do not keep the
-            # object alive until the next job is added to post-processing (see #1472)
+            # object alive until the next job is added to post-processing (see #1628)
             nzo = None
 
             # Something in the fast queue?

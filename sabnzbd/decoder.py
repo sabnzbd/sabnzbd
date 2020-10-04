@@ -117,7 +117,7 @@ class DecoderWorker(Thread):
     def run(self):
         while 1:
             # Set Article and NzbObject objects to None so references from this
-            # thread do not keep the parent objects alive (see #1472)
+            # thread do not keep the parent objects alive (see #1628)
             raw_data = article = nzo = None
             article, raw_data = self.decoder_queue.get()
             if not article:

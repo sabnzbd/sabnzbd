@@ -105,7 +105,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
         file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
         assert os.path.exists(file_to_find)
 
-        # Verify if the garbage collection works (see #1472)
+        # Verify if the garbage collection works (see #1628)
         gc_results = get_api_result("gc_stats")["value"]
         if gc_results:
             pytest.fail(f"Objects were left in memory after the job finished! {gc_results}")
