@@ -22,6 +22,7 @@ sabnzbd.api - api
 import os
 import logging
 import re
+import gc
 import datetime
 import time
 import json
@@ -902,6 +903,14 @@ def _api_server_stats(name, output, kwargs):
     return report(output, keyword="", data=stats)
 
 
+def _api_gc_stats(name, output, kwargs):
+    """Function only intended for internal testing of the memory handling"""
+    # Collect before we check
+    gc.collect()
+    # We cannot create any lists/dicts, as they would create a reference
+    return report(output, data=[str(obj) for obj in gc.get_objects() if isinstance(obj, sabnzbd.nzbstuff.TryList)])
+
+
 ##############################################################################
 _api_table = {
     "server_stats": (_api_server_stats, 2),
@@ -938,6 +947,7 @@ _api_table = {
     "restart_repair": (_api_restart_repair, 2),
     "disconnect": (_api_disconnect, 2),
     "osx_icon": (_api_osx_icon, 3),
+    "gc_stats": (_api_gc_stats, 3),
     "rescan": (_api_rescan, 2),
     "eval_sort": (_api_eval_sort, 2),
     "watched_now": (_api_watched_now, 2),
