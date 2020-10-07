@@ -101,9 +101,8 @@ class TestDownloadFlow(SABnzbdBaseTest):
         else:
             pytest.fail("Download did not complete")
 
-        # Check if the expected file exists on disk
-        file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
-        assert os.path.exists(file_to_find)
+        # Check if only the expected file exists on disk
+        assert [file_output] == os.listdir(os.path.join(SAB_COMPLETE_DIR, test_job_name))
 
         # Verify if the garbage collection works (see #1628)
         gc_results = get_api_result("gc_stats")["value"]
