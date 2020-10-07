@@ -1129,8 +1129,17 @@ def main():
         if no_file_log:
             logging.info("Console logging only")
 
+    # Start SABnzbd
     logging.info("--------------------------------")
-    logging.info("%s-%s (rev=%s)", sabnzbd.MY_NAME, sabnzbd.__version__, sabnzbd.__baseline__)
+    logging.info("%s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
+
+    # See if we can get version from git when running an unknown revision
+    if sabnzbd.__baseline__ == "unknown":
+        try:
+            sabnzbd.__baseline__ = sabnzbd.misc.run_command(["git", "rev-parse", "--short", "HEAD"]).strip()
+        except:
+            pass
+    logging.info("Commit: %s", sabnzbd.__baseline__)
     logging.info("Full executable path = %s", sabnzbd.MY_FULLNAME)
     if sabnzbd.WIN32:
         suffix = ""
