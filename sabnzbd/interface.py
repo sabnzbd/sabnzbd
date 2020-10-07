@@ -567,13 +567,12 @@ class Wizard:
 
 def get_access_info():
     """ Build up a list of url's that sabnzbd can be accessed from """
-    # Access_url is used to provide the user a link to sabnzbd depending on the host
-    access_uri = "localhost"
+    # Access_url is used to provide the user a link to SABnzbd depending on the host
     cherryhost = cfg.cherryhost()
+    host = socket.gethostname().lower()
+    socks = [host]
 
     if cherryhost == "0.0.0.0":
-        host = socket.gethostname()
-        socks = [host]
         # Grab a list of all ips for the hostname
         try:
             addresses = socket.getaddrinfo(host, None)
@@ -584,17 +583,8 @@ def get_access_info():
             # Filter out ipv6 addresses (should not be allowed)
             if ":" not in address and address not in socks:
                 socks.append(address)
-        if "host" in cherrypy.request.headers:
-            host = cherrypy.request.headers["host"]
-            host = host.rsplit(":")[0]
-            access_uri = host
-            socks.insert(0, host)
-        else:
-            socks.insert(0, "localhost")
-
+        socks.insert(0, "localhost")
     elif cherryhost == "::":
-        host = socket.gethostname()
-        socks = [host]
         # Grab a list of all ips for the hostname
         addresses = socket.getaddrinfo(host, None)
         for addr in addresses:
@@ -604,22 +594,14 @@ def get_access_info():
                 address = "[%s]" % address
                 if address not in socks:
                     socks.append(address)
-        if "host" in cherrypy.request.headers:
-            host = cherrypy.request.headers["host"]
-            host = host.rsplit(":")[0]
-            access_uri = host
-            socks.insert(0, host)
-        else:
-            socks.insert(0, "localhost")
-
-    elif not cherryhost:
-        socks = [socket.gethostname()]
-        access_uri = socket.gethostname()
-    else:
+        socks.insert(0, "localhost")
+    elif cherryhost:
         socks = [cherryhost]
-        access_uri = cherryhost
 
-    urls = []
+    # Add the current requested URL as the base
+    access_url = urllib.parse.urljoin(cherrypy.request.base, cfg.url_base())
+
+    urls = [access_url]
     for sock in socks:
         if sock:
             if cfg.enable_https() and cfg.https_port():
@@ -628,17 +610,10 @@ def get_access_info():
                 url = "https://%s:%s%s" % (sock, cfg.cherryport(), cfg.url_base())
             else:
                 url = "http://%s:%s%s" % (sock, cfg.cherryport(), cfg.url_base())
-
             urls.append(url)
 
-    if cfg.enable_https() and cfg.https_port():
-        access_url = "https://%s:%s%s" % (sock, cfg.https_port(), cfg.url_base())
-    elif cfg.enable_https():
-        access_url = "https://%s:%s%s" % (access_uri, cfg.cherryport(), cfg.url_base())
-    else:
-        access_url = "http://%s:%s%s" % (access_uri, cfg.cherryport(), cfg.url_base())
-
-    return access_url, urls
+    # Return a unique list
+    return access_url, set(urls)
 
 
 ##############################################################################
