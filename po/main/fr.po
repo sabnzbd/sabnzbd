@@ -3467,6 +3467,9 @@ msgid ""
 "turned off, all jobs will be marked as Completed even if they are "
 "incomplete."
 msgstr ""
+"Décompresser et lancer les scripts uniquement sur les tâches qui ont passé "
+"l'étape de vérification. Si désactivé, toutes les tâches seront marquées "
+"comme Terminées même si elles sont incomplètes."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
