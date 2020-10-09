@@ -3366,10 +3366,11 @@ msgid "Post-Process Only Verified Jobs"
 msgstr "Przetwarzanie końcowe tylko dla zweryfikowanych zadań"
 
 #: sabnzbd/skintext.py
-msgid "Only perform post-processing on jobs that passed all PAR2 checks."
+msgid ""
+"Only unpack and run scripts on jobs that passed the verification stage. If "
+"turned off, all jobs will be marked as Completed even if they are "
+"incomplete."
 msgstr ""
-"Uruchom przetwarzanie końcowe tylko dla zadań, które zostały sprawdzone przy"
-" użyciu PAR2"
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"

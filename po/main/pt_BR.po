@@ -3371,10 +3371,11 @@ msgid "Post-Process Only Verified Jobs"
 msgstr "Pós-processar apenas os trabalhos verificados"
 
 #: sabnzbd/skintext.py
-msgid "Only perform post-processing on jobs that passed all PAR2 checks."
+msgid ""
+"Only unpack and run scripts on jobs that passed the verification stage. If "
+"turned off, all jobs will be marked as Completed even if they are "
+"incomplete."
 msgstr ""
-"Realizar pós-processamento apenas em trabalhos que passaram todas as "
-"verificações PAR2."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
