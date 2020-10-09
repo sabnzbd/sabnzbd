@@ -1,3 +1,6 @@
+image:
+  - Visual Studio 2019
+
 environment:
   # We only test the latest Python version
   matrix:
