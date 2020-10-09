@@ -97,6 +97,7 @@ class DirectUnpacker(threading.Thread):
         if (
             not cfg.direct_unpack()
             or self.killed
+            or self.nzo.first_articles
             or not self.nzo.unpack
             or self.nzo.bad_articles
             or sabnzbd.newsunpack.RAR_PROBLEM
@@ -129,7 +130,7 @@ class DirectUnpacker(threading.Thread):
         if not cfg.direct_unpack_tested():
             test_disk_performance()
 
-        # Stop if something is wrong
+        # Stop if something is wrong or we shouldn't start yet
         if not self.check_requirements():
             return
 
