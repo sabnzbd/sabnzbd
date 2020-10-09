@@ -459,7 +459,9 @@ SKIN_TEXT = {
     "opt-top_only": TT("Only Get Articles for Top of Queue"),
     "explain-top_only": TT("Enable for less memory usage. Disable to prevent slow jobs from blocking the queue."),
     "opt-safe_postproc": TT("Post-Process Only Verified Jobs"),
-    "explain-safe_postproc": TT("Only perform post-processing on jobs that passed all PAR2 checks."),
+    "explain-safe_postproc": TT(
+        "Only unpack and run scripts on jobs that passed the verification stage. If turned off, all jobs will be marked as Completed even if they are incomplete."
+    ),
     "opt-pause_on_pwrar": TT("Action when encrypted RAR is downloaded"),
     "explain-pause_on_pwrar": TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
     "opt-no_dupes": TT("Detect Duplicate Downloads"),
