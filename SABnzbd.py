@@ -67,6 +67,7 @@ from sabnzbd.misc import (
     get_serv_parms,
     get_from_url,
     upload_file_to_sabnzbd,
+    probablyipv4,
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
@@ -76,7 +77,6 @@ import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 from sabnzbd.getipaddress import localipv4
-from sabnzbd.misc import probablyipv4
 
 try:
     import win32api
