@@ -67,6 +67,7 @@ from sabnzbd.misc import (
     get_serv_parms,
     get_from_url,
     upload_file_to_sabnzbd,
+    probablyipv4,
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
@@ -75,6 +76,7 @@ import sabnzbd.cfg
 import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
+from sabnzbd.getipaddress import localipv4
 
 try:
     import win32api
@@ -1476,11 +1478,22 @@ def main():
         check_latest_version()
     autorestarted = False
 
-    # ZeroConfig/Bonjour needs a ip. Lets try to find it.
-    try:
-        z_host = socket.gethostbyname(socket.gethostname())
-    except socket.gaierror:
+    # ZeroConfig/Bonjour needs an ip. Lets try to find it.
+    z_host = localipv4()  # IPv4 address of the LAN interface. This is the normal use case
+    if not z_host:
+        # None, so no network / default route, so let's set to ...
+        z_host = "127.0.0.1"
+    if probablyipv4(cherryhost) and not cherryhost in [
+        "localhost",
+        "127.0.0.1",
+        "::1",
+        "0.0.0.0",
+        "",
+        "::",
+    ]:
+        # a hard-configured cherryhost other than the usual, so let's take that (good or wrong)
         z_host = cherryhost
+    logging.debug("bonjour/zeroconf: Using ", z_host)
     sabnzbd.zconfig.set_bonjour(z_host, cherryport)
 
     # Have to keep this running, otherwise logging will terminate
