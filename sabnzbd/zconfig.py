@@ -68,7 +68,7 @@ def set_bonjour(host=None, port=None):
     global _HOST_PORT, _BONJOUR_OBJECT
 
     if not _HAVE_BONJOUR or not cfg.enable_bonjour():
-        logging.info("No Bonjour/ZeroConfig support installed")
+        logging.info("No bonjour/zeroconf support installed")
         return
 
     if host is None and port is None:
@@ -81,7 +81,7 @@ def set_bonjour(host=None, port=None):
     domain = None
 
     if match_str(host, ("localhost", "127.", "::1")):
-        logging.info('Bonjour/ZeroConfig does not support "localhost"')
+        logging.info("bonjour/zeroconf does not support 'localhost'")
         # All implementations fail to implement "localhost" properly
         # A false address is published even when scope==kDNSServiceInterfaceIndexLocalOnly
         return

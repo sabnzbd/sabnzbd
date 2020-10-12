@@ -76,7 +76,7 @@ import sabnzbd.cfg
 import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
-from sabnzbd.getipaddress import localipv4
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 
 try:
     import win32api
@@ -1195,9 +1195,6 @@ def main():
         ctx = ssl.create_default_context()
         logging.debug("Available certificates: %s", repr(ctx.cert_store_stats()))
 
-        # Show IPv4/IPv6 address
-        from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
-
         mylocalipv4 = localipv4()
         if mylocalipv4:
             logging.debug("My local IPv4 address = %s", mylocalipv4)
@@ -1478,22 +1475,21 @@ def main():
         check_latest_version()
     autorestarted = False
 
-    # ZeroConfig/Bonjour needs an ip. Lets try to find it.
+    # bonjour/zeroconf needs an ip. Lets try to find it.
     z_host = localipv4()  # IPv4 address of the LAN interface. This is the normal use case
     if not z_host:
         # None, so no network / default route, so let's set to ...
         z_host = "127.0.0.1"
-    if probablyipv4(cherryhost) and not cherryhost in [
+    elif probablyipv4(cherryhost) and cherryhost not in (
         "localhost",
         "127.0.0.1",
         "::1",
         "0.0.0.0",
-        "",
         "::",
-    ]:
+    ):
         # a hard-configured cherryhost other than the usual, so let's take that (good or wrong)
         z_host = cherryhost
-    logging.debug("bonjour/zeroconf: Using ", z_host)
+    logging.debug("bonjour/zeroconf using host: %s", z_host)
     sabnzbd.zconfig.set_bonjour(z_host, cherryport)
 
     # Have to keep this running, otherwise logging will terminate
