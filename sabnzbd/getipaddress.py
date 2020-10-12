@@ -68,7 +68,7 @@ def localipv4():
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s_ipv4:
             # Option: use 100.64.1.1 (IANA-Reserved IPv4 Prefix for Shared Address Space)
-            s_ipv4.connect(("1.2.3.4", 80))
+            s_ipv4.connect(("10.255.255.255", 80))
             ipv4 = s_ipv4.getsockname()[0]
     except socket.error:
         ipv4 = None
