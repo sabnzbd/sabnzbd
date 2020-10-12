@@ -1479,11 +1479,18 @@ def main():
     autorestarted = False
 
     # ZeroConfig/Bonjour needs an ip. Lets try to find it.
-    z_host = localipv4() # IPv4 address of the LAN interface. This is the normal use case
+    z_host = localipv4()  # IPv4 address of the LAN interface. This is the normal use case
     if not z_host:
-            # None, so no network / default route, so let's set to ...
-            z_host = '127.0.0.1'
-    if probablyipv4(cherryhost) and not cherryhost in ["localhost", "127.0.0.1", "::1", "0.0.0.0", "", "::",] :
+        # None, so no network / default route, so let's set to ...
+        z_host = "127.0.0.1"
+    if probablyipv4(cherryhost) and not cherryhost in [
+        "localhost",
+        "127.0.0.1",
+        "::1",
+        "0.0.0.0",
+        "",
+        "::",
+    ]:
         # a hard-configured cherryhost other than the usual, so let's take that (good or wrong)
         z_host = cherryhost
     logging.debug("bonjour/zeroconf: Using ", z_host)
