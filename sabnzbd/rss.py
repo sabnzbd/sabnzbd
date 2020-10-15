@@ -201,6 +201,7 @@ class RSSReader:
         if readout:
             all_entries = []
             for uri in uris:
+                # Reset parsing message for each feed
                 msg = ""
                 feed_parsed = {}
                 uri = uri.replace(" ", "%20").replace("feed://", "http://")
