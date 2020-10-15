@@ -278,10 +278,12 @@ class RSSQueue:
         feedparser.USER_AGENT = "SABnzbd/%s" % sabnzbd.__version__
 
         # Read the RSS feed
+        msg = ""
         entries = []
         if readout:
             all_entries = []
             for uri in uris:
+                # Reset parsing message for each feed
                 msg = ""
                 feed_parsed = {}
                 uri = uri.replace(" ", "%20").replace("feed://", "http://")
