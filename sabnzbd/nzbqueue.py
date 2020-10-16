@@ -200,16 +200,24 @@ class NzbQueue:
         return nzo_id
 
     @NzbQueueLocker
-    def send_back(self, nzo: NzbObject):
+    def send_back(self, old_nzo: NzbObject):
         """ Send back job to queue after successful pre-check """
         try:
-            nzb_path = globber_full(nzo.admin_path, "*.gz")[0]
+            nzb_path = globber_full(old_nzo.admin_path, "*.gz")[0]
         except:
-            logging.info("Failed to find NZB file after pre-check (%s)", nzo.nzo_id)
+            logging.info("Failed to find NZB file after pre-check (%s)", old_nzo.nzo_id)
             return
 
-        res, nzo_ids = process_single_nzb(nzo.filename, nzb_path, keep=True, reuse=nzo.download_path, nzo_id=nzo.nzo_id)
+        # Store old position and create new NZO
+        old_position = self.__nzo_list.index(old_nzo)
+        res, nzo_ids = process_single_nzb(
+            old_nzo.filename, nzb_path, keep=True, reuse=old_nzo.download_path, nzo_id=old_nzo.nzo_id
+        )
         if res == 0 and nzo_ids:
+            # Swap to old position
+            new_nzo = self.get_nzo(nzo_ids[0])
+            self.__nzo_list.remove(new_nzo)
+            self.__nzo_list.insert(old_position, new_nzo)
             # Reset reuse flag to make pause/abort on encryption possible
             self.__nzo_table[nzo_ids[0]].reuse = None
 
