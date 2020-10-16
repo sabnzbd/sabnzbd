@@ -27,9 +27,9 @@ import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import GIGI, ANFO, MEBI, LIMIT_DECODE_QUEUE, MIN_DECODE_QUEUE
 
-# Operations on lists and dicts are atomic, but for
-# the bytes counter we do need a lock
-ARTICLE_LOCK = threading.Lock()
+# Operations on the article table are handled via try/except.
+# The counters need to be made atomic to ensure consistency.
+ARTICLE_COUNTER_LOCK = threading.RLock()
 
 
 class ArticleCache:
@@ -39,7 +39,6 @@ class ArticleCache:
         self.__cache_limit_org = 0
         self.__cache_limit = 0
         self.__cache_size = 0
-        self.__article_list = []  # List of buffered articles
         self.__article_table = {}  # Dict of buffered articles
 
         # Limit for the decoder is based on the total available cache
@@ -55,7 +54,7 @@ class ArticleCache:
         ArticleCache.do = self
 
     def cache_info(self):
-        return ANFO(len(self.__article_list), abs(self.__cache_size), self.__cache_limit_org)
+        return ANFO(len(self.__article_table), abs(self.__cache_size), self.__cache_limit_org)
 
     def new_limit(self, limit):
         """ Called when cache limit changes """
@@ -71,12 +70,12 @@ class ArticleCache:
         # The cache should also not be too small
         self.decoder_cache_article_limit = max(decoder_cache_limit, MIN_DECODE_QUEUE)
 
-    @synchronized(ARTICLE_LOCK)
+    @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size):
         """ Reserve space in the cache """
         self.__cache_size += data_size
 
-    @synchronized(ARTICLE_LOCK)
+    @synchronized(ARTICLE_COUNTER_LOCK)
     def free_reserved_space(self, data_size):
         """ Remove previously reserved space """
         self.__cache_size -= data_size
@@ -108,7 +107,6 @@ class ArticleCache:
             self.reserve_space(data_size)
             if self.space_left():
                 # Add new article to the cache
-                self.__article_list.append(article)
                 self.__article_table[article] = data
             else:
                 # Return the space and save to disk
@@ -123,35 +121,47 @@ class ArticleCache:
         data = None
         nzo = article.nzf.nzo
 
-        if article in self.__article_list:
-            data = self.__article_table.pop(article)
-            self.__article_list.remove(article)
-            self.free_reserved_space(len(data))
+        if article in self.__article_table:
+            try:
+                data = self.__article_table.pop(article)
+                self.free_reserved_space(len(data))
+            except KeyError:
+                # Could fail due the article already being deleted by purge_articles, for example
+                # when post-processing deletes the job while delayed articles still come in
+                logging.debug("Failed to load %s from cache, probably already deleted", article)
+                return data
         elif article.art_id:
             data = sabnzbd.load_data(article.art_id, nzo.workpath, remove=True, do_pickle=False, silent=True)
         nzo.remove_saved_article(article)
-
         return data
 
-    @synchronized(ARTICLE_LOCK)
     def flush_articles(self):
+        logging.debug("Saving %s cached articles to disk", len(self.__article_table))
         self.__cache_size = 0
-        while self.__article_list:
-            article = self.__article_list.pop(0)
-            data = self.__article_table.pop(article)
-            self.__flush_article_to_disk(article, data)
+        while self.__article_table:
+            try:
+                article, data = self.__article_table.popitem()
+                self.__flush_article_to_disk(article, data)
+            except KeyError:
+                # Could fail if already deleted by purge_articles or load_data
+                logging.debug("Failed to flush item from cache, probably already deleted or written to disk")
 
     def purge_articles(self, articles):
         """ Remove all saved articles, from memory and disk """
+        logging.debug("Purging %s articles from the cache/disk", len(articles))
         for article in articles:
-            if article in self.__article_list:
-                self.__article_list.remove(article)
-                data = self.__article_table.pop(article)
-                self.free_reserved_space(len(data))
-            if article.art_id:
+            if article in self.__article_table:
+                try:
+                    data = self.__article_table.pop(article)
+                    self.free_reserved_space(len(data))
+                except KeyError:
+                    # Could fail if already deleted by flush_articles or load_data
+                    logging.debug("Failed to flush %s from cache, probably already deleted or written to disk", article)
+            elif article.art_id:
                 sabnzbd.remove_data(article.art_id, article.nzf.nzo.workpath)
 
-    def __flush_article_to_disk(self, article, data):
+    @staticmethod
+    def __flush_article_to_disk(article, data):
         nzo = article.nzf.nzo
         if nzo.is_gone():
             # Don't store deleted jobs

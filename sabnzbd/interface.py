@@ -80,8 +80,6 @@ from sabnzbd.api import (
     retry_job,
     build_header,
     build_history,
-    format_bytes,
-    report,
     del_hist_job,
     Ttemplate,
     build_queue_header,
@@ -141,12 +139,12 @@ def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
 
 
 def check_access(access_type=4):
-    """ Check if external address is allowed given access_type:
-        1=nzb
-        2=api
-        3=full_api
-        4=webui
-        5=webui with login for external
+    """Check if external address is allowed given access_type:
+    1=nzb
+    2=api
+    3=full_api
+    4=webui
+    5=webui with login for external
     """
     referrer = cherrypy.request.remote.ip
 
@@ -162,9 +160,9 @@ def check_access(access_type=4):
 
 
 def check_hostname():
-    """ Check if hostname is allowed, to mitigate DNS-rebinding attack.
-        Similar to CVE-2019-5702, we need to add protection even
-        if only allowed to be accessed via localhost.
+    """Check if hostname is allowed, to mitigate DNS-rebinding attack.
+    Similar to CVE-2019-5702, we need to add protection even
+    if only allowed to be accessed via localhost.
     """
     # If login is enabled, no API-key can be deducted
     if cfg.username() and cfg.password():
@@ -202,10 +200,10 @@ COOKIE_SECRET = str(randint(1000, 100000) * os.getpid())
 
 
 def set_login_cookie(remove=False, remember_me=False):
-    """ We try to set a cookie as unique as possible
-        to the current user. Based on it's IP and the
-        current process ID of the SAB instance and a random
-        number, so cookies cannot be re-used
+    """We try to set a cookie as unique as possible
+    to the current user. Based on it's IP and the
+    current process ID of the SAB instance and a random
+    number, so cookies cannot be re-used
     """
     salt = randint(1, 1000)
     cookie_str = utob(str(salt) + cherrypy.request.remote.ip + COOKIE_SECRET)
@@ -268,15 +266,18 @@ def set_auth(conf):
             }
         )
         conf.update(
-            {"/api": {"tools.auth_basic.on": False}, "%s/api" % cfg.url_base(): {"tools.auth_basic.on": False},}
+            {
+                "/api": {"tools.auth_basic.on": False},
+                "%s/api" % cfg.url_base(): {"tools.auth_basic.on": False},
+            }
         )
     else:
         conf.update({"tools.auth_basic.on": False})
 
 
 def check_apikey(kwargs):
-    """ Check API-key or NZB-key
-        Return None when OK, otherwise an error message
+    """Check API-key or NZB-key
+    Return None when OK, otherwise an error message
     """
     mode = kwargs.get("mode", "")
     name = kwargs.get("name", "")
@@ -809,8 +810,8 @@ class NzoPage:
                         "filename": nzf.filename if nzf.filename else nzf.subject,
                         "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
                         "mb": "%.2f" % (nzf.bytes / MEBI),
-                        "size": format_bytes(nzf.bytes),
-                        "sizeleft": format_bytes(nzf.bytes_left),
+                        "size": to_units(nzf.bytes, "B"),
+                        "sizeleft": to_units(nzf.bytes_left, "B"),
                         "nzf_id": nzf.nzf_id,
                         "age": calc_age(nzf.date),
                         "checked": checked,
@@ -919,8 +920,8 @@ class QueuePage:
 
     @secured_expose(check_api_key=True)
     def change_queue_complete_action(self, **kwargs):
-        """ Action or script to be performed once the queue has been completed
-            Scripts are prefixed with 'script_'
+        """Action or script to be performed once the queue has been completed
+        Scripts are prefixed with 'script_'
         """
         action = kwargs.get("action")
         sabnzbd.change_queue_complete_action(action)
@@ -1017,16 +1018,13 @@ class QueuePage:
 class HistoryPage:
     def __init__(self, root):
         self.__root = root
-        self.__failed_only = False
 
     @secured_expose
     def index(self, **kwargs):
         start = int_conv(kwargs.get("start"))
         limit = int_conv(kwargs.get("limit"))
         search = kwargs.get("search")
-        failed_only = kwargs.get("failed_only")
-        if failed_only is None:
-            failed_only = self.__failed_only
+        failed_only = int_conv(kwargs.get("failed_only"))
 
         history = build_header()
         history["failed_only"] = failed_only
@@ -1042,7 +1040,7 @@ class HistoryPage:
         )
 
         history["lines"], history["fetched"], history["noofslots"] = build_history(
-            limit=limit, start=start, search=search, failed_only=failed_only
+            start=start, limit=limit, search=search, failed_only=failed_only
         )
 
         if search:
@@ -1200,7 +1198,11 @@ class ConfigFolders:
                     # return sabnzbd.api.report('json', error=msg)
                     return badParameterResponse(msg, kwargs.get("ajax"))
 
-        sabnzbd.check_incomplete_vs_complete()
+        if not sabnzbd.check_incomplete_vs_complete():
+            return badParameterResponse(
+                T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
+                kwargs.get("ajax"),
+            )
         config.save_config()
         if kwargs.get("ajax"):
             return sabnzbd.api.report("json")
@@ -1230,6 +1232,7 @@ SWITCH_LIST = (
     "pre_script",
     "pause_on_pwrar",
     "sfv_check",
+    "deobfuscate_final_filenames",
     "folder_rename",
     "load_balancing",
     "quota_size",
@@ -1325,11 +1328,11 @@ SPECIAL_BOOL_LIST = (
     "start_paused",
     "no_penalties",
     "fast_fail",
-    "ignore_wrong_unrar",
     "overwrite_files",
     "enable_par_cleanup",
     "queue_complete_pers",
     "api_warnings",
+    "helpfull_warnings",
     "ampm",
     "enable_unrar",
     "enable_unzip",
@@ -1348,7 +1351,6 @@ SPECIAL_BOOL_LIST = (
     "html_login",
     "wait_for_dfolder",
     "max_art_opt",
-    "warn_empty_nzb",
     "enable_bonjour",
     "warn_dupl_jobs",
     "replace_illegal",
@@ -1365,6 +1367,7 @@ SPECIAL_VALUE_LIST = (
     "max_url_retries",
     "req_completion_rate",
     "wait_ext_drive",
+    "max_foldername_length",
     "show_sysload",
     "url_base",
     "direct_unpack_threads",
@@ -1536,7 +1539,7 @@ class ConfigGeneral:
             cfg.bandwidth_perc.set(bandwidth_perc)
         bandwidth_perc = cfg.bandwidth_perc()
         if bandwidth_perc and not bandwidth_max:
-            logging.warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
+            logging.warning_helpful(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
 
         config.save_config()
 
@@ -1821,8 +1824,8 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def upd_rss_feed(self, **kwargs):
-        """ Update Feed level attributes,
-            legacy version: ignores 'enable' parameter
+        """Update Feed level attributes,
+        legacy version: ignores 'enable' parameter
         """
         if kwargs.get("enable") is not None:
             del kwargs["enable"]
@@ -2699,6 +2702,8 @@ LIST_NCENTER = (
     "ncenter_cats",
     "ncenter_prio_startup",
     "ncenter_prio_download",
+    "ncenter_prio_pause_resume",
+    "ncenter_prio_pp",
     "ncenter_prio_pp",
     "ncenter_prio_complete",
     "ncenter_prio_failed",
@@ -2714,6 +2719,7 @@ LIST_ACENTER = (
     "acenter_cats",
     "acenter_prio_startup",
     "acenter_prio_download",
+    "acenter_prio_pause_resume",
     "acenter_prio_pp",
     "acenter_prio_complete",
     "acenter_prio_failed",
@@ -2729,6 +2735,7 @@ LIST_NTFOSD = (
     "ntfosd_cats",
     "ntfosd_prio_startup",
     "ntfosd_prio_download",
+    "ntfosd_prio_pause_resume",
     "ntfosd_prio_pp",
     "ntfosd_prio_complete",
     "ntfosd_prio_failed",
@@ -2745,6 +2752,7 @@ LIST_PROWL = (
     "prowl_apikey",
     "prowl_prio_startup",
     "prowl_prio_download",
+    "prowl_prio_pause_resume",
     "prowl_prio_pp",
     "prowl_prio_complete",
     "prowl_prio_failed",
@@ -2763,6 +2771,7 @@ LIST_PUSHOVER = (
     "pushover_device",
     "pushover_prio_startup",
     "pushover_prio_download",
+    "pushover_prio_pause_resume",
     "pushover_prio_pp",
     "pushover_prio_complete",
     "pushover_prio_failed",
@@ -2782,6 +2791,7 @@ LIST_PUSHBULLET = (
     "pushbullet_device",
     "pushbullet_prio_startup",
     "pushbullet_prio_download",
+    "pushbullet_prio_pause_resume",
     "pushbullet_prio_pp",
     "pushbullet_prio_complete",
     "pushbullet_prio_failed",
@@ -2799,6 +2809,7 @@ LIST_NSCRIPT = (
     "nscript_parameters",
     "nscript_prio_startup",
     "nscript_prio_download",
+    "nscript_prio_pause_resume",
     "nscript_prio_pp",
     "nscript_prio_complete",
     "nscript_prio_failed",
@@ -2842,8 +2853,7 @@ class ConfigNotify:
             conf[kw] = config.get_config("ntfosd", kw)()
         for kw in LIST_NSCRIPT:
             conf[kw] = config.get_config("nscript", kw)()
-        conf["notify_keys"] = sabnzbd.constants.NOTIFY_KEYS
-        conf["notify_texts"] = sabnzbd.notifier.NOTIFICATION
+        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),

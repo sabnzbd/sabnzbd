@@ -17,8 +17,8 @@ from sabnzbd.getipaddress import localipv4
 
 
 def generate_key(key_size=2048, output_file="key.pem"):
-    """ Generate the private-key file for the self-signed certificate
-        Ported from cryptography docs/x509/tutorial.rst (set with no encryption)
+    """Generate the private-key file for the self-signed certificate
+    Ported from cryptography docs/x509/tutorial.rst (set with no encryption)
     """
     # Generate our key
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=key_size, backend=default_backend())
@@ -38,8 +38,8 @@ def generate_key(key_size=2048, output_file="key.pem"):
 
 
 def generate_local_cert(private_key, days_valid=3560, output_file="cert.cert", LN="SABnzbd", ON="SABnzbd"):
-    """ Generate a certificate, using basic information.
-        Ported from cryptography docs/x509/tutorial.rst
+    """Generate a certificate, using basic information.
+    Ported from cryptography docs/x509/tutorial.rst
     """
     # Various details about who we are. For a self-signed certificate the
     # subject and issuer are always the same.

@@ -1,0 +1,33 @@
+name: Update translatable texts
+
+on:
+  push:
+    branches:
+    - develop
+
+jobs:
+  translations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Generate translatable texts
+        run: |
+          python3 tools/extract_pot.py
+      - name: Install Transifex client
+        # Sudo is needed to link the "tx"-command
+        run: |
+          sudo -H python3 -m pip install setuptools wheel
+          sudo -H python3 -m pip install transifex-client
+      - name: Push/pull Transifex translations
+        run: |
+          tx push --source --parallel
+          tx pull --all --force --parallel
+        env:
+          TX_TOKEN: ${{ secrets.TX_TOKEN }}
+      - name: Push translatable and translated texts back to repo
+        uses: stefanzweifel/git-auto-commit-action@master
+        with:
+          commit_message: Update translatable texts
+          commit_user_name: SABnzbd Automation
+          commit_user_email: bugs@sabnzbd.org
+          commit_author: SABnzbd Automation <bugs@sabnzbd.org>

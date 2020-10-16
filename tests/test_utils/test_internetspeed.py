@@ -23,8 +23,8 @@ from sabnzbd.utils.internetspeed import internetspeed, measurespeed, SizeUrlList
 
 
 class TestInternetSpeed:
-    """ This class contains tests to measure internet speed
-        with an active and inactive connection
+    """This class contains tests to measure internet speed
+    with an active and inactive connection
     """
 
     def test_measurespeed_invalid_url(self):

@@ -37,6 +37,10 @@ QNFO = namedtuple("QNFO", "bytes bytes_left bytes_left_previous_page list q_size
 
 ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 
+# Leave some space for "_UNPACK_" which we append during post-proc
+# Or, when extra ".1", ".2" etc. are added for identically named jobs
+DEF_FOLDER_MAX = 256 - 10
+
 GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
 KIBI = float(2 ** 10)
@@ -93,7 +97,7 @@ DIRECT_WRITE_TRIGGER = 35
 MAX_ASSEMBLER_QUEUE = 5
 
 REPAIR_PRIORITY = 3
-TOP_PRIORITY = 2
+FORCE_PRIORITY = 2
 HIGH_PRIORITY = 1
 NORMAL_PRIORITY = 0
 LOW_PRIORITY = -1
@@ -101,6 +105,14 @@ DEFAULT_PRIORITY = -100
 PAUSED_PRIORITY = -2
 DUP_PRIORITY = -3
 STOP_PRIORITY = -4
+
+INTERFACE_PRIORITIES = {
+    FORCE_PRIORITY: "Force",
+    REPAIR_PRIORITY: "Repair",
+    HIGH_PRIORITY: "High",
+    NORMAL_PRIORITY: "Normal",
+    LOW_PRIORITY: "Low",
+}
 
 STAGES = {"Source": 0, "Download": 1, "Servers": 2, "Repair": 3, "Filejoin": 4, "Unpack": 5, "Script": 6}
 
@@ -139,25 +151,10 @@ class Status:
     GRABBING = "Grabbing"  # Q:  Getting an NZB from an external site
     MOVING = "Moving"  # PP: Files are being moved
     PAUSED = "Paused"  # Q:  Job is paused
-    QUEUED = "Queued"  # Q:  Job is waiting for its turn to download
+    QUEUED = "Queued"  # Q:  Job is waiting for its turn to download or post-process
     QUICK_CHECK = "QuickCheck"  # PP: QuickCheck verification is running
     REPAIRING = "Repairing"  # PP: Job is being repaired (by par2)
     RUNNING = "Running"  # PP: User's post processing script is running
     VERIFYING = "Verifying"  # PP: Job is being verified (by par2)
     DELETED = "Deleted"  # Q:  Job has been deleted (and is almost gone)
     PROP = "Propagating"  # Q:  Delayed download
-
-
-NOTIFY_KEYS = (
-    "startup",
-    "download",
-    "pp",
-    "complete",
-    "failed",
-    "queue_done",
-    "disk_full",
-    "new_login",
-    "warning",
-    "error",
-    "other",
-)

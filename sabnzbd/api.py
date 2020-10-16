@@ -41,11 +41,9 @@ from sabnzbd.constants import (
     VALID_ARCHIVES,
     VALID_NZB_FILES,
     Status,
-    TOP_PRIORITY,
-    REPAIR_PRIORITY,
-    HIGH_PRIORITY,
+    FORCE_PRIORITY,
     NORMAL_PRIORITY,
-    LOW_PRIORITY,
+    INTERFACE_PRIORITIES,
     KIBI,
     MEBI,
     GIGI,
@@ -68,7 +66,7 @@ from sabnzbd.misc import (
     calc_age,
     opts_to_pp,
 )
-from sabnzbd.filesystem import diskspace, get_ext, globber_full, clip_path, remove_all
+from sabnzbd.filesystem import diskspace, get_ext, globber_full, clip_path, remove_all, userxbit
 from sabnzbd.encoding import xml_name
 from sabnzbd.postproc import PostProcessor
 from sabnzbd.articlecache import ArticleCache
@@ -76,7 +74,6 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.rating import Rating
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
-from sabnzbd.newsunpack import userxbit
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 import sabnzbd.notifier
 import sabnzbd.rss
@@ -366,6 +363,7 @@ def _api_addfile(name, output, kwargs):
             cat=cat,
             priority=kwargs.get("priority"),
             nzbname=kwargs.get("nzbname"),
+            password=kwargs.get("password"),
         )
         return report(output, keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
     else:
@@ -410,10 +408,18 @@ def _api_addlocalfile(name, output, kwargs):
                 cat = cat_convert(xcat)
             priority = kwargs.get("priority")
             nzbname = kwargs.get("nzbname")
+            password = kwargs.get("password")
 
             if get_ext(name) in VALID_ARCHIVES + VALID_NZB_FILES:
                 res, nzo_ids = sabnzbd.add_nzbfile(
-                    name, pp=pp, script=script, cat=cat, priority=priority, keep=True, nzbname=nzbname
+                    name,
+                    pp=pp,
+                    script=script,
+                    cat=cat,
+                    priority=priority,
+                    keep=True,
+                    nzbname=nzbname,
+                    password=password,
                 )
                 return report(output, keyword="", data={"status": res == 0, "nzo_ids": nzo_ids})
             else:
@@ -492,7 +498,7 @@ def _api_history(name, output, kwargs):
     limit = int_conv(kwargs.get("limit"))
     last_history_update = int_conv(kwargs.get("last_history_update", 0))
     search = kwargs.get("search")
-    failed_only = kwargs.get("failed_only")
+    failed_only = int_conv(kwargs.get("failed_only"))
     categories = kwargs.get("category")
 
     # Do we need to send anything?
@@ -536,7 +542,7 @@ def _api_history(name, output, kwargs):
             to_units(day),
         )
         history["slots"], fetched_items, history["noofslots"] = build_history(
-            start=start, limit=limit, search=search, failed_only=failed_only, categories=categories, output=output
+            start=start, limit=limit, search=search, failed_only=failed_only, categories=categories
         )
         history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
         history["version"] = sabnzbd.__version__
@@ -561,9 +567,10 @@ def _api_addurl(name, output, kwargs):
     cat = kwargs.get("cat")
     priority = kwargs.get("priority")
     nzbname = kwargs.get("nzbname", "")
+    password = kwargs.get("password", "")
 
     if name:
-        nzo_id = sabnzbd.add_url(name, pp, script, cat, priority, nzbname)
+        nzo_id = sabnzbd.add_url(name, pp, script, cat, priority, nzbname, password)
         # Reporting a list of NZO's, for compatibility with other add-methods
         return report(output, keyword="", data={"status": True, "nzo_ids": [nzo_id]})
     else:
@@ -994,10 +1001,10 @@ def api_level(cmd, name):
 
 
 def report(output, error=None, keyword="value", data=None):
-    """ Report message in json, xml or plain text
-        If error is set, only an status/error report is made.
-        If no error and no data, only a status report is made.
-        Else, a data report is made (optional 'keyword' for outer XML section).
+    """Report message in json, xml or plain text
+    If error is set, only an status/error report is made.
+    If no error and no data, only a status report is made.
+    Else, a data report is made (optional 'keyword' for outer XML section).
     """
     if output == "json":
         content = "application/json;charset=UTF-8"
@@ -1041,10 +1048,10 @@ def report(output, error=None, keyword="value", data=None):
 
 
 class xml_factory:
-    """ Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
-        Current limitations:
-            In Two tiered lists hard-coded name of "item": <cat_list><item> </item></cat_list>
-            In Three tiered lists hard-coded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
+    """Recursive xml string maker. Feed it a mixed tuple/dict/item object and will output into an xml string
+    Current limitations:
+        In Two tiered lists hard-coded name of "item": <cat_list><item> </item></cat_list>
+        In Three tiered lists hard-coded name of "slot": <tier1><slot><tier2> </tier2></slot></tier1>
     """
 
     def __init__(self):
@@ -1289,13 +1296,6 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     )
 
     datestart = datetime.datetime.now()
-    priorities = {
-        TOP_PRIORITY: "Force",
-        REPAIR_PRIORITY: "Repair",
-        HIGH_PRIORITY: "High",
-        NORMAL_PRIORITY: "Normal",
-        LOW_PRIORITY: "Low",
-    }
     limit = int_conv(limit)
     start = int_conv(start)
 
@@ -1326,7 +1326,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot["index"] = n
         slot["nzo_id"] = str(nzo_id)
         slot["unpackopts"] = str(opts_to_pp(pnfo.repair, pnfo.unpack, pnfo.delete))
-        slot["priority"] = priorities[priority] if priority >= LOW_PRIORITY else priorities[NORMAL_PRIORITY]
+        slot["priority"] = INTERFACE_PRIORITIES.get(priority, NORMAL_PRIORITY)
         slot["script"] = pnfo.script if pnfo.script else "None"
         slot["filename"] = pnfo.filename
         slot["labels"] = pnfo.labels
@@ -1334,8 +1334,8 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
         slot["cat"] = pnfo.category if pnfo.category else "None"
         slot["mbleft"] = "%.2f" % mbleft
         slot["mb"] = "%.2f" % mb
-        slot["size"] = format_bytes(bytes_total)
-        slot["sizeleft"] = format_bytes(bytesleft)
+        slot["size"] = to_units(bytes_total, "B")
+        slot["sizeleft"] = to_units(bytesleft, "B")
         slot["percentage"] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else "0"
         slot["mbmissing"] = "%.2f" % (pnfo.bytes_missing / MEBI)
         slot["direct_unpack"] = pnfo.direct_unpack
@@ -1352,7 +1352,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
                 slot["status"] = Status.DOWNLOADING
         else:
             # Ensure compatibility of API status
-            if status == Status.DELETED or priority == TOP_PRIORITY:
+            if status == Status.DELETED or priority == FORCE_PRIORITY:
                 status = Status.DOWNLOADING
             slot["status"] = "%s" % status
 
@@ -1361,7 +1361,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
             or Downloader.do.postproc
             or is_propagating
             or status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
-        ) and priority != TOP_PRIORITY:
+        ) and priority != FORCE_PRIORITY:
             slot["timeleft"] = "0:00:00"
             slot["eta"] = "unknown"
         else:
@@ -1408,8 +1408,7 @@ def fast_queue():
 
 
 def build_file_list(nzo_id):
-    """ Build file lists for specified job
-    """
+    """Build file lists for specified job"""
     jobs = []
     nzo = NzbQueue.do.get_nzo(nzo_id)
     if nzo:
@@ -1540,9 +1539,9 @@ _SKIN_CACHE = {}  # Stores pre-translated acronyms
 
 
 def Ttemplate(txt):
-    """ Translation function for Skin texts
-        This special is to be used in interface.py for template processing
-        to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
+    """Translation function for Skin texts
+    This special is to be used in interface.py for template processing
+    to be passed for the $T function: so { ..., 'T' : Ttemplate, ...}
     """
     global _SKIN_CACHE
     if txt in _SKIN_CACHE:
@@ -1633,7 +1632,7 @@ def build_header(webdir="", output=None, trans_functions=True):
 
     anfo = ArticleCache.do.cache_info()
     header["cache_art"] = str(anfo.article_sum)
-    header["cache_size"] = format_bytes(anfo.cache_size)
+    header["cache_size"] = to_units(anfo.cache_size, "B")
     header["cache_max"] = str(anfo.cache_limit)
 
     return header
@@ -1654,8 +1653,8 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     header["speed"] = to_units(bytespersec)
     header["mbleft"] = "%.2f" % (bytesleft / MEBI)
     header["mb"] = "%.2f" % (bytes_total / MEBI)
-    header["sizeleft"] = format_bytes(bytesleft)
-    header["size"] = format_bytes(bytes_total)
+    header["sizeleft"] = to_units(bytesleft, "B")
+    header["size"] = to_units(bytes_total, "B")
     header["noofslots_total"] = qnfo.q_fullsize
 
     if Downloader.do.paused or Downloader.do.postproc:
@@ -1677,50 +1676,48 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
-def build_history(start=None, limit=None, search=None, failed_only=0, categories=None, output=None):
-    limit = int_conv(limit)
+def build_history(start=0, limit=0, search=None, failed_only=0, categories=None):
+    """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
-    start = int_conv(start)
-    failed_only = int_conv(failed_only)
-
-    def matches_search(text, search_text):
-        # Replace * with .* and ' ' with .
-        search_text = search_text.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
-        try:
-            re_search = re.compile(search_text, re.I)
-        except:
-            logging.error(T("Failed to compile regex for search term: %s"), search_text)
-            return False
-        return re_search.search(text)
 
     # Grab any items that are active or queued in postproc
-    queue = PostProcessor.do.get_queue()
+    postproc_queue = PostProcessor.do.get_queue()
 
-    # Filter out any items that don't match the search
-    if search:
-        queue = [nzo for nzo in queue if matches_search(nzo.final_name, search)]
+    # Filter out any items that don't match the search term or category
+    if postproc_queue:
+        # It would be more efficient to iterate only once, but we accept the penalty for code clarity
+        if isinstance(search, list):
+            postproc_queue = [nzo for nzo in postproc_queue if nzo.cat in categories]
+
+        if isinstance(search, str):
+            # Replace * with .* and ' ' with .
+            search_text = search.strip().replace("*", ".*").replace(" ", ".*") + ".*?"
+            try:
+                re_search = re.compile(search_text, re.I)
+                postproc_queue = [nzo for nzo in postproc_queue if re_search.search(nzo.final_name)]
+            except:
+                logging.error(T("Failed to compile regex for search term: %s"), search_text)
 
     # Multi-page support for postproc items
-    full_queue_size = len(queue)
-    if start > full_queue_size:
+    postproc_queue_size = len(postproc_queue)
+    if start > postproc_queue_size:
         # On a page where we shouldn't show postproc items
-        queue = []
-        h_limit = limit
+        postproc_queue = []
+        database_history_limit = limit
     else:
         try:
             if limit:
-                queue = queue[start : start + limit]
+                postproc_queue = postproc_queue[start : start + limit]
             else:
-                queue = queue[start:]
+                postproc_queue = postproc_queue[start:]
         except:
             pass
         # Remove the amount of postproc items from the db request for history items
-        h_limit = max(limit - len(queue), 0)
+        database_history_limit = max(limit - len(postproc_queue), 0)
+    database_history_start = max(start - postproc_queue_size, 0)
 
-    h_start = max(start - full_queue_size, 0)
-
-    # Aquire the db instance
+    # Acquire the db instance
     try:
         history_db = sabnzbd.get_db_connection()
         close_db = False
@@ -1730,50 +1727,53 @@ def build_history(start=None, limit=None, search=None, failed_only=0, categories
         close_db = True
 
     # Fetch history items
-    if not h_limit:
-        items, fetched_items, total_items = history_db.fetch_history(h_start, 1, search, failed_only, categories)
+    if not database_history_limit:
+        items, fetched_items, total_items = history_db.fetch_history(
+            database_history_start, 1, search, failed_only, categories
+        )
         items = []
     else:
-        items, fetched_items, total_items = history_db.fetch_history(h_start, h_limit, search, failed_only, categories)
+        items, fetched_items, total_items = history_db.fetch_history(
+            database_history_start, database_history_limit, search, failed_only, categories
+        )
 
     # Reverse the queue to add items to the top (faster than insert)
     items.reverse()
 
     # Add the postproc items to the top of the history
-    items = get_active_history(queue, items)
+    items = get_active_history(postproc_queue, items)
 
-    # Unreverse the queue
+    # Un-reverse the queue
     items.reverse()
 
+    # Global check if rating is enabled
+    rating_enabled = cfg.rating_enable()
+
     for item in items:
-        item["size"] = format_bytes(item["bytes"])
+        item["size"] = to_units(item["bytes"], "B")
 
         if "loaded" not in item:
             item["loaded"] = False
 
         path = item.get("path", "")
-
         item["retry"] = int_conv(item.get("status") == Status.FAILED and path and os.path.exists(path))
         # Retry of failed URL-fetch
         if item["report"] == "future":
             item["retry"] = True
 
-        if Rating.do:
+        if rating_enabled:
             rating = Rating.do.get_rating_by_nzo(item["nzo_id"])
-        else:
-            rating = None
+            item["has_rating"] = rating is not None
+            if rating:
+                item["rating_avg_video"] = rating.avg_video
+                item["rating_avg_audio"] = rating.avg_audio
+                item["rating_avg_vote_up"] = rating.avg_vote_up
+                item["rating_avg_vote_down"] = rating.avg_vote_down
+                item["rating_user_video"] = rating.user_video
+                item["rating_user_audio"] = rating.user_audio
+                item["rating_user_vote"] = rating.user_vote
 
-        item["has_rating"] = rating is not None
-        if rating:
-            item["rating_avg_video"] = rating.avg_video
-            item["rating_avg_audio"] = rating.avg_audio
-            item["rating_avg_vote_up"] = rating.avg_vote_up
-            item["rating_avg_vote_down"] = rating.avg_vote_down
-            item["rating_user_video"] = rating.user_video
-            item["rating_user_audio"] = rating.user_audio
-            item["rating_user_vote"] = rating.user_vote
-
-    total_items += full_queue_size
+    total_items += postproc_queue_size
     fetched_items = len(items)
 
     if close_db:
@@ -1782,15 +1782,9 @@ def build_history(start=None, limit=None, search=None, failed_only=0, categories
     return items, fetched_items, total_items
 
 
-def get_active_history(queue=None, items=None):
+def get_active_history(queue, items):
     """ Get the currently in progress and active history queue. """
-    if items is None:
-        items = []
-    if queue is None:
-        queue = PostProcessor.do.get_queue()
-
     for nzo in queue:
-        history = build_history_info(nzo)
         item = {}
         (
             item["completed"],
@@ -1811,33 +1805,24 @@ def get_active_history(queue=None, items=None):
             item["postproc_time"],
             item["stage_log"],
             item["downloaded"],
-            item["completeness"],
             item["fail_message"],
             item["url_info"],
             item["bytes"],
             _,
             _,
             item["password"],
-        ) = history
+        ) = build_history_info(nzo)
         item["action_line"] = nzo.action_line
         item = unpack_history_info(item)
 
         item["loaded"] = nzo.pp_active
         if item["bytes"]:
-            item["size"] = format_bytes(item["bytes"])
+            item["size"] = to_units(item["bytes"], "B")
         else:
             item["size"] = ""
         items.append(item)
 
     return items
-
-
-def format_bytes(bytes_string):
-    b = to_units(bytes_string)
-    if b == "":
-        return b
-    else:
-        return b + "B"
 
 
 def calc_timeleft(bytesleft, bps):
@@ -1888,8 +1873,8 @@ def list_scripts(default=False, none=True):
 
 
 def list_cats(default=True):
-    """ Return list of (ordered) categories,
-        when default==False use '*' for Default category
+    """Return list of (ordered) categories,
+    when default==False use '*' for Default category
     """
     lst = [cat["name"] for cat in config.get_ordered_categories()]
     if default:

@@ -852,18 +852,24 @@ tr.queue-item>td:first-child>a {
 
 .multioperations-selector .add-nzb-inputbox {
     width: 20%;
+    float: left;
+}
+
+.multioperations-selector .add-nzb-inputbox select {
+    display: inline-block;
+    width: calc(100% - 30px);
+    margin: 5px 0px 5px 2px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small {
     width: 80px;
     float: right;
     padding-left: 0;
-    padding-top: 2px;
+    padding-top: 12px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small .label {
-    vertical-align: text-bottom;
-    margin-left: 2px;
+    margin-left: 5px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small span {
@@ -884,7 +890,7 @@ tr.queue-item>td:first-child>a {
 
 .multioperations-selector .add-nzb-inputbox-options {
     width: auto;
-    padding-right: 6px;
+    padding-right: 7px;
 }
 
 .multioperations-selector .add-nzb-inputbox-small label[for="multiedit-pause"],
@@ -1276,7 +1282,8 @@ tr.queue-item>td:first-child>a {
     min-height: 270px;
 }
 
-#modal-options .form-group {
+#modal-options .form-group,
+#modal-add-nzb .form-group {
     margin-bottom: 5px;
 }
 
@@ -1388,7 +1395,8 @@ tr.queue-item>td:first-child>a {
     padding-bottom: 0;
 }
 
-#modal-options .col-sm-6 {
+#modal-options .col-sm-6,
+#modal-add-nzb .col-sm-6 {
     padding-bottom: 3px;
 }
 
@@ -1520,25 +1528,14 @@ tr.queue-item>td:first-child>a {
     margin-bottom: 5px;
 }
 
-#modal-add-nzb .add-nzb-inputbox:nth-child(even) select {
-    width: 100%;
+#modal-add-nzb .col-sm-6:first-of-type label {
+    text-align: right;
 }
 
-.add-nzb-inputbox {
-    float: left;
-    width: 50%;
-    margin: 5px 0px;
-    padding-left: 20px;
-}
-
-.add-nzb-inputbox select {
+#modal-add-nzb select {
+    width: calc(100% - 35px);
     display: inline-block;
-    width: calc(100% - 10px);
-}
-
-.add-nzb-inputbox span {
-    display: inline-block;
-    margin: 8px 2px 0px -20px;
+    margin-right: 5px;
 }
 
 .btn-file {

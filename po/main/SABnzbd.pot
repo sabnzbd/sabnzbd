@@ -5,7 +5,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"Project-Id-Version: SABnzbd-3.1.0-develop\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: team@sabnzbd.org\n"
 "Language-Team: SABnzbd <team@sabnzbd.org>\n"
@@ -74,6 +74,11 @@ msgstr ""
 #. Warning message
 #: SABnzbd.py
 msgid "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
+msgid "Could not load additional certificates from certifi package"
 msgstr ""
 
 #. Warning message
@@ -148,6 +153,11 @@ msgstr ""
 msgid "Loading %s failed"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
+
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
 msgstr ""
@@ -201,12 +211,12 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
+msgid "Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
+msgid "Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords were tried)"
 msgstr ""
 
 #: sabnzbd/assembler.py
@@ -215,7 +225,7 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
 
 #: sabnzbd/assembler.py
@@ -228,12 +238,12 @@ msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
+msgid "Paused job \"%s\" because of rating (%s)"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
+msgid "Aborted job \"%s\" because of rating (%s)"
 msgstr ""
 
 #: sabnzbd/assembler.py
@@ -590,6 +600,10 @@ msgid "&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and th
 msgstr ""
 
 #: sabnzbd/interface.py
+msgid "The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr ""
 
@@ -672,12 +686,32 @@ msgstr ""
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -931,16 +965,6 @@ msgstr ""
 msgid "Checking"
 msgstr ""
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "[%s] The command in build_command is undefined."
-msgstr ""
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr ""
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr ""
@@ -969,6 +993,16 @@ msgstr ""
 #. Notification
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
+msgstr ""
+
+#. Notification - Pause downloading - Four way switch for duplicates - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr ""
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
 msgstr ""
 
 #. Notification - Config->RSS after adding to queue
@@ -1089,6 +1123,7 @@ msgstr ""
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr ""
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr ""
@@ -1221,18 +1256,8 @@ msgstr ""
 msgid "Limit Speed"
 msgstr ""
 
-#. Pause downloading - Four way switch for duplicates - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Pause"
-msgstr ""
-
 #: sabnzbd/osxmenu.py
 msgid "min."
-msgstr ""
-
-#. Resume downloading - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
-msgid "Resume"
 msgstr ""
 
 #. #: Config->Scheduler
@@ -1405,6 +1430,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr ""
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr ""
 
@@ -1466,10 +1495,6 @@ msgid "Cannot create final folder %s"
 msgstr ""
 
 #: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr ""
-
-#: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr ""
 
@@ -1501,6 +1526,11 @@ msgstr ""
 msgid "RAR files failed to verify"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1519,6 +1549,11 @@ msgstr ""
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
+msgstr ""
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
 msgstr ""
 
 #. Warning message
@@ -3345,6 +3380,14 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Delete after download"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Deobfuscate final filenames"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "If filenames of (large) files in the final folder look obfuscated or meaningless they will be renamed to the job name."
 msgstr ""
 
 #: sabnzbd/skintext.py

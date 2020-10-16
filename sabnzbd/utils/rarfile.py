@@ -154,8 +154,7 @@ except ImportError:
 if sys.hexversion < 0x3000000:
 
     def rar_crc32(data, prev=0):
-        """CRC32 with unsigned values.
-        """
+        """CRC32 with unsigned values."""
         if (prev > 0) and (prev & 0x80000000):
             prev -= 1 << 32
         res = crc32(data, prev)
@@ -390,8 +389,7 @@ BSIZE = 32 * 1024
 
 
 def _get_rar_version(xfile):
-    """Check quickly whether file is rar archive.
-    """
+    """Check quickly whether file is rar archive."""
     with XFile(xfile) as fd:
         buf = fd.read(len(RAR5_ID))
     if buf.startswith(RAR_ID):
@@ -407,13 +405,15 @@ def _get_rar_version(xfile):
 
 
 def is_rarfile(xfile):
-    """Check quickly whether file is rar archive.
-    """
-    rar_ver = _get_rar_version(xfile)
-    if rar_ver:
-        return "RAR%d" % rar_ver
-    else:
-        return None
+    """Check quickly whether file is rar archive."""
+    # SABnzbd-edit: try/except
+    try:
+        rar_ver = _get_rar_version(xfile)
+        if rar_ver:
+            return "RAR%d" % rar_ver
+    except:
+        pass
+    return None
 
 
 class Error(Exception):
@@ -641,23 +641,20 @@ class RarInfo(object):
     type = None
 
     def isdir(self):
-        """Returns True if entry is a directory.
-        """
+        """Returns True if entry is a directory."""
         if self.type == RAR_BLOCK_FILE:
             return (self.flags & RAR_FILE_DIRECTORY) == RAR_FILE_DIRECTORY
         return False
 
     def needs_password(self):
-        """Returns True if data is stored password-protected.
-        """
+        """Returns True if data is stored password-protected."""
         if self.type == RAR_BLOCK_FILE:
             return (self.flags & RAR_FILE_PASSWORD) > 0
         return False
 
 
 class RarFile(object):
-    """Parse RAR structure, provide access to files in archive.
-    """
+    """Parse RAR structure, provide access to files in archive."""
 
     #: Archive comment.  Unicode string or None.
     comment = None
@@ -752,8 +749,7 @@ class RarFile(object):
         return self._file_parser.volumelist()
 
     def getinfo(self, fname):
-        """Return RarInfo for file.
-        """
+        """Return RarInfo for file."""
         return self._file_parser.getinfo(fname)
 
     def open(self, fname, mode="r", psw=None):
@@ -864,8 +860,7 @@ class RarFile(object):
         self._extract(fnlist, path, pwd)
 
     def testrar(self):
-        """Let 'unrar' test the archive.
-        """
+        """Let 'unrar' test the archive."""
         # Modified for SABnzbd by clipping paths
         from sabnzbd.filesystem import clip_path
 
@@ -981,8 +976,7 @@ class CommonParser(object):
         self._vol_list = []
 
     def has_header_encryption(self):
-        """Returns True if headers are encrypted
-        """
+        """Returns True if headers are encrypted"""
         if self._hdrenc_main:
             return True
         if self._main:
@@ -1007,13 +1001,11 @@ class CommonParser(object):
         return self._parse_error
 
     def infolist(self):
-        """List of RarInfo records.
-        """
+        """List of RarInfo records."""
         return self._info_list
 
     def getinfo(self, fname):
-        """Return RarInfo for filename
-        """
+        """Return RarInfo for filename"""
         # accept both ways here
         if PATH_SEP == "/":
             fname2 = fname.replace("\\", "/")
@@ -1289,8 +1281,7 @@ class Rar3Info(RarInfo):
 
 
 class RAR3Parser(CommonParser):
-    """Parse RAR3 file format.
-    """
+    """Parse RAR3 file format."""
 
     _expect_sig = RAR_ID
     _last_aes_key = (None, None, None)  # (salt, key, iv)
@@ -1553,8 +1544,7 @@ class RAR3Parser(CommonParser):
 
 
 class Rar5Info(RarInfo):
-    """Shared fields for RAR5 records.
-    """
+    """Shared fields for RAR5 records."""
 
     extract_version = 50
     header_crc = None
@@ -1578,8 +1568,7 @@ class Rar5Info(RarInfo):
 
 
 class Rar5BaseFile(Rar5Info):
-    """Shared sturct for file & service record.
-    """
+    """Shared sturct for file & service record."""
 
     type = -1
     file_flags = None
@@ -1603,22 +1592,19 @@ class Rar5BaseFile(Rar5Info):
 
 
 class Rar5FileInfo(Rar5BaseFile):
-    """RAR5 file record.
-    """
+    """RAR5 file record."""
 
     type = RAR_BLOCK_FILE
 
 
 class Rar5ServiceInfo(Rar5BaseFile):
-    """RAR5 service record.
-    """
+    """RAR5 service record."""
 
     type = RAR_BLOCK_SUB
 
 
 class Rar5MainInfo(Rar5Info):
-    """RAR5 archive main record.
-    """
+    """RAR5 archive main record."""
 
     type = RAR_BLOCK_MAIN
     main_flags = None
@@ -1631,8 +1617,7 @@ class Rar5MainInfo(Rar5Info):
 
 
 class Rar5EncryptionInfo(Rar5Info):
-    """RAR5 archive header encryption record.
-    """
+    """RAR5 archive header encryption record."""
 
     type = RAR5_BLOCK_ENCRYPTION
     encryption_algo = None
@@ -1646,16 +1631,14 @@ class Rar5EncryptionInfo(Rar5Info):
 
 
 class Rar5EndArcInfo(Rar5Info):
-    """RAR5 end of archive record.
-    """
+    """RAR5 end of archive record."""
 
     type = RAR_BLOCK_ENDARC
     endarc_flags = None
 
 
 class RAR5Parser(CommonParser):
-    """Parse RAR5 format.
-    """
+    """Parse RAR5 format."""
 
     _expect_sig = RAR5_ID
     _hdrenc_main = None
@@ -1981,8 +1964,7 @@ class RAR5Parser(CommonParser):
 
 
 class UnicodeFilename(object):
-    """Handle RAR3 unicode filename decompression.
-    """
+    """Handle RAR3 unicode filename decompression."""
 
     def __init__(self, name, encdata):
         self.std_name = bytearray(name)
@@ -2309,8 +2291,7 @@ class PipeReader(RarExtFile):
 
 
 class DirectReader(RarExtFile):
-    """Read uncompressed data directly from archive.
-    """
+    """Read uncompressed data directly from archive."""
 
     _cur = None
     _cur_avail = None
@@ -2326,8 +2307,7 @@ class DirectReader(RarExtFile):
         self._cur_avail = self._cur.add_size
 
     def _skip(self, cnt):
-        """RAR Seek, skipping through rar files to get to correct position
-        """
+        """RAR Seek, skipping through rar files to get to correct position"""
 
         while cnt > 0:
             # next vol needed?
@@ -2479,8 +2459,7 @@ class HeaderDecrypt(object):
 
 # handle (filename|filelike) object
 class XFile(object):
-    """Input may be filename or file object.
-    """
+    """Input may be filename or file object."""
 
     __slots__ = ("_fd", "_need_close")
 
@@ -2561,8 +2540,7 @@ class CRC32Context(object):
 
 
 class Blake2SP(object):
-    """Blake2sp hash context.
-    """
+    """Blake2sp hash context."""
 
     __slots__ = ["_thread", "_buf", "_cur", "_digest"]
     digest_size = 32
@@ -2592,8 +2570,7 @@ class Blake2SP(object):
         self._cur = (self._cur + 1) % self.parallelism
 
     def update(self, data):
-        """Hash data.
-        """
+        """Hash data."""
         view = memoryview(data)
         bs = self.block_size
         if self._buf:
@@ -2609,8 +2586,7 @@ class Blake2SP(object):
         self._buf = view.tobytes()
 
     def digest(self):
-        """Return final digest value.
-        """
+        """Return final digest value."""
         if self._digest is None:
             if self._buf:
                 self._add_block(self._buf)
@@ -2785,8 +2761,7 @@ def _parse_xtime(flag, data, pos, basetime=None):
 
 
 def is_filelike(obj):
-    """Filename or file object?
-    """
+    """Filename or file object?"""
     if isinstance(obj, str) or isinstance(obj, str):
         return False
     res = True
@@ -2798,8 +2773,7 @@ def is_filelike(obj):
 
 
 def rar3_s2k(psw, salt):
-    """String-to-key hash for RAR3.
-    """
+    """String-to-key hash for RAR3."""
     if not isinstance(psw, str):
         psw = psw.decode("utf8")
     seed = psw.encode("utf-16le") + salt
@@ -2868,8 +2842,7 @@ def rar3_decompress(vers, meth, data, declen=0, flags=0, crc=0, psw=None, salt=N
 
 
 def to_datetime(t):
-    """Convert 6-part time tuple into datetime object.
-    """
+    """Convert 6-part time tuple into datetime object."""
     if t is None:
         return None
 
@@ -2907,8 +2880,7 @@ def to_datetime(t):
 
 
 def parse_dos_time(stamp):
-    """Parse standard 32-bit DOS timestamp.
-    """
+    """Parse standard 32-bit DOS timestamp."""
     sec, stamp = stamp & 0x1F, stamp >> 5
     mn, stamp = stamp & 0x3F, stamp >> 6
     hr, stamp = stamp & 0x1F, stamp >> 5
@@ -2919,8 +2891,7 @@ def parse_dos_time(stamp):
 
 
 def custom_popen(cmd):
-    """Disconnect cmd from parent fds, read only from stdout.
-    """
+    """Disconnect cmd from parent fds, read only from stdout."""
     # needed for py2exe
     creationflags = 0
     if sys.platform == "win32":
@@ -2937,8 +2908,7 @@ def custom_popen(cmd):
 
 
 def custom_check(cmd, ignore_retcode=False):
-    """Run command, collect output, raise error if needed.
-    """
+    """Run command, collect output, raise error if needed."""
     p = custom_popen(cmd)
     out, _ = p.communicate()
     if p.returncode and not ignore_retcode:
@@ -2947,8 +2917,7 @@ def custom_check(cmd, ignore_retcode=False):
 
 
 def add_password_arg(cmd, psw, ___required=False):
-    """Append password switch to commandline.
-    """
+    """Append password switch to commandline."""
     if UNRAR_TOOL == ALT_TOOL:
         return
     if psw is not None:
@@ -2958,8 +2927,7 @@ def add_password_arg(cmd, psw, ___required=False):
 
 
 def check_returncode(p, out):
-    """Raise exception according to unrar exit code.
-    """
+    """Raise exception according to unrar exit code."""
     code = p.returncode
     if code == 0:
         return

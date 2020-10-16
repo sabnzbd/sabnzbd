@@ -102,9 +102,19 @@ def guard_loglevel():
     LOG_FLAG = True
 
 
+def warning_helpful(*args, **kwargs):
+    """ Wrapper to ignore helpfull warnings if desired """
+    if sabnzbd.cfg.helpfull_warnings():
+        return logging.warning(*args, **kwargs)
+    return logging.info(*args, **kwargs)
+
+
+logging.warning_helpful = warning_helpful
+
+
 class GUIHandler(logging.Handler):
-    """ Logging handler collects the last warnings/errors/exceptions
-        to be displayed in the web-gui
+    """Logging handler collects the last warnings/errors/exceptions
+    to be displayed in the web-gui
     """
 
     def __init__(self, size):
@@ -276,7 +286,7 @@ def identify_web_template(key, defweb, wdir):
     full_main = real_path(full_dir, DEF_MAIN_TMPL)
 
     if not os.path.exists(full_main):
-        logging.warning(T("Cannot find web template: %s, trying standard template"), full_main)
+        logging.warning_helpful(T("Cannot find web template: %s, trying standard template"), full_main)
         full_dir = real_path(sabnzbd.DIR_INTERFACES, DEF_STDINTF)
         full_main = real_path(full_dir, DEF_MAIN_TMPL)
         if not os.path.exists(full_main):
@@ -419,10 +429,12 @@ def print_modules():
         logging.info("UNRAR binary... found (%s)", sabnzbd.newsunpack.RAR_COMMAND)
 
         # Report problematic unrar
-        if sabnzbd.newsunpack.RAR_PROBLEM and not sabnzbd.cfg.ignore_wrong_unrar():
+        if sabnzbd.newsunpack.RAR_PROBLEM:
             have_str = "%.2f" % (float(sabnzbd.newsunpack.RAR_VERSION) / 100)
             want_str = "%.2f" % (float(sabnzbd.constants.REC_RAR_VERSION) / 100)
-            logging.warning(T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str)
+            logging.warning_helpful(
+                T("Your UNRAR version is %s, we recommend version %s or higher.<br />"), have_str, want_str
+            )
         elif not (sabnzbd.WIN32 or sabnzbd.DARWIN):
             logging.info("UNRAR binary version %.2f", (float(sabnzbd.newsunpack.RAR_VERSION) / 100))
     else:
@@ -495,8 +507,8 @@ def check_resolve(host):
 
 
 def get_webhost(cherryhost, cherryport, https_port):
-    """ Determine the webhost address and port,
-        return (host, port, browserhost)
+    """Determine the webhost address and port,
+    return (host, port, browserhost)
     """
     if cherryhost == "0.0.0.0" and not check_resolve("127.0.0.1"):
         cherryhost = ""
@@ -592,7 +604,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
     if ipv6 and ipv4 and cherryhost == "" and sabnzbd.WIN32:
-        logging.warning(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
+        logging.warning_helpful(T("Please be aware the 0.0.0.0 hostname will need an IPv6 address for external access"))
 
     if cherryhost == "localhost" and not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         # On the Ubuntu family, localhost leads to problems for CherryPy
@@ -667,8 +679,8 @@ def find_free_port(host, currentport):
 
 
 def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
-    """ Check for a running instance of sabnzbd on this port
-        allow_browser==True|None will launch the browser, False will not.
+    """Check for a running instance of sabnzbd on this port
+    allow_browser==True|None will launch the browser, False will not.
     """
     if allow_browser is None:
         allow_browser = True
@@ -690,10 +702,10 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
 
 
 def evaluate_inipath(path):
-    """ Derive INI file path from a partial path.
-        Full file path: if file does not exist the name must contain a dot
-        but not a leading dot.
-        foldername is enough, the standard name will be appended.
+    """Derive INI file path from a partial path.
+    Full file path: if file does not exist the name must contain a dot
+    but not a leading dot.
+    foldername is enough, the standard name will be appended.
     """
     path = os.path.normpath(os.path.abspath(path))
     inipath = os.path.join(path, DEF_INI_FILE)
@@ -710,9 +722,9 @@ def evaluate_inipath(path):
 
 
 def commandline_handler():
-    """ Split win32-service commands are true parameters
-        Returns:
-            service, sab_opts, serv_opts, upload_nzbs
+    """Split win32-service commands are true parameters
+    Returns:
+        service, sab_opts, serv_opts, upload_nzbs
     """
     service = ""
     sab_opts = []
@@ -843,7 +855,6 @@ def main():
     pid_path = None
     pid_file = None
     new_instance = False
-    osx_console = False
     ipv6_hosting = None
 
     _service, sab_opts, _serv_opts, upload_nzbs = commandline_handler()
@@ -1153,12 +1164,16 @@ def main():
 
     # On Linux/FreeBSD/Unix "UTF-8" is strongly, strongly adviced:
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN and not ("utf-8" in sabnzbd.encoding.CODEPAGE.lower()):
-        logging.warning(
+        logging.warning_helpful(
             T(
                 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems with Unicoded file and directory names in downloads."
             ),
             sabnzbd.encoding.CODEPAGE,
         )
+
+    # TODO: Remove after 3.1.0
+    if sys.hexversion < 0x03060000:
+        logging.warning_helpful("Python 3.5 is end-of-life. SABnzbd 3.2.0 will only run on Python 3.6 and above.")
 
     # SSL Information
     logging.info("SSL version = %s", ssl.OPENSSL_VERSION)
@@ -1397,6 +1412,7 @@ def main():
 
     # Make available from both URLs
     main_page = sabnzbd.interface.MainPage()
+    cherrypy.Application.relative_urls = "server"
     cherrypy.tree.mount(main_page, "/", config=appconfig)
     cherrypy.tree.mount(main_page, sabnzbd.cfg.url_base(), config=appconfig)
 
@@ -1637,13 +1653,14 @@ https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
 
 
 def handle_windows_service():
-    """ Handle everything for Windows Service
-        Returns True when any service commands were detected or
-        when we have started as a service.
+    """Handle everything for Windows Service
+    Returns True when any service commands were detected or
+    when we have started as a service.
     """
     # Detect if running as Windows Service (only Vista and above!)
     # Adapted from https://stackoverflow.com/a/55248281/5235502
-    if win32ts.ProcessIdToSessionId(win32api.GetCurrentProcessId()) == 0:
+    # Only works when run from the exe-files
+    if hasattr(sys, "frozen") and win32ts.ProcessIdToSessionId(win32api.GetCurrentProcessId()) == 0:
         servicemanager.Initialize()
         servicemanager.PrepareToHostSingle(SABnzbd)
         servicemanager.StartServiceCtrlDispatcher()

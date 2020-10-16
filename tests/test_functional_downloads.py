@@ -24,8 +24,8 @@ from tests.testhelper import *
 
 class TestDownloadFlow(SABnzbdBaseTest):
     def is_server_configured(self):
-        """ Check if the wizard was already performed.
-            If not: run the wizard!
+        """Check if the wizard was already performed.
+        If not: run the wizard!
         """
         with open(os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"), "r") as config_file:
             if SAB_NEWSSERVER_HOST not in config_file.read():
@@ -96,7 +96,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
             except WebDriverException:
                 time.sleep(1)
         else:
-            self.fail("Download did not complete")
+            pytest.fail("Download did not complete")
 
         # Check if the expected file exists on disk
         file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)

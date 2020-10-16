@@ -62,10 +62,10 @@ def set_language(language=None):
 
 
 def list_languages():
-    """ Return sorted list of (lang-code, lang-string) pairs,
-        representing the available languages.
-        When any language file is found, the default tuple ('en', 'English')
-        will be included. Otherwise an empty list is returned.
+    """Return sorted list of (lang-code, lang-string) pairs,
+    representing the available languages.
+    When any language file is found, the default tuple ('en', 'English')
+    will be included. Otherwise an empty list is returned.
     """
     # Find all the MO files.
     lst = []

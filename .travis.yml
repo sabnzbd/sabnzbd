@@ -14,6 +14,9 @@ matrix:
   - os: linux
     language: python
     python: "3.8"
+  - os: linux
+    language: python
+    python: "3.9-dev"
   - os: osx
     addons:
       chrome: stable
@@ -32,8 +35,7 @@ install:
       ln -s /usr/lib/chromium-browser/chromedriver ~/bin/chromedriver;
     fi;
   - python3 --version
-  - python3 -m pip install --upgrade pip
-  - python3 -m pip install --upgrade wheel
+  - python3 -m pip install --upgrade pip wheel
   - python3 -m pip install --upgrade -r requirements.txt
   - python3 -m pip install --upgrade -r tests/requirements.txt
 

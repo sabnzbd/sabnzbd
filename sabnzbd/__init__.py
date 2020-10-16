@@ -24,7 +24,6 @@ import datetime
 import tempfile
 import pickle
 import gzip
-import subprocess
 import time
 import socket
 import cherrypy
@@ -532,8 +531,8 @@ def guard_language():
 
 
 def set_https_verification(value):
-    """ Set HTTPS-verification state while returning current setting
-        False = disable verification
+    """Set HTTPS-verification state while returning current setting
+    False = disable verification
     """
     prev = ssl._create_default_https_context == ssl.create_default_context
     if value:
@@ -548,7 +547,7 @@ def guard_https_ver():
     set_https_verification(cfg.enable_https_verification())
 
 
-def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
+def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None, password=None):
     """ Add NZB based on a URL, attributes optional """
     if "http" not in url:
         return
@@ -567,6 +566,12 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None):
 
     # Generate the placeholder
     future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
+
+    # Set password
+    if not future_nzo.password:
+        future_nzo.password = password
+
+    # Get it!
     URLGrabber.do.add(url, future_nzo)
     return future_nzo.nzo_id
 
@@ -655,8 +660,8 @@ def add_nzbfile(
     password=None,
     nzo_id=None,
 ):
-    """ Add file, either a single NZB-file or an archive.
-        All other parameters are passed to the NZO-creation.
+    """Add file, either a single NZB-file or an archive.
+    All other parameters are passed to the NZO-creation.
     """
     if pp == "-1":
         pp = None
@@ -810,9 +815,9 @@ def restart_program():
 
 
 def change_queue_complete_action(action, new=True):
-    """ Action or script to be performed once the queue has been completed
-        Scripts are prefixed with 'script_'
-        When "new" is False, check whether non-script actions are acceptable
+    """Action or script to be performed once the queue has been completed
+    Scripts are prefixed with 'script_'
+    When "new" is False, check whether non-script actions are acceptable
     """
     global QUEUECOMPLETE, QUEUECOMPLETEACTION, QUEUECOMPLETEARG
 
@@ -851,19 +856,10 @@ def run_script(script):
     script_path = filesystem.make_script_path(script)
     if script_path:
         try:
-            stup, need_shell, command, creationflags = sabnzbd.newsunpack.build_command([script_path])
-            logging.info("Spawning external command %s", command)
-            subprocess.Popen(
-                command,
-                shell=need_shell,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                startupinfo=stup,
-                creationflags=creationflags,
-            )
+            script_output = misc.run_command([script_path])
+            logging.info("Output of queue-complete script %s: \n%s", script, script_output)
         except:
-            logging.debug("Failed script %s, Traceback: ", script, exc_info=True)
+            logging.info("Failed queue-complete script %s, Traceback: ", script, exc_info=True)
 
 
 def empty_queues():
@@ -900,8 +896,8 @@ def keep_awake():
 
 
 def get_new_id(prefix, folder, check_list=None):
-    """ Return unique prefixed admin identifier within folder
-        optionally making sure that id is not in the check_list.
+    """Return unique prefixed admin identifier within folder
+    optionally making sure that id is not in the check_list.
     """
     for n in range(100):
         try:
@@ -1024,8 +1020,8 @@ def check_repair_request():
 
 
 def check_all_tasks():
-    """ Check every task and restart safe ones, else restart program
-        Return True when everything is under control
+    """Check every task and restart safe ones, else restart program
+    Return True when everything is under control
     """
     if __SHUTTING_DOWN__ or not __INITIALIZED__:
         return True
@@ -1091,18 +1087,21 @@ def pid_file(pid_path=None, pid_file=None, port=0):
             else:
                 filesystem.remove_file(DIR_PID)
         except:
-            logging.warning("Cannot access PID file %s", DIR_PID)
+            logging.warning(T("Cannot access PID file %s"), DIR_PID)
 
 
 def check_incomplete_vs_complete():
-    """ Make sure "incomplete" and "complete" are not identical """
+    """Make sure download_dir and complete_dir are not identical
+    or that download_dir is not a subfolder of complete_dir"""
     complete = cfg.complete_dir.get_path()
     if filesystem.same_file(cfg.download_dir.get_path(), complete):
-        if filesystem.real_path("X", cfg.download_dir()) == cfg.download_dir():
-            # Abs path, so set an abs path too
+        if filesystem.real_path("X", cfg.download_dir()) == filesystem.long_path(cfg.download_dir()):
+            # Abs path, so set download_dir as an abs path inside the complete_dir
             cfg.download_dir.set(os.path.join(complete, "incomplete"))
         else:
             cfg.download_dir.set("incomplete")
+        return False
+    return True
 
 
 def wait_for_download_folder():

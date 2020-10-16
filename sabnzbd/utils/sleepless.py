@@ -40,9 +40,9 @@ assertion_id = None
 
 
 def keep_awake(reason):
-    """ Tell OS to stay awake. One argument: text to send to OS.
-        Stays in effect until next 'allow_sleep' call.
-        Multiple calls allowed.
+    """Tell OS to stay awake. One argument: text to send to OS.
+    Stays in effect until next 'allow_sleep' call.
+    Multiple calls allowed.
     """
     global assertion_id
 

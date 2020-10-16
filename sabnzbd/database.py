@@ -34,7 +34,7 @@ from sabnzbd.bpsmeter import this_week, this_month
 from sabnzbd.decorators import synchronized
 from sabnzbd.encoding import ubtou, utob
 from sabnzbd.misc import int_conv, caller_name, opts_to_pp
-from sabnzbd.filesystem import remove_file
+from sabnzbd.filesystem import remove_file, clip_path
 
 DB_LOCK = threading.RLock()
 
@@ -61,10 +61,10 @@ def convert_search(search):
 
 
 class HistoryDB:
-    """ Class to access the History database
-        Each class-instance will create an access channel that
-        can be used in one thread.
-        Each thread needs its own class-instance!
+    """Class to access the History database
+    Each class-instance will create an access channel that
+    can be used in one thread.
+    Each thread needs its own class-instance!
     """
 
     # These class attributes will be accessed directly because
@@ -275,15 +275,15 @@ class HistoryDB:
                     save=True,
                 )
 
-    def add_history_db(self, nzo, storage="", path="", postproc_time=0, script_output="", script_line=""):
+    def add_history_db(self, nzo, storage="", postproc_time=0, script_output="", script_line=""):
         """ Add a new job entry to the database """
-        t = build_history_info(nzo, storage, path, postproc_time, script_output, script_line, series_info=True)
+        t = build_history_info(nzo, storage, postproc_time, script_output, script_line, series_info=True)
 
         self.execute(
             """INSERT INTO history (completed, name, nzb_name, category, pp, script, report,
             url, status, nzo_id, storage, path, script_log, script_line, download_time, postproc_time, stage_log,
-            downloaded, completeness, fail_message, url_info, bytes, series, md5sum, password)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            downloaded, fail_message, url_info, bytes, series, md5sum, password)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             t,
             save=True,
         )
@@ -342,11 +342,11 @@ class HistoryDB:
         if series and season and episode:
             pattern = "%s/%s/%s" % (series, season, episode)
             res = self.execute(
-                "select count(*) from History WHERE series = ? AND STATUS != ?", (pattern, Status.FAILED)
+                """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (pattern, Status.FAILED)
             )
             if res:
                 try:
-                    total = self.c.fetchone().get("count(*)")
+                    total = self.c.fetchone().get("COUNT(*)")
                 except AttributeError:
                     pass
         return total > 0
@@ -354,17 +354,20 @@ class HistoryDB:
     def have_name_or_md5sum(self, name, md5sum):
         """ Check whether this name or md5sum is already in History """
         total = 0
-        res = self.execute("select count(*) from History WHERE md5sum = ? AND STATUS != ?", (md5sum, Status.FAILED))
+        res = self.execute(
+            """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != ?""",
+            (name, md5sum, Status.FAILED),
+        )
         if res:
             try:
-                total = self.c.fetchone().get("count(*)")
+                total = self.c.fetchone().get("COUNT(*)")
             except AttributeError:
                 pass
         return total > 0
 
     def get_history_size(self):
-        """ Returns the total size of the history and
-            amounts downloaded in the last month and week
+        """Returns the total size of the history and
+        amounts downloaded in the last month and week
         """
         # Total Size of the history
         total = 0
@@ -402,7 +405,7 @@ class HistoryDB:
         """ Return decompressed log file """
         data = ""
         t = (nzo_id,)
-        if self.execute("SELECT script_log FROM history WHERE nzo_id = ?", t):
+        if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", t):
             try:
                 data = ubtou(zlib.decompress(self.c.fetchone().get("script_log")))
             except:
@@ -413,7 +416,7 @@ class HistoryDB:
         """ Return name of the job `nzo_id` """
         t = (nzo_id,)
         name = ""
-        if self.execute("SELECT name FROM history WHERE nzo_id = ?", t):
+        if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
             try:
                 name = self.c.fetchone().get("name")
             except AttributeError:
@@ -424,7 +427,7 @@ class HistoryDB:
         """ Return the `incomplete` path of the job `nzo_id` if it is still there """
         t = (nzo_id,)
         path = ""
-        if self.execute("SELECT path FROM history WHERE nzo_id = ?", t):
+        if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
             try:
                 path = self.c.fetchone().get("path")
             except AttributeError:
@@ -436,7 +439,7 @@ class HistoryDB:
     def get_other(self, nzo_id):
         """ Return additional data for job `nzo_id` """
         t = (nzo_id,)
-        if self.execute("SELECT * FROM history WHERE nzo_id = ?", t):
+        if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", t):
             try:
                 items = self.c.fetchone()
                 dtype = items.get("report")
@@ -461,13 +464,9 @@ def dict_factory(cursor, row):
 _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 
 
-def build_history_info(
-    nzo, storage="", downpath="", postproc_time=0, script_output="", script_line="", series_info=False
-):
+def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output="", script_line="", series_info=False):
     """ Collects all the information needed for the database """
     completed = int(time.time())
-    if not downpath:
-        downpath = nzo.downpath
     pp = _PP_LOOKUP.get(opts_to_pp(*nzo.repair_opts), "X")
 
     if script_output:
@@ -475,7 +474,6 @@ def build_history_info(
         script_output = sqlite3.Binary(zlib.compress(utob(script_output)))
 
     download_time = nzo.nzo_info.get("download_time", 0)
-    completeness = 0
     url_info = nzo.nzo_info.get("details", "") or nzo.nzo_info.get("more_info", "")
 
     # Get the dictionary containing the stages and their unpack process
@@ -507,15 +505,14 @@ def build_history_info(
         nzo.url,
         nzo.status,
         nzo.nzo_id,
-        storage,
-        downpath,
+        clip_path(workdir_complete),
+        clip_path(nzo.downpath),
         script_output,
         script_line,
         download_time,
         postproc_time,
         stage_log,
         nzo.bytes_downloaded,
-        completeness,
         nzo.fail_msg,
         url_info,
         nzo.bytes_downloaded,
@@ -526,8 +523,8 @@ def build_history_info(
 
 
 def unpack_history_info(item):
-    """ Expands the single line stage_log from the DB
-        into a python dictionary for use in the history display
+    """Expands the single line stage_log from the DB
+    into a python dictionary for use in the history display
     """
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lst = item["stage_log"]
@@ -538,7 +535,7 @@ def unpack_history_info(item):
             logging.error(T("Invalid stage logging in history for %s") + " (\\r\\n)", item["name"])
             logging.debug("Lines: %s", lst)
             lines = []
-        lst = [None for x in STAGES]
+        lst = [None for _ in STAGES]
         for line in lines:
             stage = {}
             try:

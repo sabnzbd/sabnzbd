@@ -36,8 +36,8 @@ def reg_info(user):
 
 
 def get_connection_info(user=True):
-    """ Return URL of the API running SABnzbd instance
-        'user' == True will first try user's registry, otherwise system is used
+    """Return URL of the API running SABnzbd instance
+    'user' == True will first try user's registry, otherwise system is used
     """
     section, keypath = reg_info(user)
     url = None

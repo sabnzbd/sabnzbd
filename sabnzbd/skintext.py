@@ -544,6 +544,10 @@ SKIN_TEXT = {
     "opt-ignore_samples": TT("Ignore Samples"),
     "explain-ignore_samples": TT("Filter out sample files (e.g. video samples)."),
     "igsam-del": TT("Delete after download"),
+    "opt-deobfuscate_final_filenames": TT("Deobfuscate final filenames"),
+    "explain-deobfuscate_final_filenames": TT(
+        "If filenames of (large) files in the final folder look obfuscated or meaningless they will be renamed to the job name."
+    ),
     "opt-enable_https_verification": TT("HTTPS certificate verification"),
     "explain-enable_https_verification": TT(
         "Verify certificates when connecting to indexers and RSS-sources using HTTPS."

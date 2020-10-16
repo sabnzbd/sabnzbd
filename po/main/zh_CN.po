@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"Project-Id-Version: SABnzbd-3.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Chinese (China) (https://www.transifex.com/sabnzbd/teams/111101/zh_CN/)\n"
@@ -87,6 +87,11 @@ msgstr "SABnzbd 以 %s 编码启动了，正常应该是 UTF-8。会导致下载
 
 #. Warning message
 #: SABnzbd.py
+msgid "Could not load additional certificates from certifi package"
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "由于缺少 CERT 及 KEY 文件，已禁用 HTTPS"
 
@@ -157,6 +162,11 @@ msgstr "tempfile.mkstemp 出错"
 msgid "Loading %s failed"
 msgstr "加载 %s 失败"
 
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
+
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
 msgstr "成功发送电子邮件"
@@ -211,16 +221,16 @@ msgstr "Assembler 出现致命错误"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
-msgstr "警告：\"%s\" 任务已暂停，因其包含加密 RAR 文件 (已尝试所有的密码，如果提供了的话)"
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
+"were tried)"
+msgstr "\"%s\" 任务已暂停，因其包含加密 RAR 文件 (已尝试所有的密码，如果提供了的话)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
-msgstr "警告：\"%s\" 任务已终止，因其包含加密 RAR 文件 (已尝试所有的密码，如果提供了的话)"
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
+" were tried)"
+msgstr "\"%s\" 任务已终止，因其包含加密 RAR 文件 (已尝试所有的密码，如果提供了的话)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -228,8 +238,8 @@ msgstr "已中止，发现加密文件"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr "*警告*: RAR 文件“%s”中出现不需要的扩展名。不需要的文件名为 %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgstr "RAR 文件“%s”中出现不需要的扩展名。不需要的文件名为 %s "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -241,13 +251,13 @@ msgstr "已中止，侦测到不需要的扩展名"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
-msgstr "*警告*: 任务“%s”已暂停，由于评分过低 (%s)"
+msgid "Paused job \"%s\" because of rating (%s)"
+msgstr "任务“%s”已暂停，由于评分过低 (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
-msgstr "*警告*: 任务“%s”已中止，由于评分过低 (%s)"
+msgid "Aborted job \"%s\" because of rating (%s)"
+msgstr "任务“%s”已中止，由于评分过低 (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
@@ -628,6 +638,12 @@ msgstr ""
 "href=\"..\">刷新</a></strong><br />"
 
 #: sabnzbd/interface.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr "警告: LOCALHOST 太含糊，请使用数字 IP 地址。"
 
@@ -711,6 +727,11 @@ msgstr "分钟"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "创建 SSL key 及证书出错"
 
@@ -720,6 +741,21 @@ msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
 msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
+msgstr "Python 脚本 \"%s\" 不具有执行 (+x) 权限"
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
@@ -973,16 +1009,6 @@ msgstr ""
 msgid "Checking"
 msgstr "正在检查"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "[%s] The command in build_command is undefined."
-msgstr ""
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr "Python 脚本 \"%s\" 不具有执行 (+x) 权限"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "正在尝试  SFV 验证"
@@ -1014,6 +1040,19 @@ msgstr "Wiki"
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
 msgstr "启动/关闭"
+
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "暂停"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "续传"
 
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
@@ -1133,6 +1172,7 @@ msgstr "%s => 所有服务器均缺失，正在舍弃"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "无效 NZB 文件 %s，正在跳过 (原因=%s, 行=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "空 NZB 文件 %s"
@@ -1266,21 +1306,9 @@ msgstr "清空历史"
 msgid "Limit Speed"
 msgstr "限速"
 
-#. Pause downloading - Four way switch for duplicates - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Pause"
-msgstr "暂停"
-
 #: sabnzbd/osxmenu.py
 msgid "min."
 msgstr "分钟"
-
-#. Resume downloading - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Resume"
-msgstr "续传"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1486,6 +1514,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "下载失败 - 不在该服务器上"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "后期处理"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "正在移动"
 
@@ -1547,10 +1579,6 @@ msgid "Cannot create final folder %s"
 msgstr "无法创建最终文件夹 %s"
 
 #: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "后期处理"
-
-#: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] 无 par2 集合"
 
@@ -1582,6 +1610,11 @@ msgstr "RAR 文件验证成功"
 msgid "RAR files failed to verify"
 msgstr "RAR 文件验证失败"
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1601,6 +1634,11 @@ msgstr "系统待机失败"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "关闭系统时出错"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py
@@ -3504,6 +3542,16 @@ msgstr "过滤样本文件 (如视频样本)。"
 #: sabnzbd/skintext.py
 msgid "Delete after download"
 msgstr "下载后删除"
+
+#: sabnzbd/skintext.py
+msgid "Deobfuscate final filenames"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"If filenames of (large) files in the final folder look obfuscated or "
+"meaningless they will be renamed to the job name."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"

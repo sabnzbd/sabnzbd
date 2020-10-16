@@ -25,6 +25,7 @@ import pyfakefs.fake_filesystem_unittest as ffs
 
 import sabnzbd.cfg
 import sabnzbd.filesystem as filesystem
+from sabnzbd.constants import DEF_FOLDER_MAX
 from tests.testhelper import *
 
 # Set the global uid for fake filesystems to a non-root user;
@@ -163,6 +164,11 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("test.aftertest..") == "test.aftertest"
         assert filesystem.sanitize_foldername("/test/this.") == "+test+this"
         assert filesystem.sanitize_foldername("/test./this.") == "+test.+this"
+
+    def test_long_foldername(self):
+        assert len(filesystem.sanitize_foldername("test" * 100)) == DEF_FOLDER_MAX
+        assert len(filesystem.sanitize_foldername("a" * DEF_FOLDER_MAX)) == DEF_FOLDER_MAX
+        assert len(filesystem.sanitize_foldername("a" * (DEF_FOLDER_MAX + 1))) == DEF_FOLDER_MAX
 
     def test_filename_empty_result(self):
         # Nothing remains after sanitizing the filename

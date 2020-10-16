@@ -284,7 +284,8 @@ class SeriesSorter:
             # Error Sorting
             return os.path.join(self.original_path, self.original_job_name)
 
-    def get_multi_ep_naming(self, one, two, extras):
+    @staticmethod
+    def get_multi_ep_naming(one, two, extras):
         """ Returns a list of unique values joined into a string and separated by - (ex:01-02-03-04) """
         extra_list = [one]
         extra2_list = [two]
@@ -978,10 +979,10 @@ class DateSorter:
 
 
 def path_subst(path, mapping):
-    """ Replace the sort sting elements by real values.
-        Non-elements are copied literally.
-        path = the sort string
-        mapping = array of tuples that maps all elements to their values
+    """Replace the sort sting elements by real values.
+    Non-elements are copied literally.
+    path = the sort string
+    mapping = array of tuples that maps all elements to their values
     """
     # Added ugly hack to prevent %ext from being masked by %e
     newpath = []
@@ -1001,11 +1002,11 @@ def path_subst(path, mapping):
 
 
 def get_titles(nzo, match, name, titleing=False):
-    """ The title will be the part before the match
-        Clean it up and title() it
+    """The title will be the part before the match
+    Clean it up and title() it
 
-        ''.title() isn't very good under python so this contains
-        a lot of little hacks to make it better and for more control
+    ''.title() isn't very good under python so this contains
+    a lot of little hacks to make it better and for more control
     """
     if nzo:
         title = nzo.nzo_info.get("propername")
@@ -1087,9 +1088,9 @@ def replace_word(word_input, one, two):
 
 
 def get_descriptions(nzo, match, name):
-    """ If present, get a description from the nzb name.
-        A description has to be after the matched item, separated either
-        like ' - Description' or '_-_Description'
+    """If present, get a description from the nzb name.
+    A description has to be after the matched item, separated either
+    like ' - Description' or '_-_Description'
     """
     if nzo:
         ep_name = nzo.nzo_info.get("episodename")
@@ -1150,8 +1151,8 @@ def to_lowercase(path):
 
 
 def strip_folders(path):
-    """ Return 'path' without leading and trailing spaces and underscores in each element
-        For Windows, also remove leading and trailing dots
+    """Return 'path' without leading and trailing spaces and underscores in each element
+    For Windows, also remove leading and trailing dots
     """
     unc = sabnzbd.WIN32 and (path.startswith("//") or path.startswith("\\\\"))
     f = path.strip("/").split("/")
@@ -1178,10 +1179,10 @@ def strip_folders(path):
 
 
 def rename_similar(folder, skip_ext, name, skipped_files):
-    """ Rename all other files in the 'folder' hierarchy after 'name'
-        and move them to the root of 'folder'.
-        Files having extension 'skip_ext' will be moved, but not renamed.
-        Don't touch files in list `skipped_files`
+    """Rename all other files in the 'folder' hierarchy after 'name'
+    and move them to the root of 'folder'.
+    Files having extension 'skip_ext' will be moved, but not renamed.
+    Don't touch files in list `skipped_files`
     """
     logging.debug('Give files in set "%s" matching names.', name)
     folder = os.path.normpath(folder)
@@ -1213,9 +1214,9 @@ def rename_similar(folder, skip_ext, name, skipped_files):
 
 
 def check_regexs(filename, matchers):
-    """ Regular Expression match for a list of regexes
-        Returns the MatchObject if a match is made
-        This version checks for an additional match
+    """Regular Expression match for a list of regexes
+    Returns the MatchObject if a match is made
+    This version checks for an additional match
     """
     extras = []
     for expressions in matchers:
@@ -1236,8 +1237,8 @@ def check_regexs(filename, matchers):
 
 
 def check_for_date(filename, matcher):
-    """ Regular Expression match for date based files
-        Returns the MatchObject if a match is made
+    """Regular Expression match for date based files
+    Returns the MatchObject if a match is made
     """
     x = 0
     if matcher:

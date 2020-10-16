@@ -9,10 +9,10 @@ _DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)
 
 
 def diskspeedmeasure(dirname):
-    """ Returns writing speed to dirname in MB/s
-        method: keep writing a file, until 1 second is passed.
-        Then divide bytes written by time passed
-        In case of problems (ie non-writable dir or file), return None
+    """Returns writing speed to dirname in MB/s
+    method: keep writing a file, until 1 second is passed.
+    Then divide bytes written by time passed
+    In case of problems (ie non-writable dir or file), return None
     """
     maxtime = 1.0  # sec
     total_written = 0

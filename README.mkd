@@ -1,72 +1,44 @@
-Release Notes - SABnzbd 3.0.2
+Release Notes - SABnzbd 3.1.0
 =========================================================
 
-## Bugfixes since 3.0.1
-- Priority was not parsed correctly if supplied as through the API.
-- API-call `addfile` could fail if `name` and `nzbfile` were used.
-- Permissions were still not set correctly when creating directories.
-- Propagation delay label was shown even if no delay was activated.
-- Reading RSS feed with no categories set could result in crash.
-- Jobs with numeric names could crash post-processing.
-- Jobs with missing articles could result in crash.
-- macOS: changed the power assertion to `NoIdleSleep`.
-- Windows: end-of-queue-script did not run on Windows.
-- Windows: crash if the virus scanner removed the certificate bundle.
+## Changes since 3.0.2
+- Added option to automatically deobfuscate final filenames: after unpacking, 
+  detect and rename obfuscated or meaningless filenames to the job name, 
+  similar to the `Deobfuscate.py` post-processing script. 
+- Switched to Transifex as our translations platform:
+  Help us translate SABnzbd in your language! Add untranslated texts or 
+  improved existing translations here: https://sabnzbd.org/wiki/translate
+- Redesigned job availability-check to be more efficient and reliable.
+- Scheduled readouts of RSS-feeds would fail silently, they now show a warning.
+- Skip repair on Retry if all sets were previously successfully verified.
+- Passwords included in the filename no longer have to be at the end.
+- Restore limit on length of foldernames (`max_foldername_length`).
+- Added password input box on the Add NZB screen. 
+- Clear error if `Complete Folder` is set as a subfolder of the `Temporary Folder`.
+- Show warning that Pyton 3.5 support will be dropped after 3.1.0.
+- Windows/macOS: update UnRar to 5.91 and MultiPar to 1.3.1.0.
+- Windows: retry `Access Denied` when renaming files on Windows. 
 
-## Bugfixes since 3.0.0
-- Basic Authentication resulted in crash. 
-- Permissions were not set correctly when creating directories.
-- Windows: base SSL certificate bundle was not included.
-
-## About the new major version
-We have been working for months to upgrade the SABnzbd code from Python 2 to Python 3.
-Although it might not sound like a big change, we had to rewrite almost every part of
-the code. We also included a number of new features, listed below.
-
-## Big changes in 3.0.0
-- Python 3.5 and above are the only supported versions of Python.
-- Cache handling is greatly improved, resulting in more stable speeds on some systems.
-- Articles failing with CRC errors are now retried on other servers.
-- SFV files, even obfuscated, will be used for renaming when there are no par2 files.
-- Fully obfuscated RAR-sets with no verification files are detected and extracted.
-- Built-in internet bandwidth test.
-- Windows Service support was changed. The service will need to be reinstalled!
-  Documentation: https://sabnzbd.org/wiki/advanced/sabnzbd-as-a-windows-service
-- The Windows installer is 64-bit only, for 32-bit please use the standalone package.
-
-## Other changes since 2.3.9
-- Files inside an NZB that are fully identical are now skipped automatically.
-- Folders of jobs that failed post-processing are renamed to `_FAILED_`.
-- Blocking of unwanted extensions that are directly inside an NZB.
-- In Python 3 OpenSSL 1.1.1 is used for Windows and macOS, as a result 
-  newsservers manually set to `RC4-MD5` cipher can no longer connect. 
-  Documentation: https://sabnzbd.org/wiki/advanced/ssl-ciphers
-- TLS1.3 support for newsserver connections.
-- SABYenc, par2 and unrar are now required to start downloading.
-- Growl-support was removed.
-- The `smpl` skin was removed.
-- Using the API with `output=text` to add NZB's will report the `nzo_ids` instead of `ok`.
-- Queue-item labels are no longer part of the name but separated in API-property `labels`.
-- API-calls `tapi` and `qstatus` were removed.
-- On Windows only Multipar is available for repair.
-- Linux tray icon support was improved.
-- On Linux special permission bits are removed from files after download.
-- macOS features such as the menu and notifications now use native code.
-
-## Bugfixes since 2.3.9
-- Resolved potential security issue in FAT-filesystem check and Nice and IONice Parameters.
-  More information: https://github.com/sabnzbd/sabnzbd/security/advisories/GHSA-9x87-96gg-33w2
-- Sample removal did not work if only 1 sample file was present.
-- Crash on badly formatted RSS-feeds or readout during editing.
-- Only really run pre-queue-script when it is set.
-- Always report API `paused` status as a boolean.
-- Automatic aborting of jobs that can't be completed would sometimes not trigger.
-- Windows systems could enter standby state during downloading.
-- Some errors thrown by unrar were not caught.
-- Files and sockets were not always closed correctly.
-- Unwanted extension check was overly aggressively deleting folders
+## Bugfixes since 3.0.2
+- Assembler crashes could occur due to race condition in `ArticleCache`.
+- On HTTP-redirects the scheme/hostname/port were ignored when behind a proxy.
+- Strip slash of the end of `url_base` as it could break other code.
+- `Temporary Folder` with unicode characters could result in duplicate unpacking.
+- Unpacking with a relative folder set for a category could fail.
+- Existing files were not parsed when retrying a job.
+- Reading attributes when retrying a job could result in crash.
+- Paused priority of pre-queue script was ignored.
+- Duplicate Detection did not check filenames in History.
+- Downloaded bytes could show as exceeding the total bytes of a job.
+- Filtering of history by category would not filter jobs in post-processing.
+- Windows: non-Latin languages were displayed incorrectly in the installer.
+- Windows: could fail to create folders on some network shares.
+- Windows: folders could end in a period, breaking Windows Explorer.
 
 ## Upgrade notices
+- Jobs that failed on versions before 3.1.x, will throw an error about the 
+  attribute file failing to load when they are retried on 3.1.0+. This error 
+  can be ignored.
 - When upgrading from 2.x.x or older the queue will be converted. Job order,
   settings and data will be preserved, but if you decide to go back to 2.x.x
   your queue cannot be downgraded again. But you can restore the jobs by going

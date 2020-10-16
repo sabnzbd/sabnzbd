@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"Project-Id-Version: SABnzbd-3.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Norwegian Bokmål (https://www.transifex.com/sabnzbd/teams/111101/nb/)\n"
@@ -92,6 +92,11 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid "Could not load additional certificates from certifi package"
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "Deaktiverte HTTPS på grunn av manglende CERT- og KEY-filer."
 
@@ -162,6 +167,11 @@ msgstr "Feil i tempfil.mkstemp"
 msgid "Loading %s failed"
 msgstr "Lasting av %s mislyktes"
 
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
+
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
 msgstr "E-post sendning lykkes"
@@ -216,15 +226,15 @@ msgstr "Kritisk feil i Assembler"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
+"were tried)"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
+" were tried)"
 msgstr ""
 
 #: sabnzbd/assembler.py
@@ -233,8 +243,8 @@ msgstr "Avbrutt, kryptering funnet"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr "ADVARSEL: I \"%s\" uønsket filtype i RAR fil. Uønsket fil er %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -246,13 +256,13 @@ msgstr "Avbryt, uønsket forlenging oppdaget"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
-msgstr "ADVARSEL: Pauset jobb \"%s\" grunnet rangeringen (%s)"
+msgid "Paused job \"%s\" because of rating (%s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
-msgstr "ADVARSEL: Avbrøt jobb \"%s\" grunnet rangering (%s)"
+msgid "Aborted job \"%s\" because of rating (%s)"
+msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
@@ -640,6 +650,12 @@ msgstr ""
 "nytt</a></strong><br />"
 
 #: sabnzbd/interface.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr "Advarsel: LOCALHOST er tvetydig, bruk numerisk IP-adresse."
 
@@ -723,6 +739,11 @@ msgstr "m"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "Kunne ikke lage SSL-nøkkel eller sertifikat."
 
@@ -731,6 +752,21 @@ msgstr "Kunne ikke lage SSL-nøkkel eller sertifikat."
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -987,16 +1023,6 @@ msgstr ""
 msgid "Checking"
 msgstr "Undersøker"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "[%s] The command in build_command is undefined."
-msgstr ""
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr ""
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Prøver SFV-verifisering"
@@ -1028,6 +1054,19 @@ msgstr "Wiki"
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
 msgstr "Oppstart/avsluttning"
+
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "Stans midlertidig"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "Gjenoppta"
 
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
@@ -1147,6 +1186,7 @@ msgstr "%s => mangler på alle servere, fjerner"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Feilaktig NZB fil %s, hopper over (årsak=%s, linje=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Tom NZB-fil %s"
@@ -1280,21 +1320,9 @@ msgstr "Slett historikk"
 msgid "Limit Speed"
 msgstr "Hastighetsbegrensning"
 
-#. Pause downloading - Four way switch for duplicates - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Pause"
-msgstr "Stans midlertidig"
-
 #: sabnzbd/osxmenu.py
 msgid "min."
 msgstr "min."
-
-#. Resume downloading - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Resume"
-msgstr "Gjenoppta"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1500,6 +1528,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Nedlastning feilet - Finnes ikke på din(e) server(e)"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Etterbehandling"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Flytter"
 
@@ -1561,10 +1593,6 @@ msgid "Cannot create final folder %s"
 msgstr "Kan ikke opprette mappe %s"
 
 #: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Etterbehandling"
-
-#: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Ingen par2 deler"
 
@@ -1596,6 +1624,11 @@ msgstr ""
 msgid "RAR files failed to verify"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1615,6 +1648,11 @@ msgstr "Kunne ikke sette systemet i ventemodus"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "Feil under avslutting av systemet"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py
@@ -3566,6 +3604,16 @@ msgstr "Filtrere ut sample-filer (ex. video samplinger)."
 #: sabnzbd/skintext.py
 msgid "Delete after download"
 msgstr "Fjern etter nedlasting"
+
+#: sabnzbd/skintext.py
+msgid "Deobfuscate final filenames"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"If filenames of (large) files in the final folder look obfuscated or "
+"meaningless they will be renamed to the job name."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"

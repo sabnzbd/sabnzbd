@@ -36,6 +36,7 @@ from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT,
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
+from sabnzbd.filesystem import get_ext, userxbit
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]{0,1})", re.I)
@@ -45,6 +46,21 @@ RE_IP6 = re.compile(r"inet6\s+(addr:\s*){0,1}([0-9a-f:]+)", re.I)
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
+
+if sabnzbd.WIN32:
+    try:
+        import win32process
+        import win32con
+
+        # Define scheduling priorities
+        WIN_SCHED_PRIOS = {
+            1: win32process.IDLE_PRIORITY_CLASS,
+            2: win32process.BELOW_NORMAL_PRIORITY_CLASS,
+            3: win32process.NORMAL_PRIORITY_CLASS,
+            4: win32process.ABOVE_NORMAL_PRIORITY_CLASS,
+        }
+    except ImportError:
+        pass
 
 
 def time_format(fmt):
@@ -56,9 +72,9 @@ def time_format(fmt):
 
 
 def calc_age(date, trans=False):
-    """ Calculate the age difference between now and date.
-        Value is returned as either days, hours, or minutes.
-        When 'trans' is True, time symbols will be translated.
+    """Calculate the age difference between now and date.
+    Value is returned as either days, hours, or minutes.
+    When 'trans' is True, time symbols will be translated.
     """
     if trans:
         d = T("d")  # : Single letter abbreviation of day
@@ -131,9 +147,9 @@ def name_to_cat(fname, cat=None):
 
 
 def cat_to_opts(cat, pp=None, script=None, priority=None):
-    """ Derive options from category, if options not already defined.
-        Specified options have priority over category-options.
-        If no valid category is given, special category '*' will supply default values
+    """Derive options from category, if options not already defined.
+    Specified options have priority over category-options.
+    If no valid category is given, special category '*' will supply default values
     """
     def_cat = config.get_categories("*")
     cat = safe_lower(cat)
@@ -215,10 +231,10 @@ def wildcard_to_re(text):
 
 
 def cat_convert(cat):
-    """ Convert indexer's category/group-name to user categories.
-        If no match found, but indexer-cat equals user-cat, then return user-cat
-        If no match found, but the indexer-cat starts with the user-cat, return user-cat
-        If no match found, return None
+    """Convert indexer's category/group-name to user categories.
+    If no match found, but indexer-cat equals user-cat, then return user-cat
+    If no match found, but the indexer-cat starts with the user-cat, return user-cat
+    If no match found, return None
     """
     if cat and cat.lower() != "none":
         cats = config.get_ordered_categories()
@@ -255,8 +271,8 @@ def cat_convert(cat):
 
 
 def windows_variant():
-    """ Determine Windows variant
-        Return vista_plus, x64
+    """Determine Windows variant
+    Return vista_plus, x64
     """
     from win32api import GetVersionEx
     from win32con import VER_PLATFORM_WIN32_NT
@@ -360,26 +376,26 @@ def convert_version(text):
 
 
 def check_latest_version():
-    """ Do an online check for the latest version
+    """Do an online check for the latest version
 
-        Perform an online version check
-        Syntax of online version file:
-            <current-final-release>
-            <url-of-current-final-release>
-            <latest-alpha/beta-or-rc>
-            <url-of-latest-alpha/beta/rc-release>
-        The latter two lines are only present when an alpha/beta/rc is available.
-        Formula for the version numbers (line 1 and 3).
-            <major>.<minor>.<bugfix>[rc|beta|alpha]<cand>
+    Perform an online version check
+    Syntax of online version file:
+        <current-final-release>
+        <url-of-current-final-release>
+        <latest-alpha/beta-or-rc>
+        <url-of-latest-alpha/beta/rc-release>
+    The latter two lines are only present when an alpha/beta/rc is available.
+    Formula for the version numbers (line 1 and 3).
+        <major>.<minor>.<bugfix>[rc|beta|alpha]<cand>
 
-        The <cand> value for a final version is assumned to be 99.
-        The <cand> value for the beta/rc version is 1..98, with RC getting
-        a boost of 80 and Beta of 40.
-        This is done to signal alpha/beta/rc users of availability of the final
-        version (which is implicitly 99).
-        People will only be informed to upgrade to a higher alpha/beta/rc version, if
-        they are already using an alpha/beta/rc.
-        RC's are valued higher than Beta's, which are valued higher than Alpha's.
+    The <cand> value for a final version is assumned to be 99.
+    The <cand> value for the beta/rc version is 1..98, with RC getting
+    a boost of 80 and Beta of 40.
+    This is done to signal alpha/beta/rc users of availability of the final
+    version (which is implicitly 99).
+    People will only be informed to upgrade to a higher alpha/beta/rc version, if
+    they are already using an alpha/beta/rc.
+    RC's are valued higher than Beta's, which are valued higher than Alpha's.
     """
 
     if not cfg.version_check():
@@ -431,7 +447,7 @@ def check_latest_version():
         url = url_beta
 
     if testver and current < latest:
-        # This is a test version, but user has't seen the
+        # This is a test version, but user hasn't seen the
         # "Final" of this one yet, so show the Final
         sabnzbd.NEW_VERSION = (latest_label, url)
     elif current < latest:
@@ -459,7 +475,7 @@ def upload_file_to_sabnzbd(url, fp):
                 url = "%s&ma_username=%s&ma_password=%s" % (url, username, password)
         get_from_url(url)
     except:
-        logging.error("Failed to upload file: %s", fp)
+        logging.error(T("Failed to upload file: %s"), fp)
         logging.info("Traceback: ", exc_info=True)
 
 
@@ -467,7 +483,7 @@ def from_units(val):
     """ Convert K/M/G/T/P notation to float """
     val = str(val).strip().upper()
     if val == "-1":
-        return val
+        return float(val)
     m = RE_UNITS.search(val)
     if m:
         if m.group(2):
@@ -488,8 +504,8 @@ def from_units(val):
 
 
 def to_units(val, postfix=""):
-    """ Convert number to K/M/G/T/P notation
-        Show single decimal for M and higher
+    """Convert number to K/M/G/T/P notation
+    Show single decimal for M and higher
     """
     dec_limit = 1
     if val < 0:
@@ -518,8 +534,8 @@ def to_units(val, postfix=""):
 
 def caller_name(skip=2):
     """Get a name of a caller in the format module.method
-       Originally used: https://gist.github.com/techtonik/2151727
-       Adapted for speed by using sys calls directly
+    Originally used: https://gist.github.com/techtonik/2151727
+    Adapted for speed by using sys calls directly
     """
     # Only do the tracing on Debug (function is always called)
     if cfg.log_level() != 2:
@@ -528,7 +544,7 @@ def caller_name(skip=2):
     parentframe = sys._getframe(skip)
     function_name = parentframe.f_code.co_name
 
-    # Modulename not available in the binaries, we can use the filename instead
+    # Module name is not available in the binaries, we can use the filename instead
     if hasattr(sys, "frozen"):
         module_name = inspect.getfile(parentframe)
     else:
@@ -576,9 +592,9 @@ def split_host(srv):
 
 
 def get_cache_limit():
-    """ Depending on OS, calculate cache limits.
-        In ArticleCache it will make sure we stay
-        within system limits for 32/64 bit
+    """Depending on OS, calculate cache limits.
+    In ArticleCache it will make sure we stay
+    within system limits for 32/64 bit
     """
     # Calculate, if possible
     try:
@@ -641,7 +657,7 @@ def get_windows_memory():
 
 def get_darwin_memory():
     """ Use system-call to extract total memory on macOS """
-    system_output = sabnzbd.newsunpack.run_simple(["sysctl", "hw.memsize"])
+    system_output = run_command(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
 
 
@@ -792,13 +808,13 @@ def get_all_passwords(nzo):
 
             # Check size
             if len(pws) > 30:
-                logging.warning(
+                logging.warning_helpful(
                     T(
                         "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
                     )
                 )
         except:
-            logging.warning("Failed to read the passwords file %s", pw_file)
+            logging.warning(T("Failed to read the password file %s"), pw_file)
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
@@ -864,17 +880,7 @@ def ip_extract():
         for item in info:
             ips.append(item[4][0])
     else:
-        p = subprocess.Popen(
-            program,
-            shell=False,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            startupinfo=None,
-            creationflags=0,
-        )
-        output = platform_btou(p.stdout.read())
-        p.wait()
+        output = run_command(program)
         for line in output.split("\n"):
             m = RE_IP4.search(line)
             if not (m and m.group(2)):
@@ -885,8 +891,8 @@ def ip_extract():
 
 
 def get_base_url(url):
-    """ Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
-        But also api.althub.co.za -> althub.co.za
+    """Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
+    But also api.althub.co.za -> althub.co.za
     """
     url_host = urllib.parse.urlparse(url).hostname
     if url_host:
@@ -919,3 +925,72 @@ def nntp_to_msg(text):
     else:
         lines = text.split(b"\r\n")
         return ubtou(lines[0])
+
+
+def build_and_run_command(command, flatten_command=False, **kwargs):
+    """Builds and then runs command with nessecary flags and optional
+    IONice and Nice commands. Optional Popen arguments can be supplied.
+    On Windows we need to run our own list2cmdline for Unrar.
+    Returns the Popen-instance.
+    """
+    # command[0] should be set, and thus not None
+    if not command[0]:
+        logging.error(T("[%s] The command in build_command is undefined."), caller_name())
+        raise IOError
+
+    if not sabnzbd.WIN32:
+        if command[0].endswith(".py"):
+            with open(command[0], "r") as script_file:
+                if not userxbit(command[0]):
+                    # Inform user that Python scripts need x-bit and then stop
+                    logging.error(T('Python script "%s" does not have execute (+x) permission set'), command[0])
+                    raise IOError
+                elif script_file.read(2) != "#!":
+                    # No shebang (#!) defined, add default python
+                    command.insert(0, "python")
+
+        if sabnzbd.newsunpack.IONICE_COMMAND and cfg.ionice():
+            ionice = cfg.ionice().split()
+            command = ionice + command
+            command.insert(0, sabnzbd.newsunpack.IONICE_COMMAND)
+        if sabnzbd.newsunpack.NICE_COMMAND and cfg.nice():
+            nice = cfg.nice().split()
+            command = nice + command
+            command.insert(0, sabnzbd.newsunpack.NICE_COMMAND)
+        creationflags = 0
+        startupinfo = None
+    else:
+        # For Windows we always need to add python interpreter
+        if command[0].endswith(".py"):
+            command.insert(0, "python.exe")
+        if flatten_command:
+            command = sabnzbd.newsunpack.list2cmdline(command)
+        # On some Windows platforms we need to supress a quick pop-up of the command window
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
+        startupinfo.wShowWindow = win32con.SW_HIDE
+        creationflags = WIN_SCHED_PRIOS[cfg.win_process_prio()]
+
+    # Set the basic Popen arguments
+    popen_kwargs = {
+        "stdin": subprocess.PIPE,
+        "stdout": subprocess.PIPE,
+        "stderr": subprocess.STDOUT,
+        "startupinfo": startupinfo,
+        "creationflags": creationflags,
+    }
+    # Update with the supplied ones
+    popen_kwargs.update(kwargs)
+
+    # Run the command
+    logging.info("[%s] Running external command: %s", caller_name(), command)
+    logging.debug("Popen arguments: %s", popen_kwargs)
+    return subprocess.Popen(command, **popen_kwargs)
+
+
+def run_command(cmd):
+    """ Run simple external command and return output as a string. """
+    with build_and_run_command(cmd) as p:
+        txt = platform_btou(p.stdout.read())
+        p.wait()
+    return txt

@@ -110,12 +110,12 @@ class Server:
 
     @property
     def hostip(self):
-        """ In case a server still has active connections, we use the same IP again
-            If new connection then based on value of load_balancing() and self.info:
-            0 - return the first entry, so all threads use the same IP
-            1 - and self.info has more than 1 entry (read: IP address): Return a random entry from the possible IPs
-            2 - and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
-            In case of problems: return the host name itself
+        """In case a server still has active connections, we use the same IP again
+        If new connection then based on value of load_balancing() and self.info:
+        0 - return the first entry, so all threads use the same IP
+        1 - and self.info has more than 1 entry (read: IP address): Return a random entry from the possible IPs
+        2 - and self.info has more than 1 entry (read: IP address): Return the quickest IP based on the happyeyeballs algorithm
+        In case of problems: return the host name itself
         """
         # Check if already a successful ongoing connection
         if self.busy_threads and self.busy_threads[0].nntp:
@@ -213,9 +213,9 @@ class Downloader(Thread):
         Downloader.do = self
 
     def init_server(self, oldserver, newserver):
-        """ Setup or re-setup single server
-            When oldserver is defined and in use, delay startup.
-            Note that the server names are "host:port" strings!
+        """Setup or re-setup single server
+        When oldserver is defined and in use, delay startup.
+        Note that the server names are "host:port" strings!
         """
 
         create = False
@@ -286,7 +286,7 @@ class Downloader(Thread):
         # Do not notify when SABnzbd is still starting
         if self.paused and sabnzbd.WEB_DIR:
             logging.info("Resuming")
-            notifier.send_notification("SABnzbd", T("Resuming"), "download")
+            notifier.send_notification("SABnzbd", T("Resuming"), "pause_resume")
         self.paused = False
 
     @NzbQueueLocker
@@ -295,7 +295,7 @@ class Downloader(Thread):
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
-            notifier.send_notification("SABnzbd", T("Paused"), "download")
+            notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
             if self.is_paused():
                 BPSMeter.do.reset()
             if cfg.autodisconnect():
@@ -314,9 +314,9 @@ class Downloader(Thread):
         self.force_disconnect = True
 
     def limit_speed(self, value):
-        """ Set the actual download speed in Bytes/sec
-            When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a pecentage of the maximum bandwidth
-            When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).
+        """Set the actual download speed in Bytes/sec
+        When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a pecentage of the maximum bandwidth
+        When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).
         """
         if value:
             mx = cfg.bandwidth_max.get_int()
@@ -326,7 +326,7 @@ class Downloader(Thread):
                 if mx:
                     self.bandwidth_limit = mx * self.bandwidth_perc / 100
                 else:
-                    logging.warning(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
+                    logging.warning_helpful(T("You must set a maximum bandwidth before you can set a bandwidth limit"))
             else:
                 self.bandwidth_limit = from_units(value)
                 if mx:
@@ -363,8 +363,8 @@ class Downloader(Thread):
                 return True
 
     def highest_server(self, me):
-        """ Return True when this server has the highest priority of the active ones
-            0 is the highest priority
+        """Return True when this server has the highest priority of the active ones
+        0 is the highest priority
         """
         for server in self.servers:
             if server is not me and server.active and server.priority < me.priority:
@@ -406,8 +406,8 @@ class Downloader(Thread):
             sabnzbd.nzbqueue.NzbQueue.do.reset_all_try_lists()
 
     def decode(self, article, raw_data):
-        """ Decode article and check the status of
-            the decoder and the assembler
+        """Decode article and check the status of
+        the decoder and the assembler
         """
         # Handle broken articles directly
         if not raw_data:
@@ -928,8 +928,8 @@ class Downloader(Thread):
                     self.init_server(server.id, server.id)
 
     def update_server(self, oldserver, newserver):
-        """ Update the server and make sure we trigger
-            the update in the loop to do housekeeping """
+        """Update the server and make sure we trigger
+        the update in the loop to do housekeeping"""
         self.init_server(oldserver, newserver)
         self.wakeup()
 

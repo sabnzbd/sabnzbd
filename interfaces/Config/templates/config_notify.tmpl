@@ -1,12 +1,12 @@
 <!--#set global $pane="Email"#-->
-<!--#set global $help_uri="configuration/3.0/notifications"#-->
+<!--#set global $help_uri="configuration/3.1/notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#def show_notify_checkboxes($section_label)#-->
-    <!--#for $type in $notify_keys#-->
+    <!--#for $type in $notify_types#-->
         <div class="field-pair">
             <label class="config wide" for="${section_label}_prio_$type">
-                $T($notify_texts[$type]).replace('/', ' / ')  <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
+                $T($notify_types[$type]).replace('/', ' / ')
             </label>
             <input type="checkbox" name="${section_label}_prio_$type" id="${section_label}_prio_$type" value="1" <!--#if int($getVar($section_label + '_prio_' + $type)) > 0 then 'checked="checked"' else ""#--> />
         </div>
@@ -232,10 +232,10 @@
                     <span class="desc">$T('explain-prowl_apikey')</span>
                 </div>
                 <!--#set $section_label = 'prowl'#-->
-                <!--#for $type in $notify_keys#-->
+                <!--#for $type in $notify_types#-->
                     <div class="field-pair">
                         <label class="config" for="${section_label}_prio_$type">
-                            $T($notify_texts[$type]).replace('/', ' / ') <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
+                            $T($notify_types[$type]).replace('/', ' / ')
                         </label>
                         <select name="${section_label}_prio_$type" id="${section_label}_prio_$type">
                             <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == -3 then 'selected="selected"' else ""#--> >$T('prowl-off')</option>
@@ -298,10 +298,10 @@
                     <span class="desc">$T('explain-pushover_emergency_expire')</span>
                 </div>
                 <!--#set $section_label = 'pushover'#-->
-                <!--#for $type in $notify_keys#-->
+                <!--#for $type in $notify_types#-->
                     <div class="field-pair">
                         <label class="config" for="${section_label}_prio_$type">
-                            $T($notify_texts[$type]).replace('/', ' / ') <!--#if $type == 'download'#--> / $T('link-pause') / $T('link-resume')<!--#end if#-->
+                            $T($notify_types[$type]).replace('/', ' / ')
                         </label>
                         <select name="${section_label}_prio_$type" id="${section_label}_prio_$type">
                             <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>

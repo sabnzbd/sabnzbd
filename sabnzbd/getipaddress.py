@@ -76,9 +76,9 @@ def localipv4():
 
 
 def publicipv4():
-    """ Because of dual IPv4/IPv6 clients, finding the
-        public ipv4 needs special attention, meaning forcing
-        IPv4 connections, and not allowing IPv6 connections
+    """Because of dual IPv4/IPv6 clients, finding the
+    public ipv4 needs special attention, meaning forcing
+    IPv4 connections, and not allowing IPv6 connections
     """
     public_ipv4 = None
     try:

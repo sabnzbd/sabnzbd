@@ -24,9 +24,9 @@ import sabnzbd.config as config
 
 class TestValidators:
     def test_clean_nice_ionice_parameters_allowed(self):
-        """ Allowed nice and ionice parameters
-            https://linux.die.net/man/1/nice
-            https://linux.die.net/man/1/ionice
+        """Allowed nice and ionice parameters
+        https://linux.die.net/man/1/nice
+        https://linux.die.net/man/1/ionice
         """
 
         def assert_allowed(inp_value):

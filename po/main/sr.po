@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"Project-Id-Version: SABnzbd-3.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Serbian (https://www.transifex.com/sabnzbd/teams/111101/sr/)\n"
@@ -89,6 +89,11 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid "Could not load additional certificates from certifi package"
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS onemogućen zbog nedostajućih CERT i KEY datoteka"
 
@@ -159,6 +164,11 @@ msgstr "Грешка у tempfile.mkstemp"
 msgid "Loading %s failed"
 msgstr "Učitavanje %s neuspešno"
 
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
+
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
 msgstr "Упешно слање е-поште"
@@ -213,15 +223,15 @@ msgstr "Fatalna greška u Assembler-u"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
+"were tried)"
 msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
+" were tried)"
 msgstr ""
 
 #: sabnzbd/assembler.py
@@ -230,10 +240,8 @@ msgstr "Prekinuto, detektovana enkripcija"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
 msgstr ""
-"UPOZORENJE: U \"%s\" pronađena neželjena ekstenzija u RAR datoteci. "
-"Neželjena datoteka je %s "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -245,13 +253,13 @@ msgstr "Prekinuto, detektovana neželjena ekstenzija"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
-msgstr "UPOZORENJE: Posao \"%s\" pauziran zbog ocene (%s)"
+msgid "Paused job \"%s\" because of rating (%s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
-msgstr "UPOZORENJE: Posao \"%s\" prekinut zbog ocene (%s)"
+msgid "Aborted job \"%s\" because of rating (%s)"
+msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
@@ -638,6 +646,12 @@ msgstr ""
 "href=\"..\">Освежи</a></strong><br />"
 
 #: sabnzbd/interface.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr "Пажња: LOCALHOST је двосмислен, користите ИП адресе."
 
@@ -721,6 +735,11 @@ msgstr "м"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "Грешка креације SSL кључа и сертификата"
 
@@ -729,6 +748,21 @@ msgstr "Грешка креације SSL кључа и сертификата"
 msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
 msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
@@ -985,16 +1019,6 @@ msgstr ""
 msgid "Checking"
 msgstr "Провера"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "[%s] The command in build_command is undefined."
-msgstr ""
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr ""
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Pokušaj SFV provere"
@@ -1026,6 +1050,19 @@ msgstr "Вики"
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
 msgstr "Покретање/Гашење"
+
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "Пауза"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "Настави"
 
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
@@ -1145,6 +1182,7 @@ msgstr "%s => фали на свим серверима, одбацивање"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Неважећи NZB %s, прескакање (разлог=%s, линија=%s)"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Празан NZB %s"
@@ -1278,21 +1316,9 @@ msgstr "Очисти хронологију"
 msgid "Limit Speed"
 msgstr "Ограничење брзине"
 
-#. Pause downloading - Four way switch for duplicates - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Pause"
-msgstr "Пауза"
-
 #: sabnzbd/osxmenu.py
 msgid "min."
 msgstr "мин."
-
-#. Resume downloading - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Resume"
-msgstr "Настави"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1498,6 +1524,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Неуспешно преузимање - није на вашем серверу"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Пост-процесирање"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Премештање"
 
@@ -1559,10 +1589,6 @@ msgid "Cannot create final folder %s"
 msgstr "Немогуће креирање фасцикле %s"
 
 #: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Пост-процесирање"
-
-#: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Нема par2 датотеке"
 
@@ -1594,6 +1620,11 @@ msgstr ""
 msgid "RAR files failed to verify"
 msgstr ""
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1613,6 +1644,11 @@ msgstr "Неуспено постављање система у стању пр�
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "Greška pri gašenju sistema"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py
@@ -3556,6 +3592,16 @@ msgstr "Филтрирај примерне датотеке (нпр. видео
 #: sabnzbd/skintext.py
 msgid "Delete after download"
 msgstr "Обриши после преузимања"
+
+#: sabnzbd/skintext.py
+msgid "Deobfuscate final filenames"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"If filenames of (large) files in the final folder look obfuscated or "
+"meaningless they will be renamed to the job name."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"

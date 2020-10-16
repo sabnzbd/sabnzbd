@@ -250,8 +250,8 @@ def launch_a_browser(url, force=False):
 
 
 def show_error_dialog(msg):
-    """ Show a pop-up when program cannot start
-        Windows-only, otherwise only print to console
+    """Show a pop-up when program cannot start
+    Windows-only, otherwise only print to console
     """
     if sabnzbd.WIN32:
         ctypes.windll.user32.MessageBoxW(0, msg, T("Fatal error"), 0)

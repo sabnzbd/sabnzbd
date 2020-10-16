@@ -152,9 +152,6 @@ If you want source code, contact with me by e-mail.
 
  Because I cannot connect to the Internet so often, I may check mails once a week.
 Please wait very long to receive my mail reply.
-There is a web-forum for MultiPar users.
-(URL: "http://www.livebusinesschat.com/smf/index.php?board=396.0")
-Even when I cannot reply your question, other users may help.
 
  My name is Yutaka Sawada.
 E-mail address is "tenfon (at mark) outlook.jp".

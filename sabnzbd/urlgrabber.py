@@ -273,6 +273,7 @@ class URLGrabber(Thread):
                         nzo_info=nzo_info,
                         url=future_nzo.url,
                         keep=False,
+                        password=future_nzo.password,
                         nzo_id=future_nzo.nzo_id,
                     )
                     # -2==Error/retry, -1==Error, 0==OK, 1==Empty
@@ -298,10 +299,11 @@ class URLGrabber(Thread):
                 logging.error(T("URLGRABBER CRASHED"), exc_info=True)
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
-    def fail_to_history(self, nzo, url, msg="", content=False):
-        """ Create History entry for failed URL Fetch
-            msg: message to be logged
-            content: report in history that cause is a bad NZB file
+    @staticmethod
+    def fail_to_history(nzo, url, msg="", content=False):
+        """Create History entry for failed URL Fetch
+        msg: message to be logged
+        content: report in history that cause is a bad NZB file
         """
         # Remove the "Trying to fetch" part
         if url:
@@ -316,7 +318,7 @@ class URLGrabber(Thread):
             msg = T("URL Fetching failed; %s") % msg
 
         # Mark as failed
-        nzo.status = Status.FAILED
+        nzo.set_unpack_info("Source", msg)
         nzo.fail_msg = msg
 
         notifier.send_notification(T("URL Fetching failed; %s") % "", "%s\n%s" % (msg, url), "other", nzo.cat)
@@ -356,8 +358,8 @@ def _build_request(url):
 
 
 def _analyse(fetch_request, future_nzo):
-    """ Analyze response of indexer
-        returns fetch_request|None, error-message|None, retry, wait-seconds, data
+    """Analyze response of indexer
+    returns fetch_request|None, error-message|None, retry, wait-seconds, data
     """
     data = None
     if not fetch_request or fetch_request.code != 200:

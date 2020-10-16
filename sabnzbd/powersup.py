@@ -196,7 +196,7 @@ def linux_shutdown():
                 else:
                     logging.info("DBus does not support Stop (shutdown)")
     except dbus.exceptions.DBusException as msg:
-        logging.error("Received a DBus exception %s", msg)
+        logging.error(T("Received a DBus exception %s"), msg)
     os._exit(0)
 
 
@@ -226,7 +226,7 @@ def linux_hibernate():
                     logging.info("DBus does not support Hibernate")
         time.sleep(10)
     except dbus.exceptions.DBusException as msg:
-        logging.error("Received a DBus exception %s", msg)
+        logging.error(T("Received a DBus exception %s"), msg)
 
 
 def linux_standby():
@@ -255,4 +255,4 @@ def linux_standby():
                     logging.info("DBus does not support Suspend (standby)")
         time.sleep(10)
     except dbus.exceptions.DBusException as msg:
-        logging.error("Received a DBus exception %s", msg)
+        logging.error(T("Received a DBus exception %s"), msg)

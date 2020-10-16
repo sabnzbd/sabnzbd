@@ -56,8 +56,8 @@ _JUNKFOLDERS = (
 
 
 def get_win_drives():
-    """ Return list of detected drives, adapted from:
-        http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
+    """Return list of detected drives, adapted from:
+    http://stackoverflow.com/questions/827371/is-there-a-way-to-list-all-the-available-drive-letters-in-python/827490
     """
     assert NT
     drives = []
@@ -70,9 +70,9 @@ def get_win_drives():
 
 
 def folders_at_path(path, include_parent=False, show_hidden=False):
-    """ Returns a list of dictionaries with the folders contained at the given path
-        Give the empty string as the path to list the contents of the root path
-        under Unix this means "/", on Windows this will be a list of drive letters)
+    """Returns a list of dictionaries with the folders contained at the given path
+    Give the empty string as the path to list the contents of the root path
+    under Unix this means "/", on Windows this will be a list of drive letters)
     """
     if path == "":
         if NT:

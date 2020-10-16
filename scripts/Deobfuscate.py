@@ -221,5 +221,13 @@ if run_renamer:
     else:
         print("No par2 files or large files found")
 
+# Note about the new option
+print(
+    "The features of Deobfuscate.py are now integrated into SABnzbd! "
+    + "Just enable 'Deobfuscate final filenames' in Config - Switches. "
+    + "Don't forget to disable this script when you enable the new option!"
+    + "This script will be removed in the next version of SABnzbd."
+)
+
 # Always exit with success-code
 sys.exit(0)

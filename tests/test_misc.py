@@ -20,16 +20,22 @@ tests.test_misc - Testing functions in misc.py
 """
 
 import datetime
+import subprocess
+import sys
+import tempfile
+from unittest import mock
 
 from sabnzbd import lang
 from sabnzbd import misc
+from sabnzbd import newsunpack
 from sabnzbd.config import ConfigCat
-from sabnzbd.constants import HIGH_PRIORITY, TOP_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY
+from sabnzbd.constants import HIGH_PRIORITY, FORCE_PRIORITY, DEFAULT_PRIORITY, NORMAL_PRIORITY
 from tests.testhelper import *
 
 
 class TestMisc:
-    def assertTime(self, offset, age):
+    @staticmethod
+    def assertTime(offset, age):
         assert offset == misc.calc_age(age, trans=True)
         assert offset == misc.calc_age(age, trans=False)
 
@@ -80,13 +86,13 @@ class TestMisc:
         assert ("movies", 3, "test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies")
         assert ("movies", 1, "test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies", pp=1)
         assert ("movies", 1, "not_test.py", HIGH_PRIORITY) == misc.cat_to_opts("movies", pp=1, script="not_test.py")
-        assert ("movies", 3, "test.py", TOP_PRIORITY) == misc.cat_to_opts("movies", priority=TOP_PRIORITY)
+        assert ("movies", 3, "test.py", FORCE_PRIORITY) == misc.cat_to_opts("movies", priority=FORCE_PRIORITY)
 
         # If the category has DEFAULT_PRIORITY, it should use the priority of the *-category (NORMAL_PRIORITY)
         # If the script-name is Default for a category, it should use the script of the *-category (None)
         ConfigCat("software", {"priority": DEFAULT_PRIORITY, "script": "Default"})
         assert ("software", 3, "None", NORMAL_PRIORITY) == misc.cat_to_opts("software")
-        assert ("software", 3, "None", TOP_PRIORITY) == misc.cat_to_opts("software", priority=TOP_PRIORITY)
+        assert ("software", 3, "None", FORCE_PRIORITY) == misc.cat_to_opts("software", priority=FORCE_PRIORITY)
 
     def test_wildcard_to_re(self):
         assert "\\\\\\^\\$\\.\\[" == misc.wildcard_to_re("\\^$.[")
@@ -105,6 +111,7 @@ class TestMisc:
         assert (3010194, True) == misc.convert_version("3.1.1RC14")
 
     def test_from_units(self):
+        assert -1.0 == misc.from_units("-1")
         assert 100.0 == misc.from_units("100")
         assert 1024.0 == misc.from_units("1KB")
         assert 1048576.0 == misc.from_units("1024KB")
@@ -211,3 +218,78 @@ class TestMisc:
         # Remove files
         os.unlink("test.cert")
         os.unlink("test.key")
+
+
+class TestBuildAndRunCommand:
+    # Path should exist
+    script_path = os.path.join(SAB_BASE_DIR, "test_misc.py")
+
+    def test_none_check(self):
+        with pytest.raises(IOError):
+            misc.build_and_run_command([None])
+
+    @mock.patch("subprocess.Popen")
+    @pytest.mark.skipif(not sys.platform.startswith("win"), reason="Windows tests")
+    def test_win(self, mock_subproc_popen):
+        # Needed for priority and startupinfo check
+        import win32process
+        import win32con
+
+        misc.build_and_run_command(["test.cmd", "input 1"])
+        assert mock_subproc_popen.call_args[0][0] == ["test.cmd", "input 1"]
+        assert mock_subproc_popen.call_args[1]["creationflags"] == win32process.NORMAL_PRIORITY_CLASS
+        assert mock_subproc_popen.call_args[1]["startupinfo"].dwFlags == win32process.STARTF_USESHOWWINDOW
+        assert mock_subproc_popen.call_args[1]["startupinfo"].wShowWindow == win32con.SW_HIDE
+
+        misc.build_and_run_command(["test.py", "input 1"])
+        assert mock_subproc_popen.call_args[0][0] == ["python.exe", "test.py", "input 1"]
+        assert mock_subproc_popen.call_args[1]["creationflags"] == win32process.NORMAL_PRIORITY_CLASS
+        assert mock_subproc_popen.call_args[1]["startupinfo"].dwFlags == win32process.STARTF_USESHOWWINDOW
+        assert mock_subproc_popen.call_args[1]["startupinfo"].wShowWindow == win32con.SW_HIDE
+
+        # See: https://github.com/sabnzbd/sabnzbd/issues/1043
+        misc.build_and_run_command(["UnRar.exe", "\\\\?\\C:\\path\\"])
+        assert mock_subproc_popen.call_args[0][0] == ["UnRar.exe", "\\\\?\\C:\\path\\"]
+        misc.build_and_run_command(["UnRar.exe", "\\\\?\\C:\\path\\"], flatten_command=True)
+        assert mock_subproc_popen.call_args[0][0] == '"UnRar.exe" "\\\\?\\C:\\path\\"'
+
+    @mock.patch("sabnzbd.misc.userxbit")
+    @mock.patch("subprocess.Popen")
+    def test_std_override(self, mock_subproc_popen, userxbit):
+        userxbit.return_value = True
+        misc.build_and_run_command([self.script_path], stderr=subprocess.DEVNULL)
+        assert mock_subproc_popen.call_args[1]["stderr"] == subprocess.DEVNULL
+
+    @set_platform("linux")
+    @set_config({"nice": "--adjustment=-7", "ionice": "-t -n9 -c7"})
+    @mock.patch("sabnzbd.misc.userxbit")
+    @mock.patch("subprocess.Popen")
+    def test_linux_features(self, mock_subproc_popen, userxbit):
+        # Should break on no-execute permissions
+        userxbit.return_value = False
+        with pytest.raises(IOError):
+            misc.build_and_run_command([self.script_path, "input 1"])
+        userxbit.return_value = True
+
+        # Check if python-call is added if not supplied by shebang
+        temp_file_fd, temp_file_path = tempfile.mkstemp(suffix=".py")
+        os.close(temp_file_fd)
+        misc.build_and_run_command([temp_file_path, "input 1"])
+        assert mock_subproc_popen.call_args[0][0] == ["python", temp_file_path, "input 1"]
+        os.remove(temp_file_path)
+
+        # Have to fake these for it to work
+        newsunpack.IONICE_COMMAND = "ionice"
+        newsunpack.NICE_COMMAND = "nice"
+        userxbit.return_value = True
+        misc.build_and_run_command([self.script_path, "input 1"])
+        assert mock_subproc_popen.call_args[0][0] == [
+            "nice",
+            "--adjustment=-7",
+            "ionice",
+            "-t",
+            "-n9",
+            "-c7",
+            self.script_path,
+            "input 1",
+        ]

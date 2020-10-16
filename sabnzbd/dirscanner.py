@@ -59,10 +59,10 @@ def clean_file_list(inp_list, folder, files):
 
 
 class DirScanner(threading.Thread):
-    """ Thread that periodically scans a given directory and picks up any
-        valid NZB, NZB.GZ ZIP-with-only-NZB and even NZB.GZ named as .NZB
-        Candidates which turned out wrong, will be remembered and skipped in
-        subsequent scans, unless changed.
+    """Thread that periodically scans a given directory and picks up any
+    valid NZB, NZB.GZ ZIP-with-only-NZB and even NZB.GZ named as .NZB
+    Candidates which turned out wrong, will be remembered and skipped in
+    subsequent scans, unless changed.
     """
 
     do = None  # Access to instance of DirScanner

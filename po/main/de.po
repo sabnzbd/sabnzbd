@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"Project-Id-Version: SABnzbd-3.1.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
@@ -99,6 +99,11 @@ msgstr ""
 
 #. Warning message
 #: SABnzbd.py
+msgid "Could not load additional certificates from certifi package"
+msgstr ""
+
+#. Warning message
+#: SABnzbd.py
 msgid "Disabled HTTPS because of missing CERT and KEY files"
 msgstr "HTTPS wegen fehlenden Zertifikats- und Schlüsseldateien deaktiviert."
 
@@ -170,6 +175,11 @@ msgstr "Fehler in tempfile.mkstemp"
 msgid "Loading %s failed"
 msgstr "Fehler beim Laden von %s"
 
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Cannot access PID file %s"
+msgstr ""
+
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
 msgstr "E-Mail erfolgreich versendet"
@@ -225,20 +235,20 @@ msgstr "Schwerer Fehler im Assembler"
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Paused job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Paused job \"%s\" because of encrypted RAR file (if supplied, all passwords "
+"were tried)"
 msgstr ""
-"ACHTUNG: \"%s\" wurde angehalten, da es ein verschlüsseltes RAR Archiv "
-"enthält (falls unterstützt, wurden alle Passwörter ausprobiert)"
+"\"%s\" wurde angehalten, da es ein verschlüsseltes RAR Archiv enthält (falls"
+" unterstützt, wurden alle Passwörter ausprobiert)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid ""
-"WARNING: Aborted job \"%s\" because of encrypted RAR file (if supplied, all "
-"passwords were tried)"
+"Aborted job \"%s\" because of encrypted RAR file (if supplied, all passwords"
+" were tried)"
 msgstr ""
-"ACHTUNG: \"%s\" wurde abgebrochen, da es ein verschlüsseltes RAR Archiv "
-"enthält (falls unterstützt, wurden alle Passwörter ausprobiert)"
+" \"%s\" wurde abgebrochen, da es ein verschlüsseltes RAR Archiv enthält "
+"(falls unterstützt, wurden alle Passwörter ausprobiert)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, encryption detected"
@@ -246,9 +256,8 @@ msgstr "Abgebrochen, Verschlüsselung vorhanden"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
-msgstr ""
-"WARNUNG: Unerwünschter Typ \"%s\" in RAR Datei. Unerwünschte Datei ist %s "
+msgid "In \"%s\" unwanted extension in RAR file. Unwanted file is %s "
+msgstr "Unerwünschter Typ \"%s\" in RAR Datei. Unerwünschte Datei ist %s "
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
@@ -260,13 +269,13 @@ msgstr "Abgebrochen, unerwünschte Dateieindung gefunden"
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Paused job \"%s\" because of rating (%s)"
-msgstr "WARNUNG: Aufgabe \"%s\" aufgrund der Bewertung (%s) pausiert."
+msgid "Paused job \"%s\" because of rating (%s)"
+msgstr "Aufgabe \"%s\" aufgrund der Bewertung (%s) pausiert."
 
 #. Warning message
 #: sabnzbd/assembler.py
-msgid "WARNING: Aborted job \"%s\" because of rating (%s)"
-msgstr "Warnung: Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
+msgid "Aborted job \"%s\" because of rating (%s)"
+msgstr "Aufgabe \"%s\" aufgrund der Bewertung (%s) abgebrochen"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
@@ -669,6 +678,12 @@ msgstr ""
 "href=\"..\">Aktualisieren</a></strong><br />"
 
 #: sabnzbd/interface.py
+msgid ""
+"The Completed Download Folder cannot be the same or a subfolder of the "
+"Temporary Download Folder"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr ""
 "Warnung: localhost ist mehrdeutig. Verwenden Sie eine numerische IP-Adresse."
@@ -755,6 +770,11 @@ msgstr "m"
 
 #. Error message
 #: sabnzbd/misc.py
+msgid "Failed to upload file: %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
 msgid "Error creating SSL key and certificate"
 msgstr "Fehler beim Anlegen des SSL-Schlüssels und -Zertifikats."
 
@@ -767,6 +787,21 @@ msgstr ""
 "Ihre Passwort-Datei enthält mehr als 30 Passwörter, das Testen aller "
 "Passwörter dauert sehr lange. Versuchen Sie, nur nützliche Passwörter "
 "aufzulisten."
+
+#. Warning message
+#: sabnzbd/misc.py
+msgid "Failed to read the password file %s"
+msgstr ""
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "[%s] The command in build_command is undefined."
+msgstr "[%s] Der Befehl in build_command ist nicht definiert."
+
+#. Error message
+#: sabnzbd/misc.py
+msgid "Python script \"%s\" does not have execute (+x) permission set"
+msgstr "Dem Pythonskript \"%s\" fehlen die Ausführungsrechte (+x)"
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
@@ -1028,16 +1063,6 @@ msgstr "Überprüfe zusätzliche Dateien"
 msgid "Checking"
 msgstr "Wird überprüft"
 
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "[%s] The command in build_command is undefined."
-msgstr "[%s] Der Befehl in build_command ist nicht definiert."
-
-#. Error message
-#: sabnzbd/newsunpack.py
-msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr "Dem Pythonskript \"%s\" fehlen die Ausführungsrechte (+x)"
-
 #: sabnzbd/newsunpack.py
 msgid "Trying SFV verification"
 msgstr "Versuche SFV-Überprüfung"
@@ -1072,6 +1097,19 @@ msgstr "Wiki"
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
 msgstr "Starten/Beenden"
+
+#. Notification - Pause downloading - Four way switch for duplicates -
+#. Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Pause"
+msgstr "Anhalten"
+
+#. Notification - Resume downloading - Config->Scheduling
+#: sabnzbd/notifier.py, sabnzbd/osxmenu.py, sabnzbd/sabtray.py,
+#: sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+msgid "Resume"
+msgstr "Fortsetzen"
 
 #. Notification - Config->RSS after adding to queue
 #: sabnzbd/notifier.py, sabnzbd/skintext.py
@@ -1191,6 +1229,7 @@ msgstr "%s wurde auf keinem Server gefunden und daher übersprungen"
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Ungültige NZB-Datei %s wird übersprungen: %s auf Zeile %s"
 
+#. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
 msgid "Empty NZB file %s"
 msgstr "Leere NZB-Datei %s"
@@ -1327,21 +1366,9 @@ msgstr "Verlauf leeren"
 msgid "Limit Speed"
 msgstr "Geschwindigkeit begrenzen"
 
-#. Pause downloading - Four way switch for duplicates - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Pause"
-msgstr "Anhalten"
-
 #: sabnzbd/osxmenu.py
 msgid "min."
 msgstr "Min."
-
-#. Resume downloading - Config->Scheduling
-#: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
-#: sabnzbd/skintext.py
-msgid "Resume"
-msgstr "Fortsetzen"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1559,6 +1586,10 @@ msgid "Download failed - Not on your server(s)"
 msgstr "Download fehlgeschlagen - Nicht auf deinem/n Server/n vorhanden"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing"
+msgstr "Nachbearbeitung"
+
+#: sabnzbd/postproc.py
 msgid "Moving"
 msgstr "Verschiebevorgang"
 
@@ -1620,10 +1651,6 @@ msgid "Cannot create final folder %s"
 msgstr "Konnte Download-Ordner %s nicht anlegen"
 
 #: sabnzbd/postproc.py
-msgid "Post-processing"
-msgstr "Nachbearbeitung"
-
-#: sabnzbd/postproc.py
 msgid "[%s] No par2 sets"
 msgstr "[%s] Keine PAR2-Sätze"
 
@@ -1655,6 +1682,11 @@ msgstr "RAR-Datei erfolgreich überprüft"
 msgid "RAR files failed to verify"
 msgstr "RAR-Datei konnten nicht überprüft werden"
 
+#. Warning message
+#: sabnzbd/postproc.py
+msgid "No matching earlier rar file for %s"
+msgstr ""
+
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
@@ -1674,6 +1706,11 @@ msgstr "Fehler beim Wechsel in den Bereitschaftsmodus"
 #: sabnzbd/powersup.py
 msgid "Error while shutting down system"
 msgstr "Fehler beim Herunterfahren des Systems"
+
+#. Error message
+#: sabnzbd/powersup.py
+msgid "Received a DBus exception %s"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/rating.py
@@ -3684,6 +3721,16 @@ msgstr "Beispieldateien herausfiltern (z.B. Videoausschnitte)"
 #: sabnzbd/skintext.py
 msgid "Delete after download"
 msgstr "Nach dem Download löschen"
+
+#: sabnzbd/skintext.py
+msgid "Deobfuscate final filenames"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"If filenames of (large) files in the final folder look obfuscated or "
+"meaningless they will be renamed to the job name."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"

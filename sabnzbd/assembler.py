@@ -121,20 +121,16 @@ class Assembler(Thread):
                         if rar_encrypted:
                             if cfg.pause_on_pwrar() == 1:
                                 logging.warning(
-                                    remove_warning_label(
-                                        T(
-                                            'WARNING: Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
-                                        )
+                                    T(
+                                        'Paused job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
                                     ),
                                     nzo.final_name,
                                 )
                                 nzo.pause()
                             else:
                                 logging.warning(
-                                    remove_warning_label(
-                                        T(
-                                            'WARNING: Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
-                                        )
+                                    T(
+                                        'Aborted job "%s" because of encrypted RAR file (if supplied, all passwords were tried)'
                                     ),
                                     nzo.final_name,
                                 )
@@ -143,9 +139,7 @@ class Assembler(Thread):
 
                         if unwanted_file:
                             logging.warning(
-                                remove_warning_label(
-                                    T('WARNING: In "%s" unwanted extension in RAR file. Unwanted file is %s ')
-                                ),
+                                T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
                                 nzo.final_name,
                                 unwanted_file,
                             )
@@ -169,14 +163,14 @@ class Assembler(Thread):
                     filter_output, reason = nzo_filtered_by_rating(nzo)
                     if filter_output == 1:
                         logging.warning(
-                            remove_warning_label(T('WARNING: Paused job "%s" because of rating (%s)')),
+                            T('Paused job "%s" because of rating (%s)'),
                             nzo.final_name,
                             reason,
                         )
                         nzo.pause()
                     elif filter_output == 2:
                         logging.warning(
-                            remove_warning_label(T('WARNING: Aborted job "%s" because of rating (%s)')),
+                            T('Aborted job "%s" because of rating (%s)'),
                             nzo.final_name,
                             reason,
                         )
@@ -187,10 +181,11 @@ class Assembler(Thread):
                 sabnzbd.nzbqueue.NzbQueue.do.remove(nzo.nzo_id, add_to_history=False, cleanup=False)
                 PostProcessor.do.process(nzo)
 
-    def assemble(self, nzf, file_done):
-        """ Assemble a NZF from its table of articles
-            1) Partial write: write what we have
-            2) Nothing written before: write all
+    @staticmethod
+    def assemble(nzf, file_done):
+        """Assemble a NZF from its table of articles
+        1) Partial write: write what we have
+        2) Nothing written before: write all
         """
         # New hash-object needed?
         if not nzf.md5:
@@ -232,8 +227,8 @@ class Assembler(Thread):
 
 
 def file_has_articles(nzf):
-    """ Do a quick check to see if any articles are present for this file.
-        Destructive: only to be used to differentiate between unknown encoding and no articles.
+    """Do a quick check to see if any articles are present for this file.
+    Destructive: only to be used to differentiate between unknown encoding and no articles.
     """
     has = False
     for article in nzf.decodetable:
@@ -417,11 +412,3 @@ def rating_filtered(rating, filename, abort):
     if any(check_keyword(k) for k in keywords.split(",")):
         return T("keywords")
     return None
-
-
-def remove_warning_label(msg):
-    """ Standardize errors by removing obsolete
-        "WARNING:" part in all languages """
-    if ":" in msg:
-        return msg.split(":")[1].strip()
-    return msg

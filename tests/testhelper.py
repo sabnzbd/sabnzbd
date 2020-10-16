@@ -144,7 +144,8 @@ class SABnzbdBaseTest:
         except (RemoteDisconnected, ProtocolError):
             pass
 
-    def selenium_wrapper(self, func, *args):
+    @staticmethod
+    def selenium_wrapper(func, *args):
         """ Wrapper with retries for more stable Selenium """
         for i in range(3):
             try:

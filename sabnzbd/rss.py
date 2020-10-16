@@ -24,6 +24,7 @@ import logging
 import time
 import datetime
 import threading
+import urllib.parse
 
 import sabnzbd
 from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, DUP_PRIORITY
@@ -128,9 +129,9 @@ def notdefault(item):
 
 
 def convert_filter(text):
-    """ Return compiled regex.
-        If string starts with re: it's a real regex
-        else quote all regex specials, replace '*' by '.*'
+    """Return compiled regex.
+    If string starts with re: it's a real regex
+    else quote all regex specials, replace '*' by '.*'
     """
     text = text.strip().lower()
     if text.startswith("re:"):
@@ -145,8 +146,8 @@ def convert_filter(text):
 
 
 def remove_obsolete(jobs, new_jobs):
-    """ Expire G/B links that are not in new_jobs (mark them 'X')
-        Expired links older than 3 days are removed from 'jobs'
+    """Expire G/B links that are not in new_jobs (mark them 'X')
+    Expired links older than 3 days are removed from 'jobs'
     """
     now = time.time()
     limit = now - 259200  # 3days (3x24x3600)
@@ -277,44 +278,49 @@ class RSSQueue:
         feedparser.USER_AGENT = "SABnzbd/%s" % sabnzbd.__version__
 
         # Read the RSS feed
-        msg = None
-        entries = None
+        msg = ""
+        entries = []
         if readout:
             all_entries = []
             for uri in uris:
-                uri = uri.replace(" ", "%20")
+                # Reset parsing message for each feed
+                msg = ""
+                feed_parsed = {}
+                uri = uri.replace(" ", "%20").replace("feed://", "http://")
                 logging.debug("Running feedparser on %s", uri)
-                feed_parsed = feedparser.parse(uri.replace("feed://", "http://"))
-                logging.debug("Done parsing %s", uri)
-
-                if not feed_parsed:
-                    msg = T("Failed to retrieve RSS from %s: %s") % (uri, "?")
-                    logging.info(msg)
+                try:
+                    feed_parsed = feedparser.parse(uri)
+                except Exception as feedparser_exc:
+                    # Feedparser 5 would catch all errors, while 6 just throws them back at us
+                    feed_parsed["bozo_exception"] = feedparser_exc
+                logging.debug("Finished parsing %s", uri)
 
                 status = feed_parsed.get("status", 999)
                 if status in (401, 402, 403):
                     msg = T("Do not have valid authentication for feed %s") % uri
-                    logging.info(msg)
-
-                if 500 <= status <= 599:
+                elif 500 <= status <= 599:
                     msg = T("Server side error (server code %s); could not get %s on %s") % (status, feed, uri)
-                    logging.info(msg)
 
-                entries = feed_parsed.get("entries")
+                entries = feed_parsed.get("entries", [])
+                if not entries and "feed" in feed_parsed and "error" in feed_parsed["feed"]:
+                    msg = T("Failed to retrieve RSS from %s: %s") % (uri, feed_parsed["feed"]["error"])
+
+                # Exception was thrown
                 if "bozo_exception" in feed_parsed and not entries:
                     msg = str(feed_parsed["bozo_exception"])
                     if "CERTIFICATE_VERIFY_FAILED" in msg:
                         msg = T("Server %s uses an untrusted HTTPS certificate") % get_base_url(uri)
                         msg += " - https://sabnzbd.org/certificate-errors"
-                        logging.error(msg)
                     elif "href" in feed_parsed and feed_parsed["href"] != uri and "login" in feed_parsed["href"]:
                         # Redirect to login page!
                         msg = T("Do not have valid authentication for feed %s") % uri
                     else:
                         msg = T("Failed to retrieve RSS from %s: %s") % (uri, msg)
-                    logging.info(msg)
 
-                if not entries and not msg:
+                if msg:
+                    # We need to escape any "%20" that could be in the warning due to the URL's
+                    logging.warning_helpful(urllib.parse.unquote(msg))
+                elif not entries:
                     msg = T("RSS Feed %s was empty") % uri
                     logging.info(msg)
                 all_entries.extend(entries)
@@ -625,8 +631,8 @@ class RSSQueue:
                     self.jobs[feed][item]["status"] = "D-"
 
     def check_duplicate(self, title):
-        """ Check if this title was in this or other feeds
-            Return matching feed name
+        """Check if this title was in this or other feeds
+        Return matching feed name
         """
         title = title.lower()
         for fd in self.jobs:
@@ -638,18 +644,31 @@ class RSSQueue:
 
 
 def patch_feedparser():
-    """ Apply options that work for SABnzbd
-        Add additional parsing of attributes
+    """Apply options that work for SABnzbd
+    Add additional parsing of attributes
     """
     feedparser.SANITIZE_HTML = 0
-    feedparser.PARSE_MICROFORMATS = 0
+    feedparser.RESOLVE_RELATIVE_URIS = 0
+
+    # Support both feedparser 5 and 6
+    try:
+        feedparser_mixin = feedparser._FeedParserMixin
+        feedparser_parse_date = feedparser._parse_date
+    except AttributeError:
+        feedparser_mixin = feedparser.mixin._FeedParserMixin
+        feedparser_parse_date = feedparser.datetimes._parse_date
 
     # Add our own namespace
-    feedparser._FeedParserMixin.namespaces["http://www.newznab.com/DTD/2010/feeds/attributes/"] = "newznab"
+    feedparser_mixin.namespaces["http://www.newznab.com/DTD/2010/feeds/attributes/"] = "newznab"
 
     # Add parsers for the namespace
     def _start_newznab_attr(self, attrsD):
-        context = self._getContext()
+        # Support both feedparser 5 and 6
+        try:
+            context = self._getContext()
+        except AttributeError:
+            context = self._get_context()
+
         # Add the dict
         if "newznab" not in context:
             context["newznab"] = {}
@@ -659,14 +678,14 @@ def patch_feedparser():
             context["newznab"][attrsD["name"]] = attrsD["value"]
             # Try to get date-object
             if attrsD["name"] == "usenetdate":
-                context["newznab"][attrsD["name"] + "_parsed"] = feedparser._parse_date(attrsD["value"])
+                context["newznab"][attrsD["name"] + "_parsed"] = feedparser_parse_date(attrsD["value"])
         except KeyError:
             pass
 
-    feedparser._FeedParserMixin._start_newznab_attr = _start_newznab_attr
-    feedparser._FeedParserMixin._start_nZEDb_attr = _start_newznab_attr
-    feedparser._FeedParserMixin._start_nzedb_attr = _start_newznab_attr
-    feedparser._FeedParserMixin._start_nntmux_attr = _start_newznab_attr
+    feedparser_mixin._start_newznab_attr = _start_newznab_attr
+    feedparser_mixin._start_nZEDb_attr = _start_newznab_attr
+    feedparser_mixin._start_nzedb_attr = _start_newznab_attr
+    feedparser_mixin._start_nntmux_attr = _start_newznab_attr
 
 
 def _HandleLink(
@@ -728,8 +747,8 @@ def _HandleLink(
 
 
 def _get_link(entry):
-    """ Retrieve the post link from this entry
-        Returns (link, category, size)
+    """Retrieve the post link from this entry
+    Returns (link, category, size)
     """
     size = 0
     age = datetime.datetime.now()
@@ -809,8 +828,8 @@ def special_rss_site(url):
 
 
 def ep_match(season, episode, expr, title=None):
-    """ Return True if season, episode is at or above expected
-        Optionally `title` can be matched
+    """Return True if season, episode is at or above expected
+    Optionally `title` can be matched
     """
     m = _RE_SP.search(expr)
     if m:

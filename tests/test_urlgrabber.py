@@ -38,7 +38,8 @@ class TestBuildRequest:
         with pytest.raises(ValueError):
             urlgrabber._build_request("")
 
-    def _runner(self, test_url, exp_code=None, return_body=False):
+    @staticmethod
+    def _runner(test_url, exp_code=None, return_body=False):
         """
         Generic test runner for _build_request().
 
@@ -72,7 +73,8 @@ class TestBuildRequest:
             if return_body:
                 return r.read().decode("utf-8")
 
-    def _check_auth(self, headers):
+    @staticmethod
+    def _check_auth(headers):
         # Ensure the Authorization header was *not* send with the HTTP request
         json_headers = json.loads(headers.lower())
         assert "authorization" not in json_headers["headers"].keys()

@@ -191,12 +191,9 @@ class BPSMeter:
             self.update()
         return res
 
-    def update(self, server=None, amount=0, testtime=None):
+    def update(self, server=None, amount=0):
         """ Update counters for "server" with "amount" bytes """
-        if testtime:
-            t = testtime
-        else:
-            t = time.time()
+        t = time.time()
         if t > self.end_of_day:
             # current day passed. get new end of day
             self.day_label = time.strftime("%Y-%m-%d")
@@ -324,9 +321,9 @@ class BPSMeter:
         return self.bps_list[::refresh_rate]
 
     def get_stable_speed(self, timespan=10):
-        """ See if there is a stable speed the last <timespan> seconds
-            None: indicates it can't determine yet
-            False: the speed was not stable during <timespan>
+        """See if there is a stable speed the last <timespan> seconds
+        None: indicates it can't determine yet
+        False: the speed was not stable during <timespan>
         """
         if len(self.bps_list) < timespan:
             return None
@@ -350,8 +347,8 @@ class BPSMeter:
         return None
 
     def reset_quota(self, force=False):
-        """ Check if it's time to reset the quota, optionally resuming
-            Return True, when still paused
+        """Check if it's time to reset the quota, optionally resuming
+        Return True, when still paused
         """
         if force or (self.have_quota and time.time() > (self.q_time - 50)):
             self.quota = self.left = cfg.quota_size.get_float()
@@ -464,7 +461,8 @@ class BPSMeter:
         if action and not status:
             self.resume()
 
-    def resume(self):
+    @staticmethod
+    def resume():
         """ Resume downloading """
         if cfg.quota_resume() and sabnzbd.downloader.Downloader.do and sabnzbd.downloader.Downloader.do.paused:
             sabnzbd.downloader.Downloader.do.resume()
