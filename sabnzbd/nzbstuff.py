@@ -20,7 +20,6 @@ sabnzbd.nzbstuff - misc
 """
 
 import os
-import pickle
 import time
 import re
 import logging
@@ -80,7 +79,6 @@ from sabnzbd.filesystem import (
     get_filepath,
     make_script_path,
     globber,
-    make_script_path,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
