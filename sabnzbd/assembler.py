@@ -26,7 +26,7 @@ import re
 from threading import Thread
 from time import sleep
 import hashlib
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 import sabnzbd
 from sabnzbd.misc import get_all_passwords
@@ -179,7 +179,7 @@ class Assembler(Thread):
                 sabnzbd.PostProcessor.process(nzo)
 
     @staticmethod
-    def assemble(nzf: NzbFile, file_done):
+    def assemble(nzf: NzbFile, file_done: bool):
         """Assemble a NZF from its table of articles
         1) Partial write: write what we have
         2) Nothing written before: write all
@@ -240,7 +240,7 @@ RE_SUBS = re.compile(r"\W+sub|subs|subpack|subtitle|subtitles(?![a-z])", re.I)
 SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 
 
-def is_cloaked(nzo: NzbObject, path, names):
+def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
     """ Return True if this is likely to be a cloaked encrypted post """
     fname = os.path.splitext(get_filename(path.lower()))[0]
     for name in names:
@@ -269,7 +269,7 @@ def is_cloaked(nzo: NzbObject, path, names):
     return False
 
 
-def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath):
+def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[bool, Optional[str]]:
     """ Combines check for unwanted and encrypted files to save on CPU and IO """
     encrypted = False
     unwanted = None
@@ -363,7 +363,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath):
     return encrypted, unwanted
 
 
-def nzo_filtered_by_rating(nzo):
+def nzo_filtered_by_rating(nzo: NzbObject) -> Tuple[int, str]:
     if cfg.rating_enable() and cfg.rating_filter_enable() and (nzo.rating_filtered < 2):
         rating = sabnzbd.Rating.get_rating_by_nzo(nzo.nzo_id)
         if rating is not None:

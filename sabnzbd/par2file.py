@@ -27,14 +27,14 @@ from typing import Dict, Optional, Tuple
 
 from sabnzbd.encoding import correct_unknown_encoding
 
-PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[\+\-](\d*)\.par2", re.I)
+PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 PAR_PKT_ID = b"PAR2\x00PKT"
 PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
 PAR_CREATOR_ID = b"PAR 2.0\x00Creator"
 PAR_RECOVERY_ID = b"RecvSlic"
 
 
-def is_parfile(filename):
+def is_parfile(filename: str) -> bool:
     """Check quickly whether file has par2 signature
     or if the filename has '.par2' in it
     """
@@ -50,7 +50,7 @@ def is_parfile(filename):
     return False
 
 
-def analyse_par2(name, filepath=None):
+def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, int]:
     """Check if file is a par2-file and determine vol/block
     return setname, vol, block
     setname is empty when not a par2 file

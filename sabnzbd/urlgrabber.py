@@ -67,7 +67,7 @@ class URLGrabber(Thread):
             self.queue.put(url_nzo_tup)
         self.shutdown = False
 
-    def add(self, url: str, future_nzo: NzbObject, when=None):
+    def add(self, url: str, future_nzo: NzbObject, when: Optional[int] = None):
         """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
         if future_nzo and when:
             # Always increase counter
@@ -215,10 +215,10 @@ class URLGrabber(Thread):
                     # URL was redirected, maybe the redirect has better filename?
                     # Check if the original URL has extension
                     if (
-                        url != fetch_request.url
+                        url != fetch_request.geturl()
                         and sabnzbd.filesystem.get_ext(filename) not in VALID_NZB_FILES + VALID_ARCHIVES
                     ):
-                        filename = os.path.basename(urllib.parse.unquote(fetch_request.url))
+                        filename = os.path.basename(urllib.parse.unquote(fetch_request.geturl()))
                 elif "&nzbname=" in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find("&nzbname=") + 9 :]
@@ -357,7 +357,7 @@ def _analyse(fetch_request: HTTPResponse, future_nzo: NzbObject):
     returns fetch_request|None, error-message|None, retry, wait-seconds, data
     """
     data = None
-    if not fetch_request or fetch_request.code != 200:
+    if not fetch_request or fetch_request.getcode() != 200:
         if fetch_request:
             msg = fetch_request.msg
         else:

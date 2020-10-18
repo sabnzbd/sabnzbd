@@ -180,7 +180,7 @@ class NNTP:
                 self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=self.nw.server.host)
             else:
                 # Use a regular wrapper, no certificate validation
-                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto), ciphers=sabnzbd.cfg.ssl_ciphers())
+                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto))
         else:
             self.sock = socket.socket(af, socktype, proto)
 

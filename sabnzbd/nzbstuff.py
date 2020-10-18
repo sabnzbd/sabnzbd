@@ -695,7 +695,7 @@ class NzbObject(TryList):
         self.next_save = None
         self.save_timeout = None
         self.encrypted = 0
-        self.url_wait = None
+        self.url_wait: Optional[float] = None
         self.url_tries = 0
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum: Optional[bytes] = None

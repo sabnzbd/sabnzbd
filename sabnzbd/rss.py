@@ -474,11 +474,11 @@ class RSSReader:
         if not sabnzbd.PAUSED_ALL:
             active = False
             if self.next_run < time.time():
-                self.next_run = time.time() + cfg.rss_rate.get() * 60
+                self.next_run = time.time() + cfg.rss_rate() * 60
             feeds = config.get_rss()
             try:
                 for feed in feeds:
-                    if feeds[feed].enable.get():
+                    if feeds[feed].enable():
                         logging.info('Starting scheduled RSS read-out for "%s"', feed)
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)

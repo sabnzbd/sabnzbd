@@ -40,10 +40,10 @@ from sabnzbd.encoding import ubtou, platform_btou
 from sabnzbd.filesystem import userxbit
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
-RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]{0,1})", re.I)
+RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
 RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
-RE_IP4 = re.compile(r"inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)")
-RE_IP6 = re.compile(r"inet6\s+(addr:\s*){0,1}([0-9a-f:]+)", re.I)
+RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
+RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime("%p", time.localtime()))

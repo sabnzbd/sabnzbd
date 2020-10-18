@@ -54,7 +54,7 @@ class ArticleCache:
     def cache_info(self):
         return ANFO(len(self.__article_table), abs(self.__cache_size), self.__cache_limit_org)
 
-    def new_limit(self, limit):
+    def new_limit(self, limit: int):
         """ Called when cache limit changes """
         self.__cache_limit_org = limit
         if limit < 0:
@@ -69,16 +69,16 @@ class ArticleCache:
         self.decoder_cache_article_limit = max(decoder_cache_limit, MIN_DECODE_QUEUE)
 
     @synchronized(ARTICLE_COUNTER_LOCK)
-    def reserve_space(self, data_size):
+    def reserve_space(self, data_size: int):
         """ Reserve space in the cache """
         self.__cache_size += data_size
 
     @synchronized(ARTICLE_COUNTER_LOCK)
-    def free_reserved_space(self, data_size):
+    def free_reserved_space(self, data_size: int):
         """ Remove previously reserved space """
         self.__cache_size -= data_size
 
-    def space_left(self):
+    def space_left(self) -> bool:
         """ Is there space left in the set limit? """
         return self.__cache_size < self.__cache_limit
 

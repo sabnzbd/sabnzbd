@@ -242,7 +242,7 @@ def daemonize():
 
     # Get log file  path and remove the log file if it got too large
     log_path = os.path.join(sabnzbd.cfg.log_dir.get_path(), DEF_LOG_ERRFILE)
-    if os.path.exists(log_path) and os.path.getsize(log_path) > sabnzbd.cfg.log_size.get_int():
+    if os.path.exists(log_path) and os.path.getsize(log_path) > sabnzbd.cfg.log_size():
         remove_file(log_path)
 
     # Replace file descriptors for stdin, stdout, and stderr
@@ -1109,7 +1109,7 @@ def main():
     try:
         if not no_file_log:
             rollover_log = logging.handlers.RotatingFileHandler(
-                sabnzbd.LOGFILE, "a+", sabnzbd.cfg.log_size.get_int(), sabnzbd.cfg.log_backups()
+                sabnzbd.LOGFILE, "a+", sabnzbd.cfg.log_size(), sabnzbd.cfg.log_backups()
             )
             rollover_log.setFormatter(logging.Formatter(logformat))
             logger.addHandler(rollover_log)

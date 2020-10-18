@@ -803,7 +803,7 @@ def change_queue_complete_action(action, new=True):
         # all scripts are labeled script_xxx
         _action = run_script
         _argument = action.replace("script_", "", 1)
-    elif new or cfg.queue_complete_pers.get():
+    elif new or cfg.queue_complete_pers():
         if action == "shutdown_pc":
             _action = system_shutdown
         elif action == "hibernate_pc":

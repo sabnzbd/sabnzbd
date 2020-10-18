@@ -31,12 +31,8 @@ class TestRSS:
     def setup_rss(feed_name, feed_url):
         """ Setup the basic settings to get things going"""
         # Setup the config settings
-        CFG = configobj.ConfigObj()
-        CFG["rss"] = {}
-        CFG["rss"][feed_name] = {}
-        CFG["rss"][feed_name]["uri"] = feed_url
-        sabnzbd.config.CFG = CFG
-        sabnzbd.config.define_rss()
+        sabnzbd.config.CFG = configobj.ConfigObj()
+        sabnzbd.config.ConfigRSS(feed_name, {"uri": feed_url})
 
         # Need to create the Default category
         # Otherwise it will try to save the config
