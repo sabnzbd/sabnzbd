@@ -1569,7 +1569,7 @@ msgstr "ראה קובץ יומן"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
-msgstr ""
+msgstr "בתר־עיבוד בוטל"
 
 #: sabnzbd/postproc.py
 msgid "Download Failed"
@@ -3371,6 +3371,8 @@ msgid ""
 "turned off, all jobs will be marked as Completed even if they are "
 "incomplete."
 msgstr ""
+"פרוק והרץ רק על עבודות שעברו את שלב הוידוא. אם מכובה, כל העבודות יסומנו "
+"כשלמות אפילו אם הן בלתי שלמות."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"

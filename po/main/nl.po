@@ -3426,6 +3426,9 @@ msgid ""
 "turned off, all jobs will be marked as Completed even if they are "
 "incomplete."
 msgstr ""
+"Uitpakken en scripts worden alleen uitgevoerd op opdrachten die succesvol "
+"geverifieerd zijn. Als deze optie uitgeschakeld is zullen alle opdrachten "
+"gemarkeerd worden als succesvol, zelfs als dat niet zo is."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
