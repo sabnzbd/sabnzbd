@@ -9,7 +9,7 @@ jobs:
   translations:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Generate translatable texts
         run: |
           python3 tools/extract_pot.py
@@ -25,7 +25,7 @@ jobs:
         env:
           TX_TOKEN: ${{ secrets.TX_TOKEN }}
       - name: Push translatable and translated texts back to repo
-        uses: stefanzweifel/git-auto-commit-action@master
+        uses: stefanzweifel/git-auto-commit-action@v4.5.1
         with:
           commit_message: Update translatable texts
           commit_user_name: SABnzbd Automation
