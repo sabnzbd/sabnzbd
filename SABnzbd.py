@@ -524,7 +524,7 @@ def get_webhost(cherryhost, cherryport, https_port):
             # Valid user defined name?
             info = socket.getaddrinfo(cherryhost, None)
         except socket.error:
-            if cherryhost not in ("localhost", "127.0.0.1", "::1"):
+            if cherryhost not in LOCALHOSTS:
                 cherryhost = "0.0.0.0"
             try:
                 info = socket.getaddrinfo(localhost, None)
@@ -591,7 +591,7 @@ def get_webhost(cherryhost, cherryport, https_port):
             except socket.error:
                 cherryhost = cherryhost.strip("[]")
 
-    if ipv6 and ipv4 and (browserhost not in ("localhost", "127.0.0.1", "[::1]", "::1")):
+    if ipv6 and ipv4 and browserhost not in LOCALHOSTS:
         sabnzbd.AMBI_LOCALHOST = True
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
@@ -1480,13 +1480,7 @@ def main():
     if not z_host:
         # None, so no network / default route, so let's set to ...
         z_host = "127.0.0.1"
-    elif probablyipv4(cherryhost) and cherryhost not in (
-        "localhost",
-        "127.0.0.1",
-        "::1",
-        "0.0.0.0",
-        "::",
-    ):
+    elif probablyipv4(cherryhost) and cherryhost not in LOCALHOSTS + ("0.0.0.0", "::"):
         # a hard-configured cherryhost other than the usual, so let's take that (good or wrong)
         z_host = cherryhost
     logging.debug("bonjour/zeroconf using host: %s", z_host)

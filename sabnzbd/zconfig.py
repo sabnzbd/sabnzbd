@@ -21,6 +21,7 @@ sabnzbd.zconfig - bonjour/zeroconfig support
 
 import os
 import logging
+import socket
 
 _HOST_PORT = (None, None)
 
@@ -34,19 +35,9 @@ except:
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import match_str
+from sabnzbd.constants import LOCALHOSTS
 
 _BONJOUR_OBJECT = None
-
-
-def hostname():
-    """ Return host's pretty name """
-    if sabnzbd.WIN32:
-        return os.environ.get("computername", "unknown")
-    try:
-        return os.uname()[1]
-    except:
-        return "unknown"
 
 
 def _zeroconf_callback(sdRef, flags, errorCode, name, regtype, domain):
@@ -80,13 +71,13 @@ def set_bonjour(host=None, port=None):
     zhost = None
     domain = None
 
-    if match_str(host, ("localhost", "127.", "::1")):
-        logging.info("bonjour/zeroconf does not support 'localhost'")
+    if host in LOCALHOSTS:
+        logging.info("bonjour/zeroconf cannot be one of %s", LOCALHOSTS)
         # All implementations fail to implement "localhost" properly
         # A false address is published even when scope==kDNSServiceInterfaceIndexLocalOnly
         return
 
-    name = hostname()
+    name = socket.gethostname()
     logging.debug('Try to publish in Bonjour as "%s" (%s:%s)', name, host, port)
     try:
         refObject = pybonjour.DNSServiceRegister(

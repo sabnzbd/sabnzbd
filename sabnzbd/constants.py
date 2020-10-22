@@ -124,6 +124,8 @@ CHEETAH_DIRECTIVES = {"directiveStartToken": "<!--#", "directiveEndToken": "#-->
 
 IGNORED_FOLDERS = ("@eaDir", ".appleDouble")
 
+LOCALHOSTS = ("localhost", "127.0.0.1", "[::1]", "::1")
+
 # (MATCHER, [EXTRA, MATCHERS])
 series_match = [
     (compile(r"( [sS]|[\d]+)x(\d+)"), [compile(r"^[-\.]+([sS]|[\d])+x(\d+)"), compile(r"^[-\.](\d+)")]),  # 1x01
