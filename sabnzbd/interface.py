@@ -59,6 +59,7 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
+import sabnzbd.utils.ssdp
 from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
@@ -467,6 +468,12 @@ class MainPage:
         """ Keep web crawlers out """
         cherrypy.response.headers["Content-Type"] = "text/plain"
         return "User-agent: *\nDisallow: /\n"
+
+    @secured_expose
+    def description_xml(self, **kwargs):
+        """ Keep web crawlers out """
+        cherrypy.response.headers["Content-Type"] = "application/xml"
+        return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
 
 
 ##############################################################################
