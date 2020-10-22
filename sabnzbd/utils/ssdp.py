@@ -52,6 +52,9 @@ class SSDP(Thread):
         logging.info("descriptionxmlURL is", descriptionxmlURL)
         # /hack
 
+        import uuid
+        myuuid = uuid.uuid1()
+
         # the standard multicast settings for SSDP:
         MCAST_GRP = '239.255.255.250'
         MCAST_PORT = 1900
@@ -68,7 +71,7 @@ CACHE-CONTROL: max-age=60
 LOCATION: {descriptionxmlURL}
 SERVER: SABnzbd
 NT: upnp:rootdevice
-USN: uuid:11105501-bf96-4bdf-a60f-382e39a0f84c::upnp:rootdevice
+USN: uuid:{myuuid}::upnp:rootdevice
 NTS: ssdp:alive
 OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 01-NLS: 1600778333
@@ -100,6 +103,10 @@ CONFIGID.UPNP.ORG: 1337
 
         #sabnameversion = _SSDP__description
 
+        import uuid
+        myuuid = uuid.uuid1()
+
+
 
         myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
 <root xmlns="urn:schemas-upnp-org:device-1-0">
@@ -118,7 +125,7 @@ CONFIGID.UPNP.ORG: 1337
 <modelNumber>model xyz</modelNumber>
 <modelURL>http://www.sabnzbd.org</modelURL>
 <serialNumber>001788721333</serialNumber>
-<UDN>uuid:2f402f80-da50-11e1-9b23-001788721f33</UDN>
+<UDN>uuid:{myuuid}</UDN>
 <presentationURL>sabnzbd</presentationURL>
 <iconList>
 <icon>
