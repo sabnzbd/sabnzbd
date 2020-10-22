@@ -22,6 +22,7 @@ sabnzbd.utils.ssdp - Support for SSDP / Simple Service Discovery Protocol
 import logging
 import time
 import socket
+import uuid
 from threading import Thread
 from typing import Optional
 
@@ -43,28 +44,24 @@ class SSDP(Thread):
         logging.info("Serving SSDP on %s as %s", self.__host, self.__server_name)
         logging.info("self.__url is %s", self.__url)
 
-        # warning ... hack ahead ... to be solved
-        # self.__url is http://192.168.1.101:8080/sabnzbd
-        # convert into
-        # descriptionxmlURL is http://192.168.1.101:8080/description.xml
-        import string
-        descriptionxmlURL = self.__url.replace('sabnzbd', 'description.xml')
+        try:
+            descriptionxmlURL = self.__url + "/description.xml"
+        except:
+            logging.warning("descriptionxmlURL went wrong")
         logging.info("descriptionxmlURL is", descriptionxmlURL)
-        # /hack
 
-        import uuid
         myuuid = uuid.uuid1()
 
         # the standard multicast settings for SSDP:
-        MCAST_GRP = '239.255.255.250'
+        MCAST_GRP = "239.255.255.250"
         MCAST_PORT = 1900
         MULTICAST_TTL = 2
 
         # Assuming we put the socket stuff here ... or in the loop?
-        #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        #sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
+        # sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+        # sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
 
-        #mySSDPbroadcast = b'NOTIFY * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nCACHE-CONTROL: max-age=60\r\nLOCATION: http://192.168.1.101:8080/description.xml\r\nSERVER: SABnzbd\r\nNT: upnp:rootdevice\r\nUSN: uuid:11105501-bf96-4bdf-a60f-382e39a0f84c::upnp:rootdevice\r\nNTS: ssdp:alive\r\nOPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01\r\n01-NLS: 1600778333\r\nBOOTID.UPNP.ORG: 1600778333\r\nCONFIGID.UPNP.ORG: 1337\r\n\r\n'
+        # mySSDPbroadcast = b'NOTIFY * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nCACHE-CONTROL: max-age=60\r\nLOCATION: http://192.168.1.101:8080/description.xml\r\nSERVER: SABnzbd\r\nNT: upnp:rootdevice\r\nUSN: uuid:11105501-bf96-4bdf-a60f-382e39a0f84c::upnp:rootdevice\r\nNTS: ssdp:alive\r\nOPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01\r\n01-NLS: 1600778333\r\nBOOTID.UPNP.ORG: 1600778333\r\nCONFIGID.UPNP.ORG: 1337\r\n\r\n'
         mySSDPbroadcast = f"""NOTIFY * HTTP/1.1
 HOST: 239.255.255.250:1900
 CACHE-CONTROL: max-age=60
@@ -80,15 +77,15 @@ CONFIGID.UPNP.ORG: 1337
 
 """
         mySSDPbroadcast = mySSDPbroadcast.replace("\n", "\r\n")
-        mySSDPbroadcast = bytes(mySSDPbroadcast, 'utf-8') # convert string to bytes
+        mySSDPbroadcast = bytes(mySSDPbroadcast, "utf-8")  # convert string to bytes
 
         while 1 and not self.__stop:
             # Do network stuff
             # Use self.__host, self.__url, self.__server_name to do stuff!
 
-            # create socket, send broadcast, and close it again
+            # create socket, send the broadcast, and close the socket again
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
-                #logging.debug("Sending a SSDP multicast with size %s", len(mySSDPbroadcast))
+                # logging.debug("Sending a SSDP multicast with size %s", len(mySSDPbroadcast))
                 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
                 sock.sendto(mySSDPbroadcast, (MCAST_GRP, MCAST_PORT))
             time.sleep(2)
@@ -100,13 +97,8 @@ CONFIGID.UPNP.ORG: 1337
             return
         # Use self.__host, self.__url, self.__server_name to do stuff!
         logging.debug("description.xml was retrieved by ...")
-
-        #sabnameversion = _SSDP__description
-
-        import uuid
+        # sabnameversion = _SSDP__description
         myuuid = uuid.uuid1()
-
-
 
         myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
 <root xmlns="urn:schemas-upnp-org:device-1-0">
@@ -140,7 +132,7 @@ CONFIGID.UPNP.ORG: 1337
 </root>"""
 
         return myxml
-        #return f"<xml><name>{self.__server_name}</name><url>{self.__url}</url></xml>"
+        # return f"<xml><name>{self.__server_name}</name><url>{self.__url}</url></xml>"
 
 
 # Reserve class variable, to be started later
