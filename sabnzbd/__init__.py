@@ -802,7 +802,7 @@ def change_queue_complete_action(action, new=True):
     if "script_" in action:
         # all scripts are labeled script_xxx
         _action = run_script
-        _argument = action.replace("script_", "")
+        _argument = action.replace("script_", "", 1)
     elif new or cfg.queue_complete_pers.get():
         if action == "shutdown_pc":
             _action = system_shutdown
