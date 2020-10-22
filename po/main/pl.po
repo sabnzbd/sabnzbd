@@ -343,10 +343,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "Ścieżka UNC \"%s\" niedozwolona"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Błąd: Długość ścieżki powinna być mniejsza niż %s"
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Błąd: Kolejka nie jest pusta, nie można zmienić katalogu."
 

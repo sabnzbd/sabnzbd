@@ -347,10 +347,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "אינו מותר כאן \"%s\" UNC נתיב"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr ".שגיאה: אורך הנתיב צריך להיות מתחת אל %s"
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr ".שגיאה: התור אינו ריק, לא יכול לשנות תיקייה"
 

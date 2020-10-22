@@ -330,10 +330,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr ""
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr ""
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr ""
 

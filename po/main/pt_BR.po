@@ -347,10 +347,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "O caminho UNC \"%s\" não é permitido aqui"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Erro: Tamanho do caminho deve ser menor que %s."
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Erro: A fila não está vazia. Não será possível mudar de pasta."
 

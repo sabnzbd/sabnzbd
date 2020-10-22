@@ -354,10 +354,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "UNC søgning \"%s\" er ikke tilladt her"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Fejl: Sti længde bør være under %s."
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Fejl: Køen er ikke tom, kan ikke skifte mappe."
 

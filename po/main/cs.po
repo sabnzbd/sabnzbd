@@ -350,10 +350,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "UNC cesta \"%s\" zde není povolena"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Chyba: délka cesty by měla být kratší než %s."
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Chyba: Fronta nené prázdná, nelze změnit složku."
 

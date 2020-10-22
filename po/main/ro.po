@@ -347,10 +347,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "cale UNC \"%s\" nu este premisă aici"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Eroare: Lungimea cale ar trebuie să fie sub %s."
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Eroare: Coada nu este goală, nu pot schimba dosar."
 

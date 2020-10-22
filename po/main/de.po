@@ -366,10 +366,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "UNC-Pfad \"%s\" ist hier nicht erlaubt"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Fehler: Dateipfadlänge sollte kürzer als %s sein."
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr ""
 "Fehler: Ordner kann nicht geändert werden, da die Warteschlange nicht leer "

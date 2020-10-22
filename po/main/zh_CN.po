@@ -343,10 +343,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "此处不允许使用 UNC 路径 \"%s\""
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "错误: 路径长度应不超过 %s。"
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "错误: 队列非空，无法变更文件夹。"
 

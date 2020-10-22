@@ -360,10 +360,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "UNC-pad '%s' hier niet toegestaan."
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Fout: het opgegeven pad mag niet langer zijn dan %s."
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Fout: Wachtrij is niet leeg, andere map kiezen niet mogelijk."
 

@@ -345,10 +345,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "UNC путања \"%s\" није дозвољена"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Greška: Dužina putanje bi trebala biti ispod %s"
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Грешка: ред није празан, фасцикла се не може променити."
 

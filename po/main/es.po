@@ -366,10 +366,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "Ruta de acceso UNC \"%s\" no permitido aqui"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Error: La longitud de ruta debería ser menor que %s."
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Error: Cola no esta vacía, no se puede cambiar el directorio"
 

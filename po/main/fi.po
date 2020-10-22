@@ -351,10 +351,6 @@ msgid "UNC path \"%s\" not allowed here"
 msgstr "TUNT polku \"%s\" ei ole sallittu"
 
 #: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Virhe: Polun pituus täytyy olla alle %s."
-
-#: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
 msgstr "Virhe: Jono ei ole tyhjä, kansiota ei voida vaihtaa."
 
