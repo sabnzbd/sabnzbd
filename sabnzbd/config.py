@@ -31,7 +31,7 @@ from urllib.parse import urlparse
 import configobj
 
 import sabnzbd.misc
-from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
+from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 
@@ -1087,11 +1087,7 @@ def validate_no_unc(root, value, default):
 
 
 def validate_safedir(root, value, default):
-    """Allow only when queues are empty and no UNC
-    On Windows path should be small
-    """
-    if sabnzbd.WIN32 and value and len(real_path(root, value)) >= MAX_WIN_DFOLDER:
-        return T("Error: Path length should be below %s.") % MAX_WIN_DFOLDER, None
+    """Allow only when queues are empty and no UNC"""
     if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
         return validate_no_unc(root, value, default)
     else:

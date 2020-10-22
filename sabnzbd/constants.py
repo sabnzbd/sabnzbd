@@ -88,7 +88,6 @@ DEF_ARTICLE_CACHE_MAX = "1G"
 DEF_TIMEOUT = 60
 DEF_SCANRATE = 5
 MAX_WARNINGS = 20
-MAX_WIN_DFOLDER = 60
 MAX_BAD_ARTICLES = 5
 
 # Constants affecting download performance
