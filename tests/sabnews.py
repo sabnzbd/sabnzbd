@@ -171,9 +171,7 @@ def create_nzb(nzb_file=None, nzb_dir=None):
         nzb_time = time.time() - randint(0, int(time.time() - 746863566))
 
         for fl in files_for_nzb:
-            nzb.write(
-                '<file poster="SABNews" date="%d" subject="&quot;%s&quot;">\n' % (nzb_time, os.path.basename(fl))
-            )
+            nzb.write('<file poster="SABNews" date="%d" subject="&quot;%s&quot;">\n' % (nzb_time, os.path.basename(fl)))
             nzb.write("<groups><group>alt.binaries.test</group></groups>\n")
             nzb.write("<segments>\n")
 
