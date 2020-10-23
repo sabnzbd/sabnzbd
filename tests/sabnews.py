@@ -29,6 +29,8 @@ import os
 import re
 import time
 
+from random import randint
+
 import sabyenc3
 
 logging.getLogger().setLevel(logging.INFO)
@@ -166,11 +168,11 @@ def create_nzb(nzb_file=None, nzb_dir=None):
         nzb.write('<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">\n')
         nzb.write('<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">\n')
 
-        current_time = time.time()
+        nzb_time = time.time() - randint(0, int(time.time() - 746863566))
 
         for fl in files_for_nzb:
             nzb.write(
-                '<file poster="SABNews" date="%d" subject="&quot;%s&quot;">\n' % (current_time, os.path.basename(fl))
+                '<file poster="SABNews" date="%d" subject="&quot;%s&quot;">\n' % (nzb_time, os.path.basename(fl))
             )
             nzb.write("<groups><group>alt.binaries.test</group></groups>\n")
             nzb.write("<segments>\n")
