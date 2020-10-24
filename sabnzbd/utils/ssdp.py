@@ -29,14 +29,14 @@ from typing import Optional
 
 class SSDP(Thread):
     def __init__(self, host, server_name, url, description):
-        self.__host = host # Note: this is the LAN IP address!
+        self.__host = host  # Note: this is the LAN IP address!
         self.__server_name = server_name
         self.__url = url
         self.__description = description
         self.__myhostname = socket.gethostname()
         # uuid stays the same as long as hostname and ip address stay the same:
         self.__uuidXML = uuid.uuid3(uuid.NAMESPACE_DNS, self.__myhostname + self.__host)
-        self.__uuidSSDP = uuid.uuid3(uuid.NAMESPACE_DNS, self.__host + self.__myhostname )
+        self.__uuidSSDP = uuid.uuid3(uuid.NAMESPACE_DNS, self.__host + self.__myhostname)
 
         self.__stop = False
         super().__init__()
