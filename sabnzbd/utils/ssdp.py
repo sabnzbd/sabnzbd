@@ -44,22 +44,19 @@ class SSDP(Thread):
         # a steady uuid: stays the same as long as hostname and ip address stay the same:
         self.__uuid = uuid.uuid3(uuid.NAMESPACE_DNS, self.__myhostname + self.__host)
 
-        # descriptionxmlURL = self.__url + "/description.xml"
-
         # Create the SSDP broadcast message
         self.__mySSDPbroadcast = f"""NOTIFY * HTTP/1.1
 HOST: 239.255.255.250:1900
 CACHE-CONTROL: max-age=60
 LOCATION: {self.__url}/description.xml
-SERVER: SABnzbd
+SERVER: {self.__server_name}
 NT: upnp:rootdevice
 USN: uuid:{self.__uuid}::upnp:rootdevice
 NTS: ssdp:alive
 OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 
 """
-        self.__mySSDPbroadcast = self.__mySSDPbroadcast.replace("\n", "\r\n")
-        self.__mySSDPbroadcast = bytes(self.__mySSDPbroadcast, "utf-8")  # convert string to bytes
+        self.__mySSDPbroadcast = self.__mySSDPbroadcast.replace("\n", "\r\n").encode("utf-8")
 
         # Create the XML info
         self.__myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
@@ -71,7 +68,7 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 <URLBase>{self.__url}</URLBase>
 <device>
 <deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>
-<friendlyName>SABnzbd ({self.__myhostname})</friendlyName>
+<friendlyName>{self.__server_name} ({self.__myhostname})</friendlyName>
 <manufacturer>SABnzbd Team</manufacturer>
 <manufacturerURL>http://www.sabnzbd.org</manufacturerURL>
 <modelDescription>SABnzbd downloader</modelDescription>
