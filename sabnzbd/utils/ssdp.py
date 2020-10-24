@@ -29,10 +29,15 @@ from typing import Optional
 
 class SSDP(Thread):
     def __init__(self, host, server_name, url, description):
-        self.__host = host
+        self.__host = host # Note: this is the LAN IP address!
         self.__server_name = server_name
         self.__url = url
         self.__description = description
+        self.__myhostname = socket.gethostname()
+        # uuid stays the same as long as hostname and ip address stay the same:
+        self.__uuidXML = uuid.uuid3(uuid.NAMESPACE_DNS, self.__myhostname + self.__host)
+        self.__uuidSSDP = uuid.uuid3(uuid.NAMESPACE_DNS, self.__host + self.__myhostname )
+
         self.__stop = False
         super().__init__()
 
@@ -44,43 +49,20 @@ class SSDP(Thread):
         logging.info("Serving SSDP on %s as %s", self.__host, self.__server_name)
         logging.info("self.__url is %s", self.__url)
 
-        try:
-            descriptionxmlURL = self.__url + "/description.xml"
-        except:
-            logging.warning("descriptionxmlURL went wrong")
-        logging.info("descriptionxmlURL is", descriptionxmlURL)
-
-        myuuid = uuid.uuid1()  # not sure if it's OK to generate UUID at each new start ...
-
+        descriptionxmlURL = self.__url + "/description.xml"
 
         # the standard multicast settings for SSDP:
         MCAST_GRP = "239.255.255.250"
         MCAST_PORT = 1900
         MULTICAST_TTL = 2
 
-        # mySSDPbroadcast = b'NOTIFY * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nCACHE-CONTROL: max-age=60\r\nLOCATION: http://192.168.1.101:8080/description.xml\r\nSERVER: SABnzbd\r\nNT: upnp:rootdevice\r\nUSN: uuid:11105501-bf96-4bdf-a60f-382e39a0f84c::upnp:rootdevice\r\nNTS: ssdp:alive\r\nOPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01\r\n01-NLS: 1600778333\r\nBOOTID.UPNP.ORG: 1600778333\r\nCONFIGID.UPNP.ORG: 1337\r\n\r\n'
         mySSDPbroadcast = f"""NOTIFY * HTTP/1.1
 HOST: 239.255.255.250:1900
 CACHE-CONTROL: max-age=60
 LOCATION: {descriptionxmlURL}
 SERVER: SABnzbd
 NT: upnp:rootdevice
-USN: uuid:{myuuid}::upnp:rootdevice
-NTS: ssdp:alive
-OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
-01-NLS: 1600778333
-BOOTID.UPNP.ORG: 1600778333
-CONFIGID.UPNP.ORG: 1337
-
-"""
-
-        mySSDPbroadcast = f"""NOTIFY * HTTP/1.1
-HOST: 239.255.255.250:1900
-CACHE-CONTROL: max-age=60
-LOCATION: {descriptionxmlURL}
-SERVER: SABnzbd
-NT: upnp:rootdevice
-USN: uuid:{myuuid}::upnp:rootdevice
+USN: uuid:{self.__uuidSSDP}::upnp:rootdevice
 NTS: ssdp:alive
 OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 
@@ -107,14 +89,6 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
             return
         # Use self.__host, self.__url, self.__server_name to do stuff!
 
-        myhostname = socket.gethostname()
-        myip = self.__host
-
-        # myuuid = uuid.uuid1() # fresh one on each start ... not good. To be fixed ... fix:
-        myuuid = uuid.uuid3(
-            uuid.NAMESPACE_DNS, myhostname + myip
-        )  # uuid stays the same as long as hostname and ip address stay the same
-
         # Create the XML info
         myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
 <root xmlns="urn:schemas-upnp-org:device-1-0">
@@ -125,44 +99,12 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 <URLBase>{self.__url}</URLBase>
 <device>
 <deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>
-<friendlyName>SABnzbd ({myhostname})</friendlyName>
-<manufacturer>SABnzbd Team</manufacturer>
-<manufacturerURL>http://www.sabnzbd.org</manufacturerURL>
-<modelDescription>SABnzbd downloader</modelDescription>
-<modelName>SABnzbd 3.4.5</modelName>
-<modelNumber>model xyz</modelNumber>
-<modelURL>http://www.sabnzbd.org</modelURL>
-<serialNumber>001788721333</serialNumber>
-<UDN>uuid:{myuuid}</UDN>
-<presentationURL>sabnzbd</presentationURL>
-<iconList>
-<icon>
-<mimetype>image/png</mimetype>
-<height>48</height>
-<width>48</width>
-<depth>24</depth>
-<url>hue_logo_0.png</url>
-</icon>
-</iconList>
-</device>
-</root>"""
-
-        # Create the XML info
-        myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
-<root xmlns="urn:schemas-upnp-org:device-1-0">
-<specVersion>
-<major>1</major>
-<minor>0</minor>
-</specVersion>
-<URLBase>{self.__url}</URLBase>
-<device>
-<deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>
-<friendlyName>SABnzbd ({myhostname})</friendlyName>
+<friendlyName>SABnzbd ({self.__myhostname})</friendlyName>
 <manufacturer>SABnzbd Team</manufacturer>
 <manufacturerURL>http://www.sabnzbd.org</manufacturerURL>
 <modelDescription>SABnzbd downloader</modelDescription>
 <modelURL>http://www.sabnzbd.org</modelURL>
-<UDN>uuid:{myuuid}</UDN>
+<UDN>uuid:{self.__uuidXML}</UDN>
 <presentationURL>sabnzbd</presentationURL>
 </device>
 </root>"""
