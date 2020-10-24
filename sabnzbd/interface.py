@@ -472,7 +472,7 @@ class MainPage:
     @secured_expose
     def description_xml(self, **kwargs):
         """ Keep web crawlers out """
-        logging.debug("description.xml was requested by %s",cherrypy.request.remote.ip)
+        logging.debug("description.xml was requested by %s", cherrypy.request.remote.ip)
         cherrypy.response.headers["Content-Type"] = "application/xml"
         return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
 
