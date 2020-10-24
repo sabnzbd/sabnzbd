@@ -17,7 +17,7 @@
 
 
 """
-sabnzbd.utils.ssdp - Support for SSDP / Simple Service Discovery Protocol
+sabnzbd.utils.ssdp - Support for SSDP / Simple Service Discovery Protocol plus XML to appear on Windows
 """
 import logging
 import time
@@ -50,16 +50,13 @@ class SSDP(Thread):
             logging.warning("descriptionxmlURL went wrong")
         logging.info("descriptionxmlURL is", descriptionxmlURL)
 
-        myuuid = uuid.uuid1()
+        myuuid = uuid.uuid1()  # not sure if it's OK to generate UUID at each new start ...
+
 
         # the standard multicast settings for SSDP:
         MCAST_GRP = "239.255.255.250"
         MCAST_PORT = 1900
         MULTICAST_TTL = 2
-
-        # Assuming we put the socket stuff here ... or in the loop?
-        # sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
-        # sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
 
         # mySSDPbroadcast = b'NOTIFY * HTTP/1.1\r\nHOST: 239.255.255.250:1900\r\nCACHE-CONTROL: max-age=60\r\nLOCATION: http://192.168.1.101:8080/description.xml\r\nSERVER: SABnzbd\r\nNT: upnp:rootdevice\r\nUSN: uuid:11105501-bf96-4bdf-a60f-382e39a0f84c::upnp:rootdevice\r\nNTS: ssdp:alive\r\nOPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01\r\n01-NLS: 1600778333\r\nBOOTID.UPNP.ORG: 1600778333\r\nCONFIGID.UPNP.ORG: 1337\r\n\r\n'
         mySSDPbroadcast = f"""NOTIFY * HTTP/1.1
@@ -76,6 +73,19 @@ BOOTID.UPNP.ORG: 1600778333
 CONFIGID.UPNP.ORG: 1337
 
 """
+
+        mySSDPbroadcast = f"""NOTIFY * HTTP/1.1
+HOST: 239.255.255.250:1900
+CACHE-CONTROL: max-age=60
+LOCATION: {descriptionxmlURL}
+SERVER: SABnzbd
+NT: upnp:rootdevice
+USN: uuid:{myuuid}::upnp:rootdevice
+NTS: ssdp:alive
+OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
+
+"""
+
         mySSDPbroadcast = mySSDPbroadcast.replace("\n", "\r\n")
         mySSDPbroadcast = bytes(mySSDPbroadcast, "utf-8")  # convert string to bytes
 
@@ -83,12 +93,12 @@ CONFIGID.UPNP.ORG: 1337
             # Do network stuff
             # Use self.__host, self.__url, self.__server_name to do stuff!
 
-            # create socket, send the broadcast, and close the socket again
+            # Create socket, send the broadcast, and close the socket again
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
                 # logging.debug("Sending a SSDP multicast with size %s", len(mySSDPbroadcast))
                 sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
                 sock.sendto(mySSDPbroadcast, (MCAST_GRP, MCAST_PORT))
-            time.sleep(2)
+            time.sleep(5)
 
     def serve_xml(self):
         """Returns an XML-structure based on the information being
@@ -96,10 +106,16 @@ CONFIGID.UPNP.ORG: 1337
         if self.__stop:
             return
         # Use self.__host, self.__url, self.__server_name to do stuff!
-        logging.debug("description.xml was retrieved by ...")
-        # sabnameversion = _SSDP__description
-        myuuid = uuid.uuid1()
 
+        myhostname = socket.gethostname()
+        myip = self.__host
+
+        # myuuid = uuid.uuid1() # fresh one on each start ... not good. To be fixed ... fix:
+        myuuid = uuid.uuid3(
+            uuid.NAMESPACE_DNS, myhostname + myip
+        )  # uuid stays the same as long as hostname and ip address stay the same
+
+        # Create the XML info
         myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
 <root xmlns="urn:schemas-upnp-org:device-1-0">
 <specVersion>
@@ -109,7 +125,7 @@ CONFIGID.UPNP.ORG: 1337
 <URLBase>{self.__url}</URLBase>
 <device>
 <deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>
-<friendlyName>SABnzbd ({self.__host})</friendlyName>
+<friendlyName>SABnzbd ({myhostname})</friendlyName>
 <manufacturer>SABnzbd Team</manufacturer>
 <manufacturerURL>http://www.sabnzbd.org</manufacturerURL>
 <modelDescription>SABnzbd downloader</modelDescription>
@@ -128,6 +144,26 @@ CONFIGID.UPNP.ORG: 1337
 <url>hue_logo_0.png</url>
 </icon>
 </iconList>
+</device>
+</root>"""
+
+        # Create the XML info
+        myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
+<root xmlns="urn:schemas-upnp-org:device-1-0">
+<specVersion>
+<major>1</major>
+<minor>0</minor>
+</specVersion>
+<URLBase>{self.__url}</URLBase>
+<device>
+<deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>
+<friendlyName>SABnzbd ({myhostname})</friendlyName>
+<manufacturer>SABnzbd Team</manufacturer>
+<manufacturerURL>http://www.sabnzbd.org</manufacturerURL>
+<modelDescription>SABnzbd downloader</modelDescription>
+<modelURL>http://www.sabnzbd.org</modelURL>
+<UDN>uuid:{myuuid}</UDN>
+<presentationURL>sabnzbd</presentationURL>
 </device>
 </root>"""
 
