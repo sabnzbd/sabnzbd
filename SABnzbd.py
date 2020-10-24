@@ -1494,7 +1494,15 @@ def main():
             ssdp_url = "https://%s:%s%s" % (external_host, cherryport, sabnzbd.cfg.url_base())
         else:
             ssdp_url = "http://%s:%s%s" % (external_host, cherryport, sabnzbd.cfg.url_base())
-        ssdp.start_ssdp(external_host, "SABnzbd", ssdp_url, "SABnzbd %s" % sabnzbd.__version__)
+        ssdp.start_ssdp(
+            external_host,
+            "SABnzbd",
+            ssdp_url,
+            "SABnzbd %s" % sabnzbd.__version__,
+            "SABnzbd Team",
+            "https://sabnzbd.org/",
+            "SABnzbd %s" % sabnzbd.__version__,
+        )
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0

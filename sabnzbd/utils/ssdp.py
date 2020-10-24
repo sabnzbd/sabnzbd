@@ -35,11 +35,15 @@ from typing import Optional
 
 
 class SSDP(Thread):
-    def __init__(self, host, server_name, url, description):
+    def __init__(self, host, server_name, url, description, manufacturer, manufacturer_url, model):
         self.__host = host  # Note: this is the LAN IP address!
         self.__server_name = server_name
         self.__url = url
         self.__description = description
+        self.__manufacturer = manufacturer
+        self.__manufacturer_url = manufacturer_url
+        self.__model = model
+
         self.__myhostname = socket.gethostname()
         # a steady uuid: stays the same as long as hostname and ip address stay the same:
         self.__uuid = uuid.uuid3(uuid.NAMESPACE_DNS, self.__myhostname + self.__host)
@@ -69,12 +73,15 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 <device>
 <deviceType>urn:schemas-upnp-org:device:Basic:1</deviceType>
 <friendlyName>{self.__server_name} ({self.__myhostname})</friendlyName>
-<manufacturer>SABnzbd Team</manufacturer>
-<manufacturerURL>http://www.sabnzbd.org</manufacturerURL>
-<modelDescription>SABnzbd downloader</modelDescription>
-<modelURL>http://www.sabnzbd.org</modelURL>
+<manufacturer>{self.__manufacturer}</manufacturer>
+<manufacturerURL>{self.__manufacturer_url}</manufacturerURL>
+<modelDescription>{self.__model} </modelDescription>
+<modelName>{self.__model}</modelName>
+<modelNumber> </modelNumber>
+<modelDescription>{self.__description}</modelDescription>
+<modelURL>{self.__manufacturer_url}</modelURL>
 <UDN>uuid:{self.__uuid}</UDN>
-<presentationURL>sabnzbd</presentationURL>
+<presentationURL>{self.__url}</presentationURL>
 </device>
 </root>"""
 
@@ -99,10 +106,13 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
             # Use self.__host, self.__url, self.__server_name to do stuff!
 
             # Create socket, send the broadcast, and close the socket again
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
-                # logging.debug("Sending a SSDP multicast with size %s", len(mySSDPbroadcast))
-                sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
-                sock.sendto(self.__mySSDPbroadcast, (MCAST_GRP, MCAST_PORT))
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
+                    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
+                    sock.sendto(self.__mySSDPbroadcast, (MCAST_GRP, MCAST_PORT))
+            except:
+                # probably no network
+                pass
             time.sleep(5)
 
     def serve_xml(self):
@@ -120,9 +130,9 @@ __SSDP: Optional[SSDP] = None
 
 
 # Wrapper functions to be called by program
-def start_ssdp(host, server_name, url, description):
+def start_ssdp(host, server_name, url, description, manufacturer, manufacturer_url, model):
     global __SSDP
-    __SSDP = SSDP(host, server_name, url, description)
+    __SSDP = SSDP(host, server_name, url, description, manufacturer, manufacturer_url, model)
     __SSDP.start()
 
 
