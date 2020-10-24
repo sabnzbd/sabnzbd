@@ -1746,8 +1746,8 @@ def build_history(start=0, limit=0, search=None, failed_only=0, categories=None)
     # Un-reverse the queue
     items.reverse()
 
-    # Global check if rating is enabled
-    rating_enabled = cfg.rating_enable()
+    # Global check if rating is enabled and available (queue-repair)
+    rating_enabled = cfg.rating_enable() and Rating.do
 
     for item in items:
         item["size"] = to_units(item["bytes"], "B")
