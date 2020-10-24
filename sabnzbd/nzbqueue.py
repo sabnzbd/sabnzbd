@@ -111,6 +111,7 @@ class NzbQueue:
 
         # Scan for any folders in "incomplete" that are not yet in the queue
         if repair:
+            logging.info("Starting queue repair")
             self.scan_jobs(not folders)
             # Handle any lost future jobs
             for item in globber_full(os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER)):

@@ -39,6 +39,7 @@ SAB_PORT = 8081
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache")
 SAB_DATA_DIR = os.path.join(SAB_BASE_DIR, "data")
+SAB_INCOMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "incomplete")
 SAB_COMPLETE_DIR = os.path.join(SAB_CACHE_DIR, "Downloads", "complete")
 SAB_NEWSSERVER_HOST = "127.0.0.1"
 SAB_NEWSSERVER_PORT = 8888

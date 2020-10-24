@@ -27,7 +27,7 @@ import cherrypy
 import sys
 import ssl
 from threading import Lock, Thread
-from typing import Any
+from typing import Any, AnyStr
 
 ##############################################################################
 # Determine platform flags
@@ -586,20 +586,20 @@ def unpause_all():
 ##############################################################################
 
 
-def backup_exists(filename):
+def backup_exists(filename: str) -> bool:
     """ Return True if backup exists and no_dupes is set """
     path = cfg.nzb_backup_dir.get_path()
     return path and os.path.exists(os.path.join(path, filename + ".gz"))
 
 
-def backup_nzb(filename, data):
+def backup_nzb(filename: str, data: AnyStr):
     """ Backup NZB file """
     path = cfg.nzb_backup_dir.get_path()
     if path:
         save_compressed(path, filename, data)
 
 
-def save_compressed(folder, filename, data):
+def save_compressed(folder: str, filename: str, data: AnyStr):
     """ Save compressed NZB file in folder """
     if filename.endswith(".nzb"):
         filename += ".gz"

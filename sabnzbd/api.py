@@ -649,7 +649,8 @@ def _api_restart_repair(name, output, kwargs):
     """ API: accepts output """
     logging.info("Queue repair requested by API")
     sabnzbd.request_repair()
-    sabnzbd.trigger_restart()
+    # Do the shutdown async to still send goodbye to browser
+    Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
     return report(output)
 
 

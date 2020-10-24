@@ -85,8 +85,8 @@ class TestDownloadFlow(SABnzbdBaseTest):
         # See how it's doing
         self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
 
-        # We wait for 60 seconds to let it complete
-        for _ in range(60):
+        # We wait for 20 seconds to let it complete
+        for _ in range(20):
             try:
                 # Locate status of our job
                 status_text = self.driver.find_element_by_xpath(

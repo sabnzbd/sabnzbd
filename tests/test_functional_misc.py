@@ -23,6 +23,8 @@ import subprocess
 import sys
 
 import sabnzbd.encoding
+from sabnzbd import save_compressed
+from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import *
 
 
@@ -39,6 +41,56 @@ class TestShowLogging(SABnzbdBaseTest):
         # Make sure sabnzbd.ini was appended
         assert "__encoding__ = utf-8" in log_result
         assert "[misc]" in log_result
+
+
+class TestQueueRepair(SABnzbdBaseTest):
+    def test_queue_repair(self):
+        """Test full queue repair by manually adding an orphaned job"""
+        nzb_data = create_and_read_nzb("basic_rar5")
+        test_job_name = "testfile_%s" % time.time()
+
+        # Create folder and save compressed NZB like SABnzbd would do
+        admin_path = os.path.join(SAB_INCOMPLETE_DIR, test_job_name, JOB_ADMIN)
+        os.makedirs(admin_path)
+        save_compressed(admin_path, test_job_name, nzb_data)
+        assert os.path.exists(os.path.join(admin_path, test_job_name + ".nzb.gz"))
+
+        # Pause the queue do we don't download stuff
+        assert get_api_result("pause") == {"status": True}
+
+        # Request queue repair
+        assert get_api_result("restart_repair") == {"status": True}
+
+        # Wait for the restart
+        time.sleep(2)
+
+        # Let's check the queue
+        for _ in range(10):
+            queue_result_slots = {}
+            try:
+                # Can give timeout if still restarting
+                queue_result_slots = get_api_result("queue")["queue"]["slots"]
+            except requests.exceptions.RequestException:
+                pass
+
+            # Check if the repaired job was added to the queue
+            if queue_result_slots:
+                break
+            time.sleep(1)
+        else:
+            # The loop never stopped, so we fail
+            pytest.fail("Did not find the repaired job in the queue")
+            return
+
+        # Verify filename
+        assert queue_result_slots[0]["filename"] == test_job_name
+
+        # Let's remove this thing
+        get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})
+        assert len(get_api_result("queue")["queue"]["slots"]) == 0
+
+        # Unpause
+        assert get_api_result("resume") == {"status": True}
 
 
 class TestSamplePostProc:

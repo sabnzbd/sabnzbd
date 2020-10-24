@@ -234,7 +234,7 @@ class TestConfigRSS(SABnzbdBaseTest):
         time.sleep(2)
 
         # Let's check the queue
-        for _ in range(20):
+        for _ in range(10):
             queue_result_slots = get_api_result("queue")["queue"]["slots"]
             # Check if the fetch-request was added to the queue
             if queue_result_slots:
@@ -246,9 +246,8 @@ class TestConfigRSS(SABnzbdBaseTest):
             return
 
         # Let's remove this thing
-        get_api_result("queue", extra_arguments={"name": "delete", "value": queue_result_slots[0]["nzo_id"]})
-        queue_result_slots = get_api_result("queue")["queue"]["slots"]
-        assert len(queue_result_slots) == 0
+        get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})
+        assert len(get_api_result("queue")["queue"]["slots"]) == 0
 
         # Unpause
         assert get_api_result("resume") == {"status": True}
