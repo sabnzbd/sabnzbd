@@ -64,6 +64,27 @@ def setname_from_path(path: str) -> str:
     return os.path.splitext(os.path.basename(path))[0]
 
 
+RAR_NR = re.compile(r"(.*?)(\.part(\d*).rar|\.r(\d*))$", re.IGNORECASE)
+
+
+def analyze_rar_filename(filename_or_path: str) -> Tuple[Optional[str], Optional[int]]:
+    """Extract volume number and setname from rar-filenames or paths
+    Both ".part01.rar" and ".r01" work
+    """
+    filename = os.path.basename(filename_or_path)
+    m = RAR_NR.search(filename)
+    if m:
+        if m.group(4):
+            # Special since starts with ".rar", ".r00"
+            return m.group(1), sabnzbd.misc.int_conv(m.group(4)) + 2
+        return m.group(1), sabnzbd.misc.int_conv(m.group(3))
+    else:
+        # Detect if first of "rxx" set
+        if filename.endswith(".rar"):
+            return os.path.splitext(filename)[0], 1
+    return None, None
+
+
 def is_writable(path: str) -> bool:
     """ Return True is file is writable (also when non-existent) """
     if os.path.isfile(path):

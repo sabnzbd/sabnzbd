@@ -25,12 +25,12 @@ import subprocess
 import time
 import threading
 import logging
-from typing import Optional
+from typing import Optional, Dict, Tuple, List
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import int_conv, format_time_string, build_and_run_command
-from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file
+from sabnzbd.misc import format_time_string, build_and_run_command
+from sabnzbd.filesystem import long_path, remove_all, real_path, remove_file, analyze_rar_filename
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.encoding import platform_btou
 from sabnzbd.decorators import synchronized
@@ -44,8 +44,6 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 START_STOP_LOCK = threading.RLock()
 
 ACTIVE_UNPACKERS = []
-
-RAR_NR = re.compile(r"(.*?)(\.part(\d*).rar|\.r(\d*))$", re.IGNORECASE)
 
 
 class DirectUnpacker(threading.Thread):
@@ -64,7 +62,7 @@ class DirectUnpacker(threading.Thread):
         self.total_volumes = {}
         self.unpack_time = 0.0
 
-        self.success_sets = {}
+        self.success_sets: Dict[str, Tuple[List[str], List[str]]] = {}
         self.next_sets = []
 
         self.duplicate_lines = 0
@@ -501,23 +499,6 @@ class DirectUnpacker(threading.Thread):
             if self.total_volumes[self.cur_setname] >= self.cur_volume and self.cur_volume:
                 return "%02d/%02d" % (self.cur_volume, self.total_volumes[self.cur_setname])
         return self.cur_volume
-
-
-def analyze_rar_filename(filename):
-    """Extract volume number and setname from rar-filenames
-    Both ".part01.rar" and ".r01"
-    """
-    m = RAR_NR.search(filename)
-    if m:
-        if m.group(4):
-            # Special since starts with ".rar", ".r00"
-            return m.group(1), int_conv(m.group(4)) + 2
-        return m.group(1), int_conv(m.group(3))
-    else:
-        # Detect if first of "rxx" set
-        if filename.endswith(".rar"):
-            return os.path.splitext(filename)[0], 1
-    return None, None
 
 
 def abort_all():

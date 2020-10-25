@@ -28,6 +28,7 @@ import time
 import zlib
 import shutil
 import functools
+from typing import List
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
@@ -55,6 +56,7 @@ from sabnzbd.filesystem import (
     setname_from_path,
     get_ext,
     get_filename,
+    analyze_rar_filename,
 )
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.sorting import SeriesSorter
@@ -63,7 +65,6 @@ from sabnzbd.constants import Status
 
 # Regex globals
 RAR_RE = re.compile(r"\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
-RAR_RE_V3 = re.compile(r"\.(?P<ext>part\d*)$", re.I)
 
 LOADING_RE = re.compile(r'^Loading "(.+)"')
 TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
@@ -467,28 +468,71 @@ def file_join(nzo: NzbObject, workdir, workdir_complete, delete, joinables):
 ##############################################################################
 # (Un)Rar Functions
 ##############################################################################
-def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, rars):
+def rar_unpack(nzo: NzbObject, workdir: str, workdir_complete: str, delete: bool, one_folder: bool, rars: List[str]):
     """Unpack multiple sets 'rars' of RAR files from 'workdir' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     When 'one_folder' is set, all files will be in a single folder
     """
+    fail = False
     newfiles = extracted_files = []
+
+    # Is the direct-unpacker still running? We wait for it
+    if nzo.direct_unpacker:
+        wait_count = 0
+        last_stats = nzo.direct_unpacker.get_formatted_stats()
+        while nzo.direct_unpacker.is_alive():
+            logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
+
+            # Bump the file-lock in case it's stuck
+            with nzo.direct_unpacker.next_file_lock:
+                nzo.direct_unpacker.next_file_lock.notify()
+            time.sleep(2)
+
+            # Did something change? Might be stuck
+            if last_stats == nzo.direct_unpacker.get_formatted_stats():
+                wait_count += 1
+                if wait_count > 60:
+                    # We abort after 2 minutes of no changes
+                    nzo.direct_unpacker.abort()
+            else:
+                wait_count = 0
+            last_stats = nzo.direct_unpacker.get_formatted_stats()
+
+        # Process everything already extracted by Direct Unpack
+        for rar_set in nzo.direct_unpacker.success_sets:
+            logging.info("Set %s completed by DirectUnpack", rar_set)
+            unpacked_rars, newfiles = nzo.direct_unpacker.success_sets[rar_set]
+            logging.debug("Rars: %s", unpacked_rars)
+            logging.debug("Newfiles: %s", newfiles)
+            extracted_files.extend(newfiles)
+
+            # Remove all source files from the list and from the disk (if requested)
+            # so they don't get parsed by the regular unpack
+            for rar in unpacked_rars:
+                if rar in rars:
+                    rars.remove(rar)
+                if delete:
+                    remove_file(rar)
+
+        # Clear all sets
+        nzo.direct_unpacker.success_sets = []
+
+    # See which sets are left
     rar_sets = {}
     for rar in rars:
-        rar_set = setname_from_path(rar)
-        if RAR_RE_V3.search(rar_set):
-            # Remove the ".partXX" part
-            rar_set = os.path.splitext(rar_set)[0]
+        # Skip any files that were already removed
+        if not os.path.exists(rar):
+            continue
+        rar_set, _ = analyze_rar_filename(rar)
         if rar_set not in rar_sets:
             rar_sets[rar_set] = []
         rar_sets[rar_set].append(rar)
 
-    logging.debug("Rar_sets: %s", rar_sets)
+    logging.debug("Remaining rar sets: %s", rar_sets)
 
     for rar_set in rar_sets:
         # Run the RAR extractor
         rar_sets[rar_set].sort(key=functools.cmp_to_key(rar_sort))
-
         rarpath = rar_sets[rar_set][0]
 
         if workdir_complete and rarpath.startswith(workdir):
@@ -496,63 +540,31 @@ def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, ra
         else:
             extraction_path = os.path.split(rarpath)[0]
 
-        # Is the direct-unpacker still running? We wait for it
-        if nzo.direct_unpacker:
-            wait_count = 0
-            last_stats = nzo.direct_unpacker.get_formatted_stats()
-            while nzo.direct_unpacker.is_alive():
-                logging.debug("DirectUnpacker still alive for %s: %s", nzo.final_name, last_stats)
+        logging.info("Extracting rarfile %s (belonging to %s) to %s", rarpath, rar_set, extraction_path)
+        try:
+            fail, newfiles, rars = rar_extract(
+                rarpath, len(rar_sets[rar_set]), one_folder, nzo, rar_set, extraction_path
+            )
+        except:
+            fail = True
+            msg = sys.exc_info()[1]
+            nzo.fail_msg = T("Unpacking failed, %s") % msg
+            setname = nzo.final_name
+            nzo.set_unpack_info("Unpack", T('[%s] Error "%s" while unpacking RAR files') % (setname, msg))
 
-                # Bump the file-lock in case it's stuck
-                with nzo.direct_unpacker.next_file_lock:
-                    nzo.direct_unpacker.next_file_lock.notify()
-                time.sleep(2)
+            logging.error(T('Error "%s" while running rar_unpack on %s'), msg, setname)
+            logging.debug("Traceback: ", exc_info=True)
 
-                # Did something change? Might be stuck
-                if last_stats == nzo.direct_unpacker.get_formatted_stats():
-                    wait_count += 1
-                    if wait_count > 60:
-                        # We abort after 2 minutes of no changes
-                        nzo.direct_unpacker.abort()
-                else:
-                    wait_count = 0
-                last_stats = nzo.direct_unpacker.get_formatted_stats()
-
-        # Did we already direct-unpack it? Not when recursive-unpacking
-        if nzo.direct_unpacker and rar_set in nzo.direct_unpacker.success_sets:
-            logging.info("Set %s completed by DirectUnpack", rar_set)
-            fail = False
-            success = True
-            rars, newfiles = nzo.direct_unpacker.success_sets.pop(rar_set)
-        else:
-            logging.info("Extracting rarfile %s (belonging to %s) to %s", rarpath, rar_set, extraction_path)
-            try:
-                fail, newfiles, rars = rar_extract(
-                    rarpath, len(rar_sets[rar_set]), one_folder, nzo, rar_set, extraction_path
-                )
-                success = not fail
-            except:
-                success = False
-                fail = True
-                msg = sys.exc_info()[1]
-                nzo.fail_msg = T("Unpacking failed, %s") % msg
-                setname = nzo.final_name
-                nzo.set_unpack_info("Unpack", T('[%s] Error "%s" while unpacking RAR files') % (setname, msg))
-
-                logging.error(T('Error "%s" while running rar_unpack on %s'), msg, setname)
-                logging.debug("Traceback: ", exc_info=True)
-
-        if success:
-            logging.debug("rar_unpack(): Rars: %s", rars)
-            logging.debug("rar_unpack(): Newfiles: %s", newfiles)
+        if not fail:
+            logging.debug("Rars: %s", rars)
+            logging.debug("Newfiles: %s", newfiles)
             extracted_files.extend(newfiles)
 
         # Do not fail if this was a recursive unpack
         if fail and rarpath.startswith(workdir_complete):
             # Do not delete the files, leave it to user!
             logging.info("Ignoring failure to do recursive unpack of %s", rarpath)
-            fail = 0
-            success = True
+            fail = False
             newfiles = []
 
         # Do not fail if this was maybe just some duplicate fileset
@@ -560,12 +572,11 @@ def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, ra
         if fail and rar_set.endswith((".1", ".2")):
             # Just in case, we leave the raw files
             logging.info("Ignoring failure of unpack for possible duplicate file %s", rarpath)
-            fail = 0
-            success = True
+            fail = False
             newfiles = []
 
         # Delete the old files if we have to
-        if success and delete and newfiles:
+        if not fail and delete and newfiles:
             for rar in rars:
                 try:
                     remove_file(rar)
