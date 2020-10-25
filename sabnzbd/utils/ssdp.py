@@ -20,9 +20,18 @@
 sabnzbd.utils.ssdp - Support for SSDP / Simple Service Discovery Protocol plus XML to appear on Windows
 
 Method:
-1) this service send a SSDP broadcast with a description.xml in it
+1) this service sends a SSDP broadcast with a description.xml URL in it
 2) Windows retrieves that description.xml from this service
-3) Windows presents the device in it in Windows Exporter -> Network
+3) Windows presents the info from the XML in Windows Exporter's Network
+
+Based on the following Specs:
+
+SSDP:
+https://tools.ietf.org/html/draft-cai-ssdp-v1-03
+
+XML:
+UPnP™ Device Architecture 1.1, paragraph 2.3 Device description
+http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
 
 
 """
@@ -62,7 +71,7 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 """
         self.__mySSDPbroadcast = self.__mySSDPbroadcast.replace("\n", "\r\n").encode("utf-8")
 
-        # Create the XML info
+        # Create the XML info (description.xml)
         self.__myxml = f"""<?xml version="1.0" encoding="UTF-8" ?>
 <root xmlns="urn:schemas-upnp-org:device-1-0">
 <specVersion>
