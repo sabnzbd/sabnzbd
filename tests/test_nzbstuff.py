@@ -58,7 +58,7 @@ class TestNZBStuffHelpers:
             ("my_awesome_nzb_file{{password}}", "my_awesome_nzb_file", "password"),
             ("file_with_text_after_pw{{passw0rd}}_[180519]", "file_with_text_after_pw", "passw0rd"),
             ("file_without_pw", "file_without_pw", None),
-            ("multiple_pw{{first-pw}}_{{second-pw}}", "multiple_pw", "first-pw}}_{{second-pw",),  # Greed is Good
+            ("multiple_pw{{first-pw}}_{{second-pw}}", "multiple_pw", "first-pw}}_{{second-pw"),  # Greed is Good
             ("デビアン", "デビアン", None),  # Unicode
             ("Gentoo_Hobby_Edition {{secret}}", "Gentoo_Hobby_Edition", "secret"),  # Space between name and password
             ("Mandrake{{top{{secret}}", "Mandrake", "top{{secret"),  # Double opening {{
