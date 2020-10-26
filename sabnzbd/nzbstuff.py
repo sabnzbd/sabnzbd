@@ -2086,9 +2086,11 @@ def scan_password(name: str) -> Tuple[str, Optional[str]]:
     if "http://" in name or "https://" in name:
         return name, None
 
-    braces = name[1:].find("{{") + 1
+    braces = name[1:].find("{{")
     if braces < 0:
         braces = len(name)
+    else:
+        braces += 1
     slash = name.find("/")
 
     # Look for name/password, but make sure that '/' comes before any {{
