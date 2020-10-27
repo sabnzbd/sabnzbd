@@ -1287,7 +1287,7 @@ def main():
             sabnzbd.cfg.enable_https.set(False)
 
         # So the cert and key files do exist, now let's check if they are valid:
-        trialcontext = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        trialcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         try:
             trialcontext.load_cert_chain(https_cert, https_key)
             logging.info("HTTPS keys are OK")
