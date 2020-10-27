@@ -52,27 +52,32 @@ class TestNZO:
 
 
 class TestNZBStuffHelpers:
-    def test_scan_passwords(self):
-        file_names = {
-            "my_awesome_nzb_file{{password}}": "password",
-            "file_with_text_after_pw{{passw0rd}}_[180519]": "passw0rd",
-            "file_without_pw": None,
-            "file_with_multiple_pw{{first-pw}}_{{second-pw}}": "first-pw",
-        }
-
-        for file_name, password in file_names.items():
-            assert nzbstuff.scan_password(file_name)[1] == password
-
-    def test_scan_passwords_filenames(self):
-        file_names = {
-            "my_awesome_nzb_file{{password}}": "my_awesome_nzb_file",
-            "file_with_text_after_pw{{passw0rd}}_[310313]": "file_with_text_after_pw",
-            "file_without_pw": "file_without_pw",
-            "file_with_multiple_pw{{first-pw}}_{{second-pw}}": "file_with_multiple_pw",
-        }
-
-        for file_name, clean_file_name in file_names.items():
-            assert nzbstuff.scan_password(file_name)[0] == clean_file_name
+    @pytest.mark.parametrize(
+        "argument, name, password",
+        [
+            ("my_awesome_nzb_file{{password}}", "my_awesome_nzb_file", "password"),
+            ("file_with_text_after_pw{{passw0rd}}_[180519]", "file_with_text_after_pw", "passw0rd"),
+            ("file_without_pw", "file_without_pw", None),
+            ("multiple_pw{{first-pw}}_{{second-pw}}", "multiple_pw", "first-pw}}_{{second-pw"),  # Greed is Good
+            ("デビアン", "デビアン", None),  # Unicode
+            ("Gentoo_Hobby_Edition {{secret}}", "Gentoo_Hobby_Edition", "secret"),  # Space between name and password
+            ("Mandrake{{top{{secret}}", "Mandrake", "top{{secret"),  # Double opening {{
+            ("Красная}}{{Шляпа}}", "Красная}}", "Шляпа"),  # Double closing }}
+            ("{{Jobname{{PassWord}}", "{{Jobname", "PassWord"),  # {{ at start
+            ("Hello/kITTY", "Hello", "kITTY"),  # Notation with slash
+            ("/Jobname", "/Jobname", None),  # Slash at start
+            ("Jobname/Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces
+            ("Jobname / Top{{Secret}}", "Jobname", "Top{{Secret}}"),  # Slash with braces and extra spaces
+            ("לינוקס/معلومات سرية", "לינוקס", "معلومات سرية"),  # LTR with slash
+            ("לינוקס{{معلومات سرية}}", "לינוקס", "معلومات سرية"),  # LTR with brackets
+            ("thư điện tử password=mật_khẩu", "thư điện tử", "mật_khẩu"),  # Password= notation
+            ("password=PartOfTheJobname", "password=PartOfTheJobname", None),  # Password= at the start
+            ("Job}}Name{{FTW", "Job}}Name{{FTW", None),  # Both {{ and }} present but incorrect order (no password)
+            ("./Text", "./Text", None),  # Name would end up empty after the function strips the dot
+        ],
+    )
+    def test_scan_password(self, argument, name, password):
+        assert nzbstuff.scan_password(argument) == (name, password)
 
     def test_create_work_name(self):
         # Only test stuff specific for create_work_name

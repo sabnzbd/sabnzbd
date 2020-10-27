@@ -2086,34 +2086,35 @@ def scan_password(name: str) -> Tuple[str, Optional[str]]:
     if "http://" in name or "https://" in name:
         return name, None
 
-    braces = name.find("{{")
+    braces = name[1:].find("{{")
     if braces < 0:
         braces = len(name)
+    else:
+        braces += 1
     slash = name.find("/")
 
     # Look for name/password, but make sure that '/' comes before any {{
-    if 0 <= slash < braces and "password=" not in name:
+    if 0 < slash < braces and "password=" not in name:
         # Is it maybe in 'name / password' notation?
-        if slash == name.find(" / ") + 1:
+        if slash == name.find(" / ") + 1 and name[: slash - 1].strip(". "):
             # Remove the extra space after name and before password
             return name[: slash - 1].strip(". "), name[slash + 2 :]
-        return name[:slash].strip(". "), name[slash + 1 :]
+        if name[:slash].strip(". "):
+            return name[:slash].strip(". "), name[slash + 1 :]
 
     # Look for "name password=password"
     pw = name.find("password=")
-    if pw >= 0:
+    if pw > 0 and name[:pw].strip(". "):
         return name[:pw].strip(". "), name[pw + 9 :]
 
     # Look for name{{password}}
-    if braces < len(name) and "}}" in name:
-        closing_braces = name.find("}}")
-        if closing_braces < 0:
-            closing_braces = len(name)
-
-        return name[:braces].strip(". "), name[braces + 2 : closing_braces]
+    if braces < len(name):
+        closing_braces = name.rfind("}}")
+        if closing_braces > braces and name[:braces].strip(". "):
+            return name[:braces].strip(". "), name[braces + 2 : closing_braces]
 
     # Look again for name/password
-    if slash >= 0:
+    if slash > 0 and name[:slash].strip(". "):
         return name[:slash].strip(". "), name[slash + 1 :]
 
     # No password found
