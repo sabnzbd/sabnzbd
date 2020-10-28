@@ -347,7 +347,7 @@ class BPSMeter:
 
     def reset_quota(self, force=False):
         """Check if it's time to reset the quota, optionally resuming
-        Return True, when still paused
+        Return True, when still paused or should be paused
         """
         if force or (self.have_quota and time.time() > (self.q_time - 50)):
             self.quota = self.left = cfg.quota_size.get_float()

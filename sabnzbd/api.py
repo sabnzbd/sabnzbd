@@ -719,6 +719,7 @@ def _api_retry_all(name, output, kwargs):
 def _api_reset_quota(name, output, kwargs):
     """ Reset quota left """
     sabnzbd.BPSMeter.reset_quota(force=True)
+    return report(output)
 
 
 def _api_test_email(name, output, kwargs):
