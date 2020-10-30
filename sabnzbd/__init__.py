@@ -446,15 +446,6 @@ def trigger_restart(timeout=None):
     if timeout:
         time.sleep(timeout)
 
-    # Add extra arguments
-    if sabnzbd.Downloader.paused:
-        sabnzbd.RESTART_ARGS.append("-p")
-    sys.argv = sabnzbd.RESTART_ARGS
-
-    # Stop all services
-    sabnzbd.halt()
-    cherrypy.engine.exit()
-
     if sabnzbd.WIN32:
         # Remove connection info for faster restart
         del_connection_info()
@@ -463,6 +454,15 @@ def trigger_restart(timeout=None):
     if hasattr(sys, "frozen"):
         sabnzbd.TRIGGER_RESTART = True
     else:
+        # Add extra arguments
+        if sabnzbd.Downloader.paused:
+            sabnzbd.RESTART_ARGS.append("-p")
+        sys.argv = sabnzbd.RESTART_ARGS
+
+        # Stop all services
+        sabnzbd.halt()
+        cherrypy.engine.exit()
+
         # Do the restart right now
         cherrypy.engine._do_execv()
 
