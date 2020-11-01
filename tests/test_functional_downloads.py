@@ -20,6 +20,7 @@ tests.test_functional_downloads - Test the downloading flow
 """
 import sys
 
+import sabnzbd.filesystem as filesystem
 from tests.testhelper import *
 
 
@@ -102,8 +103,12 @@ class TestDownloadFlow(SABnzbdBaseTest):
         else:
             pytest.fail("Download did not complete")
 
-        # Check if only the expected file exists on disk
-        assert [file_output] == os.listdir(os.path.join(SAB_COMPLETE_DIR, test_job_name))
+        # Check if there is only 1 of the expected file
+        # Sometimes par2 can also be included, but we accept that. For example when small
+        # par2 files get assembled in after the download already finished (see #1509)
+        assert [file_output] == filesystem.globber(
+            os.path.join(SAB_COMPLETE_DIR, test_job_name), "*" + filesystem.get_ext(file_output)
+        )
 
         # Verify if the garbage collection works (see #1628)
         gc_results = get_api_result("gc_stats")["value"]
