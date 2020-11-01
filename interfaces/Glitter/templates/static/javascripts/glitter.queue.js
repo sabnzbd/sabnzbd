@@ -228,11 +228,11 @@ function QueueListModel(parent) {
         switch($(event.currentTarget).data('action')) {
             case 'sortAgeAsc':
                 sort = 'avg_age';
-                dir = 'asc';
+                dir = 'desc';
                 break;
             case 'sortAgeDesc':
                 sort = 'avg_age';
-                dir = 'desc';
+                dir = 'asc';
                 break;
             case 'sortNameAsc':
                 sort = 'name';

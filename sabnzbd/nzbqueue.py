@@ -587,7 +587,7 @@ class NzbQueue:
         elif field.lower() == "size" or field.lower() == "bytes":
             self.sort_by_size(reverse)
         elif field.lower() == "avg_age":
-            self.sort_by_avg_age(reverse)
+            self.sort_by_avg_age(not reverse)
         else:
             logging.debug("Sort: %s not recognized", field)
 
