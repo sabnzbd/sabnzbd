@@ -354,15 +354,15 @@ class NzbFile(TryList):
         self.valid = bool(raw_article_db)
 
         if self.valid and self.nzf_id:
-            # Save first article separate so we can do duplicate file detection
+            # Save first article separate so we can do
+            # duplicate file detection and deobfuscate-during-download
             first_article = self.add_article(raw_article_db.pop(0))
             first_article.lowest_partnum = True
+            self.nzo.first_articles.append(first_article)
+            self.nzo.first_articles_count += 1
 
-            # For non-par2 files we also use it to do deobfuscate-during-download
-            # And we count how many bytes are available for repair
+            # Count how many bytes are available for repair
             if sabnzbd.par2file.is_parfile(self.filename):
-                self.nzo.first_articles.append(first_article)
-                self.nzo.first_articles_count += 1
                 self.nzo.bytes_par2 += self.bytes
 
             # Any articles left?
@@ -1698,8 +1698,11 @@ class NzbObject(TryList):
             self.renamed_file(yenc_filename, nzf.filename)
             nzf.filename = yenc_filename
 
+    @synchronized(NZO_LOCK)
     def verify_all_filenames_and_resort(self):
-        """ Verify all filenames based on par2 info and then re-sort files """
+        """Verify all filenames based on par2 info and then re-sort files.
+        Locked so all files are verified at once without interuptions.
+        """
         logging.info("Checking all filenames for %s", self.final_name)
         for nzf_verify in self.files:
             self.verify_nzf_filename(nzf_verify)
