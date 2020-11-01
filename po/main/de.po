@@ -7,13 +7,13 @@
 # Safihre <safihre@sabnzbd.org>, 2020
 # C E <githubce@eiselt.ch>, 2020
 # Nikolai Bohl <n.kay01@gmail.com>, 2020
-# hot io <mail+github@mailboxy.eu>, 2020
+# hotio, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: hot io <mail+github@mailboxy.eu>, 2020\n"
+"Last-Translator: hotio, 2020\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -792,7 +792,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Failed to read the password file %s"
-msgstr "Konnte die Passwortdatei %snicht lesen"
+msgstr "Konnte die Passwortdatei %s nicht lesen"
 
 #. Error message
 #: sabnzbd/misc.py
