@@ -1530,6 +1530,7 @@ def main():
         # Check for auto-restart request
         # Or special restart cases like Mac and WindowsService
         if sabnzbd.TRIGGER_RESTART:
+            logging.info("Performing triggered restart")
             # Shutdown
             sabnzbd.shutdown_program()
 
@@ -1548,7 +1549,7 @@ def main():
                 my_name = sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")
                 my_args = " ".join(sys.argv[1:])
                 cmd = 'kill -9 %s && open "%s" --args %s' % (my_pid, my_name, my_args)
-                logging.info("Launching: ", cmd)
+                logging.info("Launching: %s", cmd)
                 os.system(cmd)
             elif sabnzbd.WIN_SERVICE:
                 # Use external service handler to do the restart
