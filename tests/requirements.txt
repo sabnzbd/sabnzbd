@@ -7,3 +7,6 @@ pytest-httpbin
 pytest-httpserver
 flaky
 xmltodict
+tavern
+tavalidate
+xmltodict
