@@ -167,7 +167,7 @@ class ApiTestFunctions:
         return record
 
     def _run_tavern(self, test_name, extra_vars=None):
-        """ Run tavern tests in ${test_name}.tavern.yaml """
+        """ Run tavern tests in ${test_name}.yaml """
         vars = [
             ("daemon_host", self.daemon_host),
             ("daemon_port", self.daemon_port),
@@ -180,8 +180,9 @@ class ApiTestFunctions:
             vars.append(("daemon_history_size", self.history_size))
 
         result = run(
-            os.path.join(os.path.dirname(__file__), "data", "tavern", test_name + ".tavern.yaml"),
+            os.path.join(os.path.dirname(__file__), "data", "tavern", test_name + ".yaml"),
             tavern_global_cfg={"variables": dict(vars)},
+            pytest_args=["--tavern-file-path-regex", "api_.*.yaml"],
         )
         assert result is result.OK
 
