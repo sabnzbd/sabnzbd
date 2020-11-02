@@ -39,7 +39,7 @@ logging.getLogger().setLevel(logging.INFO)
 # Expecting the following message-id:
 # ARTICLE <file=folder/filename.mkv|part=4|start=5000|size=5000>\r\n
 ARTICLE_INFO = re.compile(
-    b"^(ARTICLE|BODY) (?P<message_id><file=(?P<file>.*)\|part=(?P<part>\d+)\|start=(?P<start>\d+)\|size=(?P<size>\d+)>)\\r\\n$",
+    br"^(ARTICLE|BODY) (?P<message_id><file=(?P<file>.*)|part=(?P<part>\d+)|start=(?P<start>\d+)|size=(?P<size>\d+)>)\r\n$",
     re.MULTILINE,
 )
 YENC_ESCAPE = [0x00, 0x0A, 0x0D, ord("="), ord(".")]
