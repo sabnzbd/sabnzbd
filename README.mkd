@@ -1,5 +1,11 @@
-Release Notes - SABnzbd 3.1.0
+Release Notes - SABnzbd 3.1.1 Release Candidate 1
 =========================================================
+
+## Changes and bugfixes since 3.1.0
+- Queue Repair would fail if Rating is enabled.
+- Deobfuscate-during-download was not triggered.
+- Failed to start on Python 3.5 with HTTPS enabled.
+- Windows/macOS: improve handling of program restart.
 
 ## Changes since 3.0.2
 - Added option to automatically deobfuscate final filenames: after unpacking, 
