@@ -1,0 +1,100 @@
+---
+test_name: Check empty history format (json output)
+
+strict:
+  - json:on
+
+stages:
+  - name: history format empty
+    request:
+      url: http://{daemon_host}:{daemon_port}/sabnzbd/api
+      method: GET
+      params:
+        mode: history
+        apikey: "{daemon_apikey}"
+        output: json
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "application/json"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+      json:
+        history:
+          # all four sizes may have a single digit value, so anything beyond that is optional
+          total_size: !re_match "[0-9][0-9.]*.?(\ [A-Z])?"
+          month_size: !re_match "[0-9][0-9.]*.?(\ [A-Z])?"
+          week_size: !re_match "[0-9][0-9.]*.?(\ [A-Z])?"
+          day_size: !re_match "[0-9][0-9.]*.?(\ [A-Z])?"
+          slots: []
+          noofslots: 0
+          last_history_update: !anyint
+          version: "{daemon_version}"
+
+
+---
+test_name: Check empty history format (text output)
+
+stages:
+  - name: history format empty
+    request:
+      url: http://{daemon_host}:{daemon_port}/sabnzbd/api
+      method: GET
+      params:
+        mode: history
+        apikey: "{daemon_apikey}"
+        output: text
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/plain"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_regex
+        extra_kwargs:
+          # Verify response with a regex using positive looksaheads so
+          # parameters match regardless of their order of appearance
+          expression: "^{{(?=.*'noofslots': 0)(?=.*'last_history_update': [0-9]+)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': \\[\\])(?=.*'version': '{daemon_version}').*}}$"
+          # minor api bug: text output appends a space to integer only values in *_size, e.g. 'day_size': '0 '
+
+
+---
+test_name: Check empty history format (xml output)
+
+stages:
+  - name: history format empty
+    request:
+      url: http://{daemon_host}:{daemon_port}/sabnzbd/api
+      method: GET
+      params:
+        mode: history
+        apikey: "{daemon_apikey}"
+        output: xml
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/xml"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      verify_response_with:
+        function: tavalidate:assert_xml
+        extra_kwargs:
+          strict: True # don't accept extra tags in the response
+          expected: |
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <history>
+            <total_size>!anystr</total_size>
+            <month_size>!anystr</month_size>
+            <week_size>!anystr</week_size>
+            <day_size>!anystr</day_size>
+            <slots></slots>
+            <noofslots>0</noofslots>
+            <last_history_update>!anyint</last_history_update>
+            <version>!anystr</version>
+            </history>

@@ -1,0 +1,107 @@
+---
+test_name: Check get_files format (json output)
+
+strict:
+  - json:on
+
+stages:
+  - name: get_files format (json)
+    request:
+      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      method: GET
+      params:
+        mode: get_files
+        apikey: "{daemon_apikey}"
+        output: json
+        value: "{nzo_id}"
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "application/json"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+      json:
+        files: !anylist
+          filename: !anystr
+          mbleft: !anyfloat
+          mb: !anyfloat
+          bytes: !anyfloat
+          age: !anystr
+          nzf_id: !re_match "SABnzbd_nzf_.*"
+          status: !re_match "(finished|active|queued)"
+
+
+---
+test_name: Check get_files format (text output)
+
+strict:
+  - json:on
+
+stages:
+  - name: get_files format (text)
+    request:
+      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      method: GET
+      params:
+        mode: get_files
+        apikey: "{daemon_apikey}"
+        output: text
+        value: "{nzo_id}"
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/plain"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_regex
+        extra_kwargs:
+          # Verify response parameters with a regex using positive
+          # looksaheads, so parameters match regardless of their order
+          # of appearance in the text output.
+          expression: "^\\[{{(?=.*'filename': )(?=.*'mbleft': )(?=.*'mb': )(?=.*'bytes': )(?=.*'age': )(?=.*'nzf_id': 'SABnzbd_nzf_.*')(?=.*'status': '(finished|active|queued)').*}}.*\\]$"
+
+
+---
+test_name: Check get_files format (xml output)
+
+strict:
+  - json:on
+
+stages:
+  - name: get_files format (xml)
+    request:
+      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      method: GET
+      params:
+        mode: get_files
+        apikey: "{daemon_apikey}"
+        output: xml
+        value: "{nzo_id}"
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/xml"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      verify_response_with:
+        function: tavalidate:assert_xml
+        extra_kwargs:
+          strict: True
+          expected: |
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <files>
+            <file>
+            <filename>!anystr</filename>
+            <mbleft>!anyfloat</mbleft>
+            <mb>!anyfloat</mb>
+            <bytes>!anyfloat</bytes>
+            <age>!anystr</age>
+            <nzf_id>!anystr</nzf_id>
+            <status>!anystr</status>
+            </file>
+            </files>

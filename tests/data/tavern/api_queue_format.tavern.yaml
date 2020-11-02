@@ -1,0 +1,213 @@
+---
+test_name: Check general queue format (json output)
+
+strict:
+  - json:on
+
+stages:
+  - name: queue format single entry
+    request:
+      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      method: GET
+      params:
+        mode: queue
+        apikey: "{daemon_apikey}"
+        output: json
+        limit: 1
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "application/json"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+      json:
+        queue:
+          version: "{daemon_version}"
+          paused: !anybool
+          pause_int: !re_match "[0-9]*"
+          paused_all: !anybool
+          diskspace1: !re_match "[0-9.]*"
+          diskspace2: !re_match "[0-9.]*"
+          diskspace1_norm: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
+          diskspace2_norm: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
+          diskspacetotal1: !re_match "[0-9.]*"
+          diskspacetotal2: !re_match "[0-9.]*"
+          loadavg: !anystr
+          speedlimit: !re_match "[0-9]*"
+          speedlimit_abs: !re_match "[0-9.]*" # Value may be empty if unset so !anyint won't work
+          have_warnings: !re_match "[0-9]*"
+          finishaction: !anything
+          quota: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
+          have_quota: !anybool
+          left_quota: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
+          cache_art: !re_search "[0-9]*"
+          cache_size: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
+          cache_max: !re_search "[0-9]*"
+          kbpersec: !re_match "[0-9.]*"
+          speed: !re_search "[0-9][0-9.]*.?(\ [A-Z])?"
+          mbleft: !re_match "[0-9.]*"
+          mb: !re_match "[0-9.]*"
+          sizeleft: !re_search "[0-9][0-9.]*.?(\ [A-Z]+)?"
+          size: !re_search "[0-9][0-9.]*.?(\ [A-Z]+)?"
+          noofslots_total: !anyint
+          status: "Paused"
+          timeleft: "0:00:00"
+          eta: "unknown"
+          refresh_rate: !re_match "[0-9]*"
+          scripts: !anylist
+          categories: !anylist
+          rating_enable: !anybool
+          noofslots: !anyint
+          start: !anyint
+          limit: !anyint
+          finish: !anyint
+          slots: !anylist
+            index: !re_match "[0-9]+"
+            nzo_id: !re_match "SABnzbd_nzo_.*"
+            unpackopts: !re_match "-?[0-9]+"
+            priority: "!anystr"
+            script: "!anystr"
+            filename: "!anystr"
+            labels: !anylist
+            password: "!anystr"
+            cat: "!anystr"
+            mbleft: !re_match "[0-9.]*"
+            mb: !re_match "[0-9.]*"
+            size: !re_search "[0-9][0-9.]*.?(\ [A-Z]+)?"
+            sizeleft: !re_search "[0-9][0-9.]*.?(\ [A-Z]+)?"
+            percentage: "[0-9.]+"
+            mbmissing: !re_search "[0-9][0-9.]*.?(\ [A-Z]+)?"
+            direct_unpack: !re_match "[0-9]+"
+            status: "Paused"
+            timeleft: "0:00:00"
+            eta: "unknown"
+            avg_age: "!anystr"
+            has_rating: !anybool
+
+
+---
+test_name: Check general queue format (text output)
+
+stages:
+  - name: queue format single entry
+    request:
+      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      method: GET
+      params:
+        mode: queue
+        apikey: "{daemon_apikey}"
+        output: text
+        limit: 1
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/plain"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_regex
+        extra_kwargs:
+          # Verify only a bunch of key response parameters with a regex using
+          # positive looksaheads, so parameters match regardless of their order
+          # of appearance in the text output
+          expression: "^{{(?=.*'version': '{daemon_version}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
+
+
+---
+test_name: Check general queue format (xml output)
+
+stages:
+  - name: queue format single entry
+    request:
+      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      method: GET
+      params:
+        mode: queue
+        apikey: "{daemon_apikey}"
+        output: xml
+        limit: 1
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/xml"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      verify_response_with:
+        function: tavalidate:assert_xml
+        extra_kwargs:
+          strict: True
+          expected: |
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <queue>
+            <version>!anystr</version>
+            <paused>!anybool</paused>
+            <pause_int>!anyint</pause_int>
+            <paused_all>!anybool</paused_all>
+            <diskspace1>!anyfloat</diskspace1>
+            <diskspace2>!anyfloat</diskspace2>
+            <diskspace1_norm>!anystr</diskspace1_norm>
+            <diskspace2_norm>!anystr</diskspace2_norm>
+            <diskspacetotal1>!anyfloat</diskspacetotal1>
+            <diskspacetotal2>!anyfloat</diskspacetotal2>
+            <loadavg>!anystr</loadavg>
+            <speedlimit>!anyint</speedlimit>
+            <speedlimit_abs>!anystr</speedlimit_abs>
+            <have_warnings>!anyint</have_warnings>
+            <finishaction>!anystr</finishaction>
+            <quota>!anystr</quota>
+            <have_quota>!anybool</have_quota>
+            <left_quota>!anystr</left_quota>
+            <cache_art>!anyint</cache_art>
+            <cache_size>!anystr</cache_size>
+            <cache_max>!anyint</cache_max>
+            <kbpersec>!anyfloat</kbpersec>
+            <speed>!anystr</speed>
+            <mbleft>!anyfloat</mbleft>
+            <mb>!anyfloat</mb>
+            <sizeleft>!anystr</sizeleft>
+            <size>!anystr</size>
+            <noofslots_total>!anyint</noofslots_total>
+            <status>!anystr</status>
+            <timeleft>0:00:00</timeleft>
+            <eta>unknown</eta>
+            <refresh_rate>!anything</refresh_rate>
+            <scripts>
+            <script>!anystr</script>
+            </scripts>
+            <categories>!anything</categories>
+            <rating_enable>!anybool</rating_enable>
+            <noofslots>!anyint</noofslots>
+            <start>!anyint</start>
+            <limit>!anyint</limit>
+            <finish>!anyint</finish>
+            <slots>
+            <slot>
+            <index>!anyint</index>
+            <nzo_id>!anystr</nzo_id>
+            <unpackopts>!anyint</unpackopts>
+            <priority>!anystr</priority>
+            <script>!anystr</script>
+            <filename>!anystr</filename>
+            <labels>!anything</labels>
+            <password>!anystr</password>
+            <cat>!anystr</cat>
+            <mbleft>!anyfloat</mbleft>
+            <mb>!anyfloat</mb>
+            <size>!anystr</size>
+            <sizeleft>!anystr</sizeleft>
+            <percentage>!anyint</percentage>
+            <mbmissing>!anyfloat</mbmissing>
+            <direct_unpack>!anyint</direct_unpack>
+            <status>!anystr</status>
+            <timeleft>0:00:00</timeleft>
+            <eta>unknown</eta>
+            <avg_age>!anystr</avg_age>
+            <has_rating>!anybool</has_rating>
+            </slot>
+            </slots>
+            </queue>
