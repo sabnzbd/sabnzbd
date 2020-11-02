@@ -29,6 +29,7 @@ from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from urllib3.exceptions import ProtocolError
+import xmltodict
 
 import sabnzbd
 import sabnzbd.cfg as cfg
@@ -112,6 +113,10 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     arguments = {"apikey": "apikey", "output": "json", "mode": mode}
     arguments.update(extra_arguments)
     r = requests.get("http://%s:%s/api" % (host, port), params=arguments)
+    if arguments["output"] == "text":
+        return r.text
+    elif arguments["output"] == "xml":
+        return xmltodict.parse(r.text)
     return r.json()
 
 

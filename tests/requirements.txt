@@ -6,3 +6,4 @@ pyfakefs
 pytest-httpbin
 pytest-httpserver
 flaky
+xmltodict
