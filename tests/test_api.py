@@ -22,7 +22,6 @@ tests.test_api - Tests for API functions
 from tests.testhelper import *
 
 import sabnzbd.api as api
-import sabnzbd.version
 
 
 class TestApiInternals:

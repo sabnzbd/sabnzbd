@@ -37,7 +37,6 @@ from warnings import warn
 
 import sabnzbd.api as api
 import sabnzbd.database as db
-import sabnzbd.version
 
 from sabnzbd.constants import (
     DB_HISTORY_NAME,
@@ -180,7 +179,7 @@ class ApiTestFunctions:
             vars.append(("daemon_history_size", self.history_size))
 
         result = run(
-            os.path.join(os.path.dirname(__file__), "data", "tavern", test_name + ".yaml"),
+            os.path.join(SAB_DATA_DIR, "tavern", test_name + ".yaml"),
             tavern_global_cfg={"variables": dict(vars)},
             pytest_args=["--tavern-file-path-regex", "api_.*.yaml"],
         )
@@ -250,7 +249,7 @@ class ApiTestFunctions:
     def _purge_queue(self, del_files=0):
         """ Clear the entire queue """
         self._get_api_json("queue", extra_args={"name": "purge", "del_files": del_files})
-        assert len(self._get_api_json("queue")["queue"]["slots"]) is int(0)
+        assert len(self._get_api_json("queue")["queue"]["slots"]) == 0
 
 
 @pytest.fixture(scope="class")
@@ -539,9 +538,9 @@ class TestOtherApi(ApiTestFunctions):
         # Verify they're gone
         json = self._get_api_json("warnings")
         assert "warnings" in json.keys()
-        assert len(json["warnings"]) == int(0)
+        assert len(json["warnings"]) == 0
         # Check queue output as well
-        assert int(self._get_api_json("queue", extra_args={"limit": 1})["queue"]["have_warnings"]) == int(0)
+        assert int(self._get_api_json("queue", extra_args={"limit": 1})["queue"]["have_warnings"]) == 0
 
     def test_api_pause_resume_pp(self):  # TODO include this in the queue output, like the other pause states?
         # Very basic test only, pp pause state cannot be verified for now
@@ -1070,7 +1069,7 @@ class TestHistoryApi(ApiTestFunctions):
     def test_api_history_restrict_invalid_cat(self):
         fake_cat = "FakeCat_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
         json = self._get_api_history({"category": fake_cat})
-        assert len(json["history"]["slots"]) is int(0)
+        assert len(json["history"]["slots"]) == 0
 
     def test_api_history_restrict_cat_and_limit(self):
         cats = self.history_category_options
@@ -1085,13 +1084,13 @@ class TestHistoryApi(ApiTestFunctions):
     def test_api_history_restrict_invalid_cat_and_limit(self):
         fake_cat = "FakeCat_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
         json = self._get_api_history({"category": fake_cat, "limit": randint(1, 5)})
-        assert len(json["history"]["slots"]) is int(0)
+        assert len(json["history"]["slots"]) == 0
 
     def test_api_history_restrict_invalid_cat_and_search(self):
         fake_cat = "FakeCat_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
         for distro in self.history_distro_names:
             json = self._get_api_history({"category": fake_cat, "search": distro})
-            assert len(json["history"]["slots"]) is int(0)
+            assert len(json["history"]["slots"]) == 0
 
     def test_api_history_restrict_search(self):
         slot_sum = 0
@@ -1103,7 +1102,7 @@ class TestHistoryApi(ApiTestFunctions):
     def test_api_history_restrict_no_results_search(self):
         fake_search = "FakeSearch_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
         json = self._get_api_history({"search": fake_search})
-        assert len(json["history"]["slots"]) is int(0)
+        assert len(json["history"]["slots"]) == 0
 
     def test_api_history_restrict_cat_and_search_and_limit(self):
         """ Combine search, category and limits requirements into a single query """
@@ -1243,7 +1242,7 @@ class TestHistoryApiPart2(ApiTestFunctions):
 
         # Make sure nothing survived
         json = self._get_api_history()
-        assert json["history"]["noofslots"] is int(0)
+        assert json["history"]["noofslots"] == 0
 
     def test_api_history_empty_format(self):
         """ Verify formatting, presence of fields for empty history """
