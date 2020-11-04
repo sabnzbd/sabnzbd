@@ -83,7 +83,6 @@ def run_sabnzbd_sabnews_and_selenium(clean_cache_dir):
         except Exception:
             warn("Failed to shutdown the sabnzbd process")
 
-
     # Copy basic config file with API key
     os.makedirs(SAB_CACHE_DIR, exist_ok=True)
     shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
