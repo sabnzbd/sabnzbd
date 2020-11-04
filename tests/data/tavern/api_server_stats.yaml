@@ -7,11 +7,11 @@ strict:
 stages:
   - name: server_stats (json output)
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: server_stats
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: json
     response:
       status_code: 200
@@ -32,11 +32,11 @@ stages:
 
   - name: server_stats (text output)
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: server_stats
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: text
     response:
       headers:
@@ -53,11 +53,11 @@ stages:
 
   - name: server_stats (xml output)
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: server_stats
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: xml
     response:
       headers:

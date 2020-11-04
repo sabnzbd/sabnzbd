@@ -25,99 +25,17 @@ import shutil
 import stat
 import subprocess
 import sys
-import tempfile
 import time
 
 from math import ceil
 from random import choice, randint, sample
-from string import ascii_lowercase, digits
 from tavern.core import run
-from unittest import mock
 from warnings import warn
 
 import sabnzbd.api as api
-import sabnzbd.database as db
-
-from sabnzbd.constants import (
-    DB_HISTORY_NAME,
-    DEF_ADMIN_DIR,
-    DEFAULT_PRIORITY,
-    FORCE_PRIORITY,
-    HIGH_PRIORITY,
-    INTERFACE_PRIORITIES,
-    LOW_PRIORITY,
-    NORMAL_PRIORITY,
-    REPAIR_PRIORITY,
-    Status,
-)
-from sabnzbd.misc import from_units, pp_to_opts
+from sabnzbd.misc import from_units
 
 from tests.testhelper import *
-
-
-class FakeHistoryDB(db.HistoryDB):
-    """
-    HistoryDB class with added control of the db_path via an argument and the
-    capability to generate history entries.
-    """
-
-    category_options = ["catA", "catB", "1234", "يوزنت"]
-    distro_names = ["Ubuntu", "デビアン", "Gentoo_Hobby_Edition", "Красная Шляпа"]
-    status_options = [
-        Status.COMPLETED,
-        Status.EXTRACTING,
-        Status.FAILED,
-        Status.MOVING,
-        Status.QUICK_CHECK,
-        Status.REPAIRING,
-        Status.RUNNING,
-        Status.VERIFYING,
-    ]
-
-    def __init__(self, db_path):
-        db.HistoryDB.db_path = db_path
-        super(FakeHistoryDB, self).__init__()
-
-    def add_fake_history_jobs(self, number_of_entries=1):
-        """ Generate a history db with any number of fake entries """
-
-        for _ in range(0, number_of_entries):
-            nzo = mock.Mock()
-
-            # Mock all input build_history_info() needs
-            distro_choice = choice(self.distro_names)
-            distro_random = "".join(choice(ascii_lowercase + digits) for i in range(8))
-            nzo.password = choice(["secret", ""])
-            nzo.final_name = "%s.%s.Linux.ISO-Usenet" % (distro_choice, distro_random)
-            nzo.filename = "%s.%s.Linux-Usenet%s.nzb" % (
-                (distro_choice, distro_random, "{{" + nzo.password + "}}")
-                if nzo.password
-                else (distro_choice, distro_random, "")
-            )
-            nzo.cat = choice(self.category_options)
-            nzo.script = "placeholder_script"
-            nzo.url = "placeholder_url"
-            nzo.status = choice([Status.COMPLETED, choice(self.status_options)])
-            nzo.fail_msg = "¡Fracaso absoluto!" if nzo.status == Status.FAILED else ""
-            nzo.nzo_id = "SABnzbd_nzo_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(8)))
-            nzo.bytes_downloaded = randint(1024, 1024 ** 4)
-            nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
-            nzo.repair_opts = pp_to_opts(choice(list(db._PP_LOOKUP.keys())))  # for "pp"
-            nzo.nzo_info = {"download_time": randint(1, 10 ** 4)}
-            nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
-            nzo.futuretype = False  # for "report", only True when fetching an URL
-            nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
-
-            # Mock time when calling add_history_db() to randomize completion times
-            almost_time = mock.Mock(return_value=time.time() - randint(0, 10 ** 8))
-            with mock.patch("time.time", almost_time):
-                self.add_history_db(
-                    nzo,
-                    storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
-                    postproc_time=randint(1, 10 ** 3),
-                    script_output="",
-                    script_line="",
-                )
 
 
 class ApiTestFunctions:
@@ -125,21 +43,21 @@ class ApiTestFunctions:
 
     def _get_api_json(self, mode, extra_args={}):
         """ Wrapper for API calls with json output """
-        extra = {"output": "json", "apikey": self.daemon_apikey}
+        extra = {"output": "json", "apikey": SAB_APIKEY}
         extra.update(extra_args)
-        return get_api_result(mode=mode, host=self.daemon_host, port=self.daemon_port, extra_arguments=extra)
+        return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
     def _get_api_text(self, mode, extra_args={}):
         """ Wrapper for API calls with text output """
-        extra = {"output": "text", "apikey": self.daemon_apikey}
+        extra = {"output": "text", "apikey": SAB_APIKEY}
         extra.update(extra_args)
-        return get_api_result(mode=mode, host=self.daemon_host, port=self.daemon_port, extra_arguments=extra)
+        return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
     def _get_api_xml(self, mode, extra_args={}):
         """ Wrapper for API calls with xml output """
-        extra = {"output": "xml", "apikey": self.daemon_apikey}
+        extra = {"output": "xml", "apikey": SAB_APIKEY}
         extra.update(extra_args)
-        return get_api_result(mode=mode, host=self.daemon_host, port=self.daemon_port, extra_arguments=extra)
+        return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
     def _setup_script_dir(self, dir, script=None):
         """ Set (or unset) the script_dir, add an optional script """
@@ -168,14 +86,14 @@ class ApiTestFunctions:
     def _run_tavern(self, test_name, extra_vars=None):
         """ Run tavern tests in ${test_name}.yaml """
         vars = [
-            ("daemon_host", self.daemon_host),
-            ("daemon_port", self.daemon_port),
-            ("daemon_version", sabnzbd.__version__),
-            ("daemon_apikey", self.daemon_apikey),
+            ("SAB_HOST", SAB_HOST),
+            ("SAB_PORT", SAB_PORT),
+            ("SAB_VERSION", sabnzbd.__version__),
+            ("SAB_APIKEY", SAB_APIKEY),
         ]
         if extra_vars:
             vars.append(extra_vars)
-        if self.api_server_parameters["add_fake_history"]:
+        if hasattr(self, "history_size"):
             vars.append(("daemon_history_size", self.history_size))
 
         result = run(
@@ -218,7 +136,7 @@ class ApiTestFunctions:
         charset = ascii_lowercase + digits
         for _ in range(0, minimum_size):
             job_name = "%s-CRQ" % ("".join(choice(charset) for i in range(16)))
-            job_dir = os.path.join(self.daemon_basedir, job_name)
+            job_dir = os.path.join(SAB_CACHE_DIR, job_name)
 
             # Create the job_dir and fill it with a bunch of smallish files with
             # random names, sizes and content. Note that some of the tests
@@ -252,146 +170,13 @@ class ApiTestFunctions:
         assert len(self._get_api_json("queue")["queue"]["slots"]) == 0
 
 
-@pytest.fixture(scope="class")
-def api_server(request):
-    """
-    Create a SABnzbd instance with optional fake history entries and locales.
-
-    Any test class using this fixture must supply a configuration in the form of
-    an api_server_parameters dictionary.
-    """
-    # Server configuration
-    host = "127.0.0.1"
-    port = randint(4000, 4999)
-
-    # Define a shutdown & cleanup routine
-    def shutdown_and_cleanup(p):
-        if p:
-            try:
-                get_url_result("shutdown", host, port)
-            except requests.ConnectionError:
-                p.kill()
-            except Exception:
-                warn("Failed to shutdown the server process")
-        # Delete the basedir
-        try:
-            shutil.rmtree(basedir)
-        except Exception:
-            warn("Failed to remove dir %s" % basedir)
-
-    # Setup a SABnzbd instance using the basic.ini
-    try:
-        basedir = tempfile.mkdtemp(dir=SAB_BASE_DIR)
-        os.mkdir(os.path.join(basedir, DEF_ADMIN_DIR))
-        shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(basedir, "sabnzbd.ini"))
-    except Exception:
-        shutdown_and_cleanup(p=None)
-        pytest.fail("Cannot create setup with basedir %s" % basedir)
-
-    # Generate a fake history db
-    if request.cls.api_server_parameters["add_fake_history"]:
-        try:
-            history_db = os.path.join(basedir, DEF_ADMIN_DIR, DB_HISTORY_NAME)
-            with FakeHistoryDB(history_db) as fake_history:
-                fake_history.add_fake_history_jobs(request.cls.api_server_parameters["history_size"])
-
-            # Make history parameters available to the test class
-            request.cls.history_category_options = fake_history.category_options
-            request.cls.history_distro_names = fake_history.distro_names
-            request.cls.history_size = request.cls.api_server_parameters["history_size"]
-        except Exception:
-            shutdown_and_cleanup(p=None)
-            pytest.fail("Cannot create fake history db %s" % history_db)
-
-    # Generate language files
-    locale_dir = os.path.join(SAB_BASE_DIR, "..", "locale")
-    if request.cls.api_server_parameters["add_locale"] and not os.path.isdir(locale_dir):
-        try:
-            # Language files missing; let make_mo do its thing
-            subprocess.Popen(
-                [
-                    sys.executable,
-                    os.path.join(SAB_BASE_DIR, "..", "tools", "make_mo.py"),
-                ]
-            ).communicate(timeout=30)
-
-            # Check the dir again, should exist now
-            if not os.path.isdir(locale_dir):
-                raise FileNotFoundError("Failed to compile language files")
-        except Exception:
-            shutdown_and_cleanup(p=None)
-            pytest.fail("Cannot compile language files in %s" % locale_dir)
-
-    # Start the test server
-    p = subprocess.Popen(
-        [
-            sys.executable,
-            os.path.join(SAB_BASE_DIR, "..", "SABnzbd.py"),
-            "--server",
-            host + ":" + str(port),
-            "--browser",
-            "0",
-            "--logging",
-            "0",
-            "--weblogging",
-            "--config",
-            basedir,
-        ]
-    )
-
-    # Try getting a response
-    for _ in range(30):
-        try:
-            get_url_result(url="", host=host, port=port)
-            break
-        except requests.ConnectionError:
-            time.sleep(1)
-    else:
-        shutdown_and_cleanup(p=p)
-        pytest.fail("No response from server at %s:%s" % (host, str(port)))
-
-    # Startup succeeded, pass server parameters to the test class
-    request.cls.daemon_host = host
-    request.cls.daemon_port = port
-    request.cls.daemon_apikey = "apikey"
-    request.cls.daemon_basedir = basedir
-
-    # Switch over to the test class
-    yield
-
-    # Cleanup after the tests are done
-    shutdown_and_cleanup(p=p)
-
-
-@pytest.fixture(scope="function")
-def update_history_specs(request):
-    """ Update the history size at the start of every test """
-    if request.function.__name__.startswith("test_"):
-        json = get_api_result(
-            "history",
-            request.cls.daemon_host,
-            request.cls.daemon_port,
-            extra_arguments={"limit": request.cls.history_size},
-        )
-        request.cls.history_size = len(json["history"]["slots"])
-
-    # Test o'clock
-    return
-
-
-@pytest.mark.usefixtures("api_server")
+@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
 class TestOtherApi(ApiTestFunctions):
     """ Test API function not directly involving either history or queue """
 
-    api_server_parameters = {
-        "add_fake_history": False,
-        "history_size": None,
-        "add_locale": True,
-    }
-
     def test_api_version_testhelper(self):
         """ Check the version, testhelper style """
-        assert "version" in get_api_result("version", self.daemon_host, self.daemon_port)
+        assert "version" in get_api_result("version", SAB_HOST, SAB_PORT)
 
     def test_api_version_tavern(self):
         """ Same same, tavern style """
@@ -521,7 +306,7 @@ class TestOtherApi(ApiTestFunctions):
         apikey_error = "API Key Incorrect"
         # Trigger warnings by sending requests with a truncated apikey
         for _ in range(0, 2):
-            assert apikey_error in self._get_api_text("shutdown", extra_args={"apikey": self.daemon_apikey[:-1]})
+            assert apikey_error in self._get_api_text("shutdown", extra_args={"apikey": SAB_APIKEY[:-1]})
 
         # Take delivery of our freshly baked warnings
         json = self._get_api_json("warnings")
@@ -549,7 +334,7 @@ class TestOtherApi(ApiTestFunctions):
 
     @pytest.mark.parametrize("set_watched_dir", [False, True])
     def test_api_watched_now(self, set_watched_dir):
-        value = self.daemon_basedir if set_watched_dir else ""
+        value = SAB_CACHE_DIR if set_watched_dir else ""
         assert (
             self._get_api_json(
                 mode="set_config", extra_args={"section": "misc", "keyword": "dirscan_dir", "value": value}
@@ -608,15 +393,9 @@ class TestOtherApi(ApiTestFunctions):
             )
 
 
-@pytest.mark.usefixtures("api_server")
+@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
 class TestQueueApi(ApiTestFunctions):
     """ Test queue-related API responses """
-
-    api_server_parameters = {
-        "add_fake_history": False,
-        "history_size": None,
-        "add_locale": False,
-    }
 
     def test_api_queue_empty_format(self):
         """ Verify formatting, presence of fields for empty queue """
@@ -1029,15 +808,9 @@ class TestQueueApi(ApiTestFunctions):
         assert json["nzf_ids"] == []
 
 
-@pytest.mark.usefixtures("api_server", "update_history_specs")
+@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium", "generate_fake_history", "update_history_specs")
 class TestHistoryApi(ApiTestFunctions):
     """ Test history-related API responses """
-
-    api_server_parameters = {
-        "add_fake_history": True,
-        "history_size": randint(81, 90),
-        "add_locale": False,
-    }
 
     def test_api_history_format(self):
         """ Verify formatting, presence of expected history fields """
@@ -1212,16 +985,10 @@ class TestHistoryApi(ApiTestFunctions):
             assert slot["status"] != Status.COMPLETED
 
 
-@pytest.mark.usefixtures("api_server", "update_history_specs")
+@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium", "generate_fake_history", "update_history_specs")
 class TestHistoryApiPart2(ApiTestFunctions):
     """Test history-related API responses, part 2. A separate testcase is
     needed because the previous one ran out of history entries to delete."""
-
-    api_server_parameters = {
-        "add_fake_history": True,
-        "history_size": randint(42, 81),
-        "add_locale": False,
-    }
 
     def test_api_history_delete_all(self):
         json = self._get_api_history({"name": "delete", "value": "all"})

@@ -83,7 +83,7 @@ class TestQueueRepair(SABnzbdBaseTest):
             return
 
         # Verify filename
-        assert queue_result_slots[0]["filename"] == test_job_name
+        assert test_job_name in [slot["filename"] for slot in queue_result_slots]
 
         # Let's remove this thing
         get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})

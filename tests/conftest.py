@@ -25,6 +25,7 @@ import sys
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as ChromeOptions
+from warnings import warn
 
 from tests.testhelper import *
 
@@ -48,36 +49,78 @@ def clean_cache_dir(request):
 
 
 @pytest.fixture(scope="session")
-def start_sabnzbd_and_selenium(clean_cache_dir):
-    # Remove cache if already there
-    if os.path.isdir(SAB_CACHE_DIR):
-        shutil.rmtree(SAB_CACHE_DIR)
+def run_sabnzbd_sabnews_and_selenium(clean_cache_dir):
+    """
+    Start SABnzbd (with translations), SABNews and Selenium/Chromedriver, shared
+    among all testcases of the pytest session. A number of key configuration
+    parameters are defined in testhelper.py (SAB_* variables).
+    """
+
+    # Define a shutdown routine; directory cleanup is handled by clean_cache_dir()
+    def shutdown_all():
+        """ Shutdown all services """
+        # Shutdown SABNews
+        try:
+            sabnews_process.kill()
+            sabnews_process.communicate(timeout=10)
+        except:
+            warn("Failed to shutdown the sabnews process")
+
+        # Shutdown Selenium/Chrome
+        try:
+            driver.close()
+            driver.quit()
+        except:
+            # If something else fails, this can cause very non-informative long tracebacks
+            warn("Failed to shutdown the selenium/chromedriver process")
+
+        # Shutdown SABnzbd
+        try:
+            get_url_result("shutdown", SAB_HOST, SAB_PORT)
+        except requests.ConnectionError:
+            sabnzbd_process.kill()
+            sabnzbd_process.communicate(timeout=10)
+        except Exception:
+            warn("Failed to shutdown the sabnzbd process")
+
 
     # Copy basic config file with API key
     os.makedirs(SAB_CACHE_DIR, exist_ok=True)
     shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
 
     # Check if we have language files
-    if not os.path.exists(os.path.join(SAB_BASE_DIR, "..", "locale")):
-        # Compile and wait to complete
-        lang_command = "%s %s/../tools/make_mo.py" % (sys.executable, SAB_BASE_DIR)
-        subprocess.Popen(lang_command.split()).communicate(timeout=30)
+    locale_dir = os.path.join(SAB_BASE_DIR, "..", "locale")
+    if not os.path.isdir(locale_dir):
+        try:
+            # Language files missing; let make_mo do its thing
+            make_mo = subprocess.Popen([sys.executable, os.path.join(SAB_BASE_DIR, "..", "tools", "make_mo.py")])
+            make_mo.communicate(timeout=30)
 
-        # Check if it exists now, fail otherwise
-        if not os.path.exists(os.path.join(SAB_BASE_DIR, "..", "locale")):
-            raise FileNotFoundError("Failed to compile language files")
+            # Check the dir again, should exist now
+            if not os.path.isdir(locale_dir):
+                raise FileNotFoundError
+        except Exception:
+            pytest.fail("Failed to compile language files in %s" % locale_dir)
 
     # Start SABnzbd and continue
-    sab_command = "%s %s/../SABnzbd.py --new -l2 -s %s:%s -b0 -f %s" % (
-        sys.executable,
-        SAB_BASE_DIR,
-        SAB_HOST,
-        SAB_PORT,
-        SAB_CACHE_DIR,
+    sabnzbd_process = subprocess.Popen(
+        [
+            sys.executable,
+            os.path.join(SAB_BASE_DIR, "..", "SABnzbd.py"),
+            "--new",
+            "--server",
+            "%s:%s" % (SAB_HOST, str(SAB_PORT)),
+            "--browser",
+            "0",
+            "--logging",
+            "2",
+            "--weblogging",
+            "--config",
+            SAB_CACHE_DIR,
+        ]
     )
-    subprocess.Popen(sab_command.split())
 
-    # In the mean time, start Selenium and Chrome
+    # In the meantime, start Selenium and Chrome;
     # We only try Chrome for consistent results
     driver_options = ChromeOptions()
 
@@ -102,7 +145,7 @@ def start_sabnzbd_and_selenium(clean_cache_dir):
         parent_class.obj.driver = driver
 
     # Start SABNews
-    sabnews = start_sabnews()
+    sabnews_process = subprocess.Popen([sys.executable, os.path.join(SAB_BASE_DIR, "sabnews.py")])
 
     # Wait for SAB to respond
     for _ in range(10):
@@ -114,39 +157,45 @@ def start_sabnzbd_and_selenium(clean_cache_dir):
             time.sleep(1)
     else:
         # Make sure we clean up
-        shutdown_sabnzbd()
+        shutdown_all()
         raise requests.ConnectionError()
 
     # Now we run the tests
-    yield True
+    yield
 
-    # Shutdown SABNews
+    # Shutdown gracefully
+    shutdown_all()
+
+
+@pytest.fixture(scope="class")
+def generate_fake_history(request):
+    """ Add fake entries to the history db """
+    history_size = randint(42, 81)
     try:
-        sabnews.kill()
-        sabnews.communicate()
-    except:
-        pass
+        history_db = os.path.join(SAB_CACHE_DIR, DEF_ADMIN_DIR, DB_HISTORY_NAME)
+        with FakeHistoryDB(history_db) as fake_history:
+            fake_history.add_fake_history_jobs(history_size)
+            # Make history parameters available to the test class
+            request.cls.history_category_options = fake_history.category_options
+            request.cls.history_distro_names = fake_history.distro_names
+            request.cls.history_size = history_size
+    except Exception:
+        pytest.fail("Failed to add fake entries to history db %s" % history_db)
 
-    # Shutdown Selenium/Chrome
-    try:
-        driver.close()
-        driver.quit()
-    except:
-        # If something else fails, this can cause very non-informative long tracebacks
-        pass
-
-    # Shutdown SABnzbd gracefully
-    shutdown_sabnzbd()
+    return
 
 
-def shutdown_sabnzbd():
-    # Graceful shutdown request
-    try:
-        get_url_result("shutdown")
-    except requests.ConnectionError:
-        pass
+@pytest.fixture(scope="function")
+def update_history_specs(request):
+    """ Update the history size at the start of every test """
+    if request.function.__name__.startswith("test_"):
+        json = get_api_result(
+            "history",
+            SAB_HOST,
+            SAB_PORT,
+            extra_arguments={"limit": request.cls.history_size},
+        )
+        request.cls.history_size = len(json["history"]["slots"])
 
-
-def start_sabnews():
-    """ Start SABNews and forget about it """
-    return subprocess.Popen([sys.executable, "%s/sabnews.py" % SAB_BASE_DIR])
+    # Test o'clock
+    return

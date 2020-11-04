@@ -7,11 +7,11 @@ strict:
 stages:
   - name: get_files format (json)
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: get_files
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: json
         value: "{nzo_id}"
     response:
@@ -41,11 +41,11 @@ strict:
 stages:
   - name: get_files format (text)
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: get_files
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: text
         value: "{nzo_id}"
     response:
@@ -73,11 +73,11 @@ strict:
 stages:
   - name: get_files format (xml)
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: get_files
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: xml
         value: "{nzo_id}"
     response:

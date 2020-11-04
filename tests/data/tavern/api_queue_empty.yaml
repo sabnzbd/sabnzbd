@@ -7,11 +7,11 @@ strict:
 stages:
   - name: queue format empty
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: queue
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: json
     response:
       status_code: 200
@@ -22,7 +22,7 @@ stages:
         access-control-allow-origin: "*"
       json:
         queue:
-          version: "{daemon_version}"
+          version: "{SAB_VERSION}"
           paused: !anybool
           pause_int: !re_match "[0-9]*"
           paused_all: !anybool
@@ -70,11 +70,11 @@ test_name: Check empty queue format (text output)
 stages:
   - name: queue format empty
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: queue
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: text
     response:
       status_code: 200
@@ -90,7 +90,7 @@ stages:
           # Verify only a bunch of key response parameters with a regex using
           # positive looksaheads, so parameters match regardless of their order
           # of appearance in the text output
-          expression: "^{{(?=.*'version': '{daemon_version}')(?=.*'noofslots_total': 0)(?=.*'status': 'Idle')(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots': 0)(?=.*'slots': \\[\\]).*}}$"
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total': 0)(?=.*'status': 'Idle')(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots': 0)(?=.*'slots': \\[\\]).*}}$"
 
 
 ---
@@ -99,11 +99,11 @@ test_name: Check empty queue format (xml output)
 stages:
   - name: queue format empty
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: queue
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: xml
     response:
       status_code: 200
@@ -131,12 +131,12 @@ stages:
             <diskspacetotal2>!anyfloat</diskspacetotal2>
             <loadavg>!anystr</loadavg>
             <speedlimit>!anyint</speedlimit>
-            <speedlimit_abs></speedlimit_abs>
+            <speedlimit_abs>!anystr</speedlimit_abs>
             <have_warnings>!anyint</have_warnings>
             <finishaction>None</finishaction>
-            <quota>0 </quota>
+            <quota>!anystr</quota>
             <have_quota>!anybool</have_quota>
-            <left_quota>0 </left_quota>
+            <left_quota>!anystr</left_quota>
             <cache_art>0</cache_art>
             <cache_size>0 B</cache_size>
             <cache_max>!anyint</cache_max>

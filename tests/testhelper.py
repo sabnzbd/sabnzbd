@@ -22,21 +22,39 @@ tests.testhelper - Basic helper functions
 import os
 import time
 from http.client import RemoteDisconnected
-
 import pytest
+from random import choice, randint
 import requests
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
+from string import ascii_lowercase, digits
+from unittest import mock
 from urllib3.exceptions import ProtocolError
 import xmltodict
 
 import sabnzbd
 import sabnzbd.cfg as cfg
+from sabnzbd.constants import (
+    DB_HISTORY_NAME,
+    DEF_ADMIN_DIR,
+    DEFAULT_PRIORITY,
+    FORCE_PRIORITY,
+    HIGH_PRIORITY,
+    INTERFACE_PRIORITIES,
+    LOW_PRIORITY,
+    NORMAL_PRIORITY,
+    REPAIR_PRIORITY,
+    Status,
+)
+import sabnzbd.database as db
+from sabnzbd.misc import pp_to_opts
+
 import tests.sabnews
 
 SAB_HOST = "localhost"
-SAB_PORT = 8081
+SAB_PORT = randint(4200, 4299)
+SAB_APIKEY = "apikey"
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SAB_CACHE_DIR = os.path.join(SAB_BASE_DIR, "cache")
 SAB_DATA_DIR = os.path.join(SAB_BASE_DIR, "data")
@@ -104,13 +122,13 @@ def set_platform(platform):
 
 def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
     """ Do basic request to web page """
-    arguments = {"apikey": "apikey"}
+    arguments = {"apikey": SAB_APIKEY}
     return requests.get("http://%s:%s/%s/" % (host, port, url), params=arguments).text
 
 
 def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     """ Build JSON request to SABnzbd """
-    arguments = {"apikey": "apikey", "output": "json", "mode": mode}
+    arguments = {"apikey": SAB_APIKEY, "output": "json", "mode": mode}
     arguments.update(extra_arguments)
     r = requests.get("http://%s:%s/api" % (host, port), params=arguments)
     if arguments["output"] == "text":
@@ -137,7 +155,72 @@ def create_and_read_nzb(nzbdir):
     return nzb_data
 
 
-@pytest.mark.usefixtures("start_sabnzbd_and_selenium")
+class FakeHistoryDB(db.HistoryDB):
+    """
+    HistoryDB class with added control of the db_path via an argument and the
+    capability to generate history entries.
+    """
+
+    category_options = ["catA", "catB", "1234", "يوزنت"]
+    distro_names = ["Ubuntu", "デビアン", "Gentoo_Hobby_Edition", "Красная Шляпа"]
+    status_options = [
+        Status.COMPLETED,
+        Status.EXTRACTING,
+        Status.FAILED,
+        Status.MOVING,
+        Status.QUICK_CHECK,
+        Status.REPAIRING,
+        Status.RUNNING,
+        Status.VERIFYING,
+    ]
+
+    def __init__(self, db_path):
+        db.HistoryDB.db_path = db_path
+        super(FakeHistoryDB, self).__init__()
+
+    def add_fake_history_jobs(self, number_of_entries=1):
+        """ Generate a history db with any number of fake entries """
+
+        for _ in range(0, number_of_entries):
+            nzo = mock.Mock()
+
+            # Mock all input build_history_info() needs
+            distro_choice = choice(self.distro_names)
+            distro_random = "".join(choice(ascii_lowercase + digits) for i in range(8))
+            nzo.password = choice(["secret", ""])
+            nzo.final_name = "%s.%s.Linux.ISO-Usenet" % (distro_choice, distro_random)
+            nzo.filename = "%s.%s.Linux-Usenet%s.nzb" % (
+                (distro_choice, distro_random, "{{" + nzo.password + "}}")
+                if nzo.password
+                else (distro_choice, distro_random, "")
+            )
+            nzo.cat = choice(self.category_options)
+            nzo.script = "placeholder_script"
+            nzo.url = "placeholder_url"
+            nzo.status = choice([Status.COMPLETED, choice(self.status_options)])
+            nzo.fail_msg = "¡Fracaso absoluto!" if nzo.status == Status.FAILED else ""
+            nzo.nzo_id = "SABnzbd_nzo_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(8)))
+            nzo.bytes_downloaded = randint(1024, 1024 ** 4)
+            nzo.md5sum = "".join(choice("abcdef" + digits) for i in range(32))
+            nzo.repair_opts = pp_to_opts(choice(list(db._PP_LOOKUP.keys())))  # for "pp"
+            nzo.nzo_info = {"download_time": randint(1, 10 ** 4)}
+            nzo.unpack_info = {"unpack_info": "placeholder unpack_info line\r\n" * 3}
+            nzo.futuretype = False  # for "report", only True when fetching an URL
+            nzo.download_path = os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_downpath")
+
+            # Mock time when calling add_history_db() to randomize completion times
+            almost_time = mock.Mock(return_value=time.time() - randint(0, 10 ** 8))
+            with mock.patch("time.time", almost_time):
+                self.add_history_db(
+                    nzo,
+                    storage=os.path.join(os.path.dirname(db.HistoryDB.db_path), "placeholder_workdir"),
+                    postproc_time=randint(1, 10 ** 3),
+                    script_output="",
+                    script_line="",
+                )
+
+
+@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
 class SABnzbdBaseTest:
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test

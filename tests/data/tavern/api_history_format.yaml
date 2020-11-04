@@ -7,11 +7,11 @@ strict:
 stages:
   - name: history format single entry
     request:
-      url: http://{daemon_host}:{daemon_port}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
       method: GET
       params:
         mode: history
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: json
         limit: 1
     response:
@@ -71,11 +71,11 @@ test_name: Check general history format (text output)
 stages:
   - name: history format single entry
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: history
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: text
         limit: 1
     response:
@@ -92,7 +92,7 @@ stages:
           # Verify response parameters with a regex using positive looksaheads,
           # so parameters match regardless of their order of appearance. Note
           # that the content of 'slots' is checked in a separate expression.
-          expression: "^{{(?=.*'version': '{daemon_version}')(?=.*'noofslots': [0-9]+)(?=.*'last_history_update': '?[0-9]+'?)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': .+).*}}$"
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots': [0-9]+)(?=.*'last_history_update': '?[0-9]+'?)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': .+).*}}$"
           expression: ".*'slots': \\[{{(?=.*'id': [0-9]+)(?=.*'completed': [0-9]+)(?=.*'name': '.+')(?=.*'nzb_name': '.+')(?=.*'category': '.+')(?=.*'pp': '.?')(?=.*'script': '.+')(?=.*'report': '.+')(?=.*'url': '.+')(?=.*'status': '.+')(?=.*'nzo_id': 'SAB.+')(?=.*'storage': '.+')(?=.*'path': '.+')(?=.*'script_log': '.*')(?=.*'script_line': '.*')(?=.*'download_time': [0-9]+)(?=.*'postproc_time': [0-9]*)(?=.*'stage_log': \\[.*\\])(?=.*'downloaded': [0-9]+)(?=.*'completeness': None)(?=.*'fail_message': '.*')(?=.*'url_info': '.*')(?=.*'bytes': [0-9]+)(?=.*'meta': None)(?=.*'series': '?.*'?)(?=.*'md5sum': '[0-9a-fA-F]+')(?=.*'password': '.*')(?=.*'action_line': '.*')(?=.*'size': '[0-9].*')(?=.*'loaded': (True|False))(?=.*'retry': [0-9]+).*}}\\].*"
 
 
@@ -102,11 +102,11 @@ test_name: Check general history format (xml output)
 stages:
   - name: history format single entry
     request:
-      url: http://{daemon_host}:{daemon_port}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
       method: GET
       params:
         mode: history
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: xml
         limit: 1
     response:
@@ -175,11 +175,11 @@ strict:
 stages:
   - name: history slot count
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: history
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: json
     response:
       status_code: 200
@@ -189,4 +189,4 @@ stages:
       json:
         history:
           noofslots: !int "{daemon_history_size}"
-          version: "{daemon_version}"
+          version: "{SAB_VERSION}"

@@ -7,11 +7,11 @@ strict:
 stages:
   - name: history format empty
     request:
-      url: http://{daemon_host}:{daemon_port}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
       method: GET
       params:
         mode: history
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: json
     response:
       status_code: 200
@@ -30,7 +30,7 @@ stages:
           slots: []
           noofslots: 0
           last_history_update: !anyint
-          version: "{daemon_version}"
+          version: "{SAB_VERSION}"
 
 
 ---
@@ -39,11 +39,11 @@ test_name: Check empty history format (text output)
 stages:
   - name: history format empty
     request:
-      url: http://{daemon_host}:{daemon_port}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
       method: GET
       params:
         mode: history
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: text
     response:
       status_code: 200
@@ -58,7 +58,7 @@ stages:
         extra_kwargs:
           # Verify response with a regex using positive looksaheads so
           # parameters match regardless of their order of appearance
-          expression: "^{{(?=.*'noofslots': 0)(?=.*'last_history_update': [0-9]+)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': \\[\\])(?=.*'version': '{daemon_version}').*}}$"
+          expression: "^{{(?=.*'noofslots': 0)(?=.*'last_history_update': [0-9]+)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': \\[\\])(?=.*'version': '{SAB_VERSION}').*}}$"
           # minor api bug: text output appends a space to integer only values in *_size, e.g. 'day_size': '0 '
 
 
@@ -68,11 +68,11 @@ test_name: Check empty history format (xml output)
 stages:
   - name: history format empty
     request:
-      url: http://{daemon_host}:{daemon_port}/sabnzbd/api
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
       method: GET
       params:
         mode: history
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: xml
     response:
       status_code: 200

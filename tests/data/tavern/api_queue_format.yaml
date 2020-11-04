@@ -7,11 +7,11 @@ strict:
 stages:
   - name: queue format single entry
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: queue
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: json
         limit: 1
     response:
@@ -23,7 +23,7 @@ stages:
         access-control-allow-origin: "*"
       json:
         queue:
-          version: "{daemon_version}"
+          version: "{SAB_VERSION}"
           paused: !anybool
           pause_int: !re_match "[0-9]*"
           paused_all: !anybool
@@ -92,11 +92,11 @@ test_name: Check general queue format (text output)
 stages:
   - name: queue format single entry
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: queue
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: text
         limit: 1
     response:
@@ -113,7 +113,7 @@ stages:
           # Verify only a bunch of key response parameters with a regex using
           # positive looksaheads, so parameters match regardless of their order
           # of appearance in the text output
-          expression: "^{{(?=.*'version': '{daemon_version}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots_total':)(?=.*'status':)(?=.*'timeleft': '0:00:00')(?=.*'eta': 'unknown')(?=.*'noofslots':)(?=.*'slots': \\[.+\\]).*}}$"
 
 
 ---
@@ -122,11 +122,11 @@ test_name: Check general queue format (xml output)
 stages:
   - name: queue format single entry
     request:
-      url: "http://{daemon_host}:{daemon_port}/sabnzbd/api"
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
       method: GET
       params:
         mode: queue
-        apikey: "{daemon_apikey}"
+        apikey: "{SAB_APIKEY}"
         output: xml
         limit: 1
     response:
