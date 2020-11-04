@@ -69,7 +69,7 @@ class TestQueueRepair(SABnzbdBaseTest):
             queue_result_slots = {}
             try:
                 # Can give timeout if still restarting
-                queue_result_slots = get_api_result("queue")["queue"]["slots"]
+                queue_result_slots = get_api_result("queue", extra_arguments={"limit": 10000})["queue"]["slots"]
             except requests.exceptions.RequestException:
                 pass
 
