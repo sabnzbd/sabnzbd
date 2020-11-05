@@ -122,6 +122,7 @@ def send_email(message, email_to, test=None):
                 return errormsg(T("Unknown authentication failure in mail server"))
 
         try:
+            email_message = b'\r\n'.join(email_message.splitlines())
             mailconn.sendmail(email_from, email_to, email_message)
             msg = None
         except smtplib.SMTPHeloError:
