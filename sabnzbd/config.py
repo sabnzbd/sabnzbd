@@ -246,7 +246,7 @@ class OptionDir(Option):
         'create' means try to create (but don't set permanent create flag)
         """
         error = None
-        if value and (value != self.get() or create):
+        if value is not None and (value != self.get() or create):
             value = value.strip()
             if self.__validation:
                 error, value = self.__validation(self.__root, value, super().default())
