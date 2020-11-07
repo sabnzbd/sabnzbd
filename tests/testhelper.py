@@ -52,7 +52,7 @@ from sabnzbd.misc import pp_to_opts
 
 import tests.sabnews
 
-SAB_HOST = "localhost"
+SAB_HOST = "127.0.0.1"
 SAB_PORT = randint(4200, 4299)
 SAB_APIKEY = "apikey"
 SAB_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
