@@ -1,0 +1,192 @@
+---
+test_name: Check general history format (json output)
+
+strict:
+  - json:on
+
+stages:
+  - name: history format single entry
+    request:
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      method: GET
+      params:
+        mode: history
+        apikey: "{SAB_APIKEY}"
+        output: json
+        limit: 1
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "application/json"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+      json:
+        history:
+          # all four sizes may have a single digit value, so anything beyond that is optional
+          total_size: !re_match "[0-9][0-9.]*(\ [A-Z])?"
+          month_size: !re_match "[0-9][0-9.]*(\ [A-Z])?"
+          week_size: !re_match "[0-9][0-9.]*(\ [A-Z])?"
+          day_size: !re_match "[0-9][0-9.]*(\ [A-Z])?"
+          slots:
+            - id: !anyint
+              completed: !anyint
+              name: !anystr
+              nzb_name: !anystr
+              category: !anystr
+              pp: !re_match "[URD]?"
+              script: !anystr
+              report: !anything
+              url: !anystr
+              status: !anystr
+              nzo_id: !anystr
+              storage: !anystr
+              path: !anystr
+              script_log: !anything
+              script_line: !anystr
+              download_time: !anyint
+              postproc_time: !anyint
+              stage_log: !anylist
+              downloaded: !anyint
+              completeness: null
+              fail_message: !anystr
+              url_info: !anystr
+              bytes: !anyint
+              meta: null
+              series: !anything
+              md5sum: !re_match "[0-9a-fA-F]+"
+              password: !anystr
+              action_line: !anything
+              size: !re_match "[0-9][0-9.]*\ [A-Z]"
+              loaded: !anybool
+              retry: !anyint
+          noofslots: !anyint
+          last_history_update: !anyint
+          version: !anystr
+
+
+---
+test_name: Check general history format (text output)
+
+stages:
+  - name: history format single entry
+    request:
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      method: GET
+      params:
+        mode: history
+        apikey: "{SAB_APIKEY}"
+        output: text
+        limit: 1
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/plain"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_regex
+        extra_kwargs:
+          # Verify response parameters with a regex using positive looksaheads,
+          # so parameters match regardless of their order of appearance. Note
+          # that the content of 'slots' is checked in a separate expression.
+          expression: "^{{(?=.*'version': '{SAB_VERSION}')(?=.*'noofslots': [0-9]+)(?=.*'last_history_update': '?[0-9]+'?)(?=.*'total_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'month_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'week_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'day_size': '[0-9][0-9.]*.?(\ [A-Z])?')(?=.*'slots': .+).*}}$"
+          expression: ".*'slots': \\[{{(?=.*'id': [0-9]+)(?=.*'completed': [0-9]+)(?=.*'name': '.+')(?=.*'nzb_name': '.+')(?=.*'category': '.+')(?=.*'pp': '.?')(?=.*'script': '.+')(?=.*'report': '.+')(?=.*'url': '.+')(?=.*'status': '.+')(?=.*'nzo_id': 'SAB.+')(?=.*'storage': '.+')(?=.*'path': '.+')(?=.*'script_log': '.*')(?=.*'script_line': '.*')(?=.*'download_time': [0-9]+)(?=.*'postproc_time': [0-9]*)(?=.*'stage_log': \\[.*\\])(?=.*'downloaded': [0-9]+)(?=.*'completeness': None)(?=.*'fail_message': '.*')(?=.*'url_info': '.*')(?=.*'bytes': [0-9]+)(?=.*'meta': None)(?=.*'series': '?.*'?)(?=.*'md5sum': '[0-9a-fA-F]+')(?=.*'password': '.*')(?=.*'action_line': '.*')(?=.*'size': '[0-9].*')(?=.*'loaded': (True|False))(?=.*'retry': [0-9]+).*}}\\].*"
+
+
+---
+test_name: Check general history format (xml output)
+
+stages:
+  - name: history format single entry
+    request:
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      method: GET
+      params:
+        mode: history
+        apikey: "{SAB_APIKEY}"
+        output: xml
+        limit: 1
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/xml"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      verify_response_with:
+        function: tavalidate:assert_xml
+        extra_kwargs:
+          strict: True  # don't accept extra tags in the response
+          expected: |
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <history><total_size>!anystr</total_size>
+            <month_size>!anystr</month_size>
+            <week_size>!anystr</week_size>
+            <day_size>!anystr</day_size>
+            <slots><slot><id>!anyint</id>
+            <completed>!anyint</completed>
+            <name>!anystr</name>
+            <nzb_name>!anystr</nzb_name>
+            <category>!anystr</category>
+            <pp>!anything</pp>
+            <script>!anystr</script>
+            <report></report>
+            <url>!anystr</url>
+            <status>!anystr</status>
+            <nzo_id>!anystr</nzo_id>
+            <storage>!anystr</storage>
+            <path>!anystr</path>
+            <script_log>!anystr</script_log>
+            <script_line>!anystr</script_line>
+            <download_time>!anyint</download_time>
+            <postproc_time>!anyint</postproc_time>
+            <stage_log>!anystr</stage_log>
+            <downloaded>!anyint</downloaded>
+            <completeness>None</completeness>
+            <fail_message>!anystr</fail_message>
+            <url_info>!anystr</url_info>
+            <bytes>!anyint</bytes>
+            <meta>!anystr</meta>
+            <series>!anystr</series>
+            <md5sum>!anystr</md5sum>
+            <password>!anystr</password>
+            <action_line>!anystr</action_line>
+            <size>!anystr</size>
+            <loaded>!anybool</loaded>
+            <retry>!anyint</retry>
+            </slot>
+            </slots>
+            <noofslots>!anyint</noofslots>
+            <last_history_update>!anyint</last_history_update>
+            <version>!anystr</version>
+            </history>
+
+
+---
+test_name: Verify value of history slot count
+
+strict:
+  - json:off
+
+stages:
+  - name: history slot count
+    request:
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      method: GET
+      params:
+        mode: history
+        apikey: "{SAB_APIKEY}"
+        output: json
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "application/json"
+        content-type: !re_search "charset=(UTF|utf)-8"
+      json:
+        history:
+          noofslots: !int "{daemon_history_size}"
+          version: "{SAB_VERSION}"

@@ -1,0 +1,58 @@
+---
+test_name: Check version
+
+strict:
+  - json:on
+
+stages:
+  - name: version (json output)
+    request:
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      method: GET
+      params:
+        mode: version
+        apikey: "{SAB_APIKEY}"
+        output: json
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "application/json"
+        content-type: !re_search "charset=(UTF|utf)-8"
+      json:
+        version: "{SAB_VERSION}"
+
+  - name: version (text output)
+    request:
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      method: GET
+      params:
+        mode: version
+        apikey: "{SAB_APIKEY}"
+        output: text
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/plain"
+        content-type: !re_search "charset=(UTF|utf)-8"
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_regex
+        extra_kwargs:
+          expression: "{SAB_VERSION}"
+
+  - name: version (xml output)
+    request:
+      url: http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api
+      method: GET
+      params:
+        mode: version
+        apikey: "{SAB_APIKEY}"
+        output: xml
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "text/xml"
+        content-type: !re_search "charset=(UTF|utf)-8"
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_regex
+        extra_kwargs:
+          expression: '<\?xml version="1.0" encoding="UTF-8" \?>\r?\n?<version>{SAB_VERSION}</version>'

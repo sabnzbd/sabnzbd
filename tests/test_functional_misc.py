@@ -69,7 +69,7 @@ class TestQueueRepair(SABnzbdBaseTest):
             queue_result_slots = {}
             try:
                 # Can give timeout if still restarting
-                queue_result_slots = get_api_result("queue")["queue"]["slots"]
+                queue_result_slots = get_api_result("queue", extra_arguments={"limit": 10000})["queue"]["slots"]
             except requests.exceptions.RequestException:
                 pass
 
@@ -83,7 +83,7 @@ class TestQueueRepair(SABnzbdBaseTest):
             return
 
         # Verify filename
-        assert queue_result_slots[0]["filename"] == test_job_name
+        assert test_job_name in [slot["filename"] for slot in queue_result_slots]
 
         # Let's remove this thing
         get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})
