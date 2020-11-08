@@ -30,7 +30,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
         If not: run the wizard!
         """
         with open(os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"), "r") as config_file:
-            if SAB_NEWSSERVER_HOST not in config_file.read():
+            if f"[[{SAB_NEWSSERVER_HOST}]]" not in config_file.read():
                 self.start_wizard()
 
     def start_wizard(self):
