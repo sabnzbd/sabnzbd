@@ -125,17 +125,23 @@ class GUIHandler(logging.Handler):
 
     def emit(self, record):
         """ Emit a record by adding it to our private queue """
+        # If % is part of the msg, this could fail
+        try:
+            record_msg = record.msg % record.args
+        except TypeError:
+            record_msg = record.msg + str(record.args)
+
         if record.levelname == "WARNING":
-            sabnzbd.LAST_WARNING = record.msg % record.args
+            sabnzbd.LAST_WARNING = record_msg
         else:
-            sabnzbd.LAST_ERROR = record.msg % record.args
+            sabnzbd.LAST_ERROR = record_msg
 
         if len(self.store) >= self.size:
             # Loose the oldest record
             self.store.pop(0)
         try:
             # Append traceback, if available
-            warning = {"type": record.levelname, "text": record.msg % record.args, "time": int(time.time())}
+            warning = {"type": record.levelname, "text": record_msg, "time": int(time.time())}
             if record.exc_info:
                 warning["text"] = "%s\n%s" % (warning["text"], traceback.format_exc())
             self.store.append(warning)
