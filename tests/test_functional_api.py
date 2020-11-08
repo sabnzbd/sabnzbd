@@ -60,10 +60,21 @@ class ApiTestFunctions:
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
     def _setup_script_dir(self, dir, script=None):
-        """ Set (or unset) the script_dir, add an optional script """
+        """
+        Set the script_dir relative to SAB_CACHE_DIR, copy the example scripts
+        there, and add an optional extra script with the given name. To unset
+        the script_dir set the value of dir to an empty string.
+        """
         script_dir_extra = {"section": "misc", "keyword": "script_dir", "value": ""}
         if dir:
-            script_dir_extra["value"] = dir
+            script_dir = os.path.join(SAB_CACHE_DIR, dir)
+            script_dir_extra["value"] = script_dir
+            try:
+                if not os.path.exists(script_dir):
+                    # Make the example scripts available in the scriptdir
+                    shutil.copytree(os.path.join(SAB_BASE_DIR, "..", "scripts"), script_dir)
+            except Exception:
+                pytest.fail("Cannot copy example scripts to %s", script_dir)
             if script:
                 try:
                     script_path = os.path.join(dir, script)
@@ -485,7 +496,7 @@ class TestQueueApi(ApiTestFunctions):
         # Setup the script_dir as ordered
         dir = ""
         if set_scriptsdir:
-            dir = os.path.join(SAB_BASE_DIR, "..", "scripts")
+            dir = "scripts"
         self._setup_script_dir(dir, script="my_script_for_sab.py")
 
         # Run the queue complete action api call
@@ -634,7 +645,7 @@ class TestQueueApi(ApiTestFunctions):
     # TODO parametrize, test invalid values? On hold, see #1650
     def test_api_queue_change_job_script(self):
         self._create_random_queue(minimum_size=4)
-        self._setup_script_dir(os.path.join(SAB_BASE_DIR, "..", "scripts"))
+        self._setup_script_dir("scripts")
         original = self._record_slots(keys=("nzo_id", "script"))
 
         value2 = choice(self._get_api_json("get_scripts")["scripts"])
