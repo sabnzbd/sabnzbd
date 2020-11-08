@@ -127,11 +127,17 @@ class GUIHandler(logging.Handler):
 
     def emit(self, record: logging.LogRecord):
         """ Emit a record by adding it to our private queue """
-        parsed_msg = record.msg % record.args
+        # If % is part of the msg, this could fail
+        try:
+            parsed_msg = record.msg % record.args
+        except TypeError:
+            parsed_msg = record.msg + str(record.args)
+
         if record.levelno == logging.WARNING:
             sabnzbd.notifier.send_notification(T("Warning"), parsed_msg, "warning")
         else:
             sabnzbd.notifier.send_notification(T("Error"), parsed_msg, "error")
+
         # Append traceback, if available
         warning = {"type": record.levelname, "text": parsed_msg, "time": int(time.time())}
         if record.exc_info:
