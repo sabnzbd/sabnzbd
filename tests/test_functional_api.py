@@ -77,7 +77,7 @@ class ApiTestFunctions:
                 pytest.fail("Cannot copy example scripts to %s", script_dir)
             if script:
                 try:
-                    script_path = os.path.join(dir, script)
+                    script_path = os.path.join(script_dir, script)
                     with open(script_path, "w") as f:
                         f.write("#!%s\n" % sys.executable)
                         f.write("print('script %s says hi!\n' % __file__)")
