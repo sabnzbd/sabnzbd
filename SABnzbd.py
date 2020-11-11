@@ -125,17 +125,23 @@ class GUIHandler(logging.Handler):
 
     def emit(self, record):
         """ Emit a record by adding it to our private queue """
+        # If % is part of the msg, this could fail
+        try:
+            record_msg = record.msg % record.args
+        except TypeError:
+            record_msg = record.msg + str(record.args)
+
         if record.levelname == "WARNING":
-            sabnzbd.LAST_WARNING = record.msg % record.args
+            sabnzbd.LAST_WARNING = record_msg
         else:
-            sabnzbd.LAST_ERROR = record.msg % record.args
+            sabnzbd.LAST_ERROR = record_msg
 
         if len(self.store) >= self.size:
             # Loose the oldest record
             self.store.pop(0)
         try:
             # Append traceback, if available
-            warning = {"type": record.levelname, "text": record.msg % record.args, "time": int(time.time())}
+            warning = {"type": record.levelname, "text": record_msg, "time": int(time.time())}
             if record.exc_info:
                 warning["text"] = "%s\n%s" % (warning["text"], traceback.format_exc())
             self.store.append(warning)
@@ -1287,7 +1293,7 @@ def main():
             sabnzbd.cfg.enable_https.set(False)
 
         # So the cert and key files do exist, now let's check if they are valid:
-        trialcontext = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        trialcontext = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
         try:
             trialcontext.load_cert_chain(https_cert, https_key)
             logging.info("HTTPS keys are OK")
@@ -1530,6 +1536,7 @@ def main():
         # Check for auto-restart request
         # Or special restart cases like Mac and WindowsService
         if sabnzbd.TRIGGER_RESTART:
+            logging.info("Performing triggered restart")
             # Shutdown
             sabnzbd.shutdown_program()
 
@@ -1548,7 +1555,7 @@ def main():
                 my_name = sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")
                 my_args = " ".join(sys.argv[1:])
                 cmd = 'kill -9 %s && open "%s" --args %s' % (my_pid, my_name, my_args)
-                logging.info("Launching: ", cmd)
+                logging.info("Launching: %s", cmd)
                 os.system(cmd)
             elif sabnzbd.WIN_SERVICE:
                 # Use external service handler to do the restart

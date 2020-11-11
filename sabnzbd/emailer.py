@@ -27,6 +27,7 @@ import glob
 
 from Cheetah.Template import Template
 from email.message import EmailMessage
+from email import policy
 
 from sabnzbd.constants import *
 import sabnzbd
@@ -296,4 +297,4 @@ def _prepare_message(txt):
                 msg[keyword] = value
 
     msg.set_content("\n".join(payload))
-    return msg.as_bytes()
+    return msg.as_bytes(policy=msg.policy.clone(linesep="\r\n"))

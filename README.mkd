@@ -1,5 +1,14 @@
-Release Notes - SABnzbd 3.1.0
+Release Notes - SABnzbd 3.1.1
 =========================================================
+
+## Changes and bugfixes since 3.1.1
+- Enforce CRLF line endings on outgoing email messages.
+- Queue Repair would fail if Rating is enabled.
+- It was not possible to set directory-settings to empty values.
+- Deobfuscate-during-download was not triggered.
+- Failed to start on Python 3.5 with HTTPS enabled.
+- Could show traceback when formatting error/warnings messages.
+- Windows/macOS: improve handling of program restart.
 
 ## Changes since 3.0.2
 - Added option to automatically deobfuscate final filenames: after unpacking, 
