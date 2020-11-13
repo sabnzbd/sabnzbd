@@ -77,6 +77,7 @@ import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+import sabnzbd.utils.ssdp as ssdp
 
 try:
     import win32api
@@ -1482,15 +1483,32 @@ def main():
     autorestarted = False
 
     # bonjour/zeroconf needs an ip. Lets try to find it.
-    z_host = localipv4()  # IPv4 address of the LAN interface. This is the normal use case
-    if not z_host:
+    external_host = localipv4()  # IPv4 address of the LAN interface. This is the normal use case
+    if not external_host:
         # None, so no network / default route, so let's set to ...
-        z_host = "127.0.0.1"
+        external_host = "127.0.0.1"
     elif probablyipv4(cherryhost) and cherryhost not in LOCALHOSTS + ("0.0.0.0", "::"):
         # a hard-configured cherryhost other than the usual, so let's take that (good or wrong)
-        z_host = cherryhost
-    logging.debug("bonjour/zeroconf using host: %s", z_host)
-    sabnzbd.zconfig.set_bonjour(z_host, cherryport)
+        external_host = cherryhost
+    logging.debug("bonjour/zeroconf/SSDP using host: %s", external_host)
+    sabnzbd.zconfig.set_bonjour(external_host, cherryport)
+
+    # Start SSDP if SABnzbd is running exposed
+    if cherryhost not in LOCALHOSTS:
+        # Set URL for browser for external hosts
+        if enable_https:
+            ssdp_url = "https://%s:%s%s" % (external_host, cherryport, sabnzbd.cfg.url_base())
+        else:
+            ssdp_url = "http://%s:%s%s" % (external_host, cherryport, sabnzbd.cfg.url_base())
+        ssdp.start_ssdp(
+            external_host,
+            "SABnzbd",
+            ssdp_url,
+            "SABnzbd %s" % sabnzbd.__version__,
+            "SABnzbd Team",
+            "https://sabnzbd.org/",
+            "SABnzbd %s" % sabnzbd.__version__,
+        )
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0

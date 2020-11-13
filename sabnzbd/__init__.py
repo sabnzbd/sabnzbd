@@ -113,6 +113,7 @@ from sabnzbd.constants import (
     QUEUE_VERSION,
     QUEUE_FILE_TMPL,
 )
+import sabnzbd.utils.ssdp
 
 # Storage for the threads, variables are filled during initialization
 ArticleCache: sabnzbd.articlecache.ArticleCache
@@ -372,6 +373,7 @@ def halt():
             sabnzbd.WINTRAY.terminate = True
 
         sabnzbd.zconfig.remove_server()
+        sabnzbd.utils.ssdp.stop_ssdp()
 
         sabnzbd.directunpacker.abort_all()
 
