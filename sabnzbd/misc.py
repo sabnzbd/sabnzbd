@@ -849,6 +849,7 @@ def probablyipv4(ip):
     except:
         return False
 
+
 def probablyipv6(ip):
     # Returns True if the given input is probably an IPv6 address
     # Square Brackets like '[2001::1]' are OK
@@ -858,7 +859,7 @@ def probablyipv6(ip):
     except:
         try:
             # Remove '[' and ']' and test again:
-            ip = re.search(r'^\[(.*)\]$', ip).group(1)
+            ip = re.search(r"^\[(.*)\]$", ip).group(1)
             return ipaddress.ip_address(ip).version == 6
         except:
             # No, not an IPv6 address

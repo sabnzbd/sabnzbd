@@ -25,22 +25,22 @@ from sabnzbd.misc import *
 class TestProbablyIP:
     def test_probablyipv4(self):
         # Positive testing
-        assert probablyipv4('1.2.3.4')
-        assert probablyipv4('255.255.255.255')
-        assert probablyipv4('0.0.0.0')
+        assert probablyipv4("1.2.3.4")
+        assert probablyipv4("255.255.255.255")
+        assert probablyipv4("0.0.0.0")
         # Negative testing
-        assert not probablyipv4('400.500.600.700')
-        assert not probablyipv4('blabla')
-        assert not probablyipv4('2001::1')
+        assert not probablyipv4("400.500.600.700")
+        assert not probablyipv4("blabla")
+        assert not probablyipv4("2001::1")
 
     def test_probablyipv6(self):
         # Positive testing
-        assert probablyipv6('2001::1')
-        assert probablyipv6('[2001::1]')
-        assert probablyipv6('fdd6:5a2d:3f20:0:14b0:d8f4:ccb9:fab6')
+        assert probablyipv6("2001::1")
+        assert probablyipv6("[2001::1]")
+        assert probablyipv6("fdd6:5a2d:3f20:0:14b0:d8f4:ccb9:fab6")
         # Negative testing
-        assert not probablyipv6('blabla')
-        assert not probablyipv6('1.2.3.4')
-        assert not probablyipv6('[1.2.3.4]')
-        assert not probablyipv6('2001:1')
-        assert not probablyipv6('2001::[2001::1]')
+        assert not probablyipv6("blabla")
+        assert not probablyipv6("1.2.3.4")
+        assert not probablyipv6("[1.2.3.4]")
+        assert not probablyipv6("2001:1")
+        assert not probablyipv6("2001::[2001::1]")
