@@ -20,6 +20,7 @@ tests.test_utils.test_diskspeed - Testing SABnzbd diskspeed
 """
 
 import os
+import tempfile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from tests.testhelper import SAB_CACHE_DIR
 
@@ -56,4 +57,3 @@ class TestDiskSpeed:
             speed = diskspeedmeasure(temp_file.name)
         assert speed == 0
         assert not os.path.exists(temp_file.name)
-
