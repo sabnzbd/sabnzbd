@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+""" Measure writing speed of disk specifiec, or working directory if not specified"""
+
 import time
 import os
 import sys
@@ -8,39 +10,36 @@ _DUMP_DATA_SIZE = 10 * 1024 * 1024
 _DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)
 
 
-def diskspeedmeasure(dirname):
-    """Returns writing speed to dirname in MB/s
+def diskspeedmeasure(my_dirname: object) -> object:
+    """Returns writing speed to my_dirname in MB/s
     method: keep writing a file, until 1 second is passed.
     Then divide bytes written by time passed
-    In case of problems (ie non-writable dir or file), return None
+    In case of problems (ie non-writable dir or file), return 0.0
     """
     maxtime = 1.0  # sec
     total_written = 0
-    filename = os.path.join(dirname, "outputTESTING.txt")
+    filename = os.path.join(my_dirname, "outputTESTING.txt")
 
     try:
         # Use low-level I/O
-        fp = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)
+        fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)
 
         # Start looping
         total_time = 0.0
         while total_time < maxtime:
             start = time.time()
-            os.write(fp, _DUMP_DATA)
-            os.fsync(fp)
+            os.write(fp_testfile, _DUMP_DATA)
+            os.fsync(fp_testfile)
             total_time += time.time() - start
             total_written += _DUMP_DATA_SIZE
 
+        # Have to use low-level close
+        os.close(fp_testfile)
         # Remove the file
-        try:
-            # Have to use low-level close
-            os.close(fp)
-            os.remove(filename)
-        except:
-            pass
-    except:
-        # No succesful measurement, so ... report None
-        return None
+        os.remove(filename)
+    except PermissionError:
+        # Could not write, so ... report None
+        return 0.0
 
     return total_written / total_time / 1024 / 1024
 
@@ -50,19 +49,19 @@ if __name__ == "__main__":
     print("Let's go")
 
     if len(sys.argv) >= 2:
-        dirname = sys.argv[1]
-        if not os.path.isdir(dirname):
+        DIRNAME = sys.argv[1]
+        if not os.path.isdir(DIRNAME):
             print("Specified argument is not a directory. Bailing out")
             sys.exit(1)
     else:
         # no argument, so use current working directory
-        dirname = os.getcwd()
+        DIRNAME = os.getcwd()
         print("Using current working directory")
 
     try:
-        speed = diskspeedmeasure(dirname)
-        if speed:
-            print("Disk writing speed: %.2f Mbytes per second" % speed)
+        SPEED = max(diskspeedmeasure(DIRNAME), diskspeedmeasure(DIRNAME))
+        if SPEED:
+            print("Disk writing speed: %.2f Mbytes per second" % SPEED)
         else:
             print("No measurement possible. Check that directory is writable.")
     except:

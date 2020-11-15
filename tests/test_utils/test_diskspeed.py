@@ -19,15 +19,38 @@
 tests.test_utils.test_diskspeed - Testing SABnzbd diskspeed
 """
 
+import os
 from sabnzbd.utils.diskspeed import diskspeedmeasure
-from tests.testhelper import *
+from tests.testhelper import SAB_CACHE_DIR
 
 
 class TestDiskSpeed:
+    """ test sabnzbd.utils.diskspeed """
+
     def test_disk_speed(self):
+        """ Test the normal use case: writable directory"""
         speed = diskspeedmeasure(SAB_CACHE_DIR)
         assert speed
         assert isinstance(speed, float)
 
         # Make sure the test-file was cleaned up after the test
         assert not os.path.exists(os.path.join(SAB_CACHE_DIR, "outputTESTING.txt"))
+
+    def test_non_existing_dir(self):
+        """ testing a non-existing dir should result in 0"""
+        speed = diskspeedmeasure("such_a_dir_does_not_exist")
+        assert speed == 0
+
+    def test_non_writable_dir(self):
+        """testing a non-writable dir should result in 0.
+        Only useful on Linux, and only if not-writable
+        """
+        non_writable_dir = "/usr"
+        if os.path.isdir(non_writable_dir) and not os.access(non_writable_dir, os.W_OK):
+            speed = diskspeedmeasure(non_writable_dir)
+            assert speed == 0
+
+    def test_file_not_dir_specified(self):
+        """ testing a file should result in 0"""
+        speed = diskspeedmeasure("tests/data/somefile.txt")
+        assert speed == 0
