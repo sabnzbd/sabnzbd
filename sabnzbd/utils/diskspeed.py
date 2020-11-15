@@ -10,7 +10,7 @@ _DUMP_DATA_SIZE = 10 * 1024 * 1024
 _DUMP_DATA = os.urandom(_DUMP_DATA_SIZE)
 
 
-def diskspeedmeasure(my_dirname: object) -> object:
+def diskspeedmeasure(my_dirname: str) -> float:
     """Returns writing speed to my_dirname in MB/s
     method: keep writing a file, until 1 second is passed.
     Then divide bytes written by time passed
@@ -37,7 +37,7 @@ def diskspeedmeasure(my_dirname: object) -> object:
         os.close(fp_testfile)
         # Remove the file
         os.remove(filename)
-    except PermissionError:
+    except (PermissionError, NotADirectoryError, FileNotFoundError):
         # Could not write, so ... report None
         return 0.0
 
