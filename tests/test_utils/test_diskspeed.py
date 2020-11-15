@@ -30,7 +30,7 @@ class TestDiskSpeed:
     def test_disk_speed(self):
         """ Test the normal use case: writable directory"""
         speed = diskspeedmeasure(SAB_CACHE_DIR)
-        assert speed
+        assert speed > 0.0
         assert isinstance(speed, float)
 
         # Make sure the test-file was cleaned up after the test
@@ -52,5 +52,8 @@ class TestDiskSpeed:
 
     def test_file_not_dir_specified(self):
         """ testing a file should result in 0"""
-        speed = diskspeedmeasure("tests/data/somefile.txt")
+        with tempfile.NamedTemporaryFile() as temp_file:
+            speed = diskspeedmeasure(temp_file.name)
         assert speed == 0
+        assert not os.path.exists(temp_file.name)
+
