@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # based on SysTrayIcon.py by Simon Brunning - simon@brunningonline.net
 # http://www.brunningonline.net/simon/blog/archives/001835.html
 # http://www.brunningonline.net/simon/blog/archives/SysTrayIcon.py.html
