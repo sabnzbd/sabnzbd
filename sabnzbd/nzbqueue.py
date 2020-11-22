@@ -179,7 +179,6 @@ class NzbQueue:
             remove_all(admin_path, "*.gz", keep_folder=True)
             logging.debug("Repair job %s with new NZB (%s)", name, new_nzb.filename)
             _, nzo_ids = sabnzbd.add_nzbfile(new_nzb, nzbname=name, reuse=repair_folder, password=password)
-            nzo_id = nzo_ids[0]
         else:
             # Was this file already post-processed?
             verified = sabnzbd.load_data(VERIFIED_FILE, admin_path, remove=False)
@@ -190,15 +189,22 @@ class NzbQueue:
             if filenames:
                 logging.debug("Repair job %s by re-parsing stored NZB", name)
                 _, nzo_ids = sabnzbd.add_nzbfile(filenames[0], nzbname=name, reuse=repair_folder, password=password)
-                nzo_id = nzo_ids[0]
             else:
-                logging.debug("Repair job %s without stored NZB", name)
-                nzo = NzbObject(name, nzbname=name, reuse=repair_folder)
-                nzo.password = password
-                self.add(nzo)
-                nzo_id = nzo.nzo_id
+                try:
+                    logging.debug("Repair job %s without stored NZB", name)
+                    nzo = NzbObject(name, nzbname=name, reuse=repair_folder)
+                    nzo.password = password
+                    self.add(nzo)
+                    nzo_ids = [nzo.nzo_id]
+                except:
+                    # NzoObject can throw exceptions if duplicate or unwanted etc
+                    logging.info("Skipping %s due to exception", name, exc_info=True)
+                    nzo_ids = []
 
-        return nzo_id
+        # Return None if we could not add anything
+        if nzo_ids:
+            return nzo_ids[0]
+        return None
 
     @NzbQueueLocker
     def send_back(self, old_nzo: NzbObject):
