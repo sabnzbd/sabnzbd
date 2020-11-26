@@ -611,7 +611,7 @@ def save_compressed(folder: str, filename: str, data: AnyStr):
     try:
         # Have to get around the path being put inside the tgz
         with open(os.path.join(folder, filename), "wb") as tgz_file:
-            f = gzip.GzipFile(filename, fileobj=tgz_file)
+            f = gzip.GzipFile(filename, fileobj=tgz_file, mode="wb")
             f.write(encoding.utob(data))
             f.flush()
             f.close()
