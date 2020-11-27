@@ -17,7 +17,7 @@ matrix:
   - os: linux
     dist: focal
     language: python
-    python: "3.9-dev"
+    python: "3.9"
   - os: osx
     addons:
       chrome: stable
