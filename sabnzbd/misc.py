@@ -31,7 +31,7 @@ import datetime
 import inspect
 import ctypes
 import ipaddress
-from typing import Union, Tuple, Any, Optional
+from typing import Union, Tuple, Any, Optional, List
 
 import sabnzbd
 from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
@@ -933,7 +933,7 @@ def nntp_to_msg(text):
         return ubtou(lines[0])
 
 
-def build_and_run_command(command, flatten_command=False, **kwargs):
+def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
     """Builds and then runs command with nessecary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
     On Windows we need to run our own list2cmdline for Unrar.
@@ -994,9 +994,9 @@ def build_and_run_command(command, flatten_command=False, **kwargs):
     return subprocess.Popen(command, **popen_kwargs)
 
 
-def run_command(cmd):
+def run_command(cmd: List[str], **kwargs):
     """ Run simple external command and return output as a string. """
-    with build_and_run_command(cmd) as p:
+    with build_and_run_command(cmd, **kwargs) as p:
         txt = platform_btou(p.stdout.read())
         p.wait()
     return txt

@@ -1145,7 +1145,9 @@ def main():
     # See if we can get version from git when running an unknown revision
     if sabnzbd.__baseline__ == "unknown":
         try:
-            sabnzbd.__baseline__ = sabnzbd.misc.run_command(["git", "rev-parse", "--short", "HEAD"]).strip()
+            sabnzbd.__baseline__ = sabnzbd.misc.run_command(
+                ["git", "rev-parse", "--short", "HEAD"], cwd=sabnzbd.DIR_PROG
+            ).strip()
         except:
             pass
     logging.info("Commit: %s", sabnzbd.__baseline__)

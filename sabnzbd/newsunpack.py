@@ -2410,10 +2410,7 @@ class SevenZip:
         """ Read named file from 7Zip and return data """
         command = [SEVEN_COMMAND, "e", "-p", "-y", "-so", self.path, name]
         # Ignore diagnostic output, otherwise it will be appended to content
-        p = build_and_run_command(command, stderr=subprocess.DEVNULL)
-        output = platform_btou(p.stdout.read())
-        p.wait()
-        return output
+        return run_command(command, stderr=subprocess.DEVNULL)
 
     def close(self):
         """ Close file """
