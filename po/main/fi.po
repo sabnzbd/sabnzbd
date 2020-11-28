@@ -2116,6 +2116,10 @@ msgid "Total"
 msgstr "Yhteensä"
 
 #: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "Mukautettu"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "käytössä"
 
@@ -4793,10 +4797,6 @@ msgstr ""
 msgid "Glitter has some (new) features you might like!"
 msgstr ""
 "Glitter-teemassa on muutamia (uusia) ominaisuuksia joista saatat pitää!"
-
-#: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "Mukautettu"
 
 #: sabnzbd/skintext.py
 msgid "Compact layout"

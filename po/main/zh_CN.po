@@ -2099,6 +2099,10 @@ msgid "Total"
 msgstr "总计"
 
 #: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "自定义"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "开"
 
@@ -4689,10 +4693,6 @@ msgstr "您的浏览器已禁用 LocalStorage (cookies)。界面设置将在您�
 #: sabnzbd/skintext.py
 msgid "Glitter has some (new) features you might like!"
 msgstr "你可能会喜欢一些 Glitter 的(新)功能！"
-
-#: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "自定义"
 
 #: sabnzbd/skintext.py
 msgid "Compact layout"

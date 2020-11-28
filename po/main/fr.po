@@ -2178,6 +2178,10 @@ msgid "Total"
 msgstr "Total"
 
 #: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "Personnalisé"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "oui"
 
@@ -4918,10 +4922,6 @@ msgstr ""
 msgid "Glitter has some (new) features you might like!"
 msgstr ""
 "Glitter a des (nouvelles) fonctionnalités que vous devriez apprécier !"
-
-#: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "Personnalisé"
 
 #: sabnzbd/skintext.py
 msgid "Compact layout"
