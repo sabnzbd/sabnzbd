@@ -115,6 +115,7 @@ SKIN_TEXT = {
     "thisMonth": TT("This month"),
     "today": TT("Today"),
     "total": TT("Total"),
+    "custom": TT("Custom"),
     "on": TT("on"),
     "off": TT("off"),
     "parameters": TT("Parameters"),  #: Config: startup parameters of SABnzbd

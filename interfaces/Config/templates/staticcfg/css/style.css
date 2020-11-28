@@ -795,6 +795,7 @@ input[type="submit"]:hover {
 input[type="text"],
 input[type="email"],
 input[type="url"],
+input[type="date"],
 input[type="number"],
 input[type="password"],
 textarea,
