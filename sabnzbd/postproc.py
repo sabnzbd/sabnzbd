@@ -958,15 +958,15 @@ def rar_renamer(nzo: NzbObject, workdir):
 
     # Sanity check of the rar set
     highest_rar = sorted(rarvolnr.keys())[-1]
-    '''
+    """
     # First an easy check
     if highest_rar != len(rarvolnr):
         # there is a missing rar file, so
         logging.warning("Incomplete rar set, so I can't deobfuscate")
         return 0
-    '''
+    """
     # More intelligent check aka staircase check: number of rarsets should no go up, but stay the same or go down
-    how_many_previous = 1000 # 1000 rarset mixed ... should be enough ...
+    how_many_previous = 1000  # 1000 rarset mixed ... should be enough ...
     for rar_set_number in range(1, highest_rar + 1):
         try:
             how_many_here = len(rarvolnr[rar_set_number])
@@ -984,7 +984,7 @@ def rar_renamer(nzo: NzbObject, workdir):
     # OK, that looked OK (a declining staircase), so we can safely proceed
 
     # More than one obfuscated rarset, so we must do matching based of files inside the rar files
-    #logging.debug("Number of obfuscated rarsets: %s", numberofrarsets)
+    # logging.debug("Number of obfuscated rarsets: %s", numberofrarsets)
 
     # Assign (random) rar set names
     rarsetname = {}  # in which rar set it should be, so rar set 'A', or 'B', or ...

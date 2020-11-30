@@ -39,7 +39,9 @@ class TestDeobfuscateFinalResult:
         # obfuscated names
         assert is_probably_obfuscated("599c1c9e2bdfb5114044bf25152b7eaa.mkv")
         assert is_probably_obfuscated("/my/blabla/directory/stuff/599c1c9e2bdfb5114044bf25152b7eaa.mkv")
-        assert is_probably_obfuscated("/my/blabla/directory/A Directory Should Not Count 2020/599c1c9e2bdfb5114044bf25152b7eaa.mkv")
+        assert is_probably_obfuscated(
+            "/my/blabla/directory/A Directory Should Not Count 2020/599c1c9e2bdfb5114044bf25152b7eaa.mkv"
+        )
         assert is_probably_obfuscated("/my/blabla/directory/stuff/afgm.avi")
         assert is_probably_obfuscated("/my/blabla/directory/stuff/afgm2020.avi")
         assert is_probably_obfuscated("MUGNjK3zi65TtN.mkv")
