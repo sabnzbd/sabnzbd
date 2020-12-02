@@ -49,7 +49,7 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q")  # no ext
         assert is_probably_obfuscated("greatdistro.iso")
         assert is_probably_obfuscated("abc.xyz.a4c567edbcbf27.BLA")  # by definition
-        assert is_probably_obfuscated("abc.xyz.iso") # lazy brother
+        assert is_probably_obfuscated("abc.xyz.iso")  # lazy brother
 
         #
         # non-obfuscated names:
