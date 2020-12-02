@@ -83,13 +83,13 @@ def is_probably_obfuscated(myinputfilename):
     # First fixed patterns that we know of:
 
     # ...blabla.H.264/b082fa0beaa644d3aa01045d5b8d0b36.mkv is certainly obfuscated
-    if re.findall("^[a-f0-9]{32}$", filebasename):
+    if re.findall(r"^[a-f0-9]{32}$", filebasename):
         logging.debug("Obfuscated: 32 hex digit")
         # exactly 32 hex digits, so:
         return True
 
     # /some/thing/abc.xyz.a4c567edbcbf27.BLA is certainly obfuscated
-    if re.findall("^abc\.xyz", filebasename):
+    if re.findall(r"^abc\.xyz", filebasename):
         logging.debug("Obfuscated: starts with 'abc.xyz'")
         # ... which we consider as obfuscated:
         return True
