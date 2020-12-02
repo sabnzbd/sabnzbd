@@ -89,8 +89,8 @@ def is_probably_obfuscated(myinputfilename):
         return True
 
     # /some/thing/abc.xyz.a4c567edbcbf27.BLA is certainly obfuscated
-    if re.findall("^abc\.xyz\.", filebasename):
-        logging.debug("Obfuscated: starts with 'abc.xyz.'")
+    if re.findall("^abc\.xyz", filebasename):
+        logging.debug("Obfuscated: starts with 'abc.xyz'")
         # ... which we consider as obfuscated:
         return True
 
