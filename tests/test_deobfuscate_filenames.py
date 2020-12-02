@@ -48,10 +48,14 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q.bin")
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q")  # no ext
         assert is_probably_obfuscated("greatdistro.iso")
+        assert is_probably_obfuscated("abc.xyz.a4c567edbcbf27.BLA")  # by definition
+        assert is_probably_obfuscated("abc.xyz.iso") # lazy brother
+
         #
         # non-obfuscated names:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Distro S03E04.iso")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Distro (2020).iso")
+        assert not is_probably_obfuscated("ubuntu.2004.iso")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/GreatDistro2020.iso")
         assert not is_probably_obfuscated("Catullus.avi")
         assert not is_probably_obfuscated("Der.Mechaniker.HDRip.XviD-SG.avi")
