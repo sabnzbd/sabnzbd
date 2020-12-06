@@ -979,7 +979,6 @@ def rar_renamer(nzo: NzbObject, workdir):
     # OK, that looked OK (a declining staircase), so we can safely proceed
 
     # More than one obfuscated rarset, so we must do matching based of files inside the rar files
-    # logging.debug("Number of obfuscated rarsets: %s", numberofrarsets)
 
     # Assign (random) rar set names
     rarsetname = {}  # in which rar set it should be, so rar set 'A', or 'B', or ...
