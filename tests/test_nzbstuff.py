@@ -95,3 +95,41 @@ class TestNZBStuffHelpers:
 
         for file_name, clean_file_name in file_names.items():
             assert nzbstuff.create_work_name(file_name) == clean_file_name
+
+    @pytest.mark.parametrize(
+        "subject, filename",
+        [
+            ('Great stuff (001/143) - "Filename.txt" yEnc (1/1)', "Filename.txt"),
+            (
+                '"910a284f98ebf57f6a531cd96da48838.vol01-03.par2" yEnc (1/3)',
+                "910a284f98ebf57f6a531cd96da48838.vol01-03.par2",
+            ),
+            ('Subject-KrzpfTest [02/30] - ""KrzpfTest.part.nzb"" yEnc', "KrzpfTest.part.nzb"),
+            (
+                '[PRiVATE]-[WtFnZb]-[Supertje-_S03E11-12_-blabla_+_blabla_WEBDL-480p.mkv]-[4/12] - "" yEnc 9786 (1/1366)',
+                "Supertje-_S03E11-12_-blabla_+_blabla_WEBDL-480p.mkv",
+            ),
+            (
+                '[N3wZ] MAlXD245333\\::[PRiVATE]-[WtFnZb]-[Show.S04E04.720p.AMZN.WEBRip.x264-GalaxyTV.mkv]-[1/2] - "" yEnc  293197257 (1/573)',
+                "Show.S04E04.720p.AMZN.WEBRip.x264-GalaxyTV.mkv",
+            ),
+            (
+                'reftestnzb bf1664007a71 [1/6] - "20b9152c-57eb-4d02-9586-66e30b8e3ac2" yEnc (1/22) 15728640',
+                "20b9152c-57eb-4d02-9586-66e30b8e3ac2",
+            ),
+            (
+                "Re: REQ Author Child's The Book-Thanks much - Child, Lee - Author - The Book.epub (1/1)",
+                "REQ Author Child's The Book-Thanks much - Child, Lee - Author - The Book.epub",
+            ),
+            ('63258-0[001/101] - "63258-2.0" yEnc (1/250) (1/250)', "63258-2.0"),
+            (
+                "Singer - A Album (2005) - [04/25] - 02 Sweetest Somebody (I Know).flac",
+                "- 02 Sweetest Somebody (I Know).flac",
+            ),
+            ("<>random!>", "<>random!>"),
+            ("nZb]-[Supertje-_S03E11-12_", "nZb]-[Supertje-_S03E11-12_"),
+            ("Bla [Now it's done.exe]", "Now it's done.exe"),
+        ],
+    )
+    def test_name_extractor(self, subject, filename):
+        assert nzbstuff.name_extractor(subject) == filename
