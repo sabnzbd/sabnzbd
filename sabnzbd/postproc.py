@@ -957,16 +957,11 @@ def rar_renamer(nzo: NzbObject, workdir):
     # numberofrarsets bigger than 1, so a mixed rar set, so we need pre-checking
 
     # Sanity check of the rar set
+    # Get the highest rar part number (that's the upper limit):
     highest_rar = sorted(rarvolnr.keys())[-1]
-    """
-    # First an easy check
-    if highest_rar != len(rarvolnr):
-        # there is a missing rar file, so
-        logging.warning("Incomplete rar set, so I can't deobfuscate")
-        return 0
-    """
-    # More intelligent check aka staircase check: number of rarsets should no go up, but stay the same or go down
-    how_many_previous = 1000  # 1000 rarset mixed ... should be enough ...
+    # A staircase check: number of rarsets should no go up, but stay the same or go down
+    how_many_previous = 1000  # 1000 rarset mixed ... should be enough ... typical is 1, 2 or maybe 3
+    # Start at part001.rar and go the highest
     for rar_set_number in range(1, highest_rar + 1):
         try:
             how_many_here = len(rarvolnr[rar_set_number])
@@ -976,7 +971,7 @@ def rar_renamer(nzo: NzbObject, workdir):
             return 0
         # OK, it exists, now let's check it's not higher
         if how_many_here > how_many_previous:
-            # this should not happen: higher number of rarset than previous
+            # this should not happen: higher number of rarset than previous number of rarset
             logging.warning("no staircase! rarset %s is higher than previous, so I can't deobfuscate.", rar_set_number)
             return 0
         how_many_previous = how_many_here
