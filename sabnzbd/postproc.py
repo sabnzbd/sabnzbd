@@ -977,10 +977,9 @@ def rar_renamer(nzo: NzbObject, workdir):
         how_many_previous = how_many_here
 
     # OK, that looked OK (a declining staircase), so we can safely proceed
-
     # More than one obfuscated rarset, so we must do matching based of files inside the rar files
 
-    # Assign (random) rar set names
+    # Assign (random) rar set names, first come first serve basis
     rarsetname = {}  # in which rar set it should be, so rar set 'A', or 'B', or ...
     mychar = "A"
     # First things first: Assigning a rarsetname to the rar file which have volume number 1
