@@ -85,6 +85,7 @@ import sabnzbd.cfg as cfg
 import sabnzbd.nzbparser
 from sabnzbd.downloader import Server
 from sabnzbd.database import HistoryDB
+from sabnzbd.deobfuscate_filenames import *
 
 # Name patterns
 SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
@@ -1691,7 +1692,7 @@ class NzbObject(TryList):
         if (
             yenc_filename
             and yenc_filename != nzf.filename
-            and not is_obfuscated_filename(yenc_filename)
+            and not is_probably_obfuscated(yenc_filename)
             and not nzf.filename.endswith(".par2")
         ):
             logging.info("Detected filename from yenc: %s -> %s", nzf.filename, yenc_filename)

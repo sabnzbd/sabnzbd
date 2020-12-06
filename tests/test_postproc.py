@@ -74,3 +74,19 @@ class TestPostProc:
         sourcedir = os.path.join(SAB_DATA_DIR, "obfuscated_but_no_rar")
         expected_filename_matches = {"*.rar": 0, "*-*-*-*-*": 6}
         assert deobfuscate_dir(sourcedir, expected_filename_matches) == 0
+
+        # One obfuscated rar set, but first rar (.part1.rar) is missing
+        sourcedir = os.path.join(SAB_DATA_DIR, "obfuscated_single_rar_set_missing_first_rar")
+        # single rar set (of 6 obfuscated rar files), so we expect renaming
+        # thus result must 6 rar files, and 0 obfuscated files
+        expected_filename_matches = {"*.rar": 6, "*-*-*-*-*": 0}
+        # 6 files should have been renamed
+        assert deobfuscate_dir(sourcedir, expected_filename_matches) == 6
+
+        # Two obfuscated rar sets, but some rars are missing
+        sourcedir = os.path.join(SAB_DATA_DIR, "obfuscated_double_rar_set_missing_rar")
+        # Two sets, missing rar, so we expect no renaming
+        # thus result should be 0 rar files, and still 8 obfuscated files
+        expected_filename_matches = {"*.rar": 0, "*-*-*-*-*": 8}
+        # 0 files should have been renamed
+        assert deobfuscate_dir(sourcedir, expected_filename_matches) == 0
