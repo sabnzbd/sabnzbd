@@ -381,7 +381,7 @@ class NzbFile(TryList):
         if raw_article_db:
             # Convert 2.x.x jobs
             if isinstance(raw_article_db, dict):
-                raw_article_db = [raw_article_db[partnum] for partnum in sorted(raw_article_db.keys())]
+                raw_article_db = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
 
             for raw_article in raw_article_db:
                 self.add_article(raw_article)
@@ -471,7 +471,7 @@ class NzbFile(TryList):
 
         # Convert 2.x.x jobs
         if isinstance(self.decodetable, dict):
-            self.decodetable = [self.decodetable[partnum] for partnum in sorted(self.decodetable.keys())]
+            self.decodetable = [self.decodetable[partnum] for partnum in sorted(self.decodetable)]
 
         # Set non-transferable values
         self.md5 = None
@@ -1490,7 +1490,7 @@ class NzbObject(TryList):
             # Sort the servers first
             servers = config.get_servers()
             server_names = sorted(
-                servers.keys(),
+                servers,
                 key=lambda svr: "%d%02d%s"
                 % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
             )
@@ -1606,7 +1606,7 @@ class NzbObject(TryList):
 
                 pos_nzf_table = self.build_pos_nzf_table(nzf_ids)
 
-                keys = list(pos_nzf_table.keys())
+                keys = list(pos_nzf_table)
                 keys.sort()
 
                 if target == keys:
@@ -1623,7 +1623,7 @@ class NzbObject(TryList):
 
                 pos_nzf_table = self.build_pos_nzf_table(nzf_ids)
 
-                keys = list(pos_nzf_table.keys())
+                keys = list(pos_nzf_table)
                 keys.sort()
 
                 if target == keys:

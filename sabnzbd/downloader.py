@@ -902,7 +902,8 @@ class Downloader(Thread):
         # Clean expired timers
         now = time.time()
         kicked = []
-        for server_id in self._timers.keys():
+        # Create a copy so we can remove during iteration
+        for server_id in list(self._timers):
             if not [stamp for stamp in self._timers[server_id] if stamp >= now]:
                 logging.debug("Forcing re-evaluation of server-id %s", server_id)
                 del self._timers[server_id]

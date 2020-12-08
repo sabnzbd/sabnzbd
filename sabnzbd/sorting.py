@@ -534,7 +534,7 @@ def check_for_sequence(regex, files):
                 prefix = name[: match1.start()]
 
     # Don't do anything if only one or no files matched
-    if len(list(matches.keys())) < 2:
+    if len(list(matches)) < 2:
         return {}
 
     key_prev = 0
@@ -542,7 +542,7 @@ def check_for_sequence(regex, files):
     alphabet = "abcdefghijklmnopqrstuvwxyz"
 
     # Check the dictionary to see if the keys are in a numeric or alphabetic sequence
-    for akey in sorted(matches.keys()):
+    for akey in sorted(matches):
         if akey.isdigit():
             key = int(akey)
         elif akey in alphabet:

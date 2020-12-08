@@ -46,7 +46,7 @@ def compare_stat_tuple(tup1, tup2):
 
 def clean_file_list(inp_list, folder, files):
     """ Remove elements of "inp_list" not found in "files" """
-    for path in sorted(inp_list.keys()):
+    for path in sorted(inp_list):
         fld, name = os.path.split(path)
         if fld == folder:
             present = False
