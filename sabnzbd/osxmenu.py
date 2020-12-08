@@ -234,7 +234,7 @@ class SABnzbdDelegate(NSObject):
             100: "100%",
         }
 
-        for speed in sorted(speeds.keys()):
+        for speed in sorted(speeds):
             menu_speed_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
                 "%s" % (speeds[speed]), "speedlimitAction:", ""
             )

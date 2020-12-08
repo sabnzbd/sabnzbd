@@ -1350,7 +1350,7 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
                     block_table[nzf.blocks] = nzf
 
             if block_table:
-                nzf = block_table[min(block_table.keys())]
+                nzf = block_table[min(block_table)]
                 logging.info("Found new par2file %s", nzf.filename)
 
                 # Move from extrapar list to files to be downloaded
@@ -1650,7 +1650,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
                     block_table[nzf.blocks] = nzf
 
             if block_table:
-                nzf = block_table[min(block_table.keys())]
+                nzf = block_table[min(block_table)]
                 logging.info("Found new par2file %s", nzf.filename)
 
                 # Move from extrapar list to files to be downloaded

@@ -151,8 +151,7 @@ def remove_obsolete(jobs, new_jobs):
     """
     now = time.time()
     limit = now - 259200  # 3days (3x24x3600)
-    olds = list(jobs.keys())
-    for old in olds:
+    for old in list(jobs):
         tm = jobs[old]["time"]
         if old not in new_jobs:
             if jobs[old].get("status", " ")[0] in ("G", "B"):
@@ -178,7 +177,7 @@ class RSSQueue:
             self.jobs = sabnzbd.load_admin(RSS_FILE_NAME)
             if self.jobs:
                 for feed in self.jobs:
-                    remove_obsolete(self.jobs[feed], list(self.jobs[feed].keys()))
+                    remove_obsolete(self.jobs[feed], list(self.jobs[feed]))
         except:
             logging.warning(T("Cannot read %s"), RSS_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)

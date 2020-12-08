@@ -118,7 +118,7 @@ def nzbfile_parser(raw_data, nzo):
                     pass
 
         # Sort the articles by part number, compatible with Python 3.5
-        raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db.keys())]
+        raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
 
         # Create NZF
         nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)

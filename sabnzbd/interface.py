@@ -529,7 +529,7 @@ class Wizard:
         else:
             # Sort servers to get the first enabled one
             server_names = sorted(
-                servers.keys(),
+                servers,
                 key=lambda svr: "%d%02d%s"
                 % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
             )
@@ -1580,7 +1580,7 @@ class ConfigServer:
         new = []
         servers = config.get_servers()
         server_names = sorted(
-            list(servers.keys()),
+            servers,
             key=lambda svr: "%d%02d%s"
             % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
         )

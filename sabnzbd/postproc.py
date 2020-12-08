@@ -962,7 +962,7 @@ def rar_renamer(nzo, workdir):
         # So, all rar files with rarvolnr 1, find the contents (files inside the rar),
         # and match with rarfiles with rarvolnr 2, and put them in the correct rarset.
         # And so on, until the highest rarvolnr minus 1 matched against highest rarvolnr
-        for n in range(1, len(rarvolnr.keys())):
+        for n in range(1, len(rarvolnr)):
             logging.debug("Deobfuscate: Finding matches between rar sets %s and %s" % (n, n + 1))
             for base_obfuscated_filename in rarvolnr[n]:
                 matchcounter = 0
