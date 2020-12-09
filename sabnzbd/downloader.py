@@ -413,7 +413,7 @@ class Downloader(Thread):
 
         # See if we need to delay because the queues are full
         logged = False
-        sleep_time = cfg.sleep_time() * 0.0001
+
         while not self.shutdown and (sabnzbd.Decoder.queue_full() or sabnzbd.Assembler.queue_full()):
             if not logged:
                 # Only log once, to not waste any CPU-cycles
@@ -423,7 +423,7 @@ class Downloader(Thread):
                     sabnzbd.Assembler.queue.qsize(),
                 )
                 logged = True
-            time.sleep(sleep_time)
+            time.sleep(cfg.sleep_time() * 0.0001)
 
     def run(self):
         # First check IPv6 connectivity
@@ -442,7 +442,6 @@ class Downloader(Thread):
         logging.debug("Sleep time: %f", cfg.sleep_time() * 0.0001)
 
         while 1:
-            sleep_time = cfg.sleep_time() * 0.0001
             idle_count += 1
             for server in self.servers:
                 for nw in server.busy_threads[:]:
@@ -524,7 +523,7 @@ class Downloader(Thread):
                             self.__reset_nw(nw, "failed to initialize")
 
             if idle_count > 1:
-                time.sleep(sleep_time)
+                time.sleep(cfg.sleep_time() * 0.0001)
 
             # Exit-point
             if self.shutdown:
@@ -613,6 +612,7 @@ class Downloader(Thread):
                     if self.bandwidth_limit:
                         limit = self.bandwidth_limit
                         if bytes_received + sabnzbd.BPSMeter.bps > limit:
+                            sleep_time = cfg.sleep_time() * 0.0001
                             while sabnzbd.BPSMeter.bps > limit:
                                 time.sleep(sleep_time)
                                 sabnzbd.BPSMeter.update()
