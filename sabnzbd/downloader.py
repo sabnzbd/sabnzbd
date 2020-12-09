@@ -439,7 +439,7 @@ class Downloader(Thread):
 
         # Counts number of iterations with no articles found
         idle_count = 0
-        logging.debug('Sleep time: %f', cfg.sleep_time() * 0.0001)
+        logging.debug("Sleep time: %f", cfg.sleep_time() * 0.0001)
 
         while 1:
             sleep_time = cfg.sleep_time() * 0.0001
