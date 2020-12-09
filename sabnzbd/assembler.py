@@ -135,11 +135,13 @@ class Assembler(Thread):
                                 sabnzbd.NzbQueue.end_job(nzo)
 
                         if unwanted_file:
-                            logging.warning(
-                                T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
-                                nzo.final_name,
-                                unwanted_file,
-                            )
+                            # Don't repeat the warning after a user override of an unwanted extension pause
+                            if nzo.unwanted_ext == 0:
+                                logging.warning(
+                                    T('In "%s" unwanted extension in RAR file. Unwanted file is %s '),
+                                    nzo.final_name,
+                                    unwanted_file,
+                                )
                             logging.debug(T("Unwanted extension is in rar file %s"), filepath)
                             if cfg.action_on_unwanted_extensions() == 1 and nzo.unwanted_ext == 0:
                                 logging.debug("Unwanted extension ... pausing")
