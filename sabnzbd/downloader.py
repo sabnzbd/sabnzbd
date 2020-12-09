@@ -413,7 +413,6 @@ class Downloader(Thread):
 
         # See if we need to delay because the queues are full
         logged = False
-
         while not self.shutdown and (sabnzbd.Decoder.queue_full() or sabnzbd.Assembler.queue_full()):
             if not logged:
                 # Only log once, to not waste any CPU-cycles
