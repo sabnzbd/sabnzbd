@@ -436,8 +436,24 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         sabnzbd.BPSMeter.update()
 
+        # Store when each server last searched for articles
+        last_searched = {}
+
+        # Store when each server last downloaded anything or found an article
+        last_busy = {}
+
         while 1:
             for server in self.servers:
+                serverid = server.id
+                if server.busy_threads:
+                    last_busy[serverid] = time.time()
+
+                # Skip this server if idle for 1 second and it has already been searched less than 0.5 seconds ago
+                if last_busy.get(serverid, 0) + 1 < time.time() and last_searched.get(serverid, 0) + 0.5 > time.time():
+                    continue
+ 
+                last_searched[serverid] = time.time()
+
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
                         if nw.nntp and nw.nntp.error_msg:
@@ -485,6 +501,8 @@ class Downloader(Thread):
 
                     if not article:
                         break
+
+                    last_busy[serverid] = time.time()
 
                     if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
                         # Let's get rid of all the articles for this server at once
