@@ -413,6 +413,7 @@ class Downloader(Thread):
 
         # See if we need to delay because the queues are full
         logged = False
+        sleep_time = cfg.sleep_time() * 0.0001
         while not self.shutdown and (sabnzbd.Decoder.queue_full() or sabnzbd.Assembler.queue_full()):
             if not logged:
                 # Only log once, to not waste any CPU-cycles
@@ -422,7 +423,7 @@ class Downloader(Thread):
                     sabnzbd.Assembler.queue.qsize(),
                 )
                 logged = True
-            time.sleep(0.05)
+            time.sleep(sleep_time)
 
     def run(self):
         # First check IPv6 connectivity
@@ -436,7 +437,13 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         sabnzbd.BPSMeter.update()
 
+        # Counts number of iterations with no articles found
+        idle_count = 0
+        logging.debug('Sleep time: %f', cfg.sleep_time() * 0.0001)
+
         while 1:
+            sleep_time = cfg.sleep_time() * 0.0001
+            idle_count += 1
             for server in self.servers:
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
@@ -486,6 +493,8 @@ class Downloader(Thread):
                     if not article:
                         break
 
+                    idle_count = 0
+
                     if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
                         # Let's get rid of all the articles for this server at once
                         logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
@@ -513,6 +522,9 @@ class Downloader(Thread):
                                 sys.exc_info()[1],
                             )
                             self.__reset_nw(nw, "failed to initialize")
+
+            if idle_count > 1:
+                time.sleep(sleep_time)
 
             # Exit-point
             if self.shutdown:
@@ -545,23 +557,6 @@ class Downloader(Thread):
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
-
-                # Why check so often when so few things happened?
-                if self.can_be_slowed and len(readkeys) >= 8 and len(read) <= 2:
-                    time.sleep(0.01)
-
-                # Need to initialize the check during first 20 seconds
-                if self.can_be_slowed is None or self.can_be_slowed_timer:
-                    # Wait for stable speed to start testing
-                    if not self.can_be_slowed_timer and sabnzbd.BPSMeter.get_stable_speed(timespan=10):
-                        self.can_be_slowed_timer = time.time()
-
-                    # Check 10 seconds after enabling slowdown
-                    if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
-                        # Now let's check if it was stable in the last 10 seconds
-                        self.can_be_slowed = sabnzbd.BPSMeter.get_stable_speed(timespan=10)
-                        self.can_be_slowed_timer = 0
-                        logging.debug("Downloader-slowdown: %r", self.can_be_slowed)
 
             else:
                 read, write, error = ([], [], [])
@@ -619,7 +614,7 @@ class Downloader(Thread):
                         limit = self.bandwidth_limit
                         if bytes_received + sabnzbd.BPSMeter.bps > limit:
                             while sabnzbd.BPSMeter.bps > limit:
-                                time.sleep(0.05)
+                                time.sleep(sleep_time)
                                 sabnzbd.BPSMeter.update()
                     sabnzbd.BPSMeter.update(server.id, bytes_received)
                     article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, bytes_received)

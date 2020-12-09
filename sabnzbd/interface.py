@@ -1343,6 +1343,7 @@ SPECIAL_VALUE_LIST = (
     "ipv6_servers",
     "selftest_host",
     "rating_host",
+    "sleep_time",
 )
 SPECIAL_LIST_LIST = ("rss_odd_titles", "quick_check_ext_ignore", "host_whitelist")
 
