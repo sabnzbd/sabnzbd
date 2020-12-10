@@ -1170,18 +1170,13 @@ class NzbObject(TryList):
 
         # Abort the job due to failure
         if not job_can_succeed:
-            self.set_download_report()
             self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
             self.set_unpack_info("Download", self.fail_msg, unique=False)
             logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
             return True, True, True
 
-        post_done = False
-        if not self.files:
-            post_done = True
-            self.set_download_report()
-
-        return articles_left, file_done, post_done
+        # Check if there are any files left here, so the check is inside the NZO_LOCK
+        return articles_left, file_done, not self.files
 
     @synchronized(NZO_LOCK)
     def add_saved_article(self, article: Article):
