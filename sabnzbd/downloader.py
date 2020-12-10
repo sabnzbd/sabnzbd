@@ -182,6 +182,9 @@ class Downloader(Thread):
         cfg.bandwidth_max.callback(self.speed_set)
         self.speed_set()
 
+        self.sleep_time_set()
+        cfg.sleep_time.callback(self.sleep_time_set)
+
         # Used to see if we can add a slowdown to the Downloader-loop
         self.can_be_slowed = None
         self.can_be_slowed_timer = 0
@@ -346,6 +349,9 @@ class Downloader(Thread):
             self.bandwidth_perc = 0
             self.bandwidth_limit = 0
 
+    def sleep_time_set(self):
+        self.sleep_time = cfg.sleep_time() * 0.0001
+
     def is_paused(self):
         if not self.paused:
             return False
@@ -422,7 +428,7 @@ class Downloader(Thread):
                     sabnzbd.Assembler.queue.qsize(),
                 )
                 logged = True
-            time.sleep(cfg.sleep_time() * 0.0001)
+            time.sleep(self.sleep_time)
 
     def run(self):
         # First check IPv6 connectivity
@@ -438,7 +444,7 @@ class Downloader(Thread):
 
         # Counts number of iterations with no articles found
         idle_count = 0
-        logging.debug("Sleep time: %f", cfg.sleep_time() * 0.0001)
+        logging.debug("Sleep time: %f", self.sleep_time)
 
         while 1:
             idle_count += 1
@@ -522,7 +528,7 @@ class Downloader(Thread):
                             self.__reset_nw(nw, "failed to initialize")
 
             if idle_count > 1:
-                time.sleep(cfg.sleep_time() * 0.0001)
+                time.sleep(self.sleep_time)
 
             # Exit-point
             if self.shutdown:
@@ -611,9 +617,8 @@ class Downloader(Thread):
                     if self.bandwidth_limit:
                         limit = self.bandwidth_limit
                         if bytes_received + sabnzbd.BPSMeter.bps > limit:
-                            sleep_time = cfg.sleep_time() * 0.0001
                             while sabnzbd.BPSMeter.bps > limit:
-                                time.sleep(sleep_time)
+                                time.sleep(self.sleep_time)
                                 sabnzbd.BPSMeter.update()
                     sabnzbd.BPSMeter.update(server.id, bytes_received)
                     article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, bytes_received)
