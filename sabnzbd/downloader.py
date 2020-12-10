@@ -428,7 +428,7 @@ class Downloader(Thread):
                     sabnzbd.Assembler.queue.qsize(),
                 )
                 logged = True
-            time.sleep(self.sleep_time)
+            time.sleep(self.sleep_time + 0.001)
 
     def run(self):
         # First check IPv6 connectivity
@@ -618,7 +618,7 @@ class Downloader(Thread):
                         limit = self.bandwidth_limit
                         if bytes_received + sabnzbd.BPSMeter.bps > limit:
                             while sabnzbd.BPSMeter.bps > limit:
-                                time.sleep(self.sleep_time)
+                                time.sleep(self.sleep_time + 0.001)
                                 sabnzbd.BPSMeter.update()
                     sabnzbd.BPSMeter.update(server.id, bytes_received)
                     article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, bytes_received)
