@@ -448,10 +448,10 @@ class Downloader(Thread):
                 serverid = server.id
                 if server.busy_threads:
                     last_busy[serverid] = now
-
-                # Skip this server if idle for 1 second and it has already been searched less than 0.5 seconds ago
-                if last_busy.get(serverid, 0) + 1 < now and last_searched.get(serverid, 0) + 0.5 > now:
-                    continue
+                else:
+                    # Skip this server if idle for 1 second and it has already been searched less than 0.5 seconds ago
+                    if last_busy.get(serverid, 0) + 1 < now and last_searched.get(serverid, 0) + 0.5 > now:
+                        continue
 
                 last_searched[serverid] = now
 
