@@ -113,7 +113,6 @@ def run_sabnzbd_sabnews_and_selenium(clean_cache_dir):
             "0",
             "--logging",
             "2",
-            "--weblogging",
             "--config",
             SAB_CACHE_DIR,
         ]
