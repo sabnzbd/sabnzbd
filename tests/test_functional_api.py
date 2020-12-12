@@ -483,9 +483,9 @@ class TestQueueApi(ApiTestFunctions):
             (False, False, "script_Sample-PostProc.py"),
             (False, False, "invalid_option"),
             (False, True, "script_foobar.py"),  # Doesn't exist, see issue #1650
-            (True, True, "my_script_for_sab.py"),  # Test for #1651
             (False, True, "script_" + os.path.join("..", "SABnzbd.py")),  # Outside the scriptsdir, #1650 again
             (False, True, "script_"),  # Empty after removal of the prefix
+            (True, True, "my_script_for_sab.py"),  # Test for #1651
         ],
     )
     def test_api_queue_change_complete_action(self, should_work, set_scriptsdir, value):
