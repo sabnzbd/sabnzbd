@@ -28,8 +28,8 @@ import time
 import json
 import cherrypy
 import locale
-
 from threading import Thread
+from typing import List
 
 try:
     import win32api
@@ -1854,7 +1854,7 @@ def calc_timeleft(bytesleft, bps):
         return "0:00:00"
 
 
-def list_scripts(default=False, none=True):
+def list_scripts(default: bool = False, none: bool = True) -> List[str]:
     """ Return a list of script names, optionally with 'Default' added """
     lst = []
     path = cfg.script_dir.get_path()
@@ -1871,6 +1871,8 @@ def list_scripts(default=False, none=True):
                     or (not sabnzbd.WIN32 and userxbit(script) and not os.path.basename(script).startswith("."))
                 ):
                     lst.append(os.path.basename(script))
+            # Make sure capitalization is ignored to avoid strange results
+            lst = sorted(lst, key=str.casefold)
         if none:
             lst.insert(0, "None")
         if default:

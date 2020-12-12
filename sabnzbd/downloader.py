@@ -436,10 +436,27 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         sabnzbd.BPSMeter.update()
 
+        # Store when each server last searched for articles
+        last_searched = {}
+
+        # Store when each server last downloaded anything or found an article
+        last_busy = {}
+
         while 1:
+            now = time.time()
             for server in self.servers:
+                serverid = server.id
+                if server.busy_threads:
+                    last_busy[serverid] = now
+                else:
+                    # Skip this server if idle for 1 second and it has already been searched less than 0.5 seconds ago
+                    if last_busy.get(serverid, 0) + 1 < now and last_searched.get(serverid, 0) + 0.5 > now:
+                        continue
+
+                last_searched[serverid] = now
+
                 for nw in server.busy_threads[:]:
-                    if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
+                    if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                         if nw.nntp and nw.nntp.error_msg:
                             self.__reset_nw(nw, "", warn=False)
                         else:
@@ -469,7 +486,7 @@ class Downloader(Thread):
 
                 for nw in server.idle_threads[:]:
                     if nw.timeout:
-                        if time.time() < nw.timeout:
+                        if now < nw.timeout:
                             continue
                         else:
                             nw.timeout = None
@@ -486,7 +503,9 @@ class Downloader(Thread):
                     if not article:
                         break
 
-                    if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
+                    last_busy[serverid] = now
+
+                    if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
                         # Let's get rid of all the articles for this server at once
                         logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
                         while article:
@@ -554,10 +573,10 @@ class Downloader(Thread):
                 if self.can_be_slowed is None or self.can_be_slowed_timer:
                     # Wait for stable speed to start testing
                     if not self.can_be_slowed_timer and sabnzbd.BPSMeter.get_stable_speed(timespan=10):
-                        self.can_be_slowed_timer = time.time()
+                        self.can_be_slowed_timer = now
 
                     # Check 10 seconds after enabling slowdown
-                    if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
+                    if self.can_be_slowed_timer and now > self.can_be_slowed_timer + 10:
                         # Now let's check if it was stable in the last 10 seconds
                         self.can_be_slowed = sabnzbd.BPSMeter.get_stable_speed(timespan=10)
                         self.can_be_slowed_timer = 0
