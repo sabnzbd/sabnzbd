@@ -65,7 +65,7 @@ class TestQueueRepair(SABnzbdBaseTest):
         time.sleep(2)
 
         # Let's check the queue
-        for _ in range(10):
+        for _ in range(30):
             queue_result_slots = {}
             try:
                 # Can give timeout if still restarting

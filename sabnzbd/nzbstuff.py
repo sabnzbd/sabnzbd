@@ -85,11 +85,11 @@ import sabnzbd.cfg as cfg
 import sabnzbd.nzbparser
 from sabnzbd.downloader import Server
 from sabnzbd.database import HistoryDB
-from sabnzbd.deobfuscate_filenames import *
+from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
 
 # Name patterns
-SUBJECT_FN_MATCHER = re.compile(r'"([^"]*)"')
-RE_NORMAL_NAME = re.compile(r"\.\w{1,5}$")  # Test reasonably sized extension at the end
+RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')  # In the subject, we expect the filename within double quotes
+RE_SUBJECT_BASIC_FILENAME = re.compile(r"([\w\-+()'\s.,]*\.\w{2,4})")  # Otherwise something that looks like a filename
 RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
 RE_PROPER = re.compile(r"(^|[\. _-])(PROPER|REAL|REPACK)([\. _-]|$)")
 
@@ -326,7 +326,7 @@ class NzbFile(TryList):
         self.date: datetime.datetime = date
         self.subject: str = subject
         self.type: Optional[str] = None
-        self.filename: str = name_extractor(subject)
+        self.filename: str = sanitize_filename(name_extractor(subject))
         self.filename_checked = False
         self.filepath: Optional[str] = None
 
@@ -857,16 +857,17 @@ class NzbObject(TryList):
             duplicate = False
 
         if duplicate or self.priority == DUP_PRIORITY:
+            self.duplicate = True
             if cfg.no_dupes() == 4 or cfg.no_series_dupes() == 4:
                 if cfg.warn_dupl_jobs():
                     logging.warning('%s: "%s"', T("Duplicate NZB"), filename)
-                self.duplicate = True
-                self.priority = NORMAL_PRIORITY
             else:
                 if cfg.warn_dupl_jobs():
                     logging.warning(T('Pausing duplicate NZB "%s"'), filename)
-                self.duplicate = True
                 self.pause()
+
+            # Only change priority it's currently set to duplicate, otherwise keep original one
+            if self.priority == DUP_PRIORITY:
                 self.priority = NORMAL_PRIORITY
 
         # Check if there is any unwanted extension in plain sight in the NZB itself
@@ -1170,18 +1171,13 @@ class NzbObject(TryList):
 
         # Abort the job due to failure
         if not job_can_succeed:
-            self.set_download_report()
             self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
             self.set_unpack_info("Download", self.fail_msg, unique=False)
             logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
             return True, True, True
 
-        post_done = False
-        if not self.files:
-            post_done = True
-            self.set_download_report()
-
-        return articles_left, file_done, post_done
+        # Check if there are any files left here, so the check is inside the NZO_LOCK
+        return articles_left, file_done, not self.files
 
     @synchronized(NZO_LOCK)
     def add_saved_article(self, article: Article):
@@ -2128,10 +2124,20 @@ def scan_password(name: str) -> Tuple[str, Optional[str]]:
 def name_extractor(subject: str) -> str:
     """ Try to extract a file name from a subject line, return `subject` if in doubt """
     result = subject
-    for name in re.findall(SUBJECT_FN_MATCHER, subject):
+    # Filename nicely wrapped in quotes
+    for name in re.findall(RE_SUBJECT_FILENAME_QUOTES, subject):
         name = name.strip(' "')
-        if name and RE_NORMAL_NAME.search(name):
+        if name:
             result = name
+
+    # Found nothing? Try a basic filename-like search
+    if result == subject:
+        for name in re.findall(RE_SUBJECT_BASIC_FILENAME, subject):
+            name = name.strip()
+            if name:
+                result = name
+
+    # Return the subject
     return result
 
 

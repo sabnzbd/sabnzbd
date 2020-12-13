@@ -442,15 +442,32 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         sabnzbd.BPSMeter.update()
 
+        # Store when each server last searched for articles
+        last_searched = {}
+
+        # Store when each server last downloaded anything or found an article
+        last_busy = {}
+
         # Counts number of iterations with no articles found
         idle_count = 0
         logging.debug("Sleep time: %f", self.sleep_time)
 
         while 1:
             idle_count += 1
+            now = time.time()
             for server in self.servers:
+                serverid = server.id
+                if server.busy_threads:
+                    last_busy[serverid] = now
+                else:
+                    # Skip this server if idle for 1 second and it has already been searched less than 0.5 seconds ago
+                    if last_busy.get(serverid, 0) + 1 < now and last_searched.get(serverid, 0) + 0.5 > now:
+                        continue
+
+                last_searched[serverid] = now
+
                 for nw in server.busy_threads[:]:
-                    if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and time.time() > nw.timeout):
+                    if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                         if nw.nntp and nw.nntp.error_msg:
                             self.__reset_nw(nw, "", warn=False)
                         else:
@@ -480,7 +497,7 @@ class Downloader(Thread):
 
                 for nw in server.idle_threads[:]:
                     if nw.timeout:
-                        if time.time() < nw.timeout:
+                        if now < nw.timeout:
                             continue
                         else:
                             nw.timeout = None
@@ -497,9 +514,10 @@ class Downloader(Thread):
                     if not article:
                         break
 
+                    last_busy[serverid] = now
                     idle_count = 0
 
-                    if server.retention and article.nzf.nzo.avg_stamp < time.time() - server.retention:
+                    if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
                         # Let's get rid of all the articles for this server at once
                         logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
                         while article:
@@ -561,7 +579,6 @@ class Downloader(Thread):
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
-
             else:
                 read, write, error = ([], [], [])
 

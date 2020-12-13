@@ -771,6 +771,7 @@ class NzbQueue:
 
             # Remove post from Queue
             if post_done:
+                nzo.set_download_report()
                 self.end_job(nzo)
 
     def end_job(self, nzo: NzbObject):
