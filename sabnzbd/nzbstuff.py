@@ -857,16 +857,17 @@ class NzbObject(TryList):
             duplicate = False
 
         if duplicate or self.priority == DUP_PRIORITY:
+            self.duplicate = True
             if cfg.no_dupes() == 4 or cfg.no_series_dupes() == 4:
                 if cfg.warn_dupl_jobs():
                     logging.warning('%s: "%s"', T("Duplicate NZB"), filename)
-                self.duplicate = True
-                self.priority = NORMAL_PRIORITY
             else:
                 if cfg.warn_dupl_jobs():
                     logging.warning(T('Pausing duplicate NZB "%s"'), filename)
-                self.duplicate = True
                 self.pause()
+
+            # Only change priority it's currently set to duplicate, otherwise keep original one
+            if self.priority == DUP_PRIORITY:
                 self.priority = NORMAL_PRIORITY
 
         # Check if there is any unwanted extension in plain sight in the NZB itself
