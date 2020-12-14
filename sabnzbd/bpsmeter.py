@@ -248,7 +248,9 @@ class BPSMeter:
 
         if server:
             try:
-                self.server_bps[server] = (self.server_bps.get(server,0.0) * (self.last_update - self.start_time) + amount) / (t - self.start_time)
+                self.server_bps[server] = (
+                    self.server_bps.get(server, 0.0) * (self.last_update - self.start_time) + amount
+                ) / (t - self.start_time)
             except:
                 self.server_bps[server] = 0.0
 
@@ -256,7 +258,9 @@ class BPSMeter:
             if s == server:
                 continue
             try:
-                self.server_bps[s] = (self.server_bps.get(s,0.0) * (self.last_update - self.start_time) + 0) / (t - self.start_time)
+                self.server_bps[s] = (self.server_bps.get(s, 0.0) * (self.last_update - self.start_time) + 0) / (
+                    t - self.start_time
+                )
             except:
                 self.server_bps[s] = 0.0
 
