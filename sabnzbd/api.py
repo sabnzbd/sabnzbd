@@ -1273,6 +1273,7 @@ def build_status(skip_dashboard=False, output=None):
                 "servererror": server.errormsg,
                 "serverpriority": server.priority,
                 "serveroptional": server.optional,
+                "serverbps": to_units(sabnzbd.BPSMeter.server_bps.get(server.id, 0), "B/s"),
             }
             info["servers"].append(server_info)
         else:

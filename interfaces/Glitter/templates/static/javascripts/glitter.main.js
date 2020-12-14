@@ -802,7 +802,8 @@ function ViewModel() {
                         'serveractiveconn': ko.observable(this.serveractiveconn),
                         'servererror': ko.observable(this.servererror),
                         'serveractive': ko.observable(this.serveractive),
-                        'serverconnections': ko.observableArray(this.serverconnections)
+                        'serverconnections': ko.observableArray(this.serverconnections),
+                        'serverbps': ko.observable(this.serverbps)
                     })
                 })
             } else {
@@ -818,7 +819,8 @@ function ViewModel() {
                     activeServer.serveractiveconn(this.serveractiveconn),
                     activeServer.servererror(this.servererror),
                     activeServer.serveractive(this.serveractive),
-                    activeServer.serverconnections(this.serverconnections)
+                    activeServer.serverconnections(this.serverconnections),
+                    activeServer.serverbps(this.serverbps)
                 })
             }
 
