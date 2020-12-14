@@ -98,6 +98,7 @@ class BPSMeter:
         self.bps_list: List[int] = []
         self.bps_list_max = 275
 
+        self.server_bps: Dict[str, int] = {}
         self.day_total: Dict[str, int] = {}
         self.week_total: Dict[str, int] = {}
         self.month_total: Dict[str, int] = {}
@@ -243,6 +244,21 @@ class BPSMeter:
             self.bps = (self.bps * (self.last_update - self.start_time) + amount) / (t - self.start_time)
         except:
             self.bps = 0.0
+            self.server_bps = {}
+
+        if server:
+            try:
+                self.server_bps[server] = (self.server_bps.get(server,0.0) * (self.last_update - self.start_time) + amount) / (t - self.start_time)
+            except:
+                self.server_bps[server] = 0.0
+
+        for s in self.server_bps:
+            if s == server:
+                continue
+            try:
+                self.server_bps[s] = (self.server_bps.get(s,0.0) * (self.last_update - self.start_time) + 0) / (t - self.start_time)
+            except:
+                self.server_bps[s] = 0.0
 
         self.last_update = t
 
@@ -269,6 +285,7 @@ class BPSMeter:
         self.log_time = t
         self.last_update = t
         self.bps = 0.0
+        self.server_bps = {}
 
     def add_empty_time(self):
         # Extra zeros, but never more than the maximum!
@@ -297,6 +314,7 @@ class BPSMeter:
             self.week_total.get(server, 0),
             self.day_total.get(server, 0),
             self.timeline_total.get(server, {}),
+            self.server_bps.get(server, 0),
         )
 
     def clear_server(self, server):
