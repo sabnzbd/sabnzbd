@@ -254,15 +254,15 @@ class BPSMeter:
             except:
                 self.server_bps[server] = 0.0
 
-        for s in self.server_bps:
-            if s == server:
+        for server_to_update in self.server_bps:
+            if server_to_update == server:
                 continue
             try:
-                self.server_bps[s] = (self.server_bps.get(s, 0.0) * (self.last_update - self.start_time) + 0) / (
-                    t - self.start_time
-                )
+                self.server_bps[server_to_update] = (
+                    self.server_bps.get(server_to_update, 0.0) * (self.last_update - self.start_time)
+                ) / (t - self.start_time)
             except:
-                self.server_bps[s] = 0.0
+                self.server_bps[server_to_update] = 0.0
 
         self.last_update = t
 
@@ -318,7 +318,6 @@ class BPSMeter:
             self.week_total.get(server, 0),
             self.day_total.get(server, 0),
             self.timeline_total.get(server, {}),
-            self.server_bps.get(server, 0),
         )
 
     def clear_server(self, server):
