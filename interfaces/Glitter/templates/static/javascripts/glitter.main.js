@@ -749,8 +749,11 @@ function ViewModel() {
         // Full refresh? Only on click and for the status-screen
         var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
 
-        // Make it spin
-        self.hasStatusInfo(false)
+        // Make it spin if the user requested it otherwise we don't,
+        // because browsers use a lot of CPU for the animation
+        if(statusFullRefresh) {
+            self.hasStatusInfo(false)
+        }
 
         // Load the custom status info
         callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {
@@ -892,10 +895,9 @@ function ViewModel() {
                 clearInterval(connectionRefresh)
                 return
             }
-            // Only when we show them
-            if(self.showActiveConnections()) {
-                self.loadStatusInfo()
-            }
+            // Update the server stats (speed/connections)
+            self.loadStatusInfo()
+
         }, self.refreshRate() * 1000)
     })
 

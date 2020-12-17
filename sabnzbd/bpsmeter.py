@@ -246,20 +246,15 @@ class BPSMeter:
             self.bps = 0.0
             self.server_bps = {}
 
-        if server:
-            try:
-                self.server_bps[server] = (
-                    self.server_bps.get(server, 0.0) * (self.last_update - self.start_time) + amount
-                ) / (t - self.start_time)
-            except:
-                self.server_bps[server] = 0.0
+        if server and server not in self.server_bps:
+            self.server_bps[server] = 0.0
 
         for server_to_update in self.server_bps:
-            if server_to_update == server:
-                continue
             try:
+                # Only add data to the current server, update the rest to get correct avarage speed
                 self.server_bps[server_to_update] = (
-                    self.server_bps.get(server_to_update, 0.0) * (self.last_update - self.start_time)
+                    self.server_bps[server_to_update] * (self.last_update - self.start_time)
+                    + amount * (server_to_update == server)
                 ) / (t - self.start_time)
             except:
                 self.server_bps[server_to_update] = 0.0
