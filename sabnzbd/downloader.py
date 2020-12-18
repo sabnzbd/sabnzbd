@@ -345,7 +345,7 @@ class Downloader(Thread):
             self.bandwidth_limit = 0
 
     def sleep_time_set(self):
-        self.sleep_time = cfg.downloader_sleep_time() * 0.0001 + 0.001
+        self.sleep_time = cfg.downloader_sleep_time() * 0.0001
         logging.debug("Sleep time: %f seconds", self.sleep_time)
 
     def is_paused(self):
