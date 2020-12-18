@@ -4,16 +4,18 @@ on: [push, pull_request]
 
 jobs:
   test:
-    name: Test ${{ matrix.os }} - Python ${{ matrix.python-version }}
+    name: Test ${{ matrix.name }} - Python ${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
         os: [ubuntu-20.04]
         include:
-          - os: macos-latest
+          - name: macOS
+            os: macos-latest
             python-version: 3.9
-          - os: windows-latest
+          - name: Windows
+            os: windows-latest
             python-version: 3.9
 
     steps:
