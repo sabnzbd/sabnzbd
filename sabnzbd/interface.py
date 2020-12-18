@@ -1330,6 +1330,7 @@ SPECIAL_BOOL_LIST = (
     "require_modern_tls",
 )
 SPECIAL_VALUE_LIST = (
+    "downloader_sleep_time",
     "size_limit",
     "movie_rename_limit",
     "nomedia_marker",
