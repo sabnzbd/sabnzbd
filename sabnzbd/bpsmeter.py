@@ -98,6 +98,7 @@ class BPSMeter:
         self.bps_list: List[int] = []
         self.bps_list_max = 275
 
+        self.server_bps: Dict[str, int] = {}
         self.day_total: Dict[str, int] = {}
         self.week_total: Dict[str, int] = {}
         self.month_total: Dict[str, int] = {}
@@ -243,6 +244,20 @@ class BPSMeter:
             self.bps = (self.bps * (self.last_update - self.start_time) + amount) / (t - self.start_time)
         except:
             self.bps = 0.0
+            self.server_bps = {}
+
+        if server and server not in self.server_bps:
+            self.server_bps[server] = 0.0
+
+        for server_to_update in self.server_bps:
+            try:
+                # Only add data to the current server, update the rest to get correct avarage speed
+                self.server_bps[server_to_update] = (
+                    self.server_bps[server_to_update] * (self.last_update - self.start_time)
+                    + amount * (server_to_update == server)
+                ) / (t - self.start_time)
+            except:
+                self.server_bps[server_to_update] = 0.0
 
         self.last_update = t
 
@@ -269,6 +284,7 @@ class BPSMeter:
         self.log_time = t
         self.last_update = t
         self.bps = 0.0
+        self.server_bps = {}
 
     def add_empty_time(self):
         # Extra zeros, but never more than the maximum!
