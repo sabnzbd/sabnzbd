@@ -2156,6 +2156,10 @@ msgid "Custom"
 msgstr "Aangepast"
 
 #: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Snelheid"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "aan"
 
@@ -4878,10 +4882,6 @@ msgstr "Compacte weergave"
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "Weergave in tabs <br/>(wachtrij en geschiedenis apart weergeven)"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Snelheid"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"

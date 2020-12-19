@@ -2103,6 +2103,10 @@ msgid "Custom"
 msgstr "自定义"
 
 #: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "速度"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "开"
 
@@ -4701,10 +4705,6 @@ msgstr "精简外观"
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "标签化外观 <br/>(分别显示队列与历史记录)"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "速度"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"

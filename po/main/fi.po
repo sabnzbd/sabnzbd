@@ -2120,6 +2120,10 @@ msgid "Custom"
 msgstr "Mukautettu"
 
 #: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Nopeus"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "käytössä"
 
@@ -4805,10 +4809,6 @@ msgstr "Tiivis käyttöliittymä"
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "Välilehditetty käyttöliittymä <br/>(erillinen jono ja historia)"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Nopeus"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"

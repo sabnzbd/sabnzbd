@@ -2016,6 +2016,10 @@ msgid "Custom"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Speed"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr ""
 
@@ -4503,10 +4507,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Speed"
 msgstr ""
 
 #: sabnzbd/skintext.py

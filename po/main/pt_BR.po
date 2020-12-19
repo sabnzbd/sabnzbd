@@ -2125,6 +2125,10 @@ msgid "Custom"
 msgstr "Personalizado"
 
 #: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Velocidade"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "ligado"
 
@@ -4786,10 +4790,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Velocidade"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"

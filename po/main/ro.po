@@ -2123,6 +2123,10 @@ msgid "Custom"
 msgstr "Personalizat"
 
 #: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Viteză"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "activat"
 
@@ -4782,10 +4786,6 @@ msgstr "Aspect compact"
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "Interfață tabelară <br/>(coadă și istoric separate)"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Viteză"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"

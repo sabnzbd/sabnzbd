@@ -2124,6 +2124,10 @@ msgid "Custom"
 msgstr "מותאם אישית"
 
 #: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "מהירות"
+
+#: sabnzbd/skintext.py
 msgid "on"
 msgstr "פועל"
 
@@ -4784,10 +4788,6 @@ msgstr "פריסה צפופה"
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "פריסה בלשוניות<br/>(תור והיסטוריה נפרדים)"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "מהירות"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"
