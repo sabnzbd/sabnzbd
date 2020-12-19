@@ -1277,10 +1277,6 @@ msgstr "Varoitukset"
 msgid "Idle"
 msgstr "Toimeton"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Asetukset"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1305,9 +1301,10 @@ msgstr "Tyhjennä historia"
 msgid "Limit Speed"
 msgstr "Nopeusrajoitus"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "min."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "minuutti"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1357,12 +1354,12 @@ msgid "History Last 10 Items"
 msgstr "Vie viimeiset 10 kohdetta historiaan"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Uusi versio saatavilla"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Mene velhoon"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "Uusi versio saatavilla"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2006,11 +2003,6 @@ msgstr "tunti"
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "tuntia"
-
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "minuutti"
 
 #. Multiple minutes
 #: sabnzbd/skintext.py

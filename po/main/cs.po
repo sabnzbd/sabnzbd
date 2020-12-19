@@ -1272,10 +1272,6 @@ msgstr "Výstrahy"
 msgid "Idle"
 msgstr "Nečinný"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Konfigurace"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1300,9 +1296,10 @@ msgstr "Vyprázdnit historii"
 msgid "Limit Speed"
 msgstr "Omezit rychlost"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr ""
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "minuta"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1352,11 +1349,11 @@ msgid "History Last 10 Items"
 msgstr ""
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
+msgid "Go to wizard"
 msgstr ""
 
 #: sabnzbd/osxmenu.py
-msgid "Go to wizard"
+msgid "New release available"
 msgstr ""
 
 #: sabnzbd/osxmenu.py
@@ -1973,11 +1970,6 @@ msgstr "hodina"
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "hodin"
-
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "minuta"
 
 #. Multiple minutes
 #: sabnzbd/skintext.py

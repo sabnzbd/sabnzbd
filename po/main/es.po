@@ -1329,10 +1329,6 @@ msgstr "Advertencias"
 msgid "Idle"
 msgstr "Inactivo"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Configuración"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1357,9 +1353,10 @@ msgstr "Purgar historial"
 msgid "Limit Speed"
 msgstr "Limitar Velocidad"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "mín."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "mín"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1409,12 +1406,12 @@ msgid "History Last 10 Items"
 msgstr "Histórico últimos 10 elementos"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Nueva versión disponible"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Ir al Asistente"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "Nueva versión disponible"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2073,11 +2070,6 @@ msgstr "hora"
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "horas"
-
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "mín"
 
 #. Multiple minutes
 #: sabnzbd/skintext.py

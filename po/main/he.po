@@ -1277,10 +1277,6 @@ msgstr "אזהרות"
 msgid "Idle"
 msgstr "מנוחה"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "תצורה"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1305,9 +1301,10 @@ msgstr "טהר היסטוריה"
 msgid "Limit Speed"
 msgstr "הגבל מהירות"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "דקות"
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "דקה"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1357,12 +1354,12 @@ msgid "History Last 10 Items"
 msgstr "העבר להיסטוריה 10 פריטים אחרונים"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "שחרור חדש זמין"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "לך לאשף"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "שחרור חדש זמין"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2010,11 +2007,6 @@ msgstr "שעה"
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "שעות"
-
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "דקה"
 
 #. Multiple minutes
 #: sabnzbd/skintext.py

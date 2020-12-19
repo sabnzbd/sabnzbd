@@ -1306,10 +1306,6 @@ msgstr "Meldingen"
 msgid "Idle"
 msgstr "Rust"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Instellingen"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1334,9 +1330,10 @@ msgstr "Wis de volledige geschiedenis"
 msgid "Limit Speed"
 msgstr "Beperk snelheid"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "min."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "min"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1386,12 +1383,12 @@ msgid "History Last 10 Items"
 msgstr "Geschiedenis Laaste 10 Items"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Nieuwe versie beschikbaar"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Ga naar Wizard"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "Nieuwe versie beschikbaar"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2042,11 +2039,6 @@ msgstr "uur"
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "uren"
-
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "min"
 
 #. Multiple minutes
 #: sabnzbd/skintext.py

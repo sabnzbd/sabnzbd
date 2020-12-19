@@ -1276,10 +1276,6 @@ msgstr "Atenționări"
 msgid "Idle"
 msgstr "Inactiv"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Configurare"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1304,9 +1300,10 @@ msgstr "Şterge Istoricul"
 msgid "Limit Speed"
 msgstr "Limitare de Viteză"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "min."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "min"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1356,12 +1353,12 @@ msgid "History Last 10 Items"
 msgstr "Istoric Ultimele 10 Obiecte"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Versiune nouă disponibilă"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Dute la vrăjitor"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "Versiune nouă disponibilă"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2009,11 +2006,6 @@ msgstr "oră"
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "ore"
-
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "min"
 
 #. Multiple minutes
 #: sabnzbd/skintext.py

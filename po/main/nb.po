@@ -1274,10 +1274,6 @@ msgstr "Advarsler"
 msgid "Idle"
 msgstr "Ledig"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Konfigurasjon"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1302,9 +1298,10 @@ msgstr "Slett historikk"
 msgid "Limit Speed"
 msgstr "Hastighetsbegrensning"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "min."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "minutt"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1354,12 +1351,12 @@ msgid "History Last 10 Items"
 msgstr "Historikk (10 siste)"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Ny utgave er tilgjengelig"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Gå til guiden"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "Ny utgave er tilgjengelig"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2003,11 +2000,6 @@ msgstr "time"
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "timer"
-
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "minutt"
 
 #. Multiple minutes
 #: sabnzbd/skintext.py

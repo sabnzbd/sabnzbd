@@ -1276,10 +1276,6 @@ msgstr "предупреждений"
 msgid "Idle"
 msgstr "Бездействие"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Конфигурация"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1304,9 +1300,10 @@ msgstr "Очистить историю"
 msgid "Limit Speed"
 msgstr "Ограничение скорости"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "мин."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "мин"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1356,12 +1353,12 @@ msgid "History Last 10 Items"
 msgstr "Последние 10 элементов истории"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Доступна новая версия"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Запустить мастер"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "Доступна новая версия"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2007,11 +2004,6 @@ msgstr "час"
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "часов"
-
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "мин"
 
 #. Multiple minutes
 #: sabnzbd/skintext.py
