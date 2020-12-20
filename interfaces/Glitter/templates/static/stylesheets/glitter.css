@@ -1840,6 +1840,11 @@ input[name="nzbURL"] {
     padding-top: 5px;
 }
 
+.container-unlimited-width .container {
+    width: calc(100% - 60px);
+}
+
+
 /***
     Dynamic sizing
 ***/

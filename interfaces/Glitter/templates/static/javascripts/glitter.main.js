@@ -15,6 +15,7 @@ function ViewModel() {
     self.dateFormat = ko.observable('fromNow').extend({ persist: 'pageDateFormat' });
     self.displayTabbed = ko.observable().extend({ persist: 'displayTabbed' });
     self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
+    self.displayUnlimitedWidth = ko.observable(false).extend({ persist: 'displayUnlimitedWidth' });
     self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
     self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
     self.extraQueueColumn = ko.observable('').extend({ persist: 'extraColumn' });
@@ -979,6 +980,11 @@ function ViewModel() {
         $('body').toggleClass('container-compact')
     })
 
+    // Toggle unlimited width
+    self.displayUnlimitedWidth.subscribe(function() {
+        $('body').toggleClass('container-unlimited-width')
+    })
+
     // Toggle Glitter's tabbed modus
     self.displayTabbed.subscribe(function() {
         $('body').toggleClass('container-tabbed')
@@ -1047,6 +1053,11 @@ function ViewModel() {
     if(localStorageGetItem('displayCompact') === 'true') {
         // Add extra class
         $('body').addClass('container-compact')
+    }
+
+    if(localStorageGetItem('displayUnlimitedWidth') === 'true') {
+        // Add extra class
+        $('body').addClass('container-unlimited-width')
     }
 
     // Tabbed layout?
