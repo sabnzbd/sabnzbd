@@ -244,7 +244,7 @@ if __name__ == "__main__":
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
         # Only continue if we can sign
-        if authority and notarization_user and notarization_pass:
+        if authority:
             files_to_sign = [
                 "dist/SABnzbd.app/Contents/MacOS/osx/par2/par2-sl64",
                 "dist/SABnzbd.app/Contents/MacOS/osx/7zip/7za",
@@ -275,7 +275,7 @@ if __name__ == "__main__":
                 print("Signed %s!" % file_to_sign)
 
             # Only notarize for real builds that we want to deploy
-            if "release" in os.environ.get("TRAVIS_TAG", ""):
+            if notarization_user and notarization_pass and "release" in os.environ.get("TRAVIS_TAG", ""):
                 # Prepare zip to upload to notarization service
                 print("Creating zip to send to Apple notarization service")
                 # We need to use ditto, otherwise the signature gets lost!
@@ -335,10 +335,12 @@ if __name__ == "__main__":
                 # Staple the notarization!
                 print("Approved! Stapling the result to the app")
                 run_external_command(["xcrun", "stapler", "staple", "dist/SABnzbd.app"])
-            else:
+            elif notarization_user and notarization_pass:
                 print("Notarization skipped, include 'release' in the name of the tag to trigger notarization!")
+            else:
+                print("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
         else:
-            print("Signing skipped, missing SIGNING_AUTH, NOTARIZATION_USER or NOTARIZATION_PASS")
+            print("Signing skipped, missing SIGNING_AUTH.")
 
     if "source" in sys.argv:
         # Prepare Source distribution package.

@@ -52,17 +52,25 @@ jobs:
       with:
         path: "*-win-setup.exe"
         name: Windows installer
+    - name: Import codesign certificates
+      uses: apple-actions/import-codesign-certs@v1
+      if: runner.os == 'macOS'
+      with:
+        p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
+        p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
     - name: Build macOS binary
       if: runner.os == 'macOS'
       run: |
         python builder/package.py app
         python builder/make_dmg.py
+      env:
+        SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
     - name: Upload macOS binary
       if: runner.os == 'macOS'
       uses: actions/upload-artifact@v2
       with:
         path: "*-osx.dmg"
-        name: macOS binary (unsigned)
+        name: macOS binary (not notarized)
 
 
 

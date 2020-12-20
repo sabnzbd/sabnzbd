@@ -66,7 +66,7 @@ if __name__ == "__main__":
         os.system('codesign --deep -f -i "org.sabnzbd.SABnzbd" -s "%s" "%s"' % (authority, fileDmg))
         print("Signed!")
     else:
-        print("Signing skipped, missing SIGNING_AUTH, NOTARIZATION_USER or NOTARIZATION_PASS")
+        print("Signing skipped, missing SIGNING_AUTH.")
     exit()
 
 
