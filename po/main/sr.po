@@ -2936,6 +2936,12 @@ msgid "Enable accessing the interface from a HTTPS address."
 msgstr "Приступ интерфејсу преко HTTPS адресе."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Modern web browsers and other clients will not accept self-signed "
+"certificates and will give a warning and/or won't connect at all."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "HTTPS Port"
 msgstr "HTTPS порт"
 
