@@ -367,8 +367,7 @@
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control" data-bind="value: extraQueueColumn">
-                                        <option value="">$T('none')</option>
+                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraQueueColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="priority">$T('priority')</option>
                                         <option value="processing">$T('swtag-pp')</option>

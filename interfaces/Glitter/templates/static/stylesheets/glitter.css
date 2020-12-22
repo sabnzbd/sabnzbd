@@ -1735,7 +1735,9 @@ input[name="nzbURL"] {
 .container-compact .search-box .form-control {
     height: 28px;
 }
-
+.container-compact .form-control-multiselect {
+    height: 60px;
+}
 .container-compact,
 .container-compact .dropdown-menu,
 .container-compact .btn,
@@ -1760,6 +1762,9 @@ input[name="nzbURL"] {
 }
 .container-compact .form-control {
     height: 29px;
+}
+.container-compact .form-control-multiselect {
+    height: 60px;
 }
 .container-compact .modal-header {
     padding: 5px 12px;
@@ -1844,6 +1849,10 @@ input[name="nzbURL"] {
     width: calc(100% - 60px);
 }
 
+.queue-table .table-header-progress-smaller {
+    width: 25%;
+}
+
 
 /***
     Dynamic sizing
@@ -1856,7 +1865,7 @@ input[name="nzbURL"] {
 
     .queue-table .table-header-progress-smaller,
     .history-table .table-header-progress-smaller {
-        width: 35%;
+        width: 25%;
     }
 
     #options-interface .label {

@@ -67,8 +67,10 @@
             <tr>
                 <th style="width: 25px;"></th>
                 <th></th>
-                <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraQueueColumn }"></th>
-                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumn }"></th>
+                <!-- ko foreach: extraQueueColumns -->
+                <th style="width:7%"></th>
+                <!-- /ko -->
+                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumns().length }"></th>
                 <th style="width: 85px;"></th>
                 <th style="width: 60px;"></th>
             </tr>
@@ -118,10 +120,9 @@
                         <small data-bind="text: avg_age"></small>
                     </div>
                 </td>
-                <td class="row-extra-text">
-                    <div class="row-wrap-text" data-bind="text: extraText">
-                    </div>
-                </td>
+                <!-- ko foreach: parent.parent.extraQueueColumns -->
+                <td data-bind="text: \$parent.showColumn(\$data)"></td>
+                <!-- /ko -->
                 <td class="progress-indicator">
                     <div class="progress">
                         <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentage() + '%; background-color: ' + progressColor() + ';' }">

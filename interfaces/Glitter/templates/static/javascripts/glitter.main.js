@@ -1,6 +1,7 @@
 /**
     Define main view model
 **/
+
 function ViewModel() {
     // Initialize models
     var self = this;
@@ -18,7 +19,7 @@ function ViewModel() {
     self.displayUnlimitedWidth = ko.observable(false).extend({ persist: 'displayUnlimitedWidth' });
     self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
     self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
-    self.extraQueueColumn = ko.observable('').extend({ persist: 'extraColumn' });
+    self.extraQueueColumns = ko.observableArray([]).extend({ persist: 'extraColumns' });
     self.extraHistoryColumn = ko.observable('').extend({ persist: 'extraHistoryColumn' });
     self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
     self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
