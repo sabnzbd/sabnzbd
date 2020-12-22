@@ -347,6 +347,9 @@ SKIN_TEXT = {
     "opt-enable_https": TT("Enable HTTPS"),
     "opt-notInstalled": TT("not installed"),
     "explain-enable_https": TT("Enable accessing the interface from a HTTPS address."),
+    "explain-enable_https_warning": TT(
+        "Modern web browsers and other clients will not accept self-signed certificates and will give a warning and/or won't connect at all."
+    ),
     "opt-https_port": TT("HTTPS Port"),
     "explain-https_port": TT("If empty, the standard port will only listen to HTTPS."),
     "opt-https_cert": TT("HTTPS Certificate"),

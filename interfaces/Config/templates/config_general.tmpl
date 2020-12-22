@@ -32,6 +32,7 @@
                     <label class="config" for="enable_https">$T('opt-enable_https')</label>
                     <input type="checkbox" name="enable_https" id="enable_https" value="1" <!--#if int($enable_https) > 0 then 'checked="checked" data-original="1"' else ""#-->/>
                     <span class="desc">$T('explain-enable_https')</span>
+                    <span class="desc"><span class="label label-warning">$T('warning').upper()</span> $T('explain-enable_https_warning')</span>
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="web_dir">$T('opt-web_dir')</label>
