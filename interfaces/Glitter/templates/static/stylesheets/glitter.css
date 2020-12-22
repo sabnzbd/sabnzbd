@@ -1852,7 +1852,7 @@ input[name="nzbURL"] {
 @media screen and (min-width: 1200px) {
     .queue-table .table-extra-header-visible,
     .history-table .table-extra-header-visible {
-        width: 10%;
+        width: 6%;
     }
 
     .queue-table .table-header-progress-smaller,
