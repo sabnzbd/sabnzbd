@@ -29,7 +29,7 @@ import json
 import cherrypy
 import locale
 from threading import Thread
-from typing import List
+from typing import List, Tuple
 
 try:
     import win32api
@@ -1273,6 +1273,7 @@ def build_status(skip_dashboard=False, output=None):
                 "servererror": server.errormsg,
                 "serverpriority": server.priority,
                 "serveroptional": server.optional,
+                "serverbps": to_units(sabnzbd.BPSMeter.server_bps.get(server.id, 0)),
             }
             info["servers"].append(server_info)
         else:
@@ -1404,7 +1405,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None):
     return info, pnfo_list, bytespersec
 
 
-def fast_queue():
+def fast_queue() -> Tuple[bool, int, float, str]:
     """ Return paused, bytes_left, bpsnow, time_left """
     bytes_left = sabnzbd.sabnzbd.NzbQueue.remaining()
     paused = sabnzbd.Downloader.paused

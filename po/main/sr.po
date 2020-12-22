@@ -1270,10 +1270,6 @@ msgstr "Упозорења"
 msgid "Idle"
 msgstr "Мирoвање"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Поставке"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1298,8 +1294,9 @@ msgstr "Очисти хронологију"
 msgid "Limit Speed"
 msgstr "Ограничење брзине"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
 msgstr "мин."
 
 #. #: Config->Scheduler
@@ -1350,12 +1347,12 @@ msgid "History Last 10 Items"
 msgstr "Хронологија задњих 10 ставка"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Ново издање је доступно"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Покрени асистент"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "Ново издање је доступно"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2000,11 +1997,6 @@ msgstr "сат"
 msgid "hours"
 msgstr "сата(и)"
 
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "мин."
-
 #. Multiple minutes
 #: sabnzbd/skintext.py
 msgid "mins"
@@ -2111,6 +2103,10 @@ msgstr "Укупно"
 #: sabnzbd/skintext.py
 msgid "Custom"
 msgstr "Прилагођено"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Брзина"
 
 #: sabnzbd/skintext.py
 msgid "on"
@@ -4758,10 +4754,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Брзина"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"

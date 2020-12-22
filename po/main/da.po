@@ -1284,10 +1284,6 @@ msgstr "Advarsler"
 msgid "Idle"
 msgstr "Inaktiv"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Opsætning"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1312,9 +1308,10 @@ msgstr "Tøm historik"
 msgid "Limit Speed"
 msgstr "Hastighedsbegrænsning"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "min."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "minut"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1364,12 +1361,12 @@ msgid "History Last 10 Items"
 msgstr "Historik (de 10 seneste poster)"
 
 #: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Ny version tilgængelig"
-
-#: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Gå til guiden"
+
+#: sabnzbd/osxmenu.py
+msgid "New release available"
+msgstr "Ny version tilgængelig"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -2016,11 +2013,6 @@ msgstr "time"
 msgid "hours"
 msgstr "timer"
 
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "minut"
-
 #. Multiple minutes
 #: sabnzbd/skintext.py
 msgid "mins"
@@ -2127,6 +2119,10 @@ msgstr "Totalt"
 #: sabnzbd/skintext.py
 msgid "Custom"
 msgstr "Tilpasse"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Hastighed"
 
 #: sabnzbd/skintext.py
 msgid "on"
@@ -4803,10 +4799,6 @@ msgstr "Kompakt layout"
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr "Tabbed layout <br/>(separat kø og historie)"
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Hastighed"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"
