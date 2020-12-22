@@ -152,11 +152,8 @@ function Fileslisting(parent) {
 
         // Activate with this weird URL "API"
         callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation/", dataToSend).then(function() {
-            // Fade it out
-            $('.item-files-table input:checked:not(:disabled)').parents('tr').fadeOut(fadeOnDeleteDuration, function() {
-                // Set state of the check-all
-                setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
-            })
+            // Set state of the check-all
+            setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
         })
     }
 

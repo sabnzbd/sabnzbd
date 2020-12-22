@@ -98,6 +98,7 @@ class BPSMeter:
         self.bps_list: List[int] = []
         self.bps_list_max = 275
 
+        self.server_bps: Dict[str, int] = {}
         self.day_total: Dict[str, int] = {}
         self.week_total: Dict[str, int] = {}
         self.month_total: Dict[str, int] = {}
@@ -243,6 +244,20 @@ class BPSMeter:
             self.bps = (self.bps * (self.last_update - self.start_time) + amount) / (t - self.start_time)
         except:
             self.bps = 0.0
+            self.server_bps = {}
+
+        if server and server not in self.server_bps:
+            self.server_bps[server] = 0.0
+
+        for server_to_update in self.server_bps:
+            try:
+                # Only add data to the current server, update the rest to get correct avarage speed
+                self.server_bps[server_to_update] = (
+                    self.server_bps[server_to_update] * (self.last_update - self.start_time)
+                    + amount * (server_to_update == server)
+                ) / (t - self.start_time)
+            except:
+                self.server_bps[server_to_update] = 0.0
 
         self.last_update = t
 
@@ -269,6 +284,7 @@ class BPSMeter:
         self.log_time = t
         self.last_update = t
         self.bps = 0.0
+        self.server_bps = {}
 
     def add_empty_time(self):
         # Extra zeros, but never more than the maximum!
@@ -318,32 +334,6 @@ class BPSMeter:
         self.add_empty_time()
         # We record every second, but display at the user's refresh-rate
         return self.bps_list[::refresh_rate]
-
-    def get_stable_speed(self, timespan=10):
-        """See if there is a stable speed the last <timespan> seconds
-        None: indicates it can't determine yet
-        False: the speed was not stable during <timespan>
-        """
-        if len(self.bps_list) < timespan:
-            return None
-
-        # Calculate the variance in the speed
-        avg = sum(self.bps_list[-timespan:]) / timespan
-        vari = 0
-        for bps in self.bps_list[-timespan:]:
-            vari += abs(bps - avg)
-        vari = vari / timespan
-
-        try:
-            # See if the variance is less than 5%
-            if (vari / (self.bps / KIBI)) < 0.05:
-                return avg
-            else:
-                return False
-        except:
-            # Probably one of the values was 0
-            pass
-        return None
 
     def reset_quota(self, force=False):
         """Check if it's time to reset the quota, optionally resuming
