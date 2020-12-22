@@ -1850,8 +1850,8 @@ input[name="nzbURL"] {
     Dynamic sizing
 ***/
 @media screen and (min-width: 1200px) {
-    .queue-table .table-extra-header-visible,
-    .history-table .table-extra-header-visible {
+    .queue-table .table-header-extra,
+    .history-table .table-header-extra {
         width: 6%;
     }
 

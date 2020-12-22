@@ -68,7 +68,7 @@
                 <th style="width: 25px;"></th>
                 <th></th>
                 <!-- ko foreach: extraQueueColumns -->
-                <th class="table-header-extra table-extra-header-visible"></th>
+                <th class="table-header-extra"></th>
                 <!-- /ko -->
                 <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumns().length }"></th>
                 <th style="width: 85px;"></th>
@@ -78,7 +78,7 @@
         <!-- ko if: !hasQueue() -->
         <tbody class="no-downloads">
             <tr>
-                <td colspan="6">
+                <td colspan="5" data-bind="attr: { 'colspan': 5 + extraQueueColumns().length }">
                     <a href="#modal-add-nzb" class="hover-button" data-toggle="modal">
                         <span title="$T('Glitter-dragAndDrop')" data-tooltip="true"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
                     </a>
