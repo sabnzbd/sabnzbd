@@ -908,7 +908,7 @@ SKIN_TEXT = {
     "Glitter-glitterTips": TT("Glitter has some (new) features you might like!"),
     "Glitter-custom": TT("Custom"),
     "Glitter-displayCompact": TT("Compact layout"),
-    "Glitter-displayUnlimitedWidth": TT("Unlimited width"),
+    "Glitter-displayFullWidth": TT("Always use full screen width"),
     "Glitter-displayTabbed": TT("Tabbed layout <br/>(separate queue and history)"),
     "Glitter-speed": TT("Speed"),
     "Glitter-confirmDeleteQueue": TT("Confirm Queue Deletions"),

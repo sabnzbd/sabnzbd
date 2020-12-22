@@ -1735,9 +1735,6 @@ input[name="nzbURL"] {
 .container-compact .search-box .form-control {
     height: 28px;
 }
-.container-compact .form-control-multiselect {
-    height: 60px;
-}
 .container-compact,
 .container-compact .dropdown-menu,
 .container-compact .btn,
@@ -1845,14 +1842,9 @@ input[name="nzbURL"] {
     padding-top: 5px;
 }
 
-.container-unlimited-width .container {
+.container-full-width .container {
     width: calc(100% - 60px);
 }
-
-.queue-table .table-header-progress-smaller {
-    width: 25%;
-}
-
 
 /***
     Dynamic sizing
