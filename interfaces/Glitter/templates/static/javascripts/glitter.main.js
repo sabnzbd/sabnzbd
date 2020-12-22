@@ -1,7 +1,6 @@
 /**
     Define main view model
 **/
-
 function ViewModel() {
     // Initialize models
     var self = this;

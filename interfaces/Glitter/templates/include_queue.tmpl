@@ -121,7 +121,9 @@
                     </div>
                 </td>
                 <!-- ko foreach: parent.parent.extraQueueColumns -->
-                <td data-bind="text: \$parent.showColumn(\$data)"></td>
+                <td class="row-extra-text">
+                    <div class="row-wrap-text" data-bind="text: \$parent.showColumn(\$data)"></div>
+                </td>
                 <!-- /ko -->
                 <td class="progress-indicator">
                     <div class="progress">
