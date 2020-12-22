@@ -438,13 +438,10 @@ function HistoryModel(parent, data) {
                     value: self.nzo_id
                 }).then(function(response) {
                     if(response.status) {
-                        // Fade and remove
-                        $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
-                            // Make sure no flickering (if there are more items left) and then remove
-                            self.parent.isLoading(self.parent.totalItems() > 1)
-                            self.parent.historyItems.remove(self);
-                            self.parent.parent.refresh();
-                        })
+                        // Make sure no flickering (if there are more items left) and then remove
+                        self.parent.isLoading(self.parent.totalItems() > 1)
+                        self.parent.historyItems.remove(self);
+                        self.parent.parent.refresh();
                     }
                 });
             }

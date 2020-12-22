@@ -734,7 +734,7 @@ function ViewModel() {
                 // Refresh
                 self.refresh();
                 // Hide notification
-                hideNotification('.main-notification-box-uploading')
+                hideNotification(true)
                 // Reset the form
                 $('#modal-add-nzb form').trigger('reset');
                 $('#nzbname').val('')
@@ -941,8 +941,6 @@ function ViewModel() {
         callSpecialAPI("./status/" + $(htmlElement.currentTarget).data('action'), {
             name: $("<div/>").html(folder).text()
         }).then(function() {
-            // Remove item and load status data
-            $(htmlElement.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
             // Refresh
             self.loadStatusInfo(true, true)
             // Hide notification
