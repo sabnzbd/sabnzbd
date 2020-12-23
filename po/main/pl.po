@@ -4677,11 +4677,11 @@ msgid "Date format"
 msgstr "Format daty"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "Dodatkowa kolumna kolejki"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
+msgid "Extra history columns"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4780,6 +4780,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Compact layout"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
 msgstr ""
 
 #: sabnzbd/skintext.py

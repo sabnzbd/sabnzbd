@@ -4770,12 +4770,12 @@ msgid "Date format"
 msgstr "Datumnotatie"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "Extra kolom aan wachtrij toevoegen"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
-msgstr "Extra kolom aan geschiedenis toevoegen"
+msgid "Extra history columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4876,6 +4876,10 @@ msgstr "Glitter heeft enkele (nieuwe) functies die je mogelijk aanspreken!"
 #: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "Compacte weergave"
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"

@@ -4812,12 +4812,12 @@ msgid "Date format"
 msgstr "Datumsformat"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "Extra Warteschlangen-Spalte"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
-msgstr "Extra Verlauf-Spalte"
+msgid "Extra history columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4918,6 +4918,10 @@ msgstr "Glitter hat ein paar (neue) Feature die du bestimmt magst!"
 #: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "Kompaktes Layout"
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"

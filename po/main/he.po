@@ -4678,12 +4678,12 @@ msgid "Date format"
 msgstr "תסדיר תאריך"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "עמודת תור נוספת"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
-msgstr "עמודה נוספת של היסטוריה"
+msgid "Extra history columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4784,6 +4784,10 @@ msgstr "!יש מספר מאפיינים (חדשים) שאתה עשוי לאהו�
 #: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "פריסה צפופה"
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"

@@ -4652,11 +4652,11 @@ msgid "Date format"
 msgstr "Формат датума"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "Ekstra kolona reda"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
+msgid "Extra history columns"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4755,6 +4755,10 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Compact layout"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
 msgstr ""
 
 #: sabnzbd/skintext.py

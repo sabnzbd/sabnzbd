@@ -4595,12 +4595,12 @@ msgid "Date format"
 msgstr "日期格式"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "队列显示更多列"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
-msgstr "额外的历史记录列"
+msgid "Extra history columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4699,6 +4699,10 @@ msgstr "你可能会喜欢一些 Glitter 的(新)功能！"
 #: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "精简外观"
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"

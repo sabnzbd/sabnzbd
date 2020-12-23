@@ -4696,12 +4696,12 @@ msgid "Date format"
 msgstr "Päivämäärän muoto"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "Ylimääräisen jonon sarake"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
-msgstr "Ylimääräinen historiasarake"
+msgid "Extra history columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4803,6 +4803,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "Tiivis käyttöliittymä"
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"

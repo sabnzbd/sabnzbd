@@ -4674,12 +4674,12 @@ msgid "Date format"
 msgstr "Format dată"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "Coloană extra la Coadă"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
-msgstr "Coloană extra de istoric"
+msgid "Extra history columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4780,6 +4780,10 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "Aspect compact"
+
+#: sabnzbd/skintext.py
+msgid "Always use full screen width"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
