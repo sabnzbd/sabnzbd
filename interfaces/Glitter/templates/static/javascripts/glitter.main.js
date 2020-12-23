@@ -640,55 +640,47 @@ function ViewModel() {
         if(fileName) $('.btn-file em').text(fileName)
     }
 
-    // From the upload
-    self.addNZBFromFileForm = function(form) {
+    // Add NZB form
+    self.addNZB = function(form) {
         // Anything?
-        if(!$(form.nzbFile)[0].files[0]) {
-            $('.btn-file').attr('style', 'border-color: red !important')
-            setTimeout(function() { $('.btn-file').css('border-color', '') }, 2000)
+        if(!$(form.nzbFile)[0].files[0] && !$(form.nzbURL).val()) {
+            $('.btn-file, input[name="nzbURL"]').attr('style', 'border-color: red !important')
+            setTimeout(function() { $('.btn-file, input[name="nzbURL"]').css('border-color', '') }, 2000)
             return false;
         }
 
-        // Upload
-        self.addNZBFromFile($(form.nzbFile)[0].files);
-
-        // Hide modal, upload will reset the form
-        $("#modal-add-nzb").modal("hide");
-    }
-    // From URL
-    self.addNZBFromURL = function(form) {
-        // Anything?
-        if(!$(form.nzbURL).val()) {
-            $(form.nzbURL).attr('style', 'border-color: red !important')
-            setTimeout(function() { $(form.nzbURL).css('border-color', '') }, 2000)
-            return false;
-        }
-
-        // Build request
-        var theCall = {
-            mode: "addurl",
-            name: $(form.nzbURL).val(),
-            nzbname: $('#nzbname').val(),
-            password: $('#password').val(),
-            script: $('#modal-add-nzb select[name="Post-processing"]').val(),
-            priority: $('#modal-add-nzb select[name="Priority"]').val(),
-            pp: $('#modal-add-nzb select[name="Processing"]').val()
-        }
-
-        // Optional, otherwise they get mis-labeled if left empty
-        if($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
-        if($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
-
-        // Add
-        callAPI(theCall).then(function(r) {
-            // Hide and reset/refresh
-            self.refresh()
+        // Upload file using the method we also use for drag-and-drop
+        if($(form.nzbFile)[0].files[0]) {
+            self.addNZBFromFile($(form.nzbFile)[0].files);
+            // Hide modal, upload will reset the form
             $("#modal-add-nzb").modal("hide");
-            form.reset()
-            $('#nzbname').val('')
-        });
+        } else if($(form.nzbURL).val()) {
+            // Or add URL
+            var theCall = {
+                mode: "addurl",
+                name: $(form.nzbURL).val(),
+                nzbname: $('#nzbname').val(),
+                password: $('#password').val(),
+                script: $('#modal-add-nzb select[name="Post-processing"]').val(),
+                priority: $('#modal-add-nzb select[name="Priority"]').val(),
+                pp: $('#modal-add-nzb select[name="Processing"]').val()
+            }
 
+            // Optional, otherwise they get mis-labeled if left empty
+            if($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
+            if($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
+
+            // Add
+            callAPI(theCall).then(function(r) {
+                // Hide and reset/refresh
+                self.refresh()
+                $("#modal-add-nzb").modal("hide");
+                form.reset()
+                $('#nzbname').val('')
+            });
+        }
     }
+
     // From the upload or filedrop
     self.addNZBFromFile = function(files, fileindex) {
         // First file
@@ -742,7 +734,6 @@ function ViewModel() {
                 $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
             }
         });
-
     }
 
     // Load status info
