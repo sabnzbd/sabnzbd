@@ -13,7 +13,7 @@
                     <tr>
                         <th>&nbsp;</th>
                         <th>$T('name')</th>
-                        <th>$T('feed') URL</th>
+                        <th>$T('feed') URLs</th>
                         <th>&nbsp;</th>
                     </tr>
                     <tr class="even">
@@ -508,9 +508,37 @@
         </div>
         <!--#end if#-->
     </div>
-
 </div>
 <!-- /colmask -->
+
+<form method="post" action="save_rss_feed" class="modal fade" id="rss_edit_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">$T('Edit') <span id="feed_edit_name_label"></span></h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="feed_edit_new_name">$T('name')</label>
+                    <input type="text" class="form-control" name="feed_new_name" id="feed_edit_new_name" placeholder="$T('name')" size="">
+                </div>
+                <div class="form-group">
+                    <label for="feed_edit_url">$T('feed') URLs</label>
+                    <input type="text" class="form-control" name="uri" id="feed_edit_url" placeholder="$T('feed') URLs" size="">
+                    <span class="help-block">$T('addMultipleFeeds')</span>
+                </div>
+                <input type="hidden" name="feed" id="feed_edit_old_name" />
+                <input type="hidden" name="apikey" value="$apikey" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> $T('cancel')</button>
+                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('rss-accept')</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</form><!-- /.modal -->
+
 <script type="text/javascript" src="${root}staticcfg/js/jquery.tablesort.min.js"></script>
 <script type="text/javascript">
 function urlencode(str) {
@@ -537,20 +565,16 @@ function urlencode(str) {
 
     \$('.editFeed').click(function(){
         var oldURI = \$(this).prev().val();
-        var newURI = prompt("$T('feed') URL. \n$T('addMultipleFeeds').", oldURI );
-        if(newURI != "" && newURI !== null) {
-            var whichFeed = \$(this).attr("rel");
-            var isEnabled = \$('.toggleFeedCheckbox[rel="'+whichFeed+'"]').attr('checked') == "checked"? 1 : 0;
-            \$.ajax({
-              type: "POST",
-              url: "save_rss_feed",
-              data: {feed: whichFeed, uri: newURI, enable: isEnabled, apikey: "$apikey" }
-            }).done(function( msg ) {
-              location.reload();
-            });
-        } else {
-            return false;
-        }
+        var whichFeed = \$(this).attr("rel");
+
+        // Fill the values
+        \$('#feed_edit_name_label').text(whichFeed)
+        \$('#feed_edit_old_name').val(whichFeed)
+        \$('#feed_edit_new_name').val(whichFeed)
+        \$('#feed_edit_url').val(oldURI)
+
+        // Show the modal
+        \$('#rss_edit_modal').modal('show');
     });
 
     \$('.delFeed').click(function(e){

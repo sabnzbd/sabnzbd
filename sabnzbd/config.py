@@ -634,6 +634,13 @@ class ConfigRSS:
         """ Remove from database """
         delete_from_database("rss", self.__name)
 
+    def rename(self, new_name: str):
+        """ Update the name and the saved entries """
+        delete_from_database("rss", self.__name)
+        sabnzbd.RSSReader.rename(self.__name, new_name)
+        self.__name = new_name
+        add_to_database("rss", self.__name, self)
+
     def ident(self) -> Tuple[str, str]:
         return "rss", self.__name
 

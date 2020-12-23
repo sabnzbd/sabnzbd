@@ -516,6 +516,12 @@ class RSSReader:
             del self.jobs[feed]
 
     @synchronized(RSS_LOCK)
+    def rename(self, old_feed, new_feed):
+        if old_feed in self.jobs:
+            old_data = self.jobs.pop(old_feed)
+            self.jobs[new_feed] = old_data
+
+    @synchronized(RSS_LOCK)
     def flag_downloaded(self, feed, fid):
         if feed in self.jobs:
             lst = self.jobs[feed]

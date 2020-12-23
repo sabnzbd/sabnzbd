@@ -1730,7 +1730,7 @@ class ConfigRss:
 
             rss[feed]["pick_cat"] = pick_cat
             rss[feed]["pick_script"] = pick_script
-            rss[feed]["link"] = urllib.parse.quote_plus(feed.encode("utf-8"))
+            rss[feed]["link"] = urllib.parse.quote_plus(feed)
             rss[feed]["baselink"] = [get_base_url(uri) for uri in rss[feed]["uri"]]
             rss[feed]["uris"] = feeds[feed].uri.get_string()
 
@@ -1816,8 +1816,9 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_feed(self, **kwargs):
         """ Update Feed level attributes """
+        feed_name = kwargs.get("feed")
         try:
-            cf = config.get_rss()[kwargs.get("feed")]
+            cf = config.get_rss()[feed_name]
         except KeyError:
             cf = None
         if "enable" not in kwargs:
@@ -1826,6 +1827,14 @@ class ConfigRss:
         if cf and uri:
             kwargs["uri"] = uri
             cf.set_dict(kwargs)
+
+            # Did we get a new name for this feed?
+            new_name = kwargs.get("feed_new_name")
+            if new_name and new_name != feed_name:
+                cf.rename(new_name)
+                # Update the feed name for the redirect
+                kwargs["feed"] = new_name
+
             config.save_config()
 
         raise rssRaiser(self.__root, kwargs)
