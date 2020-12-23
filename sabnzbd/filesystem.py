@@ -258,13 +258,6 @@ def sanitize_files_in_folder(folder):
     return lst
 
 
-def is_obfuscated_filename(filename: str) -> bool:
-    """Check if this file has an extension, if not, it's
-    probably obfuscated and we don't use it
-    """
-    return len(get_ext(filename)) < 2
-
-
 def real_path(loc: str, path: str) -> str:
     """When 'path' is relative, return normalized join of 'loc' and 'path'
     When 'path' is absolute, return normalized path

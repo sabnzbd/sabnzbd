@@ -241,28 +241,6 @@ class TestSameFile:
         assert 0 == filesystem.same_file("/test/../Home", "/home")
 
 
-class TestIsObfuscatedFilename:
-    def test_obfuscated(self):
-        # Files are considered obfuscated if they lack an extension
-        assert filesystem.is_obfuscated_filename(".") is True
-        assert filesystem.is_obfuscated_filename("..") is True
-        assert filesystem.is_obfuscated_filename(".test") is True
-        assert filesystem.is_obfuscated_filename("test.") is True
-        assert filesystem.is_obfuscated_filename("test.ext.") is True
-        assert filesystem.is_obfuscated_filename("t.....") is True
-        assert filesystem.is_obfuscated_filename("a_" + ("test" * 666)) is True
-
-    def test_not_obfuscated(self):
-        assert filesystem.is_obfuscated_filename("test.ext") is False
-        assert filesystem.is_obfuscated_filename(".test.ext") is False
-        assert filesystem.is_obfuscated_filename("test..ext") is False
-        assert filesystem.is_obfuscated_filename("test.ext") is False
-        assert filesystem.is_obfuscated_filename("test .ext") is False
-        assert filesystem.is_obfuscated_filename("test. ext") is False
-        assert filesystem.is_obfuscated_filename("test . ext") is False
-        assert filesystem.is_obfuscated_filename("a." + ("test" * 666)) is False
-
-
 class TestClipLongPath:
     def test_empty(self):
         assert filesystem.clip_path(None) is None

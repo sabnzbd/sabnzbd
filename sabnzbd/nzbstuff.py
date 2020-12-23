@@ -69,7 +69,6 @@ from sabnzbd.filesystem import (
     set_permissions,
     long_path,
     fix_unix_encoding,
-    is_obfuscated_filename,
     get_ext,
     get_filename,
     get_unique_filename,
