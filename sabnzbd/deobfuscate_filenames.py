@@ -81,6 +81,7 @@ def is_probably_obfuscated(myinputfilename):
     filebasename, fileextension = os.path.splitext(filename)
 
     # First fixed patterns that we know of:
+    logging.debug("Checking: %s", filebasename)
 
     # ...blabla.H.264/b082fa0beaa644d3aa01045d5b8d0b36.mkv is certainly obfuscated
     if re.findall(r"^[a-f0-9]{32}$", filebasename):
