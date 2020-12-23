@@ -2959,6 +2959,8 @@ msgid ""
 "Modern web browsers and other clients will not accept self-signed "
 "certificates and will give a warning and/or won't connect at all."
 msgstr ""
+"דפדפנים חדישים ולקוחות אחרים לא יקבלו תעודות חתומות עצמית ויתנו אזהרה או לא "
+"יתחברו בכלל."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS Port"

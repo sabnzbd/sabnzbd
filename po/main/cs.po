@@ -3,14 +3,14 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Pavel C <quoing_transifex@mess.cz>, 2020
 # Safihre <safihre@sabnzbd.org>, 2020
+# Pavel C <quoing_transifex@mess.cz>, 2020
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2020\n"
 "Language-Team: Czech (https://www.transifex.com/sabnzbd/teams/111101/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -42,6 +42,7 @@ msgstr ""
 #: SABnzbd.py
 msgid "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
+"SABYenc vypnut: Nenalezena správná verze! (Nalezena v%s, očekávána v%s)"
 
 #. Error message
 #: SABnzbd.py
@@ -467,7 +468,7 @@ msgstr "Příliš mnoho spojení k serveru %s"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Probable account sharing"
-msgstr ""
+msgstr "Pravděpodobné sdílení účtu"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -510,7 +511,7 @@ msgstr "Žádná použitelná autentizační metoda nenalezena"
 
 #: sabnzbd/emailer.py
 msgid "Unknown authentication failure in mail server"
-msgstr ""
+msgstr "Neznámá chyba přihlášení k poštovnímu serveru"
 
 #: sabnzbd/emailer.py
 msgid "Failed to send e-mail"
@@ -522,12 +523,12 @@ msgstr "Nezdařilo se uzavřít spojení pro mail"
 
 #: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
 msgid "Cannot send, missing required data"
-msgstr ""
+msgstr "Nelze odeslat, chybějí požadovaná data"
 
 #. Error message
 #: sabnzbd/emailer.py
 msgid "Cannot find email templates in %s"
-msgstr ""
+msgstr "Nepodařilo se najít poštovní šablony v %s"
 
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
@@ -541,7 +542,7 @@ msgstr "Nelze číst %s"
 
 #: sabnzbd/emailer.py
 msgid "No email templates found"
-msgstr ""
+msgstr "Nenalezeny poštovní šablony"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -574,12 +575,12 @@ msgstr "Nelze změnit oprávnění adresáře %s"
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Failed making (%s)"
-msgstr ""
+msgstr "Chyba vytváření (%s)"
 
 #. Error message
 #: sabnzbd/filesystem.py, sabnzbd/postproc.py
 msgid "Failed moving %s to %s"
-msgstr ""
+msgstr "Chyba přesunu %s do %s"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
