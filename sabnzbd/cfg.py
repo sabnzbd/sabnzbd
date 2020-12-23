@@ -326,7 +326,7 @@ ncenter_prio_new_login = OptionBool("ncenter", "ncenter_prio_new_login", False)
 ncenter_prio_warning = OptionBool("ncenter", "ncenter_prio_warning", False)
 ncenter_prio_error = OptionBool("ncenter", "ncenter_prio_error", False)
 ncenter_prio_queue_done = OptionBool("ncenter", "ncenter_prio_queue_done", True)
-ncenter_prio_other = OptionBool("ncenter", "ncenter_prio_other", False)
+ncenter_prio_other = OptionBool("ncenter", "ncenter_prio_other", True)
 
 # [acenter]
 acenter_enable = OptionBool("acenter", "acenter_enable", sabnzbd.WIN32)
@@ -342,7 +342,7 @@ acenter_prio_new_login = OptionBool("acenter", "acenter_prio_new_login", False)
 acenter_prio_warning = OptionBool("acenter", "acenter_prio_warning", False)
 acenter_prio_error = OptionBool("acenter", "acenter_prio_error", False)
 acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", True)
-acenter_prio_other = OptionBool("acenter", "acenter_prio_other", False)
+acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
 ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.DARWIN)
@@ -358,7 +358,7 @@ ntfosd_prio_new_login = OptionBool("ntfosd", "ntfosd_prio_new_login", False)
 ntfosd_prio_warning = OptionBool("ntfosd", "ntfosd_prio_warning", False)
 ntfosd_prio_error = OptionBool("ntfosd", "ntfosd_prio_error", False)
 ntfosd_prio_queue_done = OptionBool("ntfosd", "ntfosd_prio_queue_done", True)
-ntfosd_prio_other = OptionBool("ntfosd", "ntfosd_prio_other", False)
+ntfosd_prio_other = OptionBool("ntfosd", "ntfosd_prio_other", True)
 
 # [prowl]
 prowl_enable = OptionBool("prowl", "prowl_enable", False)
@@ -375,7 +375,7 @@ prowl_prio_new_login = OptionNumber("prowl", "prowl_prio_new_login", -3)
 prowl_prio_warning = OptionNumber("prowl", "prowl_prio_warning", -3)
 prowl_prio_error = OptionNumber("prowl", "prowl_prio_error", -3)
 prowl_prio_queue_done = OptionNumber("prowl", "prowl_prio_queue_done", 0)
-prowl_prio_other = OptionNumber("prowl", "prowl_prio_other", -3)
+prowl_prio_other = OptionNumber("prowl", "prowl_prio_other", 0)
 
 # [pushover]
 pushover_token = OptionStr("pushover", "pushover_token")
@@ -396,7 +396,7 @@ pushover_prio_new_login = OptionNumber("pushover", "pushover_prio_new_login", -3
 pushover_prio_warning = OptionNumber("pushover", "pushover_prio_warning", 1)
 pushover_prio_error = OptionNumber("pushover", "pushover_prio_error", 1)
 pushover_prio_queue_done = OptionNumber("pushover", "pushover_prio_queue_done", -1)
-pushover_prio_other = OptionNumber("pushover", "pushover_prio_other", -3)
+pushover_prio_other = OptionNumber("pushover", "pushover_prio_other", -1)
 
 # [pushbullet]
 pushbullet_enable = OptionBool("pushbullet", "pushbullet_enable")
@@ -414,7 +414,7 @@ pushbullet_prio_new_login = OptionBool("pushbullet", "pushbullet_prio_new_login"
 pushbullet_prio_warning = OptionBool("pushbullet", "pushbullet_prio_warning", False)
 pushbullet_prio_error = OptionBool("pushbullet", "pushbullet_prio_error", False)
 pushbullet_prio_queue_done = OptionBool("pushbullet", "pushbullet_prio_queue_done", False)
-pushbullet_prio_other = OptionBool("pushbullet", "pushbullet_prio_other", False)
+pushbullet_prio_other = OptionBool("pushbullet", "pushbullet_prio_other", True)
 
 # [nscript]
 nscript_enable = OptionBool("nscript", "nscript_enable")
@@ -432,7 +432,7 @@ nscript_prio_new_login = OptionBool("nscript", "nscript_prio_new_login", False)
 nscript_prio_warning = OptionBool("nscript", "nscript_prio_warning", False)
 nscript_prio_error = OptionBool("nscript", "nscript_prio_error", False)
 nscript_prio_queue_done = OptionBool("nscript", "nscript_prio_queue_done", True)
-nscript_prio_other = OptionBool("nscript", "nscript_prio_other", False)
+nscript_prio_other = OptionBool("nscript", "nscript_prio_other", True)
 
 
 ##############################################################################

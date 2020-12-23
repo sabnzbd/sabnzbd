@@ -104,6 +104,7 @@ import sabnzbd.rating
 import sabnzbd.articlecache
 import sabnzbd.bpsmeter
 import sabnzbd.scheduler as scheduler
+import sabnzbd.notifier as notifier
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
     DEFAULT_PRIORITY,

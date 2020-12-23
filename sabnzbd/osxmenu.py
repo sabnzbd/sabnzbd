@@ -245,7 +245,6 @@ class SABnzbdDelegate(NSObject):
             self.stateUpdate()
             self.pauseUpdate()
             self.speedlimitUpdate()
-            self.versionUpdate()
             self.diskspaceUpdate()
         except:
             logging.info("[osx] Exception", exc_info=True)
@@ -416,16 +415,6 @@ class SABnzbdDelegate(NSObject):
                         menuitem.setState_(NSOffState)
         except:
             logging.info("[osx] speedlimitUpdate Exception", exc_info=True)
-
-    def versionUpdate(self):
-        try:
-            if sabnzbd.NEW_VERSION and self.version_notify:
-                # logging.info("[osx] New Version : %s" % (sabnzbd.NEW_VERSION))
-                new_release, _new_rel_url = sabnzbd.NEW_VERSION
-                notifier.send_notification("SABnzbd", "%s : %s" % (T("New release available"), new_release), "other")
-                self.version_notify = 0
-        except:
-            logging.info("[osx] versionUpdate Exception", exc_info=True)
 
     def diskspaceUpdate(self):
         try:
