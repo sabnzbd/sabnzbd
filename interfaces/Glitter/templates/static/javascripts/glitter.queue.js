@@ -566,10 +566,9 @@ function QueueModel(parent, data) {
         return 'glyphicon-pause'
     })
 
-    // Extra queue column
-    self.extraText = ko.pureComputed(function() {
-        // Picked anything?
-        switch(self.parent.parent.extraQueueColumn()) {
+    // Extra queue columns
+    self.showColumn = function(param) {
+        switch(param) {
             case 'category':
                 // Exception for *
                 if(self.category() == "*")
@@ -589,7 +588,7 @@ function QueueModel(parent, data) {
                 return self.avg_age();
         }
         return;
-    })
+    };
 
     // Every update
     self.updateFromData = function(data) {

@@ -15,10 +15,11 @@ function ViewModel() {
     self.dateFormat = ko.observable('fromNow').extend({ persist: 'pageDateFormat' });
     self.displayTabbed = ko.observable().extend({ persist: 'displayTabbed' });
     self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
+    self.displayFullWidth = ko.observable(false).extend({ persist: 'displayFullWidth' });
     self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
     self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
-    self.extraQueueColumn = ko.observable('').extend({ persist: 'extraColumn' });
-    self.extraHistoryColumn = ko.observable('').extend({ persist: 'extraHistoryColumn' });
+    self.extraQueueColumns = ko.observableArray([]).extend({ persist: 'extraColumns' });
+    self.extraHistoryColumns = ko.observableArray([]).extend({ persist: 'extraHistoryColumns' });
     self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
     self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
 
@@ -981,6 +982,11 @@ function ViewModel() {
         $('body').toggleClass('container-compact')
     })
 
+    // Toggle full width
+    self.displayFullWidth.subscribe(function() {
+        $('body').toggleClass('container-full-width')
+    })
+
     // Toggle Glitter's tabbed modus
     self.displayTabbed.subscribe(function() {
         $('body').toggleClass('container-tabbed')
@@ -1049,6 +1055,11 @@ function ViewModel() {
     if(localStorageGetItem('displayCompact') === 'true') {
         // Add extra class
         $('body').addClass('container-compact')
+    }
+
+    if(localStorageGetItem('displayFullWidth') === 'true') {
+        // Add extra class
+        $('body').addClass('container-full-width')
     }
 
     // Tabbed layout?

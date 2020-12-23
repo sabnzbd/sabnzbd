@@ -371,8 +371,7 @@
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control" data-bind="value: extraQueueColumn">
-                                        <option value="">$T('none')</option>
+                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraQueueColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="priority">$T('priority')</option>
                                         <option value="processing">$T('swtag-pp')</option>
@@ -387,8 +386,7 @@
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control" data-bind="value: extraHistoryColumn">
-                                        <option value="">$T('none')</option>
+                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraHistoryColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="size">$T('size')</option>
                                         <option value="speed">$T('Glitter-speed')</option>
@@ -401,6 +399,14 @@
                                 </label>
                                 <div class="col-sm-4">
                                     <input type="checkbox" name="displayCompact" value="true" data-bind="checked: displayCompact" />
+                                </div>
+                            </div>
+                            <div class="form-group form-checkbox">
+                                <label class="col-sm-6 control-label">
+                                    $T("Glitter-displayFullWidth")
+                                </label>
+                                <div class="col-sm-4">
+                                    <input type="checkbox" name="displayFullWidth" value="true" data-bind="checked: displayFullWidth" />
                                 </div>
                             </div>
                             <div class="form-group form-checkbox">

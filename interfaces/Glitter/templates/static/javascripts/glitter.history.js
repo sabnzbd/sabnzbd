@@ -333,10 +333,10 @@ function HistoryModel(parent, data) {
         return self.script_line();
     });
 
-    // Extra history column
-    self.extraText = ko.pureComputed(function() {
+    // Extra history columns
+    self.showColumn = function(param) {
         // Picked anything?
-        switch(self.parent.parent.extraHistoryColumn()) {
+        switch(param) {
             case 'speed':
                 // Anything to calculate?
                 if(self.historyStatus.bytes() > 0 && self.historyStatus.download_time() > 0) {
@@ -359,7 +359,7 @@ function HistoryModel(parent, data) {
                 return self.historyStatus.size();
         }
         return;
-    })
+    };
 
     // Format completion time
     self.completedOn = ko.pureComputed(function() {
