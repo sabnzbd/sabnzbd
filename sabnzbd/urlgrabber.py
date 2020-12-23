@@ -316,7 +316,7 @@ class URLGrabber(Thread):
         nzo.set_unpack_info("Source", msg)
         nzo.fail_msg = msg
 
-        notifier.send_notification(T("URL Fetching failed; %s") % "", "%s\n%s" % (msg, url), "other", nzo.cat)
+        notifier.send_notification(T("URL Fetching failed; %s") % "", "%s\n%s" % (msg, url), "failed", nzo.cat)
         if cfg.email_endjob() > 0:
             emailer.badfetch_mail(msg, url)
 
