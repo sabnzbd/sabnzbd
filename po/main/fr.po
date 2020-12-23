@@ -3030,6 +3030,9 @@ msgid ""
 "Modern web browsers and other clients will not accept self-signed "
 "certificates and will give a warning and/or won't connect at all."
 msgstr ""
+"Les navigateurs web modernes et les autres clients n'accepteront pas les "
+"certificats auto-signés et donneront un avertissement et / ou ne se "
+"connecteront pas du tout."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS Port"
@@ -4821,11 +4824,11 @@ msgstr "Format de la date"
 
 #: sabnzbd/skintext.py
 msgid "Extra queue columns"
-msgstr ""
+msgstr "Colonnes de file d'attente supplémentaires"
 
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
-msgstr ""
+msgstr "Colonnes d'historique supplémentaires"
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4927,7 +4930,7 @@ msgstr "Affichage compact"
 
 #: sabnzbd/skintext.py
 msgid "Always use full screen width"
-msgstr ""
+msgstr "Toujours utiliser la largeur totale de l'écran"
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
