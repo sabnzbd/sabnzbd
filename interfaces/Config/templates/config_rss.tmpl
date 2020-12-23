@@ -1,6 +1,7 @@
 <!--#set global $pane="RSS"#-->
 <!--#set global $help_uri="configuration/3.1/rss"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
+<!--#import html#-->
 <div class="colmask">
     <!--#if not $active_feed#-->
     <div class="section">
@@ -45,9 +46,10 @@
                         <!--#set $odd = False#-->
                         <!--#for $feed_item in $feeds#-->
                             <!--#set $odd = not $odd#-->
+                            <!--#set $feed_item_html = html.escape($feed_item)#-->
                             <tr class="data-row <!--#if $odd then " alt " else " "#-->">
                                 <td class="chk">
-                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item" />
+                                    <input type="checkbox" class="toggleFeedCheckbox" name="enable" value="1" <!--#if int($rss[$feed_item]['enable']) !=0 then 'checked="checked"' else ""#--> rel="$feed_item_html" />
                                 </td>
                                 <td class="title">
                                     <a href="?feed=$rss[$feed_item]['link']" class="subscription-title path feed <!--#if int($rss[$feed_item]['enable']) != 0 then 'feed_enabled' else 'feed_disabled'#-->">
@@ -55,10 +57,10 @@
                                     </a>
                                 </td>
                                 <td class="controls">
-                                    <button type="button" class="btn btn-default testFeed" rel="$feed_item"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
+                                    <button type="button" class="btn btn-default testFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                                     <input type="hidden" name="uri" value="$rss[$feed_item]['uris']" />
-                                    <button type="button" class="btn btn-default editFeed" rel="$feed_item"><span class="glyphicon glyphicon-pencil"></span> $T('Edit')</button>
-                                    <button type="button" class="btn btn-default delFeed" rel="$feed_item"><span class="glyphicon glyphicon-trash"></span></button>
+                                    <button type="button" class="btn btn-default editFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-pencil"></span> $T('Edit')</button>
+                                    <button type="button" class="btn btn-default delFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-trash"></span></button>
                                 </td>
                             </tr>
                             <!--#for $uri_index, $uri in enumerate($rss[$feed_item]['uri'])#-->
