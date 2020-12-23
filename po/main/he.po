@@ -734,6 +734,10 @@ msgstr "ש"
 msgid "m"
 msgstr "ד"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "עדכון זמין!"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -1356,10 +1360,6 @@ msgstr "העבר להיסטוריה 10 פריטים אחרונים"
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "לך לאשף"
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "שחרור חדש זמין"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -4764,10 +4764,6 @@ msgstr "הסתר/הראה קבצים שלמים"
 #: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr "הצג יומן תסריטים"
-
-#: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr "עדכון זמין!"
 
 #: sabnzbd/skintext.py
 msgid ""

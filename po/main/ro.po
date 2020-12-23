@@ -735,6 +735,10 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "Actualizare Disponibilă!"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -1355,10 +1359,6 @@ msgstr "Istoric Ultimele 10 Obiecte"
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Dute la vrăjitor"
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Versiune nouă disponibilă"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -4760,10 +4760,6 @@ msgstr "Ascunde/arată fișierele finalizate"
 #: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr "Vezi Jurnal Script"
-
-#: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr "Actualizare Disponibilă!"
 
 #: sabnzbd/skintext.py
 msgid ""

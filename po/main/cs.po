@@ -727,6 +727,10 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr ""
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -1351,10 +1355,6 @@ msgstr ""
 
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
-msgstr ""
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
 msgstr ""
 
 #: sabnzbd/osxmenu.py
@@ -2236,7 +2236,7 @@ msgstr "Složky"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Switches"
-msgstr ""
+msgstr "Přepínače"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2251,22 +2251,22 @@ msgstr "RSS"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Notifications"
-msgstr ""
+msgstr "Upozornění"
 
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Categories"
-msgstr ""
+msgstr "Kategorie"
 
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Sorting"
-msgstr ""
+msgstr "Řazení"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2315,7 +2315,7 @@ msgstr "Přidat soubor"
 #. Job category
 #: sabnzbd/skintext.py
 msgid "Category"
-msgstr ""
+msgstr "Kategorie"
 
 #. Queue page table column header
 #: sabnzbd/skintext.py
@@ -2330,17 +2330,17 @@ msgstr "Priorita"
 #. Post processing pick list
 #: sabnzbd/skintext.py
 msgid "+Repair"
-msgstr ""
+msgstr "+Opravit"
 
 #. Post processing pick list
 #: sabnzbd/skintext.py
 msgid "+Unpack"
-msgstr ""
+msgstr "+Rozbalit"
 
 #. Post processing pick list
 #: sabnzbd/skintext.py
 msgid "+Delete"
-msgstr ""
+msgstr "+Smazat"
 
 #. Post processing pick list: abbreviation for "+Repair"
 #: sabnzbd/skintext.py
@@ -2360,12 +2360,12 @@ msgstr ""
 #. Priority pick list
 #: sabnzbd/skintext.py
 msgid "Force"
-msgstr ""
+msgstr "Vynucené"
 
 #. Priority pick list
 #: sabnzbd/skintext.py
 msgid "Stop"
-msgstr ""
+msgstr "Zastaveno"
 
 #. Add NZB Dialog
 #: sabnzbd/skintext.py
@@ -2440,7 +2440,7 @@ msgstr "Akce"
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
-msgstr ""
+msgstr "Skripty"
 
 #. Confirmation popup
 #: sabnzbd/skintext.py
@@ -2450,12 +2450,12 @@ msgstr ""
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
-msgstr ""
+msgstr "Vymazat všechny NZB"
 
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs & Delete Files"
-msgstr ""
+msgstr "Vymazat všechny NZB a smazat soubory"
 
 #. Retry all failed jobs dialog box
 #: sabnzbd/skintext.py
@@ -2465,12 +2465,12 @@ msgstr "Opakovat všechny nedokončené úkoly"
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Remove NZB"
-msgstr ""
+msgstr "Odstranit NZB"
 
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
-msgstr ""
+msgstr "Odstranit NZB a smazat soubory"
 
 #. Queue page, as in "4G *of* 10G"
 #: sabnzbd/skintext.py
@@ -2494,7 +2494,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
-msgstr ""
+msgstr "Vynulovat kvótu"
 
 #. Confirmation popup
 #: sabnzbd/skintext.py
@@ -2529,21 +2529,21 @@ msgstr "Velikost"
 #. Button to delete all failed jobs in History
 #: sabnzbd/skintext.py
 msgid "Purge Failed NZBs"
-msgstr ""
+msgstr "Vymazat všechny selhalé NZB"
 
 #: sabnzbd/skintext.py
 msgid "Purge Failed NZBs & Delete Files"
-msgstr ""
+msgstr "Vymazat všechny selhalé NZB a smazat soubory"
 
 #. Button to delete all completed jobs in History
 #: sabnzbd/skintext.py
 msgid "Purge Completed NZBs"
-msgstr ""
+msgstr "Vymazat všechny dokončené NZB"
 
 #. Button to delete jobs on current page in History
 #: sabnzbd/skintext.py
 msgid "Purge NZBs on the current page"
-msgstr ""
+msgstr "Vymazat NZB na aktuální stránce"
 
 #. Button to add NZB to failed job in History
 #: sabnzbd/skintext.py
@@ -2553,7 +2553,7 @@ msgstr ""
 #. Path as displayed in History details
 #: sabnzbd/skintext.py
 msgid "Path"
-msgstr ""
+msgstr "Cesta"
 
 #. Retry all failed jobs in History
 #: sabnzbd/skintext.py
@@ -2567,7 +2567,7 @@ msgstr "Opakovat všechny"
 
 #: sabnzbd/skintext.py
 msgid "Virus/spam"
-msgstr ""
+msgstr "Virus/spam"
 
 #: sabnzbd/skintext.py
 msgid "Out of retention"
@@ -2595,17 +2595,17 @@ msgstr ""
 #. Status page button
 #: sabnzbd/skintext.py
 msgid "Show Logging"
-msgstr ""
+msgstr "Zobrazit protokol"
 
 #. Status page button
 #: sabnzbd/skintext.py
 msgid "Test Email"
-msgstr ""
+msgstr "Otestovat email"
 
 #. Status page selection menu
 #: sabnzbd/skintext.py
 msgid "Logging"
-msgstr ""
+msgstr "Protokol"
 
 #. Status page table header
 #: sabnzbd/skintext.py
@@ -2615,17 +2615,17 @@ msgstr "Chyby/výstrahy"
 #. Status page logging selection value
 #: sabnzbd/skintext.py
 msgid "+ Info"
-msgstr ""
+msgstr "+ Info"
 
 #. Status page logging selection value
 #: sabnzbd/skintext.py
 msgid "+ Debug"
-msgstr ""
+msgstr "+ Ladění"
 
 #. Status page tab header - Server: amount of connections
 #: sabnzbd/skintext.py
 msgid "Connections"
-msgstr ""
+msgstr "Spojení"
 
 #. Status page, table header
 #: sabnzbd/skintext.py
@@ -2635,12 +2635,12 @@ msgstr "Poslední výstrahy"
 #. Status page button
 #: sabnzbd/skintext.py
 msgid "clear"
-msgstr ""
+msgstr "vymazat"
 
 #. Status page button
 #: sabnzbd/skintext.py
 msgid "Unblock"
-msgstr ""
+msgstr "Odblokovat"
 
 #. Status page, article identifier
 #: sabnzbd/skintext.py
@@ -2666,7 +2666,7 @@ msgstr ""
 #. Status page, indicator that server is enabled
 #: sabnzbd/skintext.py
 msgid "Enabled"
-msgstr ""
+msgstr "Zapnuto"
 
 #: sabnzbd/skintext.py
 msgid "Dashboard"
@@ -2694,7 +2694,7 @@ msgstr "DNS server / DNS dotazy"
 
 #: sabnzbd/skintext.py
 msgid "CPU Model"
-msgstr ""
+msgstr "Model procesoru"
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
@@ -2727,7 +2727,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
-msgstr ""
+msgstr "Opakovat test"
 
 #: sabnzbd/skintext.py
 msgid "Test download"
@@ -2788,11 +2788,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable Unzip"
-msgstr ""
+msgstr "Povolit Unzip"
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"
-msgstr ""
+msgstr "Povolit 7zip"
 
 #: sabnzbd/skintext.py
 msgid "Multicore Par2"
@@ -2814,7 +2814,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Version"
-msgstr ""
+msgstr "Verze"
 
 #: sabnzbd/skintext.py
 msgid "Uptime"
@@ -2823,7 +2823,7 @@ msgstr ""
 #. Indicates that server is Backup server in Status page
 #: sabnzbd/skintext.py
 msgid "Backup"
-msgstr ""
+msgstr "Záloha"
 
 #. Notification Script settings
 #: sabnzbd/skintext.py
@@ -2860,7 +2860,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Web Interface"
-msgstr ""
+msgstr "Webové rozhraní"
 
 #: sabnzbd/skintext.py
 msgid "Choose a skin."
@@ -2890,15 +2890,15 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Security"
-msgstr ""
+msgstr "Bezpečnost"
 
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
-msgstr ""
+msgstr "Povolit HTTPS"
 
 #: sabnzbd/skintext.py
 msgid "not installed"
-msgstr ""
+msgstr "není nainstalováno"
 
 #: sabnzbd/skintext.py
 msgid "Enable accessing the interface from a HTTPS address."
@@ -2912,7 +2912,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "HTTPS Port"
-msgstr ""
+msgstr "HTTPS port"
 
 #: sabnzbd/skintext.py
 msgid "If empty, the standard port will only listen to HTTPS."
@@ -2920,7 +2920,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "HTTPS Certificate"
-msgstr ""
+msgstr "HTTPS certifikát"
 
 #: sabnzbd/skintext.py
 msgid "File name or path to HTTPS Certificate."
@@ -2963,11 +2963,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Maximum line speed"
-msgstr ""
+msgstr "Maximální rychlost linky"
 
 #: sabnzbd/skintext.py
 msgid "Percentage of line speed"
-msgstr ""
+msgstr "Procento rychlosti linky"
 
 #: sabnzbd/skintext.py
 msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
@@ -3021,19 +3021,19 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
-msgstr ""
+msgstr "Úlohy"
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
-msgstr ""
+msgstr "Uložit změny"
 
 #: sabnzbd/skintext.py
 msgid "Restore Defaults"
-msgstr ""
+msgstr "Obnovit výchozí"
 
 #: sabnzbd/skintext.py
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: sabnzbd/skintext.py
 msgid "Language"
@@ -3041,7 +3041,7 @@ msgstr "Jazyk"
 
 #: sabnzbd/skintext.py
 msgid "Select a web interface language."
-msgstr ""
+msgstr "Vyberte jazyk webového rozhraní."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3065,7 +3065,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Generate New Key"
-msgstr ""
+msgstr "Generovat nový klíč"
 
 #. Explanation for QR code of APIKEY
 #: sabnzbd/skintext.py
@@ -3123,7 +3123,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "User Folders"
-msgstr ""
+msgstr "Uživatelská složka"
 
 #: sabnzbd/skintext.py
 msgid "Browse"
@@ -3193,7 +3193,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Scripts Folder"
-msgstr ""
+msgstr "Složka se skripty"
 
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
@@ -3311,7 +3311,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Detect Duplicate Downloads"
-msgstr ""
+msgstr "Detekovat duplicitní stahování"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4660,10 +4660,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Update Available!"
 msgstr ""
 
 #: sabnzbd/skintext.py

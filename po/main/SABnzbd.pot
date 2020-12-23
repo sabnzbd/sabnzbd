@@ -680,6 +680,10 @@ msgstr ""
 msgid "m"
 msgstr ""
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr ""
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -1287,10 +1291,6 @@ msgstr ""
 
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
-msgstr ""
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
 msgstr ""
 
 #: sabnzbd/osxmenu.py
@@ -4483,10 +4483,6 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "View Script Log"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Update Available!"
 msgstr ""
 
 #: sabnzbd/skintext.py

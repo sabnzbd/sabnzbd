@@ -734,6 +734,10 @@ msgstr "ч"
 msgid "m"
 msgstr "м"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "Доступно обновление!"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -1355,10 +1359,6 @@ msgstr "Последние 10 элементов истории"
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Запустить мастер"
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Доступна новая версия"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -4756,10 +4756,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr "Просмотреть журнал сценария"
-
-#: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr "Доступно обновление!"
 
 #: sabnzbd/skintext.py
 msgid ""

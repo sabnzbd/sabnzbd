@@ -729,6 +729,10 @@ msgstr "с"
 msgid "m"
 msgstr "м"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "Нова верзија доступна!"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -1349,10 +1353,6 @@ msgstr "Хронологија задњих 10 ставка"
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Покрени асистент"
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Ново издање је доступно"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -4738,10 +4738,6 @@ msgstr "Sakrij/prikaži sve završene datoteke"
 #: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr "Види извештај скрипта"
-
-#: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr "Нова верзија доступна!"
 
 #: sabnzbd/skintext.py
 msgid ""

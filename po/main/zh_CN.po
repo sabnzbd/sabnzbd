@@ -721,6 +721,10 @@ msgstr "小时"
 msgid "m"
 msgstr "分钟"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "有更新可用!"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -1339,10 +1343,6 @@ msgstr "最近十条历史记录"
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "转到向导"
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "新版本可用"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -4681,10 +4681,6 @@ msgstr "隐藏/显示已完成文件"
 #: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr "查看脚本日志"
-
-#: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr "有更新可用!"
 
 #: sabnzbd/skintext.py
 msgid ""

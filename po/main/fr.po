@@ -769,6 +769,10 @@ msgstr "h"
 msgid "m"
 msgstr "m"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "Mise à Jour disponible!"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -1403,10 +1407,6 @@ msgstr "Historique des 10 derniers articles"
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
 msgstr "Aller à l'assistant"
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Nouvelle version disponible"
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
@@ -4906,10 +4906,6 @@ msgstr "Afficher/masquer les fichiers terminés"
 #: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr "Afficher le journal des scripts"
-
-#: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr "Mise à Jour disponible!"
 
 #: sabnzbd/skintext.py
 msgid ""
