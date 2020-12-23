@@ -553,15 +553,10 @@ tr.separator {
 h2.activeRSS {
     margin-bottom: 10px;
 }
-.activeRSS a, .activeRSS a:visited {
-    text-decoration: none;
+.activeRSS a,
+.activeRSS a:visited {
     color: #000;
-}
-.activeRSS a:hover {
-    color: #4b4742;
-}
-.activeRSS a:first-of-type {
-    text-decoration: underline!important;
+    text-decoration: underline !important;
 }
 .favicon {
     background-position: center center!important;
