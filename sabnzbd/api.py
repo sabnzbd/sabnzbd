@@ -899,8 +899,16 @@ def _api_server_stats(name, output, kwargs):
     stats = {"total": sum_t, "month": sum_m, "week": sum_w, "day": sum_d, "servers": {}}
 
     for svr in config.get_servers():
-        t, m, w, d, daily = sabnzbd.BPSMeter.amounts(svr)
-        stats["servers"][svr] = {"total": t or 0, "month": m or 0, "week": w or 0, "day": d or 0, "daily": daily or {}}
+        t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
+        stats["servers"][svr] = {
+            "total": t,
+            "month": m,
+            "week": w,
+            "day": d,
+            "daily": daily,
+            "articles_tried": articles_tried,
+            "articles_success": articles_success,
+        }
 
     return report(output, keyword="", data=stats)
 

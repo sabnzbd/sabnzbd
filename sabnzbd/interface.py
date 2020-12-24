@@ -1556,9 +1556,9 @@ class ConfigServer:
         )
         for svr in server_names:
             new.append(servers[svr].get_dict(safe=True))
-            t, m, w, d, timeline = sabnzbd.BPSMeter.amounts(svr)
+            t, m, w, d, daily, _, _ = sabnzbd.BPSMeter.amounts(svr)
             if t:
-                new[-1]["amounts"] = to_units(t), to_units(m), to_units(w), to_units(d), timeline
+                new[-1]["amounts"] = to_units(t), to_units(m), to_units(w), to_units(d), daily
         conf["servers"] = new
         conf["cats"] = list_cats(default=True)
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION

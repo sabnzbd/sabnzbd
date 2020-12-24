@@ -730,12 +730,15 @@ class NzbQueue:
                     if self.__top_only:
                         return
 
-    def register_article(self, article: Article, success=True):
+    def register_article(self, article: Article, success: bool = True):
         """Register the articles we tried
         Not locked for performance, since it only modifies individual NZOs
         """
         nzf = article.nzf
         nzo = nzf.nzo
+
+        # Update statistics
+        sabnzbd.BPSMeter.update_article_stats(article.fetcher.id, success)
 
         if nzf.deleted:
             logging.debug("Discarding article %s, no longer in queue", article.article)
