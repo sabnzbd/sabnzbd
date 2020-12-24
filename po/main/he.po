@@ -4679,11 +4679,11 @@ msgstr "תסדיר תאריך"
 
 #: sabnzbd/skintext.py
 msgid "Extra queue columns"
-msgstr ""
+msgstr "יותר עמודות תור"
 
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
-msgstr ""
+msgstr "יותר עמודות היסטוריה"
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4783,7 +4783,7 @@ msgstr "פריסה צפופה"
 
 #: sabnzbd/skintext.py
 msgid "Always use full screen width"
-msgstr ""
+msgstr "השתמש תמיד ברוחב של מסך מלא"
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
