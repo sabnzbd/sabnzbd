@@ -292,8 +292,9 @@ def _api_queue_default(output, value, kwargs):
     start = int_conv(kwargs.get("start"))
     limit = int_conv(kwargs.get("limit"))
     search = kwargs.get("search")
+    nzo_ids = kwargs.get("nzo_ids")
 
-    info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
+    info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search, nzo_ids=nzo_ids)
     return report(output, keyword="queue", data=info)
 
 
@@ -1297,10 +1298,10 @@ def build_status(skip_dashboard=False, output=None):
     return info
 
 
-def build_queue(start=0, limit=0, trans=False, output=None, search=None):
+def build_queue(start=0, limit=0, trans=False, output=None, search=None, nzo_ids=None):
     # build up header full of basic information
     info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(
-        search=search, start=start, limit=limit, output=output
+        search=search, start=start, limit=limit, output=output, nzo_ids=nzo_ids
     )
 
     datestart = datetime.datetime.now()
@@ -1646,13 +1647,13 @@ def build_header(webdir="", output=None, trans_functions=True):
     return header
 
 
-def build_queue_header(search=None, start=0, limit=0, output=None):
+def build_queue_header(search=None, nzo_ids=None, start=0, limit=0, output=None):
     """ Build full queue header """
 
     header = build_header(output=output)
 
     bytespersec = sabnzbd.BPSMeter.bps
-    qnfo = sabnzbd.NzbQueue.queue_info(search=search, start=start, limit=limit)
+    qnfo = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
 
     bytesleft = qnfo.bytes_left
     bytes_total = qnfo.bytes

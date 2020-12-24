@@ -806,13 +806,15 @@ class NzbQueue:
                 n += 1
         return n
 
-    def queue_info(self, search=None, start=0, limit=0):
+    def queue_info(self, search=None, nzo_ids=None, start=0, limit=0):
         """Return list of queued jobs,
-        optionally filtered by 'search' and limited by start and limit.
+        optionally filtered by 'search' and 'nzo_ids', and limited by start and limit.
         Not locked for performance, only reads the queue
         """
         if search:
             search = search.lower()
+        if nzo_ids:
+            nzo_ids = nzo_ids.split(",")
         bytes_left = 0
         bytes_total = 0
         bytes_left_previous_page = 0
@@ -831,11 +833,12 @@ class NzbQueue:
                     bytes_left_previous_page += b_left
 
             if (not search) or search in nzo.final_name.lower():
-                if (not limit) or (start <= n < start + limit):
-                    pnfo_list.append(nzo.gather_info())
-                n += 1
+                if (not nzo_ids) or nzo.nzo_id in nzo_ids:
+                    if (not limit) or (start <= n < start + limit):
+                        pnfo_list.append(nzo.gather_info())
+                    n += 1
 
-        if not search:
+        if not search and not nzo_ids:
             n = len(self.__nzo_list)
         return QNFO(bytes_total, bytes_left, bytes_left_previous_page, pnfo_list, q_size, n)
 
