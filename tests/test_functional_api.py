@@ -448,6 +448,55 @@ class TestQueueApi(ApiTestFunctions):
                 else:
                     assert slot["status"] != Status.PAUSED
 
+    @pytest.mark.parametrize("sample_size", [i for i in range(0, 5)])
+    @pytest.mark.parametrize("select_filename", [True, False])
+    def test_api_queue_search_and_nzo_ids(self, sample_size, select_filename):
+        queue_size = max(4, sample_size)
+        self._create_random_queue(minimum_size=queue_size)
+        jobs = {slot["nzo_id"]: slot["filename"] for slot in self._get_api_json("queue")["queue"]["slots"]}
+
+        extra = {}
+        find_nzo_ids = []
+        return_size_nzo_id = queue_size
+        return_size_filename = queue_size
+
+        # Take a sample of nzo_ids
+        if sample_size:
+            return_size_nzo_id = sample_size
+            find_nzo_ids = sample(list(jobs.keys()), sample_size)
+            extra["nzo_ids"] = ",".join(find_nzo_ids)
+        # Select a filename to search for
+        if select_filename:
+            return_size_filename = 1
+            find_filename_nzo_id = choice(list(jobs.keys()))  # Selects a single nzo_id
+            find_filename = jobs[find_filename_nzo_id]
+            extra["search"] = find_filename
+
+        # Calculate the expected number of results
+        return_size = min(return_size_nzo_id, return_size_filename)
+        if select_filename and sample_size and find_filename_nzo_id not in find_nzo_ids:
+            # When selecting by both nzo_ids and filename, the matches may be mutually exclusive
+            return_size = 0
+
+        # Fetch results
+        json = self._get_api_json("queue", extra_args=extra)
+
+        # Verify
+        assert len(json["queue"]["slots"]) == return_size
+        if return_size != 0:
+            found = {slot["nzo_id"]: slot["filename"] for slot in json["queue"]["slots"]}
+            if select_filename:
+                assert found[find_filename_nzo_id] == find_filename
+            else:
+                for nzo_id in find_nzo_ids:
+                    assert nzo_id in found
+
+    @pytest.mark.parametrize("select_by", ["search", "nzo_ids"])
+    def test_api_queue_restrict_no_results_search_and_nzo_ids(self, select_by):
+        fake_search = "FakeSearch_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
+        json = self._get_api_json("queue", extra_args={select_by: fake_search})
+        assert len(json["queue"]["slots"]) == 0
+
     @pytest.mark.parametrize("delete_count", [1, 2, 5, 9, 10])
     def test_api_queue_delete_jobs(self, delete_count):
         number_of_jobs = max(10, delete_count)
@@ -883,9 +932,19 @@ class TestHistoryApi(ApiTestFunctions):
             slot_sum += len(json["history"]["slots"])
         assert slot_sum == self.history_size
 
-    def test_api_history_restrict_no_results_search(self):
+    def test_api_history_restrict_nzo_ids(self):
+        nzo_ids = [slot["nzo_id"] for slot in self._get_api_history()["history"]["slots"]]
+        find_me = sample(nzo_ids, randint(1, self.history_size - 1))
+        json = self._get_api_history({"nzo_ids": ",".join(find_me)})
+        assert len(json["history"]["slots"]) == len(find_me)
+        found = [slot["nzo_id"] for slot in json["history"]["slots"]]
+        for nzo_id in find_me:
+            assert nzo_id in found
+
+    @pytest.mark.parametrize("select_by", ["search", "nzo_ids"])
+    def test_api_history_restrict_no_results_search_and_nzo_ids(self, select_by):
         fake_search = "FakeSearch_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
-        json = self._get_api_history({"search": fake_search})
+        json = self._get_api_history({select_by: fake_search})
         assert len(json["history"]["slots"]) == 0
 
     def test_api_history_restrict_cat_and_search_and_limit(self):
