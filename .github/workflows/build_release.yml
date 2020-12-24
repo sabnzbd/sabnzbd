@@ -1,0 +1,76 @@
+name: Build binaries and source distribution
+
+on: [push, pull_request]
+
+jobs:
+  build_windows:
+    name: Build ${{ matrix.name }} binary
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+            python-version: 3.9
+          - name: Windows
+            os: windows-latest
+            python-version: 3.9
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Python dependencies
+      run: |
+        python --version
+        pip install --upgrade pip wheel
+        pip install --upgrade -r requirements.txt
+        pip install --upgrade -r builder/requirements.txt
+    - name: Build source distribution
+      if: runner.os == 'Windows'
+      run: python builder/package.py source
+    - name: Upload source distribution
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        path: "*-src.tar.gz"
+        name: Source distribution
+    - name: Build Windows standalone binary and installer
+      if: runner.os == 'Windows'
+      run: python builder/package.py installer
+    - name: Upload Windows standalone binary (64bit)
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        path: "*-win64-bin.zip"
+        name: Windows Windows standalone binary (64bit)
+    - name: Upload Windows installer
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        path: "*-win-setup.exe"
+        name: Windows installer
+    - name: Import codesign certificates
+      uses: apple-actions/import-codesign-certs@v1
+      if: runner.os == 'macOS'
+      with:
+        p12-file-base64: ${{ secrets.CERTIFICATES_P12 }}
+        p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
+    - name: Build macOS binary
+      if: runner.os == 'macOS'
+      run: |
+        python builder/package.py app
+        python builder/make_dmg.py
+      env:
+        SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
+    - name: Upload macOS binary
+      if: runner.os == 'macOS'
+      uses: actions/upload-artifact@v2
+      with:
+        path: "*-osx.dmg"
+        name: macOS binary (not notarized)
+
+
+
