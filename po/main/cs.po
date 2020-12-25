@@ -2068,6 +2068,10 @@ msgid "This month"
 msgstr "Tento měsíc"
 
 #: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Today"
 msgstr "Dnes"
 
@@ -3834,6 +3838,14 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Personal notes"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
 msgstr ""
 
 #. Config->Scheduling

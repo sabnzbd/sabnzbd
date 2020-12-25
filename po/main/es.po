@@ -2167,6 +2167,10 @@ msgid "This month"
 msgstr "Este mes"
 
 #: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Today"
 msgstr "Hoy"
 
@@ -4053,6 +4057,14 @@ msgstr "Enviar comando group antes de solicitar los artículos."
 #: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Notas personales"
+
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr ""
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py

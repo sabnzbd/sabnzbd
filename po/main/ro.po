@@ -2103,6 +2103,10 @@ msgid "This month"
 msgstr "Luna aceasta"
 
 #: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Today"
 msgstr "Azi"
 
@@ -3925,6 +3929,14 @@ msgstr "Trimite comanda group înainte de a cere articole."
 #: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Note personale"
+
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr ""
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py

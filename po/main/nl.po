@@ -2136,6 +2136,10 @@ msgid "This month"
 msgstr "Deze Maand"
 
 #: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Today"
 msgstr "Vandaag"
 
@@ -4012,6 +4016,14 @@ msgstr "Verzend de groepsnaam naar de server."
 #: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Persoonlijke aantekeningen"
+
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr ""
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py

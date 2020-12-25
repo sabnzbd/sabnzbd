@@ -2093,6 +2093,10 @@ msgid "This month"
 msgstr "Овог месеца"
 
 #: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Today"
 msgstr "Данас"
 
@@ -3903,6 +3907,14 @@ msgstr "Послати команду 'group' пре тражења артикл
 #: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Lične zabeleške"
+
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr ""
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py

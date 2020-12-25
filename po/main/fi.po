@@ -2100,6 +2100,10 @@ msgid "This month"
 msgstr "Tässä kuussa"
 
 #: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Today"
 msgstr "Tänään"
 
@@ -3940,6 +3944,14 @@ msgstr "Lähettää ryhmäkomennon ennen artikkeleiden pyytämistä."
 #: sabnzbd/skintext.py
 msgid "Personal notes"
 msgstr "Henkilökohtaiset huomautukset"
+
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr ""
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py
