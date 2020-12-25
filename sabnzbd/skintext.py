@@ -113,6 +113,7 @@ SKIN_TEXT = {
     "day-of-month": TT("Day of month"),
     "thisWeek": TT("This week"),
     "thisMonth": TT("This month"),
+    "selectedDates": TT("Selected date range"),
     "today": TT("Today"),
     "total": TT("Total"),
     "custom": TT("Custom"),
@@ -643,6 +644,10 @@ SKIN_TEXT = {
     "srv-send_group": TT("Send Group"),
     "srv-explain-send_group": TT("Send group command before requesting articles."),
     "srv-notes": TT("Personal notes"),
+    "srv-article-availability": TT("Article availability"),
+    "srv-articles-tried": TT(
+        "%f% available of %d requested articles"
+    ),  #: Server article availability, %f=percentage, %d=number of articles
     # Config->Scheduling
     "addSchedule": TT("Add Schedule"),  #:Config->Scheduling
     "sch-frequency": TT("Frequency"),  #:Config->Scheduling

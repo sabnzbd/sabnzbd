@@ -187,7 +187,7 @@ class BPSMeter:
 
             # Article statistics were only added in 3.2.x
             if len(data) > 12:
-                self.article_stats_tried, self.article_stats_tried = data[12:14]
+                self.article_stats_tried, self.article_stats_success = data[12:14]
 
             # Trigger quota actions
             if abs(quota - self.quota) > 0.5:

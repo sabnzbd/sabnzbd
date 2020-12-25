@@ -6,8 +6,10 @@
 <!--#import datetime#-->
 
 <script type="text/javascript">
-    // Define variable needed for the server-plots
-    var serverData = {}
+    // Define variable needed for the server-statistics
+    var serverBandwithData = {}
+    var serverArticleTries = {}
+    var serverArticleSuccess = {}
 </script>
 
 <div class="colmask">
@@ -18,7 +20,7 @@
         </label>
 
         <div class="advanced-buttonSeperator"></div>
-        <div class="chart-selector-container" title="$T('srv-bandwidth')">
+        <div class="chart-selector-container" title="$T('selectedDates')">
             <span class="glyphicon glyphicon-signal"></span>
             <!--#set today = datetime.date.today()#-->
             <input type="date" name="chart-start" id="chart-start" value="<!--#echo (today-datetime.timedelta(days=30)).strftime('%Y-%m-%d')#-->"> -
@@ -238,19 +240,27 @@
                 <div class="col1" style="display:block;">
                     <!--#if 'amounts' in $server#-->
                         <div class="server-amounts-text">
-                            <b>$T('srv-bandwidth'):</b><br/>
-                            $T('total'): $(server['amounts'][0])B<br/>
-                            $T('today'): $(server['amounts'][3])B<br/>
-                            $T('thisWeek'): $(server['amounts'][2])B<br/>
-                            $T('thisMonth'): $(server['amounts'][1])B<br/>
-                            $T('custom'): <span id="server-data-value-${cur}"></span>
+                            <p>
+                                <b>$T('srv-bandwidth'):</b><br/>
+                                $T('total'): $(server['amounts'][0])B<br/>
+                                $T('today'): $(server['amounts'][3])B<br/>
+                                $T('thisWeek'): $(server['amounts'][2])B<br/>
+                                $T('thisMonth'): $(server['amounts'][1])B<br/>
+                                $T('selectedDates'): <span id="server-bandwith-value-${cur}"></span>
+                            </p>
+                            <p title="$T('readwiki')">
+                                <b>$T('srv-article-availability'):</b><br/>
+                                $T('selectedDates'): <span id="server-article-value-${cur}"></span>
+                            </p>
                         </div>
-                        <div class="server-chart" data-serverid="${cur}"s>
+                        <div class="server-chart" data-serverid="${cur}">
                             <div id="server-chart-${cur}" class="ct-chart"></div>
                         </div>
                         <script type="text/javascript">
                             // Server data
-                            serverData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
+                            serverBandwithData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
+                            serverArticleTries[${cur}] = <!--#echo json.dumps($server['amounts'][5])#-->
+                            serverArticleSuccess[${cur}] = <!--#echo json.dumps($server['amounts'][6])#-->
                         </script>
                     <!--#end if#-->
                 </div>
@@ -297,12 +307,14 @@
         const labelStep = Math.round(nrDays/10)
 
         // Save largest value
-        var maxVal = 0
+        var maxBandwith = 0
 
         // For each chart
         \$('.server-chart').each(function(j, elemn) {
             const server_id = \$(elemn).data('serverid')
-            var totalThisRange = 0
+            var totalBandwithThisRange = 0
+            var totalArticlesTriedThisRange = 0
+            var totalArticlesSuccessThisRange = 0
 
             // Fill the data array
             var data = {
@@ -326,25 +338,39 @@
                 const dateCheck = toFormattedDate(checkDate)
 
                 // Add data if we have it
-                if(dateCheck in serverData[server_id]) {
-                    data['series'][0].push(serverData[server_id][dateCheck])
-                    totalThisRange += serverData[server_id][dateCheck]
-                    maxVal = Math.max(maxVal, serverData[server_id][dateCheck])
-                }  else {
+                if(dateCheck in serverBandwithData[server_id]) {
+                    data['series'][0].push(serverBandwithData[server_id][dateCheck])
+                    totalBandwithThisRange += serverBandwithData[server_id][dateCheck]
+                    maxBandwith = Math.max(maxBandwith, serverBandwithData[server_id][dateCheck])
+                } else {
                     data['series'][0].push(0)
+                }
+
+                // Article stats
+                if(dateCheck in serverArticleTries[server_id]) {
+                    totalArticlesTriedThisRange += serverArticleTries[server_id][dateCheck]
+                    totalArticlesSuccessThisRange += serverArticleSuccess[server_id][dateCheck]
                 }
             }
 
             // Update the text value
-            \$('#server-data-value-' + server_id).text(filesize(totalThisRange, {round: 1}))
+            \$('#server-bandwith-value-' + server_id).text(filesize(totalBandwithThisRange, {round: 1}))
 
-            // Save data in a very ugly way, but we need to do this
+            // Calculate article ratio, if available
+            var articleRatio = Math.round(totalArticlesTriedThisRange/totalArticlesSuccessThisRange)
+            if(!isNaN(articleRatio)) {
+                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio * 100).replace('%d', totalArticlesTriedThisRange))
+            } else {
+                \$('#server-article-value-' + server_id).text('$T("notAvailable")')
+            }
+
+            // Save bandwidth data in a very ugly way, but we need to do this
             // so we can calculate the maximum Y-axis for all graphs
             \$(elemn).data("chart-data", data)
         })
 
         // Set the maximum
-        chartOptions.axisY.high = maxVal;
+        chartOptions.axisY.high = maxBandwith
         chartOptions.axisY.low = 0
 
         // Update all the axis with the largest value and draw the graph
