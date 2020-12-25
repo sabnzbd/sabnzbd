@@ -174,7 +174,7 @@ class DecoderWorker(Thread):
                         lline = line.lower()
                         if b"message-id:" in lline:
                             article_success = True
-                        if not lline.startswith(b"X-") and match_str(
+                        if not lline.startswith(b"x-") and match_str(
                             lline, (b"dmca", b"removed", b"cancel", b"blocked")
                         ):
                             article_success = False
