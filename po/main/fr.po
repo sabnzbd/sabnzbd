@@ -2163,7 +2163,7 @@ msgstr "Ce mois"
 
 #: sabnzbd/skintext.py
 msgid "Selected date range"
-msgstr ""
+msgstr "Plage de dates sélectionnée"
 
 #: sabnzbd/skintext.py
 msgid "Today"
@@ -4067,11 +4067,11 @@ msgstr "Notes personnelles"
 
 #: sabnzbd/skintext.py
 msgid "Article availability"
-msgstr ""
+msgstr "Disponibilité de l'article"
 
 #: sabnzbd/skintext.py
 msgid "%f% available of %d requested articles"
-msgstr ""
+msgstr "%f% disponibles sur %d articles demandés"
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py
