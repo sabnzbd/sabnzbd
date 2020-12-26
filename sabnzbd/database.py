@@ -290,7 +290,7 @@ class HistoryDB:
         )
         logging.info("Added job %s to history", nzo.final_name)
 
-    def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
+    def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None, nzo_ids=None):
         """ Return records for specified jobs """
         command_args = [convert_search(search)]
 
@@ -301,6 +301,12 @@ class HistoryDB:
             post += " OR CATEGORY = ? " * (len(categories) - 1)
             post += ")"
             command_args.extend(categories)
+        if nzo_ids:
+            nzo_ids = nzo_ids.split(",")
+            post += " AND (NZO_ID = ?"
+            post += " OR NZO_ID = ? " * (len(nzo_ids) - 1)
+            post += ")"
+            command_args.extend(nzo_ids)
         if failed_only:
             post += " AND STATUS = ?"
             command_args.append(Status.FAILED)

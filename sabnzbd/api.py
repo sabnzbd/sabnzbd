@@ -292,8 +292,9 @@ def _api_queue_default(output, value, kwargs):
     start = int_conv(kwargs.get("start"))
     limit = int_conv(kwargs.get("limit"))
     search = kwargs.get("search")
+    nzo_ids = kwargs.get("nzo_ids")
 
-    info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search)
+    info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search, nzo_ids=nzo_ids)
     return report(output, keyword="queue", data=info)
 
 
@@ -487,7 +488,7 @@ def _api_fullstatus(name, output, kwargs):
 
 
 def _api_history(name, output, kwargs):
-    """ API: accepts output, value(=nzo_id), start, limit, search """
+    """ API: accepts output, value(=nzo_id), start, limit, search, nzo_ids """
     value = kwargs.get("value", "")
     start = int_conv(kwargs.get("start"))
     limit = int_conv(kwargs.get("limit"))
@@ -495,6 +496,7 @@ def _api_history(name, output, kwargs):
     search = kwargs.get("search")
     failed_only = int_conv(kwargs.get("failed_only"))
     categories = kwargs.get("category")
+    nzo_ids = kwargs.get("nzo_ids")
 
     # Do we need to send anything?
     if last_history_update == sabnzbd.LAST_HISTORY_UPDATE:
@@ -537,7 +539,7 @@ def _api_history(name, output, kwargs):
             to_units(day),
         )
         history["slots"], fetched_items, history["noofslots"] = build_history(
-            start=start, limit=limit, search=search, failed_only=failed_only, categories=categories
+            start=start, limit=limit, search=search, failed_only=failed_only, categories=categories, nzo_ids=nzo_ids
         )
         history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
         history["version"] = sabnzbd.__version__
@@ -1304,10 +1306,10 @@ def build_status(skip_dashboard=False, output=None):
     return info
 
 
-def build_queue(start=0, limit=0, trans=False, output=None, search=None):
+def build_queue(start=0, limit=0, trans=False, output=None, search=None, nzo_ids=None):
     # build up header full of basic information
     info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(
-        search=search, start=start, limit=limit, output=output
+        search=search, start=start, limit=limit, output=output, nzo_ids=nzo_ids
     )
 
     datestart = datetime.datetime.now()
@@ -1653,13 +1655,13 @@ def build_header(webdir="", output=None, trans_functions=True):
     return header
 
 
-def build_queue_header(search=None, start=0, limit=0, output=None):
+def build_queue_header(search=None, nzo_ids=None, start=0, limit=0, output=None):
     """ Build full queue header """
 
     header = build_header(output=output)
 
     bytespersec = sabnzbd.BPSMeter.bps
-    qnfo = sabnzbd.NzbQueue.queue_info(search=search, start=start, limit=limit)
+    qnfo = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
 
     bytesleft = qnfo.bytes_left
     bytes_total = qnfo.bytes
@@ -1691,7 +1693,7 @@ def build_queue_header(search=None, start=0, limit=0, output=None):
     return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
-def build_history(start=0, limit=0, search=None, failed_only=0, categories=None):
+def build_history(start=0, limit=0, search=None, failed_only=0, categories=None, nzo_ids=None):
     """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
@@ -1744,12 +1746,12 @@ def build_history(start=0, limit=0, search=None, failed_only=0, categories=None)
     # Fetch history items
     if not database_history_limit:
         items, fetched_items, total_items = history_db.fetch_history(
-            database_history_start, 1, search, failed_only, categories
+            database_history_start, 1, search, failed_only, categories, nzo_ids
         )
         items = []
     else:
         items, fetched_items, total_items = history_db.fetch_history(
-            database_history_start, database_history_limit, search, failed_only, categories
+            database_history_start, database_history_limit, search, failed_only, categories, nzo_ids
         )
 
     # Reverse the queue to add items to the top (faster than insert)
