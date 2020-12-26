@@ -2137,7 +2137,7 @@ msgstr "Deze Maand"
 
 #: sabnzbd/skintext.py
 msgid "Selected date range"
-msgstr ""
+msgstr "Datumbereik"
 
 #: sabnzbd/skintext.py
 msgid "Today"
@@ -3005,6 +3005,9 @@ msgid ""
 "Modern web browsers and other clients will not accept self-signed "
 "certificates and will give a warning and/or won't connect at all."
 msgstr ""
+"Self-signed (onofficiële) certificaten worden door moderne webbrowsers en "
+"andere programma's meestal niet geaccepteerd waardoor deze een foutmelding "
+"geven of helemaal niet kunnen verbinden."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS Port"
@@ -4019,11 +4022,11 @@ msgstr "Persoonlijke aantekeningen"
 
 #: sabnzbd/skintext.py
 msgid "Article availability"
-msgstr ""
+msgstr "Beschikbaarheid van artikelen"
 
 #: sabnzbd/skintext.py
 msgid "%f% available of %d requested articles"
-msgstr ""
+msgstr "%f% van %d opgevraagde artikelen"
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py
@@ -4783,11 +4786,11 @@ msgstr "Datumnotatie"
 
 #: sabnzbd/skintext.py
 msgid "Extra queue columns"
-msgstr ""
+msgstr "Extra kolommen aan wachtrij toevoegen"
 
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
-msgstr ""
+msgstr "Extra kolommen aan geschiedenis toevoegen"
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4887,7 +4890,7 @@ msgstr "Compacte weergave"
 
 #: sabnzbd/skintext.py
 msgid "Always use full screen width"
-msgstr ""
+msgstr "Gebruik de volledige schermbreedte"
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
