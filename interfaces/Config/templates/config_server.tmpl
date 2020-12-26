@@ -9,7 +9,7 @@
     // Define variable needed for the server-statistics
     var serverBandwithData = {}
     var serverArticleTries = {}
-    var serverArticleSuccess = {}
+    var serverArticleFailed = {}
 </script>
 
 <div class="colmask">
@@ -260,7 +260,7 @@
                             // Server data
                             serverBandwithData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
                             serverArticleTries[${cur}] = <!--#echo json.dumps($server['amounts'][5])#-->
-                            serverArticleSuccess[${cur}] = <!--#echo json.dumps($server['amounts'][6])#-->
+                            serverArticleFailed[${cur}] = <!--#echo json.dumps($server['amounts'][6])#-->
                         </script>
                     <!--#end if#-->
                 </div>
@@ -314,7 +314,7 @@
             const server_id = \$(elemn).data('serverid')
             var totalBandwithThisRange = 0
             var totalArticlesTriedThisRange = 0
-            var totalArticlesSuccessThisRange = 0
+            var totalArticlesFailedThisRange = 0
 
             // Fill the data array
             var data = {
@@ -349,17 +349,19 @@
                 // Article stats
                 if(dateCheck in serverArticleTries[server_id]) {
                     totalArticlesTriedThisRange += serverArticleTries[server_id][dateCheck]
-                    totalArticlesSuccessThisRange += serverArticleSuccess[server_id][dateCheck]
+                    totalArticlesFailedThisRange += serverArticleFailed[server_id][dateCheck]
                 }
             }
 
             // Update the text value
             \$('#server-bandwith-value-' + server_id).text(filesize(totalBandwithThisRange, {round: 1}))
 
-            // Calculate article ratio, if available
-            var articleRatio = Math.round(totalArticlesTriedThisRange/totalArticlesSuccessThisRange)
+            // Calculate article success ratio, if available
+            var articleRatio = Math.round(100 * (1 - totalArticlesFailedThisRange/totalArticlesTriedThisRange))
+
+            // If values were missing
             if(!isNaN(articleRatio)) {
-                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio * 100).replace('%d', totalArticlesTriedThisRange))
+                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', totalArticlesTriedThisRange))
             } else {
                 \$('#server-article-value-' + server_id).text('$T("notAvailable")')
             }

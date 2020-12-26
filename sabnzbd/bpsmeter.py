@@ -108,7 +108,7 @@ class BPSMeter:
         self.timeline_total: Dict[str, Dict[str, int]] = {}
 
         self.article_stats_tried: Dict[str, Dict[str, int]] = {}
-        self.article_stats_success: Dict[str, Dict[str, int]] = {}
+        self.article_stats_failed: Dict[str, Dict[str, int]] = {}
 
         self.day_label: str = time.strftime("%Y-%m-%d")
         self.end_of_day: float = tomorrow(t)  # Time that current day will end
@@ -141,7 +141,7 @@ class BPSMeter:
                 self.q_time,
                 self.timeline_total,
                 self.article_stats_tried,
-                self.article_stats_success,
+                self.article_stats_failed,
             ),
             BYTES_FILE_NAME,
         )
@@ -187,7 +187,7 @@ class BPSMeter:
 
             # Article statistics were only added in 3.2.x
             if len(data) > 12:
-                self.article_stats_tried, self.article_stats_success = data[12:14]
+                self.article_stats_tried, self.article_stats_failed = data[12:14]
 
             # Trigger quota actions
             if abs(quota - self.quota) > 0.5:
@@ -291,19 +291,23 @@ class BPSMeter:
             self.bps_list.append(int(self.bps / KIBI))
             self.speed_log_time = t
 
-    def update_article_stats(self, server: str, success: bool):
+    def register_server_article_tried(self, server: str):
         """Keep track how many articles were tried for each server"""
         if server not in self.article_stats_tried:
             self.article_stats_tried[server] = {}
-            self.article_stats_success[server] = {}
+            self.article_stats_failed[server] = {}
         if self.day_label not in self.article_stats_tried[server]:
             self.article_stats_tried[server][self.day_label] = 0
-            self.article_stats_success[server][self.day_label] = 0
+            self.article_stats_failed[server][self.day_label] = 0
 
         # Update the counters
         self.article_stats_tried[server][self.day_label] += 1
-        if success:
-            self.article_stats_success[server][self.day_label] += 1
+
+    def register_server_article_failed(self, server: str):
+        """Keep track how many articles failed for each server"""
+        # This function is always called after the one above,
+        # so we can skip the check if the keys in the dict exist
+        self.article_stats_failed[server][self.day_label] += 1
 
     def reset(self):
         t = time.time()
@@ -341,7 +345,7 @@ class BPSMeter:
             self.day_total.get(server, 0),
             self.timeline_total.get(server, {}),
             self.article_stats_tried.get(server, {}),
-            self.article_stats_success.get(server, {}),
+            self.article_stats_failed.get(server, {}),
         )
 
     def clear_server(self, server: str):
@@ -358,8 +362,8 @@ class BPSMeter:
             del self.timeline_total[server]
         if server in self.article_stats_tried:
             del self.article_stats_tried[server]
-        if server in self.article_stats_success:
-            del self.article_stats_success[server]
+        if server in self.article_stats_failed:
+            del self.article_stats_failed[server]
         self.save()
 
     def get_bps_list(self):

@@ -234,7 +234,9 @@ class Article(TryList):
         return self.art_id
 
     def search_new_server(self):
-        # Search new server
+        """Search for a new server for this article"""
+        # Since we need a new server, this one can be listed as failed
+        sabnzbd.BPSMeter.register_server_article_failed(self.fetcher.id)
         self.add_to_try_list(self.fetcher)
         for server in sabnzbd.Downloader.servers:
             if server.active and not self.server_in_try_list(server):

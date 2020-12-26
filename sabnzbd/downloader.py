@@ -404,6 +404,9 @@ class Downloader(Thread):
         """Decode article and check the status of
         the decoder and the assembler
         """
+        # Article was requested and fetched, update article stats for the server
+        sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
+
         # Handle broken articles directly
         if not raw_data:
             if not article.search_new_server():

@@ -737,9 +737,6 @@ class NzbQueue:
         nzf = article.nzf
         nzo = nzf.nzo
 
-        # Update statistics
-        sabnzbd.BPSMeter.update_article_stats(article.fetcher.id, success)
-
         if nzf.deleted:
             logging.debug("Discarding article %s, no longer in queue", article.article)
             return
