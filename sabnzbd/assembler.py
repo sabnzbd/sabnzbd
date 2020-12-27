@@ -66,15 +66,18 @@ class Assembler(Thread):
             if nzf:
                 # Check if enough disk space is free after each file is done
                 # If not enough space left, pause downloader and send email
-                if (
-                    file_done
-                    and diskspace(force=True)["download_dir"][1] < (cfg.download_free.get_float() + nzf.bytes) / GIGI
-                ):
+                if file_done and (
+                    diskspace(force=True)["download_dir"][1] < (cfg.download_free.get_float() + nzf.bytes) / GIGI
+                    or (diskspace(force=True)["complete_dir"][1] < (cfg.complete_free.get_float() + nzf.bytes) / GIGI)
+                 ):
                     # Only warn and email once
                     if not sabnzbd.Downloader.paused:
                         logging.warning(T("Too little diskspace forcing PAUSE"))
                         # Pause downloader, but don't save, since the disk is almost full!
                         sabnzbd.Downloader.pause()
+                        if cfg.fulldisk_pausetime():
+                            logging.debug("Resuming in %d minutes", cfg.fulldisk_pausetime())
+                            sabnzbd.Scheduler.plan_resume(cfg.fulldisk_pausetime())
                         sabnzbd.emailer.diskfull_mail()
                         # Abort all direct unpackers, just to be sure
                         sabnzbd.directunpacker.abort_all()

@@ -428,6 +428,13 @@ SKIN_TEXT = {
     "explain-complete_dir": TT(
         "Location to store finished, fully processed downloads.<br /><i>Can be overruled by user-defined categories.</i>"
     ),
+    "opt-complete_free": TT("Minimum Free Space for Completed Download Folder"),
+    "explain-complete_free": TT(
+        'Auto-pause when free space is beneath this value. Only valid for the default folder. <br /><i>In bytes, optionally follow with K,M,G,T. For example: "800M" or "8G"</i>'
+    ),
+    "opt-fulldisk_pausetime": TT("Pause time on full disk"),
+    "explain-fulldisk_pausetime": TT("Pause for this long on full temporary or complete folder."),
+    "permanently": TT("Permanently"),
     "opt-permissions": TT("Permissions for completed downloads"),
     "explain-permissions": TT(
         'Set permissions pattern for completed files/folders.<br /><i>In octal notation. For example: "755" or "777"</i>'

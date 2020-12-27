@@ -28,13 +28,30 @@
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="download_free">$T('opt-download_free')</label>
-                    <input type="text" name="download_free" id="download_free" value="$download_free" class="smaller_input"  />
+                    <input type="text" name="download_free" id="download_free" value="$download_free" class="smaller_input" />
                     <span class="desc">$T('explain-download_free')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="complete_dir">$T('opt-complete_dir')</label>
                     <input type="text" name="complete_dir" id="complete_dir" value="$complete_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-complete_dir')</span>
+                </div>
+                <div class="field-pair advanced-settings">
+                    <label class="config" for="complete_free">$T('opt-complete_free')</label>
+                    <input type="text" name="complete_free" id="complete_free" value="$complete_free" class="smaller_input" />
+                    <span class="desc">$T('explain-complete_free')</span>
+                </div>
+                <div class="field-pair advanced-settings">
+                    <label class="config" for="fulldisk_pausetime">$T('opt-fulldisk_pausetime')</label>
+                    <select name="fulldisk_pausetime" id="fulldisk_pausetime">
+                        <option value="0" <!--#if $fulldisk_pausetime == 0 then 'selected="selected"' else ""#--> >$T('permanently')</option>
+                        <option value="10" <!--#if $fulldisk_pausetime == 10 then 'selected="selected"' else ""#--> >10 $T('minutes')</option>
+                        <option value="30" <!--#if $fulldisk_pausetime == 30 then 'selected="selected"' else ""#--> >30 $T('minutes')</option>
+                        <option value="120" <!--#if $fulldisk_pausetime == 120 then 'selected="selected"' else ""#--> >2 $T('hours')</option>
+                        <option value="480" <!--#if $fulldisk_pausetime == 480 then 'selected="selected"' else ""#--> >8 $T('hours')</option>
+                        <option value="1440" <!--#if $fulldisk_pausetime == 1440 then 'selected="selected"' else ""#--> >24 $T('hours')</option>
+                    </select>
+                    <span class="desc">$T('explain-fulldisk_pausetime')</span>
                 </div>
                 <!--#if not $nt#-->
                 <div class="field-pair advanced-settings">
