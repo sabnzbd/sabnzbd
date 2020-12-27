@@ -68,8 +68,11 @@ class Assembler(Thread):
                 # If not enough space left, pause downloader and send email
                 if file_done and (
                     diskspace(force=True)["download_dir"][1] < (cfg.download_free.get_float() + nzf.bytes) / GIGI
-                    or (diskspace(force=True)["complete_dir"][1] < (cfg.complete_free.get_float() + nzo.bytes_tried) / GIGI)
-                 ):
+                    or (
+                        diskspace(force=True)["complete_dir"][1]
+                        < (cfg.complete_free.get_float() + nzo.bytes_tried) / GIGI
+                    )
+                ):
                     # Only warn and email once
                     if not sabnzbd.Downloader.paused:
                         logging.warning(T("Too little diskspace forcing PAUSE"))
