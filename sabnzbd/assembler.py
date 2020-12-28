@@ -70,22 +70,15 @@ class Assembler(Thread):
                 if file_done and not sabnzbd.Downloader.paused:
                     freespace = diskspace(force=True)
                     download_full = freespace["download_dir"][1] < (cfg.download_free.get_float() + nzf.bytes) / GIGI
+
                     complete_full = 0
                     if cfg.direct_unpack():
-                        # Subtract the amount of bytes that has already been unpacked from size check
-                        bytes_unpacked = 0
-                        if nzo.direct_unpacker:
-                            bytes_unpacked = nzo.direct_unpacker.cur_volume * nzf.bytes
                         complete_full = (
-                            freespace["complete_dir"][1]
-                            < (cfg.complete_free.get_float() + nzo.bytes_tried - bytes_unpacked) / GIGI
+                            freespace["complete_dir"][1] < (cfg.complete_free.get_float() + nzo.bytes_downloaded) / GIGI
                         )
                     else:
-                        # Start checking when there are at least 5 files or 1 GB left to download, whichever is higher
-                        min_left = nzf.bytes * 5
-                        if min_left < 1024 ** 3:
-                            min_left = 1024 ** 3
-                        if nzo.remaining < min_left + nzo.bytes_par2:
+                        # Not direct unpack, continue downloading until 80% complete
+                        if nzo.remaining < nzo.bytes * 0.8:
                             complete_full = (
                                 freespace["complete_dir"][1] < (cfg.complete_free.get_float() + nzo.bytes) / GIGI
                             )
