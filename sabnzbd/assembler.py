@@ -77,8 +77,8 @@ class Assembler(Thread):
                             freespace["complete_dir"][1] < (cfg.complete_free.get_float() + nzo.bytes_downloaded) / GIGI
                         )
                     else:
-                        # Not direct unpack, continue downloading until 90% complete
-                        if nzo.bytes_tried > nzo.bytes * 0.90:
+                        # Not direct unpack, continue downloading until 95% complete
+                        if nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
                             complete_full = (
                                 freespace["complete_dir"][1] < (cfg.complete_free.get_float() + nzo.bytes) / GIGI
                             )
