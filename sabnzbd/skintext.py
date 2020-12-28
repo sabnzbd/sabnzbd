@@ -433,7 +433,7 @@ SKIN_TEXT = {
         'Auto-pause when free space is beneath this value. Only valid for the default folder. <br /><i>In bytes, optionally follow with K,M,G,T. For example: "800M" or "8G"</i>'
     ),
     "opt-fulldisk_pausetime": TT("Pause time on full disk"),
-    "explain-fulldisk_pausetime": TT("Pause for this long on full temporary or complete folder."),
+    "explain-fulldisk_pausetime": TT("Pause for this long on if minimum free space is exceeded for Completed Folder."),
     "permanently": TT("Permanently"),
     "opt-permissions": TT("Permissions for completed downloads"),
     "explain-permissions": TT(
