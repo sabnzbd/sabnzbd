@@ -29,7 +29,7 @@ import hashlib
 from typing import Tuple, Optional, List
 
 import sabnzbd
-from sabnzbd.misc import get_all_passwords
+from sabnzbd.misc import get_all_passwords, match_str
 from sabnzbd.filesystem import set_permissions, clip_path, has_win_device, diskspace, get_filename, get_ext
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
@@ -324,13 +324,20 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                                     zf.testrar()
                                     password_hit = password
                                     break
-                                except rarfile.RarCRCError:
-                                    # On CRC error we can continue!
-                                    password_hit = password
-                                    break
+                                except rarfile.RarCRCError as e:
+                                    # CRC errors can be thrown for wrong password or
+                                    # missing the next volume (with correct password)
+                                    if "cannot find volume" in str(e).lower():
+                                        password_hit = password
+                                        break
+                                    # This one didn't work
+                                    pass
                                 except Exception as e:
-                                    # Did we start from the right volume?
-                                    if "need to start extraction from a previous volume" in str(e):
+                                    # Did we start from the right volume? Skip the checks for now.
+                                    if match_str(
+                                        str(e).lower(),
+                                        ("need to start extraction from a previous volume", "non-fatal error"),
+                                    ):
                                         return encrypted, unwanted
                                     # This one failed
                                     pass
