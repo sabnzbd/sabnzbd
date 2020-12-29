@@ -355,17 +355,17 @@ class Scheduler:
         """ Resume if there is sufficient available space """
         disk_free = diskspace(force=True)[full_dir][1]
         if disk_free > required_space:
-            logging.debug("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
+            logging.info("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
             sabnzbd.unpause_all()
             self.scheduler.cancel(self.resume_task)
             self.resume_task = None
         else:
-            logging.debug("%s has %d GB free, need %d GB to resume", full_dir, disk_free, required_space)
+            logging.info("%s has %d GB free, need %d GB to resume", full_dir, disk_free, required_space)
 
     def plan_diskspace_resume(self, full_dir=None, required_space=None):
         """ Create regular check for free disk space """
         self.cancel_resume_task()
-        logging.debug("Pausing, will resume when %s has more than %d GB free", full_dir, required_space)
+        logging.info("Pausing, will resume when %s has more than %d GB free", full_dir, required_space)
         self.resume_task = self.scheduler.add_interval_task(
             self.__check_diskspace, "check_diskspace", 5 * 60, 9 * 60, "threaded", args=[full_dir, required_space]
         )
@@ -373,7 +373,7 @@ class Scheduler:
 
     def cancel_resume_task(self):
         if self.resume_task:
-            logging.debug("Cancelling existing resume_task")
+            logging.debug("Cancelling existing resume_task '%s'", self.resume_task.name)
             self.scheduler.cancel(self.resume_task)
             self.resume_task = None
 
