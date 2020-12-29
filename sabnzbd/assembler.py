@@ -38,6 +38,7 @@ import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
 
+
 class Assembler(Thread):
     def __init__(self):
         Thread.__init__(self)

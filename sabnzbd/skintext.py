@@ -433,7 +433,9 @@ SKIN_TEXT = {
         'Auto-pause when free space is beneath this value. Only valid for the default disk. <br /><i>In bytes, optionally follow with K,M,G,T. For example: "800M" or "8G"</i>'
     ),
     "opt-fulldisk_autoresume": TT("Automatic resume"),
-    "explain-fulldisk_autoresume": TT("If SABnzbd is paused because of low disk space it will check regularly and resume downloading if enough space has been freed. Needs restart if currently paused."),
+    "explain-fulldisk_autoresume": TT(
+        "If SABnzbd is paused because of low disk space it will check regularly and resume downloading if enough space has been freed. Needs restart if currently paused."
+    ),
     "opt-permissions": TT("Permissions for completed downloads"),
     "explain-permissions": TT(
         'Set permissions pattern for completed files/folders.<br /><i>In octal notation. For example: "755" or "777"</i>'
