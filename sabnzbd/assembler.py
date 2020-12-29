@@ -93,8 +93,6 @@ class Assembler(Thread):
                         if cfg.fulldisk_autoresume():
                             sabnzbd.Scheduler.plan_diskspace_resume(full_dir, required_space)
                         sabnzbd.emailer.diskfull_mail()
-                        # Abort all direct unpackers, just to be sure
-                        sabnzbd.directunpacker.abort_all()
 
                 # Prepare filepath
                 filepath = nzf.prepare_filepath()
