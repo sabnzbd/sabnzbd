@@ -1125,7 +1125,7 @@ LIST_DIRPAGE = (
     "download_free",
     "complete_dir",
     "complete_free",
-    "fulldisk_pausetime",
+    "fulldisk_autoresume",
     "admin_dir",
     "nzb_backup_dir",
     "dirscan_dir",

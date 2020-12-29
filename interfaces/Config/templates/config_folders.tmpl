@@ -42,16 +42,9 @@
                     <span class="desc">$T('explain-complete_free')</span>
                 </div>
                 <div class="field-pair advanced-settings">
-                    <label class="config" for="fulldisk_pausetime">$T('opt-fulldisk_pausetime')</label>
-                    <select name="fulldisk_pausetime" id="fulldisk_pausetime">
-                        <option value="0" <!--#if $fulldisk_pausetime == 0 then 'selected="selected"' else ""#--> >$T('permanently')</option>
-                        <option value="10" <!--#if $fulldisk_pausetime == 10 then 'selected="selected"' else ""#--> >10 $T('minutes')</option>
-                        <option value="30" <!--#if $fulldisk_pausetime == 30 then 'selected="selected"' else ""#--> >30 $T('minutes')</option>
-                        <option value="120" <!--#if $fulldisk_pausetime == 120 then 'selected="selected"' else ""#--> >2 $T('hours')</option>
-                        <option value="480" <!--#if $fulldisk_pausetime == 480 then 'selected="selected"' else ""#--> >8 $T('hours')</option>
-                        <option value="1440" <!--#if $fulldisk_pausetime == 1440 then 'selected="selected"' else ""#--> >24 $T('hours')</option>
-                    </select>
-                    <span class="desc">$T('explain-fulldisk_pausetime')</span>
+                    <label class="config" for="fulldisk_autoresume">$T('opt-fulldisk_autoresume')</label>
+                    <input type="checkbox" name="fulldisk_autoresume" id="fulldisk_autoresume" value="1" <!--#if int($fulldisk_autoresume) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-fulldisk_autoresume')</span>
                 </div>
                 <!--#if not $nt#-->
                 <div class="field-pair advanced-settings">

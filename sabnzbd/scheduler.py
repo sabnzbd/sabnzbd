@@ -31,6 +31,7 @@ import sabnzbd.dirscanner
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
+from sabnzbd.filesystem import diskspace
 from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
 
@@ -38,6 +39,7 @@ class Scheduler:
     def __init__(self):
         self.scheduler = kronos.ThreadedScheduler()
         self.pause_end: Optional[float] = None  # Moment when pause will end
+        self.resume_task = None
         self.restart_scheduler = False
         self.pp_pause_event = False
         self.load_schedules()
@@ -348,6 +350,31 @@ class Scheduler:
         else:
             self.pause_end = None
             sabnzbd.unpause_all()
+
+    def __check_diskspace(self, full_dir, required_space):
+        """ Resume if there is sufficient available space """
+        disk_free = diskspace(force=True)[full_dir][1]
+        if disk_free > required_space:
+            logging.debug("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
+            sabnzbd.unpause_all()
+            self.scheduler.cancel(self.resume_task)
+            self.resume_task = None
+        else:
+            logging.debug("%s has %d GB free, need %d GB to resume", full_dir, disk_free, required_space)
+
+    def plan_diskspace_resume(self, full_dir=None, required_space=None):
+        """ Create regular check for free disk space """
+        if self.resume_task:
+            logging.debug("Cancelling existing resume_task")
+            self.scheduler.cancel(self.resume_task)
+            self.resume_task = None
+
+        if required_space:
+            logging.debug("Pausing, will resume when %s has more than %d GB free", full_dir, required_space)
+            self.resume_task = self.scheduler.add_interval_task(
+                self.__check_diskspace, "check_diskspace", 5 * 60, 9 * 60, "threaded", args=[full_dir, required_space]
+            )
+            sabnzbd.Downloader.pause()
 
     def pause_int(self) -> str:
         """ Return minutes:seconds until pause ends """

@@ -38,7 +38,6 @@ import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
 
-
 class Assembler(Thread):
     def __init__(self):
         Thread.__init__(self)
@@ -66,30 +65,32 @@ class Assembler(Thread):
             if nzf:
                 # Check if enough disk space is free after each file is done
                 # If not enough space left, pause downloader and send email
-                # Only warn and email once per pause
                 if file_done and not sabnzbd.Downloader.paused:
                     freespace = diskspace(force=True)
-                    download_full = freespace["download_dir"][1] < (cfg.download_free.get_float() + nzf.bytes) / GIGI
+                    full_dir = None
+                    required_space = (cfg.download_free.get_float() + nzf.bytes) / GIGI
+                    if freespace["download_dir"][1] < required_space:
+                        full_dir = "download_dir"
 
-                    complete_full = 0
-                    if cfg.direct_unpack():
-                        complete_full = (
-                            freespace["complete_dir"][1] < (cfg.complete_free.get_float() + nzo.bytes_downloaded) / GIGI
-                        )
-                    else:
-                        # Not direct unpack, continue downloading until 95% complete
-                        if nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
-                            complete_full = (
-                                freespace["complete_dir"][1] < (cfg.complete_free.get_float() + nzo.bytes) / GIGI
-                            )
+                    # Enough space in download_dir, check complete_dir
+                    if not full_dir:
+                        required_space = 0
+                        if cfg.direct_unpack():
+                            required_space = (cfg.complete_free.get_float() + nzo.bytes_downloaded) / GIGI
+                        else:
+                            # Continue downloading until 95% complete before checking
+                            if nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.0095:
+                                required_space = (cfg.complete_free.get_float() + nzo.bytes) / GIGI
 
-                    if download_full or complete_full:
+                        if required_space and freespace["complete_dir"][1] < required_space:
+                            full_dir = "complete_dir"
+
+                    if full_dir:
                         logging.warning(T("Too little diskspace forcing PAUSE"))
                         # Pause downloader, but don't save, since the disk is almost full!
                         sabnzbd.Downloader.pause()
-                        if not download_full and cfg.fulldisk_pausetime():
-                            logging.debug("Resuming in %d minutes", cfg.fulldisk_pausetime())
-                            sabnzbd.Scheduler.plan_resume(cfg.fulldisk_pausetime())
+                        if cfg.fulldisk_autoresume():
+                            sabnzbd.Scheduler.plan_diskspace_resume(full_dir, required_space)
                         sabnzbd.emailer.diskfull_mail()
                         # Abort all direct unpackers, just to be sure
                         sabnzbd.directunpacker.abort_all()

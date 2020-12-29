@@ -137,7 +137,7 @@ complete_dir = OptionDir(
     "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_umask=True, validation=validate_notempty
 )
 complete_free = OptionStr("misc", "complete_free")
-fulldisk_pausetime = OptionNumber("misc", "fulldisk_pausetime", 0)
+fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
 script_dir = OptionDir("misc", "script_dir", create=True, writable=False)
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
