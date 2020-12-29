@@ -364,17 +364,18 @@ class Scheduler:
 
     def plan_diskspace_resume(self, full_dir=None, required_space=None):
         """ Create regular check for free disk space """
+        self.cancel_resume_task()
+        logging.debug("Pausing, will resume when %s has more than %d GB free", full_dir, required_space)
+        self.resume_task = self.scheduler.add_interval_task(
+            self.__check_diskspace, "check_diskspace", 5 * 60, 9 * 60, "threaded", args=[full_dir, required_space]
+        )
+        sabnzbd.Downloader.pause()
+
+    def cancel_resume_task(self):
         if self.resume_task:
             logging.debug("Cancelling existing resume_task")
             self.scheduler.cancel(self.resume_task)
             self.resume_task = None
-
-        if required_space:
-            logging.debug("Pausing, will resume when %s has more than %d GB free", full_dir, required_space)
-            self.resume_task = self.scheduler.add_interval_task(
-                self.__check_diskspace, "check_diskspace", 5 * 60, 9 * 60, "threaded", args=[full_dir, required_space]
-            )
-            sabnzbd.Downloader.pause()
 
     def pause_int(self) -> str:
         """ Return minutes:seconds until pause ends """
