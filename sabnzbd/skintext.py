@@ -429,12 +429,10 @@ SKIN_TEXT = {
         "Location to store finished, fully processed downloads.<br /><i>Can be overruled by user-defined categories.</i>"
     ),
     "opt-complete_free": TT("Minimum Free Space for Completed Download Folder"),
-    "explain-complete_free": TT(
-        'Auto-pause when free space is beneath this value. Only valid for the default disk. <br /><i>In bytes, optionally follow with K,M,G,T. For example: "800M" or "8G"</i>'
-    ),
-    "opt-fulldisk_autoresume": TT("Automatic resume"),
+    "explain-complete_free": TT("Will not work if a category folder is on a different disk."),
+    "opt-fulldisk_autoresume": TT("Auto resume"),
     "explain-fulldisk_autoresume": TT(
-        "Check regularly if enough space has been freed and automatically resume downloading. Needs manual unpause if currently paused."
+        "Downloading will automatically resume if the minimum free space is available again.<br />Applies to both the Temporary and Complete Download Folder.<br />Checked every %s minutes."
     ),
     "opt-permissions": TT("Permissions for completed downloads"),
     "explain-permissions": TT(
