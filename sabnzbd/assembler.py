@@ -73,15 +73,16 @@ class Assembler(Thread):
                     if freespace["download_dir"][1] < required_space:
                         full_dir = "download_dir"
 
+                    complete_free = cfg.complete_free.get_float()
                     # Enough space in download_dir, check complete_dir
-                    if not full_dir:
+                    if complete_free > 0 and not full_dir:
                         required_space = 0
                         if cfg.direct_unpack():
-                            required_space = (cfg.complete_free.get_float() + nzo.bytes_downloaded) / GIGI
+                            required_space = (complete_free + nzo.bytes_downloaded) / GIGI
                         else:
                             # Continue downloading until 95% complete before checking
                             if nzo.bytes_tried > (nzo.bytes - nzo.bytes_par2) * 0.95:
-                                required_space = (cfg.complete_free.get_float() + nzo.bytes) / GIGI
+                                required_space = (complete_free + nzo.bytes) / GIGI
 
                         if required_space and freespace["complete_dir"][1] < required_space:
                             full_dir = "complete_dir"
