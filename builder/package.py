@@ -275,7 +275,7 @@ if __name__ == "__main__":
                 print("Signed %s!" % file_to_sign)
 
             # Only notarize for real builds that we want to deploy
-            if notarization_user and notarization_pass and "release" in os.environ.get("TRAVIS_TAG", ""):
+            if notarization_user and notarization_pass and "/tags/" in os.environ.get("GITHUB_REF", ""):
                 # Prepare zip to upload to notarization service
                 print("Creating zip to send to Apple notarization service")
                 # We need to use ditto, otherwise the signature gets lost!
