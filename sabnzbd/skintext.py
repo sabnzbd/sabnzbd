@@ -432,7 +432,7 @@ SKIN_TEXT = {
     "explain-complete_free": TT("Will not work if a category folder is on a different disk."),
     "opt-fulldisk_autoresume": TT("Auto resume"),
     "explain-fulldisk_autoresume": TT(
-        "Downloading will automatically resume if the minimum free space is available again.<br />Applies to both the Temporary and Complete Download Folder.<br />Checked every %s minutes."
+        "Downloading will automatically resume if the minimum free space is available again.<br />Applies to both the Temporary and Complete Download Folder.<br />Checked every few minutes."
     ),
     "opt-permissions": TT("Permissions for completed downloads"),
     "explain-permissions": TT(
