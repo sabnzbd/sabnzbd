@@ -353,6 +353,10 @@ class Scheduler:
 
     def __check_diskspace(self, full_dir: str, required_space: float):
         """ Resume if there is sufficient available space """
+        if not cfg.fulldisk_autoresume():
+            self.cancel_resume_task()
+            return
+
         disk_free = diskspace(force=True)[full_dir][1]
         if disk_free > required_space:
             logging.info("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
