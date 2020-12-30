@@ -357,9 +357,12 @@ class Scheduler:
         if disk_free > required_space:
             logging.info("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
             sabnzbd.Downloader.resume()
-            self.cancel_resume_task()
         else:
             logging.info("%s has %d GB free, need %d GB to resume", full_dir, disk_free, required_space)
+
+        # Remove scheduled task if user manually resumed or we auto-resumed
+        if not sabnzbd.Downloader.paused:
+            self.cancel_resume_task()
 
     def plan_diskspace_resume(self, full_dir: str, required_space: float):
         """ Create regular check for free disk space """
