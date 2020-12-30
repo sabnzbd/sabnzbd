@@ -434,7 +434,7 @@ SKIN_TEXT = {
     ),
     "opt-fulldisk_autoresume": TT("Automatic resume"),
     "explain-fulldisk_autoresume": TT(
-        "If SABnzbd is paused because of low disk space it will check regularly and resume downloading if enough space has been freed. Needs restart if currently paused."
+        "Check regularly if enough space has been freed and automatically resume downloading. Needs manual unpause if currently paused."
     ),
     "opt-permissions": TT("Permissions for completed downloads"),
     "explain-permissions": TT(
