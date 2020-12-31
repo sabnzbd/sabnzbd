@@ -152,7 +152,9 @@
                             <div class="col-sm-6">$T('dashboard-testDownload')</div>
                             <div class="col-sm-6">
                                 <a href="#" class="btn btn-default" data-bind="click: testDownload" data-size="100MB" data-tooltip="true" data-placement="top" title="$T('dashboard-testDownload-explain')"><span class="glyphicon glyphicon-download-alt"></span> 100 MB</a>
-                                <a href="#" class="btn btn-default" data-bind="click: testDownload" data-size="1000MB" data-tooltip="true" data-placement="top" title="$T('dashboard-testDownload-explain')"><span class="glyphicon glyphicon-download-alt"></span> 1000 MB</a>
+                                <a href="#" class="btn btn-default" data-bind="click: testDownload" data-size="1000MB" data-tooltip="true" data-placement="top" title="$T('dashboard-testDownload-explain')"><span class="glyphicon glyphicon-download-alt"></span> 1 GB</a>
+                                <a href="#" class="btn btn-default" data-bind="click: testDownload" data-size="10GB" data-tooltip="true" data-placement="top" title="$T('dashboard-testDownload-explain')"><span class="glyphicon glyphicon-download-alt"></span> 10 GB</a>
+
                             </div>
                         </div>
                         <hr />
@@ -443,7 +445,7 @@
 </div>
 
 <div id="modal-add-nzb" class="modal fade" tabindex="-1">
-    <div class="modal-dialog">
+    <form class="modal-dialog">
         <form class="modal-content" data-bind="submit: addNZB">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -522,7 +524,7 @@
                 </div>
                 <div class="clearfix"></div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
