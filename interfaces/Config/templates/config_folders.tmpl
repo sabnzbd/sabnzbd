@@ -28,13 +28,23 @@
                 </div>
                 <div class="field-pair advanced-settings">
                     <label class="config" for="download_free">$T('opt-download_free')</label>
-                    <input type="text" name="download_free" id="download_free" value="$download_free" class="smaller_input"  />
+                    <input type="text" name="download_free" id="download_free" value="$download_free" class="smaller_input" />
                     <span class="desc">$T('explain-download_free')</span>
                 </div>
                 <div class="field-pair">
                     <label class="config" for="complete_dir">$T('opt-complete_dir')</label>
                     <input type="text" name="complete_dir" id="complete_dir" value="$complete_dir" data-initialdir="$my_home" />
                     <span class="desc">$T('explain-complete_dir')</span>
+                </div>
+                <div class="field-pair advanced-settings">
+                    <label class="config" for="complete_free">$T('opt-complete_free')</label>
+                    <input type="text" name="complete_free" id="complete_free" value="$complete_free" class="smaller_input" />
+                    <span class="desc">$T('explain-download_free') <br>$T('explain-complete_free')</span>
+                </div>
+                <div class="field-pair advanced-settings">
+                    <label class="config" for="fulldisk_autoresume">$T('opt-fulldisk_autoresume')</label>
+                    <input type="checkbox" name="fulldisk_autoresume" id="fulldisk_autoresume" value="1" <!--#if int($fulldisk_autoresume) > 0 then 'checked="checked"' else ""#--> />
+                    <span class="desc">$T('explain-fulldisk_autoresume')</span>
                 </div>
                 <!--#if not $nt#-->
                 <div class="field-pair advanced-settings">

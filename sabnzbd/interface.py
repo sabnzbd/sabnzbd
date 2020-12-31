@@ -1124,6 +1124,7 @@ LIST_DIRPAGE = (
     "download_dir",
     "download_free",
     "complete_dir",
+    "complete_free",
     "admin_dir",
     "nzb_backup_dir",
     "dirscan_dir",
@@ -1135,6 +1136,8 @@ LIST_DIRPAGE = (
     "password_file",
 )
 
+LIST_BOOL_DIRPAGE = ("fulldisk_autoresume",)
+
 
 class ConfigFolders:
     def __init__(self, root):
@@ -1144,7 +1147,7 @@ class ConfigFolders:
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        for kw in LIST_DIRPAGE:
+        for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
             conf[kw] = config.get_config("misc", kw)()
 
         template = Template(
@@ -1156,9 +1159,9 @@ class ConfigFolders:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveDirectories(self, **kwargs):
-        for kw in LIST_DIRPAGE:
+        for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
             value = kwargs.get(kw)
-            if value is not None:
+            if value is not None or kw in LIST_BOOL_DIRPAGE:
                 if kw in ("complete_dir", "dirscan_dir"):
                     msg = config.get_config("misc", kw).set(value, create=True)
                 else:
