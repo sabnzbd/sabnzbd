@@ -631,8 +631,10 @@ class Downloader(Thread):
                 else:
                     try:
                         article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, bytes_received)
-                    except:
+                    except AttributeError:
+                        # In case nzf has disappeared because the file was deleted before the update could happen
                         pass
+
                     if self.bandwidth_limit:
                         limit = self.bandwidth_limit
                         if bytes_received + sabnzbd.BPSMeter.bps > limit:
