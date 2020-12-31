@@ -3322,6 +3322,26 @@ msgstr ""
 "outrepassé par les catégories définies par l'utilisateur.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr ""
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr "Reprise auto"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
 msgstr "Permissions pour le dossier de téléchargements terminés"
 
@@ -3804,11 +3824,6 @@ msgid ""
 msgstr ""
 "A quel jour du mois ou de la semaine (1=lundi) votre fournisseur "
 "réinitialise le quota ? (Optionnel avec hh:mm)"
-
-#. Auto-resume download on the reset day
-#: sabnzbd/skintext.py
-msgid "Auto resume"
-msgstr "Reprise auto"
 
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"

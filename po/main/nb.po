@@ -3224,6 +3224,26 @@ msgstr ""
 "overstyres av brukerdefinerte kategorier.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr ""
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr "Gjenoppta automatisk"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
 msgstr "Rettigheter for ferdige nedlastinger"
 
@@ -3670,11 +3690,6 @@ msgid ""
 msgstr ""
 "På hvilken dag i måneden eller uken (1=mandag) resetter til nettilbyder "
 "kvoten? (Valgfritt med tt:mm)"
-
-#. Auto-resume download on the reset day
-#: sabnzbd/skintext.py
-msgid "Auto resume"
-msgstr "Gjenoppta automatisk"
 
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"

@@ -3235,6 +3235,26 @@ msgstr ""
 "קטגוריות מוגדרות ע״י משתמש</i>"
 
 #: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr ""
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr "המשך באופן אוטומטי"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
 msgstr "הרשאות עבור הורדות שלמות"
 
@@ -3683,11 +3703,6 @@ msgid ""
 msgstr ""
 "(באיזה יום של החודש או השבוע (1=יום שני) ספק האינטרנט שלך מאפס את המיכסה? "
 "(לא חובה עם שש:דד"
-
-#. Auto-resume download on the reset day
-#: sabnzbd/skintext.py
-msgid "Auto resume"
-msgstr "המשך באופן אוטומטי"
 
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"

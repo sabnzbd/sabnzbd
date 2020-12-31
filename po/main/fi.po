@@ -3238,6 +3238,26 @@ msgstr ""
 "kohteet.<br /><i>Käyttäjän asettamat kategoriat voivat kumota tämän.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr ""
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr "Jatka automaattisesti"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
 msgstr "Käyttöoikeudet valmistuneille latauksille"
 
@@ -3695,11 +3715,6 @@ msgid ""
 msgstr ""
 "Minä päivänä kuusta tai viikosta (1=Maanantai) palveluntarjoajasi resetoi "
 "rajoituksen? (Voit syöttää kellonajan perään hh:mm)"
-
-#. Auto-resume download on the reset day
-#: sabnzbd/skintext.py
-msgid "Auto resume"
-msgstr "Jatka automaattisesti"
 
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"

@@ -3225,6 +3225,26 @@ msgstr ""
 " переопределить в пользовательских категориях.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr ""
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr "Автоматически возобновлять"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
 msgstr "Права доступа для завершённых загрузок"
 
@@ -3669,11 +3689,6 @@ msgid ""
 msgstr ""
 "День месяца или недели (1 — понедельник), когда провайдер сбрасывает квоту. "
 "(дополнительно можно указать чч:мм)"
-
-#. Auto-resume download on the reset day
-#: sabnzbd/skintext.py
-msgid "Auto resume"
-msgstr "Автоматически возобновлять"
 
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"
