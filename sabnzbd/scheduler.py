@@ -39,7 +39,7 @@ class Scheduler:
     def __init__(self):
         self.scheduler = kronos.ThreadedScheduler()
         self.pause_end: Optional[float] = None  # Moment when pause will end
-        self.resume_task = None
+        self.resume_task: Optional[kronos.Task] = None
         self.restart_scheduler = False
         self.pp_pause_event = False
         self.load_schedules()
@@ -351,25 +351,30 @@ class Scheduler:
             self.pause_end = None
             sabnzbd.unpause_all()
 
-    def __check_diskspace(self, full_dir, required_space):
+    def __check_diskspace(self, full_dir: str, required_space: float):
         """ Resume if there is sufficient available space """
+        if not cfg.fulldisk_autoresume():
+            self.cancel_resume_task()
+            return
+
         disk_free = diskspace(force=True)[full_dir][1]
         if disk_free > required_space:
             logging.info("Resuming, %s has %d GB free, needed %d GB", full_dir, disk_free, required_space)
-            sabnzbd.unpause_all()
-            self.scheduler.cancel(self.resume_task)
-            self.resume_task = None
+            sabnzbd.Downloader.resume()
         else:
             logging.info("%s has %d GB free, need %d GB to resume", full_dir, disk_free, required_space)
 
-    def plan_diskspace_resume(self, full_dir=None, required_space=None):
+        # Remove scheduled task if user manually resumed or we auto-resumed
+        if not sabnzbd.Downloader.paused:
+            self.cancel_resume_task()
+
+    def plan_diskspace_resume(self, full_dir: str, required_space: float):
         """ Create regular check for free disk space """
         self.cancel_resume_task()
-        logging.info("Pausing, will resume when %s has more than %d GB free", full_dir, required_space)
+        logging.info("Will resume when %s has more than %d GB free space", full_dir, required_space)
         self.resume_task = self.scheduler.add_interval_task(
             self.__check_diskspace, "check_diskspace", 5 * 60, 9 * 60, "threaded", args=[full_dir, required_space]
         )
-        sabnzbd.Downloader.pause()
 
     def cancel_resume_task(self):
         if self.resume_task:

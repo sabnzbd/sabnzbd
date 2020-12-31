@@ -173,7 +173,7 @@ class Downloader(Thread):
         logging.debug("Initializing downloader")
 
         # Used for scheduled pausing
-        self.paused = paused
+        self.paused: bool = paused
 
         # Used for reducing speed
         self.bandwidth_limit = 0
