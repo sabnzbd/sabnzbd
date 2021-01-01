@@ -3323,11 +3323,13 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
-msgstr ""
+msgstr "Espace libre minimum pour le dossier des téléchargements terminés"
 
 #: sabnzbd/skintext.py
 msgid "Will not work if a category folder is on a different disk."
 msgstr ""
+"Ne fonctionnera pas si un dossier de catégorie se trouve sur un autre "
+"disque."
 
 #. Auto-resume download on the reset day
 #: sabnzbd/skintext.py
@@ -3340,6 +3342,9 @@ msgid ""
 " again.<br />Applies to both the Temporary and Complete Download Folder.<br "
 "/>Checked every few minutes."
 msgstr ""
+"Le téléchargement reprendra automatiquement si l'espace libre minimum est à "
+"nouveau disponible.<br />S'applique aux dossiers de téléchargements "
+"temporaires et terminés.<br />Vérifié toutes les quelques minutes."
 
 #: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
