@@ -472,10 +472,14 @@ class MainPage:
     @secured_expose
     def description_xml(self, **kwargs):
         """ Provide the description.xml which was broadcast via SSDP """
+        try:
+            useragent = cherrypy.request.headers["User-Agent"]
+        except:
+            useragent = "No User-Agent specified by client"
         logging.debug(
             "description.xml was requested from %s by %s",
             cherrypy.request.remote.ip,
-            cherrypy.request.headers["User-Agent"],
+            useragent
         )
         cherrypy.response.headers["Content-Type"] = "application/xml"
         return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
