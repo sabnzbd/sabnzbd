@@ -123,7 +123,6 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
             except:
                 # probably no network
                 pass
-            print("Sleeping for", self.__ssdp_broadcast_interval)
             time.sleep(self.__ssdp_broadcast_interval)
 
     def serve_xml(self):
@@ -141,9 +140,9 @@ __SSDP: Optional[SSDP] = None
 
 
 # Wrapper functions to be called by program
-def start_ssdp(host, server_name, url, description, manufacturer, manufacturer_url, model, **kwargs):
+def start_ssdp(*args, **kwargs):
     global __SSDP
-    __SSDP = SSDP(host, server_name, url, description, manufacturer, manufacturer_url, model, **kwargs)
+    __SSDP = SSDP(*args, **kwargs)
     __SSDP.start()
 
 
