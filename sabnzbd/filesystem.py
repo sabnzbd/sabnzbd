@@ -30,6 +30,7 @@ import fnmatch
 import stat
 import zipfile
 from typing import Union, List, Tuple, Any, Dict, Optional
+from collections import namedtuple
 
 try:
     import win32api
@@ -923,3 +924,37 @@ def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
         __DISKS_SAME = __LAST_DISK_RESULT["download_dir"] == __LAST_DISK_RESULT["complete_dir"]
 
     return __LAST_DISK_RESULT
+
+class Disk:
+    def __init__(self):
+        self.paths = {}
+        self.volumes = {}
+
+    def free(self, path, timeout=10):
+        disk_size = None
+        available = None
+        device = None
+
+        try:
+            volume = self.paths[path]
+            logging.debug("Reused volume id %s", volume)
+        except KeyError:
+            volume = os.lstat(path).st_dev
+            logging.debug("Fetched volume id %s", volume)
+            self.paths[path] = volume
+
+        try:
+            if self.volumes[volume].timestamp + timeout > time.time():
+                available = self.volumes[volume].available
+                logging.debug("Reused volumeinfo")
+            else:
+                raise KeyError
+        except KeyError:
+            disk_size, available = diskspace_base(path)
+            self.volumes[volume] = Volumeinfo(disk_size, available, time.time())
+            logging.debug("Updated volumeinfo")
+
+        return available
+
+Volumeinfo = namedtuple('Volumeinfo',['disk_size', 'available', 'timestamp'])
+disk = Disk()
