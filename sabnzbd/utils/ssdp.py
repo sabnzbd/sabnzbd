@@ -41,11 +41,10 @@ import socket
 import uuid
 from threading import Thread
 from typing import Optional
-import sabnzbd.cfg as cfg
 
 
 class SSDP(Thread):
-    def __init__(self, host, server_name, url, description, manufacturer, manufacturer_url, model):
+    def __init__(self, host, server_name, url, description, manufacturer, manufacturer_url, model, **kwargs):
         self.__host = host  # Note: this is the LAN IP address!
         self.__server_name = server_name
         self.__url = url
@@ -53,6 +52,7 @@ class SSDP(Thread):
         self.__manufacturer = manufacturer
         self.__manufacturer_url = manufacturer_url
         self.__model = model
+        self.__ssdp_broadcast_interval = kwargs.get('ssdp_broadcast_interval', 15) # optional, default 15 seconds
 
         self.__myhostname = socket.gethostname()
         # a steady uuid: stays the same as long as hostname and ip address stay the same:
@@ -123,8 +123,8 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
             except:
                 # probably no network
                 pass
-            # now sleep for the time specified in ssdp_broadcast_interval in sabnzbd.ini / Specials
-            time.sleep(cfg.ssdp_broadcast_interval())
+            print("Sleeping for", self.__ssdp_broadcast_interval)
+            time.sleep(self.__ssdp_broadcast_interval)
 
     def serve_xml(self):
         """Returns an XML-structure based on the information being
@@ -141,9 +141,9 @@ __SSDP: Optional[SSDP] = None
 
 
 # Wrapper functions to be called by program
-def start_ssdp(host, server_name, url, description, manufacturer, manufacturer_url, model):
+def start_ssdp(host, server_name, url, description, manufacturer, manufacturer_url, model, **kwargs):
     global __SSDP
-    __SSDP = SSDP(host, server_name, url, description, manufacturer, manufacturer_url, model)
+    __SSDP = SSDP(host, server_name, url, description, manufacturer, manufacturer_url, model, **kwargs)
     __SSDP.start()
 
 
