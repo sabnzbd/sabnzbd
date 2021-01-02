@@ -471,8 +471,12 @@ class MainPage:
 
     @secured_expose
     def description_xml(self, **kwargs):
-        """ Keep web crawlers out """
-        logging.debug("description.xml was requested by %s", cherrypy.request.remote.ip)
+        """ Provide the description.xml which was broadcast via SSDP """
+        logging.debug(
+            "description.xml was requested from %s by %s",
+            cherrypy.request.remote.ip,
+            cherrypy.request.headers.get("User-Agent", "??"),
+        )
         cherrypy.response.headers["Content-Type"] = "application/xml"
         return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
 
@@ -1347,6 +1351,7 @@ SPECIAL_VALUE_LIST = (
     "ipv6_servers",
     "selftest_host",
     "rating_host",
+    "ssdp_broadcast_interval",
 )
 SPECIAL_LIST_LIST = ("rss_odd_titles", "quick_check_ext_ignore", "host_whitelist")
 
