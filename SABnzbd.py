@@ -1510,7 +1510,7 @@ def main():
             "SABnzbd Team",
             "https://sabnzbd.org/",
             "SABnzbd %s" % sabnzbd.__version__,
-            ssdp_broadcast_interval = sabnzbd.cfg.ssdp_broadcast_interval() ,
+            ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
         )
 
     # Have to keep this running, otherwise logging will terminate
