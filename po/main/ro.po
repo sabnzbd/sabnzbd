@@ -667,6 +667,8 @@ msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
+"Directorul de descărcări finalizate nu poate fi același, sau un subdirector "
+"al directorului de descărcări temporare"
 
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
@@ -725,6 +727,8 @@ msgstr "Server nedefinit!"
 msgid ""
 "Category folder cannot be a subfolder of the Temporary Download Folder."
 msgstr ""
+"Directorul de categorii nu poate fi un subdirector al directorului de "
+"descărcări temporare."
 
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "ERROR:"
@@ -757,7 +761,7 @@ msgstr "Actualizare Disponibilă!"
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
-msgstr ""
+msgstr "Eșuare la încărcarea fișierului: %s"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -770,21 +774,23 @@ msgid ""
 "Your password file contains more than 30 passwords, testing all these "
 "passwords takes a lot of time. Try to only list useful passwords."
 msgstr ""
+"Fișierul tău cu parole conține peste 30 de parole, verificarea tuturor "
+"necesită mult timp. Listează doar parolele utile."
 
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Failed to read the password file %s"
-msgstr ""
+msgstr "Eșuare la citirea fișierului cu parole %s"
 
 #. Error message
 #: sabnzbd/misc.py
 msgid "[%s] The command in build_command is undefined."
-msgstr ""
+msgstr "[%s] Comanda din build_command este nedefinită."
 
 #. Error message
 #: sabnzbd/misc.py
 msgid "Python script \"%s\" does not have execute (+x) permission set"
-msgstr ""
+msgstr "Scriptul Python „%s” nu are permisiuni de executare (+x)"
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
@@ -872,11 +878,12 @@ msgstr "EROARE: CRC nereuşit în \"%s\""
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
+"Dezarhivare eșuată, fișier prea mare pentru sistemul de fișiere (FAT?)"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
+msgstr "EROARE: fișier prea mare pentru sistemul de fișiere (%s)"
 
 #. Error message
 #: sabnzbd/newsunpack.py
@@ -907,7 +914,7 @@ msgstr "Fișier RAR ce poate fi folosit"
 
 #: sabnzbd/newsunpack.py
 msgid "Corrupt RAR file"
-msgstr ""
+msgstr "Fișier RAR corupt"
 
 #: sabnzbd/newsunpack.py
 msgid "%s files in %s"
@@ -920,7 +927,7 @@ msgstr "Eroare \"%s\"  în timpul rulării unzip() pe  %s"
 
 #: sabnzbd/newsunpack.py
 msgid "No 7za binary found, cannot unpack \"%s\""
-msgstr ""
+msgstr "Nu s-a găsit binar 7za, nu pot dezarhiva „%s”"
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
@@ -983,6 +990,8 @@ msgstr "[%s] Verificat în %s, reparare necesară"
 #: sabnzbd/newsunpack.py
 msgid "Invalid par2 files or invalid PAR2 parameters, cannot verify or repair"
 msgstr ""
+"Fișiere par2 invalide sau parametri PAR2 invalizi, nu pot verifica sau "
+"repara"
 
 #: sabnzbd/newsunpack.py
 msgid "Fetching %s blocks..."
@@ -1006,7 +1015,7 @@ msgstr "[%s] Reparat în %s"
 
 #: sabnzbd/newsunpack.py
 msgid "Verifying repair"
-msgstr ""
+msgstr "Se verifică repararea"
 
 #. Notification
 #: sabnzbd/newsunpack.py, sabnzbd/notifier.py
@@ -1019,7 +1028,7 @@ msgstr "Se verifică"
 
 #: sabnzbd/newsunpack.py
 msgid "Checking extra files"
-msgstr ""
+msgstr "Se verifică fișierele extra"
 
 #. PP status
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
@@ -1039,14 +1048,16 @@ msgid ""
 "Certificate hostname mismatch: the server hostname is not listed in the "
 "certificate. This is a server issue."
 msgstr ""
+"Neportivire certificat: denumirea serverului nu este listată în certificat. "
+"Aceasta este o problemă de server."
 
 #: sabnzbd/newswrapper.py
 msgid "Certificate not valid. This is most probably a server issue."
-msgstr ""
+msgstr "Certificat invalid. Este cel mai probabil o problemă de server."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr ""
+msgstr "Serverul %s utilizează un certificat nesigur [%s]"
 
 #. Main menu item
 #: sabnzbd/newswrapper.py, sabnzbd/skintext.py
@@ -1106,7 +1117,7 @@ msgstr "Indisponibil"
 
 #: sabnzbd/notifier.py
 msgid "Failed to send macOS notification"
-msgstr ""
+msgstr "Eșuare la trimiterea notificării macOS"
 
 #. Warning message
 #: sabnzbd/notifier.py
@@ -1196,7 +1207,7 @@ msgstr "Fişier NZB gol %s"
 
 #: sabnzbd/nzbstuff.py
 msgid "Pre-queue script marked job as failed"
-msgstr ""
+msgstr "Scriptul pre-coadă a marcat sarcina ca nereușită"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1206,12 +1217,12 @@ msgstr "Ignorăm duplicat NZB \"%s\""
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Failing duplicate NZB \"%s\""
-msgstr ""
+msgstr "Eșuare duplicat NZB „%s”"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Duplicate NZB"
-msgstr ""
+msgstr "NZB duplicat"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1221,7 +1232,7 @@ msgstr "Întrerupem duplicat NZB \"%s\""
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
+msgstr "Extensie nedorită în fișierul %s (%s)"
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -1491,6 +1502,8 @@ msgid ""
 "Unable to bind to port %s on %s. Some other software uses the port or "
 "SABnzbd is already running."
 msgstr ""
+"Nu pot rezerva portul %s pe %s. Alt software utilizează portul sau SABnzbs "
+"rulează deja."
 
 #. Warning message
 #: sabnzbd/panic.py
@@ -1518,6 +1531,8 @@ msgid ""
 "Completed Download Folder %s is on FAT file system, limiting maximum file "
 "size to 4GB"
 msgstr ""
+"Directorul de descărcări finalizate %s se află pe sistem de fișiere FAT, "
+"limitând dimensiunea maximă a fișierului la 4GB"
 
 #: sabnzbd/postproc.py
 msgid "Download might fail, only %s of required %s available"
@@ -1576,7 +1591,7 @@ msgstr "vezi fişier jurnal"
 
 #: sabnzbd/postproc.py
 msgid "Post-processing was aborted"
-msgstr ""
+msgstr "Post-procesarea a fost întreruptă"
 
 #: sabnzbd/postproc.py
 msgid "Download Failed"
@@ -1610,11 +1625,11 @@ msgstr "Verificare reuşită cu fişierele SFV"
 
 #: sabnzbd/postproc.py
 msgid "Trying RAR-based verification"
-msgstr ""
+msgstr "Încerc verificare RAR"
 
 #: sabnzbd/postproc.py
 msgid "[%s] RAR-based verification failed: %s"
-msgstr ""
+msgstr "[%s] verificarea RAR a eșuat: %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "Passworded"
@@ -1622,11 +1637,11 @@ msgstr "Parolat"
 
 #: sabnzbd/postproc.py
 msgid "RAR files verified successfully"
-msgstr ""
+msgstr "Fișierele RAR verificate cu succes"
 
 #: sabnzbd/postproc.py
 msgid "RAR files failed to verify"
-msgstr ""
+msgstr "Verificarea fișierelor RAR a eșuat"
 
 #. Warning message
 #: sabnzbd/postproc.py
