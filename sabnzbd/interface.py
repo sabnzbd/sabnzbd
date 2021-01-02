@@ -471,7 +471,7 @@ class MainPage:
 
     @secured_expose
     def description_xml(self, **kwargs):
-        """ Provide the description.xml which is broadcast via SSDP """
+        """ Provide the description.xml which was broadcast via SSDP """
         logging.debug(
             "description.xml was requested from %s by %s",
             cherrypy.request.remote.ip,
