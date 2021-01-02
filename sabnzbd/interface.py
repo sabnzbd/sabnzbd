@@ -472,7 +472,11 @@ class MainPage:
     @secured_expose
     def description_xml(self, **kwargs):
         """ Provide the description.xml which is broadcast via SSDP """
-        logging.debug("description.xml was requested from %s by %s", cherrypy.request.remote.ip, cherrypy.request.headers['User-Agent'])
+        logging.debug(
+            "description.xml was requested from %s by %s",
+            cherrypy.request.remote.ip,
+            cherrypy.request.headers["User-Agent"],
+        )
         cherrypy.response.headers["Content-Type"] = "application/xml"
         return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
 
