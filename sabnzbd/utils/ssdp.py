@@ -41,6 +41,7 @@ import socket
 import uuid
 from threading import Thread
 from typing import Optional
+import sabnzbd.cfg as cfg
 
 
 class SSDP(Thread):
@@ -122,7 +123,8 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
             except:
                 # probably no network
                 pass
-            time.sleep(5)
+            # now sleep for the time specified in ssdp_broadcast_interval in sabnzbd.ini / Specials
+            time.sleep(cfg.ssdp_broadcast_interval())
 
     def serve_xml(self):
         """Returns an XML-structure based on the information being
