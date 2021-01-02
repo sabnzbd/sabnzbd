@@ -52,7 +52,7 @@ class SSDP(Thread):
         self.__manufacturer = manufacturer
         self.__manufacturer_url = manufacturer_url
         self.__model = model
-        self.__ssdp_broadcast_interval = kwargs.get('ssdp_broadcast_interval', 15) # optional, default 15 seconds
+        self.__ssdp_broadcast_interval = kwargs.get("ssdp_broadcast_interval", 15)  # optional, default 15 seconds
 
         self.__myhostname = socket.gethostname()
         # a steady uuid: stays the same as long as hostname and ip address stay the same:
