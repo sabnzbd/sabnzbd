@@ -480,7 +480,6 @@ class NzbQueue:
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             nzo.resume()
-            nzo.reset_all_try_lists()
             logging.info("Resumed nzo: %s", nzo_id)
             handled.append(nzo_id)
         return handled
@@ -693,10 +692,6 @@ class NzbQueue:
             article.reset_try_list()
         article.nzf.reset_try_list()
         article.nzf.nzo.reset_try_list()
-
-    def reset_all_try_lists(self):
-        for nzo in self.__nzo_list:
-            nzo.reset_all_try_lists()
 
     def has_forced_items(self):
         """Check if the queue contains any Forced

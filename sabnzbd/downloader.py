@@ -395,10 +395,12 @@ class Downloader(Thread):
             # Remove all connections to server
             for nw in server.idle_threads + server.busy_threads:
                 self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, send_quit=False)
+                # Let the other servers try the articles of this server again
+                if nw.article:
+                    sabnzbd.NzbQueue.reset_try_lists(nw.article)
+
             # Make sure server address resolution is refreshed
             server.info = None
-
-            sabnzbd.NzbQueue.reset_all_try_lists()
 
     def decode(self, article, raw_data: Optional[List[bytes]]):
         """Decode article and check the status of
@@ -480,7 +482,6 @@ class Downloader(Thread):
                         if newid:
                             self.init_server(None, newid)
                         self.__restart -= 1
-                        sabnzbd.NzbQueue.reset_all_try_lists()
                         # Have to leave this loop, because we removed element
                         break
                     else:
@@ -723,7 +724,7 @@ class Downloader(Thread):
                                     server.active = False
                                     if penalty and (block or server.optional):
                                         self.plan_server(server, penalty)
-                                    sabnzbd.NzbQueue.reset_all_try_lists()
+                                    sabnzbd.NzbQueue.reset_try_lists(article)
                                 self.__reset_nw(nw, None, warn=False, send_quit=True)
                             continue
                         except:
