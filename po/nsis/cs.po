@@ -1,7 +1,7 @@
 # SABnzbd Translation Template file NSIS
 # Copyright 2011-2021 The SABnzbd-Team
 #   team@sabnzbd.org
-#
+# 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.0.0-develop\n"
