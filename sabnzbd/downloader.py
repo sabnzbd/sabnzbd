@@ -27,7 +27,7 @@ from nntplib import NNTPPermanentError
 import socket
 import random
 import sys
-from typing import List, Dict
+from typing import List, Dict, Optional, Union
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
@@ -205,7 +205,7 @@ class Downloader(Thread):
         for server in config.get_servers():
             self.init_server(None, server)
 
-    def init_server(self, oldserver, newserver):
+    def init_server(self, oldserver: Optional[str], newserver: str):
         """Setup or re-setup single server
         When oldserver is defined and in use, delay startup.
         Note that the server names are "host:port" strings!
@@ -268,7 +268,7 @@ class Downloader(Thread):
         self.server_nr = len(self.servers)
 
     @NzbQueueLocker
-    def set_paused_state(self, state):
+    def set_paused_state(self, state: bool):
         """ Set downloader to specified paused state """
         self.paused = state
 
@@ -304,7 +304,7 @@ class Downloader(Thread):
     def disconnect(self):
         self.force_disconnect = True
 
-    def limit_speed(self, value):
+    def limit_speed(self, value: Union[str, int]):
         """Set the actual download speed in Bytes/sec
         When 'value' ends with a '%' sign or is within 1-100, it is interpreted as a pecentage of the maximum bandwidth
         When no '%' is found, it is interpreted as an absolute speed (including KMGT notation).
@@ -369,7 +369,7 @@ class Downloader(Thread):
     def nzo_servers(self, nzo):
         return list(filter(nzo.server_in_try_list, self.servers))
 
-    def maybe_block_server(self, server):
+    def maybe_block_server(self, server: Server):
         # Was it resolving problem?
         if server.info is False:
             # Warn about resolving issues
@@ -400,7 +400,7 @@ class Downloader(Thread):
 
             sabnzbd.NzbQueue.reset_all_try_lists()
 
-    def decode(self, article, raw_data):
+    def decode(self, article, raw_data: Optional[List[bytes]]):
         """Decode article and check the status of
         the decoder and the assembler
         """
@@ -785,7 +785,7 @@ class Downloader(Thread):
                     server.busy_threads.remove(nw)
                     server.idle_threads.append(nw)
 
-    def __lookup_nw(self, nw):
+    def __lookup_nw(self, nw: NewsWrapper):
         """ Find the fileno matching the nw, needed for closed connections """
         for f in self.read_fds:
             if self.read_fds[f] == nw:
@@ -795,7 +795,15 @@ class Downloader(Thread):
                 return f
         return None
 
-    def __reset_nw(self, nw, reset_msg, warn=True, wait=True, destroy=False, send_quit=False):
+    def __reset_nw(
+        self,
+        nw: NewsWrapper,
+        reset_msg: Optional[str],
+        warn: bool = True,
+        wait: bool = True,
+        destroy: bool = False,
+        send_quit: bool = False,
+    ):
         server = nw.server
         article = nw.article
         fileno = None
@@ -829,7 +837,7 @@ class Downloader(Thread):
                 # Too many tries on this server, consider article missing
                 self.decode(article, None)
             else:
-                # Allow all servers to iterate over each nzo/nzf again
+                # Allow all servers to iterate over this nzo/nzf again
                 sabnzbd.NzbQueue.reset_try_lists(article)
 
         if destroy:
@@ -872,7 +880,7 @@ class Downloader(Thread):
     # Each server has a dictionary entry, consisting of a list of timestamps.
 
     @synchronized(TIMER_LOCK)
-    def plan_server(self, server, interval):
+    def plan_server(self, server: Server, interval: int):
         """ Plan the restart of a server in 'interval' minutes """
         if cfg.no_penalties() and interval > _PENALTY_SHORT:
             # Overwrite in case of no_penalties
@@ -887,7 +895,7 @@ class Downloader(Thread):
             sabnzbd.Scheduler.plan_server(self.trigger_server, [server.id, stamp], interval)
 
     @synchronized(TIMER_LOCK)
-    def trigger_server(self, server_id, timestamp):
+    def trigger_server(self, server_id: str, timestamp: float):
         """ Called by scheduler, start server if timer still valid """
         logging.debug("Trigger planned server resume for server-id %s", server_id)
         if server_id in self._timers:
@@ -897,7 +905,7 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     @synchronized(TIMER_LOCK)
-    def unblock(self, server_id):
+    def unblock(self, server_id: str):
         # Remove timer
         try:
             del self._timers[server_id]
@@ -935,7 +943,7 @@ class Downloader(Thread):
                     logging.debug("Forcing activation of server %s", server.host)
                     self.init_server(server.id, server.id)
 
-    def update_server(self, oldserver, newserver):
+    def update_server(self, oldserver: str, newserver: Optional[str]):
         """Update the server and make sure we trigger
         the update in the loop to do housekeeping"""
         self.init_server(oldserver, newserver)
@@ -964,7 +972,7 @@ def stop():
         pass
 
 
-def clues_login(text):
+def clues_login(text: str) -> bool:
     """ Check for any "failed login" clues in the response code """
     text = text.lower()
     for clue in ("username", "password", "invalid", "authen", "access denied"):
@@ -973,7 +981,7 @@ def clues_login(text):
     return False
 
 
-def clues_too_many(text):
+def clues_too_many(text: str) -> bool:
     """ Check for any "too many connections" clues in the response code """
     text = text.lower()
     for clue in ("exceed", "connections", "too many", "threads", "limit"):
@@ -983,7 +991,7 @@ def clues_too_many(text):
     return False
 
 
-def clues_too_many_ip(text):
+def clues_too_many_ip(text: str) -> bool:
     """ Check for any "account sharing" clues in the response code """
     text = text.lower()
     for clue in ("simultaneous ip", "multiple ip"):
@@ -992,7 +1000,7 @@ def clues_too_many_ip(text):
     return False
 
 
-def clues_pay(text):
+def clues_pay(text: str) -> bool:
     """ Check for messages about payments """
     text = text.lower()
     for clue in ("credits", "paym", "expired", "exceeded"):
