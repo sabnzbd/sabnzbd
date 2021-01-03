@@ -4,7 +4,7 @@
 0) LICENSE
 -------------------------------------------------------------------------------
 
-(c) Copyright 2007-2020 by "The SABnzbd-team" <team@sabnzbd.org>
+(c) Copyright 2007-2021 by "The SABnzbd-team" <team@sabnzbd.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
