@@ -18,7 +18,7 @@
 """
 sabnzbd.postproc - threaded post-processing of jobs
 """
-
+import gc
 import os
 import logging
 import functools
@@ -1037,6 +1037,11 @@ def handle_empty_queue():
             else:
                 Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
             sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
+
+        # Trigger garbage collection
+        logging.debug("Triggering Python garbage collection")
+        gc.collect()
+        logging.debug("Finished Python garbage collection")
 
 
 def cleanup_list(wdir, skip_nzb):
