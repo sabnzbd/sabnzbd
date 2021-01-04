@@ -26,13 +26,15 @@
             <!-- /ko -->
             <!-- ko foreach: allMessages -->
                 <tr>
-                    <td class="table-messages-label">
+                    <td class="table-messages-label" data-bind="attr: { 'colspan': 1 + !\$data.hasOwnProperty('clear') }">
                         <span class="label" data-bind="css: 'label-' + css, text: type"></span>
                         <span class="queue-message-text" data-bind="html: text"></span>
                     </td>
+                    <!-- ko if: \$data.hasOwnProperty("clear") -->
                     <td class="table-messages-remove">
-                        <!-- ko if: \$data.hasOwnProperty("clear") --><a href="#" data-bind="click: clear"  class="hover-button"><span class="glyphicon glyphicon-remove"></span></a><!-- /ko -->
+                        <a href="#" data-bind="click: clear"  class="hover-button"><span class="glyphicon glyphicon-remove"></span></a>
                     </td>
+                    <!-- /ko -->
                 </tr>
             <!-- /ko -->
             <!-- ko if: !hasMessages() && displayTabbed() -->
