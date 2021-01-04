@@ -1180,10 +1180,11 @@ def handle_cat_api(output, kwargs):
         name = kwargs.get("name")
     if not name:
         return None
+    name = name.lower()
 
-    feed = config.get_config("categories", name)
-    if feed:
-        feed.set_dict(kwargs)
+    cat = config.get_config("categories", name)
+    if cat:
+        cat.set_dict(kwargs)
     else:
         config.ConfigCat(name, kwargs)
     return name
