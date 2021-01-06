@@ -3,13 +3,13 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
+# Safihre <safihre@sabnzbd.org>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
 "Language-Team: Dutch (https://www.transifex.com/sabnzbd/teams/111101/nl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -3285,11 +3285,11 @@ msgstr "(kan aangepast worden door de categorieën)."
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
-msgstr ""
+msgstr "Minimale vrije ruimte voor verwerkte downloads map"
 
 #: sabnzbd/skintext.py
 msgid "Will not work if a category folder is on a different disk."
-msgstr ""
+msgstr "Werkt niet als een categorie-pad naar een andere schijf verwijst."
 
 #. Auto-resume download on the reset day
 #: sabnzbd/skintext.py
@@ -3302,6 +3302,9 @@ msgid ""
 " again.<br />Applies to both the Temporary and Complete Download Folder.<br "
 "/>Checked every few minutes."
 msgstr ""
+"Het downloaden zal automatisch hervat worden als de minimale vrije ruimte "
+"weer beschikbaar is.<br />Is van toepassing op zowel de tijdelijke als "
+"verwerkte download map.<br />Wordt elke paar minuten gecontroleerd."
 
 #: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
