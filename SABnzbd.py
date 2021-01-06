@@ -34,6 +34,7 @@ import subprocess
 import ssl
 import time
 import re
+import gc
 from typing import List, Dict, Any
 
 try:
@@ -1517,6 +1518,7 @@ def main():
     timer = 0
     while not sabnzbd.SABSTOP:
         time.sleep(3)
+        timer += 1
 
         # Check for loglevel changes
         if LOG_FLAG:
@@ -1526,9 +1528,15 @@ def main():
             if console_logging:
                 console.setLevel(level)
 
-        # 30 sec polling tasks
-        if timer > 9:
+        # 300 sec polling tasks
+        if not timer % 100:
+            if sabnzbd.LOG_ALL:
+                logging.debug("Triggering Python garbage collection")
+            gc.collect()
             timer = 0
+
+        # 30 sec polling tasks
+        if not timer % 10:
             # Keep OS awake (if needed)
             sabnzbd.keep_awake()
             # Restart scheduler (if needed)
@@ -1539,8 +1547,6 @@ def main():
             if not sabnzbd.check_all_tasks():
                 autorestarted = True
                 sabnzbd.TRIGGER_RESTART = True
-        else:
-            timer += 1
 
         # 3 sec polling tasks
         # Check for auto-restart request
