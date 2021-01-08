@@ -31,11 +31,11 @@ from typing import List, Dict, Optional, Union
 
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
-from sabnzbd.newswrapper import NewsWrapper, request_server_info
+from sabnzbd.newswrapper import NewsWrapper
 import sabnzbd.notifier
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import from_units, nntp_to_msg, int_conv
+from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo
 from sabnzbd.utils.happyeyeballs import happyeyeballs
 
 
@@ -73,42 +73,42 @@ class Server:
         retention=0,
     ):
 
-        self.id = server_id
-        self.newid = None
-        self.restart = False
-        self.displayname = displayname
-        self.host = host
+        self.id: str = server_id
+        self.newid: Optional[str] = None
+        self.restart: bool = False
+        self.displayname: str = displayname
+        self.host: str = host
         self.port: int = port
-        self.timeout = timeout
-        self.threads = threads
+        self.timeout: int = timeout
+        self.threads: int = threads
         self.priority: int = priority
-        self.ssl = ssl
-        self.ssl_verify = ssl_verify
-        self.ssl_ciphers = ssl_ciphers
-        self.optional = optional
-        self.retention = retention
-        self.send_group = send_group
+        self.ssl: bool = ssl
+        self.ssl_verify: int = ssl_verify
+        self.ssl_ciphers: str = ssl_ciphers
+        self.optional: bool = optional
+        self.retention: int = retention
+        self.send_group: bool = send_group
 
-        self.username = username
-        self.password = password
+        self.username: Optional[str] = username
+        self.password: Optional[str] = password
 
-        self.busy_threads = []
-        self.idle_threads = []
-        self.active = True
-        self.bad_cons = 0
-        self.errormsg = ""
-        self.warning = ""
-        self.info = None  # Will hold getaddrinfo() list
-        self.ssl_info = ""  # Will hold the type and cipher of SSL connection
-        self.request = False  # True if a getaddrinfo() request is pending
-        self.have_body = "free.xsusenet.com" not in host
-        self.have_stat = True  # Assume server has "STAT", until proven otherwise
+        self.busy_threads: List[NewsWrapper] = []
+        self.idle_threads: List[NewsWrapper] = []
+        self.active: bool = True
+        self.bad_cons: int = 0
+        self.errormsg: str = ""
+        self.warning: str = ""
+        self.info: Optional[List] = None  # Will hold getaddrinfo() list
+        self.ssl_info: str = ""  # Will hold the type and cipher of SSL connection
+        self.request: bool = False  # True if a getaddrinfo() request is pending
+        self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
+        self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
 
     @property
-    def hostip(self):
+    def hostip(self) -> str:
         """In case a server still has active connections, we use the same IP again
         If new connection then based on value of load_balancing() and self.info:
         0 - return the first entry, so all threads use the same IP
@@ -147,7 +147,7 @@ class Server:
             ip = self.host
         return ip
 
-    def stop(self, readers, writers):
+    def stop(self, readers: Dict[int, NewsWrapper], writers: Dict[int, NewsWrapper]):
         for nw in self.idle_threads:
             try:
                 fno = nw.nntp.sock.fileno()
@@ -159,6 +159,26 @@ class Server:
                 writers.pop(fno)
             nw.terminate(quit=True)
         self.idle_threads = []
+
+    def request_info(self):
+        """Launch async request to resolve server address.
+        getaddrinfo() can be very slow. In some situations this can lead
+        to delayed starts and timeouts on connections.
+        Because of this, the results will be cached in the server object."""
+        if not self.request:
+            self.request = True
+            Thread(target=self._request_info_internal).start()
+
+    def _request_info_internal(self):
+        """ Async attempt to run getaddrinfo() for specified server """
+        logging.debug("Retrieving server address information for %s", self.host)
+        self.info = get_server_addrinfo(self.host, self.port)
+        if not self.info:
+            self.bad_cons += self.threads
+        else:
+            self.bad_cons = 0
+        self.request = False
+        sabnzbd.Downloader.wakeup()
 
     def __repr__(self):
         return "<Server: %s:%s>" % (self.host, self.port)
@@ -176,8 +196,8 @@ class Downloader(Thread):
         self.paused: bool = paused
 
         # Used for reducing speed
-        self.bandwidth_limit = 0
-        self.bandwidth_perc = 0
+        self.bandwidth_limit: int = 0
+        self.bandwidth_perc: int = 0
         cfg.bandwidth_perc.callback(self.speed_set)
         cfg.bandwidth_max.callback(self.speed_set)
         self.speed_set()
@@ -185,22 +205,22 @@ class Downloader(Thread):
         self.sleep_time_set()
         cfg.downloader_sleep_time.callback(self.sleep_time_set)
 
-        self.postproc = False
-        self.shutdown = False
+        self.postproc: bool = False
+        self.shutdown: bool = False
 
         # A user might change server parms again before server restart is ready.
         # Keep a counter to prevent multiple restarts
-        self.__restart = 0
+        self.server_restarts: bool = 0
 
-        self.force_disconnect = False
+        self.force_disconnect: bool = False
 
         self.read_fds: Dict[int, NewsWrapper] = {}
         self.write_fds: Dict[int, NewsWrapper] = {}
 
         self.servers: List[Server] = []
         self.server_dict: Dict[str, Server] = {}  # For faster lookups, but is not updated later!
-        self.server_nr = 0
-        self._timers = {}
+        self.server_nr: int = 0
+        self.timers: Dict[str, float] = {}
 
         for server in config.get_servers():
             self.init_server(None, server)
@@ -229,18 +249,18 @@ class Downloader(Thread):
             username = srv.username()
             password = srv.password()
             optional = srv.optional()
-            retention = float(srv.retention() * 24 * 3600)  # days ==> seconds
+            retention = int(srv.retention() * 24 * 3600)  # days ==> seconds
             send_group = srv.send_group()
             create = True
 
         if oldserver:
-            for n in range(len(self.servers)):
-                if self.servers[n].id == oldserver:
+            for server in self.servers:
+                if server.id == oldserver:
                     # Server exists, do re-init later
                     create = False
-                    self.servers[n].newid = newserver
-                    self.servers[n].restart = True
-                    self.__restart += 1
+                    server.newid = newserver
+                    server.restart = True
+                    self.server_restarts += 1
                     break
 
         if create and enabled and host and port and threads:
@@ -481,7 +501,7 @@ class Downloader(Thread):
                         self.servers.remove(server)
                         if newid:
                             self.init_server(None, newid)
-                        self.__restart -= 1
+                        self.server_restarts -= 1
                         # Have to leave this loop, because we removed element
                         break
                     else:
@@ -505,7 +525,7 @@ class Downloader(Thread):
                         # Only request info if there's stuff in the queue
                         if not sabnzbd.NzbQueue.is_empty():
                             self.maybe_block_server(server)
-                            request_server_info(server)
+                            server.request_info()
                         break
 
                     article = sabnzbd.NzbQueue.get_article(server, self.servers)
@@ -589,7 +609,7 @@ class Downloader(Thread):
                 while (
                     (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.postproc)
                     and not self.shutdown
-                    and not self.__restart
+                    and not self.server_restarts
                 ):
                     DOWNLOADER_CV.wait()
                 DOWNLOADER_CV.release()
@@ -860,7 +880,7 @@ class Downloader(Thread):
             else:
                 if sabnzbd.LOG_ALL:
                     logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
-                nw.body(nzo.precheck)
+                nw.body()
 
             fileno = nw.nntp.sock.fileno()
             if fileno not in self.read_fds:
@@ -888,10 +908,10 @@ class Downloader(Thread):
             interval = _PENALTY_SHORT
 
         logging.debug("Set planned server resume %s in %s mins", server.host, interval)
-        if server.id not in self._timers:
-            self._timers[server.id] = []
+        if server.id not in self.timers:
+            self.timers[server.id] = []
         stamp = time.time() + 60.0 * interval
-        self._timers[server.id].append(stamp)
+        self.timers[server.id].append(stamp)
         if interval:
             sabnzbd.Scheduler.plan_server(self.trigger_server, [server.id, stamp], interval)
 
@@ -899,9 +919,9 @@ class Downloader(Thread):
     def trigger_server(self, server_id: str, timestamp: float):
         """ Called by scheduler, start server if timer still valid """
         logging.debug("Trigger planned server resume for server-id %s", server_id)
-        if server_id in self._timers:
-            if timestamp in self._timers[server_id]:
-                del self._timers[server_id]
+        if server_id in self.timers:
+            if timestamp in self.timers[server_id]:
+                del self.timers[server_id]
                 self.init_server(server_id, server_id)
 
     @NzbQueueLocker
@@ -909,7 +929,7 @@ class Downloader(Thread):
     def unblock(self, server_id: str):
         # Remove timer
         try:
-            del self._timers[server_id]
+            del self.timers[server_id]
         except KeyError:
             pass
         # Activate server if it was inactive
@@ -920,7 +940,7 @@ class Downloader(Thread):
                 break
 
     def unblock_all(self):
-        for server_id in self._timers.keys():
+        for server_id in self.timers.keys():
             self.unblock(server_id)
 
     @NzbQueueLocker
@@ -931,15 +951,15 @@ class Downloader(Thread):
         now = time.time()
         kicked = []
         # Create a copy so we can remove during iteration
-        for server_id in list(self._timers):
-            if not [stamp for stamp in self._timers[server_id] if stamp >= now]:
+        for server_id in list(self.timers):
+            if not [stamp for stamp in self.timers[server_id] if stamp >= now]:
                 logging.debug("Forcing re-evaluation of server-id %s", server_id)
-                del self._timers[server_id]
+                del self.timers[server_id]
                 self.init_server(server_id, server_id)
                 kicked.append(server_id)
         # Activate every inactive server without an active timer
         for server in self.servers:
-            if server.id not in self._timers:
+            if server.id not in self.timers:
                 if server.id not in kicked and not server.active:
                     logging.debug("Forcing activation of server %s", server.host)
                     self.init_server(server.id, server.id)

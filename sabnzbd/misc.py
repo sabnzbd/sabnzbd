@@ -31,7 +31,7 @@ import datetime
 import inspect
 import ctypes
 import ipaddress
-from typing import Union, Tuple, Any, Optional, List
+from typing import Union, Tuple, Any, AnyStr, Optional, List
 
 import sabnzbd
 from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
@@ -861,7 +861,7 @@ def probablyipv6(ip):
             return False
 
 
-def ip_extract():
+def ip_extract() -> List[str]:
     """ Return list of IP addresses of this system """
     ips = []
     program = find_on_path("ip")
@@ -891,7 +891,43 @@ def ip_extract():
     return ips
 
 
-def get_base_url(url):
+def get_server_addrinfo(host: str, port: int) -> socket.getaddrinfo:
+    """ Return processed getaddrinfo() """
+    try:
+        int(port)
+    except:
+        port = 119
+    opt = sabnzbd.cfg.ipv6_servers()
+    """ ... with the following meaning for 'opt':
+    Control the use of IPv6 Usenet server addresses. Meaning:
+    0 = don't use
+    1 = use when available and reachable (DEFAULT)
+    2 = force usage (when SABnzbd's detection fails)
+    """
+    try:
+        # Standard IPV4 or IPV6
+        ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
+            # IPv6 forced by user, or IPv6 allowed and reachable, or IPv6 allowed and loadbalancing-with-IPv6 activated
+            # So return all IP addresses, no matter IPv4 or IPv6:
+            return ips
+        else:
+            # IPv6 unreachable or not allowed by user, so only return IPv4 address(es):
+            return [ip for ip in ips if ":" not in ip[4][0]]
+    except:
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
+            try:
+                # Try IPV6 explicitly
+                return socket.getaddrinfo(
+                    host, port, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME
+                )
+            except:
+                # Nothing found!
+                pass
+        return []
+
+
+def get_base_url(url: str) -> str:
     """Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
     But also api.althub.co.za -> althub.co.za
     """
@@ -906,7 +942,7 @@ def get_base_url(url):
         return ""
 
 
-def match_str(text, matches):
+def match_str(text: AnyStr, matches: List[AnyStr]) -> Optional[AnyStr]:
     """ Return first matching element of list 'matches' in 'text', otherwise None """
     for match in matches:
         if match in text:
@@ -914,7 +950,7 @@ def match_str(text, matches):
     return None
 
 
-def nntp_to_msg(text):
+def nntp_to_msg(text: Union[List[bytes], bytes]) -> str:
     """ Format raw NNTP bytes data for display """
     if isinstance(text, list):
         text = text[0]
