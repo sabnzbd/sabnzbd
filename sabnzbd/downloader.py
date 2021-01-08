@@ -544,7 +544,9 @@ class Downloader(Thread):
                             )
                             self.__reset_nw(nw, "failed to initialize")
 
-            if idle_count > 1:
+            # Wait longer between sleeps when speed increases
+            if idle_count > sabnzbd.BPSMeter.bps / 5000000:
+                idle_count = 0
                 time.sleep(self.sleep_time)
 
             # Exit-point
