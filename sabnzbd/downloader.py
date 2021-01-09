@@ -565,7 +565,7 @@ class Downloader(Thread):
                             self.__reset_nw(nw, "failed to initialize")
 
             # Wait longer between sleeps when speed increases
-            if idle_count > sabnzbd.BPSMeter.bps / 5000000:
+            if idle_count > 5:
                 idle_count = 0
                 time.sleep(self.sleep_time)
 
@@ -600,6 +600,8 @@ class Downloader(Thread):
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
+                if len(read) > 1:
+                    idle_count -= 1
             else:
                 read, write, error = ([], [], [])
 
