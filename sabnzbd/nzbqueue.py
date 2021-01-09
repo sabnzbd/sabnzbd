@@ -32,7 +32,6 @@ from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp, safe
 from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
-import sabnzbd.database as database
 from sabnzbd.decorators import NzbQueueLocker
 from sabnzbd.constants import (
     QUEUE_FILE_NAME,

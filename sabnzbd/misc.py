@@ -942,7 +942,7 @@ def get_base_url(url: str) -> str:
         return ""
 
 
-def match_str(text: AnyStr, matches: List[AnyStr]) -> Optional[AnyStr]:
+def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
     """ Return first matching element of list 'matches' in 'text', otherwise None """
     for match in matches:
         if match in text:
@@ -950,7 +950,7 @@ def match_str(text: AnyStr, matches: List[AnyStr]) -> Optional[AnyStr]:
     return None
 
 
-def nntp_to_msg(text: Union[List[bytes], bytes]) -> str:
+def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
     """ Format raw NNTP bytes data for display """
     if isinstance(text, list):
         text = text[0]

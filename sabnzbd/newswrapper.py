@@ -62,7 +62,7 @@ class NewsWrapper:
         self.thrdnum: int = thrdnum
         self.blocking: bool = block
 
-        self.timeout: Optional[str] = None
+        self.timeout: Optional[float] = None
         self.article: Optional[sabnzbd.nzbstuff.Article] = None
         self.data: List[AnyStr] = []
 

@@ -210,7 +210,7 @@ class Downloader(Thread):
 
         # A user might change server parms again before server restart is ready.
         # Keep a counter to prevent multiple restarts
-        self.server_restarts: bool = 0
+        self.server_restarts: int = 0
 
         self.force_disconnect: bool = False
 
@@ -220,7 +220,7 @@ class Downloader(Thread):
         self.servers: List[Server] = []
         self.server_dict: Dict[str, Server] = {}  # For faster lookups, but is not updated later!
         self.server_nr: int = 0
-        self.timers: Dict[str, float] = {}
+        self.timers: Dict[str, List[float]] = {}
 
         for server in config.get_servers():
             self.init_server(None, server)
