@@ -3,17 +3,16 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# N S <reloxx@interia.pl>, 2020
 # Safihre <safihre@sabnzbd.org>, 2020
 # C E <githubce@eiselt.ch>, 2020
 # Nikolai Bohl <n.kay01@gmail.com>, 2020
-# hotio, 2020
+# reloxx13 <reloxx@interia.pl>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: hotio, 2020\n"
+"Last-Translator: reloxx13 <reloxx@interia.pl>, 2021\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -776,7 +775,7 @@ msgstr "Neue Version verfügbar!"
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
-msgstr "Hochladen der Datei %s fehlgeschlagen"
+msgstr "Hochladen fehlgeschlagen: %s"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -796,7 +795,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/misc.py
 msgid "Failed to read the password file %s"
-msgstr "Konnte die Passwortdatei %s nicht lesen"
+msgstr "Die Passwortdatei %s konnte nicht gelesen werden"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -2163,7 +2162,7 @@ msgstr "Dieser Monat"
 
 #: sabnzbd/skintext.py
 msgid "Selected date range"
-msgstr ""
+msgstr "Ausgewählter Datumsbereich"
 
 #: sabnzbd/skintext.py
 msgid "Today"
@@ -3033,6 +3032,9 @@ msgid ""
 "Modern web browsers and other clients will not accept self-signed "
 "certificates and will give a warning and/or won't connect at all."
 msgstr ""
+"Moderne Webbrowser und andere Clients akzeptieren keine selbstsignierten "
+"Zertifikate und geben eine Warnung aus und/oder stellen gar keine Verbindung"
+" her."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS Port"
@@ -3319,11 +3321,13 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Minimum Free Space for Completed Download Folder"
-msgstr ""
+msgstr "Minimaler freier Speicherplatz im Download Ordner"
 
 #: sabnzbd/skintext.py
 msgid "Will not work if a category folder is on a different disk."
 msgstr ""
+"Funktioniert nicht, wenn sich der Kategorie Ordner auf einer anderen "
+"Festplatte befindet."
 
 #. Auto-resume download on the reset day
 #: sabnzbd/skintext.py
@@ -3336,6 +3340,9 @@ msgid ""
 " again.<br />Applies to both the Temporary and Complete Download Folder.<br "
 "/>Checked every few minutes."
 msgstr ""
+"Das Herunterladen wird automatisch fortgesetzt, wenn der minimale freie Speicherplatz wieder verfügbar ist. <br />\n"
+"Gilt sowohl für den temporären als auch für den Download Ordner.<br />\n"
+"Wird alle paar Minuten überprüft."
 
 #: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
@@ -4076,11 +4083,11 @@ msgstr "Persönliche Notizen"
 
 #: sabnzbd/skintext.py
 msgid "Article availability"
-msgstr ""
+msgstr "Verfügbarkeit der Artikel"
 
 #: sabnzbd/skintext.py
 msgid "%f% available of %d requested articles"
-msgstr ""
+msgstr "%f vorhanden von %d angefragten Artikeln"
 
 #. Config->Scheduling
 #: sabnzbd/skintext.py
@@ -4840,11 +4847,11 @@ msgstr "Datumsformat"
 
 #: sabnzbd/skintext.py
 msgid "Extra queue columns"
-msgstr ""
+msgstr "Weitere Warteschlangen Spalten"
 
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
-msgstr ""
+msgstr "Weitere Verlauf Spalten"
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4944,7 +4951,7 @@ msgstr "Kompaktes Layout"
 
 #: sabnzbd/skintext.py
 msgid "Always use full screen width"
-msgstr ""
+msgstr "Benutze die volle Fensterbreite"
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
