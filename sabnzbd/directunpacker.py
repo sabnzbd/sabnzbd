@@ -166,7 +166,6 @@ class DirectUnpacker(threading.Thread):
     def run(self):
         # Input and output
         linebuf = b""
-        linebuf_encoded = ""
         last_volume_linebuf = b""
         unrar_log = []
         rarfiles = []

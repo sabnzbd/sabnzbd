@@ -47,9 +47,9 @@ from sabnzbd.misc import (
     probablyipv4,
     probablyipv6,
     opts_to_pp,
+    get_server_addrinfo,
 )
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
-from sabnzbd.newswrapper import GetServerParms
 from sabnzbd.encoding import xml_name, utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -1644,7 +1644,7 @@ def check_server(host, port, ajax):
     if host.lower() == "localhost" and sabnzbd.AMBI_LOCALHOST:
         return badParameterResponse(T("Warning: LOCALHOST is ambiguous, use numerical IP-address."), ajax)
 
-    if GetServerParms(host, int_conv(port)):
+    if get_server_addrinfo(host, int_conv(port)):
         return ""
     else:
         return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
