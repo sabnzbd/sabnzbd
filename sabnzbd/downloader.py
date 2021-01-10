@@ -473,7 +473,6 @@ class Downloader(Thread):
         idle_count = 0
 
         while 1:
-            idle_count += 1
             now = time.time()
             for server in self.servers:
                 serverid = server.id
@@ -600,8 +599,8 @@ class Downloader(Thread):
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
-                if len(read) > 1:
-                    idle_count -= 1
+                if len(read) < 2:
+                    idle_count += 1
             else:
                 read, write, error = ([], [], [])
 
