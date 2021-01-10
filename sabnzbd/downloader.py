@@ -565,7 +565,6 @@ class Downloader(Thread):
                             )
                             self.__reset_nw(nw, "failed to initialize")
 
-            # Wait longer between sleeps when speed increases
             if idle_count > 5:
                 idle_count = 0
                 time.sleep(self.sleep_time)
