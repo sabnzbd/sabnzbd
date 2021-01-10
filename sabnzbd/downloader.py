@@ -473,6 +473,7 @@ class Downloader(Thread):
         idle_count = 0
 
         while 1:
+            connection_count = 0
             now = time.time()
             for server in self.servers:
                 serverid = server.id
@@ -485,6 +486,7 @@ class Downloader(Thread):
 
                 last_searched[serverid] = now
 
+                connection_count += len(server.busy_threads)
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                         if nw.nntp and nw.nntp.error_msg:
@@ -533,7 +535,6 @@ class Downloader(Thread):
                         break
 
                     last_busy[serverid] = now
-                    idle_count = 0
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
                         # Let's get rid of all the articles for this server at once
@@ -543,6 +544,7 @@ class Downloader(Thread):
                             article = article.nzf.nzo.get_article(server, self.servers)
                         break
 
+                    connection_count += 1
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
 
@@ -599,8 +601,13 @@ class Downloader(Thread):
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
-                if len(read) < 2:
-                    idle_count += 1
+                if len(read) < 1 + connection_count / 10:
+                    if idle_count < 0:
+                        idle_count = 0
+                    else:
+                        idle_count += 1
+                else:
+                    idle_count -= 1
             else:
                 read, write, error = ([], [], [])
 
