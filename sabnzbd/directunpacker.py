@@ -50,7 +50,7 @@ RAR_NR = re.compile(r"(.*?)(\.part(\d*).rar|\.r(\d*))$", re.IGNORECASE)
 
 class DirectUnpacker(threading.Thread):
     def __init__(self, nzo: NzbObject):
-        threading.Thread.__init__(self)
+        super().__init__()
 
         self.nzo: NzbObject = nzo
         self.active_instance: Optional[subprocess.Popen] = None

@@ -120,7 +120,7 @@ class Rating(Thread):
         except:
             logging.info("Corrupt %s file, discarding", RATING_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
-        Thread.__init__(self)
+        super().__init__()
 
     def stop(self):
         self.shutdown = True

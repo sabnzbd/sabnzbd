@@ -66,7 +66,7 @@ class DirScanner(threading.Thread):
     """
 
     def __init__(self):
-        threading.Thread.__init__(self)
+        super().__init__()
 
         self.newdir()
         try:

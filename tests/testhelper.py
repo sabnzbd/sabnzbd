@@ -176,7 +176,7 @@ class FakeHistoryDB(db.HistoryDB):
 
     def __init__(self, db_path):
         db.HistoryDB.db_path = db_path
-        super(FakeHistoryDB, self).__init__()
+        super().__init__()
 
     def add_fake_history_jobs(self, number_of_entries=1):
         """ Generate a history db with any number of fake entries """

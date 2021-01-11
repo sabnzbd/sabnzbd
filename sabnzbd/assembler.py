@@ -41,7 +41,7 @@ import sabnzbd.utils.rarfile as rarfile
 
 class Assembler(Thread):
     def __init__(self):
-        Thread.__init__(self)
+        super().__init__()
         self.queue: queue.Queue[Tuple[Optional[NzbObject], Optional[NzbFile], Optional[bool]]] = queue.Queue()
 
     def stop(self):

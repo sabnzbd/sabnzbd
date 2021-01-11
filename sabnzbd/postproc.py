@@ -102,7 +102,7 @@ class PostProcessor(Thread):
 
     def __init__(self):
         """ Initialize PostProcessor thread """
-        Thread.__init__(self)
+        super().__init__()
 
         # This history queue is simply used to log what active items to display in the web_ui
         self.history_queue: List[NzbObject] = []

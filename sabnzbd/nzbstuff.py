@@ -150,7 +150,7 @@ class Article(TryList):
     __slots__ = ArticleSaver + ("fetcher", "fetcher_priority", "tries")
 
     def __init__(self, article, article_bytes, nzf):
-        TryList.__init__(self)
+        super().__init__()
         self.fetcher: Optional[Server] = None
         self.article: str = article
         self.art_id = None
@@ -255,7 +255,7 @@ class Article(TryList):
         dict_ = {}
         for item in ArticleSaver:
             dict_[item] = getattr(self, item)
-        dict_["try_list"] = TryList.__getstate__(self)
+        dict_["try_list"] = super().__getstate__()
         return dict_
 
     def __setstate__(self, dict_):
@@ -266,7 +266,7 @@ class Article(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        TryList.__setstate__(self, dict_.get("try_list", []))
+        super().__setstate__(dict_.get("try_list", []))
         self.fetcher_priority = 0
         self.fetcher = None
         self.tries = 0
@@ -322,7 +322,7 @@ class NzbFile(TryList):
 
     def __init__(self, date, subject, raw_article_db, file_bytes, nzo):
         """ Setup object """
-        TryList.__init__(self)
+        super().__init__()
 
         self.date: datetime.datetime = date
         self.subject: str = subject
@@ -457,7 +457,7 @@ class NzbFile(TryList):
         dict_ = {}
         for item in NzbFileSaver:
             dict_[item] = getattr(self, item)
-        dict_["try_list"] = TryList.__getstate__(self)
+        dict_["try_list"] = super().__getstate__()
         return dict_
 
     def __setstate__(self, dict_):
@@ -468,7 +468,7 @@ class NzbFile(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        TryList.__setstate__(self, dict_.get("try_list", []))
+        super().__setstate__(dict_.get("try_list", []))
 
         # Convert 2.x.x jobs
         if isinstance(self.decodetable, dict):
@@ -584,7 +584,7 @@ class NzbObject(TryList):
         reuse=None,
         dup_check=True,
     ):
-        TryList.__init__(self)
+        super().__init__()
 
         self.filename = filename  # Original filename
         if nzbname and nzb:
@@ -1979,7 +1979,7 @@ class NzbObject(TryList):
         dict_ = {}
         for item in NzbObjectSaver:
             dict_[item] = getattr(self, item)
-        dict_["try_list"] = TryList.__getstate__(self)
+        dict_["try_list"] = super().__getstate__()
         return dict_
 
     def __setstate__(self, dict_):
@@ -1990,7 +1990,7 @@ class NzbObject(TryList):
             except KeyError:
                 # Handle new attributes
                 setattr(self, item, None)
-        TryList.__setstate__(self, dict_.get("try_list", []))
+        super().__setstate__(dict_.get("try_list", []))
 
         # Set non-transferable values
         self.pp_active = False

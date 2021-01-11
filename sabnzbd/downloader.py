@@ -188,7 +188,7 @@ class Downloader(Thread):
     """ Singleton Downloader Thread """
 
     def __init__(self, paused=False):
-        Thread.__init__(self)
+        super().__init__()
 
         logging.debug("Initializing downloader")
 

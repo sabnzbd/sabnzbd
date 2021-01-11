@@ -47,7 +47,7 @@ except ImportError:
 
 class CrcError(Exception):
     def __init__(self, needcrc, gotcrc, data):
-        Exception.__init__(self)
+        super().__init__()
         self.needcrc = needcrc
         self.gotcrc = gotcrc
         self.data = data
@@ -55,7 +55,7 @@ class CrcError(Exception):
 
 class BadYenc(Exception):
     def __init__(self):
-        Exception.__init__(self)
+        super().__init__()
 
 
 class Decoder:
@@ -109,7 +109,7 @@ class DecoderWorker(Thread):
     """ The actuall workhorse that handles decoding! """
 
     def __init__(self, decoder_queue):
-        Thread.__init__(self)
+        super().__init__()
         logging.debug("Initializing decoder %s", self.name)
 
         self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[List[bytes]]]] = decoder_queue

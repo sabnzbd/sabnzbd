@@ -26,7 +26,7 @@ class SysTrayIconThread(Thread):
     terminate = False
 
     def __init__(self, icon, hover_text, menu_options, on_quit=None, default_menu_index=None, window_class_name=None):
-        Thread.__init__(self)
+        super().__init__()
         self.icon = icon
         self.icons = {}
         self.hover_text = hover_text

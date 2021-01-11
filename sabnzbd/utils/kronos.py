@@ -407,7 +407,7 @@ class ThreadedScheduler(Scheduler):
     """A Scheduler that runs in its own thread."""
 
     def __init__(self):
-        Scheduler.__init__(self)
+        super().__init__()
         # we require a lock around the task queue
         self._lock = threading.Lock()
 

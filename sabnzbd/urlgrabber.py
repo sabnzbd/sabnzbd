@@ -61,7 +61,7 @@ _RARTING_FIELDS = (
 
 class URLGrabber(Thread):
     def __init__(self):
-        Thread.__init__(self)
+        super().__init__()
         self.queue: queue.Queue[Tuple[Optional[str], Optional[NzbObject]]] = queue.Queue()
         for url_nzo_tup in sabnzbd.NzbQueue.get_urls():
             self.queue.put(url_nzo_tup)

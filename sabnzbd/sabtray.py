@@ -82,7 +82,7 @@ class SABTrayThread(SysTrayIconThread):
             (T("Shutdown"), None, self.shutdown),
         )
 
-        SysTrayIconThread.__init__(self, self.sabicons["default"], "SABnzbd", menu_options, None, 0, "SabTrayIcon")
+        super().__init__(self.sabicons["default"], "SABnzbd", menu_options, None, 0, "SabTrayIcon")
 
     def set_texts(self):
         """ Cache texts for performance, doUpdates is called often """
