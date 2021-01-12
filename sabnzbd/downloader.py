@@ -565,10 +565,6 @@ class Downloader(Thread):
                             )
                             self.__reset_nw(nw, "failed to initialize")
 
-            if idle_count > 5:
-                idle_count = 0
-                time.sleep(self.sleep_time)
-
             # Exit-point
             if self.shutdown:
                 empty = True
@@ -594,17 +590,20 @@ class Downloader(Thread):
 
                 self.force_disconnect = False
 
+            if idle_count > 7:
+                idle_count = 0
+                time.sleep(self.sleep_time)
+
             # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
             writekeys = self.write_fds.keys()
 
             if readkeys or writekeys:
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
+                # If there are too few results compared to actively downloading connections,
+                # increase idle_count, otherwise decrease it
                 if len(read) < 1 + connection_count / 10:
-                    if idle_count < 0:
-                        idle_count = 0
-                    else:
-                        idle_count += 1
+                    idle_count += 1
                 else:
                     idle_count -= 1
             else:
