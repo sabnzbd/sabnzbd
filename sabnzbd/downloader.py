@@ -94,6 +94,7 @@ class Server:
 
         self.busy_threads: List[NewsWrapper] = []
         self.idle_threads: List[NewsWrapper] = []
+        self.next_article_search: int = 0
         self.active: bool = True
         self.bad_cons: int = 0
         self.errormsg: str = ""
@@ -467,26 +468,18 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         sabnzbd.BPSMeter.update()
 
-        # Store when each server last searched for articles
-        last_searched = {}
-
-        # Store when each server last downloaded anything or found an article
-        last_busy = {}
-
         while 1:
             connection_count = 0
             now = time.time()
-            for server in self.servers:
-                serverid = server.id
-                if server.busy_threads:
-                    last_busy[serverid] = now
-                else:
-                    # Skip this server if idle for 1 second and it has already been searched less than 0.5 seconds ago
-                    if last_busy.get(serverid, 0) + 1 < now and last_searched.get(serverid, 0) + 0.5 > now:
-                        continue
 
-                last_searched[serverid] = now
-                connection_count += len(server.busy_threads)
+            # Set Article to None so references from this
+            # thread do not keep the parent objects alive (see #1628)
+            article = None
+
+            for server in self.servers:
+                # Skip this server if there's no point searching for new stuff to do
+                if server.next_article_search > now:
+                    continue
 
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
@@ -533,9 +526,9 @@ class Downloader(Thread):
                     article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
                     if not article:
+                        # Skip this server for 1 second
+                        server.next_article_search = now + 1
                         break
-
-                    last_busy[serverid] = now
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
                         # Let's get rid of all the articles for this server at once
