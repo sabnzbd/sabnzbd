@@ -214,6 +214,7 @@ class NewsWrapper:
 
     def soft_reset(self):
         """ Reset for the next article """
+        logging.info("SOFT RESET %s", self)
         self.timeout = None
         self.article = None
         self.clear_data()
