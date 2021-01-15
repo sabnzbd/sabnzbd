@@ -404,7 +404,11 @@ def halt():
 
         # Stop Required Objects
         logging.debug("Stopping downloader")
-        sabnzbd.downloader.stop()
+        sabnzbd.Downloader.stop()
+        try:
+            sabnzbd.Downloader.join()
+        except:
+            pass
 
         # Decoder handles join gracefully
         logging.debug("Stopping decoders")
