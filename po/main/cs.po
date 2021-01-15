@@ -4,13 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
-# Pavel C <quoing_transifex@mess.cz>, 2020
+# Pavel C <quoing_transifex@mess.cz>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2020\n"
+"Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2021\n"
 "Language-Team: Czech (https://www.transifex.com/sabnzbd/teams/111101/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -63,15 +63,15 @@ msgstr "Nalezen UNRAR verze %s, doporučujeme verzi %s nebo vyšší. <br />"
 #. Error message
 #: SABnzbd.py
 msgid "unrar binary... NOT found"
-msgstr "Program unrar... nenalezeno!"
+msgstr "Program unrar... nenalezen!"
 
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
-msgstr "Program 7za... nenalezeno!"
+msgstr "Program 7za... nenalezen!"
 
 #: SABnzbd.py
 msgid "unzip binary... NOT found!"
-msgstr "Program unizip... nenalezeno!"
+msgstr "Program unizip... nenalezen!"
 
 #. Error message
 #: SABnzbd.py
@@ -483,7 +483,7 @@ msgstr ""
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Suspect error in downloader"
-msgstr ""
+msgstr "Nejspíše chyba downloaderu"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
@@ -565,7 +565,7 @@ msgstr "Nelze vytvořit adresář %s"
 
 #: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
-msgstr ""
+msgstr "Adresář %s: chyba přístupu k %s"
 
 #. Error message
 #: sabnzbd/filesystem.py
@@ -584,7 +584,7 @@ msgstr "Chyba přesunu %s do %s"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
-msgstr ""
+msgstr "Odmítnuté spojení s hostem \"%s\" z:"
 
 #: sabnzbd/interface.py
 msgid "User logged in to the web interface"
@@ -648,6 +648,7 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr ""
+"Upozornění: LOCALHOST je nejednoznačný, použijte numerickou IP adresu."
 
 #: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
@@ -656,7 +657,7 @@ msgstr "Adresa serveru \"%s:%s\" není správná."
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Feed"
-msgstr ""
+msgstr "Kanál"
 
 #: sabnzbd/interface.py
 msgid "Daily"
@@ -696,7 +697,7 @@ msgstr "vypnuto"
 
 #: sabnzbd/interface.py
 msgid "Undefined server!"
-msgstr ""
+msgstr "Nedefinovaný server!"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -729,7 +730,7 @@ msgstr "m"
 
 #: sabnzbd/misc.py, sabnzbd/skintext.py
 msgid "Update Available!"
-msgstr ""
+msgstr "Dostupná aktualizace!"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -828,7 +829,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
-msgstr ""
+msgstr "Rozbaluji"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -837,44 +838,45 @@ msgstr ""
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: unable to find \"%s\""
-msgstr ""
+msgstr "CHYBA: nepodařilo se najít \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
-msgstr ""
+msgstr "Rozbalování selhalo, CRC chyba"
 
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: CRC failed in \"%s\""
-msgstr ""
+msgstr "CHYBA: CRC selhalo pro \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
+"Rozbalování selhalo, soubor je příliš velký pro souborový systém (FAT?)"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
+msgstr "CHYBA: Soubor je příliš velký pro souborový systém (%s)"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
-msgstr ""
+msgstr "Rozbalování selhalo, chyba zápisu nebo plný disk?"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: write error (%s)"
-msgstr ""
+msgstr "CHYBA: chyba zápisu (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
-msgstr ""
+msgstr "Rozbalování selhalo, cesta k souboru je příliš dlouhá."
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: path too long (%s)"
-msgstr ""
+msgstr "CHYBA: cesta k souboru je příliš dlouhá (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "ERROR: %s"
@@ -903,7 +905,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
-msgstr ""
+msgstr "Zkouším 7zip s heslem \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
@@ -911,11 +913,11 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Could not unpack %s"
-msgstr ""
+msgstr "Nelze robalit %s"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
-msgstr ""
+msgstr "Rychlá kontrola"
 
 #. PP phase "repair"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
@@ -982,7 +984,7 @@ msgstr "Opravuji"
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Repaired in %s"
-msgstr ""
+msgstr "[%s] opraveno v %s"
 
 #: sabnzbd/newsunpack.py
 msgid "Verifying repair"
@@ -1024,11 +1026,11 @@ msgstr ""
 
 #: sabnzbd/newswrapper.py
 msgid "Certificate not valid. This is most probably a server issue."
-msgstr ""
+msgstr "Certifikát není validní. Pravděpodobně chyba serveru."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr ""
+msgstr "Server %s používá nedůvěryhodný certifikát [%s]"
 
 #. Main menu item
 #: sabnzbd/newswrapper.py, sabnzbd/skintext.py
@@ -1188,7 +1190,7 @@ msgstr "Ignoruji duplikátní NZB \"%s\""
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Failing duplicate NZB \"%s\""
-msgstr ""
+msgstr "Nezdařilo se duplikovat NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1203,7 +1205,7 @@ msgstr "Pozastavuji duplikátní NZB \"%s\""
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
+msgstr "Nechtěná přípona v souboru %s (%s)"
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -1216,11 +1218,11 @@ msgstr "Chyba při importu %s"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "DUPLICATE"
-msgstr ""
+msgstr "DUPLIKÁT"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "ENCRYPTED"
-msgstr ""
+msgstr "ŠIFROVANÉ"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "TOO LARGE"
@@ -1244,16 +1246,16 @@ msgstr "ČEKÁNÍ %s s"
 
 #: sabnzbd/nzbstuff.py
 msgid "PROPAGATING %s min"
-msgstr ""
+msgstr "PROPAGUJI %s min"
 
 #: sabnzbd/nzbstuff.py
 msgid "Downloaded in %s at an average of %sB/s"
-msgstr ""
+msgstr "Staženo do %s s průměrnou rychlostí %s B/s"
 
 #. Job details page, file age column header
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "Age"
-msgstr ""
+msgstr "Stáří"
 
 #: sabnzbd/nzbstuff.py
 msgid "%s articles were malformed"
@@ -1309,7 +1311,7 @@ msgstr "minuta"
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Scan watched folder"
-msgstr ""
+msgstr "Zkontrolovat sledovanou složku"
 
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Read all RSS feeds"
@@ -1347,7 +1349,7 @@ msgstr ""
 
 #: sabnzbd/osxmenu.py
 msgid "Empty"
-msgstr ""
+msgstr "Prázdný"
 
 #: sabnzbd/osxmenu.py
 msgid "History Last 10 Items"
@@ -1359,7 +1361,7 @@ msgstr ""
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
-msgstr ""
+msgstr "Zastavuji..."
 
 #: sabnzbd/panic.py
 msgid "Problem with"
