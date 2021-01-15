@@ -166,7 +166,18 @@ def sanitize_filename(name: str) -> str:
     if not name:
         name = "unknown"
 
+    # now split name into name, ext
     name, ext = os.path.splitext(name)
+
+    # If filename is too long, truncate it:
+    if len(name) + len(ext) > 222:
+        # We hope not to get here, but if so ... solve it:
+        logging.debug("Resulting filename from %s is too long, so truncating", url)
+        # Too long filenames are often caused by incorrect non-ascii chars,
+        # so brute-force remove those non-ascii chars, and only keep first 222 chars
+        ame = str(name.encode("ascii", "ignore"), "utf-8")[:222-len(ext)]
+
+
     lowext = ext.lower()
     if lowext == ".par2" and lowext != ext:
         ext = lowext
