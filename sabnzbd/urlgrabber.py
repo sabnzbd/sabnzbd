@@ -251,12 +251,12 @@ class URLGrabber(Thread):
                 if not filename:
                     filename = sabnzbd.get_new_id("url", os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER))
 
-                if len(filename) > 250:
+                if len(filename) > 245:
                     # We hope not to get here, but if so ... solve it:
                     logging.info("Resulting filename from %s is too long, so truncating", url)
                     # Too long filenames are often caused by incorrect non-ascii chars,
                     # so brute-force remove those non-ascii chars, and only keep first 250 chars
-                    filename = str(filename.encode("ascii", "ignore"), "utf-8")[:250]
+                    filename = str(filename.encode("ascii", "ignore"), "utf-8")[:245]
 
                 # Write data to temp file
                 path = os.path.join(cfg.admin_dir.get_path(), FUTURE_Q_FOLDER, filename)
