@@ -148,7 +148,7 @@ class Server:
             ip = self.host
         return ip
 
-    def stop(self, readers: Dict[int, NewsWrapper], writers: Dict[int, NewsWrapper]):
+    def stop(self, readers: Dict[int, NewsWrapper]):
         for nw in self.idle_threads:
             try:
                 fno = nw.nntp.fileno
@@ -156,8 +156,6 @@ class Server:
                 fno = None
             if fno and fno in readers:
                 readers.pop(fno)
-            if fno and fno in writers:
-                writers.pop(fno)
             nw.terminate(quit=True)
         self.idle_threads = []
 
@@ -220,7 +218,6 @@ class Downloader(Thread):
         self.force_disconnect: bool = False
 
         self.read_fds: Dict[int, NewsWrapper] = {}
-        self.write_fds: Dict[int, NewsWrapper] = {}
 
         self.servers: List[Server] = []
         self.server_dict: Dict[str, Server] = {}  # For faster lookups, but is not updated later!
@@ -492,7 +489,7 @@ class Downloader(Thread):
                 if server.restart:
                     if not server.busy_threads:
                         newid = server.newid
-                        server.stop(self.read_fds, self.write_fds)
+                        server.stop(self.read_fds)
                         self.servers.remove(server)
                         if newid:
                             self.init_server(None, newid)
@@ -572,7 +569,7 @@ class Downloader(Thread):
 
                 if empty:
                     for server in self.servers:
-                        server.stop(self.read_fds, self.write_fds)
+                        server.stop(self.read_fds)
 
                     logging.info("Shutting down")
                     break
@@ -589,10 +586,8 @@ class Downloader(Thread):
 
             # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
-            writekeys = self.write_fds.keys()
-
-            if readkeys or writekeys:
-                read, write, error = select.select(readkeys, writekeys, (), 1.0)
+            if readkeys:
+                read, _, _ = select.select(readkeys, (), (), 1.0)
 
                 # Add a sleep if there are too few results compared to the number of active connections
                 if self.can_be_slowed and len(read) < 1 + len(readkeys) / 10:
@@ -612,7 +607,7 @@ class Downloader(Thread):
                         logging.debug("Downloader-slowdown: %r", self.can_be_slowed)
 
             else:
-                read, write, error = ([], [], [])
+                read = []
 
                 sabnzbd.BPSMeter.reset()
 
@@ -628,13 +623,6 @@ class Downloader(Thread):
                 DOWNLOADER_CV.release()
 
                 self.force_disconnect = False
-
-            for selected in write:
-                nw = self.write_fds[selected]
-                if nw.nntp.fileno not in self.read_fds:
-                    self.read_fds[nw.nntp.fileno] = nw
-                if nw.nntp.fileno in self.write_fds:
-                    self.write_fds.pop(nw.nntp.fileno)
 
             if not read:
                 sabnzbd.BPSMeter.update()
@@ -823,9 +811,6 @@ class Downloader(Thread):
         for f in self.read_fds:
             if self.read_fds[f] == nw:
                 return f
-        for f in self.write_fds:
-            if self.read_fds[f] == nw:
-                return f
         return None
 
     def __reset_nw(
@@ -860,8 +845,6 @@ class Downloader(Thread):
         if not (destroy or nw in server.idle_threads):
             server.idle_threads.append(nw)
 
-        if fileno and fileno in self.write_fds:
-            self.write_fds.pop(fileno)
         if fileno and fileno in self.read_fds:
             self.read_fds.pop(fileno)
 
