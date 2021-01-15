@@ -357,7 +357,7 @@ class NNTP:
                 self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
 
             # Now it's safe to add the socket to the list of active sockets.
-            sabnzbd.Downloader.write_fds[self.fileno] = self.nw
+            sabnzbd.Downloader.read_fds[self.fileno] = self.nw
         except OSError as e:
             self.error(e)
 
