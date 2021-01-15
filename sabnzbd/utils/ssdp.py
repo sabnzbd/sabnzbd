@@ -42,6 +42,58 @@ import uuid
 from threading import Thread
 from typing import Optional
 
+import socket, os
+
+
+def codelength(s):
+    """ returns the given string/bytes as bytes, prepended with the 7-bit-encoded length """
+    # We want bytes
+    if not isinstance(s, bytes):
+        # Not bytes. Let's try to convert to bytes, but only plain ASCII
+        try:
+            s = str.encode(s, "ascii")
+        except:
+            s = b""
+    l = len(s)
+    if l == 0:
+        return b"\x00"
+    encodedlen = b""
+    while l > 0:
+        c = l & 0x7F
+        l = l >> 7
+        if l > 0:
+            c = c + 128
+        encodedlen = c.to_bytes(1, "little") + encodedlen
+    return encodedlen + s
+
+
+def submit_to_minissdpd(st, usn, server, url, sockpath="/var/run/minissdpd.sock"):
+    """ submits the specified service to MiniSSDPD (if running)"""
+    """
+    ST = Search Target of the service that is responding.
+        Example: "urn:schemas-upnp-org:device:InternetGatewayDevice:1"
+    USN = The unique service name to identify the service.
+        Example: "uuid:73616d61-6a6b-7a74-650a-0d24d4a5d636::urn:schemas-upnp-org:device:InternetGatewayDevice:1"
+    SERVER = The server system information (SERVER) value providing information in the following format: [OS-Name] UPnP/[Version] [Product-Name]/[Product-Version]
+        Example: "MyServer/0.0"
+    URL = The URL location to allow the control point to gain more information about this service.
+        Example: "http://192.168.0.1:1234/rootDesc.xml"
+    """
+    # First check if sockpath exists i.e. MiniSSDPD is running
+    if not os.path.exists(sockpath):
+        return -1, f"Error: {sockpath} does not exist. Is minissdpd running?"
+    # OK, submit
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    try:
+        sock.connect(sockpath)
+        sock.send(b"\x04" + codelength(st) + codelength(usn) + codelength(server) + codelength(url))
+    except socket.error as msg:
+        print(msg)
+        return -1, msg
+    finally:
+        sock.close()
+    return 0, "OK"
+
 
 class SSDP(Thread):
     def __init__(self, host, server_name, url, description, manufacturer, manufacturer_url, model, **kwargs):
@@ -106,24 +158,45 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
         logging.info("Serving SSDP on %s as %s", self.__host, self.__server_name)
         # logging.info("self.__url is %s", self.__url)
 
+        logging.info("Trying if miniSSDPd is there")
+        rc, message = submit_to_minissdpd(
+            b"urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+            "uuid:" + str(self.__uuid) + "::upnp:rootdevice",
+            self.__server_name,
+            self.__url + "/description.xml"
+        )
+        if rc == 0:
+            logging.info("miniSSDPd OK: submitting to MiniSSDPD went well")
+        else:
+            logging.info("miniSSDPd not there")
+            logging.debug("miniSSDPd Not OK. Error message is: %s", message)
+
         # the standard multicast settings for SSDP:
         MCAST_GRP = "239.255.255.250"
         MCAST_PORT = 1900
         MULTICAST_TTL = 2
 
-        while 1 and not self.__stop:
-            # Do network stuff
-            # Use self.__host, self.__url, self.__server_name to do stuff!
 
-            # Create socket, send the broadcast, and close the socket again
-            try:
-                with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
-                    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
-                    sock.sendto(self.__mySSDPbroadcast, (MCAST_GRP, MCAST_PORT))
-            except:
-                # probably no network
-                pass
-            time.sleep(self.__ssdp_broadcast_interval)
+
+        if rc == 0:
+            logging.info("We have miniSSPDd running, so no SSDP broadcasts sending needed")
+            while True and not self.__stop:
+                time.sleep(20)
+        else:
+            logging.info("Start sending SSDP broadcasts")
+            while 1 and not self.__stop:
+                # Do network stuff
+                # Use self.__host, self.__url, self.__server_name to do stuff!
+
+                # Create socket, send the broadcast, and close the socket again
+                try:
+                    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
+                        sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, MULTICAST_TTL)
+                        sock.sendto(self.__mySSDPbroadcast, (MCAST_GRP, MCAST_PORT))
+                except:
+                    # probably no network
+                    pass
+                time.sleep(self.__ssdp_broadcast_interval)
 
     def serve_xml(self):
         """Returns an XML-structure based on the information being
@@ -154,6 +227,7 @@ def stop_ssdp():
 
 def server_ssdp_xml():
     """Returns the description.xml if the server is alive, empty otherwise"""
+    logging.debug("request for description.xml")
     if __SSDP and __SSDP.is_alive():
         return __SSDP.serve_xml()
     return ""
