@@ -289,6 +289,10 @@ class Downloader(Thread):
         # Update server-count
         self.server_nr = len(self.servers)
 
+    def add_socket(self, fileno: int, nw: NewsWrapper):
+        """ Add a socket ready to be used to the list """
+        self.read_fds[fileno] = nw
+
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
         """ Set downloader to specified paused state """
@@ -877,9 +881,8 @@ class Downloader(Thread):
                     logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
                 nw.body()
 
-            fileno = nw.nntp.fileno
-            if fileno not in self.read_fds:
-                self.read_fds[fileno] = nw
+            # Mark as ready to be read
+            self.read_fds[nw.nntp.fileno] = nw
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
             self.__reset_nw(nw, "server broke off connection", send_quit=False)
