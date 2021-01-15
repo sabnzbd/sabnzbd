@@ -1376,7 +1376,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None, nzo_ids
 
         if (
             sabnzbd.Downloader.paused
-            or sabnzbd.Downloader.postproc
+            or sabnzbd.Downloader.paused_for_postproc
             or is_propagating
             or status not in (Status.DOWNLOADING, Status.FETCHING, Status.QUEUED)
         ) and priority != FORCE_PRIORITY:
@@ -1627,7 +1627,7 @@ def build_header(webdir="", output=None, trans_functions=True):
         header["new_release"], header["new_rel_url"] = sabnzbd.NEW_VERSION
 
     header["version"] = sabnzbd.__version__
-    header["paused"] = bool(sabnzbd.Downloader.paused or sabnzbd.Downloader.postproc)
+    header["paused"] = bool(sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc)
     header["pause_int"] = sabnzbd.Scheduler.pause_int()
     header["paused_all"] = sabnzbd.PAUSED_ALL
 
@@ -1675,7 +1675,7 @@ def build_queue_header(search=None, nzo_ids=None, start=0, limit=0, output=None)
     header["size"] = to_units(bytes_total, "B")
     header["noofslots_total"] = qnfo.q_fullsize
 
-    if sabnzbd.Downloader.paused or sabnzbd.Downloader.postproc:
+    if sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc:
         status = Status.PAUSED
     elif bytespersec > 0:
         status = Status.DOWNLOADING

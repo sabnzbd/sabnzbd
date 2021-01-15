@@ -84,7 +84,7 @@ class NewsWrapper:
         except:
             return None
 
-    def init_connect(self, write_fds):
+    def init_connect(self):
         """ Setup the connection in NNTP object """
         # Server-info is normally requested by initialization of
         # servers in Downloader, but not when testing servers
@@ -92,7 +92,7 @@ class NewsWrapper:
             self.server.info = get_server_addrinfo(self.server.host, self.server.port)
 
         # Construct NNTP object
-        self.nntp = NNTP(self, self.server.hostip, write_fds)
+        self.nntp = NNTP(self, self.server.hostip)
         self.timeout = time.time() + self.server.timeout
 
     def finish_connect(self, code: int):
@@ -214,7 +214,6 @@ class NewsWrapper:
 
     def soft_reset(self):
         """ Reset for the next article """
-        logging.info("SOFT RESET %s", self)
         self.timeout = None
         self.article = None
         self.clear_data()
@@ -267,9 +266,9 @@ class NewsWrapper:
 
 class NNTP:
     # Pre-define attributes to save memory
-    __slots__ = ("nw", "host", "error_msg", "sock")
+    __slots__ = ("nw", "host", "error_msg", "sock", "fileno")
 
-    def __init__(self, nw: NewsWrapper, host, write_fds):
+    def __init__(self, nw: NewsWrapper, host):
         self.nw: NewsWrapper = nw
         self.host: str = host  # Store the fastest ip
         self.error_msg: Optional[str] = None
@@ -316,11 +315,14 @@ class NNTP:
                 # Use a regular wrapper, no certificate validation
                 self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto))
 
+        # Store fileno of the socket
+        self.fileno: int = self.sock.fileno()
+
         try:
             # Open the connection in a separate thread due to avoid blocking
             # For server-testing we do want blocking
             if not self.nw.blocking:
-                Thread(target=self.connect, args=(write_fds,)).start()
+                Thread(target=self.connect).start()
             else:
                 # if blocking (server test) only wait for 15 seconds during connect until timeout
                 self.sock.settimeout(15)
@@ -338,7 +340,7 @@ class NNTP:
         except OSError as e:
             self.error(e)
 
-    def connect(self, write_fds):
+    def connect(self):
         """A-sync connection start"""
         try:
             self.sock.connect((self.host, self.nw.server.port))
@@ -355,10 +357,7 @@ class NNTP:
                 self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
 
             # Now it's safe to add the socket to the list of active sockets.
-            # 'write_fds' is an attribute of the Downloader singleton.
-            # This direct access is needed to prevent multi-threading sync problems.
-            if write_fds is not None:
-                write_fds[self.sock.fileno()] = self.nw
+            sabnzbd.Downloader.write_fds[self.fileno] = self.nw
         except OSError as e:
             self.error(e)
 
