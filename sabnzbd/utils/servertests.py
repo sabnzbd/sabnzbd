@@ -90,7 +90,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
     try:
         nw = NewsWrapper(s, -1, block=True)
-        nw.init_connect(None)
+        nw.init_connect()
         while not nw.connected:
             nw.clear_data()
             nw.recv_chunk(block=True)

@@ -151,7 +151,7 @@ class Server:
     def stop(self, readers: Dict[int, NewsWrapper], writers: Dict[int, NewsWrapper]):
         for nw in self.idle_threads:
             try:
-                fno = nw.nntp.sock.fileno()
+                fno = nw.nntp.fileno
             except:
                 fno = None
             if fno and fno in readers:
@@ -204,13 +204,13 @@ class Downloader(Thread):
         self.speed_set()
 
         # Used to see if we can add a slowdown to the Downloader-loop
-        self.can_be_slowed = None
-        self.can_be_slowed_timer = 0
-
+        self.can_be_slowed: Optional[bool] = None
+        self.can_be_slowed_timer: int = 0
+        self.sleep_time: float = 0.0
         self.sleep_time_set()
         cfg.downloader_sleep_time.callback(self.sleep_time_set)
 
-        self.postproc: bool = False
+        self.paused_for_postproc: bool = False
         self.shutdown: bool = False
 
         # A user might change server parms again before server restart is ready.
@@ -319,12 +319,12 @@ class Downloader(Thread):
 
     def wait_for_postproc(self):
         logging.info("Waiting for post-processing to finish")
-        self.postproc = True
+        self.paused_for_postproc = True
 
     @NzbQueueLocker
     def resume_from_postproc(self):
         logging.info("Post-processing finished, resuming download")
-        self.postproc = False
+        self.paused_for_postproc = False
 
     def disconnect(self):
         self.force_disconnect = True
@@ -469,7 +469,6 @@ class Downloader(Thread):
         sabnzbd.BPSMeter.update()
 
         while 1:
-            connection_count = 0
             now = time.time()
 
             # Set Article to None so references from this
@@ -489,6 +488,7 @@ class Downloader(Thread):
                             self.__reset_nw(nw, "timed out")
                         server.bad_cons += 1
                         self.maybe_block_server(server)
+
                 if server.restart:
                     if not server.busy_threads:
                         newid = server.newid
@@ -503,10 +503,14 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
-                if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.postproc:
-                    continue
-
-                if not server.active:
+                if (
+                    not server.idle_threads
+                    or server.restart
+                    or self.is_paused()
+                    or self.shutdown
+                    or self.paused_for_postproc
+                    or not server.active
+                ):
                     continue
 
                 for nw in server.idle_threads[:]:
@@ -538,7 +542,6 @@ class Downloader(Thread):
                             article = article.nzf.nzo.get_article(server, self.servers)
                         break
 
-                    connection_count += 1
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
 
@@ -549,7 +552,7 @@ class Downloader(Thread):
                     else:
                         try:
                             logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
-                            nw.init_connect(self.write_fds)
+                            nw.init_connect()
                         except:
                             logging.error(
                                 T("Failed to initialize %s@%s with reason: %s"),
@@ -592,7 +595,7 @@ class Downloader(Thread):
                 read, write, error = select.select(readkeys, writekeys, (), 1.0)
 
                 # Add a sleep if there are too few results compared to the number of active connections
-                if self.can_be_slowed and len(read) < 1 + connection_count / 10:
+                if self.can_be_slowed and len(read) < 1 + len(readkeys) / 10:
                     time.sleep(self.sleep_time)
 
                 # Need to initialize the check during first 20 seconds
@@ -617,7 +620,7 @@ class Downloader(Thread):
 
                 DOWNLOADER_CV.acquire()
                 while (
-                    (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.postproc)
+                    (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.paused_for_postproc)
                     and not self.shutdown
                     and not self.server_restarts
                 ):
@@ -628,14 +631,10 @@ class Downloader(Thread):
 
             for selected in write:
                 nw = self.write_fds[selected]
-
-                fileno = nw.nntp.sock.fileno()
-
-                if fileno not in self.read_fds:
-                    self.read_fds[fileno] = nw
-
-                if fileno in self.write_fds:
-                    self.write_fds.pop(fileno)
+                if nw.nntp.fileno not in self.read_fds:
+                    self.read_fds[nw.nntp.fileno] = nw
+                if nw.nntp.fileno in self.write_fds:
+                    self.write_fds.pop(nw.nntp.fileno)
 
             if not read:
                 sabnzbd.BPSMeter.update()
@@ -806,15 +805,18 @@ class Downloader(Thread):
                         self.__request_article(nw)
 
                 if done:
-                    server.bad_cons = 0  # Successful data, clear "bad" counter
+                    # Successful data, clear "bad" counter
+                    server.bad_cons = 0
                     server.errormsg = server.warning = ""
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
                     self.decode(article, nw.data)
 
+                    # Reset connection for new activity
                     nw.soft_reset()
                     server.busy_threads.remove(nw)
                     server.idle_threads.append(nw)
+                    self.read_fds.pop(nw.nntp.fileno, None)
 
     def __lookup_nw(self, nw: NewsWrapper):
         """ Find the fileno matching the nw, needed for closed connections """
@@ -841,7 +843,7 @@ class Downloader(Thread):
 
         if nw.nntp:
             try:
-                fileno = nw.nntp.sock.fileno()
+                fileno = nw.nntp.fileno
             except:
                 fileno = self.__lookup_nw(nw)
                 destroy = True
@@ -892,7 +894,7 @@ class Downloader(Thread):
                     logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
                 nw.body()
 
-            fileno = nw.nntp.sock.fileno()
+            fileno = nw.nntp.fileno
             if fileno not in self.read_fds:
                 self.read_fds[fileno] = nw
         except socket.error as err:
