@@ -171,10 +171,10 @@ def sanitize_filename(name: str) -> str:
 
     # If filename is too long, truncate it:
     if len(name) + len(ext) > 222:
-        # We hope not to get here, but if so ... solve it:
-        logging.debug("Filename %s is too long, so truncating", name)
+        logging.debug("Filename %s is too long, so truncating", name + ext)
         # Too long filenames are often caused by incorrect non-ascii chars,
-        # so brute-force remove those non-ascii chars, and only keep first 222 chars
+        # so brute-force remove those non-ascii chars, and only keep 222 chars
+        # ... keeping in place the original extension
         name = str(name.encode("ascii", "ignore"), "utf-8")[: 222 - len(ext)]
 
     lowext = ext.lower()
