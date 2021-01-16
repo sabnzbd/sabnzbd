@@ -130,7 +130,7 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
             for i in range(self.__ssdp_broadcast_interval * 4):
                 time.sleep(0.25)
                 if self.__stop:
-                    break # ... and the outer while will check on self.__stop too ... and exit
+                    break  # ... and the outer while will check on self.__stop too ... and exit
 
     def serve_xml(self):
         """Returns an XML-structure based on the information being
