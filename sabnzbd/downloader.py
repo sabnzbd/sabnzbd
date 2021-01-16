@@ -996,22 +996,11 @@ class Downloader(Thread):
         """ Just rattle the semaphore """
         pass
 
+    @NzbQueueLocker
     def stop(self):
+        """ Shutdown, wrapped so the semahore is notified """
         self.shutdown = True
         sabnzbd.notifier.send_notification("SABnzbd", T("Shutting down"), "startup")
-
-
-def stop():
-    DOWNLOADER_CV.acquire()
-    try:
-        sabnzbd.Downloader.stop()
-    finally:
-        DOWNLOADER_CV.notify_all()
-        DOWNLOADER_CV.release()
-    try:
-        sabnzbd.Downloader.join()
-    except:
-        pass
 
 
 def clues_login(text: str) -> bool:
