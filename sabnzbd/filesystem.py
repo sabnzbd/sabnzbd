@@ -175,7 +175,9 @@ def sanitize_filename(name: str) -> str:
         # Too long filenames are often caused by incorrect non-ascii chars,
         # so brute-force remove those non-ascii chars, and only keep 222 chars
         # ... keeping in place the original extension
-        name = str(name.encode("ascii", "ignore"), "utf-8")[: 222 - len(ext)]
+        name = str(name.encode("ascii", "ignore"), "utf-8")
+        name = ''.join( c for c in name if  ord(c) >= 32 and ord(c)<128 )
+        name = name[: 222 - len(ext)]
 
     lowext = ext.lower()
     if lowext == ".par2" and lowext != ext:
