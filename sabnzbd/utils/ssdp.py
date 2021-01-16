@@ -127,10 +127,13 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 
             # Now sleep, but stop if instructed in the meantime
             # Remember: self.__ssdp_broadcast_interval is in seconds
+            time.sleep(self.__ssdp_broadcast_interval)
+            '''
             for i in range(self.__ssdp_broadcast_interval * 4):
                 time.sleep(0.25)
                 if self.__stop:
                     break  # ... and the outer while will check on self.__stop too ... and exit
+            '''
 
     def serve_xml(self):
         """Returns an XML-structure based on the information being
@@ -156,7 +159,8 @@ def start_ssdp(*args, **kwargs):
 def stop_ssdp():
     if __SSDP and __SSDP.is_alive():
         __SSDP.stop()
-        __SSDP.join()
+        # We don't want to wait, so no join()
+        #__SSDP.join()
 
 
 def server_ssdp_xml():
