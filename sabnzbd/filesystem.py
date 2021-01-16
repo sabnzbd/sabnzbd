@@ -169,15 +169,22 @@ def sanitize_filename(name: str) -> str:
     # now split name into name, ext
     name, ext = os.path.splitext(name)
 
-    # If filename is too long, truncate it:
-    if len(name) + len(ext) > 222:
+    # If filename is too long, brute-force truncate it:
+    maxlength = 222
+    if len(name) + len(ext) > maxlength:
         logging.debug("Filename %s is too long, so truncating", name + ext)
         # Too long filenames are often caused by incorrect non-ascii chars,
-        # so brute-force remove those non-ascii chars, and only keep 222 chars
-        # ... keeping in place the original extension
+        # so brute-force remove those non-ascii chars
         name = str(name.encode("ascii", "ignore"), "utf-8")
-        name = ''.join( c for c in name if  ord(c) >= 32 and ord(c)<128 )
-        name = name[: 222 - len(ext)]
+        if len(name) + len(ext) > maxlength:
+            # still too long, limit the extension
+            maxextlength = 100
+            if len(ext) > maxextlength:
+                # allow first 150 chars, including the starting dot
+                ext = ext[:maxextlength]
+            if len(name) + len(ext) > maxlength:
+                # Still too long, limit the basename
+                name = name[: maxlength - len(ext)]
 
     lowext = ext.lower()
     if lowext == ".par2" and lowext != ext:
