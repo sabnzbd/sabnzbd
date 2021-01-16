@@ -190,12 +190,12 @@ class TestFileFolderNameSanitizer:
 
     def test_filename_too_long(self):
         # Should be truncated, keeping extension in place
-        assert len(filesystem.sanitize_filename("a"*300)) < 255
-        assert (filesystem.sanitize_filename("a"*300 + ".ext")).endswith(".ext")
+        assert len(filesystem.sanitize_filename("a" * 300)) < 255
+        assert (filesystem.sanitize_filename("a" * 300 + ".ext")).endswith(".ext")
         newname = filesystem.sanitize_filename("aaaa" + str(os.urandom(300)) + "bbbb.ext")
         assert newname.startswith("aaaa") and newname.endswith(".ext") and len(newname) < 255
         # Nothing should happen:
-        assert len(filesystem.sanitize_filename("a"*200)) == 200
+        assert len(filesystem.sanitize_filename("a" * 200)) == 200
         assert len(filesystem.sanitize_filename("你" * 200)) == 200
 
 
