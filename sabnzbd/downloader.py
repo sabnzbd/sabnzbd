@@ -94,6 +94,7 @@ class Server:
 
         self.busy_threads: List[NewsWrapper] = []
         self.idle_threads: List[NewsWrapper] = []
+        self.next_article_search: float = 0
         self.active: bool = True
         self.bad_cons: int = 0
         self.errormsg: str = ""
@@ -432,6 +433,7 @@ class Downloader(Thread):
         """
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
+        article.nzf.last_used = time.time()
 
         # Handle broken articles directly
         if not raw_data:
@@ -538,6 +540,8 @@ class Downloader(Thread):
                     last_busy[serverid] = now
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
+                        self.decode(article, None)
+                        break
                         # Let's get rid of all the articles for this server at once
                         logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
                         while article:

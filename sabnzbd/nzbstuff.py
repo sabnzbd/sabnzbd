@@ -311,6 +311,7 @@ NzbFileSaver = (
     "import_finished",
     "md5sum",
     "md5of16k",
+    "last_used",
 )
 
 
@@ -349,6 +350,7 @@ class NzbFile(TryList):
         self.deleted = False
         self.valid = False
         self.import_finished = False
+        self.last_used: float = time.time()
 
         self.md5 = None
         self.md5sum: Optional[bytes] = None
@@ -370,15 +372,40 @@ class NzbFile(TryList):
             # Any articles left?
             if raw_article_db:
                 # Save the rest
-                sabnzbd.save_data(raw_article_db, self.nzf_id, nzo.admin_path)
+                self.finish_import(raw_article_db)
+                self.pickle_articles()
             else:
                 # All imported
                 self.import_finished = True
 
-    def finish_import(self):
+    def pickle_articles(self):
+        if not self.import_finished or len(self.decodetable) < 2:
+            return
+        logging.debug("pickle %s", self.filename)
+        first_article = self.decodetable.pop(0)
+        if first_article == self.articles[0]:
+            self.articles.pop(0)
+        for article in self.decodetable:
+            article.nzf = None
+        articles = (self.articles, self.decodetable)
+        sabnzbd.save_data(articles, self.nzf_id, self.nzo.admin_path)
+        self.articles = []
+        self.decodetable = [first_article]
+        self.import_finished = False
+
+    def unpickle_articles(self, caller_name):
+        if not self.import_finished:
+            logging.debug("unpickle %s called by %s, finished: %s", self.filename, caller_name, self.import_finished)
+            temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
+            for article in temp_data[1]:
+                article.nzf = self
+            self.articles = (self.articles + temp_data[0])
+            self.decodetable = (self.decodetable + temp_data[1])
+            self.import_finished = True
+
+    def finish_import(self,raw_article_db):
         """ Load the article objects from disk """
         logging.debug("Finishing import on %s", self.filename)
-        raw_article_db = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
         if raw_article_db:
             # Convert 2.x.x jobs
             if isinstance(raw_article_db, dict):
@@ -393,6 +420,7 @@ class NzbFile(TryList):
 
             # Mark safe to continue
             self.import_finished = True
+
 
     def add_article(self, article_info):
         """ Add article to object database and return article object """
@@ -1560,19 +1588,13 @@ class NzbObject(TryList):
                 else:
                     # Don't try to get an article if server is in try_list of nzf
                     if not nzf.server_in_try_list(server):
-                        if not nzf.import_finished:
-                            # Only load NZF when it's a primary server
-                            # or when it's a backup server without active primaries
-                            if sabnzbd.Downloader.highest_server(server):
-                                nzf.finish_import()
-                                # Still not finished? Something went wrong...
-                                if not nzf.import_finished and not self.is_gone():
-                                    logging.error(T("Error importing %s"), nzf)
-                                    nzf_remove_list.append(nzf)
-                                    nzf.nzo.status = Status.PAUSED
-                                    continue
-                            else:
-                                continue
+                        nzf.unpickle_articles(server.displayname)
+                        # Still not finished? Something went wrong...
+                        if not nzf.import_finished and not self.is_gone():
+                            logging.error(T("Error importing %s"), nzf)
+                            nzf_remove_list.append(nzf)
+                            nzf.nzo.status = Status.PAUSED
+                            continue
 
                         article = nzf.get_article(server, servers)
                         if article:

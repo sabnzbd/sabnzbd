@@ -24,6 +24,7 @@ import logging
 import time
 import datetime
 import functools
+import pprint
 from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
@@ -50,6 +51,7 @@ from sabnzbd.constants import (
     IGNORED_FOLDERS,
     QNFO,
     DIRECT_WRITE_TRIGGER,
+    GIGI,
 )
 
 import sabnzbd.cfg as cfg
@@ -65,6 +67,7 @@ class NzbQueue:
         self.__top_only: bool = cfg.top_only()
         self.__nzo_list: List[NzbObject] = []
         self.__nzo_table: Dict[str, NzbObject] = {}
+
 
     def read_queue(self, repair):
         """Read queue from disk, supporting repair modes
@@ -874,6 +877,7 @@ class NzbQueue:
 
                 # Reset main trylist, minimal performance impact
                 logging.info("Resetting bad trylist for job %s", nzo.final_name)
+                logging.info("Content: %s", pprint.pformat(nzo.try_list))
                 nzo.reset_try_list()
 
         for nzo in empty:
@@ -917,6 +921,59 @@ class NzbQueue:
     def __repr__(self):
         return "<NzbQueue>"
 
+    def pickle(self):
+        """Find pickleable files in the queue"""
+
+        # Keep approximately 30 seconds worth of artickles unpickled ahead of a server
+        buffer_size = sabnzbd.BPSMeter.bps * 30
+        if buffer_size < GIGI:
+            buffer_size = GIGI
+        needed = buffer_size
+        logging.debug("Pickle buffer: %d", buffer_size)
+        picklelist = []
+        for nzo in self.__nzo_list:
+            if nzo.status == Status.GRABBING:
+                continue
+            logging.debug("Checking file for pickle: %s", nzo.filename)
+            filenum = 0
+            # Skip the first file of an nzb so that the first article is always unpickled
+            #seenfirst = 0
+            now = time.time()
+            picklelist = []
+            for nzf in nzo.files:
+                if nzo.deleted:
+                    continue
+                if nzf.bytes_left < 1:
+                    #seenfirst = 1
+                    logging.debug("Skipping %s because no bytes_left", nzf.filename)
+                    continue
+
+                if nzo.status == Status.PAUSED:
+                    if nzf.import_finished and seenfirst:
+                        nzf.pickle_articles()
+                    #else:
+                    #    seenfirst = 1
+                    continue
+
+                if not nzf.import_finished:
+                    needed -= nzf.bytes_left
+                    #seenfirst = 1
+                    continue
+
+                if now - nzf.last_used > 20:
+                    #if needed < 0 and seenfirst and len(nzf.articles):
+                    if needed < 0 and len(nzf.articles):
+                        picklelist.append(nzf)
+                    else:
+                        needed -= nzf.bytes_left
+                else:
+                    logging.debug("Skipping %s. trylist: %d, lastused: %d", nzf.filename, len(nzf.try_list), now - nzf.last_used)
+                    needed = buffer_size
+                #seenfirst = 1
+
+            for nzf in picklelist:
+                nzf.pickle_articles()
+                #time.sleep(0.001)
 
 def _nzo_date_cmp(nzo1: NzbObject, nzo2: NzbObject):
     avg_date1 = nzo1.avg_date
