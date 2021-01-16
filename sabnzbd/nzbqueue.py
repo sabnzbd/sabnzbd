@@ -68,7 +68,6 @@ class NzbQueue:
         self.__nzo_list: List[NzbObject] = []
         self.__nzo_table: Dict[str, NzbObject] = {}
 
-
     def read_queue(self, repair):
         """Read queue from disk, supporting repair modes
         0 = no repairs
@@ -924,7 +923,7 @@ class NzbQueue:
     def pickle(self):
         """Find pickleable files in the queue"""
 
-        # Keep approximately 30 seconds worth of artickles unpickled ahead of a server
+        # Keep approximately the next 30 seconds worth of articles after file being downloaded unpickled
         buffer_size = sabnzbd.BPSMeter.bps * 30
         if buffer_size < GIGI:
             buffer_size = GIGI
@@ -936,44 +935,36 @@ class NzbQueue:
                 continue
             logging.debug("Checking file for pickle: %s", nzo.filename)
             filenum = 0
-            # Skip the first file of an nzb so that the first article is always unpickled
-            #seenfirst = 0
             now = time.time()
             picklelist = []
             for nzf in nzo.files:
                 if nzo.deleted:
                     continue
                 if nzf.bytes_left < 1:
-                    #seenfirst = 1
                     logging.debug("Skipping %s because no bytes_left", nzf.filename)
                     continue
 
                 if nzo.status == Status.PAUSED:
                     if nzf.import_finished and seenfirst:
                         nzf.pickle_articles()
-                    #else:
-                    #    seenfirst = 1
                     continue
 
                 if not nzf.import_finished:
                     needed -= nzf.bytes_left
-                    #seenfirst = 1
                     continue
 
+                # Don't pickle if the file has been touched in the last 20 seconds or it will soon be reached by a server
                 if now - nzf.last_used > 20:
-                    #if needed < 0 and seenfirst and len(nzf.articles):
                     if needed < 0 and len(nzf.articles):
-                        picklelist.append(nzf)
+                        nzf.pickle_articles()
                     else:
                         needed -= nzf.bytes_left
                 else:
-                    logging.debug("Skipping %s. trylist: %d, lastused: %d", nzf.filename, len(nzf.try_list), now - nzf.last_used)
+                    logging.debug(
+                        "Skipping %s. trylist: %d, lastused: %d", nzf.filename, len(nzf.try_list), now - nzf.last_used
+                    )
                     needed = buffer_size
-                #seenfirst = 1
 
-            for nzf in picklelist:
-                nzf.pickle_articles()
-                #time.sleep(0.001)
 
 def _nzo_date_cmp(nzo1: NzbObject, nzo2: NzbObject):
     avg_date1 = nzo1.avg_date

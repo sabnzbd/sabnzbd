@@ -399,11 +399,11 @@ class NzbFile(TryList):
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
             for article in temp_data[1]:
                 article.nzf = self
-            self.articles = (self.articles + temp_data[0])
-            self.decodetable = (self.decodetable + temp_data[1])
+            self.articles = self.articles + temp_data[0]
+            self.decodetable = self.decodetable + temp_data[1]
             self.import_finished = True
 
-    def finish_import(self,raw_article_db):
+    def finish_import(self, raw_article_db):
         """ Load the article objects from disk """
         logging.debug("Finishing import on %s", self.filename)
         if raw_article_db:
@@ -420,7 +420,6 @@ class NzbFile(TryList):
 
             # Mark safe to continue
             self.import_finished = True
-
 
     def add_article(self, article_info):
         """ Add article to object database and return article object """
