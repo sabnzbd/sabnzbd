@@ -111,8 +111,7 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
         MCAST_PORT = 1900
         MULTICAST_TTL = 2
 
-        # TODO: is that 1 needed?
-        while 1 and not self.__stop:
+        while not self.__stop:
             # Do network stuff
             # Use self.__host, self.__url, self.__server_name to do stuff!
 
@@ -125,15 +124,8 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
                 # probably no network
                 pass
 
-            # Now sleep, but stop if instructed in the meantime
-            # Remember: self.__ssdp_broadcast_interval is in seconds
+            # Now sleep before sending a new broadcast
             time.sleep(self.__ssdp_broadcast_interval)
-            '''
-            for i in range(self.__ssdp_broadcast_interval * 4):
-                time.sleep(0.25)
-                if self.__stop:
-                    break  # ... and the outer while will check on self.__stop too ... and exit
-            '''
 
     def serve_xml(self):
         """Returns an XML-structure based on the information being
@@ -160,7 +152,6 @@ def stop_ssdp():
     if __SSDP and __SSDP.is_alive():
         __SSDP.stop()
         # We don't want to wait, so no join()
-        #__SSDP.join()
 
 
 def server_ssdp_xml():
