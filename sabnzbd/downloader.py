@@ -431,9 +431,9 @@ class Downloader(Thread):
         """Decode article and check the status of
         the decoder and the assembler
         """
+        article.nzf.last_used = time.time()
         # Article was requested and fetched, update article stats for the server
         sabnzbd.BPSMeter.register_server_article_tried(article.fetcher.id)
-        article.nzf.last_used = time.time()
 
         # Handle broken articles directly
         if not raw_data:

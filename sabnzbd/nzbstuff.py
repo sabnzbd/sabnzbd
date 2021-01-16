@@ -383,13 +383,17 @@ class NzbFile(TryList):
             return
         logging.debug("pickle %s", self.filename)
         first_article = self.decodetable.pop(0)
+        removed_first = 0
         if first_article == self.articles[0]:
             self.articles.pop(0)
+            removed_first = 1
         for article in self.decodetable:
             article.nzf = None
         articles = (self.articles, self.decodetable)
         sabnzbd.save_data(articles, self.nzf_id, self.nzo.admin_path)
         self.articles = []
+        if removed_first:
+            self.articles.append(first_article)
         self.decodetable = [first_article]
         self.import_finished = False
 
