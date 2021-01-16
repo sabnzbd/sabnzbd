@@ -945,7 +945,7 @@ class NzbQueue:
                     continue
 
                 if nzo.status == Status.PAUSED:
-                    if nzf.import_finished and seenfirst:
+                    if nzf.import_finished:
                         nzf.pickle_articles()
                     continue
 

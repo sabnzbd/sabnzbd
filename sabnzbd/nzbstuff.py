@@ -391,6 +391,9 @@ class NzbFile(TryList):
             article.nzf = None
         articles = (self.articles, self.decodetable)
         sabnzbd.save_data(articles, self.nzf_id, self.nzo.admin_path)
+        # Restore nzf in case the articles are stored in articlecache or elsewhere
+        for article in self.decodetable:
+            article.nzf = self
         self.articles = []
         if removed_first:
             self.articles.append(first_article)
@@ -452,6 +455,7 @@ class NzbFile(TryList):
         for article in self.articles:
             article = article.get_article(server, servers)
             if article:
+                article.nzf.last_used = time.time()
                 return article
         self.add_to_try_list(server)
 
