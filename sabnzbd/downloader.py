@@ -148,16 +148,14 @@ class Server:
             ip = self.host
         return ip
 
-    def stop(self, readers: Dict[int, NewsWrapper], writers: Dict[int, NewsWrapper]):
+    def stop(self, readers: Dict[int, NewsWrapper]):
         for nw in self.idle_threads:
             try:
-                fno = nw.nntp.sock.fileno()
+                fno = nw.nntp.fileno
             except:
                 fno = None
             if fno and fno in readers:
                 readers.pop(fno)
-            if fno and fno in writers:
-                writers.pop(fno)
             nw.terminate(quit=True)
         self.idle_threads = []
 
@@ -204,13 +202,13 @@ class Downloader(Thread):
         self.speed_set()
 
         # Used to see if we can add a slowdown to the Downloader-loop
-        self.can_be_slowed = None
-        self.can_be_slowed_timer = 0
-
+        self.can_be_slowed: Optional[bool] = None
+        self.can_be_slowed_timer: int = 0
+        self.sleep_time: float = 0.0
         self.sleep_time_set()
         cfg.downloader_sleep_time.callback(self.sleep_time_set)
 
-        self.postproc: bool = False
+        self.paused_for_postproc: bool = False
         self.shutdown: bool = False
 
         # A user might change server parms again before server restart is ready.
@@ -220,7 +218,6 @@ class Downloader(Thread):
         self.force_disconnect: bool = False
 
         self.read_fds: Dict[int, NewsWrapper] = {}
-        self.write_fds: Dict[int, NewsWrapper] = {}
 
         self.servers: List[Server] = []
         self.server_dict: Dict[str, Server] = {}  # For faster lookups, but is not updated later!
@@ -292,6 +289,10 @@ class Downloader(Thread):
         # Update server-count
         self.server_nr = len(self.servers)
 
+    def add_socket(self, fileno: int, nw: NewsWrapper):
+        """ Add a socket ready to be used to the list """
+        self.read_fds[fileno] = nw
+
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
         """ Set downloader to specified paused state """
@@ -319,12 +320,12 @@ class Downloader(Thread):
 
     def wait_for_postproc(self):
         logging.info("Waiting for post-processing to finish")
-        self.postproc = True
+        self.paused_for_postproc = True
 
     @NzbQueueLocker
     def resume_from_postproc(self):
         logging.info("Post-processing finished, resuming download")
-        self.postproc = False
+        self.paused_for_postproc = False
 
     def disconnect(self):
         self.force_disconnect = True
@@ -469,26 +470,17 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         sabnzbd.BPSMeter.update()
 
-        # Store when each server last searched for articles
-        last_searched = {}
-
-        # Store when each server last downloaded anything or found an article
-        last_busy = {}
-
         while 1:
-            connection_count = 0
             now = time.time()
-            for server in self.servers:
-                serverid = server.id
-                if server.busy_threads:
-                    last_busy[serverid] = now
-                else:
-                    # Skip this server if idle for 1 second and it has already been searched less than 0.5 seconds ago
-                    if last_busy.get(serverid, 0) + 1 < now and last_searched.get(serverid, 0) + 0.5 > now:
-                        continue
 
-                last_searched[serverid] = now
-                connection_count += len(server.busy_threads)
+            # Set Article to None so references from this
+            # thread do not keep the parent objects alive (see #1628)
+            article = None
+
+            for server in self.servers:
+                # Skip this server if there's no point searching for new stuff to do
+                if server.next_article_search > now:
+                    continue
 
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
@@ -498,10 +490,11 @@ class Downloader(Thread):
                             self.__reset_nw(nw, "timed out")
                         server.bad_cons += 1
                         self.maybe_block_server(server)
+
                 if server.restart:
                     if not server.busy_threads:
                         newid = server.newid
-                        server.stop(self.read_fds, self.write_fds)
+                        server.stop(self.read_fds)
                         self.servers.remove(server)
                         if newid:
                             self.init_server(None, newid)
@@ -512,10 +505,14 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
-                if not server.idle_threads or server.restart or self.is_paused() or self.shutdown or self.postproc:
-                    continue
-
-                if not server.active:
+                if (
+                    not server.idle_threads
+                    or server.restart
+                    or self.is_paused()
+                    or self.shutdown
+                    or self.paused_for_postproc
+                    or not server.active
+                ):
                     continue
 
                 for nw in server.idle_threads[:]:
@@ -535,13 +532,11 @@ class Downloader(Thread):
                     article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
                     if not article:
+                        # Skip this server for 1 second
+                        server.next_article_search = now + 1
                         break
-
-                    last_busy[serverid] = now
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                        self.decode(article, None)
-                        break
                         # Let's get rid of all the articles for this server at once
                         logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
                         while article:
@@ -549,7 +544,6 @@ class Downloader(Thread):
                             article = article.nzf.nzo.get_article(server, self.servers)
                         break
 
-                    connection_count += 1
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
 
@@ -560,7 +554,7 @@ class Downloader(Thread):
                     else:
                         try:
                             logging.info("%s@%s: Initiating connection", nw.thrdnum, server.host)
-                            nw.init_connect(self.write_fds)
+                            nw.init_connect()
                         except:
                             logging.error(
                                 T("Failed to initialize %s@%s with reason: %s"),
@@ -580,7 +574,7 @@ class Downloader(Thread):
 
                 if empty:
                     for server in self.servers:
-                        server.stop(self.read_fds, self.write_fds)
+                        server.stop(self.read_fds)
 
                     logging.info("Shutting down")
                     break
@@ -597,13 +591,11 @@ class Downloader(Thread):
 
             # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
-            writekeys = self.write_fds.keys()
-
-            if readkeys or writekeys:
-                read, write, error = select.select(readkeys, writekeys, (), 1.0)
+            if readkeys:
+                read, _, _ = select.select(readkeys, (), (), 1.0)
 
                 # Add a sleep if there are too few results compared to the number of active connections
-                if self.can_be_slowed and len(read) < 1 + connection_count / 10:
+                if self.can_be_slowed and len(read) < 1 + len(readkeys) / 10:
                     time.sleep(self.sleep_time)
 
                 # Need to initialize the check during first 20 seconds
@@ -620,7 +612,7 @@ class Downloader(Thread):
                         logging.debug("Downloader-slowdown: %r", self.can_be_slowed)
 
             else:
-                read, write, error = ([], [], [])
+                read = []
 
                 sabnzbd.BPSMeter.reset()
 
@@ -628,7 +620,7 @@ class Downloader(Thread):
 
                 DOWNLOADER_CV.acquire()
                 while (
-                    (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.postproc)
+                    (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.paused_for_postproc)
                     and not self.shutdown
                     and not self.server_restarts
                 ):
@@ -636,17 +628,6 @@ class Downloader(Thread):
                 DOWNLOADER_CV.release()
 
                 self.force_disconnect = False
-
-            for selected in write:
-                nw = self.write_fds[selected]
-
-                fileno = nw.nntp.sock.fileno()
-
-                if fileno not in self.read_fds:
-                    self.read_fds[fileno] = nw
-
-                if fileno in self.write_fds:
-                    self.write_fds.pop(fileno)
 
             if not read:
                 sabnzbd.BPSMeter.update()
@@ -817,22 +798,22 @@ class Downloader(Thread):
                         self.__request_article(nw)
 
                 if done:
-                    server.bad_cons = 0  # Successful data, clear "bad" counter
+                    # Successful data, clear "bad" counter
+                    server.bad_cons = 0
                     server.errormsg = server.warning = ""
                     if sabnzbd.LOG_ALL:
                         logging.debug("Thread %s@%s: %s done", nw.thrdnum, server.host, article.article)
                     self.decode(article, nw.data)
 
+                    # Reset connection for new activity
                     nw.soft_reset()
                     server.busy_threads.remove(nw)
                     server.idle_threads.append(nw)
+                    self.read_fds.pop(nw.nntp.fileno, None)
 
     def __lookup_nw(self, nw: NewsWrapper):
         """ Find the fileno matching the nw, needed for closed connections """
         for f in self.read_fds:
-            if self.read_fds[f] == nw:
-                return f
-        for f in self.write_fds:
             if self.read_fds[f] == nw:
                 return f
         return None
@@ -852,7 +833,7 @@ class Downloader(Thread):
 
         if nw.nntp:
             try:
-                fileno = nw.nntp.sock.fileno()
+                fileno = nw.nntp.fileno
             except:
                 fileno = self.__lookup_nw(nw)
                 destroy = True
@@ -869,8 +850,6 @@ class Downloader(Thread):
         if not (destroy or nw in server.idle_threads):
             server.idle_threads.append(nw)
 
-        if fileno and fileno in self.write_fds:
-            self.write_fds.pop(fileno)
         if fileno and fileno in self.read_fds:
             self.read_fds.pop(fileno)
 
@@ -903,9 +882,8 @@ class Downloader(Thread):
                     logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
                 nw.body()
 
-            fileno = nw.nntp.sock.fileno()
-            if fileno not in self.read_fds:
-                self.read_fds[fileno] = nw
+            # Mark as ready to be read
+            self.read_fds[nw.nntp.fileno] = nw
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
             self.__reset_nw(nw, "server broke off connection", send_quit=False)
