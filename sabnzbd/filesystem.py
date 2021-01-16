@@ -180,7 +180,7 @@ def sanitize_filename(name: str) -> str:
             # still too long, limit the extension
             maxextlength = 100
             if len(ext) > maxextlength:
-                # allow first 150 chars, including the starting dot
+                # allow first <maxextlength> chars, including the starting dot
                 ext = ext[:maxextlength]
             if len(name) + len(ext) > maxlength:
                 # Still too long, limit the basename
