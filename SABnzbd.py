@@ -35,6 +35,7 @@ import ssl
 import time
 import re
 import gc
+import pickle
 from typing import List, Dict, Any
 
 try:
@@ -77,6 +78,7 @@ import sabnzbd.cfg
 import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
+import sabnzbd.nzbqueue
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
 import sabnzbd.utils.ssdp as ssdp
 
@@ -1534,6 +1536,9 @@ def main():
                 logging.debug("Triggering Python garbage collection")
             gc.collect()
             timer = 0
+
+        if not timer % 5:
+            sabnzbd.NzbQueue.pickle()
 
         # 30 sec polling tasks
         if not timer % 10:

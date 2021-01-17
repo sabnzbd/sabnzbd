@@ -536,7 +536,7 @@ class Downloader(Thread):
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                        # Mark articles tested at a rate equivalent of about 350 MB/s to let the pickler keep up
+                        # Mark articles tested at a rate equivalent of about 750 MB/s to let the pickler keep up
                         max_read = 100
                         if len(self.servers) == 1:
                             max_read = 9999999
@@ -546,7 +546,7 @@ class Downloader(Thread):
                             if max_read < 1:
                                 break
                             article = article.nzf.nzo.get_article(server, self.servers)
-                            server.next_article_search = now + 0.2
+                        server.next_article_search = now + 0.1
                         break
 
                     server.idle_threads.remove(nw)

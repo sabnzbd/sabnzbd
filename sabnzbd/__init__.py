@@ -365,9 +365,6 @@ def start():
         logging.debug("Starting urlgrabber")
         sabnzbd.URLGrabber.start()
 
-        logging.debug("Starting pickler")
-        sabnzbd.Pickler.start()
-
 
 @synchronized(INIT_LOCK)
 def halt():

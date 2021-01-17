@@ -350,7 +350,7 @@ class NzbFile(TryList):
         self.deleted = False
         self.valid = False
         self.import_finished = False
-        self.last_used: float = time.time()
+        self.last_used: float = 0
 
         self.md5 = None
         self.md5sum: Optional[bytes] = None
@@ -382,6 +382,7 @@ class NzbFile(TryList):
         if not self.import_finished or len(self.decodetable) < 2:
             return
         logging.debug("pickle %s", self.filename)
+
         first_article = self.decodetable.pop(0)
         removed_first = 0
         if first_article == self.articles[0]:
@@ -389,8 +390,10 @@ class NzbFile(TryList):
             removed_first = 1
         for article in self.decodetable:
             article.nzf = None
+
         articles = (self.articles, self.decodetable)
         sabnzbd.save_data(articles, self.nzf_id, self.nzo.admin_path)
+
         # Restore nzf in case the articles are stored in articlecache or elsewhere
         for article in self.decodetable:
             article.nzf = self
@@ -400,9 +403,9 @@ class NzbFile(TryList):
         self.decodetable = [first_article]
         self.import_finished = False
 
-    def unpickle_articles(self, caller_name):
+    def unpickle_articles(self, caller):
         if not self.import_finished:
-            logging.debug("unpickle %s called by %s, finished: %s", self.filename, caller_name, self.import_finished)
+            logging.debug("unpickle %s, called by %s", self.filename, caller)
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
             for article in temp_data[1]:
                 article.nzf = self
@@ -1595,13 +1598,19 @@ class NzbObject(TryList):
                 else:
                     # Don't try to get an article if server is in try_list of nzf
                     if not nzf.server_in_try_list(server):
-                        nzf.unpickle_articles(server.displayname)
-                        # Still not finished? Something went wrong...
-                        if not nzf.import_finished and not self.is_gone():
-                            logging.error(T("Error importing %s"), nzf)
-                            nzf_remove_list.append(nzf)
-                            nzf.nzo.status = Status.PAUSED
-                            continue
+                        if not nzf.import_finished:
+                            # Only load NZF when it's a primary server
+                            # or when it has already been accessed
+                            if nzf.last_used or sabnzbd.Downloader.highest_server(server):
+                                nzf.unpickle_articles(server.displayname)
+                                # Still not finished? Something went wrong...
+                                if not nzf.import_finished and not self.is_gone():
+                                    logging.error(T("Error importing %s"), nzf)
+                                    nzf_remove_list.append(nzf)
+                                    nzf.nzo.status = Status.PAUSED
+                                    continue
+                            else:
+                                continue
 
                         article = nzf.get_article(server, servers)
                         if article:
