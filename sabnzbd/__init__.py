@@ -26,7 +26,7 @@ import socket
 import cherrypy
 import sys
 import ssl
-from threading import Lock, Thread
+from threading import Lock, Thread, Condition
 from typing import Any, AnyStr
 
 ##############################################################################
@@ -175,6 +175,9 @@ WEBUI_READY = False
 EXTERNAL_IPV6 = False
 LAST_HISTORY_UPDATE = 1
 
+# Condition used to handle the main loop in SABnzbd.py
+SABSTOP_CONDITION = Condition(Lock())
+
 # Performance measure for dashboard
 PYSTONE_SCORE = 0
 DOWNLOAD_DIR_SPEED = 0
@@ -198,19 +201,7 @@ def sig_handler(signum=None, frame=None):
         return True
     if signum is not None:
         logging.warning(T("Signal %s caught, saving and exiting..."), signum)
-    try:
-        save_state()
-        sabnzbd.zconfig.remove_server()
-    finally:
-        if sabnzbd.WIN32:
-            del_connection_info()
-            if sabnzbd.WINTRAY:
-                sabnzbd.WINTRAY.terminate = True
-                time.sleep(0.5)
-        else:
-            pid_file()
-        sabnzbd.SABSTOP = True
-        os._exit(0)
+        sabnzbd.shutdown_program()
 
 
 ##############################################################################
@@ -371,7 +362,11 @@ def halt():
 
         # Stop the windows tray icon
         if sabnzbd.WINTRAY:
-            sabnzbd.WINTRAY.terminate = True
+            sabnzbd.WINTRAY.stop()
+
+        # Remove registry information
+        if sabnzbd.WIN32:
+            del_connection_info()
 
         sabnzbd.zconfig.remove_server()
         sabnzbd.utils.ssdp.stop_ssdp()
@@ -402,7 +397,6 @@ def halt():
         except:
             pass
 
-        # Stop Required Objects
         logging.debug("Stopping downloader")
         sabnzbd.Downloader.stop()
         try:
@@ -447,31 +441,31 @@ def halt():
         sabnzbd.__INITIALIZED__ = False
 
 
+def notify_shutdown_loop():
+    """ Trigger the main loop to wake up"""
+    with sabnzbd.SABSTOP_CONDITION:
+        sabnzbd.SABSTOP_CONDITION.notify()
+
+
+def shutdown_program():
+    """ Stop program after halting and saving """
+    if not sabnzbd.SABSTOP:
+        logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
+        sabnzbd.halt()
+        cherrypy.engine.exit()
+        sabnzbd.SABSTOP = True
+        notify_shutdown_loop()
+
+
 def trigger_restart(timeout=None):
     """ Trigger a restart by setting a flag an shutting down CP """
     # Sometimes we need to wait a bit to send good-bye to the browser
     if timeout:
         time.sleep(timeout)
 
-    if sabnzbd.WIN32:
-        # Remove connection info for faster restart
-        del_connection_info()
-
-    # Leave the harder restarts to the polling in SABnzbd.py
-    if hasattr(sys, "frozen"):
-        sabnzbd.TRIGGER_RESTART = True
-    else:
-        # Add extra arguments
-        if sabnzbd.Downloader.paused:
-            sabnzbd.RESTART_ARGS.append("-p")
-        sys.argv = sabnzbd.RESTART_ARGS
-
-        # Stop all services
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-
-        # Do the restart right now
-        cherrypy.engine._do_execv()
+    # Set the flag and wake up the main loop
+    sabnzbd.TRIGGER_RESTART = True
+    notify_shutdown_loop()
 
 
 ##############################################################################
@@ -565,6 +559,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None, pa
 
 def save_state():
     """ Save all internal bookkeeping to disk """
+    config.save_config()
     sabnzbd.ArticleCache.flush_articles()
     sabnzbd.NzbQueue.save()
     sabnzbd.BPSMeter.save()
@@ -780,15 +775,6 @@ def system_standby():
         powersup.osx_standby()
     else:
         powersup.linux_standby()
-
-
-def shutdown_program():
-    """ Stop program after halting and saving """
-    if not sabnzbd.SABSTOP:
-        logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
 
 
 def restart_program():

@@ -1519,7 +1519,9 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
-        time.sleep(3)
+        # Wait to be awoken or every 3 seconds
+        with sabnzbd.SABSTOP_CONDITION:
+            sabnzbd.SABSTOP_CONDITION.wait(3)
         timer += 1
 
         # Check for loglevel changes
@@ -1584,13 +1586,6 @@ def main():
                 subprocess.Popen("timeout 5 & sc start SABnzbd", shell=True)
             else:
                 cherrypy.engine._do_execv()
-
-    config.save_config()
-
-    if sabnzbd.WINTRAY:
-        sabnzbd.WINTRAY.terminate = True
-    if sabnzbd.WIN32:
-        del_connection_info()
 
     # Send our final goodbyes!
     notifier.send_notification("SABnzbd", T("SABnzbd shutdown finished"), "startup")

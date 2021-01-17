@@ -21,6 +21,7 @@ sabtray.py - Systray icon for SABnzbd on Windows, contributed by Jan Schejbal
 
 import os
 import logging
+from threading import Thread
 from time import sleep
 
 import sabnzbd
@@ -188,7 +189,8 @@ class SABTrayThread(SysTrayIconThread):
 
     def shutdown(self, icon):
         self.hover_text = T("Shutdown")
-        sabnzbd.shutdown_program()
+        # In seperate thread, because the shutdown also stops the tray icon
+        Thread(target=sabnzbd.shutdown_program).start()
 
     def pause(self):
         sabnzbd.Scheduler.plan_resume(0)
