@@ -38,10 +38,9 @@ except ImportError:
 
 import sabnzbd
 from sabnzbd.decorators import synchronized
-from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
+from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX
 from sabnzbd.encoding import correct_unknown_encoding
 from sabnzbd.utils import rarfile
-from sabnzbd.constants import DEF_FILE_MAX
 
 
 def get_ext(filename: str) -> str:
@@ -171,21 +170,20 @@ def sanitize_filename(name: str) -> str:
     name, ext = os.path.splitext(name)
 
     # If filename is too long, brute-force truncate it:
-    maxlength = DEF_FILE_MAX
-    if len(name) + len(ext) > maxlength:
+    if len(name) + len(ext) > DEF_FILE_MAX:
         logging.debug("Filename %s is too long, so truncating", name + ext)
         # Too long filenames are often caused by incorrect non-ascii chars,
         # so brute-force remove those non-ascii chars
         name = str(name.encode("ascii", "ignore"), "utf-8")
-        if len(name) + len(ext) > maxlength:
+        if len(name) + len(ext) > DEF_FILE_MAX:
             # still too long, limit the extension
-            maxextlength = 100
+            maxextlength = 100 # max length of an extension
             if len(ext) > maxextlength:
                 # allow first <maxextlength> chars, including the starting dot
                 ext = ext[:maxextlength]
-            if len(name) + len(ext) > maxlength:
+            if len(name) + len(ext) > DEF_FILE_MAX:
                 # Still too long, limit the basename
-                name = name[: maxlength - len(ext)]
+                name = name[: DEF_FILE_MAX - len(ext)]
 
     lowext = ext.lower()
     if lowext == ".par2" and lowext != ext:
