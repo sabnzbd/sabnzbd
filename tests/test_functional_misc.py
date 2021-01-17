@@ -61,11 +61,8 @@ class TestQueueRepair(SABnzbdBaseTest):
         # Request queue repair
         assert get_api_result("restart_repair") == {"status": True}
 
-        # Wait for the restart
-        time.sleep(2)
-
-        # Let's check the queue
-        for _ in range(30):
+        # Let's check the queue, this can take long on GitHub Actions
+        for _ in range(60):
             queue_result_slots = {}
             try:
                 # Can give timeout if still restarting
