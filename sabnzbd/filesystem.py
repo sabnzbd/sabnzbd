@@ -177,7 +177,7 @@ def sanitize_filename(name: str) -> str:
         name = str(name.encode("ascii", "ignore"), "utf-8")
         if len(name) + len(ext) > DEF_FILE_MAX:
             # still too long, limit the extension
-            maxextlength = 100 # max length of an extension
+            maxextlength = 100  # max length of an extension
             if len(ext) > maxextlength:
                 # allow first <maxextlength> chars, including the starting dot
                 ext = ext[:maxextlength]
