@@ -41,6 +41,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI
 from sabnzbd.encoding import correct_unknown_encoding
 from sabnzbd.utils import rarfile
+from sabnzbd.constants import DEF_FILE_MAX
 
 
 def get_ext(filename: str) -> str:
@@ -170,7 +171,7 @@ def sanitize_filename(name: str) -> str:
     name, ext = os.path.splitext(name)
 
     # If filename is too long, brute-force truncate it:
-    maxlength = 222
+    maxlength = DEF_FILE_MAX
     if len(name) + len(ext) > maxlength:
         logging.debug("Filename %s is too long, so truncating", name + ext)
         # Too long filenames are often caused by incorrect non-ascii chars,
