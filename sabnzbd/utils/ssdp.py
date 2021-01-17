@@ -36,10 +36,9 @@ http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
 
 """
 import logging
-import time
 import socket
 import uuid
-from threading import Thread
+from threading import Thread, Condition, Lock
 from typing import Optional
 
 
@@ -96,25 +95,25 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 </root>"""
 
         self.__stop = False
+        self.__condition = Condition(Lock())
         super().__init__()
 
     def stop(self):
         logging.info("Stopping SSDP")
         self.__stop = True
+        with self.__condition:
+            self.__condition.notify()
 
     def run(self):
         logging.info("Serving SSDP on %s as %s", self.__host, self.__server_name)
-        # logging.info("self.__url is %s", self.__url)
 
         # the standard multicast settings for SSDP:
         MCAST_GRP = "239.255.255.250"
         MCAST_PORT = 1900
         MULTICAST_TTL = 2
 
-        while 1 and not self.__stop:
+        while not self.__stop:
             # Do network stuff
-            # Use self.__host, self.__url, self.__server_name to do stuff!
-
             # Create socket, send the broadcast, and close the socket again
             try:
                 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) as sock:
@@ -123,15 +122,16 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
             except:
                 # probably no network
                 pass
-            time.sleep(self.__ssdp_broadcast_interval)
+
+            # Wait until awoken or timeout is up
+            with self.__condition:
+                self.__condition.wait(self.__ssdp_broadcast_interval)
 
     def serve_xml(self):
         """Returns an XML-structure based on the information being
         served by this service, returns nothing if not running"""
         if self.__stop:
             return
-        # Use self.__host, self.__url, self.__server_name to do stuff!
-
         return self.__myxml
 
 
