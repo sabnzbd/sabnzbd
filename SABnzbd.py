@@ -1582,13 +1582,6 @@ def main():
             else:
                 cherrypy.engine._do_execv()
 
-    config.save_config()
-
-    if sabnzbd.WINTRAY:
-        sabnzbd.WINTRAY.terminate = True
-    if sabnzbd.WIN32:
-        del_connection_info()
-
     # Send our final goodbyes!
     notifier.send_notification("SABnzbd", T("SABnzbd shutdown finished"), "startup")
     logging.info("Leaving SABnzbd")

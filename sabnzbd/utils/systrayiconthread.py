@@ -21,12 +21,11 @@ from time import sleep
 class SysTrayIconThread(Thread):
     QUIT = "QUIT"
     SPECIAL_ACTIONS = [QUIT]
-
     FIRST_ID = 1023
-    terminate = False
 
     def __init__(self, icon, hover_text, menu_options, on_quit=None, default_menu_index=None, window_class_name=None):
         super().__init__()
+        self.terminate = False
         self.icon = icon
         self.icons = {}
         self.hover_text = hover_text
@@ -80,12 +79,16 @@ class SysTrayIconThread(Thread):
         self.notify_id = None
         self.refresh_icon()
 
+    def stop(self):
+        self.terminate = True
+        sleep(0.15)
+
     def run(self):
         self.initialize()
         while not self.terminate:
             win32gui.PumpWaitingMessages()
             self.doUpdates()
-            sleep(0.100)
+            sleep(0.1)
         win32gui.Shell_NotifyIcon(win32gui.NIM_DELETE, (self.hwnd, 0))
 
     # Override this

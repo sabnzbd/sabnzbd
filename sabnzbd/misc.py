@@ -64,6 +64,9 @@ if sabnzbd.WIN32:
     except ImportError:
         pass
 
+if sabnzbd.DARWIN:
+    from PyObjCTools import AppHelper
+
 
 def time_format(fmt):
     """ Return time-format string adjusted for 12/24 hour clock setting """
@@ -556,8 +559,6 @@ def exit_sab(value):
     sys.stderr.flush()
     sys.stdout.flush()
     if hasattr(sys, "frozen") and sabnzbd.DARWIN:
-        from PyObjCTools import AppHelper
-
         AppHelper.stopEventLoop()
     sys.exit(value)
 
