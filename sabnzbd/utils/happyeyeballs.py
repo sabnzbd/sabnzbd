@@ -2,7 +2,7 @@
 # Python implementation of RFC 6555 / Happy Eyeballs: find the quickest IPv4/IPv6 connection
 # See https://tools.ietf.org/html/rfc6555
 # Method: Start parallel sessions using threads, and only wait for the quickest succesful socket connect
-# If the HOST has an IPv6 address, IPv6 is given a head start by delaying IPv4. See https://tools.ietf.org/html/rfc6555#section-4.1
+# See https://tools.ietf.org/html/rfc6555#section-4.1
 
 # You can run this as a standalone program, or as a module:
 """
@@ -39,7 +39,7 @@ def do_socket_connect(queue, ip, PORT, SSL, ipv4delay):
         if ip.find(":") >= 0:
             s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
         if ip.find(".") >= 0:
-            time.sleep(ipv4delay)  # IPv4 ... so a delay for IPv4 as we prefer IPv6. Note: ipv4delay could be 0
+            time.sleep(ipv4delay)  # IPv4 ... so a delay for IPv4 if we prefer IPv6. Note: ipv4delay could be 0
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         s.settimeout(3)
@@ -86,7 +86,7 @@ def happyeyeballs(HOST, **kwargs):
     try:
         preferipv6 = kwargs["preferipv6"]
     except:
-        preferipv6 = True  # prefer IPv6, so give IPv6 connects a head start by delaying IPv4
+        preferipv6 = False  # Do not prefer IPv6
 
         # Find out if a cached result is available, and recent enough:
     timecurrent = int(time.time())  # current time in seconds since epoch
@@ -187,6 +187,7 @@ if __name__ == "__main__":
     print((happyeyeballs("news.thundernews.com", port=119)))
     print((happyeyeballs("news.thundernews.com", port=119, preferipv6=False)))
     print((happyeyeballs("secure.eu.thundernews.com", port=563, ssl=True)))
+    print((happyeyeballs("bonus.frugalusenet.com", port=563, ssl=True)))
 
     # Strange cases
     print((happyeyeballs("does.not.resolve", port=443, ssl=True)))
