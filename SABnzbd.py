@@ -1726,7 +1726,6 @@ if __name__ == "__main__":
             main()
 
     elif sabnzbd.DARWIN and sabnzbd.FOUNDATION:
-
         # macOS binary runner
         from threading import Thread
         from PyObjCTools import AppHelper
@@ -1735,7 +1734,7 @@ if __name__ == "__main__":
 
         # Need to run the main application in separate thread because the eventLoop
         # has to be in the main thread. The eventLoop is required for the menu.
-        # This code is made with trial-and-error, please improve!
+        # This code is made with trial-and-error, please feel free to improve!
         class startApp(Thread):
             def run(self):
                 main()
