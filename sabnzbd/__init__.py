@@ -26,7 +26,7 @@ import socket
 import cherrypy
 import sys
 import ssl
-from threading import Lock, Thread
+from threading import Lock, Thread, Condition
 from typing import Any, AnyStr
 
 ##############################################################################
@@ -175,6 +175,9 @@ WEBUI_READY = False
 EXTERNAL_IPV6 = False
 LAST_HISTORY_UPDATE = 1
 
+# Condition used to handle the main loop in SABnzbd.py
+SABSTOP_CONDITION = Condition(Lock())
+
 # Performance measure for dashboard
 PYSTONE_SCORE = 0
 DOWNLOAD_DIR_SPEED = 0
@@ -198,19 +201,7 @@ def sig_handler(signum=None, frame=None):
         return True
     if signum is not None:
         logging.warning(T("Signal %s caught, saving and exiting..."), signum)
-    try:
-        save_state()
-        sabnzbd.zconfig.remove_server()
-    finally:
-        if sabnzbd.WIN32:
-            del_connection_info()
-            if sabnzbd.WINTRAY:
-                sabnzbd.WINTRAY.terminate = True
-                time.sleep(0.5)
-        else:
-            pid_file()
-        sabnzbd.SABSTOP = True
-        os._exit(0)
+        sabnzbd.shutdown_program()
 
 
 ##############################################################################
@@ -789,6 +780,8 @@ def shutdown_program():
         sabnzbd.halt()
         cherrypy.engine.exit()
         sabnzbd.SABSTOP = True
+        with sabnzbd.SABSTOP_CONDITION:
+            sabnzbd.SABSTOP_CONDITION.notify()
 
 
 def restart_program():

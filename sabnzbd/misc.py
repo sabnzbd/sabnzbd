@@ -556,7 +556,6 @@ def exit_sab(value):
     sys.stderr.flush()
     sys.stdout.flush()
     if hasattr(sys, "frozen") and sabnzbd.DARWIN:
-        sabnzbd.SABSTOP = True
         from PyObjCTools import AppHelper
 
         AppHelper.stopEventLoop()

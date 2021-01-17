@@ -1517,7 +1517,9 @@ def main():
     # Have to keep this running, otherwise logging will terminate
     timer = 0
     while not sabnzbd.SABSTOP:
-        time.sleep(3)
+        # Wait to be awoken or every 3 seconds
+        with sabnzbd.SABSTOP_CONDITION:
+            sabnzbd.SABSTOP_CONDITION.wait(3)
         timer += 1
 
         # Check for loglevel changes
