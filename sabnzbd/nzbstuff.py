@@ -407,11 +407,12 @@ class NzbFile(TryList):
         if not self.import_finished:
             logging.debug("unpickle %s, called by %s", self.filename, caller)
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
-            for article in temp_data[1]:
-                article.nzf = self
-            self.articles = self.articles + temp_data[0]
-            self.decodetable = self.decodetable + temp_data[1]
-            self.import_finished = True
+            if temp_data:
+                for article in temp_data[1]:
+                    article.nzf = self
+                self.articles = self.articles + temp_data[0]
+                self.decodetable = self.decodetable + temp_data[1]
+                self.import_finished = True
 
     def finish_import(self, raw_article_db):
         """ Load the article objects from disk """
