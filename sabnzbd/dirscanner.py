@@ -79,12 +79,12 @@ class DirScanner(threading.Thread):
             # successfully processed ones that cannot be deleted
             self.suspected = {}  # Will hold name/attributes of suspected candidates
 
+        self.loop_condition = threading.Condition(threading.Lock())
         self.shutdown = False
-        self.error_reported = False  # Prevents mulitple reporting of missing watched folder
+        self.error_reported = False  # Prevents multiple reporting of missing watched folder
         self.dirscan_dir = cfg.dirscan_dir.get_path()
-        self.dirscan_speed = cfg.dirscan_speed()
+        self.dirscan_speed = cfg.dirscan_speed() or None  # If set to 0, use None so the wait() is forever
         self.busy = False
-        self.trigger = False
         cfg.dirscan_dir.callback(self.newdir)
         cfg.dirscan_speed.callback(self.newspeed)
 
@@ -97,12 +97,16 @@ class DirScanner(threading.Thread):
 
     def newspeed(self):
         """ We're notified of a scan speed change """
-        self.dirscan_speed = cfg.dirscan_speed()
-        self.trigger = True
+        # If set to 0, use None so the wait() is forever
+        self.dirscan_speed = cfg.dirscan_speed() or None
+        with self.loop_condition:
+            self.loop_condition.notify()
 
     def stop(self):
         """ Stop the dir scanner """
         self.shutdown = True
+        with self.loop_condition:
+            self.loop_condition.notify()
 
     def save(self):
         """ Save dir scanner bookkeeping """
@@ -114,13 +118,9 @@ class DirScanner(threading.Thread):
         self.shutdown = False
 
         while not self.shutdown:
-            # Use variable scan delay
-            x = max(self.dirscan_speed, 1)
-            while (x > 0) and not self.shutdown and not self.trigger:
-                time.sleep(1.0)
-                x = x - 1
-
-            self.trigger = False
+            # Wait to be woken up or triggered
+            with self.loop_condition:
+                self.loop_condition.wait(self.dirscan_speed)
             if self.dirscan_speed and not self.shutdown:
                 self.scan()
 

@@ -975,7 +975,7 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def stop(self):
-        """ Shutdown, wrapped so the semahore is notified """
+        """ Shutdown, wrapped so the semaphore is notified """
         self.shutdown = True
         sabnzbd.notifier.send_notification("SABnzbd", T("Shutting down"), "startup")
 
