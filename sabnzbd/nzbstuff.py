@@ -407,6 +407,7 @@ class NzbFile(TryList):
         if not self.import_finished:
             logging.debug("unpickle %s, called by %s", self.filename, caller)
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
+            self.last_used = time.time()
             if temp_data:
                 for article in temp_data[1]:
                     article.nzf = self
