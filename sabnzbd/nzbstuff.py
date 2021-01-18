@@ -197,17 +197,18 @@ class Article(TryList):
                     for server_check in servers:
                         if log:
                             logging.debug("Article %s | Server: %s | checking", self.article, server.host)
-                        if server_check.active and (server_check.priority < found_priority):
-                            if server_check.priority < server.priority:
-                                if not self.server_in_try_list(server_check):
-                                    if log:
-                                        logging.debug(
-                                            "Article %s | Server: %s | setting found priority to %s",
-                                            self.article,
-                                            server.host,
-                                            server_check.priority,
-                                        )
-                                    found_priority = server_check.priority
+                        if not server_check.active or server_check.priority >= server.priority:
+                            break
+                        if not self.server_in_try_list(server_check):
+                            if log:
+                                logging.debug(
+                                    "Article %s | Server: %s | setting found priority to %s",
+                                    self.article,
+                                    server.host,
+                                    server_check.priority,
+                                )
+                            found_priority = server_check.priority
+                            break
                     if found_priority == 1000:
                         # If no higher priority servers, use this server
                         self.fetcher_priority = server.priority

@@ -284,10 +284,16 @@ class Downloader(Thread):
                 retention,
             )
             self.servers.append(server)
+            self.sort_servers()
             self.server_dict[newserver] = server
 
         # Update server-count
         self.server_nr = len(self.servers)
+
+    def sort_servers(self):
+        """ Sort by active (active first), priority and id """
+        # Active flag is switched (True = 0, False = 1) for sorting
+        self.servers.sort(key=lambda srv: "%d%02d%s" % ((srv.active + 1) % 2, srv.priority, srv.id))
 
     def add_socket(self, fileno: int, nw: NewsWrapper):
         """ Add a socket ready to be used to the list """
@@ -387,10 +393,7 @@ class Downloader(Thread):
         """Return True when this server has the highest priority of the active ones
         0 is the highest priority
         """
-        for server in self.servers:
-            if server is not me and server.active and server.priority < me.priority:
-                return False
-        return True
+        return me.priority == self.servers[0].priority
 
     def nzo_servers(self, nzo):
         return list(filter(nzo.server_in_try_list, self.servers))
@@ -408,6 +411,7 @@ class Downloader(Thread):
             # Not fully the same as the code below for optional servers
             server.bad_cons = 0
             server.active = False
+            self.sort_servers()
             self.plan_server(server, _PENALTY_TIMEOUT)
 
         # Optional and active server had too many problems.
@@ -415,6 +419,7 @@ class Downloader(Thread):
         if server.optional and server.active and (server.bad_cons / server.threads) > 3:
             server.bad_cons = 0
             server.active = False
+            self.sort_servers()
             logging.warning(T("Server %s will be ignored for %s minutes"), server.host, _PENALTY_TIMEOUT)
             self.plan_server(server, _PENALTY_TIMEOUT)
 
@@ -742,6 +747,7 @@ class Downloader(Thread):
                             if block or (penalty and server.optional):
                                 if server.active:
                                     server.active = False
+                                    self.sort_servers()
                                     if penalty and (block or server.optional):
                                         self.plan_server(server, penalty)
                                     sabnzbd.NzbQueue.reset_try_lists(article)
