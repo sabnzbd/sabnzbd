@@ -48,9 +48,6 @@ class Assembler(Thread):
         self.queue.put((None, None, None))
 
     def process(self, nzo: NzbObject, nzf: Optional[NzbFile] = None, file_done: Optional[bool] = None):
-        # Don't pickle stuff in the assembler queue
-        if nzf:
-            nzf.last_used = 9999999999
         self.queue.put((nzo, nzf, file_done))
 
     def queue_full(self):

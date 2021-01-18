@@ -379,7 +379,7 @@ class NzbFile(TryList):
                 self.import_finished = True
 
     def pickle_articles(self):
-        if not self.import_finished or len(self.decodetable) < 2:
+        if not self.import_finished or len(self.decodetable) < 2 or self.decodetable[1].decoded:
             return
         logging.debug("pickle %s", self.filename)
 
