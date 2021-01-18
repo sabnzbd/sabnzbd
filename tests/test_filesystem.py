@@ -189,23 +189,50 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername(" ") == "unknown"
         assert filesystem.sanitize_foldername("  ") == "unknown"
 
+
+
+
+
+
     def test_filename_too_long(self):
+        def create_and_delete_OK(filename):
+            try:
+                outF = open(filename, "w")
+            except:
+                return False
+            outF.close()
+            os.remove(filename)
+            return True
+
+        # Part 0: check Filesystem
+
+        assert create_and_delete_OK(255*"a")
+        assert create_and_delete_OK(50*"你")
+        assert not create_and_delete_OK(256*"A")
+        assert not create_and_delete_OK(150*"你")
+
+
+
         # Part 1: Base cases: Nothing should happen:
 
         # normal filename
         name = "a" * 200 + ".ext"
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == name
+        assert create_and_delete_OK(sanitizedname)
 
         # Unicode / UTF8 is OK ... as total filename length is not too long
-        name = "BASE" + "你" * 200 + ".ext"
+        name = "BASE" + "你" * 20 + ".ext"
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == name
+        assert create_and_delete_OK(sanitizedname)
 
         # filename with very long extension, but total filename is no problem, so no change
         name = "hello.ext" + "e" * 200
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == name  # no change
+
+
 
         # Part 2: base truncating
 
@@ -234,6 +261,13 @@ class TestFileFolderNameSanitizer:
         name = "aaaa" + 200 * chr(188) + 200 * chr(222) + "bbbb.ext"
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == "aaaabbbb.ext"
+
+        # Unicode / UTF8 ... total filename length is too long: UTF-8 char is more than 1 byte
+        name = "BASE" + "你" * 200 + ".ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname.startswith("BASE")
+        assert sanitizedname.endswith(".ext")
+        assert create_and_delete_OK(sanitizedname)
 
         # Linux / POSIX: a hidden file (no extension), with size 200, so do not truncate at all
         name = "." + "a" * 200
