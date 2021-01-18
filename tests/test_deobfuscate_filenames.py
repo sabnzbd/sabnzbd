@@ -64,6 +64,10 @@ class TestDeobfuscateFinalResult:
         assert not is_probably_obfuscated("Der.Mechaniker.HDRip.XviD-SG.avi")
         assert not is_probably_obfuscated("Bonjour.1969.FRENCH.BRRiP.XviD.AC3-HuSh.avi")
         assert not is_probably_obfuscated("Bonjour.1969.avi")
+        assert not is_probably_obfuscated("This That S01E11")
+        assert not is_probably_obfuscated("This_That_S01E11")
+        assert not is_probably_obfuscated("this_that_S01E11")
+        assert not is_probably_obfuscated("this_that_there_here.avi")
         assert not is_probably_obfuscated("Lorem Ipsum.avi")
         assert not is_probably_obfuscated("Lorem Ipsum")  # no ext
 
