@@ -197,7 +197,7 @@ class Article(TryList):
                     for server_check in servers:
                         if log:
                             logging.debug("Article %s | Server: %s | checking", self.article, server.host)
-                        if not server_check.active or server_check.priority >= server.priority:
+                        if server_check.priority >= server.priority:
                             break
                         if not self.server_in_try_list(server_check):
                             if log:
