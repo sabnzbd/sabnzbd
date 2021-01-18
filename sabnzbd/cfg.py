@@ -82,7 +82,7 @@ def validate_server(value):
 pre_script = OptionStr("misc", "pre_script", "None")
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)
-bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 0, 0, 100)
+bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 100, 0, 100)
 refresh_rate = OptionNumber("misc", "refresh_rate", 0)
 log_level = OptionNumber("logging", "log_level", 1, -1, 2)
 log_size = OptionNumber("logging", "max_log_size", 5242880)

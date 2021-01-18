@@ -623,14 +623,13 @@ class Downloader(Thread):
 
                 time.sleep(1.0)
 
-                DOWNLOADER_CV.acquire()
-                while (
-                    (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.paused_for_postproc)
-                    and not self.shutdown
-                    and not self.server_restarts
-                ):
-                    DOWNLOADER_CV.wait()
-                DOWNLOADER_CV.release()
+                with DOWNLOADER_CV:
+                    while (
+                        (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.paused_for_postproc)
+                        and not self.shutdown
+                        and not self.server_restarts
+                    ):
+                        DOWNLOADER_CV.wait()
 
                 self.force_disconnect = False
 

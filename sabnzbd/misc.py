@@ -554,13 +554,12 @@ def caller_name(skip=2):
     return ".".join([module_name, function_name])
 
 
-def exit_sab(value):
+def exit_sab(value: int):
     """ Leave the program after flushing stderr/stdout """
     sys.stderr.flush()
     sys.stdout.flush()
-    if hasattr(sys, "frozen") and sabnzbd.DARWIN:
-        AppHelper.stopEventLoop()
-    sys.exit(value)
+    # Cannot use sys.exit as it will not work inside the macOS-runner-thread
+    os._exit(value)
 
 
 def split_host(srv):
