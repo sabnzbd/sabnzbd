@@ -302,7 +302,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.ArticleCache = sabnzbd.articlecache.ArticleCache()
     sabnzbd.BPSMeter = sabnzbd.bpsmeter.BPSMeter()
     sabnzbd.NzbQueue = sabnzbd.nzbqueue.NzbQueue()
-    sabnzbd.Downloader = sabnzbd.downloader.Downloader(pause_downloader or sabnzbd.BPSMeter.read())
+    sabnzbd.Downloader = sabnzbd.downloader.Downloader(sabnzbd.BPSMeter.read() or pause_downloader)
     sabnzbd.Decoder = sabnzbd.decoder.Decoder()
     sabnzbd.Assembler = sabnzbd.assembler.Assembler()
     sabnzbd.PostProcessor = sabnzbd.postproc.PostProcessor()
