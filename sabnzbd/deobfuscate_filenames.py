@@ -99,7 +99,7 @@ def is_probably_obfuscated(myinputfilename):
     decimals = sum(1 for c in filebasename if c.isnumeric())
     upperchars = sum(1 for c in filebasename if c.isupper())
     lowerchars = sum(1 for c in filebasename if c.islower())
-    spacesdots = sum(1 for c in filebasename if c == " " or c == ".")
+    spacesdots = sum(1 for c in filebasename if c == " " or c == "." or c == "_")  # space-like symbols
 
     # Example: "Great Distro"
     if upperchars >= 2 and lowerchars >= 2 and spacesdots >= 1:
