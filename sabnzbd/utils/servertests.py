@@ -133,7 +133,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             return False, str(sys.exc_info()[1])
 
     # Close the connection
-    nw.terminate(quit=True)
+    nw.hard_reset(send_quit=True)
 
     if nw.status_code == 480:
         return False, T("Server requires username and password.")

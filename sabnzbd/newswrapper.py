@@ -228,11 +228,13 @@ class NewsWrapper:
             try:
                 if send_quit:
                     self.nntp.sock.sendall(b"QUIT\r\n")
-                    time.sleep(0.1)
+                    time.sleep(0.01)
                 self.nntp.sock.close()
             except:
                 pass
+            self.nntp = None
 
+        # Reset all variables (including the NNTP connection)
         self.__init__(self.server, self.thrdnum)
 
         # Wait before re-using this newswrapper
@@ -242,18 +244,6 @@ class NewsWrapper:
         else:
             # Reset for internal reasons, just wait 5 sec
             self.timeout = time.time() + 5
-
-    def terminate(self, quit: bool = False):
-        """ Close connection and remove NNTP object """
-        if self.nntp:
-            try:
-                if quit:
-                    self.nntp.sock.sendall(b"QUIT\r\n")
-                    time.sleep(0.1)
-                self.nntp.sock.close()
-            except:
-                pass
-        del self.nntp
 
     def __repr__(self):
         return "<NewsWrapper: server=%s:%s, thread=%s, connected=%s>" % (
