@@ -175,11 +175,10 @@ class Article(TryList):
                     "Article %s | Server: %s | Server priority: %s", self.article, server.host, server.priority
                 )
             if server.priority == self.fetcher_priority:
-                if log:
-                    logging.debug("Article %s | Server: %s | same priority, use it", self.article, server.host)
                 self.fetcher = server
                 self.tries += 1
                 if log:
+                    logging.debug("Article %s | Server: %s | same priority, use it", self.article, server.host)
                     logging.debug("Article %s | Server: %s | Article-try: %s", self.article, server.host, self.tries)
                 return self
             else:
