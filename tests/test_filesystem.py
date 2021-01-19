@@ -189,52 +189,29 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername(" ") == "unknown"
         assert filesystem.sanitize_foldername("  ") == "unknown"
 
-
-
-
-
-
     def test_filename_too_long(self):
-        def create_and_delete_OK(filename):
-            try:
-                outF = open(filename, "w")
-            except:
-                return False
-            outF.close()
-            os.remove(filename)
-            return True
 
-        # Part 0: check Filesystem
+        # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
+        # but we stay on the safe side: max DEF_FILE_MAX bytes
 
-        assert create_and_delete_OK(255*"a")
-        assert create_and_delete_OK(50*"你")
-        assert not create_and_delete_OK(256*"A")
-        assert not create_and_delete_OK(150*"你")
-
-
-
-        # Part 1: Base cases: Nothing should happen:
+        # PART 1: Base cases: Nothing should happen:
 
         # normal filename
         name = "a" * 200 + ".ext"
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == name
-        assert create_and_delete_OK(sanitizedname)
 
         # Unicode / UTF8 is OK ... as total filename length is not too long
-        name = "BASE" + "你" * 20 + ".ext"
+        name = "BASE" + "你" * 50 + "blabla.ext"
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == name
-        assert create_and_delete_OK(sanitizedname)
 
         # filename with very long extension, but total filename is no problem, so no change
         name = "hello.ext" + "e" * 200
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == name  # no change
 
-
-
-        # Part 2: base truncating
+        # PART 2: base truncating
 
         name = "BASE" + "a" * 300 + ".mylongext"
         sanitizedname = filesystem.sanitize_filename(name)
@@ -250,7 +227,7 @@ class TestFileFolderNameSanitizer:
         assert newname.startswith("BASEaaaaa")
         assert newext.startswith(".EXTeeeee")
 
-        # Part 3: more exotic cases
+        # PART 3: more exotic cases
 
         # insert NON-ASCII chars, which should stay in place because overall length is no problem
         name = "aaaa" + 10 * chr(188) + 10 * chr(222) + "bbbb.ext"
@@ -262,12 +239,11 @@ class TestFileFolderNameSanitizer:
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == "aaaabbbb.ext"
 
-        # Unicode / UTF8 ... total filename length is too long: UTF-8 char is more than 1 byte
+        # Unicode / UTF8 ... total filename length might be too long for certain filesystems
         name = "BASE" + "你" * 200 + ".ext"
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname.startswith("BASE")
         assert sanitizedname.endswith(".ext")
-        assert create_and_delete_OK(sanitizedname)
 
         # Linux / POSIX: a hidden file (no extension), with size 200, so do not truncate at all
         name = "." + "a" * 200
