@@ -40,7 +40,7 @@ ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 # Leave some space for "_UNPACK_" which we append during post-proc
 # Or, when extra ".1", ".2" etc. are added for identically named jobs
 DEF_FOLDER_MAX = 256 - 10
-DEF_FILE_MAX = 255 - 6 # max filename length on modern filesystems, minus 6 positions
+DEF_FILE_MAX = 255 - 6  # max filename length on modern filesystems, minus 6 positions
 
 GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
