@@ -169,7 +169,8 @@ def sanitize_filename(name: str) -> str:
     # now split name into name, ext
     name, ext = os.path.splitext(name)
 
-    # If filename is too long (more than DEF_FILE_MAX bytes), brute-force truncate it.
+    # If filename is too long (more than DEF_FILE_MAX bytes), brute-force truncate it,
+    # preserving the extension (max ext length 20)
     # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
     # but we stay on the safe side: max DEF_FILE_MAX bytes
     if len(name.encode("utf8")) + len(ext.encode("utf8")) > DEF_FILE_MAX:
