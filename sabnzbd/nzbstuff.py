@@ -167,12 +167,10 @@ class Article(TryList):
         if not self.fetcher and not self.server_in_try_list(server):
             if log:
                 logging.debug("Article %s | Server: %s | in second if", self.article, server.host)
-            # Is the current selected server of the same priority as this article?
-            if log:
+                # Is the current selected server of the same priority as this article?
                 logging.debug(
                     "Article %s | Server: %s | Article priority: %s", self.article, server.host, self.fetcher_priority
                 )
-            if log:
                 logging.debug(
                     "Article %s | Server: %s | Server priority: %s", self.article, server.host, server.priority
                 )
