@@ -942,7 +942,7 @@ class NzbQueue:
             now = time.time()
             picklelist = []
             for nzf in nzo.files:
-                if max_items < 0:
+                if max_items < 1:
                     return False
                 if nzo.deleted:
                     continue
