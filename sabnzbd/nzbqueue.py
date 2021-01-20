@@ -927,7 +927,7 @@ class NzbQueue:
         return "<NzbQueue>"
 
     @NzbQueueLocker
-    def pickle(self, max_items=10):
+    def pickle(self, max_items: int = 10):
         """Find pickleable files in the queue"""
 
         # Keep approximately the next 3 GB worth of articles after file being downloaded unpickled
@@ -942,7 +942,7 @@ class NzbQueue:
             now = time.time()
             picklelist = []
             for nzf in nzo.files:
-                if max_items < 1:
+                if max_items < 0:
                     return False
                 if nzo.deleted:
                     continue
@@ -952,8 +952,8 @@ class NzbQueue:
 
                 if nzo.status == Status.PAUSED:
                     if nzf.import_finished:
-                        nzf.pickle_articles()
-                        max_items -= 1
+                        if nzf.pickle_articles():
+                            max_items -= 1
                     continue
 
                 if not nzf.import_finished:
@@ -963,8 +963,8 @@ class NzbQueue:
                 # Don't pickle if the file has been touched in the last 20 seconds or it will soon be reached by a server
                 if now - nzf.last_used > 20:
                     if needed < 0 and len(nzf.articles):
-                        nzf.pickle_articles()
-                        max_items -= 1
+                        if nzf.pickle_articles():
+                            max_items -= 1
                     else:
                         needed -= nzf.bytes_left
                 else:

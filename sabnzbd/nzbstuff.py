@@ -381,7 +381,7 @@ class NzbFile(TryList):
     def pickle_articles(self):
         """ Pickle articles to file """
         if not self.import_finished or len(self.decodetable) < 2 or self.decodetable[1].decoded:
-            return
+            return False
         logging.debug("pickle %s", self.filename)
 
         first_article = self.decodetable.pop(0)
@@ -403,6 +403,7 @@ class NzbFile(TryList):
             self.articles.append(first_article)
         self.decodetable = [first_article]
         self.import_finished = False
+        return True
 
     def unpickle_articles(self, caller):
         """ Unpickle articles from file """
