@@ -175,7 +175,7 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
         MULTICAST_TTL = 2
 
         if rc == 0:
-            # TODO is this necessary to keep the class alive? Or can we quit this.
+            # TODO is this necessary to keep the class alive? Or can we leave this out?
             logging.info("We have miniSSPDd running, so no SSDP broadcasts sending needed")
             while True and not self.__stop:
                 time.sleep(20)
