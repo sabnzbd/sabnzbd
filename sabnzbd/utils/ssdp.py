@@ -68,6 +68,7 @@ def codelength(s):
 
 
 def submit_to_minissdpd(st, usn, server, url, sockpath="/var/run/minissdpd.sock"):
+
     """ submits the specified service to MiniSSDPD (if running)"""
     """
     ST = Search Target of the service that is responding.
@@ -163,10 +164,10 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
             b"urn:schemas-upnp-org:device:InternetGatewayDevice:1",
             "uuid:" + str(self.__uuid) + "::upnp:rootdevice",
             self.__server_name,
-            self.__url + "/description.xml"
+            self.__url + "/description.xml",
         )
         if rc == 0:
-            logging.info("miniSSDPd OK: submitting to MiniSSDPD went well")
+            logging.info("miniSSDPd OK: submitting to MiniSSDPD went OK")
         else:
             logging.info("miniSSDPd not there")
             logging.debug("miniSSDPd Not OK. Error message is: %s", message)
@@ -176,9 +177,8 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
         MCAST_PORT = 1900
         MULTICAST_TTL = 2
 
-
-
         if rc == 0:
+            # TODO is this necessary?
             logging.info("We have miniSSPDd running, so no SSDP broadcasts sending needed")
             while True and not self.__stop:
                 time.sleep(20)
