@@ -936,13 +936,13 @@ class NzbQueue:
         for nzo in self.__nzo_list:
             if nzo.status == Status.GRABBING:
                 continue
-            logging.debug("Checking file for pickle: %s", nzo.filename)
+            logging.debug("Checking nzo for pickle: %s", nzo.filename)
             filenum = 0
             now = time.time()
             for nzf in nzo.files:
                 if max_items < 1:
                     return False
-                if nzo.deleted:
+                if nzf.deleted:
                     continue
                 if nzf.bytes_left < 1:
                     logging.debug("Skipping %s because no bytes_left", nzf.filename)
