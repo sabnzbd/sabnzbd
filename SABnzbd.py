@@ -1535,7 +1535,7 @@ def main():
             n = gc.collect()
             if sabnzbd.LOG_ALL:
                 logging.debug("gc.collect yielded %s unreachable objects %s", n)
-            #print("gc.collect yielded unreachable objects", n)
+            # print("gc.collect yielded unreachable objects", n)
             timer = 0
 
         # 30 sec polling tasks
