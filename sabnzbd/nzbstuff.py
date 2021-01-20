@@ -424,19 +424,21 @@ class NzbFile(TryList):
     def finish_import(self, raw_article_db):
         """ Import raw articles to file object """
         logging.debug("Finishing import on %s", self.filename)
-        # Convert 2.x.x jobs
-        if isinstance(raw_article_db, dict):
-            raw_article_db = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
+        self.last_used = time.time()
+        if raw_article_db:
+            # Convert 2.x.x jobs
+            if isinstance(raw_article_db, dict):
+                raw_article_db = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
 
-        for raw_article in raw_article_db:
-            self.add_article(raw_article)
+            for raw_article in raw_article_db:
+                self.add_article(raw_article)
 
-        # Make sure we have labeled the lowest part number
-        # Also when DirectUnpack is disabled we need to know
-        self.decodetable[0].lowest_partnum = True
+            # Make sure we have labeled the lowest part number
+            # Also when DirectUnpack is disabled we need to know
+            self.decodetable[0].lowest_partnum = True
 
-        # Mark safe to continue
-        self.import_finished = True
+            # Mark safe to continue
+            self.import_finished = True
 
     def add_article(self, article_info):
         """ Add article to object database and return article object """

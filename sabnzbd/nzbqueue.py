@@ -933,14 +933,12 @@ class NzbQueue:
         # Keep approximately the next 3 GB worth of articles after file being downloaded unpickled
         buffer_size = 3 * GIGI
         needed = buffer_size
-        picklelist = []
         for nzo in self.__nzo_list:
             if nzo.status == Status.GRABBING:
                 continue
             logging.debug("Checking file for pickle: %s", nzo.filename)
             filenum = 0
             now = time.time()
-            picklelist = []
             for nzf in nzo.files:
                 if max_items < 1:
                     return False
