@@ -20,12 +20,13 @@ tests.test_filesystem - Testing functions in filesystem.py
 """
 import stat
 import sys
+import os
 
 import pyfakefs.fake_filesystem_unittest as ffs
 
 import sabnzbd.cfg
 import sabnzbd.filesystem as filesystem
-from sabnzbd.constants import DEF_FOLDER_MAX
+from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX
 from tests.testhelper import *
 
 # Set the global uid for fake filesystems to a non-root user;
@@ -187,6 +188,67 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("\t\t\t") == "unknown"
         assert filesystem.sanitize_foldername(" ") == "unknown"
         assert filesystem.sanitize_foldername("  ") == "unknown"
+
+    def test_filename_too_long(self):
+
+        # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
+        # but we stay on the safe side: max DEF_FILE_MAX bytes
+
+        # PART 1: Base cases: Nothing should happen:
+
+        # normal filename
+        name = "a" * 200 + ".ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name
+
+        # Unicode / UTF8 is OK ... as total filename length is not too long
+        name = "BASE" + "你" * 50 + "blabla.ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name
+
+        # filename with very long extension, but total filename is no problem, so no change
+        name = "hello.ext" + "e" * 200
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name  # no change
+
+        # PART 2: base truncating
+
+        name = "BASE" + "a" * 300 + ".mylongext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert len(sanitizedname) <= DEF_FILE_MAX
+        assert sanitizedname.startswith("BASEaaaaaaaaaaaaaaa")
+        assert sanitizedname.endswith(".mylongext")
+
+        # too long filename, so truncate keeping the start of name and ext should stay the same
+        name = "BASE" + "a" * 200 + ".EXT" + "e" * 200
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert len(sanitizedname) <= DEF_FILE_MAX
+        newname, newext = os.path.splitext(sanitizedname)
+        assert newname.startswith("BASEaaaaa")
+        assert newext.startswith(".EXTeeeee")
+
+        # PART 3: more exotic cases
+
+        # insert NON-ASCII chars, which should stay in place because overall length is no problem
+        name = "aaaa" + 10 * chr(188) + 10 * chr(222) + "bbbb.ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name
+
+        # insert NON-ASCII chars, which should get removed because overall length is too long
+        name = "aaaa" + 200 * chr(188) + 200 * chr(222) + "bbbb.ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == "aaaabbbb.ext"
+
+        # Unicode / UTF8 ... total filename length might be too long for certain filesystems
+        name = "BASE" + "你" * 200 + ".ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname.startswith("BASE")
+        assert sanitizedname.endswith(".ext")
+
+        # Linux / POSIX: a hidden file (no extension), with size 200, so do not truncate at all
+        name = "." + "a" * 200
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name  # no change
 
 
 class TestSameFile:
