@@ -379,6 +379,7 @@ class NzbFile(TryList):
                 self.import_finished = True
 
     def pickle_articles(self):
+        """ Pickle articles to file """
         if not self.import_finished or len(self.decodetable) < 2 or self.decodetable[1].decoded:
             return
         logging.debug("pickle %s", self.filename)
@@ -404,34 +405,37 @@ class NzbFile(TryList):
         self.import_finished = False
 
     def unpickle_articles(self, caller):
+        """ Unpickle articles from file """
         if not self.import_finished:
             logging.debug("unpickle %s, called by %s", self.filename, caller)
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
             self.last_used = time.time()
-            if temp_data:
-                for article in temp_data[1]:
-                    article.nzf = self
-                self.articles = self.articles + temp_data[0]
-                self.decodetable = self.decodetable + temp_data[1]
-                self.import_finished = True
+            try:
+                if temp_data[0][0].decoded == False:
+                    for article in temp_data[1]:
+                        article.nzf = self
+                    self.articles = self.articles + temp_data[0]
+                    self.decodetable = self.decodetable + temp_data[1]
+                    self.import_finished = True
+            except AttributeError:
+                self.finish_import(temp_data)
 
     def finish_import(self, raw_article_db):
-        """ Load the article objects from disk """
+        """ Import raw articles to file object """
         logging.debug("Finishing import on %s", self.filename)
-        if raw_article_db:
-            # Convert 2.x.x jobs
-            if isinstance(raw_article_db, dict):
-                raw_article_db = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
+        # Convert 2.x.x jobs
+        if isinstance(raw_article_db, dict):
+            raw_article_db = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
 
-            for raw_article in raw_article_db:
-                self.add_article(raw_article)
+        for raw_article in raw_article_db:
+            self.add_article(raw_article)
 
-            # Make sure we have labeled the lowest part number
-            # Also when DirectUnpack is disabled we need to know
-            self.decodetable[0].lowest_partnum = True
+        # Make sure we have labeled the lowest part number
+        # Also when DirectUnpack is disabled we need to know
+        self.decodetable[0].lowest_partnum = True
 
-            # Mark safe to continue
-            self.import_finished = True
+        # Mark safe to continue
+        self.import_finished = True
 
     def add_article(self, article_info):
         """ Add article to object database and return article object """

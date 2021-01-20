@@ -107,6 +107,9 @@ class NzbQueue:
                 path = get_admin_path(folder, future=True)
                 nzo = sabnzbd.load_data(_id, path)
             if nzo:
+                for nzf in nzo.files:
+                    if nzf.last_used is None:
+                        nzf.last_used = 0
                 self.add(nzo, save=False, quiet=True)
                 folders.append(folder)
 
@@ -121,6 +124,9 @@ class NzbQueue:
                     if nzo_id.startswith("SABnzbd_nzo"):
                         nzo = sabnzbd.load_data(nzo_id, path, remove=True)
                         if nzo:
+                            for nzf in nzo.files:
+                                if nzf.last_used is None:
+                                    nzf.last_used = 0
                             self.add(nzo, save=True)
                     else:
                         try:
@@ -920,15 +926,13 @@ class NzbQueue:
     def __repr__(self):
         return "<NzbQueue>"
 
-    def pickle(self):
+    @NzbQueueLocker
+    def pickle(self, max_items=10):
         """Find pickleable files in the queue"""
 
-        # Keep approximately the next 30 seconds worth of articles after file being downloaded unpickled
-        buffer_size = sabnzbd.BPSMeter.bps * 30
-        if buffer_size < GIGI:
-            buffer_size = GIGI
+        # Keep approximately the next 3 GB worth of articles after file being downloaded unpickled
+        buffer_size = 3 * GIGI
         needed = buffer_size
-        logging.debug("Pickle buffer: %d", buffer_size)
         picklelist = []
         for nzo in self.__nzo_list:
             if nzo.status == Status.GRABBING:
@@ -938,6 +942,8 @@ class NzbQueue:
             now = time.time()
             picklelist = []
             for nzf in nzo.files:
+                if max_items < 1:
+                    return False
                 if nzo.deleted:
                     continue
                 if nzf.bytes_left < 1:
@@ -947,6 +953,7 @@ class NzbQueue:
                 if nzo.status == Status.PAUSED:
                     if nzf.import_finished:
                         nzf.pickle_articles()
+                        max_items -= 1
                     continue
 
                 if not nzf.import_finished:
@@ -957,6 +964,7 @@ class NzbQueue:
                 if now - nzf.last_used > 20:
                     if needed < 0 and len(nzf.articles):
                         nzf.pickle_articles()
+                        max_items -= 1
                     else:
                         needed -= nzf.bytes_left
                 else:
@@ -964,6 +972,7 @@ class NzbQueue:
                         "Skipping %s. trylist: %d, lastused: %d", nzf.filename, len(nzf.try_list), now - nzf.last_used
                     )
                     needed = buffer_size
+        return True
 
 
 def _nzo_date_cmp(nzo1: NzbObject, nzo2: NzbObject):

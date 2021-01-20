@@ -1538,9 +1538,6 @@ def main():
             gc.collect()
             timer = 0
 
-        if not timer % 5:
-            sabnzbd.NzbQueue.pickle()
-
         # 30 sec polling tasks
         if not timer % 10:
             # Keep OS awake (if needed)
@@ -1553,6 +1550,17 @@ def main():
             if not sabnzbd.check_all_tasks():
                 autorestarted = True
                 sabnzbd.TRIGGER_RESTART = True
+
+        # 15 seconds polling tasks
+        if not timer % 5:
+            # Check for pickleable articles
+            finished = False
+            logging.debug("Start pickling")
+            while not finished:
+                finished = sabnzbd.NzbQueue.pickle()
+                if not finished:
+                    time.sleep(0.01)
+            logging.debug("End pickling")
 
         # 3 sec polling tasks
         # Check for auto-restart request
