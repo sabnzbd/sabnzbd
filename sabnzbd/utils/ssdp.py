@@ -46,8 +46,8 @@ import socket, os
 
 
 def codelength(s):
-    """ returns the given string/bytes as bytes, prepended with the 7-bit-encoded length """
-    # We want bytes
+    """ returns the given string/bytes as bytes, prepended with the 7-bit-encoded length (which might be >1 bytes)"""
+    # We want bytes as input
     if not isinstance(s, bytes):
         # Not bytes. Let's try to convert to bytes, but only plain ASCII
         try:
@@ -57,18 +57,15 @@ def codelength(s):
     l = len(s)
     if l == 0:
         return b"\x00"
-    encodedlen = b""
-    while l > 0:
-        c = l & 0x7F
+    encodedlen = (l & 0x7F).to_bytes(1, "little")
+    while l > 0x7F:
         l = l >> 7
-        if l > 0:
-            c = c + 128
+        c = (l & 0x7F) | 0x80
         encodedlen = c.to_bytes(1, "little") + encodedlen
     return encodedlen + s
 
 
 def submit_to_minissdpd(st, usn, server, url, sockpath="/var/run/minissdpd.sock"):
-
     """ submits the specified service to MiniSSDPD (if running)"""
     """
     ST = Search Target of the service that is responding.
@@ -178,7 +175,7 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
         MULTICAST_TTL = 2
 
         if rc == 0:
-            # TODO is this necessary?
+            # TODO is this necessary to keep the class alive? Or can we quit this.
             logging.info("We have miniSSPDd running, so no SSDP broadcasts sending needed")
             while True and not self.__stop:
                 time.sleep(20)
