@@ -1529,13 +1529,10 @@ def main():
                 console.setLevel(level)
 
         # 300 sec polling tasks
-        if not timer % 10:
+        if not timer % 100:
             if sabnzbd.LOG_ALL:
                 logging.debug("Triggering Python garbage collection")
-            n = gc.collect()
-            if sabnzbd.LOG_ALL:
-                logging.debug("gc.collect yielded %s unreachable objects %s", n)
-            # print("gc.collect yielded unreachable objects", n)
+            gc.collect()
             timer = 0
 
         # 30 sec polling tasks

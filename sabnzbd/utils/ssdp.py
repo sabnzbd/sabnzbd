@@ -224,7 +224,6 @@ def stop_ssdp():
 
 def server_ssdp_xml():
     """Returns the description.xml if the server is alive, empty otherwise"""
-    logging.debug("request for description.xml")
     if __SSDP and __SSDP.is_alive():
         return __SSDP.serve_xml()
     return ""
