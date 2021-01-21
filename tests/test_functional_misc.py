@@ -214,6 +214,10 @@ class TestDaemonizing(SABnzbdBaseTest):
         assert os.path.exists(error_log_path)
         assert os.path.getsize(error_log_path) < 1024
 
-        # Let's shut it down and give it some time to do so
-        get_url_result("shutdown", daemon_host, daemon_port)
-        time.sleep(3.0)
+        try:
+            # Let's shut it down and give it some time to do so
+            get_url_result("shutdown", daemon_host, daemon_port)
+            time.sleep(3.0)
+        except requests.exceptions.RequestException:
+            # Shutdown can be faster than the request
+            pass
