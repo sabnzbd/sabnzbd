@@ -31,14 +31,33 @@ from tests.testhelper import *
 
 
 @pytest.fixture(scope="module")
-def run_sabnzbd(request):
+def clean_cache_dir(request):
+    # Remove cache if already there
+    try:
+        if os.path.isdir(SAB_CACHE_DIR):
+            shutil.rmtree(SAB_CACHE_DIR)
+        # Create an empty placeholder
+        os.makedirs(SAB_CACHE_DIR)
+    except Exception:
+        pytest.fail("Failed to freshen up cache dir %s" % SAB_CACHE_DIR)
+
+    yield request
+
+    # Remove cache dir with retries in case it's still running
+    for x in range(10):
+        try:
+            shutil.rmtree(SAB_CACHE_DIR)
+            break
+        except OSError:
+            print("Unable to remove cache dir (try %d)" % x)
+            time.sleep(1)
+
+
+@pytest.fixture(scope="module")
+def run_sabnzbd(clean_cache_dir):
     """Start SABnzbd (with translations). A number of key configuration parameters are defined
     in testhelper.py (SAB_* variables). Scope is set to 'module' to prevent configuration
     changes made during functional tests from causing failures in unrelated tests."""
-
-    # Remove cache if already there
-    if os.path.isdir(SAB_CACHE_DIR):
-        shutil.rmtree(SAB_CACHE_DIR)
 
     def shutdown_sabnzbd():
         # Shutdown SABnzbd
@@ -51,7 +70,6 @@ def run_sabnzbd(request):
             warn("Failed to shutdown the sabnzbd process")
 
     # Copy basic config file with API key
-    os.makedirs(SAB_CACHE_DIR, exist_ok=True)
     shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
 
     # Check if we have language files
@@ -101,15 +119,6 @@ def run_sabnzbd(request):
     yield
 
     shutdown_sabnzbd()
-
-    # Remove cache dir with retries in case it's still running
-    for x in range(10):
-        try:
-            shutil.rmtree(SAB_CACHE_DIR)
-            break
-        except OSError:
-            print("Unable to remove cache dir (try %d)" % x)
-            time.sleep(1)
 
 
 @pytest.fixture(scope="session")
