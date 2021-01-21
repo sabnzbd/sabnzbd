@@ -1318,6 +1318,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None, nzo_ids
     start = int_conv(start)
 
     info["refresh_rate"] = str(cfg.refresh_rate()) if cfg.refresh_rate() > 0 else ""
+    info["interface_settings"] = cfg.interface_settings()
     info["scripts"] = list_scripts()
     info["categories"] = list_cats(output is None)
     info["rating_enable"] = bool(cfg.rating_enable())
