@@ -1574,13 +1574,13 @@ def main():
                     cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), my_name, my_args)
                     logging.info("Launching: %s", cmd)
                     os.system(cmd)
+                elif sabnzbd.WIN_SERVICE:
+                    # Use external service handler to do the restart
+                    # Wait 5 seconds to clean up
+                    subprocess.Popen("timeout 5 & sc start SABnzbd", shell=True)
                 elif sabnzbd.WIN32:
                     # Just a simple restart of the exe
                     os.execv(sys.executable, ['"%s"' % arg for arg in sys.argv])
-            elif sabnzbd.WIN_SERVICE:
-                # Use external service handler to do the restart
-                # Wait 5 seconds to clean up
-                subprocess.Popen("timeout 5 & sc start SABnzbd", shell=True)
             else:
                 # CherryPy has special logic to include interpreter options such as "-OO"
                 cherrypy.engine._do_execv()
