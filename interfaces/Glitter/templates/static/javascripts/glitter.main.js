@@ -629,6 +629,37 @@ function ViewModel() {
         }
     })
 
+    // Save the rest in config if global-settings
+    var saveInterfaceSettings = function(newValue) {
+        if(self.useGlobalOptions()) {
+            var interfaceSettings = {
+                "dateFormat": self.dateFormat,
+                "extraQueueColumns": self.extraQueueColumns,
+                "extraHistoryColumns": self.extraHistoryColumns,
+                "displayCompact": self.displayCompact,
+                "displayFullWidth": self.displayFullWidth,
+                "displayTabbed": self.displayTabbed,
+                "confirmDeleteQueue": self.confirmDeleteQueue,
+                "confirmDeleteHistory": self.confirmDeleteHistory
+            };
+            callAPI({
+                mode: "set_config",
+                section: "misc",
+                keyword: "interface_settings",
+                value: ko.toJSON(interfaceSettings)
+            })
+        }
+    }
+
+    self.dateFormat.subscribe(saveInterfaceSettings);
+    self.extraQueueColumns.subscribe(saveInterfaceSettings);
+    self.extraHistoryColumns.subscribe(saveInterfaceSettings);
+    self.displayCompact.subscribe(saveInterfaceSettings);
+    self.displayFullWidth.subscribe(saveInterfaceSettings);
+    self.displayTabbed.subscribe(saveInterfaceSettings);
+    self.confirmDeleteQueue.subscribe(saveInterfaceSettings);
+    self.confirmDeleteHistory.subscribe(saveInterfaceSettings);
+
     /***
          Add NZB's
     ***/
@@ -1073,6 +1104,17 @@ function ViewModel() {
 
             // Set queue limit
             self.queue.paginationLimit(response.config.misc.queue_limit.toString())
+
+            // Import the rest of the settings
+            var interfaceSettings = JSON.parse(response.config.misc.interface_settings);
+            self.dateFormat(interfaceSettings['dateFormat']);
+            self.extraQueueColumns(interfaceSettings['extraQueueColumns']);
+            self.extraHistoryColumns(interfaceSettings['extraHistoryColumns']);
+            self.displayCompact(interfaceSettings['displayCompact']);
+            self.displayFullWidth(interfaceSettings['displayFullWidth']);
+            self.displayTabbed(interfaceSettings['displayTabbed']);
+            self.confirmDeleteQueue(interfaceSettings['confirmDeleteQueue']);
+            self.confirmDeleteHistory(interfaceSettings['confirmDeleteHistory']);
         }
 
         // Set bandwidth limit
