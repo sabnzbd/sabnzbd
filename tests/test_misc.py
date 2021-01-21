@@ -214,6 +214,22 @@ class TestMisc:
         os.unlink("test.cert")
         os.unlink("test.key")
 
+    @pytest.mark.parametrize(
+        "test_input, expected_output",
+        [
+            (["cmd1", 9, "cmd3"], '"cmd1" "9" "cmd3"'),  # sending all commands as valid string
+            (["", "cmd1", "5"], '"" "cmd1" "5"'),  # sending blank string
+            (["cmd1", None, "cmd3", "tail -f"], '"cmd1" "" "cmd3" "tail -f"'),  # sending None in command
+            (["cmd1", 0, "ps ux"], '"cmd1" "" "ps ux"'),  # sending 0
+        ],
+    )
+    def test_list_to_cmd(self, test_input, expected_output):
+        """ Test to convert list to a cmd.exe-compatible command string """
+
+        res = misc.list2cmdline(test_input)
+        # Make sure the output is cmd.exe-compatible
+        assert res == expected_output
+
 
 class TestBuildAndRunCommand:
     # Path should exist

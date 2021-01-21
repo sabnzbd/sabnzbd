@@ -1555,31 +1555,34 @@ def main():
         # Or special restart cases like Mac and WindowsService
         if sabnzbd.TRIGGER_RESTART:
             logging.info("Performing triggered restart")
-            # Shutdown
             sabnzbd.shutdown_program()
 
+            # Add arguments and make sure we are in the right directory
             if sabnzbd.Downloader.paused:
                 sabnzbd.RESTART_ARGS.append("-p")
             if autorestarted:
                 sabnzbd.RESTART_ARGS.append("--autorestarted")
             sys.argv = sabnzbd.RESTART_ARGS
-
             os.chdir(org_dir)
-            # If macOS frozen restart of app instead of embedded python
-            if hasattr(sys, "frozen") and sabnzbd.DARWIN:
-                # [[NSProcessInfo processInfo] processIdentifier]]
-                # logging.info("%s" % (NSProcessInfo.processInfo().processIdentifier()))
-                my_pid = os.getpid()
-                my_name = sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")
-                my_args = " ".join(sys.argv[1:])
-                cmd = 'kill -9 %s && open "%s" --args %s' % (my_pid, my_name, my_args)
-                logging.info("Launching: %s", cmd)
-                os.system(cmd)
+
+            # Binaries require special restart
+            if hasattr(sys, "frozen"):
+                if sabnzbd.DARWIN:
+                    # On macOS restart of app instead of embedded python
+                    my_name = sabnzbd.MY_FULLNAME.replace("/Contents/MacOS/SABnzbd", "")
+                    my_args = " ".join(sys.argv[1:])
+                    cmd = 'kill -9 %s && open "%s" --args %s' % (os.getpid(), my_name, my_args)
+                    logging.info("Launching: %s", cmd)
+                    os.system(cmd)
+                elif sabnzbd.WIN32:
+                    # Just a simple restart of the exe
+                    os.execv(sys.executable, ['"%s"' % arg for arg in sys.argv])
             elif sabnzbd.WIN_SERVICE:
                 # Use external service handler to do the restart
                 # Wait 5 seconds to clean up
                 subprocess.Popen("timeout 5 & sc start SABnzbd", shell=True)
             else:
+                # CherryPy has special logic to include interpreter options such as "-OO"
                 cherrypy.engine._do_execv()
 
     # Send our final goodbyes!

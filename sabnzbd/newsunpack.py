@@ -2367,17 +2367,6 @@ def pre_queue(nzo: NzbObject, pp, cat):
     return values
 
 
-def list2cmdline(lst):
-    """ convert list to a cmd.exe-compatible command string """
-    nlst = []
-    for arg in lst:
-        if not arg:
-            nlst.append('""')
-        else:
-            nlst.append('"%s"' % arg)
-    return " ".join(nlst)
-
-
 def is_sevenfile(path):
     """ Return True if path has proper extension and 7Zip is installed """
     return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == ".7z"
