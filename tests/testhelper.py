@@ -220,7 +220,7 @@ class FakeHistoryDB(db.HistoryDB):
                 )
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
+@pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
 class SABnzbdBaseTest:
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test

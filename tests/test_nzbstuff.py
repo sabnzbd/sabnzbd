@@ -9,7 +9,6 @@ from sabnzbd.filesystem import globber
 from tests.testhelper import *
 
 
-@pytest.mark.usefixtures("clean_cache_dir")
 class TestNZO:
     @set_config({"download_dir": SAB_CACHE_DIR})
     def test_nzo_basic(self):

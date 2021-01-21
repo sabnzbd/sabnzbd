@@ -181,7 +181,7 @@ class ApiTestFunctions:
         assert len(self._get_api_json("queue")["queue"]["slots"]) == 0
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
+@pytest.mark.usefixtures("run_sabnzbd")
 class TestOtherApi(ApiTestFunctions):
     """ Test API function not directly involving either history or queue """
 
@@ -404,7 +404,7 @@ class TestOtherApi(ApiTestFunctions):
             )
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
+@pytest.mark.usefixtures("run_sabnzbd")
 class TestQueueApi(ApiTestFunctions):
     """ Test queue-related API responses """
 
@@ -868,7 +868,7 @@ class TestQueueApi(ApiTestFunctions):
         assert json["nzf_ids"] == []
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium", "generate_fake_history", "update_history_specs")
+@pytest.mark.usefixtures("run_sabnzbd", "generate_fake_history", "update_history_specs")
 class TestHistoryApi(ApiTestFunctions):
     """ Test history-related API responses """
 
@@ -1055,7 +1055,7 @@ class TestHistoryApi(ApiTestFunctions):
             assert slot["status"] != Status.COMPLETED
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium", "generate_fake_history", "update_history_specs")
+@pytest.mark.usefixtures("run_sabnzbd", "generate_fake_history", "update_history_specs")
 class TestHistoryApiPart2(ApiTestFunctions):
     """Test history-related API responses, part 2. A separate testcase is
     needed because the previous one ran out of history entries to delete."""
