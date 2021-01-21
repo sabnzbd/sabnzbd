@@ -1853,7 +1853,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
             verifynum += 1
             nzo.set_action_line(T("Verifying repair"), "%02d/%02d" % (verifynum, verifytotal))
 
-        elif line.startswith("Failed to repair"):
+        elif line.startswith("Failed to repair") and not readd:
             # Unknown repair problem
             msg = T("Repairing failed, %s") % line
             nzo.fail_msg = msg
