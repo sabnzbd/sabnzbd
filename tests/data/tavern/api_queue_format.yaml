@@ -55,7 +55,7 @@ stages:
           timeleft: "0:00:00"
           eta: "unknown"
           refresh_rate: !re_match "[0-9]*"
-          interface_settings: !re_match "'\{.*\}'"
+          interface_settings: !re_match ".*"
           scripts: !anylist
           categories: !anylist
           rating_enable: !anybool
