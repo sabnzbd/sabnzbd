@@ -394,7 +394,7 @@ class Scheduler:
                     server.quota_left.get_float() + server.usage_at_start.get_float()
                     < sabnzbd.BPSMeter.grand_total[srv]
                 ):
-                    logging.warning("Server %s has used the spcified quota", server.displayname())
+                    logging.warning("Server %s has used the specified quota", server.displayname())
                     server.quota_left.set("")
                     config.save_config()
 

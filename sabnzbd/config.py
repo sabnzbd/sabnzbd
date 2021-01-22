@@ -413,7 +413,7 @@ class ConfigServer:
         self.retention = OptionNumber(name, "retention", 0, add=False)
         self.expire_date = OptionStr(name, "expire_date")
         self.quota_left = OptionStr(name, "quota_left")
-        self.usage_at_start = OptionStr(name, "usage_at_start")
+        self.usage_at_start = OptionStr(name, "usage_at_start", "0")
         self.send_group = OptionBool(name, "send_group", False, add=False)
         self.priority = OptionNumber(name, "priority", 0, 0, 99, add=False)
         self.notes = OptionStr(name, "notes", add=False)
@@ -429,7 +429,7 @@ class ConfigServer:
             server = servers[self.__name]
             usage_at_start_new = sabnzbd.BPSMeter.grand_total[self.__name]
             if usage_at_start_new and values.get("quota_left", "") != server.quota_left():
-                values["usage_at_start"] = usage_at_start_new
+                getattr(self, "usage_at_start").set(usage_at_start_new)
 
         for kw in (
             "displayname",
@@ -448,7 +448,6 @@ class ConfigServer:
             "retention",
             "expire_date",
             "quota_left",
-            "usage_at_start",
             "priority",
             "notes",
         ):
