@@ -1669,6 +1669,10 @@ msgstr "Fichiers RAR vérifiés avec succès"
 msgid "RAR files failed to verify"
 msgstr "Echec lors de la vérification des fichiers RAR"
 
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid "No matching earlier rar file for %s"
