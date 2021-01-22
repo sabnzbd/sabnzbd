@@ -171,7 +171,7 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
         urn:schemas-upnp-org:device:basic:1
         uuid:2f402f80-da50-11e1-9b23-001788721f4f
         '''
-        rc, message = submit_to_minissdpd(            "urn:schemas-upnp-org:device:basic:1", # b"urn:schemas-upnp-org:device:InternetGatewayDevice:1",            "uuid:" + str(self.__uuid),            self.__server_name,             self.__url + "/description.xml",
+        rc, message = submit_to_minissdpd("urn:schemas-upnp-org:device:basic:1",             "uuid:" + str(self.__uuid),            self.__server_name,             self.__url + "/description.xml",
         )
 
         if rc == 0:
