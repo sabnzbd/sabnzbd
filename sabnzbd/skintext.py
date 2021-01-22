@@ -624,6 +624,10 @@ SKIN_TEXT = {
     "srv-password": TT("Password"),  #: Server password
     "srv-timeout": TT("Timeout"),  #: Server timeout
     "srv-connections": TT("Connections"),  #: Server: amount of connections
+    "srv-expire_date": TT("Account expire date"),
+    "srv-explain-expire_date": TT("Give warning on this date. Format: YYYY-MM-DD, e.g. 2022-01-31"),
+    "srv-quota_left": TT("Quota left on account"),
+    "srv-explain-quota_left": TT("Give warning when this much data has been used, 0 for no warning (K/M/G)."),
     "srv-retention": TT("Retention time"),  #: Server's retention time in days
     "srv-ssl": TT("SSL"),  #: Server SSL tickbox
     "explain-ssl": TT("Secure connection to server"),  #: Server SSL tickbox

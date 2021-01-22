@@ -411,6 +411,9 @@ class ConfigServer:
         self.enable = OptionBool(name, "enable", True, add=False)
         self.optional = OptionBool(name, "optional", False, add=False)
         self.retention = OptionNumber(name, "retention", 0, add=False)
+        self.expire_date = OptionStr(name, "expire_date")
+        self.quota_left = OptionStr(name, "quota_left")
+        self.usage_at_start = OptionStr(name, "usage_at_start")
         self.send_group = OptionBool(name, "send_group", False, add=False)
         self.priority = OptionNumber(name, "priority", 0, 0, 99, add=False)
         self.notes = OptionStr(name, "notes", add=False)
@@ -435,10 +438,17 @@ class ConfigServer:
             "enable",
             "optional",
             "retention",
+            "expire_date",
+            "quota_left",
+            "usage_at_start",
             "priority",
             "notes",
         ):
             try:
+                if kw == "usage_at_start":
+                    usage_at_start_new = values.get('usage_at_start_new', "")
+                    if usage_at_start_new and values['quota_left'] != values['quota_left_old']:
+                        values['usage_at_start'] = usage_at_start_new
                 value = values[kw]
                 getattr(self, kw).set(value)
             except KeyError:
@@ -466,6 +476,9 @@ class ConfigServer:
         output_dict["enable"] = self.enable()
         output_dict["optional"] = self.optional()
         output_dict["retention"] = self.retention()
+        output_dict["expire_date"] = self.expire_date()
+        output_dict["quota_left"] = self.quota_left()
+        output_dict["usage_at_start"] = self.usage_at_start()
         output_dict["send_group"] = self.send_group()
         output_dict["priority"] = self.priority()
         output_dict["notes"] = self.notes()

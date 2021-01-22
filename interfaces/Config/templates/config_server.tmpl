@@ -108,6 +108,17 @@
                         <input type="text" name="displayname" id="displayname" />
                     </div>
                     <div class="field-pair advanced-settings">
+                        <label class="config" for="expire_date">$T('srv-expire_date')</label>
+                        <input type="text" name="expire_date" id="expire_date" />
+                        <span class="desc">$T('srv-explain-expire_date')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="quota_left">$T('srv-quota_left')</label>
+                        <input type="text" name="quota_left" id="quota_left" />
+                        <input type="text" name="usage_at_start" id="usage_at_start" value="0" />
+                        <span class="desc">$T('srv-explain-quota_left')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="notes">$T('srv-notes')</label>
                         <textarea name="notes" id="notes" rows="3" cols="50"></textarea>
                     </div>
@@ -222,6 +233,19 @@
                         <div class="field-pair advanced-settings">
                             <label class="config" for="displayname$cur">$T('srv-displayname')</label>
                             <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="expire_date">$T('srv-expire_date')</label>
+                            <input type="text" name="expire_date" id="expire_date$cur"  value="$server['expire_date']" />
+                            <span class="desc">$T('srv-explain-expire_date')</span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="quota_left">$T('srv-quota_left')</label>
+                            <input type="text" name="quota_left" id="quota_left$cur" value="$server['quota_left']" />
+                            <input type="hidden" name="quota_left_old" id="quota_left_old$cur" value="$server['quota_left']" />
+                            <input type="hidden" name="usage_at_start" id="usage_at_start$cur" value="$server['usage_at_start']" />
+                            <input type="hidden" name="usage_at_start_new" id="usage_at_start_new$cur"  value="<!--#if 'amounts' in $server#-->$(server['amounts'][0])<!--#end if#-->" />
+                            <span class="desc">$T('srv-explain-quota_left')</span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="notes$cur">$T('srv-notes')</label>
