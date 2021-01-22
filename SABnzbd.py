@@ -1532,13 +1532,6 @@ def main():
 
         # 300 sec polling tasks
         if not timer % 100:
-            if sabnzbd.LOG_ALL:
-                logging.debug("Triggering Python garbage collection")
-            gc.collect()
-            timer = 0
-
-        # 30 sec polling tasks
-        if not timer % 10:
             servers = config.get_servers()
             for srv in config.get_servers():
                 server = servers[srv]
@@ -1555,7 +1548,13 @@ def main():
                         logging.warning("Server %s has used the spcified quota", server.displayname())
                         server.quota_left.set("")
                         config.save_config()
+            if sabnzbd.LOG_ALL:
+                logging.debug("Triggering Python garbage collection")
+            gc.collect()
+            timer = 0
 
+        # 30 sec polling tasks
+        if not timer % 10:
             # Keep OS awake (if needed)
             sabnzbd.keep_awake()
             # Restart scheduler (if needed)
