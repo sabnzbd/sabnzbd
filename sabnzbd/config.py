@@ -427,7 +427,7 @@ class ConfigServer:
         if self.displayname():
             new_usage_at_start = sabnzbd.BPSMeter.grand_total[self.__name]
             if new_usage_at_start and values.get("quota_left", "") != self.quota_left():
-                values['usage_at_start'] = new_usage_at_start
+                values["usage_at_start"] = new_usage_at_start
 
         for kw in (
             "displayname",
