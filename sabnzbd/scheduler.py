@@ -421,7 +421,7 @@ class Scheduler:
         """ Add task to check server date or quota expiration """
         self.__daily_interval_tasks()
         self.resume_task = self.scheduler.add_daytime_task(
-            self.__daily_interval_tasks, "check_server_expire", (1,2,3,4,5,6,7), (), (0,0), "threaded"
+            self.__daily_interval_tasks, "check_server_expire", (1, 2, 3, 4, 5, 6, 7), (), (0, 0), "threaded"
         )
 
     def pause_int(self) -> str:

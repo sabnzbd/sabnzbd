@@ -625,9 +625,7 @@ SKIN_TEXT = {
     "srv-timeout": TT("Timeout"),  #: Server timeout
     "srv-connections": TT("Connections"),  #: Server: amount of connections
     "srv-expire_date": TT("Account expire date"),
-    "srv-explain-expire_date": TT(
-        "Give warning on this date. Set a day or two before expiry to get an early warning."
-    ),
+    "srv-explain-expire_date": TT("Give warning on this date. Set a day or two before expiry to get an early warning."),
     "srv-explain-quota_left": TT(
         "Counted from when you last changed the value. Set a smaller amount than the remaining quota to get an early warning. 0 for no warning (K/M/G)."
     ),
