@@ -424,7 +424,6 @@ class NzbFile(TryList):
     def finish_import(self, raw_article_db):
         """ Import raw articles to file object """
         logging.debug("Finishing import on %s", self.filename)
-        self.last_used = time.time()
         if raw_article_db:
             # Convert 2.x.x jobs
             if isinstance(raw_article_db, dict):
