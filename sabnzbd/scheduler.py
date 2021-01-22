@@ -377,10 +377,52 @@ class Scheduler:
         )
 
     def cancel_resume_task(self):
+        """ Cancel the current auto resume task """
         if self.resume_task:
             logging.debug("Cancelling existing resume_task '%s'", self.resume_task.name)
             self.scheduler.cancel(self.resume_task)
             self.resume_task = None
+
+    def __10_minute_interval_tasks(self):
+        """ Do these tasks every 10 minutes """
+        # Check quota on servers
+        servers = config.get_servers()
+        for srv in servers:
+            server = servers[srv]
+            if server.quota_left():
+                if (
+                    server.quota_left.get_float() + server.usage_at_start.get_float()
+                    < sabnzbd.BPSMeter.grand_total[srv]
+                ):
+                    logging.warning("Server %s has used the spcified quota", server.displayname())
+                    server.quota_left.set("")
+                    config.save_config()
+
+    def plan_10_minute_interval_tasks(self):
+        """ Add task to check 10 minute interval tasks """
+        self.__10_minute_interval_tasks()
+        self.resume_task = self.scheduler.add_interval_task(
+            self.__10_minute_interval_tasks, "check_server_quota", 10 * 60, 10 * 60, "threaded"
+        )
+
+    def __daily_interval_tasks(self):
+        """ Tasks done daily at midnight and at startup """
+        # Check if user should get warning about server date expiration
+        servers = config.get_servers()
+        for srv in servers:
+            server = servers[srv]
+            if server.expire_date():
+                if time.time() > time.mktime(time.strptime(server.expire_date(), "%Y-%m-%d")):
+                    logging.warning("Server %s is expiring", server.displayname())
+                    server.expire_date.set("")
+                    config.save_config()
+
+    def plan_daily_interval_tasks(self):
+        """ Add task to check server date or quota expiration """
+        self.__daily_interval_tasks()
+        self.resume_task = self.scheduler.add_daytime_task(
+            self.__daily_interval_tasks, "check_server_expire", (1,2,3,4,5,6,7), (), (0,0), "threaded"
+        )
 
     def pause_int(self) -> str:
         """ Return minutes:seconds until pause ends """

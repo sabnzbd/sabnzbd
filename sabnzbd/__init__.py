@@ -321,6 +321,10 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
         cfg.cache_limit.set(misc.get_cache_limit())
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
+    # Add scheduled tasks
+    sabnzbd.Scheduler.plan_10_minute_interval_tasks()
+    sabnzbd.Scheduler.plan_daily_interval_tasks()
+
     logging.info("All processes started")
     sabnzbd.RESTART_REQ = False
     sabnzbd.__INITIALIZED__ = True
