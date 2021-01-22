@@ -1544,12 +1544,15 @@ def main():
                 server = servers[srv]
                 if server.expire_date():
                     if time.time() > time.mktime(time.strptime(server.expire_date(), "%Y-%m-%d")):
-                        logging.warning('Server %s is expiring', server.displayname())
+                        logging.warning("Server %s is expiring", server.displayname())
                         server.expire_date.set("")
                         config.save_config()
                 if server.quota_left():
-                    if server.quota_left.get_float() + server.usage_at_start.get_float() < sabnzbd.BPSMeter.grand_total[srv]:
-                        logging.warning('Server %s has used the spcified quota', server.displayname())
+                    if (
+                        server.quota_left.get_float() + server.usage_at_start.get_float()
+                        < sabnzbd.BPSMeter.grand_total[srv]
+                    ):
+                        logging.warning("Server %s has used the spcified quota", server.displayname())
                         server.quota_left.set("")
                         config.save_config()
 

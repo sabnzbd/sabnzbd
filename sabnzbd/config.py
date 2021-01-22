@@ -446,9 +446,9 @@ class ConfigServer:
         ):
             try:
                 if kw == "usage_at_start":
-                    usage_at_start_new = values.get('usage_at_start_new', "")
-                    if usage_at_start_new and values['quota_left'] != values['quota_left_old']:
-                        values['usage_at_start'] = usage_at_start_new
+                    usage_at_start_new = values.get("usage_at_start_new", "")
+                    if usage_at_start_new and values["quota_left"] != values["quota_left_old"]:
+                        values["usage_at_start"] = usage_at_start_new
                 value = values[kw]
                 getattr(self, kw).set(value)
             except KeyError:
