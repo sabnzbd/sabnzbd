@@ -115,7 +115,6 @@
                     <div class="field-pair advanced-settings">
                         <label class="config" for="quota_left">$T('quota-left')</label>
                         <input type="text" name="quota_left" id="quota_left" />
-                        <input type="hidden" name="usage_at_start" id="usage_at_start" value="0" />
                         <span class="desc">$T('srv-explain-quota_left')</span>
                     </div>
                     <div class="field-pair advanced-settings">
@@ -242,9 +241,6 @@
                         <div class="field-pair advanced-settings">
                             <label class="config" for="quota_left">$T('quota-left')</label>
                             <input type="text" name="quota_left" id="quota_left$cur" value="$server['quota_left']" />
-                            <input type="hidden" name="quota_left_old" id="quota_left_old$cur" value="$server['quota_left']" />
-                            <input type="hidden" name="usage_at_start" id="usage_at_start$cur" value="$server['usage_at_start']" />
-                            <input type="hidden" name="usage_at_start_new" id="usage_at_start_new$cur"  value="<!--#if 'amounts' in $server#-->$(server['amounts'][0])<!--#end if#-->" />
                             <span class="desc">$T('srv-explain-quota_left')</span>
                         </div>
                         <div class="field-pair advanced-settings">

@@ -424,9 +424,12 @@ class ConfigServer:
     def set_dict(self, values: Dict[str, Any]):
         """ Set one or more fields, passed as dictionary """
         # Replace usage_at_start value with most recent statistics if the user changes the quota value
-        usage_at_start_new = values.get("usage_at_start_new", "")
-        if usage_at_start_new and values.get("quota_left", "") != values.get("quota_left_old", ""):
-            values["usage_at_start"] = usage_at_start_new
+        if self.displayname():
+            servers = get_servers()
+            server = servers[self.__name]
+            usage_at_start_new = sabnzbd.BPSMeter.grand_total[self.__name]
+            if usage_at_start_new and values.get("quota_left", "") != server.quota_left():
+                values["usage_at_start"] = usage_at_start_new
 
         for kw in (
             "displayname",
