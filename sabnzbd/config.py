@@ -425,11 +425,9 @@ class ConfigServer:
         """ Set one or more fields, passed as dictionary """
         # Replace usage_at_start value with most recent statistics if the user changes the quota value
         if self.displayname():
-            servers = get_servers()
-            server = servers[self.__name]
-            usage_at_start_new = sabnzbd.BPSMeter.grand_total[self.__name]
-            if usage_at_start_new and values.get("quota_left", "") != server.quota_left():
-                getattr(self, "usage_at_start").set(usage_at_start_new)
+            new_usage_at_start = sabnzbd.BPSMeter.grand_total[self.__name]
+            if new_usage_at_start and values.get("quota_left", "") != self.quota_left():
+                values['usage_at_start'] = new_usage_at_start
 
         for kw in (
             "displayname",
@@ -448,6 +446,7 @@ class ConfigServer:
             "retention",
             "expire_date",
             "quota_left",
+            "usage_at_start",
             "priority",
             "notes",
         ):
