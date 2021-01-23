@@ -40,6 +40,10 @@
                         <input type="checkbox" name="enable" id="enable" value="1" checked="checked" />
                         <span class="desc">$T('srv-enable')</span>
                     </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="displayname">$T('srv-displayname')</label>
+                        <input type="text" name="displayname" id="displayname" />
+                    </div>
                     <div class="field-pair">
                         <label class="config" for="host">$T('srv-host')</label>
                         <input type="text" name="host" id="host" required />
@@ -104,10 +108,6 @@
                         <span class="desc">$T('explain-optional')</span>
                     </div>
                     <div class="field-pair advanced-settings">
-                        <label class="config" for="displayname">$T('srv-displayname')</label>
-                        <input type="text" name="displayname" id="displayname" />
-                    </div>
-                    <div class="field-pair advanced-settings">
                         <label class="config" for="expire_date">$T('srv-expire_date')</label>
                         <input type="date" name="expire_date" id="expire_date" />
                         <span class="desc">$T('srv-explain-expire_date')</span>
@@ -165,6 +165,10 @@
                 <div class="col1" style="display:none;">
                     <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
                     <fieldset>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="displayname$cur">$T('srv-displayname')</label>
+                            <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
+                        </div>
                         <div class="field-pair">
                             <label class="config" for="host$cur">$T('srv-host')</label>
                             <input type="text" name="host" id="host$cur" value="$server['host']" required />
@@ -228,10 +232,6 @@
                             <label class="config" for="send_group$cur">$T('srv-send_group')</label>
                             <input type="checkbox" name="send_group" id="send_group$cur" value="1" <!--#if int($server['send_group']) != 0 then 'checked="checked"' else ""#--> />
                             <span class="desc">$T('srv-explain-send_group')</span>
-                        </div>
-                        <div class="field-pair advanced-settings">
-                            <label class="config" for="displayname$cur">$T('srv-displayname')</label>
-                            <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="expire_date$cur">$T('srv-expire_date')</label>
