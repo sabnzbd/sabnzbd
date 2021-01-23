@@ -113,9 +113,9 @@
                         <span class="desc">$T('srv-explain-expire_date')</span>
                     </div>
                     <div class="field-pair advanced-settings">
-                        <label class="config" for="quota_left">$T('quota-left')</label>
-                        <input type="text" name="quota_left" id="quota_left" />
-                        <span class="desc">$T('srv-explain-quota_left')</span>
+                        <label class="config" for="quota">$T('swtag-quota')</label>
+                        <input type="text" name="quota" id="quota" class="smaller_input" />
+                        <span class="desc">$T('srv-explain-quota')</span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="notes">$T('srv-notes')</label>
@@ -234,14 +234,14 @@
                             <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
                         </div>
                         <div class="field-pair advanced-settings">
-                            <label class="config" for="expire_date">$T('srv-expire_date')</label>
+                            <label class="config" for="expire_date$cur">$T('srv-expire_date')</label>
                             <input type="date" name="expire_date" id="expire_date$cur"  value="$server['expire_date']" />
                             <span class="desc">$T('srv-explain-expire_date')</span>
                         </div>
                         <div class="field-pair advanced-settings">
-                            <label class="config" for="quota_left">$T('quota-left')</label>
-                            <input type="text" name="quota_left" id="quota_left$cur" value="$server['quota_left']" />
-                            <span class="desc">$T('srv-explain-quota_left')</span>
+                            <label class="config" for="quota$cur">$T('swtag-quota')</label>
+                            <input type="text" name="quota" id="quota$cur" value="$server['quota']" class="smaller_input" />
+                            <span class="desc">$T('srv-explain-quota')</span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="notes$cur">$T('srv-notes')</label>
