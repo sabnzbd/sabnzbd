@@ -34,6 +34,8 @@ import sabnzbd.cfg as cfg
 from sabnzbd.filesystem import diskspace
 from sabnzbd.constants import LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY
 
+DAILY_RANGE = list(range(1, 8))
+
 
 class Scheduler:
     def __init__(self):
@@ -105,7 +107,7 @@ class Scheduler:
             if d.isdigit():
                 d = [int(i) for i in d]
             else:
-                d = list(range(1, 8))
+                d = DAILY_RANGE
 
             if action_name == "resume":
                 action = self.scheduled_resume
@@ -202,16 +204,29 @@ class Scheduler:
         action, hour, minute = sabnzbd.BPSMeter.get_quota()
         if action:
             logging.info("Setting schedule for quota check daily at %s:%s", hour, minute)
-            self.scheduler.add_daytime_task(action, "quota_reset", list(range(1, 8)), None, (hour, minute))
+            self.scheduler.add_daytime_task(action, "quota_reset", DAILY_RANGE, None, (hour, minute))
 
         if sabnzbd.misc.int_conv(cfg.history_retention()) > 0:
             logging.info("Setting schedule for midnight auto history-purge")
             self.scheduler.add_daytime_task(
-                sabnzbd.database.midnight_history_purge, "midnight_history_purge", list(range(1, 8)), None, (0, 0)
+                sabnzbd.database.midnight_history_purge, "midnight_history_purge", DAILY_RANGE, None, (0, 0)
             )
 
         logging.info("Setting schedule for midnight BPS reset")
-        self.scheduler.add_daytime_task(sabnzbd.BPSMeter.midnight, "midnight_bps", list(range(1, 8)), None, (0, 0))
+        self.scheduler.add_daytime_task(sabnzbd.BPSMeter.midnight, "midnight_bps", DAILY_RANGE, None, (0, 0))
+
+        logging.info("Setting schedule for server expiration check")
+        self.scheduler.add_daytime_task(
+            sabnzbd.downloader.check_server_expiration, "check_server_expiration", DAILY_RANGE, None, (0, 0)
+        )
+
+        logging.info("Setting scheduler for server quota check")
+        self.scheduler.add_interval_task(
+            sabnzbd.downloader.check_server_quota,
+            "check_server_quota",
+            0,
+            10 * 60,
+        )
 
         # Subscribe to special schedule changes
         cfg.rss_rate.callback(self.scheduler_restart_guard)
@@ -377,6 +392,7 @@ class Scheduler:
         )
 
     def cancel_resume_task(self):
+        """ Cancel the current auto resume task """
         if self.resume_task:
             logging.debug("Cancelling existing resume_task '%s'", self.resume_task.name)
             self.scheduler.cancel(self.resume_task)
