@@ -41,6 +41,11 @@ Release Notes - SABnzbd 3.2.0 Beta 1
 - Direct Unpack stability fixes.
 - macOS: tray text was misaligned on macOS 11 (Big Sur).
 
+## Upgrade notices
+- The download statistics file `totals10.sab` is updated in this 
+  version. If you downgrade to 3.1.x or lower, detailed download 
+  statistics will be lost.
+
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
 
