@@ -158,20 +158,24 @@ OPT: "http://schemas.upnp.org/upnp/1/0/"; ns=01
 
         logging.info("Trying if miniSSDPd is there")
         rc, message = submit_to_minissdpd(
-            "upnp:rootdevice", # b"urn:schemas-upnp-org:device:InternetGatewayDevice:1",
+            "upnp:rootdevice",  # b"urn:schemas-upnp-org:device:InternetGatewayDevice:1",
             "uuid:" + str(self.__uuid) + "::upnp:rootdevice",
             self.__server_name,
             self.__url + "/description.xml",
         )
 
         # to be sure
-        '''
+        """
         and now something like:
         http://192.168.1.217:80/description.xml
         urn:schemas-upnp-org:device:basic:1
         uuid:2f402f80-da50-11e1-9b23-001788721f4f
-        '''
-        rc, message = submit_to_minissdpd("urn:schemas-upnp-org:device:basic:1",             "uuid:" + str(self.__uuid),            self.__server_name,             self.__url + "/description.xml",
+        """
+        rc, message = submit_to_minissdpd(
+            "urn:schemas-upnp-org:device:basic:1",
+            "uuid:" + str(self.__uuid),
+            self.__server_name,
+            self.__url + "/description.xml",
         )
 
         if rc == 0:
