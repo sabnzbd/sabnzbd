@@ -485,6 +485,16 @@ msgstr "Erro suspeito no downloader"
 msgid "Shutting down"
 msgstr "Encerrando"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr ""
+
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
 msgstr "Falha ao conectar ao servidor de e-mail"
@@ -3861,6 +3871,21 @@ msgstr "Senha"
 #: sabnzbd/skintext.py
 msgid "Timeout"
 msgstr "Tempo limite"
+
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py

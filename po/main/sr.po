@@ -480,6 +480,16 @@ msgstr "Sumnja u grešku u programu za download"
 msgid "Shutting down"
 msgstr "Гашење"
 
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr ""
+
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
 msgstr "Неуспешно привезивање на сервер е-поште"
@@ -3835,6 +3845,21 @@ msgstr "Лозинка"
 #: sabnzbd/skintext.py
 msgid "Timeout"
 msgstr "Време истекло"
+
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
