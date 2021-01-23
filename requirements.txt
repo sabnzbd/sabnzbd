@@ -3,7 +3,7 @@ cheetah3>=3.0.0
 cryptography
 feedparser>=6.0.0
 configobj
-cheroot<8.4.3
+cheroot
 cherrypy
 portend
 chardet

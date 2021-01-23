@@ -112,7 +112,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
 
         # Verify if the garbage collection works (see #1628)
         # We need to give it a second to calm down and clear the variables
-        time.sleep(1)
+        time.sleep(2)
         gc_results = get_api_result("gc_stats")["value"]
         if gc_results:
             pytest.fail(f"Objects were left in memory after the job finished! {gc_results}")
