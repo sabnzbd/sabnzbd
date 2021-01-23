@@ -5,7 +5,7 @@
 <!--#import json#-->
 <!--#import datetime#-->
 
-<script type="text/javascript">
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
     // Define variable needed for the server-statistics
     var serverBandwithData = {}
     var serverArticleTries = {}
@@ -268,10 +268,14 @@
                                 $T('thisMonth'): $(server['amounts'][1])B<br/>
                                 $T('selectedDates'): <span id="server-bandwith-value-${cur}"></span>
                             </p>
+
                             <p title="$T('readwiki')">
                                 <b>$T('srv-article-availability'):</b><br/>
                                 $T('selectedDates'): <span id="server-article-value-${cur}"></span>
                             </p>
+                            <!--#if $server['quota']#-->
+                            <p><b>$T('quota-left'):</b> $(server['quota_left'])B</p>
+                            <!--#end if#-->
                         </div>
                         <div class="server-chart" data-serverid="${cur}">
                             <div id="server-chart-${cur}" class="ct-chart"></div>

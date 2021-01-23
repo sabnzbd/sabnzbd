@@ -1028,7 +1028,7 @@ def check_server_expiration():
                 (time.mktime(time.strptime(server.expire_date(), "%Y-%m-%d")) - time.time()) / (60 * 60 * 24)
             )
             # Notify from 5 days in advance
-            if 0 <= days_to_expire < 6:
+            if days_to_expire < 6:
                 logging.warning(T("Server %s is expiring in %s day(s)"), server.displayname(), days_to_expire)
                 # Reset on the day of expiration
                 if days_to_expire <= 0:
@@ -1040,7 +1040,7 @@ def check_server_quota():
     """Check quota on servers"""
     for srv, server in config.get_servers().items():
         if server.quota():
-            if server.quota.get_float() + server.usage_at_start() < sabnzbd.BPSMeter.grand_total[srv]:
+            if server.quota.get_int() + server.usage_at_start() < sabnzbd.BPSMeter.grand_total.get(srv, 0):
                 logging.warning(T("Server %s has used the specified quota"), server.displayname())
                 server.quota.set("")
                 config.save_config()
