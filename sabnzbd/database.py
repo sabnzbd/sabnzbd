@@ -271,7 +271,9 @@ class HistoryDB:
             if to_keep > 0:
                 logging.info("Removing all but last %s completed jobs from history", to_keep)
                 return self.execute(
-                    """DELETE FROM history WHERE status = ? AND id NOT IN ( SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ? )""",
+                    """DELETE FROM history WHERE status = ? AND id NOT IN ( 
+                        SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ? 
+                    )""",
                     (Status.COMPLETED, Status.COMPLETED, to_keep),
                     save=True,
                 )
@@ -312,13 +314,9 @@ class HistoryDB:
             command_args.append(Status.FAILED)
 
         cmd = "SELECT COUNT(*) FROM history WHERE name LIKE ?"
-        res = self.execute(cmd + post, tuple(command_args))
         total_items = -1
-        if res:
-            try:
-                total_items = self.c.fetchone()["COUNT(*)"]
-            except IndexError:
-                pass
+        if self.execute(cmd + post, tuple(command_args)):
+            total_items = self.c.fetchone()["COUNT(*)"]
 
         if not start:
             start = 0
@@ -327,9 +325,7 @@ class HistoryDB:
 
         command_args.extend([start, limit])
         cmd = "SELECT * FROM history WHERE name LIKE ?"
-        fetch_ok = self.execute(cmd + post + " ORDER BY completed desc LIMIT ?, ?", tuple(command_args))
-
-        if fetch_ok:
+        if self.execute(cmd + post + " ORDER BY completed desc LIMIT ?, ?", tuple(command_args)):
             items = self.c.fetchall()
         else:
             items = []
@@ -348,28 +344,20 @@ class HistoryDB:
         series = series.lower().replace(".", " ").replace("_", " ").replace("  ", " ")
         if series and season and episode:
             pattern = "%s/%s/%s" % (series, season, episode)
-            res = self.execute(
+            if self.execute(
                 """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (pattern, Status.FAILED)
-            )
-            if res:
-                try:
-                    total = self.c.fetchone()["COUNT(*)"]
-                except IndexError:
-                    pass
+            ):
+                total = self.c.fetchone()["COUNT(*)"]
         return total > 0
 
     def have_name_or_md5sum(self, name, md5sum):
         """ Check whether this name or md5sum is already in History """
         total = 0
-        res = self.execute(
+        if self.execute(
             """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != ?""",
             (name, md5sum, Status.FAILED),
-        )
-        if res:
-            try:
-                total = self.c.fetchone()["COUNT(*)"]
-            except IndexError:
-                pass
+        ):
+            total = self.c.fetchone()["COUNT(*)"]
         return total > 0
 
     def get_history_size(self):
@@ -379,32 +367,21 @@ class HistoryDB:
         # Total Size of the history
         total = 0
         if self.execute("""SELECT sum(bytes) FROM history"""):
-            try:
-                total = self.c.fetchone()["sum(bytes)"]
-            except IndexError:
-                pass
+            total = self.c.fetchone()["sum(bytes)"]
 
         # Amount downloaded this month
-        # r = time.gmtime(time.time())
-        # month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
         month_timest = int(this_month(time.time()))
 
         month = 0
         if self.execute("""SELECT sum(bytes) FROM history WHERE completed > ?""", (month_timest,)):
-            try:
-                month = self.c.fetchone()["sum(bytes)"]
-            except IndexError:
-                pass
+            month = self.c.fetchone()["sum(bytes)"]
 
         # Amount downloaded this week
         week_timest = int(this_week(time.time()))
 
         week = 0
         if self.execute("""SELECT sum(bytes) FROM history WHERE completed > ?""", (week_timest,)):
-            try:
-                week = self.c.fetchone()["sum(bytes)"]
-            except IndexError:
-                pass
+            week = self.c.fetchone()["sum(bytes)"]
 
         return total, month, week
 
@@ -426,18 +403,20 @@ class HistoryDB:
         if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
             try:
                 name = self.c.fetchone()["name"]
-            except IndexError:
+            except TypeError:
+                # No records found
                 pass
         return name
 
-    def get_path(self, nzo_id):
+    def get_path(self, nzo_id: str):
         """ Return the `incomplete` path of the job `nzo_id` if it is still there """
         t = (nzo_id,)
         path = ""
         if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
             try:
                 path = self.c.fetchone()["path"]
-            except AttributeError:
+            except TypeError:
+                # No records found
                 pass
         if os.path.exists(path):
             return path
@@ -450,7 +429,8 @@ class HistoryDB:
             try:
                 item = self.c.fetchone()
                 return item["report"], item["url"], item["pp"], item["script"], item["category"]
-            except (AttributeError, IndexError):
+            except TypeError:
+                # No records found
                 pass
         return "", "", "", "", ""
 

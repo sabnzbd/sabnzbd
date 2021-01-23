@@ -982,7 +982,6 @@ class TestHistoryApi(ApiTestFunctions):
     def test_api_history_delete_single(self):
         # Collect a single random nzo_id
         json = self._get_api_history({"start": randint(0, self.history_size - 1), "limit": 1})
-        delete_this = {"nzo_id": [], "name": []}
         delete_this = {
             "nzo_id": str(json["history"]["slots"][0]["nzo_id"]),
             "name": str(json["history"]["slots"][0]["name"]),
@@ -998,6 +997,10 @@ class TestHistoryApi(ApiTestFunctions):
         # Searching by name could match other jobs too, so we can't rely on "noofslots" here
         for slot in json["history"]["slots"]:
             assert slot["nzo_id"] != delete_this["nzo_id"]
+
+        # Try to delete a non-existing one, it just returns true
+        json = self._get_api_history({"name": "delete", "value": "fake"})
+        assert json["status"] is True
 
     def test_api_history_delete_multiple(self):
         # Collect several nzo_ids to delete
