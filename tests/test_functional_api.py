@@ -693,24 +693,35 @@ class TestQueueApi(ApiTestFunctions):
                 # All other jobs should remain unchanged
                 assert changed[row] == original[row]
 
-    # TODO parametrize, test invalid values? On hold, see #1650
-    def test_api_queue_change_job_script(self):
+    @pytest.mark.parametrize("script_filename, create_scriptfile, should_work",
+        [
+            ("helloworld.py", True, True),
+            ("helloworld2.py", False, False),
+            ("my_scripted_script_.py", True, True),
+            ("유닉스.sh", True, True),
+            ("لغة برمجة نصية", False, False),
+            (None, True, False),
+            ("", True, False),
+        ]
+    )
+    def test_api_queue_change_job_script(self, script_filename, create_scriptfile, should_work):
         self._create_random_queue(minimum_size=4)
-        self._setup_script_dir("scripts")
+        if create_scriptfile:
+            self._setup_script_dir("scripts", script=script_filename)
+        else:
+            self._setup_script_dir("scripts")
         original = self._record_slots(keys=("nzo_id", "script"))
 
-        value2 = choice(self._get_api_json("get_scripts")["scripts"])
-        assert value2
         nzo_id = choice(original)["nzo_id"]
-        json = self._get_api_json("change_script", extra_args={"value": nzo_id, "value2": value2})
+        json = self._get_api_json("change_script", extra_args={"value": nzo_id, "value2": script_filename})
 
-        assert "error" not in json.keys()
-        assert json["status"] is True
+        assert ("error" not in json.keys()) is (should_work is create_scriptfile)
+        assert json["status"] is should_work
 
         changed = self._record_slots(keys=("nzo_id", "script"))
         for row in range(0, len(original)):
-            if changed[row]["nzo_id"] == nzo_id:
-                assert changed[row]["script"] == value2
+            if should_work and changed[row]["nzo_id"] == nzo_id:
+                assert changed[row]["script"] == script_filename
             else:
                 # All other jobs should remain unchanged
                 assert changed[row] == original[row]
