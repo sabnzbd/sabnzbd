@@ -472,7 +472,7 @@ def fix_unix_encoding(folder: str):
                         logging.info("Cannot correct name of %s", os.path.join(root, name))
 
 
-def is_valid_script(basename):
+def is_valid_script(basename: str) -> bool:
     """ Determine if 'basename' is a valid script """
     return basename in sabnzbd.api.list_scripts(default=False, none=False)
 
