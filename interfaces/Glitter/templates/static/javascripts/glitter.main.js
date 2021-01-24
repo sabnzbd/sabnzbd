@@ -1106,15 +1106,17 @@ function ViewModel() {
             self.queue.paginationLimit(response.config.misc.queue_limit.toString())
 
             // Import the rest of the settings
-            var interfaceSettings = JSON.parse(response.config.misc.interface_settings);
-            self.dateFormat(interfaceSettings['dateFormat']);
-            self.extraQueueColumns(interfaceSettings['extraQueueColumns']);
-            self.extraHistoryColumns(interfaceSettings['extraHistoryColumns']);
-            self.displayCompact(interfaceSettings['displayCompact']);
-            self.displayFullWidth(interfaceSettings['displayFullWidth']);
-            self.displayTabbed(interfaceSettings['displayTabbed']);
-            self.confirmDeleteQueue(interfaceSettings['confirmDeleteQueue']);
-            self.confirmDeleteHistory(interfaceSettings['confirmDeleteHistory']);
+            if(response.config.misc.interface_settings) {
+                var interfaceSettings = JSON.parse(response.config.misc.interface_settings);
+                self.dateFormat(interfaceSettings['dateFormat']);
+                self.extraQueueColumns(interfaceSettings['extraQueueColumns']);
+                self.extraHistoryColumns(interfaceSettings['extraHistoryColumns']);
+                self.displayCompact(interfaceSettings['displayCompact']);
+                self.displayFullWidth(interfaceSettings['displayFullWidth']);
+                self.displayTabbed(interfaceSettings['displayTabbed']);
+                self.confirmDeleteQueue(interfaceSettings['confirmDeleteQueue']);
+                self.confirmDeleteHistory(interfaceSettings['confirmDeleteHistory']);
+            }
         }
 
         // Set bandwidth limit
