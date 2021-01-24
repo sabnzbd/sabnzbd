@@ -380,7 +380,11 @@ class NNTP:
                 raw_error_str = T("Certificate not valid. This is most probably a server issue.")
 
             # Reformat error and overwrite str-representation
-            error_str = T("Server %s (%s) uses an untrusted certificate [%s]") % (self.nw.server.host, self.sock.getpeername()[0], raw_error_str)
+            error_str = T("Server %s (%s) uses an untrusted certificate [%s]") % (
+                self.nw.server.host,
+                self.sock.getpeername()[0],
+                raw_error_str,
+            )
             error_str = "%s - %s: %s" % (error_str, T("Wiki"), "https://sabnzbd.org/certificate-errors")
             error.strerror = error_str
 
