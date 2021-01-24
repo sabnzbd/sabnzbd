@@ -83,12 +83,6 @@ _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
 _MSG_BAD_SERVER_PARMS = "Incorrect server settings"
 
-# For Windows: determine executable extensions
-if os.name == "nt":
-    PATHEXT = os.environ.get("PATHEXT", "").lower().split(";")
-else:
-    PATHEXT = []
-
 
 def api_handler(kwargs):
     """ API Dispatcher """

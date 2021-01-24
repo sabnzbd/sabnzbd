@@ -43,6 +43,12 @@ from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX
 from sabnzbd.encoding import correct_unknown_encoding
 from sabnzbd.utils import rarfile
 
+# For Windows: determine executable extensions
+if os.name == "nt":
+    PATHEXT = os.environ.get("PATHEXT", "").lower().split(";")
+else:
+    PATHEXT = []
+
 
 def get_ext(filename: str) -> str:
     """ Return lowercased file extension """
