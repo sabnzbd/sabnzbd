@@ -521,7 +521,6 @@ class TestQueueApi(ApiTestFunctions):
         for nzo_id in deleted_nzo_ids:
             assert nzo_id not in remaining_nzo_ids
 
-    @pytest.mark.xfail(reason="Script values aren't sanitized, see issue #1650")
     @pytest.mark.parametrize(
         "should_work, set_scriptsdir, value",
         [
@@ -533,8 +532,11 @@ class TestQueueApi(ApiTestFunctions):
             (False, False, "invalid_option"),
             (False, True, "script_foobar.py"),  # Doesn't exist, see issue #1650
             (False, True, "script_" + os.path.join("..", "SABnzbd.py")),  # Outside the scriptsdir, #1650 again
+            (False, True, "script_" + os.path.join("..", "..", "SABnzbd.py")),
+            (False, True, "script_" + os.path.join("..", "..", "..", "SABnzbd.py")),
             (False, True, "script_"),  # Empty after removal of the prefix
-            (True, True, "my_script_for_sab.py"),  # Test for #1651
+            (True, True, "script_my_script_for_sab.py"),  # Test for #1651
+            (False, True, "my_script_for_sab.py"),
         ],
     )
     def test_api_queue_change_complete_action(self, should_work, set_scriptsdir, value):

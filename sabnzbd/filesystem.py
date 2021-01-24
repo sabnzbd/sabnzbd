@@ -472,12 +472,17 @@ def fix_unix_encoding(folder: str):
                         logging.info("Cannot correct name of %s", os.path.join(root, name))
 
 
+def is_valid_script(basename):
+    """ Determine if 'basename' is a valid script """
+    return basename in sabnzbd.api.list_scripts(default=False, none=False)
+
+
 def make_script_path(script: str) -> Optional[str]:
     """ Return full script path, if any valid script exists, else None """
     script_path = None
     script_dir = sabnzbd.cfg.script_dir.get_path()
     if script_dir and script:
-        if script.lower() not in ("none", "default"):
+        if script.lower() not in ("none", "default") and is_valid_script(script):
             script_path = os.path.join(script_dir, script)
             if not os.path.exists(script_path):
                 script_path = None
