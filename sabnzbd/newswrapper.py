@@ -318,35 +318,26 @@ class NNTP:
         # Store fileno of the socket
         self.fileno: int = self.sock.fileno()
 
-        try:
-            # Open the connection in a separate thread due to avoid blocking
-            # For server-testing we do want blocking
-            if not self.nw.blocking:
-                Thread(target=self.connect).start()
-            else:
-                # if blocking (server test) only wait for 15 seconds during connect until timeout
-                self.sock.settimeout(15)
-                self.sock.connect((self.host, self.nw.server.port))
-                if self.nw.server.ssl:
-                    # Log SSL/TLS info
-                    logging.info(
-                        "%s@%s: Connected using %s (%s)",
-                        self.nw.thrdnum,
-                        self.nw.server.host,
-                        self.sock.version(),
-                        self.sock.cipher()[0],
-                    )
-                    self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
-        except OSError as e:
-            self.error(e)
+        # Open the connection in a separate thread due to avoid blocking
+        # For server-testing we do want blocking
+        if not self.nw.blocking:
+            Thread(target=self.connect).start()
+        else:
+            self.connect()
 
     def connect(self):
-        """A-sync connection start"""
+        """Start of connection, can be performed a-sync"""
         try:
+            # Wait only 15 seconds during server test
+            if self.nw.blocking:
+                self.sock.settimeout(15)
+
+            # Connect
             self.sock.connect((self.host, self.nw.server.port))
-            self.sock.setblocking(False)
+            self.sock.setblocking(self.nw.blocking)
+
+            # Log SSL/TLS info
             if self.nw.server.ssl:
-                # Log SSL/TLS info
                 logging.info(
                     "%s@%s: Connected using %s (%s)",
                     self.nw.thrdnum,
@@ -356,8 +347,10 @@ class NNTP:
                 )
                 self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
 
-            # Now it's safe to add the socket to the list of active sockets.
-            sabnzbd.Downloader.add_socket(self.fileno, self.nw)
+            # Now it's safe to add the socket to the list of active sockets
+            # Skip this step during server test
+            if not self.nw.blocking:
+                sabnzbd.Downloader.add_socket(self.fileno, self.nw)
         except OSError as e:
             self.error(e)
 

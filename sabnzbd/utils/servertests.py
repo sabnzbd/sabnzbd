@@ -108,7 +108,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
     except socket.error as e:
         # Trying SSL on non-SSL port?
-        if "unknown protocol" in str(e).lower():
+        if "unknown protocol" in str(e).lower() or "wrong version number" in str(e).lower():
             return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
 
         return False, str(e)
