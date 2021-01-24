@@ -693,16 +693,31 @@ class TestQueueApi(ApiTestFunctions):
                 # All other jobs should remain unchanged
                 assert changed[row] == original[row]
 
-    @pytest.mark.parametrize("script_filename, create_scriptfile, should_work",
+    @pytest.mark.parametrize(
+        "script_filename, create_scriptfile, should_work",
         [
             ("helloworld.py", True, True),
             ("helloworld2.py", False, False),
             ("my_scripted_script_.py", True, True),
-            ("유닉스.sh", True, True),
-            ("لغة برمجة نصية", False, False),
+            ("유닉스.py", True, True),
+            pytest.param(
+                "유닉스.sh", True, True, marks=pytest.mark.skipif(sys.platform.startswith("win"), reason="Not for Windows")
+            ),
+            pytest.param(
+                "لغة برمجة نصية",
+                False,
+                False,
+                marks=pytest.mark.skipif(sys.platform.startswith("win"), reason="Not for Windows"),
+            ),
+            pytest.param(
+                ".dotfilehiddenfile.sh",
+                True,
+                False,
+                marks=pytest.mark.skipif(sys.platform.startswith("win"), reason="Not for Windows"),
+            ),
             (None, True, False),
             ("", True, False),
-        ]
+        ],
     )
     def test_api_queue_change_job_script(self, script_filename, create_scriptfile, should_work):
         self._create_random_queue(minimum_size=4)
@@ -715,7 +730,8 @@ class TestQueueApi(ApiTestFunctions):
         nzo_id = choice(original)["nzo_id"]
         json = self._get_api_json("change_script", extra_args={"value": nzo_id, "value2": script_filename})
 
-        assert ("error" not in json.keys()) is (should_work is create_scriptfile)
+        if should_work:
+            assert "error" not in json.keys()
         assert json["status"] is should_work
 
         changed = self._record_slots(keys=("nzo_id", "script"))
