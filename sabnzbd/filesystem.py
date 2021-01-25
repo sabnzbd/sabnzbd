@@ -33,6 +33,7 @@ from typing import Union, List, Tuple, Any, Dict, Optional
 
 try:
     import win32api
+    import win32file
 except ImportError:
     pass
 
@@ -41,6 +42,12 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX
 from sabnzbd.encoding import correct_unknown_encoding
 from sabnzbd.utils import rarfile
+
+# For Windows: determine executable extensions
+if os.name == "nt":
+    PATHEXT = os.environ.get("PATHEXT", "").lower().split(";")
+else:
+    PATHEXT = []
 
 
 def get_ext(filename: str) -> str:
@@ -472,12 +479,43 @@ def fix_unix_encoding(folder: str):
                         logging.info("Cannot correct name of %s", os.path.join(root, name))
 
 
+def is_valid_script(basename: str) -> bool:
+    """ Determine if 'basename' is a valid script """
+    return basename in list_scripts(default=False, none=False)
+
+
+def list_scripts(default: bool = False, none: bool = True) -> List[str]:
+    """ Return a list of script names, optionally with 'Default' added """
+    lst = []
+    path = sabnzbd.cfg.script_dir.get_path()
+    if path and os.access(path, os.R_OK):
+        for script in globber_full(path):
+            if os.path.isfile(script):
+                if (
+                    (
+                        sabnzbd.WIN32
+                        and os.path.splitext(script)[1].lower() in PATHEXT
+                        and not win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN
+                    )
+                    or script.endswith(".py")
+                    or (not sabnzbd.WIN32 and userxbit(script) and not os.path.basename(script).startswith("."))
+                ):
+                    lst.append(os.path.basename(script))
+            # Make sure capitalization is ignored to avoid strange results
+            lst = sorted(lst, key=str.casefold)
+        if none:
+            lst.insert(0, "None")
+        if default:
+            lst.insert(0, "Default")
+    return lst
+
+
 def make_script_path(script: str) -> Optional[str]:
     """ Return full script path, if any valid script exists, else None """
     script_path = None
     script_dir = sabnzbd.cfg.script_dir.get_path()
     if script_dir and script:
-        if script.lower() not in ("none", "default"):
+        if script.lower() not in ("none", "default") and is_valid_script(script):
             script_path = os.path.join(script_dir, script)
             if not os.path.exists(script_path):
                 script_path = None

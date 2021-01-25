@@ -888,8 +888,8 @@ def try_rar_check(nzo: NzbObject, rars):
 def rar_renamer(nzo: NzbObject, workdir):
     """ Deobfuscate rar file names: Use header and content information to give RAR-files decent names """
     nzo.status = Status.VERIFYING
-    nzo.set_unpack_info("Repair", T("Trying RAR-based verification"))
-    nzo.set_action_line(T("Trying RAR-based verification"), "...")
+    nzo.set_unpack_info("Repair", T("Trying RAR renamer"))
+    nzo.set_action_line(T("Trying RAR renamer"), "...")
 
     renamed_files = 0
 

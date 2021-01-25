@@ -1853,7 +1853,7 @@ def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
             verifynum += 1
             nzo.set_action_line(T("Verifying repair"), "%02d/%02d" % (verifynum, verifytotal))
 
-        elif line.startswith("Failed to repair"):
+        elif line.startswith("Failed to repair") and not readd:
             # Unknown repair problem
             msg = T("Repairing failed, %s") % line
             nzo.fail_msg = msg
@@ -2365,17 +2365,6 @@ def pre_queue(nzo: NzbObject, pp, cat):
             logging.info("Pre-Q accepts %s", nzo.final_name)
 
     return values
-
-
-def list2cmdline(lst):
-    """ convert list to a cmd.exe-compatible command string """
-    nlst = []
-    for arg in lst:
-        if not arg:
-            nlst.append('""')
-        else:
-            nlst.append('"%s"' % arg)
-    return " ".join(nlst)
 
 
 def is_sevenfile(path):

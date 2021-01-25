@@ -108,7 +108,7 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
 
     except socket.error as e:
         # Trying SSL on non-SSL port?
-        if "unknown protocol" in str(e).lower():
+        if "unknown protocol" in str(e).lower() or "wrong version number" in str(e).lower():
             return False, T("Unknown SSL protocol: Try disabling SSL or connecting on a different port.")
 
         return False, str(e)
@@ -132,20 +132,17 @@ def test_nntp_server(host, port, server=None, username=None, password=None, ssl=
             # Some internal error, not always safe to close connection
             return False, str(sys.exc_info()[1])
 
-    # Close the connection
-    nw.terminate(quit=True)
-
     if nw.status_code == 480:
-        return False, T("Server requires username and password.")
-
+        return_status = (False, T("Server requires username and password."))
     elif nw.status_code == 100 or str(nw.status_code).startswith(("2", "4")):
-        return True, T("Connection Successful!")
-
+        return_status = (True, T("Connection Successful!"))
     elif nw.status_code == 502 or clues_login(nntp_to_msg(nw.data)):
-        return False, T("Authentication failed, check username/password.")
-
+        return_status = (False, T("Authentication failed, check username/password."))
     elif clues_too_many(nntp_to_msg(nw.data)):
-        return False, T("Too many connections, please pause downloading or try again later")
-
+        return_status = (False, T("Too many connections, please pause downloading or try again later"))
     else:
-        return False, T("Could not determine connection result (%s)") % nntp_to_msg(nw.data)
+        return_status = (False, T("Could not determine connection result (%s)") % nntp_to_msg(nw.data))
+
+    # Close the connection and return result
+    nw.hard_reset(send_quit=True)
+    return return_status

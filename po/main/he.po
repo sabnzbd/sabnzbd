@@ -304,7 +304,7 @@ msgstr "מילות מפתח"
 #. Warning message
 #: sabnzbd/bpsmeter.py
 msgid "Quota spent, pausing downloading"
-msgstr "מיכסה נוצלה, משהה הורדה"
+msgstr "מכסה נוצלה, משהה הורדה"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
@@ -313,6 +313,10 @@ msgstr "אינה כתובת דוא״ל תקפה %s"
 #: sabnzbd/cfg.py, sabnzbd/interface.py
 msgid "Server address required"
 msgstr "כתובת שרת דרושה"
+
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/config.py
@@ -482,6 +486,16 @@ msgstr "הורדה חשודה במורידן"
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "מכבה"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr "השרת %s יפוג עוד %s יום"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr "השרת %s השתמש במכסה המצויינת"
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -1614,6 +1628,10 @@ msgstr "קבצי RAR וודאו בהצלחה"
 msgid "RAR files failed to verify"
 msgstr "נכשלו בוידוא RAR קבצי"
 
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
+msgstr "מנסה משנה שם של RAR"
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid "No matching earlier rar file for %s"
@@ -1936,12 +1954,12 @@ msgstr "המשך עבודות עם עדיפות גבוהה"
 #. Config->Scheduler
 #: sabnzbd/skintext.py
 msgid "Enable quota management"
-msgstr "אפשר ניהול מיכסה"
+msgstr "אפשר ניהול מכסה"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
 msgid "Disable quota management"
-msgstr "השבת ניהול מיכסה"
+msgstr "השבת ניהול מכסה"
 
 #. Config->Scheduler
 #: sabnzbd/skintext.py
@@ -2525,7 +2543,7 @@ msgstr "מאמרים חסרים"
 #. Remaining quota (displayed in Queue)
 #: sabnzbd/skintext.py
 msgid "Quota left"
-msgstr "מיכסה שנותרה"
+msgstr "מכסה שנותרה"
 
 #. Manual reset of quota
 #: sabnzbd/skintext.py
@@ -2534,7 +2552,7 @@ msgstr "ידני"
 
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
-msgstr "אפס מיכסה כעת"
+msgstr "אפס מכסה כעת"
 
 #. Confirmation popup
 #: sabnzbd/skintext.py
@@ -3684,7 +3702,7 @@ msgstr "מתן שמות"
 
 #: sabnzbd/skintext.py
 msgid "Quota"
-msgstr "מיכסה"
+msgstr "מכסה"
 
 #: sabnzbd/skintext.py
 msgid "Indexing"
@@ -3704,21 +3722,21 @@ msgid ""
 "On which day of the month or week (1=Monday) does your ISP reset the quota? "
 "(Optionally with hh:mm)"
 msgstr ""
-"(באיזה יום של החודש או השבוע (1=יום שני) ספק האינטרנט שלך מאפס את המיכסה? "
-"(לא חובה עם שש:דד"
+"(באיזה יום של החודש או השבוע (1=יום שני) ספק האינטרנט שלך מאפס את המכסה? (לא"
+" חובה עם שש:דד"
 
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"
-msgstr "?האם ההורדה תמשיך לאחר שהמיכסה אופסה"
+msgstr "?האם ההורדה תמשיך לאחר שהמכסה תתאפס"
 
 #. Does the quota get reset every day, week or month?
 #: sabnzbd/skintext.py
 msgid "Quota period"
-msgstr "תקופת מיכסה"
+msgstr "תקופת מכסה"
 
 #: sabnzbd/skintext.py
 msgid "Does the quota get reset each day, week or month?"
-msgstr "?האם המיכסה מתאפסת כל יום, שבוע או חודש"
+msgstr "?האם המכסה מתאפסת כל יום, שבוע או חודש"
 
 #: sabnzbd/skintext.py
 msgid "Check before download"
@@ -3859,6 +3877,23 @@ msgstr "סיסמה"
 #: sabnzbd/skintext.py
 msgid "Timeout"
 msgstr "פסק זמן"
+
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr "תאריך תפוגת חשבון"
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr "הזהר 5 ימים טרם תאריך תפוגת החשבון."
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
+"מכסה עבור חשבון זה, נספרת מהזמן שהיא הוגדרה. בבתים, באופן רשותי עם K,M,G "
+"עוקבים.<br />הזהר כאשר המכסה מגיעה אל 0, היא נבדקת כל כמה דקות."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py

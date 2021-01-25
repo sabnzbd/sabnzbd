@@ -963,6 +963,17 @@ def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
         return ubtou(lines[0])
 
 
+def list2cmdline(lst: List[str]) -> str:
+    """ convert list to a cmd.exe-compatible command string """
+    nlst = []
+    for arg in lst:
+        if not arg:
+            nlst.append('""')
+        else:
+            nlst.append('"%s"' % arg)
+    return " ".join(nlst)
+
+
 def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
     """Builds and then runs command with nessecary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
@@ -1000,7 +1011,7 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
         if command[0].endswith(".py"):
             command.insert(0, "python.exe")
         if flatten_command:
-            command = sabnzbd.newsunpack.list2cmdline(command)
+            command = list2cmdline(command)
         # On some Windows platforms we need to supress a quick pop-up of the command window
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
