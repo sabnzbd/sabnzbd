@@ -297,6 +297,10 @@ msgstr ""
 msgid "Server address required"
 msgstr ""
 
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"

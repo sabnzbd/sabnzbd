@@ -314,6 +314,10 @@ msgstr "%s não é um endereço de e-mail válido"
 msgid "Server address required"
 msgstr "Endereço do servidor necessário"
 
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
