@@ -77,6 +77,7 @@ from sabnzbd.filesystem import (
     get_filepath,
     make_script_path,
     globber,
+    is_valid_script,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
@@ -623,6 +624,8 @@ class NzbObject(TryList):
         self.unpack: bool = u  # True if we want to unpack this set
         self.delete: bool = d  # True if we want to delete this set
         self.script: str = script  # External script for this set
+        if not is_valid_script(self.script):
+            self.script = None
         self.cat = cat  # User-set category
 
         # Information fields
@@ -818,7 +821,7 @@ class NzbObject(TryList):
                 priority = int(priority)
             except:
                 priority = DEFAULT_PRIORITY
-            if script_pp:
+            if script_pp and is_valid_script(script_pp):
                 script = script_pp
             if group:
                 self.groups = [str(group)]

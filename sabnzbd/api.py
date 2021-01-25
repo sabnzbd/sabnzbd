@@ -31,12 +31,6 @@ import locale
 from threading import Thread
 from typing import List, Tuple
 
-try:
-    import win32api
-    import win32file
-except ImportError:
-    pass
-
 import sabnzbd
 from sabnzbd.constants import (
     VALID_ARCHIVES,
@@ -64,7 +58,7 @@ from sabnzbd.misc import (
     calc_age,
     opts_to_pp,
 )
-from sabnzbd.filesystem import diskspace, get_ext, globber_full, clip_path, remove_all, userxbit
+from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
 from sabnzbd.encoding import xml_name
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
@@ -88,12 +82,6 @@ _MSG_OUTPUT_FORMAT = "Format not supported"
 _MSG_NO_SUCH_CONFIG = "Config item does not exist"
 _MSG_CONFIG_LOCKED = "Configuration locked"
 _MSG_BAD_SERVER_PARMS = "Incorrect server settings"
-
-# For Windows: determine executable extensions
-if os.name == "nt":
-    PATHEXT = os.environ.get("PATHEXT", "").lower().split(";")
-else:
-    PATHEXT = []
 
 
 def api_handler(kwargs):
@@ -1865,32 +1853,6 @@ def calc_timeleft(bytesleft, bps):
             return "%s:%s:%s" % (hours, minutes, seconds)
     except:
         return "0:00:00"
-
-
-def list_scripts(default: bool = False, none: bool = True) -> List[str]:
-    """ Return a list of script names, optionally with 'Default' added """
-    lst = []
-    path = cfg.script_dir.get_path()
-    if path and os.access(path, os.R_OK):
-        for script in globber_full(path):
-            if os.path.isfile(script):
-                if (
-                    (
-                        sabnzbd.WIN32
-                        and os.path.splitext(script)[1].lower() in PATHEXT
-                        and not win32api.GetFileAttributes(script) & win32file.FILE_ATTRIBUTE_HIDDEN
-                    )
-                    or script.endswith(".py")
-                    or (not sabnzbd.WIN32 and userxbit(script) and not os.path.basename(script).startswith("."))
-                ):
-                    lst.append(os.path.basename(script))
-            # Make sure capitalization is ignored to avoid strange results
-            lst = sorted(lst, key=str.casefold)
-        if none:
-            lst.insert(0, "None")
-        if default:
-            lst.insert(0, "Default")
-    return lst
 
 
 def list_cats(default=True):

@@ -645,7 +645,7 @@ def add_nzbfile(
     """
     if pp == "-1":
         pp = None
-    if script and script.lower() == "default":
+    if script and (script.lower() == "default" or not filesystem.is_valid_script(script)):
         script = None
     if cat and cat.lower() == "default":
         cat = None
@@ -792,7 +792,7 @@ def change_queue_complete_action(action, new=True):
     """
     _action = None
     _argument = None
-    if action.startswith("script_"):
+    if action.startswith("script_") and filesystem.is_valid_script(action.replace("script_", "", 1)):
         # all scripts are labeled script_xxx
         _action = run_script
         _argument = action.replace("script_", "", 1)

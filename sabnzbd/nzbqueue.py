@@ -29,7 +29,7 @@ from typing import List, Dict, Union, Tuple, Optional
 import sabnzbd
 from sabnzbd.nzbstuff import NzbObject, Article
 from sabnzbd.misc import exit_sab, cat_to_opts, int_conv, caller_name, cmp, safe_lower
-from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file
+from sabnzbd.filesystem import get_admin_path, remove_all, globber_full, remove_file, is_valid_script
 from sabnzbd.nzbparser import process_single_nzb
 from sabnzbd.panic import panic_queue
 from sabnzbd.decorators import NzbQueueLocker
@@ -276,11 +276,12 @@ class NzbQueue:
 
     def change_script(self, nzo_ids: str, script: str) -> int:
         result = 0
-        for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
-            if nzo_id in self.__nzo_table:
-                self.__nzo_table[nzo_id].script = script
-                logging.info("Set script=%s for job %s", script, self.__nzo_table[nzo_id].final_name)
-                result += 1
+        if is_valid_script(script):
+            for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
+                if nzo_id in self.__nzo_table:
+                    self.__nzo_table[nzo_id].script = script
+                    logging.info("Set script=%s for job %s", script, self.__nzo_table[nzo_id].final_name)
+                    result += 1
         return result
 
     def change_cat(self, nzo_ids: str, cat: str, explicit_priority=None):

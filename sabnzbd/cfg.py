@@ -77,10 +77,19 @@ def validate_server(value):
         return None, value
 
 
+def validate_script(value):
+    """ Check if value is a valid script """
+    if value and sabnzbd.filesystem.is_valid_script(value):
+        return None, value
+    elif (value and value == "None") or not value:
+        return None, "None"
+    return T("%s is not a valid script") % value, None
+
+
 ##############################################################################
 # Special settings
 ##############################################################################
-pre_script = OptionStr("misc", "pre_script", "None")
+pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)
 bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 100, 0, 100)
@@ -425,7 +434,7 @@ pushbullet_prio_other = OptionBool("pushbullet", "pushbullet_prio_other", True)
 # [nscript]
 nscript_enable = OptionBool("nscript", "nscript_enable")
 nscript_cats = OptionList("nscript", "nscript_cats", ["*"])
-nscript_script = OptionStr("nscript", "nscript_script")
+nscript_script = OptionStr("nscript", "nscript_script", validation=validate_script)
 nscript_parameters = OptionStr("nscript", "nscript_parameters")
 nscript_prio_startup = OptionBool("nscript", "nscript_prio_startup", True)
 nscript_prio_download = OptionBool("nscript", "nscript_prio_download", False)
