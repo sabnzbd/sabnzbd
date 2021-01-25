@@ -19,7 +19,6 @@
 tests.test_functional_adding_nzbs - Tests for settings interaction when adding NZBs
 """
 # TODO:
-# input from nzb metadata
 # interaction with duplicate handling setting, size limit option
 
 import os
@@ -87,6 +86,15 @@ PRIO_OPTS_PREQ_CAT = [
     FORCE_PRIORITY,
     None,
 ]
+PRIO_OPTS_META_CAT = [
+    DEFAULT_PRIORITY,
+    PAUSED_PRIORITY,
+    LOW_PRIORITY,
+    NORMAL_PRIORITY,
+    HIGH_PRIORITY,
+    FORCE_PRIORITY,
+    None,
+]
 # Valid priority values for the Default category (as determined by their availability from the interface)
 VALID_DEFAULT_PRIORITIES = [PAUSED_PRIORITY, LOW_PRIORITY, NORMAL_PRIORITY, HIGH_PRIORITY, FORCE_PRIORITY]
 
@@ -107,40 +115,44 @@ ALL_PRIOS = {
     REPAIR_PRIORITY: "Repair",
 }
 
+# Re-usable randomized category/script/nzb name
+CAT_RANDOM = os.urandom(4).hex()
+SCRIPT_RANDOM = os.urandom(4).hex()
+NZB_RANDOM = os.urandom(4).hex()
+# Full path to script directory resp. nzb files, once in place/generated
+SCRIPT_DIR = None
+NZB_FILE = None
+META_NZB_FILE = None
+# Script directory setup marker
+PRE_QUEUE_SETUP_DONE = False
+
 
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestAddingNZBs:
-    # Re-usable randomized category/script/nzb name
-    CAT_RANDOM = os.urandom(4).hex()
-    SCRIPT_RANDOM = os.urandom(4).hex()
-    NZB_RANDOM = os.urandom(4).hex()
-    # Full path to script dir resp. nzb file, once in place/generated
-    SCRIPT_DIR = None
-    NZB_FILE = None
-    PRE_QUEUE_SETUP_DONE = False
-
     def _setup_script_dir(self):
-        self.SCRIPT_DIR = os.path.join(SAB_CACHE_DIR, "scripts")
+        global SCRIPT_DIR
+        SCRIPT_DIR = os.path.join(SAB_CACHE_DIR, "scripts")
         try:
-            os.makedirs(self.SCRIPT_DIR, exist_ok=True)
+            os.makedirs(SCRIPT_DIR, exist_ok=True)
         except Exception:
-            pytest.fail("Cannot create script_dir %s" % self.SCRIPT_DIR)
+            pytest.fail("Cannot create script_dir %s" % SCRIPT_DIR)
 
         json = get_api_result(
             mode="set_config",
             extra_arguments={
                 "section": "misc",
                 "keyword": "script_dir",
-                "value": self.SCRIPT_DIR,
+                "value": SCRIPT_DIR,
             },
         )
-        assert self.SCRIPT_DIR in json["config"]["misc"]["script_dir"]
+        assert SCRIPT_DIR in json["config"]["misc"]["script_dir"]
 
     def _customize_pre_queue_script(self, priority, category):
         """ Add a script that accepts the job and sets priority & category """
-        script_name = "SCRIPT%s.py" % self.SCRIPT_RANDOM
+        global PRE_QUEUE_SETUP_DONE
+        script_name = "SCRIPT%s.py" % SCRIPT_RANDOM
         try:
-            script_path = os.path.join(self.SCRIPT_DIR, script_name)
+            script_path = os.path.join(SCRIPT_DIR, script_name)
             with open(script_path, "w") as f:
                 # line 1 = accept; 4 = category; 6 = priority
                 f.write(
@@ -154,9 +166,9 @@ class TestAddingNZBs:
             if not sys.platform.startswith("win"):
                 os.chmod(script_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
         except Exception:
-            pytest.fail("Cannot add script %s to script_dir %s" % (script_name, self.SCRIPT_DIR))
+            pytest.fail("Cannot add script %s to script_dir %s" % (script_name, SCRIPT_DIR))
 
-        if not self.PRE_QUEUE_SETUP_DONE:
+        if not PRE_QUEUE_SETUP_DONE:
             # Set as pre-queue script
             json = get_api_result(
                 mode="set_config",
@@ -167,10 +179,10 @@ class TestAddingNZBs:
                 },
             )
             assert script_name in json["config"]["misc"]["pre_script"]
-            self.PRE_QUEUE_SETUP_DONE = True
+            PRE_QUEUE_SETUP_DONE = True
 
     def _configure_cat(self, priority, tag):
-        category_name = "cat" + tag + self.CAT_RANDOM
+        category_name = "cat" + tag + CAT_RANDOM
         category_config = {
             "section": "categories",
             "name": category_name,
@@ -201,20 +213,42 @@ class TestAddingNZBs:
         assert ("*", priority) == (json["config"]["categories"][0]["name"], json["config"]["categories"][0]["priority"])
 
     def _create_random_nzb(self):
-        # Create some simple, unique nzb
-        job_dir = os.path.join(SAB_CACHE_DIR, "NZB" + os.urandom(16).hex())
-        try:
-            os.mkdir(job_dir)
-            job_file = "%s.%s" % (
-                "".join(choice(ascii_lowercase + digits) for i in range(randint(6, 18))),
-                "".join(sample(ascii_lowercase, 3)),
-            )
-            with open(os.path.join(job_dir, job_file), "wb") as f:
-                f.write(os.urandom(randint(128, 1024)))
-        except Exception:
-            pytest.fail("Failed to create random nzb")
+        global NZB_FILE
+        if not NZB_FILE:
+            # Create some simple, unique nzb
+            job_dir = os.path.join(SAB_CACHE_DIR, "NZB" + os.urandom(16).hex())
+            try:
+                os.mkdir(job_dir)
+                job_file = "%s.%s" % (
+                    "".join(choice(ascii_lowercase + digits) for i in range(randint(6, 18))),
+                    "".join(sample(ascii_lowercase, 3)),
+                )
+                with open(os.path.join(job_dir, job_file), "wb") as f:
+                    f.write(os.urandom(randint(128, 1024)))
+            except Exception:
+                pytest.fail("Failed to create random nzb")
 
-        return create_nzb(job_dir)
+            NZB_FILE = create_nzb(job_dir)
+
+    def _create_meta_nzb(self, cat_meta):
+        """ Create a copy of NZB_FILE with added metadata setting a category """
+        global META_NZB_FILE
+        if not META_NZB_FILE:
+            basedir, basename = os.path.split(NZB_FILE)
+            META_NZB_FILE = os.path.join(basedir, "meta_" + basename)
+
+            with open(NZB_FILE, "rt") as nzb_in:
+                nzb_lines = nzb_in.readlines()
+                assert len(nzb_lines) >= 9
+
+            with open(META_NZB_FILE, "wt") as nzb_out:
+                for line in range(0, len(nzb_lines)):
+                    nzb_out.write(nzb_lines[line])
+                    if nzb_lines[line].startswith("<nzb xmlns="):
+                        # Insert header, metadata
+                        nzb_out.write("<head>\n")
+                        nzb_out.write('<meta type="category">' + cat_meta + "</meta>\n")
+                        nzb_out.write("</head>\n")
 
     def _expected_results(self, STAGES, return_state=None):
         """ Figure out what priority and state the job should end up with """
@@ -227,9 +261,12 @@ class TestAddingNZBs:
                 STAGES[1] = None
                 STAGES[3] = None
 
-            # If the category was set from pre-queue, it replaces any category priority set earlier
+            # If the category was set from pre-queue, it replaces any category set earlier
             if hit_stage == 4:
                 STAGES[2] = None
+                STAGES[5] = None
+            if hit_stage == 2:
+                STAGES[5] = None
 
             return STAGES
 
@@ -248,8 +285,8 @@ class TestAddingNZBs:
             # Work forward to find the priority prior to the hit_stage
             pre_state_prio = None
             pre_state_stage = None
-            # default cat -> implicit on add -> explicit on add -> implicit pre-q -> explicit pre-q
-            for stage in (0, 2, 1, 4, 3):
+            # default cat -> implicit meta -> implicit on add -> explicit on add -> implicit pre-q -> explicit pre-q
+            for stage in (0, 5, 2, 1, 4, 3):
                 if stage == hit_stage:
                     if hit_stage == 1 and STAGES[4] != None:
                         # An explicit state-setting priority still has to deal with the category from pre-queue
@@ -267,12 +304,13 @@ class TestAddingNZBs:
                 # The next-in-line prio is unsuitable; recurse with relevant stages zero'ed out
                 STAGES[hit_stage] = None
                 if pre_state_stage:
-                    STAGES[pre_state_stage] = None
-                    if pre_state_stage == 4:
-                        # The category from pre-queue replaces any earlier category setting. While this
-                        # is also done by the sanitize_stages(), it's needed again in case hit_stage 3
-                        # sets a job state, and the fallback comes from stage 4.
-                        STAGES[2] = None
+                    if pre_state_prio == DEFAULT_PRIORITY:
+                        handle_default_cat(pre_state_stage, STAGES, return_state)
+                    else:
+                        STAGES[pre_state_stage] = None
+                        # Sanitize again, with 'pre_state_stage' as the new hit_stage. This is needed again
+                        # in cases such as hit_stage 3 setting a job state, with a fallback from stage 4.
+                        sanitize_stages(pre_state_stage, STAGES)
                 return self._expected_results(STAGES, return_state)
 
         def handle_default_cat(hit_stage, STAGES, return_state):
@@ -285,8 +323,8 @@ class TestAddingNZBs:
             return self._expected_results(STAGES, return_state)
 
         # Work backwards through all stages:
-        # explicit pre-q -> implicit pre-q -> explicit on add -> implicit on add
-        for stage in (3, 4, 1, 2):
+        # explicit pre-q -> implicit pre-q -> explicit on add -> implicit on add -> implicit meta
+        for stage in (3, 4, 1, 2, 5):
             if STAGES[stage] != None:
                 if stage == 4 and STAGES[1] != None:
                     # Explicit priority on add takes precedence over implicit-from-pre-queue
@@ -298,7 +336,7 @@ class TestAddingNZBs:
                 if STAGES[stage] == DEFAULT_PRIORITY:
                     return handle_default_cat(stage, STAGES, return_state)
 
-        # ...and finally the Default category (stage 0)
+        # # ...and finally the Default category (stage 0)
         if STAGES[0] not in (None, DEFAULT_PRIORITY):
             if STAGES[0] in REGULAR_PRIOS:
                 # Avoid falling back to priority Force after setting a job state
@@ -312,15 +350,18 @@ class TestAddingNZBs:
         # The default of defaults...
         return NORMAL_PRIORITY, return_state
 
-    def _test_runner(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat):
-        if not self.SCRIPT_DIR:
-            self._setup_script_dir()
-        if not self.NZB_FILE:
-            self.NZB_FILE = self._create_random_nzb()
+    def _test_runner(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat):
+        self._setup_script_dir()
+        self._create_random_nzb()
 
         # Set the priority for the Default category
         self._configure_default_category_priority(prio_def_cat)
 
+        # Setup categories
+        cat_meta = None
+        if prio_meta_cat != None:
+            cat_meta = self._configure_cat(prio_meta_cat, "meta")
+            self._create_meta_nzb(cat_meta)
         cat_add = None
         if prio_add_cat != None:
             cat_add = self._configure_cat(prio_add_cat, "add")
@@ -336,7 +377,7 @@ class TestAddingNZBs:
         assert get_api_result(mode="pause")["status"] is True
 
         # Queue the job, store the nzo_id
-        extra = {"name": self.NZB_FILE}
+        extra = {"name": META_NZB_FILE if cat_meta else NZB_FILE}
         if cat_add:
             extra["cat"] = cat_add
         if prio_add != None:
@@ -348,7 +389,7 @@ class TestAddingNZBs:
 
         # Determine the expected results
         expected_prio, expected_state = self._expected_results(
-            [prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat]
+            [prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat]
         )
 
         # Verify the results; queue output uses a string representation for the priority
@@ -368,66 +409,75 @@ class TestAddingNZBs:
         # Unpause the queue
         assert get_api_result(mode="resume")["status"] is True
 
-    # Caution: a full run is good for 15k+ tests
+    # Caution: a full run is good for 90k+ tests
+    # @pytest.mark.parametrize("prio_meta_cat", PRIO_OPTS_META_CAT)
     # @pytest.mark.parametrize("prio_def_cat", VALID_DEFAULT_PRIORITIES)
     # @pytest.mark.parametrize("prio_add", PRIO_OPTS_ADD)
     # @pytest.mark.parametrize("prio_add_cat", PRIO_OPTS_ADD_CAT)
     # @pytest.mark.parametrize("prio_preq", PRIO_OPTS_PREQ)
     # @pytest.mark.parametrize("prio_preq_cat", PRIO_OPTS_PREQ_CAT)
 
+    @pytest.mark.parametrize("prio_meta_cat", sample(PRIO_OPTS_META_CAT, 2))
     @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
-    @pytest.mark.parametrize("prio_add", sample(PRIO_OPTS_ADD, 3))
-    @pytest.mark.parametrize("prio_add_cat", sample(PRIO_OPTS_ADD_CAT, 3))
-    @pytest.mark.parametrize("prio_preq", sample(PRIO_OPTS_PREQ, 3))
-    @pytest.mark.parametrize("prio_preq_cat", sample(PRIO_OPTS_PREQ_CAT, 3))
-    def test_adding_nzbs_random_sample(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat):
-        self._test_runner(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat)
+    @pytest.mark.parametrize("prio_add", sample(PRIO_OPTS_ADD, 2))
+    @pytest.mark.parametrize("prio_add_cat", sample(PRIO_OPTS_ADD_CAT, 2))
+    @pytest.mark.parametrize("prio_preq", sample(PRIO_OPTS_PREQ, 2))
+    @pytest.mark.parametrize("prio_preq_cat", sample(PRIO_OPTS_PREQ_CAT, 2))
+    def test_adding_nzbs_priority_sample(
+        self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat
+    ):
+        self._test_runner(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat)
 
     @pytest.mark.parametrize(
-        "prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat",
+        "prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat",
         [
             # Specific triggers for fixed bugs
-            (-1, -2, None, None, None),  # State-setting priorities always fell back to Normal
-            (-1, -3, None, None, None),
-            (1, None, -2, None, None),
-            (2, None, None, -2, None),
-            (2, None, None, -3, None),
-            (2, -2, None, -3, None),
-            (0, -3, None, None, None),
-            (0, 2, None, None, 1),  # Explicit priority on add was bested by implicit from pre-queue
-            (1, None, None, None, -1),  # Category-based values from pre-queue didn't work at all
+            (-1, -2, None, None, None, None),  # State-setting priorities always fell back to Normal
+            (-1, -3, None, None, None, None),
+            (1, None, -2, None, None, None),
+            (2, None, None, -2, None, None),
+            (2, None, None, -3, None, None),
+            (2, -2, None, -3, None, None),
+            (0, -3, None, None, None, None),
+            (0, 2, None, None, 1, None),  # Explicit priority on add was bested by implicit from pre-queue
+            (1, None, None, None, -1, None),  # Category-based values from pre-queue didn't work at all
             # Checks for test code regressions
-            (-2, -100, 2, None, None),
-            (-2, 0, 2, -100, None),
-            (1, 2, 0, -100, None),
-            (-2, None, -2, None, 2),
-            (-2, None, -1, None, 1),
-            (2, None, -1, None, -2),
-            (-2, -3, 1, None, None),
-            (2, 2, None, -2, None),
-            (2, 1, None, -2, None),
-            (1, -2, 0, None, None),
-            (0, -3, None, None, 1),
-            (0, -1, -1, -3, 2),
-            (0, None, None, None, None),
+            (-2, -100, 2, None, None, None),
+            (-2, 0, 2, -100, None, None),
+            (1, 2, 0, -100, None, None),
+            (-2, None, -2, None, 2, None),
+            (-2, None, -1, None, 1, None),
+            (2, None, -1, None, -2, None),
+            (-2, -3, 1, None, None, None),
+            (2, 2, None, -2, None, None),
+            (2, 1, None, -2, None, None),
+            (1, -2, 0, None, None, None),
+            (0, -3, None, None, 1, None),
+            (0, -1, -1, -3, 2, None),
+            (0, 2, None, -2, None, -1),
+            (1, -2, -100, None, None, -1),
+            (1, None, None, None, None, -1),
+            (-1, None, None, None, None, 1),
+            (0, None, None, None, None, None),
         ],
     )
-    def test_adding_nzbs_bugs_bunny(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat):
-        self._test_runner(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat)
+    def test_adding_nzbs_priority_triggers(
+        self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat
+    ):
+        self._test_runner(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat)
 
     def test_adding_nzbs_partial(self):
         """Test adding parts of an NZB file, cut off somewhere in the middle to simulate
         the effects of an interrupted download or bad hardware. Should fail, of course."""
-        if not self.NZB_FILE:
-            self.NZB_FILE = self._create_random_nzb()
+        self._create_random_nzb()
 
-        nzb_basedir, nzb_basename = os.path.split(self.NZB_FILE)
-        nzb_size = os.stat(self.NZB_FILE).st_size
+        nzb_basedir, nzb_basename = os.path.split(NZB_FILE)
+        nzb_size = os.stat(NZB_FILE).st_size
         part_size = round(randint(20, 80) / 100 * nzb_size)
         first_part = os.path.join(nzb_basedir, "part1_of_" + nzb_basename)
         second_part = os.path.join(nzb_basedir, "part2_of_" + nzb_basename)
 
-        with open(self.NZB_FILE, "rb") as nzb_in:
+        with open(NZB_FILE, "rb") as nzb_in:
             for nzb_part, chunk in (first_part, part_size), (second_part, -1):
                 with open(nzb_part, "wb") as nzb_out:
                     nzb_out.write(nzb_in.read(chunk))
@@ -457,10 +507,9 @@ class TestAddingNZBs:
     )
     def test_adding_nzbs_malformed(self, keep_first, keep_last, strip_first, strip_last, should_work):
         """ Test adding broken, empty, or otherwise malformed NZB file """
-        if not self.NZB_FILE:
-            self.NZB_FILE = self._create_random_nzb()
+        self._create_random_nzb()
 
-        with open(self.NZB_FILE, "rt") as nzb_in:
+        with open(NZB_FILE, "rt") as nzb_in:
             nzb_lines = nzb_in.readlines()
             assert len(nzb_lines) >= 9
 
