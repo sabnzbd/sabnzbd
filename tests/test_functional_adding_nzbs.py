@@ -491,18 +491,20 @@ class TestAddingNZBs:
     @pytest.mark.parametrize(
         "keep_first, keep_last, strip_first, strip_last, should_work",
         [
-            (6, 3, None, None, False),  # Remove all segments content
-            (6, None, None, None, False),
-            (5, 2, None, None, False),  # Remove all segments
-            (5, None, None, None, False),
-            (4, 2, None, None, False),  # Remove all groups
-            (3, 1, None, None, False),  # Remove all files
-            (None, None, 1, None, True),  # Strip '?xml' line (survivable)
-            (None, None, 2, None, True),  # Also strip 'doctype' line (survivable)
-            (None, None, 3, None, False),  # Also strip 'nzb xmlns' line
-            (None, None, None, 1, False),  # Forget the 'nzb' closing tag
-            (None, None, None, 2, False),  # Also forget the (last) 'file' closing tag
-            (None, None, None, 3, False),  # Also forget the (last) 'segment' closing tag
+            # Keep parts
+            (6, 3, 0, 0, False),  # Remove all segments content
+            (6, 0, 0, 0, False),
+            (5, 2, 0, 0, False),  # Remove all segments
+            (5, 0, 0, 0, False),
+            (4, 2, 0, 0, False),  # Remove all groups
+            (3, 1, 0, 0, False),  # Remove all files
+            # Strip parts
+            (0, 0, 1, 0, True),  # Strip '?xml' line (survivable)
+            (0, 0, 2, 0, True),  # Also strip 'doctype' line (survivable)
+            (0, 0, 3, 0, False),  # Also strip 'nzb xmlns' line
+            (0, 0, 0, 1, False),  # Forget the 'nzb' closing tag
+            (0, 0, 0, 2, False),  # Also forget the (last) 'file' closing tag
+            (0, 0, 0, 3, False),  # Also forget the (last) 'segment' closing tag
         ],
     )
     def test_adding_nzbs_malformed(self, keep_first, keep_last, strip_first, strip_last, should_work):
