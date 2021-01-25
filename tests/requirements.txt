@@ -9,5 +9,4 @@ flaky
 xmltodict
 tavern
 tavalidate
-xmltodict
 lxml>=4.5.0 # needed by tavalidate
