@@ -414,3 +414,80 @@ class TestAddingNZBs:
     )
     def test_adding_nzbs_bugs_bunny(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat):
         self._test_runner(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat)
+
+    def test_adding_nzbs_partial(self):
+        """Test adding parts of an NZB file, cut off somewhere in the middle to simulate
+        the effects of an interrupted download or bad hardware. Should fail, of course."""
+        if not self.NZB_FILE:
+            self.NZB_FILE = self._create_random_nzb()
+
+        nzb_basedir, nzb_basename = os.path.split(self.NZB_FILE)
+        nzb_size = os.stat(self.NZB_FILE).st_size
+        part_size = round(randint(20, 80) / 100 * nzb_size)
+        first_part = os.path.join(nzb_basedir, "part1_of_" + nzb_basename)
+        second_part = os.path.join(nzb_basedir, "part2_of_" + nzb_basename)
+
+        with open(self.NZB_FILE, "rb") as nzb_in:
+            for nzb_part, chunk in (first_part, part_size), (second_part, -1):
+                with open(nzb_part, "wb") as nzb_out:
+                    nzb_out.write(nzb_in.read(chunk))
+
+        for nzb_part in first_part, second_part:
+            json = get_api_result(mode="addlocalfile", extra_arguments={"name": nzb_part})
+            assert json["status"] is False
+            assert json["nzo_ids"] == []
+            os.remove(nzb_part)
+
+    @pytest.mark.parametrize(
+        "keep_first, keep_last, strip_first, strip_last, should_work",
+        [
+            (6, 3, None, None, False),  # Remove all segments content
+            (6, None, None, None, False),
+            (5, 2, None, None, False),  # Remove all segments
+            (5, None, None, None, False),
+            (4, 2, None, None, False),  # Remove all groups
+            (3, 1, None, None, False),  # Remove all files
+            (None, None, 1, None, True),  # Strip '?xml' line (survivable)
+            (None, None, 2, None, True),  # Also strip 'doctype' line (survivable)
+            (None, None, 3, None, False),  # Also strip 'nzb xmlns' line
+            (None, None, None, 1, False),  # Forget the 'nzb' closing tag
+            (None, None, None, 2, False),  # Also forget the (last) 'file' closing tag
+            (None, None, None, 3, False),  # Also forget the (last) 'segment' closing tag
+        ],
+    )
+    def test_adding_nzbs_malformed(self, keep_first, keep_last, strip_first, strip_last, should_work):
+        """ Test adding broken, empty, or otherwise malformed NZB file """
+        if not self.NZB_FILE:
+            self.NZB_FILE = self._create_random_nzb()
+
+        with open(self.NZB_FILE, "rt") as nzb_in:
+            nzb_lines = nzb_in.readlines()
+            assert len(nzb_lines) >= 9
+
+        broken_nzb_basename = "broken_" + os.urandom(4).hex() + ".nzb"
+        broken_nzb = os.path.join(SAB_CACHE_DIR, broken_nzb_basename)
+        with open(broken_nzb, "wt") as nzb_out:
+            # Keep only first x, last y lines
+            if keep_first:
+                nzb_out.write("".join(nzb_lines[:keep_first]))
+            elif strip_first:
+                nzb_out.write("".join(nzb_lines[strip_first:]))
+            if keep_last:
+                nzb_out.write("".join(nzb_lines[(-1 * keep_last) :]))
+            elif strip_last:
+                nzb_out.write("".join(nzb_lines[: (-1 * strip_last)]))
+
+        json = get_api_result(mode="warnings", extra_arguments={"name": "clear"})
+        json = get_api_result(mode="addlocalfile", extra_arguments={"name": broken_nzb})
+        assert json["status"] is should_work
+        assert len(json["nzo_ids"]) == int(should_work)
+
+        json = get_api_result(mode="warnings")
+        assert (len(json["warnings"]) == 0) is should_work
+        if not should_work:
+            for warning in range(0, len(json["warnings"])):
+                assert (("Empty NZB file" or "Failed to import") and broken_nzb_basename) in json["warnings"][warning][
+                    "text"
+                ]
+
+        os.remove(broken_nzb)
