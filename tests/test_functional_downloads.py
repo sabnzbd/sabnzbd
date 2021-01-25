@@ -112,7 +112,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
 
         # Verify if the garbage collection works (see #1628)
         # We need to give it a second to calm down and clear the variables
-        time.sleep(1)
+        time.sleep(2)
         gc_results = get_api_result("gc_stats")["value"]
         if gc_results:
             pytest.fail(f"Objects were left in memory after the job finished! {gc_results}")
@@ -129,7 +129,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
     def test_download_passworded(self):
         self.download_nzb("test_passworded{{secret}}", "testfile.bin")
 
-    @pytest.mark.xfail(not sys.platform.startswith("win"), reason="Probably #1633")
+    @pytest.mark.xfail(reason="Probably #1633")
     def test_download_unicode_made_on_windows(self):
         self.download_nzb("test_win_unicode", "frènch_german_demö.bin")
 

@@ -312,6 +312,10 @@ msgstr "%s är inte en godkänd e-mail adress"
 msgid "Server address required"
 msgstr "Kräver serveradress"
 
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
@@ -479,6 +483,16 @@ msgstr "Misstänker fel i nedladdare"
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "Påbörjar nedstängning av SABnzbd.."
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr ""
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -1607,6 +1621,10 @@ msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "RAR files failed to verify"
+msgstr ""
+
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
 msgstr ""
 
 #. Warning message
@@ -3843,6 +3861,21 @@ msgstr "Lösenord"
 #: sabnzbd/skintext.py
 msgid "Timeout"
 msgstr "Tidsgräns"
+
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py

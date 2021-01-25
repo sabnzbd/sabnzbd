@@ -228,11 +228,13 @@ class NewsWrapper:
             try:
                 if send_quit:
                     self.nntp.sock.sendall(b"QUIT\r\n")
-                    time.sleep(0.1)
+                    time.sleep(0.01)
                 self.nntp.sock.close()
             except:
                 pass
+            self.nntp = None
 
+        # Reset all variables (including the NNTP connection)
         self.__init__(self.server, self.thrdnum)
 
         # Wait before re-using this newswrapper
@@ -242,18 +244,6 @@ class NewsWrapper:
         else:
             # Reset for internal reasons, just wait 5 sec
             self.timeout = time.time() + 5
-
-    def terminate(self, quit: bool = False):
-        """ Close connection and remove NNTP object """
-        if self.nntp:
-            try:
-                if quit:
-                    self.nntp.sock.sendall(b"QUIT\r\n")
-                    time.sleep(0.1)
-                self.nntp.sock.close()
-            except:
-                pass
-        del self.nntp
 
     def __repr__(self):
         return "<NewsWrapper: server=%s:%s, thread=%s, connected=%s>" % (
@@ -318,35 +308,26 @@ class NNTP:
         # Store fileno of the socket
         self.fileno: int = self.sock.fileno()
 
-        try:
-            # Open the connection in a separate thread due to avoid blocking
-            # For server-testing we do want blocking
-            if not self.nw.blocking:
-                Thread(target=self.connect).start()
-            else:
-                # if blocking (server test) only wait for 15 seconds during connect until timeout
-                self.sock.settimeout(15)
-                self.sock.connect((self.host, self.nw.server.port))
-                if self.nw.server.ssl:
-                    # Log SSL/TLS info
-                    logging.info(
-                        "%s@%s: Connected using %s (%s)",
-                        self.nw.thrdnum,
-                        self.nw.server.host,
-                        self.sock.version(),
-                        self.sock.cipher()[0],
-                    )
-                    self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
-        except OSError as e:
-            self.error(e)
+        # Open the connection in a separate thread due to avoid blocking
+        # For server-testing we do want blocking
+        if not self.nw.blocking:
+            Thread(target=self.connect).start()
+        else:
+            self.connect()
 
     def connect(self):
-        """A-sync connection start"""
+        """Start of connection, can be performed a-sync"""
         try:
+            # Wait only 15 seconds during server test
+            if self.nw.blocking:
+                self.sock.settimeout(15)
+
+            # Connect
             self.sock.connect((self.host, self.nw.server.port))
-            self.sock.setblocking(False)
+            self.sock.setblocking(self.nw.blocking)
+
+            # Log SSL/TLS info
             if self.nw.server.ssl:
-                # Log SSL/TLS info
                 logging.info(
                     "%s@%s: Connected using %s (%s)",
                     self.nw.thrdnum,
@@ -356,8 +337,10 @@ class NNTP:
                 )
                 self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
 
-            # Now it's safe to add the socket to the list of active sockets.
-            sabnzbd.Downloader.add_socket(self.fileno, self.nw)
+            # Now it's safe to add the socket to the list of active sockets
+            # Skip this step during server test
+            if not self.nw.blocking:
+                sabnzbd.Downloader.add_socket(self.fileno, self.nw)
         except OSError as e:
             self.error(e)
 

@@ -326,6 +326,10 @@ msgstr "%s nu este o adresă email validă"
 msgid "Server address required"
 msgstr "Adresă server necesară"
 
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
@@ -498,6 +502,16 @@ msgstr "Eroare suspectă în sistemul de descprcare"
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "Închidere"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr ""
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -1642,6 +1656,10 @@ msgstr "Fișierele RAR verificate cu succes"
 #: sabnzbd/postproc.py
 msgid "RAR files failed to verify"
 msgstr "Verificarea fișierelor RAR a eșuat"
+
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -3882,6 +3900,21 @@ msgstr "Parolă"
 #: sabnzbd/skintext.py
 msgid "Timeout"
 msgstr "Timp Expirare"
+
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py

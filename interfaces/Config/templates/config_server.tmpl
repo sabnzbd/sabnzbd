@@ -5,7 +5,7 @@
 <!--#import json#-->
 <!--#import datetime#-->
 
-<script type="text/javascript">
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
     // Define variable needed for the server-statistics
     var serverBandwithData = {}
     var serverArticleTries = {}
@@ -39,6 +39,10 @@
                         <label class="config" for="enable">$T('srv-enable')</label>
                         <input type="checkbox" name="enable" id="enable" value="1" checked="checked" />
                         <span class="desc">$T('srv-enable')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="displayname">$T('srv-displayname')</label>
+                        <input type="text" name="displayname" id="displayname" />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="host">$T('srv-host')</label>
@@ -104,8 +108,14 @@
                         <span class="desc">$T('explain-optional')</span>
                     </div>
                     <div class="field-pair advanced-settings">
-                        <label class="config" for="displayname">$T('srv-displayname')</label>
-                        <input type="text" name="displayname" id="displayname" />
+                        <label class="config" for="expire_date">$T('srv-expire_date')</label>
+                        <input type="date" name="expire_date" id="expire_date" />
+                        <span class="desc">$T('srv-explain-expire_date')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="quota">$T('swtag-quota')</label>
+                        <input type="text" name="quota" id="quota" class="smaller_input" />
+                        <span class="desc">$T('srv-explain-quota')</span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="notes">$T('srv-notes')</label>
@@ -155,6 +165,10 @@
                 <div class="col1" style="display:none;">
                     <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
                     <fieldset>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="displayname$cur">$T('srv-displayname')</label>
+                            <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
+                        </div>
                         <div class="field-pair">
                             <label class="config" for="host$cur">$T('srv-host')</label>
                             <input type="text" name="host" id="host$cur" value="$server['host']" required />
@@ -220,8 +234,14 @@
                             <span class="desc">$T('srv-explain-send_group')</span>
                         </div>
                         <div class="field-pair advanced-settings">
-                            <label class="config" for="displayname$cur">$T('srv-displayname')</label>
-                            <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
+                            <label class="config" for="expire_date$cur">$T('srv-expire_date')</label>
+                            <input type="date" name="expire_date" id="expire_date$cur"  value="$server['expire_date']" />
+                            <span class="desc">$T('srv-explain-expire_date')</span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="quota$cur">$T('swtag-quota')</label>
+                            <input type="text" name="quota" id="quota$cur" value="$server['quota']" class="smaller_input" />
+                            <span class="desc">$T('srv-explain-quota')</span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="notes$cur">$T('srv-notes')</label>
@@ -248,10 +268,14 @@
                                 $T('thisMonth'): $(server['amounts'][1])B<br/>
                                 $T('selectedDates'): <span id="server-bandwith-value-${cur}"></span>
                             </p>
+
                             <p title="$T('readwiki')">
                                 <b>$T('srv-article-availability'):</b><br/>
                                 $T('selectedDates'): <span id="server-article-value-${cur}"></span>
                             </p>
+                            <!--#if $server['quota']#-->
+                            <p><b>$T('quota-left'):</b> $(server['quota_left'])B</p>
+                            <!--#end if#-->
                         </div>
                         <div class="server-chart" data-serverid="${cur}">
                             <div id="server-chart-${cur}" class="ct-chart"></div>

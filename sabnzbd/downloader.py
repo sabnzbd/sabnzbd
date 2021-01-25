@@ -22,6 +22,7 @@ sabnzbd.downloader - download engine
 import time
 import select
 import logging
+from math import ceil
 from threading import Thread, RLock
 from nntplib import NNTPPermanentError
 import socket
@@ -148,15 +149,11 @@ class Server:
             ip = self.host
         return ip
 
-    def stop(self, readers: Dict[int, NewsWrapper]):
+    def stop(self):
+        """Remove all connections from server"""
         for nw in self.idle_threads:
-            try:
-                fno = nw.nntp.fileno
-            except:
-                fno = None
-            if fno and fno in readers:
-                readers.pop(fno)
-            nw.terminate(quit=True)
+            sabnzbd.Downloader.remove_socket(nw)
+            nw.hard_reset(send_quit=True)
         self.idle_threads = []
 
     def request_info(self):
@@ -290,8 +287,13 @@ class Downloader(Thread):
         self.server_nr = len(self.servers)
 
     def add_socket(self, fileno: int, nw: NewsWrapper):
-        """ Add a socket ready to be used to the list """
+        """ Add a socket ready to be used to the list to be watched """
         self.read_fds[fileno] = nw
+
+    def remove_socket(self, nw: NewsWrapper):
+        """ Remove a socket to be watched """
+        if nw.nntp:
+            self.read_fds.pop(nw.nntp.fileno, None)
 
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
@@ -420,10 +422,9 @@ class Downloader(Thread):
 
             # Remove all connections to server
             for nw in server.idle_threads + server.busy_threads:
-                self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, send_quit=False)
-                # Let the other servers try the articles of this server again
-                if nw.article:
-                    sabnzbd.NzbQueue.reset_try_lists(nw.article)
+                self.__reset_nw(
+                    nw, "forcing disconnect", warn=False, wait=False, count_article_try=False, send_quit=False
+                )
 
             # Make sure server address resolution is refreshed
             server.info = None
@@ -469,6 +470,9 @@ class Downloader(Thread):
         # Kick BPS-Meter to check quota
         sabnzbd.BPSMeter.update()
 
+        # Check server expiration dates
+        check_server_expiration()
+
         while 1:
             now = time.time()
 
@@ -484,16 +488,17 @@ class Downloader(Thread):
                 for nw in server.busy_threads[:]:
                     if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                         if nw.nntp and nw.nntp.error_msg:
-                            self.__reset_nw(nw, "", warn=False)
+                            # Already showed error
+                            self.__reset_nw(nw)
                         else:
-                            self.__reset_nw(nw, "timed out")
+                            self.__reset_nw(nw, "timed out", warn=True)
                         server.bad_cons += 1
                         self.maybe_block_server(server)
 
                 if server.restart:
                     if not server.busy_threads:
                         newid = server.newid
-                        server.stop(self.read_fds)
+                        server.stop()
                         self.servers.remove(server)
                         if newid:
                             self.init_server(None, newid)
@@ -561,32 +566,28 @@ class Downloader(Thread):
                                 server.host,
                                 sys.exc_info()[1],
                             )
-                            self.__reset_nw(nw, "failed to initialize")
+                            self.__reset_nw(nw, "failed to initialize", warn=True)
 
-            # Exit-point
-            if self.shutdown:
-                empty = True
-                for server in self.servers:
-                    if server.busy_threads:
-                        empty = False
-                        break
-
-                if empty:
-                    for server in self.servers:
-                        server.stop(self.read_fds)
-
-                    logging.info("Shutting down")
-                    break
-
-            if self.force_disconnect:
+            if self.force_disconnect or self.shutdown:
                 for server in self.servers:
                     for nw in server.idle_threads + server.busy_threads:
-                        send_quit = nw.connected and server.active
-                        self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, send_quit=send_quit)
+                        # Send goodbye if we have open socket
+                        if nw.nntp:
+                            self.__reset_nw(
+                                nw,
+                                "forcing disconnect",
+                                wait=False,
+                                count_article_try=False,
+                                send_quit=True,
+                            )
                     # Make sure server address resolution is refreshed
                     server.info = None
-
                 self.force_disconnect = False
+
+                # Exit-point
+                if self.shutdown:
+                    logging.info("Shutting down")
+                    break
 
             # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
@@ -646,7 +647,7 @@ class Downloader(Thread):
                     continue
 
                 if bytes_received < 1:
-                    self.__reset_nw(nw, "server closed connection", warn=False, wait=False)
+                    self.__reset_nw(nw, "server closed connection", wait=False)
                     continue
 
                 else:
@@ -690,7 +691,8 @@ class Downloader(Thread):
                                     if server.errormsg != errormsg:
                                         server.errormsg = errormsg
                                         logging.warning(T("Too many connections to server %s"), server.host)
-                                    self.__reset_nw(nw, None, warn=False, destroy=True, send_quit=True)
+                                    # Don't count this for the tries (max_art_tries) on this server
+                                    self.__reset_nw(nw, count_article_try=False, send_quit=True)
                                     self.plan_server(server, _PENALTY_TOOMANY)
                                     server.threads -= 1
                             elif ecode in (502, 481, 482) and clues_too_many_ip(msg):
@@ -744,8 +746,8 @@ class Downloader(Thread):
                                     server.active = False
                                     if penalty and (block or server.optional):
                                         self.plan_server(server, penalty)
-                                    sabnzbd.NzbQueue.reset_try_lists(article)
-                                self.__reset_nw(nw, None, warn=False, send_quit=True)
+                                # Note that this will count towards the tries (max_art_tries) on this server!
+                                self.__reset_nw(nw, send_quit=True)
                             continue
                         except:
                             logging.error(
@@ -755,7 +757,7 @@ class Downloader(Thread):
                                 nntp_to_msg(nw.data),
                             )
                             # No reset-warning needed, above logging is sufficient
-                            self.__reset_nw(nw, None, warn=False)
+                            self.__reset_nw(nw)
 
                         if nw.connected:
                             logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
@@ -807,65 +809,51 @@ class Downloader(Thread):
                     nw.soft_reset()
                     server.busy_threads.remove(nw)
                     server.idle_threads.append(nw)
-                    self.read_fds.pop(nw.nntp.fileno, None)
-
-    def __lookup_nw(self, nw: NewsWrapper):
-        """ Find the fileno matching the nw, needed for closed connections """
-        for f in self.read_fds:
-            if self.read_fds[f] == nw:
-                return f
-        return None
+                    self.remove_socket(nw)
 
     def __reset_nw(
         self,
         nw: NewsWrapper,
-        reset_msg: Optional[str],
-        warn: bool = True,
+        reset_msg: Optional[str] = None,
+        warn: bool = False,
         wait: bool = True,
-        destroy: bool = False,
+        count_article_try: bool = True,
         send_quit: bool = False,
     ):
-        server = nw.server
-        article = nw.article
-        fileno = None
-
-        if nw.nntp:
-            try:
-                fileno = nw.nntp.fileno
-            except:
-                fileno = self.__lookup_nw(nw)
-                destroy = True
-            nw.nntp.error_msg = None
-
+        # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
-            server.warning = reset_msg
-            logging.info("Thread %s@%s: %s", nw.thrdnum, server.host, reset_msg)
+            nw.server.warning = reset_msg
+            logging.info("Thread %s@%s: %s", nw.thrdnum, nw.server.host, reset_msg)
         elif reset_msg:
-            logging.debug("Thread %s@%s: %s", nw.thrdnum, server.host, reset_msg)
+            logging.debug("Thread %s@%s: %s", nw.thrdnum, nw.server.host, reset_msg)
 
-        if nw in server.busy_threads:
-            server.busy_threads.remove(nw)
-        if not (destroy or nw in server.idle_threads):
-            server.idle_threads.append(nw)
+        # Make sure this NewsWrapper is in the idle threads
+        if nw in nw.server.busy_threads:
+            nw.server.busy_threads.remove(nw)
+        if nw not in nw.server.idle_threads:
+            nw.server.idle_threads.append(nw)
 
-        if fileno and fileno in self.read_fds:
-            self.read_fds.pop(fileno)
+        # Make sure it is not in the readable sockets
+        self.remove_socket(nw)
 
-        if article:
-            if article.tries > cfg.max_art_tries() and (article.fetcher.optional or not cfg.max_art_opt()):
+        if nw.article:
+            # Only some errors should count towards the total tries for each server
+            if (
+                count_article_try
+                and nw.article.tries > cfg.max_art_tries()
+                and (nw.article.fetcher.optional or not cfg.max_art_opt())
+            ):
                 # Too many tries on this server, consider article missing
-                self.decode(article, None)
+                self.decode(nw.article, None)
             else:
                 # Allow all servers to iterate over this nzo/nzf again
-                sabnzbd.NzbQueue.reset_try_lists(article)
+                sabnzbd.NzbQueue.reset_try_lists(nw.article)
 
-        if destroy:
-            nw.terminate(quit=send_quit)
-        else:
-            nw.hard_reset(wait, send_quit=send_quit)
+        # Reset connection object
+        nw.hard_reset(wait, send_quit=send_quit)
 
         # Empty SSL info, it might change on next connect
-        server.ssl_info = ""
+        nw.server.ssl_info = ""
 
     def __request_article(self, nw: NewsWrapper):
         try:
@@ -879,16 +867,15 @@ class Downloader(Thread):
                 if sabnzbd.LOG_ALL:
                     logging.debug("Thread %s@%s: BODY %s", nw.thrdnum, nw.server.host, nw.article.article)
                 nw.body()
-
             # Mark as ready to be read
             self.read_fds[nw.nntp.fileno] = nw
         except socket.error as err:
             logging.info("Looks like server closed connection: %s", err)
-            self.__reset_nw(nw, "server broke off connection", send_quit=False)
+            self.__reset_nw(nw, "server broke off connection", warn=True, send_quit=False)
         except:
             logging.error(T("Suspect error in downloader"))
             logging.info("Traceback: ", exc_info=True)
-            self.__reset_nw(nw, "server broke off connection", send_quit=False)
+            self.__reset_nw(nw, "server broke off connection", warn=True, send_quit=False)
 
     # ------------------------------------------------------------------------------
     # Timed restart of servers admin.
@@ -1014,3 +1001,29 @@ def clues_pay(text: str) -> bool:
         if clue in text:
             return True
     return False
+
+
+def check_server_expiration():
+    """Check if user should get warning about server date expiration"""
+    for server in config.get_servers().values():
+        if server.expire_date():
+            days_to_expire = ceil(
+                (time.mktime(time.strptime(server.expire_date(), "%Y-%m-%d")) - time.time()) / (60 * 60 * 24)
+            )
+            # Notify from 5 days in advance
+            if days_to_expire < 6:
+                logging.warning(T("Server %s is expiring in %s day(s)"), server.displayname(), days_to_expire)
+                # Reset on the day of expiration
+                if days_to_expire <= 0:
+                    server.expire_date.set("")
+                    config.save_config()
+
+
+def check_server_quota():
+    """Check quota on servers"""
+    for srv, server in config.get_servers().items():
+        if server.quota():
+            if server.quota.get_int() + server.usage_at_start() < sabnzbd.BPSMeter.grand_total.get(srv, 0):
+                logging.warning(T("Server %s has used the specified quota"), server.displayname())
+                server.quota.set("")
+                config.save_config()

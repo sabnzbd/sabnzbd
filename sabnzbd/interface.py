@@ -1575,6 +1575,10 @@ class ConfigServer:
                     articles_tried,
                     articles_success,
                 )
+            new[-1]["quota_left"] = to_units(
+                servers[svr].quota.get_int() - sabnzbd.BPSMeter.grand_total.get(svr, 0) + servers[svr].usage_at_start()
+            )
+
         conf["servers"] = new
         conf["cats"] = list_cats(default=True)
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION

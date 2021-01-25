@@ -411,6 +411,9 @@ class ConfigServer:
         self.enable = OptionBool(name, "enable", True, add=False)
         self.optional = OptionBool(name, "optional", False, add=False)
         self.retention = OptionNumber(name, "retention", 0, add=False)
+        self.expire_date = OptionStr(name, "expire_date", add=False)
+        self.quota = OptionStr(name, "quota", add=False)
+        self.usage_at_start = OptionNumber(name, "usage_at_start", add=False)
         self.send_group = OptionBool(name, "send_group", False, add=False)
         self.priority = OptionNumber(name, "priority", 0, 0, 99, add=False)
         self.notes = OptionStr(name, "notes", add=False)
@@ -420,6 +423,12 @@ class ConfigServer:
 
     def set_dict(self, values: Dict[str, Any]):
         """ Set one or more fields, passed as dictionary """
+        # Replace usage_at_start value with most recent statistics if the user changes the quota value
+        # Only when we are updating it from the Config
+        if sabnzbd.WEBUI_READY and values.get("quota", "") != self.quota():
+            values["usage_at_start"] = sabnzbd.BPSMeter.grand_total.get(self.__name, 0)
+
+        # Store all values
         for kw in (
             "displayname",
             "host",
@@ -435,6 +444,9 @@ class ConfigServer:
             "enable",
             "optional",
             "retention",
+            "expire_date",
+            "quota",
+            "usage_at_start",
             "priority",
             "notes",
         ):
@@ -466,6 +478,9 @@ class ConfigServer:
         output_dict["enable"] = self.enable()
         output_dict["optional"] = self.optional()
         output_dict["retention"] = self.retention()
+        output_dict["expire_date"] = self.expire_date()
+        output_dict["quota"] = self.quota()
+        output_dict["usage_at_start"] = self.usage_at_start()
         output_dict["send_group"] = self.send_group()
         output_dict["priority"] = self.priority()
         output_dict["notes"] = self.notes()

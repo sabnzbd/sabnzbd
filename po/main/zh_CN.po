@@ -310,6 +310,10 @@ msgstr "%s 不是有效的电子邮箱地址"
 msgid "Server address required"
 msgstr "服务器地址必填"
 
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
@@ -476,6 +480,16 @@ msgstr "下载器疑似错误"
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "正在关闭"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr ""
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -1592,6 +1606,10 @@ msgstr "RAR 文件验证成功"
 #: sabnzbd/postproc.py
 msgid "RAR files failed to verify"
 msgstr "RAR 文件验证失败"
+
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -3777,6 +3795,21 @@ msgstr "密码"
 #: sabnzbd/skintext.py
 msgid "Timeout"
 msgstr "超时"
+
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
