@@ -18,8 +18,6 @@
 """
 tests.test_functional_adding_nzbs - Tests for settings interaction when adding NZBs
 """
-# TODO:
-# interaction with duplicate handling setting
 
 import os
 import shutil
