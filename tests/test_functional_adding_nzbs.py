@@ -19,7 +19,7 @@
 tests.test_functional_adding_nzbs - Tests for settings interaction when adding NZBs
 """
 # TODO:
-# interaction with duplicate handling setting, size limit option
+# interaction with duplicate handling setting
 
 import os
 import stat
@@ -115,7 +115,11 @@ ALL_PRIOS = {
     REPAIR_PRIORITY: "Repair",
 }
 
-# Shared constants at module level, for randomized category/script/nzb name
+# Min/max size for random files used in generated NZBs (bytes)
+MIN_FILESIZE = 128
+MAX_FILESIZE = 1024
+
+# Tags to randomise category/script/nzb name
 CAT_RANDOM = os.urandom(4).hex()
 SCRIPT_RANDOM = os.urandom(4).hex()
 NZB_RANDOM = os.urandom(4).hex()
@@ -227,7 +231,7 @@ class TestAddingNZBs:
                 "".join(sample(ascii_lowercase, 3)),
             )
             with open(os.path.join(job_dir, job_file), "wb") as f:
-                f.write(os.urandom(randint(128, 1024)))
+                f.write(os.urandom(randint(MIN_FILESIZE, MAX_FILESIZE)))
         except Exception:
             pytest.fail("Failed to create random nzb")
 
@@ -336,7 +340,7 @@ class TestAddingNZBs:
         # The default of defaults...
         return NORMAL_PRIORITY, return_state
 
-    def _test_runner(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat):
+    def _prep_test_runner(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat):
         if not VAR.SCRIPT_DIR:
             self._setup_script_dir()
         if not VAR.NZB_FILE:
@@ -362,9 +366,6 @@ class TestAddingNZBs:
         # Setup the pre-queue script
         self._customize_pre_queue_script(prio_preq, cat_preq)
 
-        # Pause the queue
-        assert get_api_result(mode="pause")["status"] is True
-
         # Queue the job, store the nzo_id
         extra = {"name": VAR.META_NZB_FILE if cat_meta else VAR.NZB_FILE}
         if cat_add:
@@ -374,7 +375,13 @@ class TestAddingNZBs:
         nzo_id = ",".join(get_api_result(mode="addlocalfile", extra_arguments=extra)["nzo_ids"])
 
         # Fetch the queue output for the current job
-        json = get_api_result(mode="queue", extra_arguments={"nzo_ids": nzo_id})
+        return get_api_result(mode="queue", extra_arguments={"nzo_ids": nzo_id})["queue"]["slots"][0]
+
+    def _test_runner(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat):
+        # Pause the queue
+        assert get_api_result(mode="pause")["status"] is True
+
+        job = self._prep_test_runner(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat)
 
         # Determine the expected results
         expected_prio, expected_state = self._expected_results(
@@ -382,13 +389,13 @@ class TestAddingNZBs:
         )
 
         # Verify the results; queue output uses a string representation for the priority
-        assert ALL_PRIOS.get(expected_prio) == json["queue"]["slots"][0]["priority"]
+        assert ALL_PRIOS.get(expected_prio) == job["priority"]
         if expected_state:
             # Also check the correct state or label was set
             if expected_state == DUP_PRIORITY:
-                assert "DUPLICATE" in json["queue"]["slots"][0]["labels"]
+                assert "DUPLICATE" in job["labels"]
             if expected_state == PAUSED_PRIORITY:
-                assert "Paused" == json["queue"]["slots"][0]["status"]
+                assert "Paused" == job["status"]
 
         # Delete all jobs
         assert (
@@ -533,3 +540,29 @@ class TestAddingNZBs:
                 ]
 
         os.remove(broken_nzb)
+
+    @pytest.mark.parametrize("prio_meta_cat", sample(PRIO_OPTS_META_CAT, 2))
+    @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
+    @pytest.mark.parametrize("prio_add", sample(PRIO_OPTS_ADD, 2))
+    def test_adding_nzbs_size_limit(self, prio_meta_cat, prio_def_cat, prio_add):
+        """ Verify state and priority of a job exceeding the size_limit """
+        # Set size limit
+        json = get_api_result(
+            mode="set_config", extra_arguments={"section": "misc", "keyword": "size_limit", "value": MIN_FILESIZE - 1}
+        )
+        assert int(json["config"]["misc"]["size_limit"]) < MIN_FILESIZE
+        # Pause the queue
+        assert get_api_result(mode="pause")["status"] is True
+
+        job = self._prep_test_runner(prio_def_cat, prio_add, None, None, None, prio_meta_cat)
+
+        # Verify job is paused and low priority
+        assert job["status"] == "Paused"
+        assert job["priority"] == ALL_PRIOS.get(-1)
+
+        # Unset size limit
+        json = get_api_result(
+            mode="set_config", extra_arguments={"section": "misc", "keyword": "size_limit", "value": ""}
+        )
+        # Unpause the queue
+        assert get_api_result(mode="resume")["status"] is True

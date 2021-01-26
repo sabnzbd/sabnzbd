@@ -1326,7 +1326,7 @@ class NzbObject(TryList):
         # Invalid value, set to normal priority
         self.priority = NORMAL_PRIORITY
 
-    def find_stateless_priority(self, category: int):
+    def find_stateless_priority(self, category: str) -> int:
         """Find a priority that doesn't set a job state, starting from the given category,
         for jobs to fall back to after their priority was set to PAUSED or DUP. The fallback
         priority cannot be another state-setting priority or FORCE; the latter could override
