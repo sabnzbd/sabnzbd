@@ -22,6 +22,7 @@ tests.test_functional_adding_nzbs - Tests for settings interaction when adding N
 # interaction with duplicate handling setting
 
 import os
+import shutil
 import stat
 import sys
 from random import choice, randint, sample
@@ -415,7 +416,7 @@ class TestAddingNZBs:
 
     @pytest.mark.parametrize("prio_meta_cat", sample(PRIO_OPTS_META_CAT, 2))
     @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
-    @pytest.mark.parametrize("prio_add", sample(PRIO_OPTS_ADD, 2))
+    @pytest.mark.parametrize("prio_add", sample(PRIO_OPTS_ADD, 3))
     @pytest.mark.parametrize("prio_add_cat", sample(PRIO_OPTS_ADD_CAT, 2))
     @pytest.mark.parametrize("prio_preq", sample(PRIO_OPTS_PREQ, 2))
     @pytest.mark.parametrize("prio_preq_cat", sample(PRIO_OPTS_PREQ_CAT, 2))
@@ -541,9 +542,9 @@ class TestAddingNZBs:
 
         os.remove(broken_nzb)
 
-    @pytest.mark.parametrize("prio_meta_cat", sample(PRIO_OPTS_META_CAT, 2))
-    @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
-    @pytest.mark.parametrize("prio_add", sample(PRIO_OPTS_ADD, 2))
+    @pytest.mark.parametrize("prio_meta_cat", sample(PRIO_OPTS_META_CAT, 1))
+    @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 1))
+    @pytest.mark.parametrize("prio_add", PRIO_OPTS_ADD)
     def test_adding_nzbs_size_limit(self, prio_meta_cat, prio_def_cat, prio_add):
         """ Verify state and priority of a job exceeding the size_limit """
         # Set size limit
@@ -556,13 +557,87 @@ class TestAddingNZBs:
 
         job = self._prep_test_runner(prio_def_cat, prio_add, None, None, None, prio_meta_cat)
 
-        # Verify job is paused and low priority
+        # Verify job is paused and low priority, and correctly labeled
         assert job["status"] == "Paused"
         assert job["priority"] == ALL_PRIOS.get(-1)
+        assert "TOO LARGE" in job["labels"]
 
         # Unset size limit
         json = get_api_result(
             mode="set_config", extra_arguments={"section": "misc", "keyword": "size_limit", "value": ""}
         )
+        # Delete all jobs
+        assert (
+            get_api_result(mode="queue", extra_arguments={"name": "delete", "value": "all", "del_files": 1})["status"]
+            is True
+        )
+        # Unpause the queue
+        assert get_api_result(mode="resume")["status"] is True
+
+    @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 2))
+    @pytest.mark.parametrize("prio_add", PRIO_OPTS_ADD)
+    @pytest.mark.parametrize("prio_add_cat", sample(PRIO_OPTS_ADD_CAT, 1))
+    @pytest.mark.parametrize("prio_preq", sample(PRIO_OPTS_PREQ, 1))
+    @pytest.mark.parametrize("prio_preq_cat", sample(PRIO_OPTS_PREQ_CAT, 2))
+    def test_adding_nzbs_duplicate_pausing(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat):
+        # Set an nzb backup directory
+        try:
+            backup_dir = os.path.join(SAB_CACHE_DIR, "nzb_backup_dir" + os.urandom(4).hex())
+            assert (
+                get_api_result(
+                    mode="set_config",
+                    extra_arguments={"section": "misc", "keyword": "nzb_backup_dir", "value": backup_dir},
+                )["config"]["misc"]["nzb_backup_dir"]
+                == backup_dir
+            )
+        except Exception:
+            pytest.fail("Cannot create nzb_backup_dir %s" % backup_dir)
+
+        # Pause the queue
+        assert get_api_result(mode="pause")["status"] is True
+
+        # Add the job a first time
+        job = self._prep_test_runner(None, None, None, None, None, None)
+        assert job["status"] == "Queued"
+
+        # Setup duplicate handling to 2 (Pause)
+        assert (
+            get_api_result(mode="set_config", extra_arguments={"section": "misc", "keyword": "no_dupes", "value": 2})[
+                "config"
+            ]["misc"]["no_dupes"]
+            == 2
+        )
+
+        expected_prio, _ = self._expected_results(
+            [prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, None]
+        )
+
+        job = self._prep_test_runner(prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, None)
+
+        # Verify job is paused and correctly labeled, and given the right (fallback) priority
+        assert "DUPLICATE" in job["labels"]
+        assert job["priority"] == ALL_PRIOS.get(expected_prio)
+        # Priority Force overrules the duplicate pause
+        assert job["status"] == "Paused" if expected_prio != FORCE_PRIORITY else "Downloading"
+
+        # Reset duplicate handling (0), nzb_backup_dir ("")
+        get_api_result(mode="set_config_default", extra_arguments={"keyword": "no_dupes", "keyword": "nzb_backup_dir"})
+
+        # Remove backup_dir
+        for timer in range(0, 5):
+            try:
+                shutil.rmtree(backup_dir)
+                break
+            except OSError:
+                time.sleep(1)
+        else:
+            pytest.fail("Failed to erase nzb_backup_dir %s" % backup_dir)
+
+        # Delete all jobs from queue and history
+        for mode in ("queue", "history"):
+            assert (
+                get_api_result(mode=mode, extra_arguments={"name": "delete", "value": "all", "del_files": 1})["status"]
+                is True
+            )
         # Unpause the queue
         assert get_api_result(mode="resume")["status"] is True
