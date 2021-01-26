@@ -115,44 +115,49 @@ ALL_PRIOS = {
     REPAIR_PRIORITY: "Repair",
 }
 
-# Re-usable randomized category/script/nzb name
+# Shared constants at module level, for randomized category/script/nzb name
 CAT_RANDOM = os.urandom(4).hex()
 SCRIPT_RANDOM = os.urandom(4).hex()
 NZB_RANDOM = os.urandom(4).hex()
-# Full path to script directory resp. nzb files, once in place/generated
-SCRIPT_DIR = None
-NZB_FILE = None
-META_NZB_FILE = None
-# Script directory setup marker
-PRE_QUEUE_SETUP_DONE = False
+
+
+class ModuleVars:
+    # Full path to script directory resp. nzb files, once in place/generated
+    SCRIPT_DIR = None
+    NZB_FILE = None
+    META_NZB_FILE = None
+    # Pre-queue script setup marker
+    PRE_QUEUE_SETUP_DONE = False
+
+
+# Shared variables at module-level
+VAR = ModuleVars()
 
 
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestAddingNZBs:
     def _setup_script_dir(self):
-        global SCRIPT_DIR
-        SCRIPT_DIR = os.path.join(SAB_CACHE_DIR, "scripts")
+        VAR.SCRIPT_DIR = os.path.join(SAB_CACHE_DIR, "scripts" + SCRIPT_RANDOM)
         try:
-            os.makedirs(SCRIPT_DIR, exist_ok=True)
+            os.makedirs(VAR.SCRIPT_DIR, exist_ok=True)
         except Exception:
-            pytest.fail("Cannot create script_dir %s" % SCRIPT_DIR)
+            pytest.fail("Cannot create script_dir %s" % VAR.SCRIPT_DIR)
 
         json = get_api_result(
             mode="set_config",
             extra_arguments={
                 "section": "misc",
                 "keyword": "script_dir",
-                "value": SCRIPT_DIR,
+                "value": VAR.SCRIPT_DIR,
             },
         )
-        assert SCRIPT_DIR in json["config"]["misc"]["script_dir"]
+        assert VAR.SCRIPT_DIR in json["config"]["misc"]["script_dir"]
 
     def _customize_pre_queue_script(self, priority, category):
         """ Add a script that accepts the job and sets priority & category """
-        global PRE_QUEUE_SETUP_DONE
         script_name = "SCRIPT%s.py" % SCRIPT_RANDOM
         try:
-            script_path = os.path.join(SCRIPT_DIR, script_name)
+            script_path = os.path.join(VAR.SCRIPT_DIR, script_name)
             with open(script_path, "w") as f:
                 # line 1 = accept; 4 = category; 6 = priority
                 f.write(
@@ -166,9 +171,9 @@ class TestAddingNZBs:
             if not sys.platform.startswith("win"):
                 os.chmod(script_path, stat.S_IRUSR | stat.S_IWUSR | stat.S_IXUSR)
         except Exception:
-            pytest.fail("Cannot add script %s to script_dir %s" % (script_name, SCRIPT_DIR))
+            pytest.fail("Cannot add script %s to script_dir %s" % (script_name, VAR.SCRIPT_DIR))
 
-        if not PRE_QUEUE_SETUP_DONE:
+        if not VAR.PRE_QUEUE_SETUP_DONE:
             # Set as pre-queue script
             json = get_api_result(
                 mode="set_config",
@@ -179,7 +184,7 @@ class TestAddingNZBs:
                 },
             )
             assert script_name in json["config"]["misc"]["pre_script"]
-            PRE_QUEUE_SETUP_DONE = True
+            VAR.PRE_QUEUE_SETUP_DONE = True
 
     def _configure_cat(self, priority, tag):
         category_name = "cat" + tag + CAT_RANDOM
@@ -212,43 +217,24 @@ class TestAddingNZBs:
         )
         assert ("*", priority) == (json["config"]["categories"][0]["name"], json["config"]["categories"][0]["priority"])
 
-    def _create_random_nzb(self):
-        global NZB_FILE
-        if not NZB_FILE:
-            # Create some simple, unique nzb
-            job_dir = os.path.join(SAB_CACHE_DIR, "NZB" + os.urandom(16).hex())
-            try:
-                os.mkdir(job_dir)
-                job_file = "%s.%s" % (
-                    "".join(choice(ascii_lowercase + digits) for i in range(randint(6, 18))),
-                    "".join(sample(ascii_lowercase, 3)),
-                )
-                with open(os.path.join(job_dir, job_file), "wb") as f:
-                    f.write(os.urandom(randint(128, 1024)))
-            except Exception:
-                pytest.fail("Failed to create random nzb")
+    def _create_random_nzb(self, metadata=None):
+        # Create some simple, unique nzb
+        job_dir = os.path.join(SAB_CACHE_DIR, "NZB" + os.urandom(16).hex())
+        try:
+            os.mkdir(job_dir)
+            job_file = "%s.%s" % (
+                "".join(choice(ascii_lowercase + digits) for i in range(randint(6, 18))),
+                "".join(sample(ascii_lowercase, 3)),
+            )
+            with open(os.path.join(job_dir, job_file), "wb") as f:
+                f.write(os.urandom(randint(128, 1024)))
+        except Exception:
+            pytest.fail("Failed to create random nzb")
 
-            NZB_FILE = create_nzb(job_dir)
+        return create_nzb(job_dir, metadata=metadata)
 
     def _create_meta_nzb(self, cat_meta):
-        """ Create a copy of NZB_FILE with added metadata setting a category """
-        global META_NZB_FILE
-        if not META_NZB_FILE:
-            basedir, basename = os.path.split(NZB_FILE)
-            META_NZB_FILE = os.path.join(basedir, "meta_" + basename)
-
-            with open(NZB_FILE, "rt") as nzb_in:
-                nzb_lines = nzb_in.readlines()
-                assert len(nzb_lines) >= 9
-
-            with open(META_NZB_FILE, "wt") as nzb_out:
-                for line in range(0, len(nzb_lines)):
-                    nzb_out.write(nzb_lines[line])
-                    if nzb_lines[line].startswith("<nzb xmlns="):
-                        # Insert header, metadata
-                        nzb_out.write("<head>\n")
-                        nzb_out.write('<meta type="category">' + cat_meta + "</meta>\n")
-                        nzb_out.write("</head>\n")
+        return self._create_random_nzb(metadata={"category": cat_meta})
 
     def _expected_results(self, STAGES, return_state=None):
         """ Figure out what priority and state the job should end up with """
@@ -351,8 +337,10 @@ class TestAddingNZBs:
         return NORMAL_PRIORITY, return_state
 
     def _test_runner(self, prio_def_cat, prio_add, prio_add_cat, prio_preq, prio_preq_cat, prio_meta_cat):
-        self._setup_script_dir()
-        self._create_random_nzb()
+        if not VAR.SCRIPT_DIR:
+            self._setup_script_dir()
+        if not VAR.NZB_FILE:
+            VAR.NZB_FILE = self._create_random_nzb()
 
         # Set the priority for the Default category
         self._configure_default_category_priority(prio_def_cat)
@@ -361,7 +349,8 @@ class TestAddingNZBs:
         cat_meta = None
         if prio_meta_cat != None:
             cat_meta = self._configure_cat(prio_meta_cat, "meta")
-            self._create_meta_nzb(cat_meta)
+            if not VAR.META_NZB_FILE:
+                VAR.META_NZB_FILE = self._create_meta_nzb(cat_meta)
         cat_add = None
         if prio_add_cat != None:
             cat_add = self._configure_cat(prio_add_cat, "add")
@@ -377,7 +366,7 @@ class TestAddingNZBs:
         assert get_api_result(mode="pause")["status"] is True
 
         # Queue the job, store the nzo_id
-        extra = {"name": META_NZB_FILE if cat_meta else NZB_FILE}
+        extra = {"name": VAR.META_NZB_FILE if cat_meta else VAR.NZB_FILE}
         if cat_add:
             extra["cat"] = cat_add
         if prio_add != None:
@@ -469,15 +458,16 @@ class TestAddingNZBs:
     def test_adding_nzbs_partial(self):
         """Test adding parts of an NZB file, cut off somewhere in the middle to simulate
         the effects of an interrupted download or bad hardware. Should fail, of course."""
-        self._create_random_nzb()
+        if not VAR.NZB_FILE:
+            VAR.NZB_FILE = self._create_random_nzb()
 
-        nzb_basedir, nzb_basename = os.path.split(NZB_FILE)
-        nzb_size = os.stat(NZB_FILE).st_size
+        nzb_basedir, nzb_basename = os.path.split(VAR.NZB_FILE)
+        nzb_size = os.stat(VAR.NZB_FILE).st_size
         part_size = round(randint(20, 80) / 100 * nzb_size)
         first_part = os.path.join(nzb_basedir, "part1_of_" + nzb_basename)
         second_part = os.path.join(nzb_basedir, "part2_of_" + nzb_basename)
 
-        with open(NZB_FILE, "rb") as nzb_in:
+        with open(VAR.NZB_FILE, "rb") as nzb_in:
             for nzb_part, chunk in (first_part, part_size), (second_part, -1):
                 with open(nzb_part, "wb") as nzb_out:
                     nzb_out.write(nzb_in.read(chunk))
@@ -509,9 +499,10 @@ class TestAddingNZBs:
     )
     def test_adding_nzbs_malformed(self, keep_first, keep_last, strip_first, strip_last, should_work):
         """ Test adding broken, empty, or otherwise malformed NZB file """
-        self._create_random_nzb()
+        if not VAR.NZB_FILE:
+            VAR.NZB_FILE = self._create_random_nzb()
 
-        with open(NZB_FILE, "rt") as nzb_in:
+        with open(VAR.NZB_FILE, "rt") as nzb_in:
             nzb_lines = nzb_in.readlines()
             assert len(nzb_lines) >= 9
 

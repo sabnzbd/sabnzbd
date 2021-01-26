@@ -138,7 +138,7 @@ async def serve_sabnews(hostname, port):
     return server
 
 
-def create_nzb(nzb_file=None, nzb_dir=None):
+def create_nzb(nzb_file=None, nzb_dir=None, metadata=None):
     article_size = 500000
     files_for_nzb = []
     output_file = ""
@@ -167,6 +167,12 @@ def create_nzb(nzb_file=None, nzb_dir=None):
         nzb.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         nzb.write('<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">\n')
         nzb.write('<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">\n')
+
+        if metadata:
+            nzb.write("<head>\n")
+            for meta_name, meta_value in metadata.items():
+                nzb.write('<meta type="%s">%s</meta>\n' % (meta_name, meta_value))
+            nzb.write("</head>\n")
 
         nzb_time = time.time() - randint(0, int(time.time() - 746863566))
 

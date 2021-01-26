@@ -138,10 +138,10 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.json()
 
 
-def create_nzb(nzb_dir):
+def create_nzb(nzb_dir, metadata=None):
     """ Create NZB from directory using SABNews """
     nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
-    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full)
+    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata)
 
 
 def create_and_read_nzb(nzbdir):
