@@ -129,6 +129,10 @@ class TestNZBStuffHelpers:
             ("<>random!>", "<>random!>"),
             ("nZb]-[Supertje-_S03E11-12_", "nZb]-[Supertje-_S03E11-12_"),
             ("Bla [Now it's done.exe]", "Now it's done.exe"),
+            (
+                '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
+                '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
+            ),
         ],
     )
     def test_name_extractor(self, subject, filename):
