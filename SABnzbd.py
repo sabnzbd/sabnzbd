@@ -1552,15 +1552,15 @@ def main():
                 sabnzbd.TRIGGER_RESTART = True
 
         # 15 seconds polling tasks
-        if not timer % 5:
+        if not timer % 3:
             # Check for pickleable articles
             finished = False
-            logging.debug("Start pickling")
+            # logging.debug("Start pickling")
             while not finished:
                 finished = sabnzbd.NzbQueue.pickle()
                 if not finished:
                     time.sleep(0.01)
-            logging.debug("End pickling")
+            # logging.debug("End pickling")
 
         # 3 sec polling tasks
         # Check for auto-restart request

@@ -105,6 +105,7 @@ import sabnzbd.articlecache
 import sabnzbd.bpsmeter
 import sabnzbd.scheduler as scheduler
 import sabnzbd.notifier as notifier
+import sabnzbd.unpickler
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
     DEFAULT_PRIORITY,
@@ -129,6 +130,7 @@ DirScanner: sabnzbd.dirscanner.DirScanner
 BPSMeter: sabnzbd.bpsmeter.BPSMeter
 RSSReader: sabnzbd.rss.RSSReader
 Scheduler: sabnzbd.scheduler.Scheduler
+Unpickler: sabnzbd.unpickler.Unpickler
 
 # Regular constants
 START = datetime.datetime.now()
@@ -311,6 +313,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     sabnzbd.URLGrabber = sabnzbd.urlgrabber.URLGrabber()
     sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
     sabnzbd.Scheduler = sabnzbd.scheduler.Scheduler()
+    sabnzbd.Unpickler = sabnzbd.unpickler.Unpickler()
 
     # Run startup tasks
     sabnzbd.NzbQueue.read_queue(repair)
@@ -352,6 +355,9 @@ def start():
 
         logging.debug("Starting urlgrabber")
         sabnzbd.URLGrabber.start()
+
+        logging.debug("Starting unpickler")
+        sabnzbd.Unpickler.start()
 
 
 @synchronized(INIT_LOCK)

@@ -932,12 +932,13 @@ class NzbQueue:
         """Find pickleable files in the queue"""
 
         # Keep approximately the next 3 GB worth of articles after file being downloaded unpickled
-        buffer_size = 3 * GIGI
+        buffer_size = 5 * GIGI
         needed = buffer_size
+
         for nzo in self.__nzo_list:
             if nzo.status == Status.GRABBING:
                 continue
-            logging.debug("Checking nzo for pickle: %s", nzo.filename)
+            # logging.debug("Checking nzo for pickle: %s", nzo.filename)
             filenum = 0
             now = time.time()
             for nzf in nzo.files:
@@ -946,7 +947,7 @@ class NzbQueue:
                 if nzf.deleted:
                     continue
                 if nzf.bytes_left < 1:
-                    logging.debug("Skipping %s because no bytes_left", nzf.filename)
+                    logging.debug("Not pickling %s because no bytes_left", nzf.filename)
                     continue
 
                 if nzo.status == Status.PAUSED:
@@ -956,6 +957,9 @@ class NzbQueue:
                     continue
 
                 if not nzf.import_finished:
+                    if buffer_size - needed < 2 * GIGI:
+                        sabnzbd.Unpickler.process(time.time(), nzf, "pickler")
+                        time.sleep(0.1)
                     needed -= nzf.bytes_left
                     continue
 
@@ -968,7 +972,10 @@ class NzbQueue:
                         needed -= nzf.bytes_left
                 else:
                     logging.debug(
-                        "Skipping %s. trylist: %d, lastused: %d", nzf.filename, len(nzf.try_list), now - nzf.last_used
+                        "Not pickling %s. trylist: %d, lastused: %d",
+                        nzf.filename,
+                        len(nzf.try_list),
+                        now - nzf.last_used,
                     )
                     needed = buffer_size
         return True

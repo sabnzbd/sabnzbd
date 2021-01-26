@@ -26,6 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
+import time
 from typing import List, Dict, Any, Tuple, Optional
 
 # SABnzbd modules
@@ -411,7 +412,6 @@ class NzbFile(TryList):
         if not self.import_finished:
             logging.debug("unpickle %s, called by %s", self.filename, caller)
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
-            self.last_used = time.time()
             try:
                 if temp_data[0][0].decoded == False:
                     for article in temp_data[1]:
@@ -1613,7 +1613,13 @@ class NzbObject(TryList):
                             # Only load NZF when it's a primary server
                             # or when it has already been accessed
                             if nzf.last_used or sabnzbd.Downloader.highest_server(server):
-                                nzf.unpickle_articles(server.displayname)
+                                sabnzbd.Unpickler.process(0, nzf, server.displayname)
+
+                                # Wait up to 10 seconds for unpickling
+                                wait_until = time.time() + 10
+                                while wait_until > time.time() and not nzf.import_finished:
+                                    time.sleep(0.001)
+
                                 # Still not finished? Something went wrong...
                                 if not nzf.import_finished and not self.is_gone():
                                     logging.error(T("Error importing %s"), nzf)
