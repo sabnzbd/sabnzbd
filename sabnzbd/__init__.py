@@ -422,6 +422,8 @@ def halt():
         except:
             pass
 
+        sabnzbd.Unpickler.stop()
+
         logging.debug("Stopping postprocessor")
         sabnzbd.PostProcessor.stop()
         try:

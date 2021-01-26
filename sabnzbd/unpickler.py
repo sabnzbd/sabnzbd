@@ -32,6 +32,11 @@ class Unpickler(Thread):
             priority, nzf, source = self.unpickle_queue.get()
             if not nzf:
                 logging.info("Shutting down unpickler")
+                while not self.unpickle_queue.empty():
+                    try:
+                        self.unpickle_queue.get(False)
+                    except Empty:
+                        continue
                 break
 
             nzf.unpickle_articles(source)
@@ -39,7 +44,7 @@ class Unpickler(Thread):
             time.sleep(0.01)
 
     def stop(self):
-        self.decoder_queue.put((1, None, None))
+        self.unpickle_queue.put((1, None, None))
 
     def process(self, priority, nzf, source):
         logging.debug("Adding %s to unpickle queue. pri %f, source: %s", nzf.filename, priority, source)

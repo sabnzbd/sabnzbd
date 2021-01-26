@@ -942,6 +942,8 @@ class NzbQueue:
             filenum = 0
             now = time.time()
             for nzf in nzo.files:
+                if sabnzbd.TRIGGER_RESTART or sabnzbd.SABSTOP:
+                    return True
                 if max_items < 1:
                     return False
                 if nzf.deleted:
@@ -959,7 +961,7 @@ class NzbQueue:
                 if not nzf.import_finished:
                     if buffer_size - needed < 2 * GIGI:
                         sabnzbd.Unpickler.process(time.time(), nzf, "pickler")
-                        time.sleep(0.1)
+                        time.sleep(0.005)
                     needed -= nzf.bytes_left
                     continue
 

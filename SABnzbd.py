@@ -1551,7 +1551,7 @@ def main():
                 autorestarted = True
                 sabnzbd.TRIGGER_RESTART = True
 
-        # 15 seconds polling tasks
+        # 9 seconds polling tasks
         if not timer % 3:
             # Check for pickleable articles
             finished = False

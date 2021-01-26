@@ -1613,7 +1613,7 @@ class NzbObject(TryList):
                             # Only load NZF when it's a primary server
                             # or when it has already been accessed
                             if nzf.last_used or sabnzbd.Downloader.highest_server(server):
-                                sabnzbd.Unpickler.process(0, nzf, server.displayname)
+                                sabnzbd.Unpickler.process(1, nzf, server.displayname)
 
                                 # Wait up to 10 seconds for unpickling
                                 wait_until = time.time() + 10
