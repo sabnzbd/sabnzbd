@@ -124,29 +124,26 @@ class Server:
             logging.debug("%s: Re-using address %s", self.host, self.busy_threads[0].nntp.host)
             return self.busy_threads[0].nntp.host
 
-        # Determine new IP
-        if cfg.load_balancing() == 0 and self.info:
-            # Just return the first one, so all next threads use the same IP
-            ip = self.info[0][4][0]
-            logging.debug("%s: Connecting to address %s", self.host, ip)
-
-        elif cfg.load_balancing() == 1 and self.info and len(self.info) > 1:
-            # Return a random entry from the possible IPs
-            rnd = random.randint(0, len(self.info) - 1)
-            ip = self.info[rnd][4][0]
-            logging.debug("%s: Connecting to address %s", self.host, ip)
-
-        elif cfg.load_balancing() == 2 and self.info and len(self.info) > 1:
-            # RFC6555 / Happy Eyeballs:
-            ip = happyeyeballs(self.host, port=self.port, ssl=self.ssl)
-            if ip:
+        # Determine IP
+        ip = self.host
+        if self.info:
+            if cfg.load_balancing() == 0 or len(self.info) == 1:
+                # Just return the first one, so all next threads use the same IP
+                ip = self.info[0][4][0]
                 logging.debug("%s: Connecting to address %s", self.host, ip)
-            else:
-                # nothing returned, so there was a connection problem
-                ip = self.host
-                logging.debug("%s: No successful IP connection was possible", self.host)
-        else:
-            ip = self.host
+            elif cfg.load_balancing() == 1:
+                # Return a random entry from the possible IPs
+                rnd = random.randint(0, len(self.info) - 1)
+                ip = self.info[rnd][4][0]
+                logging.debug("%s: Connecting to address %s", self.host, ip)
+            elif cfg.load_balancing() == 2:
+                # RFC6555 / Happy Eyeballs:
+                ip = happyeyeballs(self.host, port=self.port, ssl=self.ssl)
+                if ip:
+                    logging.debug("%s: Connecting to address %s", self.host, ip)
+                else:
+                    # nothing returned, so there was a connection problem
+                    logging.debug("%s: No successful IP connection was possible", self.host)
         return ip
 
     def stop(self):

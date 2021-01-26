@@ -4,13 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
-# Fred L <88com88@gmail.com>, 2020
+# Fred L <88com88@gmail.com>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Fred L <88com88@gmail.com>, 2020\n"
+"Last-Translator: Fred L <88com88@gmail.com>, 2021\n"
 "Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -338,7 +338,7 @@ msgstr "Adresse du serveur requise"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
-msgstr ""
+msgstr "%s n'est pas un script valide"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -518,12 +518,12 @@ msgstr "Arrêt en cours..."
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s is expiring in %s day(s)"
-msgstr ""
+msgstr "Le serveur %s expirera dans %s jour(s)"
 
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s has used the specified quota"
-msgstr ""
+msgstr "Le serveur %s a utilisé le quota spécifié"
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -1685,7 +1685,7 @@ msgstr "Echec lors de la vérification des fichiers RAR"
 
 #: sabnzbd/postproc.py
 msgid "Trying RAR renamer"
-msgstr ""
+msgstr "Essai avec le renommeur RAR"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -4010,11 +4010,11 @@ msgstr "Délai d'expiration"
 
 #: sabnzbd/skintext.py
 msgid "Account expiration date"
-msgstr ""
+msgstr "Date d'expiration du compte"
 
 #: sabnzbd/skintext.py
 msgid "Warn 5 days in advance of account expiration date."
-msgstr ""
+msgstr "Avertir 5 jours avant la date d'expiration du compte."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4022,6 +4022,9 @@ msgid ""
 "optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
 " minutes."
 msgstr ""
+"Quota pour ce compte calculé à partir du moment où il est défini. En octets,"
+" éventuellement suivi de K,M,G.<br />Avertir quand il atteint 0, vérifié "
+"toutes les quelques minutes."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
