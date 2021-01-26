@@ -1,45 +1,59 @@
-Release Notes - SABnzbd 3.2.0 Beta 1
+Release Notes - SABnzbd 3.2.0 Beta 2
 =========================================================
 
+Changes since 3.2.0 Beta 1 were added below.
+
 ## Changes since 3.1.1
-- Python 3.6 is now the minimum required version. 
+- Python 3.6 is the minimum required version. 
 - macOS release is currently restricted to macOS 10.14 (Mojave) and above 
-  due to changes in our build platform. We are trying to resolve this.
+  due to changes in our build platform. We are still trying to resolve this.
 - Post-processing can be aborted at any stage, including scripts.
 - Improvements in the downloader to reduce CPU-load.
 - Custom date ranges for server graphs can be selected.
 - Keep track of article fetching success-rate of each server.
+- Added option to add download quota warning for each server.
+- Added option to add expiration waring for each server.
 - Added `Minimum Free Space for Completed Download Folder` option.
 - Added option to `Auto resume` for both `Minimum Free Space` settings.
 - Multiple additional Queue and History columns can be added.
 - Added option to always use full screen width.
+- Additional interface settings can be stored server-side.
 - Using SSDP, SABnzbd instances are now listed in `Network` on Windows.
 - Improvements to parsing of job name and filenames listed in the NZB.
 - RSS titles can be edited.
-- Show commit hash when running from git sources.
+- Sanitize all filenames to a maximum of 245 characters.
+- Show commit hash when running from `git` sources.
 - Notify through Notifications if new version is available.
+- Program shutdown time reduced to almost instant.
 - Added `10 GB` test download.
+- IPv6 is no longer preferred in HappyEyeballs address selection.
 - API-calls `queue` and `history` can now be filtered by `nzo_id`.
+- Inreased garbage collection rate to reduce memory usage.
 - Windows: `Temporary Download` job folders no longer have a maximum length.
-- Windws/macOS: Update UnRar to 6.0.0 and MultiPar to 1.3.1.3.
+- Windows/macOS: Update UnRar to 6.0.0 and MultiPar to 1.3.1.3.
 
 ## Bugfixes since 3.1.1
 - Memory could leak after jobs were removed from the queue.
 - The active browser URL is used during the wizard.
 - Repairing or Retrying jobs could result in a crash.  
 - API-call `reset_quota` returned nothing.
+- New categories were not always forced to lowercase.
 - Broken downloads could result in crash during RAR-renaming  
 - Improved obfuscation detection for `Deobfuscate final filenames`.
 - Keep original priority of duplicate jobs.
 - Increase Maximum number of connections per server to `1000`.
 - Update encryption check to handle partially assembled files.
 - Don't activate Windows notifications when running as service.
+- Crash in API-call to delete history items for non-existing `nzo_id`.
 - Prevent repetition of unwanted extension warnings.
 - Correct notification category for failed URL fetches.
 - Improvements to the `Add NZB` modal window.
 - Sort script drop-down list alphabetically.
 - Direct Unpack stability fixes.
-- macOS: tray text was misaligned on macOS 11 (Big Sur).
+- macOS: Program shutdown could fail.
+- macOS: Tray text was misaligned on macOS 11 (Big Sur).
+- Windows: Improved handling of some MultiPar output.
+- Windows: Program restart failed.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in this 
