@@ -421,6 +421,9 @@ class NzbFile(TryList):
                     self.import_finished = True
             except AttributeError:
                 self.finish_import(temp_data)
+            except TypeError:
+                # load_data will probably already have printed an info messsage
+                logging.debug("Could not load pickle data for %s", self.filename)
 
     def finish_import(self, raw_article_db):
         """ Import raw articles to file object """
@@ -1613,7 +1616,7 @@ class NzbObject(TryList):
                             # Only load NZF when it's a primary server
                             # or when it has already been accessed
                             if nzf.last_used or sabnzbd.Downloader.highest_server(server):
-                                sabnzbd.Unpickler.process(1, nzf, server.displayname)
+                                sabnzbd.Unpickler.process(0, nzf, server.displayname)
 
                                 # Wait up to 10 seconds for unpickling
                                 wait_until = time.time() + 10

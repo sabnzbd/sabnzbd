@@ -1,20 +1,8 @@
 import logging
-
 import time
-import os
-
-# import gc
-# import psutil
-import zlib
-import time
-
-# import pprint
-# from inspect import getmembers
-
 import pickle
 import queue
 from threading import Thread
-from collections import namedtuple
 
 import sabnzbd
 
@@ -26,6 +14,7 @@ class Unpickler(Thread):
         self.shutdown = False
 
         self.unpickle_queue = queue.PriorityQueue()
+        self.sequence = 0
 
     def run(self):
         while 1:
@@ -40,12 +29,14 @@ class Unpickler(Thread):
                 break
 
             nzf.unpickle_articles(source)
-            logging.debug("Unpickled pri %f article from %s", priority, source)
-            time.sleep(0.01)
+            logging.debug("Unpickled pri %d article from %s", priority, source)
+            time.sleep(0.001)
 
     def stop(self):
-        self.unpickle_queue.put((1, None, None))
+        self.sequence += 1
+        self.unpickle_queue.put((1000 + self.sequence, None, None))
 
     def process(self, priority, nzf, source):
-        logging.debug("Adding %s to unpickle queue. pri %f, source: %s", nzf.filename, priority, source)
-        self.unpickle_queue.put((priority, nzf, source))
+        logging.debug("Adding %s to unpickle queue. pri %d, source: %s", nzf.filename, priority, source)
+        self.sequence += 1
+        self.unpickle_queue.put((priority + self.sequence, nzf, source))

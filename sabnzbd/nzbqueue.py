@@ -928,12 +928,13 @@ class NzbQueue:
         return "<NzbQueue>"
 
     @NzbQueueLocker
-    def pickle(self, max_items: int = 10):
+    def pickle(self, max_items: int = 100):
         """Find pickleable files in the queue"""
 
-        # Keep approximately the next 3 GB worth of articles after file being downloaded unpickled
+        # Keep approximately the next 5 GB worth of articles after file being downloaded unpickled
         buffer_size = 5 * GIGI
         needed = buffer_size
+        pickle_count = 0
 
         for nzo in self.__nzo_list:
             if nzo.status == Status.GRABBING:
@@ -943,13 +944,12 @@ class NzbQueue:
             now = time.time()
             for nzf in nzo.files:
                 if sabnzbd.TRIGGER_RESTART or sabnzbd.SABSTOP:
-                    return True
-                if max_items < 1:
                     return False
+                if max_items < 1:
+                    return True
                 if nzf.deleted:
                     continue
                 if nzf.bytes_left < 1:
-                    logging.debug("Not pickling %s because no bytes_left", nzf.filename)
                     continue
 
                 if nzo.status == Status.PAUSED:
@@ -958,10 +958,10 @@ class NzbQueue:
                             max_items -= 1
                     continue
 
+                # Add to unpickle queue if it is less than 2GB ahead of the active file and qsize < 20
                 if not nzf.import_finished:
-                    if buffer_size - needed < 2 * GIGI:
-                        sabnzbd.Unpickler.process(time.time(), nzf, "pickler")
-                        time.sleep(0.005)
+                    if buffer_size - needed < 2 * GIGI and sabnzbd.Unpickler.unpickle_queue.qsize() < 20:
+                        sabnzbd.Unpickler.process(1000000, nzf, "pickler")
                     needed -= nzf.bytes_left
                     continue
 
@@ -980,7 +980,7 @@ class NzbQueue:
                         now - nzf.last_used,
                     )
                     needed = buffer_size
-        return True
+        return False
 
 
 def _nzo_date_cmp(nzo1: NzbObject, nzo2: NzbObject):

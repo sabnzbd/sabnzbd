@@ -1551,18 +1551,15 @@ def main():
                 autorestarted = True
                 sabnzbd.TRIGGER_RESTART = True
 
-        # 9 seconds polling tasks
-        if not timer % 3:
-            # Check for pickleable articles
-            finished = False
-            # logging.debug("Start pickling")
-            while not finished:
-                finished = sabnzbd.NzbQueue.pickle()
-                if not finished:
-                    time.sleep(0.01)
-            # logging.debug("End pickling")
-
         # 3 sec polling tasks
+        # logging.debug("Start pickling")
+        pickle_start = time.time()
+        while time.time() - pickle_start < 0.5 and sabnzbd.NzbQueue.pickle():
+            time.sleep(0.01)
+        pickle_time = time.time() - pickle_start
+        if pickle_time:
+            logging.debug("Pickle time: %f", pickle_time)
+
         # Check for auto-restart request
         # Or special restart cases like Mac and WindowsService
         if sabnzbd.TRIGGER_RESTART:
