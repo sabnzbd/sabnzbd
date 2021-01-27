@@ -408,7 +408,7 @@ if __name__ == "__main__":
     # Release to github
     if "release" in sys.argv:
         # Check if tagged as release and check for token
-        gh_token = os.environ.get("GITHUB_TOKEN", "")
+        gh_token = os.environ.get("AUTOMATION_GITHUB_TOKEN", "")
         if RELEASE_THIS and gh_token:
             gh_obj = github.Github(gh_token)
             gh_repo = gh_obj.get_repo("sabnzbd/sabnzbd")
@@ -543,7 +543,7 @@ if __name__ == "__main__":
                 )
         else:
             print("To push release to GitHub, add 'draft release' to the commit message.")
-            print("Or missing the GITHUB_TOKEN, cannot push to GitHub without it.")
+            print("Or missing the AUTOMATION_GITHUB_TOKEN, cannot push to GitHub without it.")
 
     # Reset!
     run_git_command(["reset", "--hard"])
