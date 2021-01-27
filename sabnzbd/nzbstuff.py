@@ -625,10 +625,10 @@ class NzbObject(TryList):
         self.repair: bool = r  # True if we want to repair this set
         self.unpack: bool = u  # True if we want to unpack this set
         self.delete: bool = d  # True if we want to delete this set
-        self.script: str = script  # External script for this set
-        if not is_valid_script(self.script):
-            self.script = None
         self.cat = cat  # User-set category
+        self.script: Optional[str] = None  # External script for this set
+        if is_valid_script(script):
+            self.script = script
 
         # Information fields
         self.url = url or filename
