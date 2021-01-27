@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Norwegian Bokmål (https://www.transifex.com/sabnzbd/teams/111101/nb/)\n"
@@ -17,56 +17,62 @@ msgstr ""
 "Language: nb\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Vis versjonsmerknader"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
 msgstr "Støtt prosjektet, donèr!"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Vennligst lukk \"SABnzbd.exe\" først"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
 msgstr ""
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "The installer only supports 64-bit Windows, use the standalone version to "
 "run on 32-bit Windows."
 msgstr ""
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
+msgid ""
+"The installer only supports Windows 8.1 and above, use the standalone legacy"
+" version to run on older Windows version."
+msgstr ""
+
+#: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Dette vil avinstallere SABnzbd fra ditt system"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Run at startup"
 msgstr "Kjør ved oppstart"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Desktop Icon"
 msgstr "Skrivebordsikon"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
 msgstr "NZB-filassosiering"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"
 msgstr "Fjern program"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
 msgstr "Slett innstillinger"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
@@ -75,6 +81,6 @@ msgstr ""
 " fjerne tidligere installasjon, eller 'Avbryt' for å avbryte denne "
 "oppgraderingen."
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Dine innstillinger og data vil bli tatt vare på."
