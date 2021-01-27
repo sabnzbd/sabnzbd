@@ -238,7 +238,7 @@ Function .onInit
   ${EndIf}
 
   ; Python 3.9 no longer supports Windows 7
-  ${If} ${AtLeastWin7}
+  ${If} ${AtMostWin8}
       MessageBox MB_OK $(MsgNoWin7)
       ExecShell "open" "https://sabnzbd.org/downloads"
       Abort
@@ -380,7 +380,7 @@ SectionEnd
 
   LangString MsgOnly64bit   ${LANG_ENGLISH} "The installer only supports 64-bit Windows, use the standalone version to run on 32-bit Windows."
 
-  LangString MsgNoWin7      ${LANG_ENGLISH} "The installer only supports Windows 8.1 and above, use the legacy version to run on older Windows."
+  LangString MsgNoWin7      ${LANG_ENGLISH} "The installer only supports Windows 8.1 and above, use the standalone legacy version to run on older Windows version."
 
   LangString MsgUninstall   ${LANG_ENGLISH} "This will uninstall SABnzbd from your system"
 
