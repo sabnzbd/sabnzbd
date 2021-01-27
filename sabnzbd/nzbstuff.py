@@ -1412,27 +1412,23 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def prospective_add(self, nzf: NzbFile):
-        """Add par2 files to compensate for missing articles
-        This fails in case of multi-sets with identical setnames
-        """
-        # Make sure to also select a parset if it was in the original filename
-        original_filename = self.renames.get(nzf.filename, "")
-
+        """Add par2 files to compensate for missing articles"""
         # Get some blocks!
         if not nzf.is_par2:
-            # We have to find the right par-set
-            blocks_new = 0
-            for parset in self.extrapars.keys():
-                if (parset in nzf.filename or parset in original_filename) and self.extrapars[parset]:
-                    for new_nzf in self.extrapars[parset]:
-                        self.add_parfile(new_nzf)
-                        blocks_new += new_nzf.blocks
-                        # Enough now?
-                        if blocks_new >= self.bad_articles:
-                            logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
-                            break
-                    # Reset NZO TryList
-                    self.reset_try_list()
+            for parset in self.extrapars:
+                # Due to strong obfuscation on article-level the parset could have a different name
+                # than the files. Because of that we just add the required number of par2-blocks
+                # from all the sets. This probably means we get too much par2, but it's worth it.
+                blocks_new = 0
+                for new_nzf in self.extrapars[parset]:
+                    self.add_parfile(new_nzf)
+                    blocks_new += new_nzf.blocks
+                    # Enough now?
+                    if blocks_new >= self.bad_articles:
+                        logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
+                        break
+            # Reset NZO TryList
+            self.reset_try_list()
 
     def add_to_direct_unpacker(self, nzf: NzbFile):
         """ Start or add to DirectUnpacker """
