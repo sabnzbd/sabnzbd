@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Ester Molla Aragones <moarages@gmail.com>, 2020\n"
 "Language-Team: Spanish (https://www.transifex.com/sabnzbd/teams/111101/es/)\n"
@@ -18,19 +18,19 @@ msgstr ""
 "Language: es\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "Mostrar notas de la versión"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
 msgstr "¡Apoye el proyecto, haga una  donación!"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "Por favor cierre primero \"SABnzbd.exe\""
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
@@ -41,7 +41,7 @@ msgstr ""
 "en \"OK\" para eliminar los servicios existentes o \"Cancelar\" para "
 "cancelar la actualización."
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "The installer only supports 64-bit Windows, use the standalone version to "
 "run on 32-bit Windows."
@@ -49,31 +49,37 @@ msgstr ""
 "El instalador solo admite Windows 64-bit, utilice la versión independiente "
 "para ejecutar Windows 32-bit."
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
+msgid ""
+"The installer only supports Windows 8.1 and above, use the standalone legacy"
+" version to run on older Windows version."
+msgstr ""
+
+#: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
 msgstr "Esto desinstalará SABnzbd de su sistema"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Run at startup"
 msgstr "Ejecutar al inicio"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Desktop Icon"
 msgstr "Icono del escritorio"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
 msgstr "Asociación de archivos NZB"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"
 msgstr "Eliminar programa"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
 msgstr "Eliminar Ajustes"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
@@ -81,6 +87,6 @@ msgstr ""
 "No es posible sobrescribir una instalación existente. \\n\\nPresione `OK' "
 "para quitar la versión anterior o 'Cancelar' para cancelar la actualización."
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "Tus ajustes y datos se mantendrán intactos."

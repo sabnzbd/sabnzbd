@@ -137,6 +137,8 @@ class DirScanner(threading.Thread):
                 files = []
 
             for filename in files:
+                if self.shutdown:
+                    break
                 path = os.path.join(folder, filename)
                 if os.path.isdir(path) or path in self.ignored or filename[0] == ".":
                     continue

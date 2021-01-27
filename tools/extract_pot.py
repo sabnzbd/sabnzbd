@@ -177,7 +177,7 @@ print("Finished creating email POT file")
 
 
 # Create the NSIS POT file
-NSIS = "NSIS_Installer.nsi"
+NSIS = "builder/win/NSIS_Installer.nsi"
 RE_NSIS = re.compile(r'LangString\s+\w+\s+\$\{LANG_ENGLISH\}\s+(".*)', re.I)
 
 if os.path.exists(NSIS):

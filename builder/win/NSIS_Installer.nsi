@@ -237,6 +237,13 @@ Function .onInit
       Abort
   ${EndIf}
 
+  ; Python 3.9 no longer supports Windows 7
+  ${If} ${AtMostWin8}
+      MessageBox MB_OK $(MsgNoWin7)
+      ExecShell "open" "https://sabnzbd.org/downloads"
+      Abort
+  ${EndIf}
+
   ;------------------------------------------------------------------
   ; Change settings based on if SAB was already installed
   ReadRegStr $PREV_INST_DIR HKEY_LOCAL_MACHINE "SOFTWARE\SABnzbd" ""
@@ -372,6 +379,8 @@ SectionEnd
   LangString MsgServChange  ${LANG_ENGLISH} "The SABnzbd Windows Service changed in SABnzbd 3.0.0. $\nYou will need to reinstall the SABnzbd service. $\n$\nClick `OK` to remove the existing services or `Cancel` to cancel this upgrade."
 
   LangString MsgOnly64bit   ${LANG_ENGLISH} "The installer only supports 64-bit Windows, use the standalone version to run on 32-bit Windows."
+
+  LangString MsgNoWin7      ${LANG_ENGLISH} "The installer only supports Windows 8.1 and above, use the standalone legacy version to run on older Windows version."
 
   LangString MsgUninstall   ${LANG_ENGLISH} "This will uninstall SABnzbd from your system"
 

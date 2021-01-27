@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.0.0-develop\n"
+"Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Hebrew (https://www.transifex.com/sabnzbd/teams/111101/he/)\n"
@@ -17,19 +17,19 @@ msgstr ""
 "Language: he\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n == 2 && n % 1 == 0) ? 1: (n % 10 == 0 && n % 1 == 0 && n > 10) ? 2 : 3;\n"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Show Release Notes"
 msgstr "הראה הערות שחרור"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Support the project, Donate!"
 msgstr "תמוך במיזם, תרום!"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Please close \"SABnzbd.exe\" first"
 msgstr "אנא סגור את \"SABnzbd.exe\" תחילה"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "The SABnzbd Windows Service changed in SABnzbd 3.0.0. \\nYou will need to "
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
@@ -39,7 +39,7 @@ msgstr ""
 "השירות SABnzbd. \\n\\nלחץ `אשר` כדי להסיר את השירותים הקיימים או `בטל` כדי "
 "לבטל שדרוג זה."
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "The installer only supports 64-bit Windows, use the standalone version to "
 "run on 32-bit Windows."
@@ -47,31 +47,37 @@ msgstr ""
 "המתקין תומך רק במערכת Windows מסוג 64־סיביות, השתמש בגרסה העצמאית כדי להריץ "
 "על Windows מסוג 32־סיביות."
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
+msgid ""
+"The installer only supports Windows 8.1 and above, use the standalone legacy"
+" version to run on older Windows version."
+msgstr ""
+
+#: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
 msgstr "זה יסיר את SABnzbd ממערכתך"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Run at startup"
 msgstr "הפעלה בהזנק"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Desktop Icon"
 msgstr "צלמית שולחן עבודה"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
 msgstr "NZB שיוך קבצי"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"
 msgstr "מחק תוכנית"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Delete Settings"
 msgstr "מחק הגדרות"
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
@@ -79,6 +85,6 @@ msgstr ""
 "אינך יכול לדרוס התקנה קיימת.\\n\\nלחץ על `אישור` כדי להסיר את הגרסה הקודמת "
 "או על `ביטול` כדי לבטל שדרוג זה."
 
-#: NSIS_Installer.nsi
+#: builder/win/NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
 msgstr "ההגדרות והנתונים שלך יישמרו."

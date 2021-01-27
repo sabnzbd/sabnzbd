@@ -6,6 +6,8 @@ jobs:
   build_windows:
     name: Build Windows binary
     runs-on: windows-latest
+    env:
+      AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9 (64bit)
@@ -38,28 +40,27 @@ jobs:
       with:
         path: "*-win-setup.exe"
         name: Windows installer
-    - name: Set up Python 3.9 (32bit)
+    - name: Set up Python 3.8 (32bit and legacy)
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
+        python-version: 3.8
         architecture: x86
-    - name: Install Python dependencies (32bit)
+    - name: Install Python dependencies (32bit and legacy)
       run: |
         python --version
         pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r builder/requirements.txt
-    - name: Build Windows standalone binary (32bit)
+    - name: Build Windows standalone binary (32bit and legacy)
       run: python builder/package.py binary
-    - name: Upload Windows standalone binary (32bit)
+    - name: Upload Windows standalone binary (32bit and legacy)
       uses: actions/upload-artifact@v2
       with:
         path: "*-win32-bin.zip"
-        name: Windows Windows standalone binary (32bit)
+        name: Windows Windows standalone binary (32bit and legacy)
     - name: Prepare official release
+      if: env.AUTOMATION_GITHUB_TOKEN
       run: python builder/package.py release
-      env:
-        GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
 
   build_macos:
     name: Build macOS binary
@@ -68,6 +69,7 @@ jobs:
       SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
       NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
       NOTARIZATION_PASS: ${{ secrets.NOTARIZATION_PASS }}
+      AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.9
@@ -96,7 +98,5 @@ jobs:
         path: "*-osx.dmg"
         name: macOS binary (not notarized)
     - name: Prepare official release
+      if: env.AUTOMATION_GITHUB_TOKEN
       run: python builder/package.py release
-      env:
-        GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
-
