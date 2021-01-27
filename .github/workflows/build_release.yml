@@ -40,24 +40,24 @@ jobs:
       with:
         path: "*-win-setup.exe"
         name: Windows installer
-    - name: Set up Python 3.8 (32bit/legacy)
+    - name: Set up Python 3.8 (32bit and legacy)
       uses: actions/setup-python@v2
       with:
         python-version: 3.8
         architecture: x86
-    - name: Install Python dependencies (32bit/legacy)
+    - name: Install Python dependencies (32bit and legacy)
       run: |
         python --version
         pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r builder/requirements.txt
-    - name: Build Windows standalone binary (32bit/legacy)
+    - name: Build Windows standalone binary (32bit and legacy)
       run: python builder/package.py binary
-    - name: Upload Windows standalone binary (32bit/legacy)
+    - name: Upload Windows standalone binary (32bit and legacy)
       uses: actions/upload-artifact@v2
       with:
         path: "*-win32-bin.zip"
-        name: Windows Windows standalone binary (32bit/legacy)
+        name: Windows Windows standalone binary (32bit and legacy)
     - name: Prepare official release
       if: env.AUTOMATION_GITHUB_TOKEN
       run: python builder/package.py release
