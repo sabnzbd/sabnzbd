@@ -79,7 +79,7 @@ def validate_server(value):
 
 def validate_script(value):
     """ Check if value is a valid script """
-    if value and sabnzbd.filesystem.is_valid_script(value):
+    if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
         return None, value
     elif (value and value == "None") or not value:
         return None, "None"
