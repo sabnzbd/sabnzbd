@@ -31,7 +31,7 @@ class Unpickler(Thread):
 
             nzf.unpickle_articles(source)
             logging.debug("Unpickled pri %d article from %s", priority, source)
-            time.sleep(0.001)
+            time.sleep(0.005)
 
     def stop(self):
         self.sequence += 1

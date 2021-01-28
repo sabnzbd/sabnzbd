@@ -959,9 +959,11 @@ class NzbQueue:
                     max_items -= 1
                     continue
 
-                # Add to unpickle queue if it is less than 2GB ahead of the active file and qsize < 20
+                # Add to unpickle queue if it is less than 2.5GB ahead of the active file and qsize < 20
+                # 2.5 is because the pickler runs every 3 seconds and servers out of retention are limited
+                # to 750 MB.
                 if not nzf.import_finished:
-                    if buffer_size - needed < 2 * GIGI and sabnzbd.Unpickler.unpickle_queue.qsize() < 20:
+                    if buffer_size - needed < 2.5 * GIGI and sabnzbd.Unpickler.unpickle_queue.qsize() < 100:
                         sabnzbd.Unpickler.process(1000000, nzf, "pickler")
                     needed -= nzf.bytes_left
                     continue
