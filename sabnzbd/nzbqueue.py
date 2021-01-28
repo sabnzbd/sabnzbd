@@ -971,10 +971,10 @@ class NzbQueue:
                         needed -= nzf.bytes_left
                 else:
                     # logging.debug(
-                        # "Not pickling %s. trylist: %d, lastused: %d",
-                        # nzf.filename,
-                        # len(nzf.try_list),
-                        # now - nzf.last_used,
+                    # "Not pickling %s. trylist: %d, lastused: %d",
+                    # nzf.filename,
+                    # len(nzf.try_list),
+                    # now - nzf.last_used,
                     # )
                     needed = buffer_size
         return False
