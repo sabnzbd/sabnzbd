@@ -928,13 +928,12 @@ class NzbQueue:
         return "<NzbQueue>"
 
     @NzbQueueLocker
-    def pickle(self, max_items: int = 100):
+    def pickle(self, max_items: int = 10):
         """Find pickleable files in the queue"""
 
         # Keep approximately the next 5 GB worth of articles after file being downloaded unpickled
-        buffer_size = 5 * GIGI
-        needed = buffer_size
-        pickle_count = 0
+        buffer_size: int = 5 * GIGI
+        needed: int = buffer_size
 
         for nzo in self.__nzo_list:
             if nzo.status == Status.GRABBING:
@@ -952,10 +951,8 @@ class NzbQueue:
                 if nzf.bytes_left < 1:
                     continue
 
-                if nzo.status == Status.PAUSED:
-                    if nzf.import_finished:
-                        if nzf.pickle_articles():
-                            max_items -= 1
+                if nzo.status == Status.PAUSED and nzf.import_finished and nzf.pickle_articles():
+                    max_items -= 1
                     continue
 
                 # Add to unpickle queue if it is less than 2GB ahead of the active file and qsize < 20
@@ -967,18 +964,18 @@ class NzbQueue:
 
                 # Don't pickle if the file has been touched in the last 20 seconds or it will soon be reached by a server
                 if now - nzf.last_used > 20:
-                    if needed < 0 and len(nzf.articles):
+                    if needed < 0 and len(nzf.articles) > 1:
                         if nzf.pickle_articles():
                             max_items -= 1
                     else:
                         needed -= nzf.bytes_left
                 else:
-                    logging.debug(
-                        "Not pickling %s. trylist: %d, lastused: %d",
-                        nzf.filename,
-                        len(nzf.try_list),
-                        now - nzf.last_used,
-                    )
+                    # logging.debug(
+                        # "Not pickling %s. trylist: %d, lastused: %d",
+                        # nzf.filename,
+                        # len(nzf.try_list),
+                        # now - nzf.last_used,
+                    # )
                     needed = buffer_size
         return False
 

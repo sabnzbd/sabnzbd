@@ -409,10 +409,10 @@ class NzbFile(TryList):
         self.import_finished = False
         return True
 
-    def unpickle_articles(self, caller):
+    def unpickle_articles(self, source):
         """ Unpickle articles from file """
         if not self.import_finished:
-            logging.debug("unpickle %s, called by %s", self.filename, caller)
+            logging.debug("unpickle %s, called by %s", self.filename, source)
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
             try:
                 if temp_data[0][0].decoded == False:
@@ -1623,7 +1623,7 @@ class NzbObject(TryList):
                                 # Wait up to 10 seconds for unpickling
                                 wait_until = time.time() + 10
                                 while wait_until > time.time() and not nzf.import_finished:
-                                    time.sleep(0.001)
+                                    time.sleep(0.004)
 
                                 # Still not finished? Something went wrong...
                                 if not nzf.import_finished and not self.is_gone():
