@@ -18,6 +18,7 @@ class Unpickler(Thread):
 
     def run(self):
         while 1:
+            nzf = None
             priority, nzf, source = self.unpickle_queue.get()
             if not nzf:
                 logging.info("Shutting down unpickler")

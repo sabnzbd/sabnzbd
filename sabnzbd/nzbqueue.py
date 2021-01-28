@@ -107,9 +107,11 @@ class NzbQueue:
                 path = get_admin_path(folder, future=True)
                 nzo = sabnzbd.load_data(_id, path)
             if nzo:
+                # There is probably a better place to initialize these values for old save files
                 for nzf in nzo.files:
                     if nzf.last_used is None:
                         nzf.last_used = 0
+                        nzf.pickle_lock_time = 0
                 self.add(nzo, save=False, quiet=True)
                 folders.append(folder)
 
@@ -124,9 +126,11 @@ class NzbQueue:
                     if nzo_id.startswith("SABnzbd_nzo"):
                         nzo = sabnzbd.load_data(nzo_id, path, remove=True)
                         if nzo:
+                            # There is probably a better place to initialize these values for old save files
                             for nzf in nzo.files:
                                 if nzf.last_used is None:
                                     nzf.last_used = 0
+                                    nzf.pickle_lock_time = 0
                             self.add(nzo, save=True)
                     else:
                         try:
@@ -963,7 +967,7 @@ class NzbQueue:
                     continue
 
                 # Don't pickle if the file has been touched in the last 20 seconds or it will soon be reached by a server
-                if now - nzf.last_used > 20:
+                if now - nzf.last_used > 20 and nzf.pickle_lock_time < time.time():
                     if needed < 0 and len(nzf.articles) > 1:
                         if nzf.pickle_articles():
                             max_items -= 1

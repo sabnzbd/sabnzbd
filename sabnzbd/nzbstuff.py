@@ -316,6 +316,7 @@ NzbFileSaver = (
     "md5sum",
     "md5of16k",
     "last_used",
+    "pickle_lock_time",
 )
 
 
@@ -355,6 +356,7 @@ class NzbFile(TryList):
         self.valid = False
         self.import_finished = False
         self.last_used: float = 0
+        self.pickle_lock_time: float = 0
 
         self.md5 = None
         self.md5sum: Optional[bytes] = None
@@ -384,7 +386,12 @@ class NzbFile(TryList):
 
     def pickle_articles(self):
         """ Pickle articles to file """
-        if not self.import_finished or len(self.decodetable) < 2 or self.decodetable[1].decoded:
+        if (
+            not self.import_finished
+            or len(self.decodetable) < 2
+            or self.decodetable[1].decoded
+            or self.pickle_lock_time > time.time()
+        ):
             return False
         logging.debug("pickle %s", self.filename)
 
@@ -420,6 +427,8 @@ class NzbFile(TryList):
                         article.nzf = self
                     self.articles = self.articles + temp_data[0]
                     self.decodetable = self.decodetable + temp_data[1]
+                    # Make sure it isn't pickled again before it's had a chance to be used
+                    self.pickle_lock_time = time.time() + 10
                     self.import_finished = True
             except AttributeError:
                 self.finish_import(temp_data)
