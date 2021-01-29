@@ -1038,8 +1038,11 @@ def handle_empty_queue():
                 Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
             sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
 
-        # Trigger garbage collection
+        # Trigger garbage collection and release of memory
+        logging.debug("Triggering garbage collection and release of memory")
         gc.collect()
+        if sabnzbd.LIBC:
+            sabnzbd.LIBC.malloc_trim(0)
 
 
 def cleanup_list(wdir, skip_nzb):

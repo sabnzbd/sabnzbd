@@ -329,7 +329,7 @@ msgstr "Serveradres verplicht"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
-msgstr ""
+msgstr "%s is geen geldig script."
 
 #. Warning message
 #: sabnzbd/config.py
@@ -509,12 +509,12 @@ msgstr "Afsluiten"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s is expiring in %s day(s)"
-msgstr ""
+msgstr "Server %s verloopt over %s dag(en)."
 
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s has used the specified quota"
-msgstr ""
+msgstr "Het beschikbare quotum voor server %s is verbruikt. "
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -1660,7 +1660,7 @@ msgstr "RAR bestanden zijn niet verifieerbaar"
 
 #: sabnzbd/postproc.py
 msgid "Trying RAR renamer"
-msgstr ""
+msgstr "RAR-hernoeming wordt geprobeerd"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -3962,11 +3962,11 @@ msgstr "Tijdslimiet"
 
 #: sabnzbd/skintext.py
 msgid "Account expiration date"
-msgstr ""
+msgstr "Verloopdatum"
 
 #: sabnzbd/skintext.py
 msgid "Warn 5 days in advance of account expiration date."
-msgstr ""
+msgstr "Ontvang 5 dagen voor de verloopdatum een waarschuwing."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3974,6 +3974,10 @@ msgid ""
 "optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
 " minutes."
 msgstr ""
+"Quotum voor dit account, wordt geteld vanaf het moment dat het voor het "
+"eerst ingesteld wordt. In bytes, in K,M,G notatie.<br />Er wordt een "
+"waarschuwing gegeven als het quotum bereikt is, dit wordt elke paar minuten "
+"gecontroleerd."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py

@@ -326,6 +326,7 @@ class Downloader(Thread):
         logging.info("Post-processing finished, resuming download")
         self.paused_for_postproc = False
 
+    @NzbQueueLocker
     def disconnect(self):
         self.force_disconnect = True
 
@@ -625,11 +626,10 @@ class Downloader(Thread):
                     while (
                         (sabnzbd.NzbQueue.is_empty() or self.is_paused() or self.paused_for_postproc)
                         and not self.shutdown
+                        and not self.force_disconnect
                         and not self.server_restarts
                     ):
                         DOWNLOADER_CV.wait()
-
-                self.force_disconnect = False
 
             if not read:
                 sabnzbd.BPSMeter.update()
