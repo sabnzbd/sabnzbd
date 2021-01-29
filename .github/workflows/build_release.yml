@@ -70,8 +70,23 @@ jobs:
       NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
       NOTARIZATION_PASS: ${{ secrets.NOTARIZATION_PASS }}
       AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+      # These are picked up by xcodebuild automatically
+      # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
+      DEVELOPER_DIR: /Applications/Xcode_11.7.app/Contents/Developer
+      SDKROOT: macosx10.11
     steps:
     - uses: actions/checkout@v2
+    - name: Cache macOS 10.11 SDK
+      id: cache-sdk
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.DEVELOPER_DIR }}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk
+        key: ${{ env.SDKROOT }}-${{ env.DEVELOPER_DIR }}
+    - name: Get macOS 10.10 SDK
+      if: steps.cache-sdk.outputs.cache-hit != 'true'
+      run: |
+        curl -L https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.11.sdk.tar.xz --output MacOSX10.11.sdk.tar.xz
+        sudo tar -xf MacOSX10.11.sdk.tar.xz --directory $DEVELOPER_DIR/Platforms/MacOSX.platform/Developer/SDKs
     - name: Set up Python 3.9
       uses: actions/setup-python@v2
       with:
