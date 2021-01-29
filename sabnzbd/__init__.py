@@ -20,10 +20,12 @@ import logging
 import datetime
 import tempfile
 import pickle
+import ctypes
 import gzip
 import time
 import socket
 import cherrypy
+import platform
 import sys
 import ssl
 from threading import Lock, Thread, Condition
@@ -33,15 +35,13 @@ from typing import Any, AnyStr
 # Determine platform flags
 ##############################################################################
 WIN32 = DARWIN = FOUNDATION = WIN64 = DOCKER = False
-KERNEL32 = None
+KERNEL32 = LIBC = None
 
 if os.name == "nt":
     WIN32 = True
     from sabnzbd.utils.apireg import del_connection_info
 
     try:
-        import ctypes
-
         KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
     except:
         pass
@@ -56,8 +56,13 @@ elif os.name == "posix":
     except:
         pass
 
-    import platform
+    # See if we have Linux memory functions
+    try:
+        LIBC = ctypes.CDLL("libc.so.6")
+    except:
+        pass
 
+    # Parse macOS version numbers
     if platform.system().lower() == "darwin":
         DARWIN = True
         # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
@@ -183,7 +188,6 @@ PYSTONE_SCORE = 0
 DOWNLOAD_DIR_SPEED = 0
 COMPLETE_DIR_SPEED = 0
 INTERNET_BANDWIDTH = 0
-
 
 # Rendering of original command line arguments in Config
 CMDLINE = " ".join(['"%s"' % arg for arg in sys.argv])
