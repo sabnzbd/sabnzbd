@@ -940,7 +940,6 @@ class NzbQueue:
         for nzo in self.__nzo_list:
             if nzo.status == Status.GRABBING:
                 continue
-            # logging.debug("Checking nzo for pickle: %s", nzo.filename)
             filenum = 0
             now = time.time()
             for nzf in nzo.files:
@@ -954,8 +953,7 @@ class NzbQueue:
                     continue
 
                 if nzo.status == Status.PAUSED and nzf.import_finished:
-                    if len(nzf.articles) > 1 and not nzf.articles[1].fetcher:
-                        nzf.pickle_articles()
+                    if len(nzf.articles) > 1 and not nzf.articles[1].fetcher and nzf.pickle_articles():
                         max_items -= 1
                     continue
 
@@ -976,6 +974,7 @@ class NzbQueue:
                         else:
                             if nzf.pickle_articles():
                                 max_items -= 1
+                        continue
                     needed -= nzf.bytes_left
                 else:
                     logging.debug(

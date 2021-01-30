@@ -549,7 +549,7 @@ class Downloader(Thread):
                         max_read = 100
                         if len(self.servers) == 1:
                             max_read = 9999999
-                        while article and not server.unpickle_break:
+                        while article:
                             self.decode(article, None)
                             max_read -= 1
                             if max_read < 1:
