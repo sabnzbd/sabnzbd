@@ -390,6 +390,7 @@ class NzbFile(TryList):
             or len(self.decodetable) < 2
             or self.decodetable[1].decoded
             or self.pickle_lock_time > time.time()
+            or not len(self.articles)
         ):
             return False
 
