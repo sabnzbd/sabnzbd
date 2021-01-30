@@ -966,14 +966,19 @@ class NzbQueue:
                     needed -= nzf.bytes_left
                     continue
 
+                # Refresh last_used if it is still active after 10 seconds
+                if 25 > now - nzf.last_used > 10:
+                    if len(nzf.articles) > 1 and nzf.articles[1].fetcher:
+                        logging.debug("Skipping pickle %s, refreshing last_used", nzf.filename)
+                        nzf.last_used = now
+                        needed = buffer_size
+                        continue
+
                 # Don't pickle if the file has been touched in the last 20 seconds or it will soon be reached by a server
                 if now - nzf.last_used > 20:
-                    if needed < 0 and len(nzf.articles) > 1 and nzf.pickle_lock_time < now:
-                        if nzf.articles[1].fetcher:
-                            nzf.last_used = now
-                        else:
-                            if nzf.pickle_articles():
-                                max_items -= 1
+                    if needed < 0 and nzf.pickle_lock_time < now:
+                        if nzf.pickle_articles():
+                            max_items -= 1
                         continue
                     needed -= nzf.bytes_left
                 else:

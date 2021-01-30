@@ -392,8 +392,8 @@ class NzbFile(TryList):
             or self.pickle_lock_time > time.time()
         ):
             return False
-        logging.debug("pickle %s", self.filename)
 
+        logging.debug("pickle %s", self.filename)
         first_article = self.decodetable.pop(0)
         removed_first = 0
         if first_article == self.articles[0]:
