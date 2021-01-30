@@ -715,7 +715,8 @@ class TestQueueApi(ApiTestFunctions):
                 False,
                 marks=pytest.mark.skipif(sys.platform.startswith("win"), reason="Not for Windows"),
             ),
-            (None, True, False),
+            (None, False, False),
+            ("None", False, True),
             ("", True, False),
         ],
     )
