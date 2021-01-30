@@ -1632,7 +1632,7 @@ class NzbObject(TryList):
                             # Only load NZF when it's a primary server
                             # or when it has already been accessed
                             if nzf.last_used or sabnzbd.Downloader.highest_server(server):
-                                sabnzbd.Unpickler.process(0, nzf, server.displayname)
+                                sabnzbd.Unpickler.process(100, nzf, server.displayname)
                                 # Skip looking for articles the next x downloader loops
                                 server.unpickle_break = 3
                                 break
