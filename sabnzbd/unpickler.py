@@ -14,7 +14,8 @@ class Unpickler(Thread):
         self.shutdown = False
 
         self.unpickle_queue = queue.PriorityQueue()
-        self.sequence = 0
+        self.sequence: int = 0
+        self.previous_nzf: str = ""
 
     def run(self):
         while 1:
@@ -31,13 +32,16 @@ class Unpickler(Thread):
 
             nzf.unpickle_articles(source)
             logging.debug("Unpickled pri %d article from %s", priority, source)
-            time.sleep(0.005)
 
     def stop(self):
         self.sequence += 1
         self.unpickle_queue.put((1000 + self.sequence, None, None))
 
     def process(self, priority, nzf, source):
-        logging.debug("Adding %s to unpickle queue. pri %d, source: %s", nzf.filename, priority, source)
+        # The same nzf will be re-added every time it's hit by a server
+        if self.previous_nzf == nzf.nzf_id:
+            return
+        else:
+            self.previous_nzf = nzf.nzf_id
         self.sequence += 1
         self.unpickle_queue.put((priority + self.sequence, nzf, source))

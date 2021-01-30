@@ -105,6 +105,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
+        self.unpickle_break: int = 0
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
@@ -507,13 +508,17 @@ class Downloader(Thread):
                         # Restart pending, don't add new articles
                         continue
 
+                if server.unpickle_break > 0:
+                    server.unpickle_break -= 1
+                    continue
+
                 if (
                     not server.idle_threads
                     or server.restart
-                    or self.is_paused()
                     or self.shutdown
                     or self.paused_for_postproc
                     or not server.active
+                    or self.is_paused()
                 ):
                     continue
 
@@ -535,7 +540,8 @@ class Downloader(Thread):
 
                     if not article:
                         # Skip this server for 1 second
-                        server.next_article_search = now + 1
+                        if not server.unpickle_break:
+                            server.next_article_search = now + 1
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
@@ -543,13 +549,14 @@ class Downloader(Thread):
                         max_read = 100
                         if len(self.servers) == 1:
                             max_read = 9999999
-                        while article:
+                        while article and not server.unpickle_break:
                             self.decode(article, None)
                             max_read -= 1
                             if max_read < 1:
                                 break
                             article = article.nzf.nzo.get_article(server, self.servers)
-                        server.next_article_search = now + 0.1
+                        if not server.unpickle_break:
+                            server.next_article_search = now + 0.1
                         break
 
                     server.idle_threads.remove(nw)

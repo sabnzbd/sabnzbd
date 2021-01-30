@@ -353,7 +353,7 @@ class NzbFile(TryList):
         self.nzo: NzbObject = nzo
         self.nzf_id: str = sabnzbd.get_new_id("nzf", nzo.admin_path)
         self.deleted = False
-        self.valid = False
+        self.valid: bool = bool(raw_article_db)
         self.import_finished = False
         self.last_used: float = 0
         self.pickle_lock_time: float = 0
@@ -361,7 +361,6 @@ class NzbFile(TryList):
         self.md5 = None
         self.md5sum: Optional[bytes] = None
         self.md5of16k: Optional[bytes] = None
-        self.valid = bool(raw_article_db)
 
         if self.valid and self.nzf_id:
             # Save first article separate so we can do
@@ -435,6 +434,7 @@ class NzbFile(TryList):
             except TypeError:
                 # load_data will probably already have printed an info messsage
                 logging.debug("Could not load pickle data for %s", self.filename)
+                self.valid = False
 
     def finish_import(self, raw_article_db):
         """ Import raw articles to file object """
@@ -481,7 +481,7 @@ class NzbFile(TryList):
         for article in self.articles:
             article = article.get_article(server, servers)
             if article:
-                article.nzf.last_used = time.time()
+                self.last_used = time.time()
                 return article
         self.add_to_try_list(server)
 
@@ -1617,6 +1617,15 @@ class NzbObject(TryList):
                 if nzf.deleted:
                     logging.debug("Skipping existing file %s", nzf.filename or nzf.subject)
                 else:
+                    # Unpickler sets valid = False if it fails
+                    if not nzf.valid:
+                        logging.debug("Invalid nzf for server %s", server.id)
+                        if not self.is_gone():
+                            logging.error(T("Error importing %s"), nzf)
+                            nzf_remove_list.append(nzf)
+                            nzf.nzo.status = Status.PAUSED
+                        continue
+
                     # Don't try to get an article if server is in try_list of nzf
                     if not nzf.server_in_try_list(server):
                         if not nzf.import_finished:
@@ -1624,18 +1633,9 @@ class NzbObject(TryList):
                             # or when it has already been accessed
                             if nzf.last_used or sabnzbd.Downloader.highest_server(server):
                                 sabnzbd.Unpickler.process(0, nzf, server.displayname)
-
-                                # Wait up to 10 seconds for unpickling
-                                wait_until = time.time() + 10
-                                while wait_until > time.time() and not nzf.import_finished:
-                                    time.sleep(0.004)
-
-                                # Still not finished? Something went wrong...
-                                if not nzf.import_finished and not self.is_gone():
-                                    logging.error(T("Error importing %s"), nzf)
-                                    nzf_remove_list.append(nzf)
-                                    nzf.nzo.status = Status.PAUSED
-                                    continue
+                                # Skip looking for articles the next x downloader loops
+                                server.unpickle_break = 3
+                                break
                             else:
                                 continue
 
@@ -1652,7 +1652,7 @@ class NzbObject(TryList):
         if nzf_remove_list and not self.files:
             sabnzbd.NzbQueue.end_job(self)
 
-        if not article:
+        if not article and not server.unpickle_break:
             # No articles for this server, block for next time
             self.add_to_try_list(server)
         return article

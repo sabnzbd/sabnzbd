@@ -24,7 +24,6 @@ import logging
 import time
 import datetime
 import functools
-import pprint
 from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
@@ -731,7 +730,7 @@ class NzbQueue:
                 ):
                     if not nzo.server_in_try_list(server):
                         article = nzo.get_article(server, servers)
-                        if article:
+                        if article or server.unpickle_break:
                             return article
                     # Stop after first job that wasn't paused/propagating/etc
                     if self.__top_only:
@@ -887,7 +886,6 @@ class NzbQueue:
 
                 # Reset main trylist, minimal performance impact
                 logging.info("Resetting bad trylist for job %s", nzo.final_name)
-                logging.info("Content: %s", pprint.pformat(nzo.try_list))
                 nzo.reset_try_list()
 
         for nzo in empty:
@@ -955,33 +953,39 @@ class NzbQueue:
                 if nzf.bytes_left < 1:
                     continue
 
-                if nzo.status == Status.PAUSED and nzf.import_finished and nzf.pickle_articles():
-                    max_items -= 1
+                if nzo.status == Status.PAUSED and nzf.import_finished:
+                    if len(nzf.articles) > 1 and not nzf.articles[1].fetcher:
+                        nzf.pickle_articles()
+                        max_items -= 1
                     continue
 
-                # Add to unpickle queue if it is less than 2.5GB ahead of the active file and qsize < 20
+                # Add to unpickle queue if it is less than 2.5GB ahead of the active file.
                 # 2.5 is because the pickler runs every 3 seconds and servers out of retention are limited
-                # to 750 MB.
+                # to 750 MB/s.
                 if not nzf.import_finished:
-                    if buffer_size - needed < 2.5 * GIGI and sabnzbd.Unpickler.unpickle_queue.qsize() < 100:
-                        sabnzbd.Unpickler.process(1000000, nzf, "pickler")
+                    if needed > (buffer_size / 2) and sabnzbd.Unpickler.unpickle_queue.qsize() < 100:
+                        sabnzbd.Unpickler.process(10000, nzf, "pickler")
                     needed -= nzf.bytes_left
                     continue
 
                 # Don't pickle if the file has been touched in the last 20 seconds or it will soon be reached by a server
-                if now - nzf.last_used > 20 and nzf.pickle_lock_time < time.time():
-                    if needed < 0 and len(nzf.articles) > 1:
-                        if nzf.pickle_articles():
-                            max_items -= 1
-                    else:
-                        needed -= nzf.bytes_left
+                if now - nzf.last_used > 20:
+                    if needed < 0 and len(nzf.articles) > 1 and nzf.pickle_lock_time < now:
+                        if nzf.articles[1].fetcher:
+                            nzf.last_used = now
+                        else:
+                            if nzf.pickle_articles():
+                                max_items -= 1
+                    needed -= nzf.bytes_left
                 else:
-                    # logging.debug(
-                    # "Not pickling %s. trylist: %d, lastused: %d",
-                    # nzf.filename,
-                    # len(nzf.try_list),
-                    # now - nzf.last_used,
-                    # )
+                    logging.debug(
+                        "Not pickling %s. trylist: %d, lastused: %d, sum: %d, now: %d",
+                        nzf.filename,
+                        len(nzf.try_list),
+                        nzf.last_used,
+                        now - nzf.last_used,
+                        now,
+                    )
                     needed = buffer_size
         return False
 
