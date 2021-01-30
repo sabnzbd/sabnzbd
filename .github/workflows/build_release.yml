@@ -70,18 +70,30 @@ jobs:
       NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
       NOTARIZATION_PASS: ${{ secrets.NOTARIZATION_PASS }}
       AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
+      # We need the official Python, because the GA ones only support newer macOS versions
+      # The deployment target is picked up by the Python build tools automatically
+      # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
+      PYTHON_VERSION: 3.9.1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v2
+    - name: Cache Python download
+      id: cache-python-download
+      uses: actions/cache@v2
       with:
-        python-version: 3.9
+        path: python.pkg
+        key: Python-${{ env.PYTHON_VERSION }}
+    - name: Get Python
+      if: steps.cache-python-download.outputs.cache-hit != 'true'
+      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx10.9.pkg -o "python.pkg"
+    - name: Install Python
+      run: sudo installer -pkg python.pkg -target /
     - name: Install Python dependencies
       run: |
-        python --version
-        pip install --upgrade pip wheel
-        pip install --upgrade -r requirements.txt
-        pip install --upgrade -r builder/requirements.txt
+        python3 --version
+        pip3 install --upgrade pip wheel
+        pip3 install --upgrade -r requirements.txt
+        pip3 install --upgrade -r builder/requirements.txt
     - name: Import macOS codesign certificates
       uses: apple-actions/import-codesign-certs@v1
       if: env.SIGNING_AUTH
@@ -90,8 +102,8 @@ jobs:
         p12-password: ${{ secrets.CERTIFICATES_P12_PASSWORD }}
     - name: Build macOS binary
       run: |
-        python builder/package.py app
-        python builder/make_dmg.py
+        python3 builder/package.py app
+        python3 builder/make_dmg.py
     - name: Upload macOS binary
       uses: actions/upload-artifact@v2
       with:
@@ -99,4 +111,4 @@ jobs:
         name: macOS binary (not notarized)
     - name: Prepare official release
       if: env.AUTOMATION_GITHUB_TOKEN
-      run: python builder/package.py release
+      run: python3 builder/package.py release
