@@ -715,8 +715,8 @@ class TestQueueApi(ApiTestFunctions):
                 False,
                 marks=pytest.mark.skipif(sys.platform.startswith("win"), reason="Not for Windows"),
             ),
-            (None, True, False),
-            ("", True, False),
+            ("None", False, True),
+            ("", False, False),
         ],
     )
     def test_api_queue_change_job_script(self, script_filename, create_scriptfile, should_work):
