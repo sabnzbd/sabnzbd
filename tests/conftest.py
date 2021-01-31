@@ -122,7 +122,7 @@ def run_sabnzbd_sabnews_and_selenium(clean_cache_dir):
     # We only try Chrome for consistent results
     driver_options = ChromeOptions()
 
-    # Headless on Appveyor/Travis
+    # Headless during CI testing
     if "CI" in os.environ:
         driver_options.add_argument("--headless")
         driver_options.add_argument("--no-sandbox")
