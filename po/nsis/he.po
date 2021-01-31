@@ -4,12 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
+# ION, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: ION, 2021\n"
 "Language-Team: Hebrew (https://www.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -52,6 +53,8 @@ msgid ""
 "The installer only supports Windows 8.1 and above, use the standalone legacy"
 " version to run on older Windows version."
 msgstr ""
+"המתקין תומך רק במערכת Windows 8.1 ומעלה, השתמש בגרסה העצמאית המיושנת כדי "
+"להריץ על גרסת Windows ישנה יותר."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
