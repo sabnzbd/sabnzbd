@@ -287,7 +287,7 @@ class NzbQueue:
 
     def change_script(self, nzo_ids: str, script: str) -> int:
         result = 0
-        if is_valid_script(script):
+        if (script is None) or is_valid_script(script):
             for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
                 if nzo_id in self.__nzo_table:
                     self.__nzo_table[nzo_id].script = script
