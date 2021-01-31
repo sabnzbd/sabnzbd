@@ -26,7 +26,7 @@ class Unpickler(Thread):
                 while not self.unpickle_queue.empty():
                     try:
                         self.unpickle_queue.get(False)
-                    except Empty:
+                    except queue.Empty:
                         continue
                 break
             if priority > 100:
