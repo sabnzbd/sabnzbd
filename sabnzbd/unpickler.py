@@ -30,15 +30,13 @@ class Unpickler(Thread):
                         continue
                 break
             nzf.unpickle_articles(source)
-            if priority < 100:
-                time.sleep(0.01)
             logging.debug("Unpickled pri %d article from %s", priority, source)
 
     def stop(self):
         self.unpickle_queue.put((0, None, None))
 
     def process(self, priority, nzf, source):
-        # The same nzf will be re-added every time it's hit by a server
+        # The same nzf will be re-added every time it's hit by a server when last_used is set and try_list is reset
         if self.previous_nzf == nzf.nzf_id:
             return
         else:

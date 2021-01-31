@@ -940,7 +940,6 @@ class NzbQueue:
         for nzo in self.__nzo_list:
             if nzo.status == Status.GRABBING:
                 continue
-            filenum = 0
             now = time.time()
             for nzf in nzo.files:
                 if sabnzbd.TRIGGER_RESTART or sabnzbd.SABSTOP:
@@ -952,27 +951,29 @@ class NzbQueue:
                 if nzf.bytes_left < 1:
                     continue
 
-                if nzo.status == Status.PAUSED and nzf.import_finished:
-                    if len(nzf.articles) > 1 and not nzf.articles[1].fetcher and nzf.pickle_articles():
-                        max_items -= 1
-                    continue
-
-                # Add to unpickle queue if it is less than 2.5GB ahead of the active file.
-                # 2.5 is because the pickler runs every 3 seconds and servers out of retention are limited
-                # to 750 MB/s.
                 if not nzf.import_finished:
-                    if needed > (buffer_size / 2) and sabnzbd.Unpickler.unpickle_queue.qsize() < 100:
-                        sabnzbd.Unpickler.process(10000, nzf, "pickler")
-                    needed -= nzf.bytes_left
+                    # Add to unpickle queue if it is less than 2.5GB ahead of the active file.
+                    # 2.5 is because the pickler runs every 3 seconds and servers out of retention are limited
+                    # to 750 MB/s.
+                    if nzo.status != Status.PAUSED:
+                        if needed > (buffer_size / 2) and sabnzbd.Unpickler.unpickle_queue.qsize() < 100:
+                            sabnzbd.Unpickler.process(10000, nzf, "pickler")
+                        needed -= nzf.bytes_left
                     continue
 
-                # Refresh last_used if it is still active after 10 seconds
-                if 25 > now - nzf.last_used > 10:
-                    if len(nzf.articles) > 1 and nzf.articles[1].fetcher:
+                # Refresh last_used if it is still active after 15 seconds
+                if 300 > now - nzf.last_used > 10:
+                    if len(nzf.articles) and nzf.articles[0].fetcher:
                         logging.debug("Skipping pickle %s, refreshing last_used", nzf.filename)
                         nzf.last_used = now
-                        needed = buffer_size
+                        if nzo.status != Status.PAUSED:
+                            needed = buffer_size
                         continue
+
+                if nzo.status == Status.PAUSED:
+                    if now - nzf.last_used > 20 and nzf.pickle_articles():
+                        max_items -= 1
+                    continue
 
                 # Don't pickle if the file has been touched in the last 20 seconds or it will soon be reached by a server
                 if now - nzf.last_used > 20:
@@ -983,7 +984,7 @@ class NzbQueue:
                     needed -= nzf.bytes_left
                 else:
                     logging.debug(
-                        "Not pickling %s. trylist: %d, lastused: %d, sum: %d, now: %d",
+                        "Not pickling %s. trylist: %d, lastused: %d, age: %d, now: %d",
                         nzf.filename,
                         len(nzf.try_list),
                         nzf.last_used,

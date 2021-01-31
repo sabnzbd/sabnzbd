@@ -1552,13 +1552,14 @@ def main():
                 sabnzbd.TRIGGER_RESTART = True
 
         # 3 sec polling tasks
-        # logging.debug("Start pickling")
+        # Check for pickleable articles
         # Release thread before entering locking pickle call
         time.sleep(0.001)
         pickle_start = time.time()
         # Don't pickle for more than 1 second and release the queue for every 10 pickles
         while time.time() - pickle_start < 1 and sabnzbd.NzbQueue.pickle():
             time.sleep(0.01)
+
         pickle_time = time.time() - pickle_start
         if pickle_time:
             logging.debug("Pickle time: %f", pickle_time)
