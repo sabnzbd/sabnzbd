@@ -29,9 +29,9 @@ class Unpickler(Thread):
                     except Empty:
                         continue
                 break
-            nzf.unpickle_articles(source)
             if priority > 100:
                 time.sleep(0.01)
+            nzf.unpickle_articles(source)
             logging.debug("Unpickled pri %d article from %s", priority, source)
 
     def stop(self):
