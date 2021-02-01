@@ -77,10 +77,17 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: 10.9
     steps:
     - uses: actions/checkout@v2
+    - name: Cache Python download
+      id: cache-python-download
+      uses: actions/cache@v2
+      with:
+        path: ~/python.pkg
+        key: macOS-Python-${{ env.PYTHON_VERSION }}
     - name: Get Python
-      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx10.9.pkg -o "python.pkg"
+      if: steps.cache-python-download.outputs.cache-hit != 'true'
+      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx10.9.pkg -o ~/python.pkg
     - name: Install Python
-      run: sudo installer -pkg python.pkg -target /
+      run: sudo installer -pkg ~/python.pkg -target /Applications
     - name: Install Python dependencies
       run: |
         python3 --version
