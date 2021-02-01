@@ -9,7 +9,8 @@ portend
 chardet
 notify2
 
-# Support for SickGear https://github.com/SickGear/SickGear/blob/master/autoProcessTV/autoProcessTV.py
+# Support for SickGear
+# https://github.com/SickGear/SickGear/blob/master/autoProcessTV/autoProcessTV.py
 requests>=2.25.0
 
 # Windows system integration
