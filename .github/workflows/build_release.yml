@@ -59,7 +59,7 @@ jobs:
         path: "*-win32-bin.zip"
         name: Windows Windows standalone binary (32bit and legacy)
     - name: Prepare official release
-      if: env.AUTOMATION_GITHUB_TOKEN
+      if: env.AUTOMATION_GITHUB_TOKEN && !startsWith(github.ref, 'refs/tags/')
       run: python builder/package.py release
 
   build_macos:
@@ -87,7 +87,7 @@ jobs:
       if: steps.cache-python-download.outputs.cache-hit != 'true'
       run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx10.9.pkg -o ~/python.pkg
     - name: Install Python
-      run: sudo installer -pkg ~/python.pkg -target /Applications
+      run: sudo installer -pkg ~/python.pkg -target /
     - name: Install Python dependencies
       run: |
         python3 --version
@@ -110,5 +110,5 @@ jobs:
         path: "*-osx.dmg"
         name: macOS binary (not notarized)
     - name: Prepare official release
-      if: env.AUTOMATION_GITHUB_TOKEN
+      if: env.AUTOMATION_GITHUB_TOKEN && !startsWith(github.ref, 'refs/tags/')
       run: python3 builder/package.py release

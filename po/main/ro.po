@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.2.0-develop\n"
+"Project-Id-Version: SABnzbd-3.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Eduard Baniceru <war4peace@gmail.com>, 2021\n"
 "Language-Team: Romanian (https://www.transifex.com/sabnzbd/teams/111101/ro/)\n"
