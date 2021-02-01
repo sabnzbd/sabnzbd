@@ -1,14 +1,14 @@
-Release Notes - SABnzbd 3.2.0 Beta 2
+Release Notes - SABnzbd 3.2.0 Release Candidate 1
 =========================================================
-
-Changes since 3.2.0 Beta 1 were added below.
 
 ## Changes since 3.1.1
 - Python 3.6 is the minimum required version. 
-- macOS release is currently restricted to macOS 10.14 (Mojave) and above 
-  due to changes in our build platform. We are still trying to resolve this.
+- The Windows installer can only be used on 64bit Windows 8.1 and 
+  above. For 32bit systems or older Windows versions the 
+  standalone 32bit legacy version can be used.
 - Post-processing can be aborted at any stage, including scripts.
 - Improvements in the downloader to reduce CPU-load.
+- Increased garbage collection rate to reduce memory usage.
 - Custom date ranges for server graphs can be selected.
 - Keep track of article fetching success-rate of each server.
 - Added option to add download quota warning for each server.
@@ -21,6 +21,7 @@ Changes since 3.2.0 Beta 1 were added below.
 - Using SSDP, SABnzbd instances are now listed in `Network` on Windows.
 - Improvements to parsing of job name and filenames listed in the NZB.
 - RSS titles can be edited.
+- Prospective par2 will add blocks from all sets in a job.
 - Sanitize all filenames to a maximum of 245 characters.
 - Show commit hash when running from `git` sources.
 - Notify through Notifications if new version is available.
@@ -28,7 +29,6 @@ Changes since 3.2.0 Beta 1 were added below.
 - Added `10 GB` test download.
 - IPv6 is no longer preferred in HappyEyeballs address selection.
 - API-calls `queue` and `history` can now be filtered by `nzo_id`.
-- Inreased garbage collection rate to reduce memory usage.
 - Windows: `Temporary Download` job folders no longer have a maximum length.
 - Windows/macOS: Update UnRar to 6.0.0 and MultiPar to 1.3.1.3.
 
@@ -44,11 +44,13 @@ Changes since 3.2.0 Beta 1 were added below.
 - Increase Maximum number of connections per server to `1000`.
 - Update encryption check to handle partially assembled files.
 - Don't activate Windows notifications when running as service.
+- Command line option `--console` did not work.
 - Crash in API-call to delete history items for non-existing `nzo_id`.
 - Prevent repetition of unwanted extension warnings.
 - Correct notification category for failed URL fetches.
 - Improvements to the `Add NZB` modal window.
 - Sort script drop-down list alphabetically.
+- Default Bandwidth percentage was not set to `100`.
 - Direct Unpack stability fixes.
 - macOS: Program shutdown could fail.
 - macOS: Tray text was misaligned on macOS 11 (Big Sur).
