@@ -61,7 +61,7 @@ from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
 import sabnzbd.utils.ssdp
 from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
-from sabnzbd.lang import list_languages
+from sabnzbd.lang import list_languages, LanguageTable
 from sabnzbd.api import (
     list_scripts,
     list_cats,
@@ -384,6 +384,7 @@ class MainPage:
             info["categories"] = list_cats(True)
             info["have_rss_defined"] = bool(config.get_rss())
             info["have_watched_dir"] = bool(cfg.dirscan_dir())
+            info["rtl"] = LanguageTable.get(cfg.language(), "en")[3]
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
