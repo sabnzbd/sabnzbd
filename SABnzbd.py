@@ -195,6 +195,7 @@ def print_help():
     print("      --no-login           Start with username and password reset")
     print("      --log-all            Log all article handling (for developers)")
     print("      --disable-file-log   Logging is only written to console")
+    print("      --console            Force logging to console")
     print("      --new                Run a new instance of SABnzbd")
     print()
     print("NZB (or related) file:")
@@ -845,6 +846,7 @@ def main():
     cherrypylogging = None
     clean_up = False
     logging_level = None
+    console_logging = False
     no_file_log = False
     web_dir = None
     vista_plus = False
@@ -900,6 +902,8 @@ def main():
             if logging_level < -1 or logging_level > 2:
                 print_help()
                 exit_sab(1)
+        elif opt == "--console":
+            console_logging = True
         elif opt in ("-v", "--version"):
             print_version()
             exit_sab(0)
@@ -941,8 +945,8 @@ def main():
     sabnzbd.DIR_LANGUAGE = real_path(sabnzbd.DIR_PROG, DEF_LANGUAGE)
     org_dir = os.getcwd()
 
-    # Need console logging for SABnzbd.py and SABnzbd-console.exe
-    console_logging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find("-console") > 0)
+    # Need console logging if requested, for SABnzbd.py and SABnzbd-console.exe
+    console_logging = console_logging or sabnzbd.MY_NAME.lower().find("-console") > 0 or not hasattr(sys, "frozen")
     console_logging = console_logging and not sabnzbd.DAEMON
 
     LOGLEVELS = (logging.FATAL, logging.WARNING, logging.INFO, logging.DEBUG)
