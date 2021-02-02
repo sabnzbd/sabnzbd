@@ -24,7 +24,7 @@
         <!-- ko if: (quotaLimit() != 0)  -->
         <div dir="ltr" class="info-container-box">
             <span data-bind="css: { 'queue-error-info' : (parseInt(quotaLimitLeft())<=0) }">
-                <span class="glyphicon glyphicon-log-in"></span> <span dir="ltr" data-bind="text: quotaLimitLeft"></span>B / <span dir="ltr" data-bind="text: quotaLimit"></span>B $T('quota-left')
+                <span class="glyphicon glyphicon-log-in"></span> <span data-bind="text: quotaLimitLeft"></span>B / <span data-bind="text: quotaLimit"></span>B $T('quota-left')
             </span>
         </div>
         <!-- /ko -->
