@@ -16,26 +16,26 @@
         </div>
         <!--#end if#-->
         <!-- ko if: (queueDataLeft() != '')  -->
-        <div class="info-container-box">
+        <div dir="ltr" class="info-container-box">
             <span class="glyphicon glyphicon-save"></span>
             <span data-bind="text: queueDataLeft"></span> $T('Glitter-left')
         </div>
         <!-- /ko -->
         <!-- ko if: (quotaLimit() != 0)  -->
-        <div class="info-container-box">
+        <div dir="ltr" class="info-container-box">
             <span data-bind="css: { 'queue-error-info' : (parseInt(quotaLimitLeft())<=0) }">
-                <span class="glyphicon glyphicon-log-in"></span> <span data-bind="text: quotaLimitLeft"></span>B / <span data-bind="text: quotaLimit"></span>B $T('quota-left')
+                <span class="glyphicon glyphicon-log-in"></span> <span dir="ltr" data-bind="text: quotaLimitLeft"></span>B / <span dir="ltr" data-bind="text: quotaLimit"></span>B $T('quota-left')
             </span>
         </div>
         <!-- /ko -->
-        <div class="info-container-box" data-bind="css: { 'queue-error-info' : diskSpaceExceeded1() }">
+        <div dir="ltr" class="info-container-box" data-bind="css: { 'queue-error-info' : diskSpaceExceeded1() }">
             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft1"></span>B $T('Glitter-free')
             <!-- ko if: diskSpaceLeft2()  -->
             <em>($T('Glitter-freeTemp'))</em>
             <!-- /ko -->
         </div>
         <!-- ko if: diskSpaceLeft2()  -->
-        <div class="info-container-box"  data-bind="css: { 'queue-error-info' : diskSpaceExceeded2() }">
+        <div dir="ltr" class="info-container-box"  data-bind="css: { 'queue-error-info' : diskSpaceExceeded2() }">
             <span class="glyphicon glyphicon-hdd"></span> <span data-bind="text: diskSpaceLeft2"></span>B $T('Glitter-free')
         </div>
         <!-- /ko -->
@@ -125,13 +125,13 @@
                     <div class="row-wrap-text" data-bind="text: \$parent.showColumn(\$data)"></div>
                 </td>
                 <!-- /ko -->
-                <td class="progress-indicator">
+                <td dir="ltr" class="progress-indicator">
                     <div class="progress">
-                        <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentage() + '%; background-color: ' + progressColor() + ';' }">
+                        <div style="text-align: right;" class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentage() + '%; background-color: ' + progressColor() + ';' }">
                             <strong data-bind="text: percentage() + '%'"></strong>
                             <i data-bind="text: missingText"></i>
                         </div>
-                        <span data-bind="text: progressText"></span>
+                        <span data-bind="text: progressText" ></span>
                     </div>
                 </td>
                 <td class="timeleft row-wrap-text" data-bind="text: statusText"></td>
