@@ -127,11 +127,11 @@
                 <!-- /ko -->
                 <td dir="ltr" class="progress-indicator">
                     <div class="progress">
-                        <div style="text-align: right;" class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentage() + '%; background-color: ' + progressColor() + ';' }">
+                        <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentage() + '%; background-color: ' + progressColor() + ';' }">
                             <strong data-bind="text: percentage() + '%'"></strong>
                             <i data-bind="text: missingText"></i>
                         </div>
-                        <span data-bind="text: progressText" ></span>
+                        <span data-bind="text: progressText"></span>
                     </div>
                 </td>
                 <td class="timeleft row-wrap-text" data-bind="text: statusText"></td>
