@@ -613,6 +613,11 @@ class NzbObject(TryList):
         if not self.password:
             _, self.password = scan_password(os.path.splitext(filename)[0])
 
+        # Create a record of the input for pp, script, and priority
+        input_pp = pp
+        input_script = script
+        input_priority = priority if priority != DEFAULT_PRIORITY else None
+
         # Determine category and find pp/script values based on input
         # Later will be re-evaluated based on import steps
         if pp is None:
@@ -800,6 +805,16 @@ class NzbObject(TryList):
             # Call the script
             accept, name, pp, cat_pp, script_pp, priority, group = sabnzbd.newsunpack.pre_queue(self, pp, cat)
 
+            if cat_pp:
+                # An explicit pp/script/priority set upon adding the job takes precedence
+                # over an implicit setting based on the category set by pre-queue
+                if input_priority and not priority:
+                    priority = input_priority
+                if input_pp and not pp:
+                    pp = input_pp
+                if input_script and not script_pp:
+                    script_pp = input_script
+
             # Accept or reject
             accept = int_conv(accept)
             if accept < 1:
@@ -838,7 +853,7 @@ class NzbObject(TryList):
         # Pause if requested by the NZB-adding or the pre-queue script
         if self.priority == PAUSED_PRIORITY:
             self.pause()
-            self.priority = NORMAL_PRIORITY
+            self.priority = self.find_stateless_priority(self.cat)
 
         # Pause job when above size limit
         limit = cfg.size_limit.get_int()
@@ -874,7 +889,7 @@ class NzbObject(TryList):
 
             # Only change priority it's currently set to duplicate, otherwise keep original one
             if self.priority == DUP_PRIORITY:
-                self.priority = NORMAL_PRIORITY
+                self.priority = self.find_stateless_priority(self.cat)
 
         # Check if there is any unwanted extension in plain sight in the NZB itself
         for nzf in self.files:
@@ -1312,6 +1327,22 @@ class NzbObject(TryList):
 
         # Invalid value, set to normal priority
         self.priority = NORMAL_PRIORITY
+
+    def find_stateless_priority(self, category: str) -> int:
+        """Find a priority that doesn't set a job state, starting from the given category,
+        for jobs to fall back to after their priority was set to PAUSED or DUP. The fallback
+        priority cannot be another state-setting priority or FORCE; the latter could override
+        the job state immediately after it was set."""
+        cat_options = [category]
+        if category != "*":
+            cat_options.append("default")
+
+        for cat in cat_options:
+            prio = cat_to_opts(cat)[3]
+            if prio not in (DUP_PRIORITY, PAUSED_PRIORITY, FORCE_PRIORITY):
+                return prio
+
+        return NORMAL_PRIORITY
 
     @property
     def labels(self):

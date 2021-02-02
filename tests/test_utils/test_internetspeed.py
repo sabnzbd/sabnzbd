@@ -18,10 +18,12 @@
 """
 tests.test_utils.test_internetspeed - Testing SABnzbd internetspeed
 """
+import pytest
 
 from sabnzbd.utils.internetspeed import internetspeed, measurespeed, SizeUrlList
 
 
+@pytest.mark.usefixtures("clean_cache_dir")
 class TestInternetSpeed:
     """This class contains tests to measure internet speed
     with an active and inactive connection

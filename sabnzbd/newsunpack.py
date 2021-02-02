@@ -2350,11 +2350,21 @@ def pre_queue(nzo: NzbObject, pp, cat):
         ret = p.wait()
         logging.info("Pre-queue script returns %s and output=\n%s", ret, output)
         if ret == 0:
+            try:
+                # Extract category line from pre-queue output
+                pre_queue_category = output.splitlines()[3].strip("\r\n '\"")
+            except IndexError:
+                pre_queue_category = None
             n = 0
             for line in output.split("\n"):
                 line = line.strip("\r\n '\"")
-                if n < len(values) and line:
-                    values[n] = line
+                if n < len(values):
+                    if line:
+                        values[n] = line
+                    elif pre_queue_category and n in (2, 4, 5):
+                        # Preserve empty pp, script, and priority lines to prevent
+                        # pre-existing values from overriding cat.-based settings
+                        values[n] = ""
                 n += 1
         accept = int_conv(values[0])
         if accept < 1:

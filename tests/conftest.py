@@ -30,11 +30,16 @@ from warnings import warn
 from tests.testhelper import *
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="module")
 def clean_cache_dir(request):
     # Remove cache if already there
-    if os.path.isdir(SAB_CACHE_DIR):
-        shutil.rmtree(SAB_CACHE_DIR)
+    try:
+        if os.path.isdir(SAB_CACHE_DIR):
+            shutil.rmtree(SAB_CACHE_DIR)
+        # Create an empty placeholder
+        os.makedirs(SAB_CACHE_DIR)
+    except Exception:
+        pytest.fail("Failed to freshen up cache dir %s" % SAB_CACHE_DIR)
 
     yield request
 
@@ -48,32 +53,13 @@ def clean_cache_dir(request):
             time.sleep(1)
 
 
-@pytest.fixture(scope="session")
-def run_sabnzbd_sabnews_and_selenium(clean_cache_dir):
-    """
-    Start SABnzbd (with translations), SABNews and Selenium/Chromedriver, shared
-    among all testcases of the pytest session. A number of key configuration
-    parameters are defined in testhelper.py (SAB_* variables).
-    """
+@pytest.fixture(scope="module")
+def run_sabnzbd(clean_cache_dir):
+    """Start SABnzbd (with translations). A number of key configuration parameters are defined
+    in testhelper.py (SAB_* variables). Scope is set to 'module' to prevent configuration
+    changes made during functional tests from causing failures in unrelated tests."""
 
-    # Define a shutdown routine; directory cleanup is handled by clean_cache_dir()
-    def shutdown_all():
-        """ Shutdown all services """
-        # Shutdown SABNews
-        try:
-            sabnews_process.kill()
-            sabnews_process.communicate(timeout=10)
-        except:
-            warn("Failed to shutdown the sabnews process")
-
-        # Shutdown Selenium/Chrome
-        try:
-            driver.close()
-            driver.quit()
-        except:
-            # If something else fails, this can cause very non-informative long tracebacks
-            warn("Failed to shutdown the selenium/chromedriver process")
-
+    def shutdown_sabnzbd():
         # Shutdown SABnzbd
         try:
             get_url_result("shutdown", SAB_HOST, SAB_PORT)
@@ -84,7 +70,6 @@ def run_sabnzbd_sabnews_and_selenium(clean_cache_dir):
             warn("Failed to shutdown the sabnzbd process")
 
     # Copy basic config file with API key
-    os.makedirs(SAB_CACHE_DIR, exist_ok=True)
     shutil.copyfile(os.path.join(SAB_DATA_DIR, "sabnzbd.basic.ini"), os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"))
 
     # Check if we have language files
@@ -118,7 +103,27 @@ def run_sabnzbd_sabnews_and_selenium(clean_cache_dir):
         ]
     )
 
-    # In the meantime, start Selenium and Chrome;
+    # Wait for SAB to respond
+    for _ in range(10):
+        try:
+            get_url_result()
+            # Woohoo, we're up!
+            break
+        except requests.ConnectionError:
+            time.sleep(1)
+    else:
+        # Make sure we clean up
+        shutdown_sabnzbd()
+        raise requests.ConnectionError()
+
+    yield
+
+    shutdown_sabnzbd()
+
+
+@pytest.fixture(scope="session")
+def run_sabnews_and_selenium(request):
+    """ Start SABNews and Selenium/Chromedriver, shared across the pytest session. """
     # We only try Chrome for consistent results
     driver_options = ChromeOptions()
 
@@ -138,31 +143,30 @@ def run_sabnzbd_sabnews_and_selenium(clean_cache_dir):
 
     # Start the driver and pass it on to all the classes
     driver = webdriver.Chrome(options=driver_options)
-    for item in clean_cache_dir.node.items:
+    for item in request.node.items:
         parent_class = item.getparent(pytest.Class)
         parent_class.obj.driver = driver
 
     # Start SABNews
     sabnews_process = subprocess.Popen([sys.executable, os.path.join(SAB_BASE_DIR, "sabnews.py")])
 
-    # Wait for SAB to respond
-    for _ in range(10):
-        try:
-            get_url_result()
-            # Woohoo, we're up!
-            break
-        except requests.ConnectionError:
-            time.sleep(1)
-    else:
-        # Make sure we clean up
-        shutdown_all()
-        raise requests.ConnectionError()
-
     # Now we run the tests
     yield
 
-    # Shutdown gracefully
-    shutdown_all()
+    # Shutdown SABNews
+    try:
+        sabnews_process.kill()
+        sabnews_process.communicate(timeout=10)
+    except:
+        warn("Failed to shutdown the sabnews process")
+
+    # Shutdown Selenium/Chrome
+    try:
+        driver.close()
+        driver.quit()
+    except:
+        # If something else fails, this can cause very non-informative long tracebacks
+        warn("Failed to shutdown the selenium/chromedriver process")
 
 
 @pytest.fixture(scope="class")
