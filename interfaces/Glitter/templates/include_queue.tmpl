@@ -51,7 +51,7 @@
             <a href="#" data-bind="click: queue.showMultiEdit">
                 <span class="glyphicon glyphicon-tasks" data-tooltip="true" data-placement="left" title="$T('Glitter-multiOperations')"></span>
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" style="text-align: $text_align;">
                 <li><a href="#" data-action="sortAgeAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeAsc')</a></li>
                 <li><a href="#" data-action="sortAgeDesc" data-bind="click: queue.queueSorting">$T('Glitter-sortAgeDesc')</a></li>
                 <li><a href="#" data-action="sortNameAsc" data-bind="click: queue.queueSorting">$T('Glitter-sortNameAsc')</a></li>
@@ -145,7 +145,7 @@
                             <span class="caret"></span>
                         </a>
                         <!-- ko if: hasDropdown()  -->
-                        <ul class="dropdown-menu queue-item-settings">
+                        <ul class="dropdown-menu queue-item-settings" dir="$text_direction">
                             <li title="$T('category')" data-tooltip="true" data-placement="left">
                                 <span class="glyphicon glyphicon-tag"></span>
                                 <select name="Category" class="form-control" data-bind="options: parent.categoriesList, optionsValue: 'catValue', optionsText: 'catText',  value: category, event: { change: changeCat }"></select>
