@@ -91,6 +91,7 @@ def list_languages():
     lst.sort()
     return lst
 
+
 def is_rtl(lang):
     return LanguageTable.get(lang, "en")[3]
 

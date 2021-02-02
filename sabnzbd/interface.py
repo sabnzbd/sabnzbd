@@ -392,7 +392,6 @@ class MainPage:
                 info["text_direction"] = "ltr"
                 info["text_align"] = "left"
 
-
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
                 cfg.username()
