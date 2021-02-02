@@ -37,8 +37,8 @@ msgid ""
 "services or `Cancel` to cancel this upgrade."
 msgstr ""
 "שירות SABnzbd Windows השתנה בגרסה SABnzbd 3.0.0. \\nתצטרך להתקין מחדש את "
-"השירות SABnzbd. \\n\\nלחץ `אשר` כדי להסיר את השירותים הקיימים או `בטל` כדי "
-"לבטל שדרוג זה."
+"השירות SABnzbd. \\n\\nלחץ `אישור` כדי להסיר את השירותים הקיימים או `ביטול` "
+"כדי לבטל שדרוג זה."
 
 #: builder/win/NSIS_Installer.nsi
 msgid ""
@@ -58,7 +58,7 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
-msgstr "זה יסיר את SABnzbd ממערכתך"
+msgstr "זה יסיר את SABnzbd מהמערכת שלך"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Run at startup"
@@ -66,11 +66,11 @@ msgstr "הפעלה בהזנק"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Desktop Icon"
-msgstr "צלמית שולחן עבודה"
+msgstr "איקון שולחן עבודה"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
-msgstr "NZB שיוך קבצי"
+msgstr "שיוך קבצי NZB"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"
