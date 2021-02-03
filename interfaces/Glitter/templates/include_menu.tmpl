@@ -85,7 +85,7 @@
                 </a>
             </li>
             <!--#end if#-->
-            <li data-tooltip="true" data-placement="bottom" title="SABnzbd $T('menu-config')">
+            <li data-tooltip="true" data-placement="bottom" title="#unless $rtl #SABnzbd #end unless#$T('menu-config')#if $rtl # SABnzbd#end if#">
                 <a href="./config/"><span class="glyphicon glyphicon-cog"></span></a>
             </li>
             <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}">
