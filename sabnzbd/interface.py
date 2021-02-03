@@ -385,7 +385,7 @@ class MainPage:
             info["have_rss_defined"] = bool(config.get_rss())
             info["have_watched_dir"] = bool(cfg.dirscan_dir())
             info["rtl"] = is_rtl(cfg.language())
-            if is_rtl(cfg.language()):
+            if info["rtl"]:
                 info["text_direction"] = "rtl"
                 info["text_align"] = "right"
                 info["text_align_reverse"] = "left"
@@ -423,7 +423,7 @@ class MainPage:
             return "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
 
         sabnzbd.shutdown_program()
-        return T("SABnzbd shutdown finished")
+        return SimpleResult(T("SABnzbd shutdown finished"))
 
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
@@ -949,7 +949,7 @@ class QueuePage:
     @secured_expose(check_api_key=True)
     def shutdown(self, **kwargs):
         sabnzbd.shutdown_program()
-        return T("SABnzbd shutdown finished")
+        return SimpleResult(T("SABnzbd shutdown finished"))
 
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
@@ -2691,6 +2691,28 @@ def GetRssLog(feed):
         pass
 
     return done, good, bad
+
+def SimpleResult(string):
+    rtl = is_rtl(cfg.language())
+    if rtl:
+        text_direction = "rtl"
+    else:
+        text_direction = "ltr"
+    return """
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+<html dir="%s">
+<head>
+           <title>%s</title>
+</head>
+<body>
+%s
+</body>
+</html>
+""" % (
+        text_direction,
+        string,
+        string
+        )
 
 
 ##############################################################################

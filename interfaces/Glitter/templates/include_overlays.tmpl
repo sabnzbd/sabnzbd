@@ -536,7 +536,7 @@
                 <h4 class="modal-title row-wrap-text" data-bind="text: filelist.filelist_name">$T('Glitter-loading')</h4>
             </div>
             <div class="modal-body">
-                <div id="modal-item-filelist">
+                <div id="modal-item-filelist" dir="ltr">
                     <form data-bind="submit: filelist.setNzbPassword" class="form-inline">
                         <div class="form-group">
                             <div class="input-group">
@@ -544,7 +544,7 @@
                                     <span class="glyphicon glyphicon-lock"></span>
                                 <span class="glyphicon glyphicon-floppy-saved"></span>
                                 </span>
-                                <input type="text" class="form-control" id="nzb_password" placeholder="$T('srv-password')" data-bind="value: filelist.filelist_password" />
+                                <input dir="$text_direction" type="text" class="form-control" id="nzb_password" placeholder="$T('srv-password')" data-bind="value: filelist.filelist_password" />
                                 <button type="submit" class="btn btn-default">$T('Glitter-submit')</button>
                             </div>
                         </div>
