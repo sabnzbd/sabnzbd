@@ -2692,6 +2692,7 @@ def GetRssLog(feed):
 
     return done, good, bad
 
+
 def SimpleResult(string):
     rtl = is_rtl(cfg.language())
     if rtl:
@@ -2711,8 +2712,8 @@ def SimpleResult(string):
 """ % (
         text_direction,
         string,
-        string
-        )
+        string,
+    )
 
 
 ##############################################################################
