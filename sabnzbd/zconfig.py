@@ -35,7 +35,7 @@ except:
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import LOCALHOSTS
+from sabnzbd.misc import is_localhost
 
 _BONJOUR_OBJECT = None
 
@@ -58,7 +58,7 @@ def set_bonjour(host=None, port=None):
     """ Publish host/port combo through Bonjour """
     global _HOST_PORT, _BONJOUR_OBJECT
 
-    if not _HAVE_BONJOUR or not cfg.enable_bonjour():
+    if not _HAVE_BONJOUR or not cfg.enable_broadcast():
         logging.info("No bonjour/zeroconf support installed")
         return
 
@@ -71,8 +71,8 @@ def set_bonjour(host=None, port=None):
     zhost = None
     domain = None
 
-    if host in LOCALHOSTS:
-        logging.info("bonjour/zeroconf cannot be one of %s", LOCALHOSTS)
+    if is_localhost(host):
+        logging.info("Cannot setup bonjour/zeroconf for localhost (%s)", host)
         # All implementations fail to implement "localhost" properly
         # A false address is published even when scope==kDNSServiceInterfaceIndexLocalOnly
         return

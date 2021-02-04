@@ -1327,7 +1327,7 @@ SPECIAL_BOOL_LIST = (
     "html_login",
     "wait_for_dfolder",
     "max_art_opt",
-    "enable_bonjour",
+    "enable_broadcast",
     "warn_dupl_jobs",
     "replace_illegal",
     "backup_for_duplicates",

@@ -230,6 +230,154 @@ class TestMisc:
         # Make sure the output is cmd.exe-compatible
         assert res == expected_output
 
+    @pytest.mark.parametrize(
+        "value, result",
+        [
+            ("1.2.3.4", True),
+            ("255.255.255.255", True),
+            ("0.0.0.0", True),
+            ("10.11.12.13", True),
+            ("127.0.0.1", True),
+            ("400.500.600.700", False),
+            ("blabla", False),
+            ("2001::1", False),
+            ("::1", False),
+            ("::", False),
+            ("example.org", False),
+            (None, False),
+            ("", False),
+            ("3.2.0", False),
+            (-42, False),
+        ],
+    )
+    def test_probablyipv4(self, value, result):
+        assert misc.probablyipv4(value) is result
+
+    @pytest.mark.parametrize(
+        "value, result",
+        [
+            ("2001::1", True),
+            ("::1", True),
+            ("[2001::1]", True),
+            ("fdd6:5a2d:3f20:0:14b0:d8f4:ccb9:fab6", True),
+            ("::", True),
+            ("a::b", True),
+            ("1.2.3.4", False),
+            ("255.255.255.255", False),
+            ("0.0.0.0", False),
+            ("10.11.12.13", False),
+            ("127.0.0.1", False),
+            ("400.500.600.700", False),
+            ("blabla", False),
+            (666, False),
+            ("example.org", False),
+            (None, False),
+            ("", False),
+            ("[1.2.3.4]", False),
+            ("2001:1", False),
+            ("2001::[2001::1]", False),
+        ],
+    )
+    def test_probablyipv6(self, value, result):
+        assert misc.probablyipv6(value) is result
+
+    @pytest.mark.parametrize(
+        "value, result",
+        [
+            ("::1", True),
+            ("[::1]", True),
+            ("127.0.0.1", True),
+            ("127.255.0.0", True),
+            ("127.1.2.7", True),
+            ("fdd6:5a2d:3f20:0:14b0:d8f4:ccb9:fab6", False),
+            ("::", False),
+            ("a::b", False),
+            ("1.2.3.4", False),
+            ("255.255.255.255", False),
+            ("0.0.0.0", False),
+            ("10.11.12.13", False),
+            ("400.500.600.700", False),
+            ("localhost", False),
+            (-666, False),
+            ("example.org", False),
+            (None, False),
+            ("", False),
+            ("[127.6.6.6]", False),
+            ("2001:1", False),
+            ("2001::[2001::1]", False),
+        ],
+    )
+    def test_is_loopback_addr(self, value, result):
+        assert misc.is_loopback_addr(value) is result
+
+    @pytest.mark.parametrize(
+        "value, result",
+        [
+            ("localhost", True),
+            ("::1", True),
+            ("[::1]", True),
+            ("localhost", True),
+            ("127.0.0.1", True),
+            ("127.255.0.0", True),
+            ("127.1.2.7", True),
+            (".local", False),
+            ("test.local", False),
+            ("fdd6:5a2d:3f20:0:14b0:d8f4:ccb9:fab6", False),
+            ("::", False),
+            ("a::b", False),
+            ("1.2.3.4", False),
+            ("255.255.255.255", False),
+            ("0.0.0.0", False),
+            ("10.11.12.13", False),
+            ("400.500.600.700", False),
+            (-1984, False),
+            ("example.org", False),
+            (None, False),
+            ("", False),
+            ("[127.6.6.6]", False),
+            ("2001:1", False),
+            ("2001::[2001::1]", False),
+        ],
+    )
+    def test_is_localhost(self, value, result):
+        assert misc.is_localhost(value) is result
+
+    @pytest.mark.parametrize(
+        "value, result",
+        [
+            ("10.11.12.13", True),
+            ("172.16.2.81", True),
+            ("192.168.255.255", True),
+            ("169.254.42.42", True),  # Link-local
+            ("fd00::ffff", True),  # Part of fc00::/7, IPv6 "Unique Local Addresses"
+            ("fe80::a1", True),  # IPv6 Link-local
+            ("::1", False),
+            ("localhost", False),
+            ("127.0.0.1", False),
+            ("2001:1337:babe::", False),
+            ("172.32.32.32", False),  # Near but not part of 172.16.0.0/12
+            ("100.64.0.1", False),  # Test net
+            ("[2001::1]", False),
+            ("::", False),
+            ("::a:b:c", False),
+            ("1.2.3.4", False),
+            ("255.255.255.255", False),
+            ("0.0.0.0", False),
+            ("127.0.0.1", False),
+            ("400.500.600.700", False),
+            ("blabla", False),
+            (-666, False),
+            ("example.org", False),
+            (None, False),
+            ("", False),
+            ("[1.2.3.4]", False),
+            ("2001:1", False),
+            ("2001::[2001::1]", False),
+        ],
+    )
+    def test_is_lan_addr(self, value, result):
+        assert misc.is_lan_addr(value) is result
+
 
 class TestBuildAndRunCommand:
     # Path should exist
