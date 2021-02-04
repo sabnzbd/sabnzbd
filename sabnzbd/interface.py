@@ -384,15 +384,6 @@ class MainPage:
             info["categories"] = list_cats(True)
             info["have_rss_defined"] = bool(config.get_rss())
             info["have_watched_dir"] = bool(cfg.dirscan_dir())
-            info["rtl"] = is_rtl(cfg.language())
-            if info["rtl"]:
-                info["text_direction"] = "rtl"
-                info["text_align"] = "right"
-                info["text_align_reverse"] = "left"
-            else:
-                info["text_direction"] = "ltr"
-                info["text_align"] = "left"
-                info["text_align_reverse"] = "right"
 
             # Have logout only with HTML and if inet=5, only when we are external
             info["have_logout"] = (
