@@ -474,6 +474,7 @@ class Downloader(Thread):
 
         while 1:
             now = time.time()
+            unpickle_break = 0
 
             # Set Article to None so references from this
             # thread do not keep the parent objects alive (see #1628)
@@ -510,6 +511,7 @@ class Downloader(Thread):
 
                 if server.unpickle_break > 0:
                     server.unpickle_break -= 1
+                    unpickle_break = 1
                     continue
 
                 if (
@@ -624,6 +626,10 @@ class Downloader(Thread):
 
             else:
                 read = []
+
+                if unpickle_break:
+                    time.sleep(0.005)
+                    continue
 
                 sabnzbd.BPSMeter.reset()
 
