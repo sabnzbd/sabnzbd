@@ -837,7 +837,7 @@ def find_on_path(targets):
     return None
 
 
-def probablyipv4(ip: str) -> bool:
+def is_ipv4_addr(ip: str) -> bool:
     """ Determine if the ip is an IPv4 address """
     try:
         return ipaddress.ip_address(ip).version == 4
@@ -845,7 +845,7 @@ def probablyipv4(ip: str) -> bool:
         return False
 
 
-def probablyipv6(ip: str) -> bool:
+def is_ipv6_addr(ip: str) -> bool:
     """ Determine if the ip is an IPv6 address; square brackets ([2001::1]) are OK """
     try:
         return ipaddress.ip_address(ip.strip("[]")).version == 6

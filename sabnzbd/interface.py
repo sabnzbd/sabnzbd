@@ -44,8 +44,8 @@ from sabnzbd.misc import (
     calc_age,
     int_conv,
     get_base_url,
-    probablyipv4,
-    probablyipv6,
+    is_ipv4_addr,
+    is_ipv6_addr,
     opts_to_pp,
     get_server_addrinfo,
 )
@@ -165,7 +165,7 @@ def check_hostname():
     host = re.sub(":[0123456789]+$", "", host).lower()
 
     # Fine if localhost or IP
-    if host == "localhost" or probablyipv4(host) or probablyipv6(host):
+    if host == "localhost" or is_ipv4_addr(host) or is_ipv6_addr(host):
         return True
 
     # Check on the whitelist

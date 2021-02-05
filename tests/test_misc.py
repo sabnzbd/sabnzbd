@@ -250,8 +250,8 @@ class TestMisc:
             (-42, False),
         ],
     )
-    def test_probablyipv4(self, value, result):
-        assert misc.probablyipv4(value) is result
+    def test_is_ipv4_addr(self, value, result):
+        assert misc.is_ipv4_addr(value) is result
 
     @pytest.mark.parametrize(
         "value, result",
@@ -278,8 +278,8 @@ class TestMisc:
             ("2001::[2001::1]", False),
         ],
     )
-    def test_probablyipv6(self, value, result):
-        assert misc.probablyipv6(value) is result
+    def test_is_ipv6_addr(self, value, result):
+        assert misc.is_ipv6_addr(value) is result
 
     @pytest.mark.parametrize(
         "value, result",

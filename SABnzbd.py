@@ -68,7 +68,7 @@ from sabnzbd.misc import (
     get_serv_parms,
     get_from_url,
     upload_file_to_sabnzbd,
-    probablyipv4,
+    is_ipv4_addr,
     is_localhost,
     is_lan_addr,
 )

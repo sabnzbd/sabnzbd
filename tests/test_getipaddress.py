@@ -21,7 +21,7 @@ tests.test_utils.test_check_dir - Testing SABnzbd checkdir util
 
 from sabnzbd.cfg import selftest_host
 from sabnzbd.getipaddress import *
-from sabnzbd.misc import probablyipv4, probablyipv6
+from sabnzbd.misc import is_ipv4_addr, is_ipv6_addr
 
 
 class TestGetIpAddress:
@@ -33,14 +33,14 @@ class TestGetIpAddress:
 
     def test_publicipv4(self):
         public_ipv4 = publicipv4()
-        assert probablyipv4(public_ipv4)
+        assert is_ipv4_addr(public_ipv4)
 
     def test_localipv4(self):
         local_ipv4 = localipv4()
-        assert probablyipv4(local_ipv4)
+        assert is_ipv4_addr(local_ipv4)
 
     def test_ipv6(self):
         test_ipv6 = ipv6()
         # Not all systems have IPv6
         if test_ipv6:
-            assert probablyipv6(test_ipv6)
+            assert is_ipv6_addr(test_ipv6)
