@@ -48,6 +48,7 @@ from sabnzbd.misc import (
     is_ipv6_addr,
     opts_to_pp,
     get_server_addrinfo,
+    is_lan_addr,
 )
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
 from sabnzbd.encoding import xml_name, utob
@@ -477,8 +478,11 @@ class MainPage:
             cherrypy.request.remote.ip,
             cherrypy.request.headers.get("User-Agent", "??"),
         )
-        cherrypy.response.headers["Content-Type"] = "application/xml"
-        return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
+        if is_lan_addr(cherrypy.request.remote.ip):
+            cherrypy.response.headers["Content-Type"] = "application/xml"
+            return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
+        else:
+            return None
 
 
 ##############################################################################
