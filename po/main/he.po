@@ -1312,7 +1312,7 @@ msgstr "היסטוריה"
 #. History page button
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Purge History"
-msgstr "טהר היסטוריה"
+msgstr "נקה היסטוריה"
 
 #: sabnzbd/osxmenu.py
 msgid "Limit Speed"
@@ -2507,12 +2507,12 @@ msgstr "למחוק את כל הפריטים מהתור?"
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
-msgstr "טהר קבצי NZB"
+msgstr "טהר הורדות"
 
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs & Delete Files"
-msgstr "טהר קבצי NZB ומחק קבצים"
+msgstr "טהר הורדות ומחק קבצים"
 
 #. Retry all failed jobs dialog box
 #: sabnzbd/skintext.py
@@ -2586,21 +2586,21 @@ msgstr "גודל"
 #. Button to delete all failed jobs in History
 #: sabnzbd/skintext.py
 msgid "Purge Failed NZBs"
-msgstr "טהר קבצי NZB כושלים"
+msgstr "נקה הורדות כושלות"
 
 #: sabnzbd/skintext.py
 msgid "Purge Failed NZBs & Delete Files"
-msgstr "טהר קבצי NZB כושלים ומחק קבצים"
+msgstr "נקה הורדות כושלות ומחק קבצים"
 
 #. Button to delete all completed jobs in History
 #: sabnzbd/skintext.py
 msgid "Purge Completed NZBs"
-msgstr "טהר קבצי NZB שהושלמו"
+msgstr "נקה הורדות שלמות"
 
 #. Button to delete jobs on current page in History
 #: sabnzbd/skintext.py
 msgid "Purge NZBs on the current page"
-msgstr "טהר קבצי NZB בדף הנוכחי"
+msgstr "טהר הורדות בדף הנוכחי"
 
 #. Button to add NZB to failed job in History
 #: sabnzbd/skintext.py
@@ -3056,8 +3056,8 @@ msgid ""
 "Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally"
 " follow with K,M,G. For example: \"64M\" or \"128M\"</i>"
 msgstr ""
-"הטמן מאמרים בזיכרון כדי להפחית גישת דיסק.<br /><i>בבתים, יכול לבוא עם ק״ב, "
-"מ״ב, ג״ב. לדוגמה: \"64 מ״ב\" או \"128 מ״ב\"</i>"
+"הטמן מאמרים בזיכרון כדי להפחית גישת דיסק.<br /><i>בבתים, יכול לבוא עם K,M,G."
+" לדוגמה: \"64M\" או \"128M\"</i>"
 
 #: sabnzbd/skintext.py
 msgid "Cleanup List"
@@ -3238,7 +3238,7 @@ msgid ""
 "optionally follow with K,M,G,T. For example: \"800M\" or \"8G\"</i>"
 msgstr ""
 "השהה באופן אוטומטי כששטח פנוי הוא מתחת לערך זה.<br /><i>בבתים, יכול לבוא עם "
-"ק״ב, מ״ב, ג״ב, ט״ב. לדוגמה: \"800 מ״ב\" או \"8 ג״ב\"</i>"
+"K,M,G,T. לדוגמה: \"800M\" או \"8G\"</i>"
 
 #: sabnzbd/skintext.py
 msgid "Completed Download Folder"
@@ -3891,8 +3891,8 @@ msgid ""
 "optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
 " minutes."
 msgstr ""
-"מכסה עבור חשבון זה, נספרת מהזמן שהיא הוגדרה. בבתים, יכולה לבוא עם ק״ב, מ״ב, "
-"ג״ב.<br />הזהר כאשר המכסה מגיעה אל 0, היא נבדקת כל כמה דקות."
+"מכסה עבור חשבון זה, נספרת מהזמן שהיא הוגדרה. בבתים, יכולה לבוא עם K,M,G.<br "
+"/>הזהר כאשר המכסה מגיעה אל 0, היא נבדקת כל כמה דקות."
 
 #. Server's retention time in days
 #: sabnzbd/skintext.py
@@ -4797,7 +4797,7 @@ msgstr "משוך NZB מכתובת"
 
 #: sabnzbd/skintext.py
 msgid "Upload NZB"
-msgstr "NZB העלה"
+msgstr "העלה NZB"
 
 #: sabnzbd/skintext.py
 msgid "Optionally specify a filename"
@@ -4821,7 +4821,7 @@ msgstr "שום דבר לא נבחר!"
 
 #: sabnzbd/skintext.py
 msgid "Remove all selected files"
-msgstr "הסר את כל הקבצים שנבחרו"
+msgstr "הסר את כל הקבצים הנבחרים"
 
 #: sabnzbd/skintext.py
 msgid "Hide/show completed files"
@@ -4938,7 +4938,7 @@ msgstr "הבא"
 
 #: sabnzbd/skintext.py
 msgid "Purge the History?"
-msgstr "לטהר את ההיסטוריה?"
+msgstr "לנקות את ההיסטוריה?"
 
 #: sabnzbd/skintext.py
 msgid "You must enable JavaScript for Plush to function!"
