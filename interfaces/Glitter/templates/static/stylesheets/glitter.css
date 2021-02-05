@@ -1979,6 +1979,33 @@ input[name="nzbURL"] {
     }
 }
 
+/***
+    RTL Fixes
+***/
+
+html[dir="rtl"] .navbar-nav {
+    padding-right: 0;
+}
+
+html[dir="rtl"] .queue h2,
+html[dir="rtl"] .history h2 {
+    float: right;
+}
+
+html[dir="rtl"] .dropdown-menu {
+    text-align: right;
+    direction: rtl;
+}
+
+html[dir="rtl"] .search-box a {
+    right: initial;
+    left: 8px;
+}
+
+html[dir="rtl"] .info-container {
+    float: left;
+}
+
 
 /***
     Bootstrap overwrites

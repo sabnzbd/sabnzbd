@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--#set $active_lang=$active_lang.replace('_', '-').lower()#-->
-<html lang="$active_lang" dir="$text_direction" id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
+<html lang="$active_lang" <!--#if $rtl#-->dir="rtl"<!--#end if#--> id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
     <head>
         <!--
                 Glitter V2

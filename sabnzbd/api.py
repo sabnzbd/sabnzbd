@@ -1603,14 +1603,6 @@ def build_header(webdir="", output=None, trans_functions=True):
         header["active_lang"] = cfg.language()
 
         header["rtl"] = is_rtl(header["active_lang"])
-        if header["rtl"]:
-            header["text_direction"] = "rtl"
-            header["text_align"] = "right"
-            header["text_align_reverse"] = "left"
-        else:
-            header["text_direction"] = "ltr"
-            header["text_align"] = "left"
-            header["text_align_reverse"] = "right"
 
         header["my_lcldata"] = clip_path(sabnzbd.DIR_LCLDATA)
         header["my_home"] = clip_path(sabnzbd.DIR_HOME)

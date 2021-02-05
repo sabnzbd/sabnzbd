@@ -61,7 +61,7 @@ from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
 import sabnzbd.utils.ssdp
 from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
-from sabnzbd.lang import list_languages, is_rtl
+from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
     list_cats,
@@ -414,7 +414,7 @@ class MainPage:
             return "Incorrect PID for this instance, remove PID from URL to initiate shutdown."
 
         sabnzbd.shutdown_program()
-        return SimpleResult(T("SABnzbd shutdown finished"))
+        return T("SABnzbd shutdown finished")
 
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
@@ -940,7 +940,7 @@ class QueuePage:
     @secured_expose(check_api_key=True)
     def shutdown(self, **kwargs):
         sabnzbd.shutdown_program()
-        return SimpleResult(T("SABnzbd shutdown finished"))
+        return T("SABnzbd shutdown finished")
 
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
@@ -2682,29 +2682,6 @@ def GetRssLog(feed):
         pass
 
     return done, good, bad
-
-
-def SimpleResult(string):
-    rtl = is_rtl(cfg.language())
-    if rtl:
-        text_direction = "rtl"
-    else:
-        text_direction = "ltr"
-    return """
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
-<html dir="%s">
-<head>
-           <title>%s</title>
-</head>
-<body>
-%s
-</body>
-</html>
-""" % (
-        text_direction,
-        string,
-        string,
-    )
 
 
 ##############################################################################

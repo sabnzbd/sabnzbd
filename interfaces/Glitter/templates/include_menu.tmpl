@@ -18,7 +18,7 @@
                 <button type="button" class="btn btn-default navbar-btn dropdown-toggle" data-toggle="dropdown">
                     <span class="caret"></span>
                 </button>
-                <ul class="dropdown-menu" style="text-align: $text_align;">
+                <ul class="dropdown-menu">
                     <li><a href="#" data-time="5" data-bind="click: pauseTime">$T('Glitter-pause5m')</a></li>
                     <li><a href="#" data-time="15" data-bind="click: pauseTime">$T('Glitter-pause15m')</a></li>
                     <li><a href="#" data-time="30" data-bind="click: pauseTime">$T('Glitter-pause30m')</a></li>
@@ -85,7 +85,7 @@
                 </a>
             </li>
             <!--#end if#-->
-            <li data-tooltip="true" data-placement="bottom" title="#unless $rtl #SABnzbd #end unless#$T('menu-config')#if $rtl # SABnzbd#end if#">
+            <li data-tooltip="true" data-placement="bottom" title="SABnzbd $T('menu-config')">
                 <a href="./config/"><span class="glyphicon glyphicon-cog"></span></a>
             </li>
             <li class="dropdown main-menu-link" data-bind="css: { 'active-on-queue-finish-menu': onQueueFinish()}">
@@ -94,7 +94,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </a>
-                <ul class="dropdown-menu menu-options" style="text-align: $text_align;">
+                <ul class="dropdown-menu menu-options">
                     <li><a href="#modal-help" data-toggle="modal"><span class="glyphicon glyphicon-question-sign"></span> $T('menu-help')</a></li>
                     <li><a href="https://sabnzbd.org/donate" target="_blank"><span class="glyphicon glyphicon-heart"></span> $T('menu-donate')</a></li>
                     <!--#if $have_logout or $have_quota or $have_rss_defined or $have_watched_dir or $pp_pause_event#--><li class="divider"></li><!--#end if#-->
