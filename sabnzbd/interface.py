@@ -509,7 +509,7 @@ class Wizard:
             cfg.language.set(kwargs.get("lang"))
 
         # Always setup Glitter
-        change_web_dir("Glitter - Default")
+        change_web_dir("Glitter - Auto")
 
         info = build_header(sabnzbd.WIZARD_DIR)
         info["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
