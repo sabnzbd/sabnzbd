@@ -837,27 +837,47 @@ def find_on_path(targets):
     return None
 
 
-def probablyipv4(ip):
+def is_ipv4_addr(ip: str) -> bool:
+    """ Determine if the ip is an IPv4 address """
     try:
         return ipaddress.ip_address(ip).version == 4
-    except:
+    except ValueError:
         return False
 
 
-def probablyipv6(ip):
-    # Returns True if the given input is probably an IPv6 address
-    # Square Brackets like '[2001::1]' are OK
+def is_ipv6_addr(ip: str) -> bool:
+    """ Determine if the ip is an IPv6 address; square brackets ([2001::1]) are OK """
     try:
-        # Check for plain IPv6 address
-        return ipaddress.ip_address(ip).version == 6
-    except:
-        try:
-            # Remove '[' and ']' and test again:
-            ip = re.search(r"^\[(.*)\]$", ip).group(1)
-            return ipaddress.ip_address(ip).version == 6
-        except:
-            # No, not an IPv6 address
-            return False
+        return ipaddress.ip_address(ip.strip("[]")).version == 6
+    except (ValueError, AttributeError):
+        return False
+
+
+def is_loopback_addr(ip: str) -> bool:
+    """ Determine if the ip is an IPv4 or IPv6 local loopback address """
+    try:
+        if ip.find(".") < 0:
+            ip = ip.strip("[]")
+        return ipaddress.ip_address(ip).is_loopback
+    except (ValueError, AttributeError):
+        return False
+
+
+def is_localhost(value: str) -> bool:
+    """ Determine if the input is some variety of 'localhost' """
+    return (value == "localhost") or is_loopback_addr(value)
+
+
+def is_lan_addr(ip: str) -> bool:
+    """ Determine if the ip is a local area network address """
+    try:
+        return (
+            ip not in ("0.0.0.0", "255.255.255.255", "::")
+            and ipaddress.ip_address(ip).is_private
+            and not is_loopback_addr(ip)
+        )
+    except ValueError:
+        return False
 
 
 def ip_extract() -> List[str]:
