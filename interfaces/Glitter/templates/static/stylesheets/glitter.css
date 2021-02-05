@@ -1997,6 +1997,13 @@ html[dir="rtl"] .dropdown-menu {
     direction: rtl;
 }
 
+html[dir="rtl"] .speedlimit-dropdown,
+html[dir="rtl"] .progress-indicator,
+html[dir="rtl"] #modal-item-filelist,
+html[dir="rtl"] .info-container-box {
+    direction: ltr;
+}
+
 html[dir="rtl"] .search-box a {
     right: initial;
     left: 8px;
