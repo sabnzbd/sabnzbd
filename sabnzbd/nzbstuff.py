@@ -1173,6 +1173,8 @@ class NzbObject(TryList):
                 # Check the availability of these first articles
                 if cfg.fail_hopeless_jobs() and cfg.fast_fail():
                     job_can_succeed = self.check_first_article_availability()
+                    if not job_can_succeed:
+                        abort_reason = "https://sabnzbd.org/not-complete (check_first_article_availability)"
 
         # Remove from file-tracking
         articles_left = nzf.remove_article(article, success)
@@ -1190,30 +1192,20 @@ class NzbObject(TryList):
         # Skip check if retry or first articles already deemed it hopeless
         if not success and job_can_succeed and not self.reuse:
             # Abort if more than 50% is missing after reaching missing_threshold_mbytes
-            if self.bytes_missing > self.bytes_downloaded:
-                missing_threshold = cfg.missing_threshold_mbytes() * MEBI
-                if missing_threshold and self.bytes_tried > missing_threshold:
-                    self.fail_msg = (
-                        T("Aborted, cannot be completed")
-                        + " - "
-                        + T("At least 50% missing articles after reaching missing_threshold_mbytes")
-                    )
-                    self.set_unpack_info("Download", self.fail_msg, unique=False)
-                    logging.debug(
-                        'Abort job "%s", due to exceeded missing_threshold_mbytes in file "%s"',
-                        self.final_name,
-                        nzf.filename,
-                    )
-                    return True, True, True
+            job_can_succeed = self.check_missing_threshold_mbytes()
+            if not job_can_succeed:
+                abort_reason = "https://sabnzbd.org/not-complete (missing_threshold_mbytes)"
 
-            if cfg.fail_hopeless_jobs():
+            if job_can_succeed and cfg.fail_hopeless_jobs():
                 job_can_succeed, _ = self.check_availability_ratio()
+                if not job_can_succeed:
+                    abort_reason = "https://sabnzbd.org/not-complete (check_availability_ratio)"
 
         # Abort the job due to failure
         if not job_can_succeed:
-            self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
+            self.fail_msg = T("Aborted, cannot be completed") + " - " + abort_reason
             self.set_unpack_info("Download", self.fail_msg, unique=False)
-            logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
+            logging.debug('Abort job "%s", due to impossibility to complete it (%s)', self.final_name, abort_reason)
             return True, True, True
 
         # Check if there are any files left here, so the check is inside the NZO_LOCK
@@ -1528,6 +1520,14 @@ class NzbObject(TryList):
                 # We need a float-division, see if more than 80% is there
                 if self.bad_articles / self.first_articles_count >= 0.8:
                     return False
+        return True
+
+    def check_missing_threshold_mbytes(self):
+        """ Return false if more than 50% is missing after downloading missing_threshold_mbytes MB """
+        if self.bytes_missing > self.bytes_downloaded:
+            missing_threshold = cfg.missing_threshold_mbytes() * MEBI
+            if missing_threshold and self.bytes_tried > missing_threshold:
+                return False
         return True
 
     @synchronized(NZO_LOCK)
