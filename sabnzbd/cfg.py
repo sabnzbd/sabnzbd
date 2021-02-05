@@ -310,6 +310,7 @@ host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
+missing_threshold_mbytes = OptionNumber("misc", "missing_threshold_mbytes", 0)
 
 
 ##############################################################################

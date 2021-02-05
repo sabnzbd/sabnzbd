@@ -1352,6 +1352,7 @@ SPECIAL_VALUE_LIST = (
     "selftest_host",
     "rating_host",
     "ssdp_broadcast_interval",
+    "missing_threshold_mbytes",
 )
 SPECIAL_LIST_LIST = ("rss_odd_titles", "quick_check_ext_ignore", "host_whitelist")
 
