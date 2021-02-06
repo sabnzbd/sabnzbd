@@ -70,7 +70,7 @@ msgstr "צור קיצור דרך בשולחן העבודה"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
-msgstr "שייך קבצי NZB"
+msgstr "NZB שייך קבצי"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"

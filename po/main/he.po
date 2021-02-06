@@ -2248,7 +2248,7 @@ msgstr "בית"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Config"
-msgstr "תצר את"
+msgstr "תצורה"
 
 #. Main menu item - History table header
 #: sabnzbd/skintext.py
@@ -3313,7 +3313,7 @@ msgstr "תיקיית תסריטים"
 
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
-msgstr "תיקייה המכילה תסריטי משתמש."
+msgstr "תיקייה שמכילה תסריטי משתמש."
 
 #: sabnzbd/skintext.py
 msgid "Email Templates Folder"
@@ -3321,7 +3321,7 @@ msgstr "תיקיית תבניות דוא״ל"
 
 #: sabnzbd/skintext.py
 msgid "Folder containing user-defined email templates."
-msgstr "תיקייה המכילה תבניות דוא״ל מוגדרות ע״י משתמש."
+msgstr "תיקייה שמכילה תבניות דוא״ל מוגדרות־משתמש."
 
 #: sabnzbd/skintext.py
 msgid "Password file"
@@ -4226,7 +4226,7 @@ msgstr "אפשר התראות Prowl"
 #. Prowl settings
 #: sabnzbd/skintext.py
 msgid "Requires a Prowl account"
-msgstr "Prowl דורש חשבון"
+msgstr "דורש חשבון Prowl"
 
 #. Prowl settings
 #: sabnzbd/skintext.py
@@ -4557,7 +4557,7 @@ msgstr "קובץ"
 
 #: sabnzbd/skintext.py
 msgid "Sort String"
-msgstr "מיין מחרוזת"
+msgstr "מחרוזת מיון"
 
 #: sabnzbd/skintext.py
 msgid "Multi-part label"
