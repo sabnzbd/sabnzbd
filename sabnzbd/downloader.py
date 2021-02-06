@@ -95,7 +95,7 @@ class Server:
 
         self.busy_threads: List[NewsWrapper] = []
         self.idle_threads: List[NewsWrapper] = []
-        self.next_article_search: int = 0
+        self.next_article_search: float = 0
         self.active: bool = True
         self.bad_cons: int = 0
         self.errormsg: str = ""
@@ -480,7 +480,7 @@ class Downloader(Thread):
 
             for server in self.servers:
                 # Skip this server if there's no point searching for new stuff to do
-                if server.next_article_search > now:
+                if not server.busy_threads and server.next_article_search > now:
                     continue
 
                 for nw in server.busy_threads[:]:
@@ -534,8 +534,8 @@ class Downloader(Thread):
                     article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
                     if not article:
-                        # Skip this server for 1 second
-                        server.next_article_search = now + 1
+                        # Skip this server for 0.5 second
+                        server.next_article_search = now + 0.5
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
