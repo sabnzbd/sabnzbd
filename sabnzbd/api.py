@@ -63,6 +63,7 @@ from sabnzbd.encoding import xml_name
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
+from sabnzbd.lang import is_rtl
 import sabnzbd.notifier
 import sabnzbd.rss
 import sabnzbd.emailer
@@ -1600,6 +1601,7 @@ def build_header(webdir="", output=None, trans_functions=True):
         header["restart_req"] = sabnzbd.RESTART_REQ
         header["pid"] = os.getpid()
         header["active_lang"] = cfg.language()
+        header["rtl"] = is_rtl(header["active_lang"])
 
         header["my_lcldata"] = clip_path(sabnzbd.DIR_LCLDATA)
         header["my_home"] = clip_path(sabnzbd.DIR_HOME)

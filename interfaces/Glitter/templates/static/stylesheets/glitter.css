@@ -1979,6 +1979,45 @@ input[name="nzbURL"] {
     }
 }
 
+/***
+    RTL Fixes
+***/
+
+html[dir="rtl"] .navbar-nav {
+    padding-right: 0;
+}
+
+html[dir="rtl"] .queue h2,
+html[dir="rtl"] .history h2 {
+    float: right;
+}
+
+html[dir="rtl"] .dropdown-menu {
+    text-align: right;
+    direction: rtl;
+}
+
+html[dir="rtl"] .speedlimit-dropdown,
+html[dir="rtl"] .progress-indicator,
+html[dir="rtl"] #modal-item-filelist,
+html[dir="rtl"] #modal-item-files .modal-title,
+html[dir="rtl"] .info-container-box,
+html[dir="rtl"] .queue-table,
+html[dir="rtl"] .history-table {
+    direction: ltr;
+}
+
+html[dir="rtl"] .search-box a {
+    right: initial;
+    left: 8px;
+}
+
+html[dir="rtl"] .navbar-logo,
+html[dir="rtl"] .info-container,
+html[dir="rtl"] .modal-header .close,
+html[dir="rtl"] #modal-options .modal-header a {
+    float: left;
+}
 
 /***
     Bootstrap overwrites
