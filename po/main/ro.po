@@ -4068,6 +4068,16 @@ msgstr "Citeşte Flux"
 msgid "Force Download"
 msgstr "Descărcare Forţată"
 
+#. Config->RSS edit button
+#: sabnzbd/skintext.py
+msgid "Edit"
+msgstr ""
+
+#. Config->RSS when will be the next RSS scan
+#: sabnzbd/skintext.py
+msgid "Next scan at"
+msgstr ""
+
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
 msgid "Filter"
