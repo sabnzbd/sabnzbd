@@ -2000,7 +2000,9 @@ html[dir="rtl"] .dropdown-menu {
 html[dir="rtl"] .speedlimit-dropdown,
 html[dir="rtl"] .progress-indicator,
 html[dir="rtl"] #modal-item-filelist,
-html[dir="rtl"] .info-container-box {
+html[dir="rtl"] .info-container-box,
+html[dir="rtl"] .queue-table,
+html[dir="rtl"] .history-table {
     direction: ltr;
 }
 
@@ -2009,7 +2011,9 @@ html[dir="rtl"] .search-box a {
     left: 8px;
 }
 
-html[dir="rtl"] .info-container {
+html[dir="rtl"] .info-container,
+html[dir="rtl"] .modal-header .close,
+html[dir="rtl"] #modal-options .modal-header a {
     float: left;
 }
 

@@ -533,7 +533,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 dir="ltr" class="modal-title row-wrap-text" data-bind="text: filelist.filelist_name">$T('Glitter-loading')</h4>
+                <h4 class="modal-title row-wrap-text" data-bind="text: filelist.filelist_name">$T('Glitter-loading')</h4>
             </div>
             <div class="modal-body">
                 <div id="modal-item-filelist">
@@ -561,7 +561,7 @@
                         <table class="table item-files-table">
                             <tbody data-bind="sortable: { data: filelist.fileItems, afterMove: filelist.move, options: { start: filelist.removeUpdate, stop: filelist.triggerUpdate, containment: '#modal-item-filelist', items: '.files-sortable', distance: 10 } }">
                                 <tr data-bind="css: { 'files-sortable' : canselect(), 'files-done' : isdone() }">
-                                    <td dir="ltr" class="row-wrap-text">
+                                    <td class="row-wrap-text">
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: '+percentage()+'; background-color: ' + \$parent.filelist.currentItem.progressColor() + ';' }">
                                                 <input type="checkbox" data-bind="attr: { 'name' : nzf_id }, disable: !canselect(), click : \$parent.filelist.checkSelectRange" title="$T('Glitter-multiSelect')" />

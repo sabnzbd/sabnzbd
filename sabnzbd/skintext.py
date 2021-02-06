@@ -678,6 +678,8 @@ SKIN_TEXT = {
     "addMultipleFeeds": TT("Seperate multiple URLs by a comma"),  #: Config->RSS, placeholder (cannot be too long)
     "button-preFeed": TT("Read Feed"),  #: Config->RSS button
     "button-forceFeed": TT("Force Download"),  #: Config->RSS button
+    "rss-edit": TT("Edit"),  #: Config->RSS edit button
+    "rss-nextscan": TT("Next scan at"),  #: Config->RSS when will be the next RSS scan
     "rss-order": TT("Order"),  #: Config->RSS table column header
     "rss-type": TT("Type"),  #: Config->RSS table column header
     "rss-filter": TT("Filter"),  #: Config->RSS table column header
