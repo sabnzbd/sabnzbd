@@ -853,7 +853,7 @@ class NzbObject(TryList):
         # Pause if requested by the NZB-adding or the pre-queue script
         if self.priority == PAUSED_PRIORITY:
             self.pause()
-            self.priority = self.find_stateless_priority(self.cat)
+            self.set_stateless_priority(self.cat)
 
         # Pause job when above size limit
         limit = cfg.size_limit.get_int()
@@ -887,9 +887,9 @@ class NzbObject(TryList):
                     logging.warning(T('Pausing duplicate NZB "%s"'), filename)
                 self.pause()
 
-            # Only change priority it's currently set to duplicate, otherwise keep original one
+            # Only change priority if it's currently set to duplicate, otherwise keep original one
             if self.priority == DUP_PRIORITY:
-                self.priority = self.find_stateless_priority(self.cat)
+                self.set_stateless_priority(self.cat)
 
         # Check if there is any unwanted extension in plain sight in the NZB itself
         for nzf in self.files:
@@ -1328,7 +1328,7 @@ class NzbObject(TryList):
         # Invalid value, set to normal priority
         self.priority = NORMAL_PRIORITY
 
-    def find_stateless_priority(self, category: str) -> int:
+    def set_stateless_priority(self, category: str) -> int:
         """Find a priority that doesn't set a job state, starting from the given category,
         for jobs to fall back to after their priority was set to PAUSED or DUP. The fallback
         priority cannot be another state-setting priority or FORCE; the latter could override
@@ -1340,9 +1340,10 @@ class NzbObject(TryList):
         for cat in cat_options:
             prio = cat_to_opts(cat)[3]
             if prio not in (DUP_PRIORITY, PAUSED_PRIORITY, FORCE_PRIORITY):
-                return prio
-
-        return NORMAL_PRIORITY
+                self.priority = prio
+                break
+        else:
+            self.priority = NORMAL_PRIORITY
 
     @property
     def labels(self):
