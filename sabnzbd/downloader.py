@@ -480,7 +480,7 @@ class Downloader(Thread):
 
             for server in self.servers:
                 # Skip this server if there's no point searching for new stuff to do
-                if server.next_article_search > now:
+                if not server.busy_threads and server.next_article_search > now:
                     continue
 
                 for nw in server.busy_threads[:]:
