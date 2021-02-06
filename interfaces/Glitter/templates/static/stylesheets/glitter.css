@@ -2000,6 +2000,7 @@ html[dir="rtl"] .dropdown-menu {
 html[dir="rtl"] .speedlimit-dropdown,
 html[dir="rtl"] .progress-indicator,
 html[dir="rtl"] #modal-item-filelist,
+html[dir="rtl"] #modal-item-files .modal-title,
 html[dir="rtl"] .info-container-box,
 html[dir="rtl"] .queue-table,
 html[dir="rtl"] .history-table {
