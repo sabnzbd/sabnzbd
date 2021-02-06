@@ -1601,7 +1601,6 @@ def build_header(webdir="", output=None, trans_functions=True):
         header["restart_req"] = sabnzbd.RESTART_REQ
         header["pid"] = os.getpid()
         header["active_lang"] = cfg.language()
-
         header["rtl"] = is_rtl(header["active_lang"])
 
         header["my_lcldata"] = clip_path(sabnzbd.DIR_LCLDATA)

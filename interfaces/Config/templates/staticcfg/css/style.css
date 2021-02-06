@@ -1190,7 +1190,6 @@ html[dir="rtl"] .Scheduling form[action="addSchedule"] input[type="checkbox"] {
     right: 5px;
 }
 
-
 @media screen and (min-width: 1200px) {
     .Categories input[name="dir"] {
         max-width: 240px !important;

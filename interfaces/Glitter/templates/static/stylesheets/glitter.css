@@ -2011,12 +2011,12 @@ html[dir="rtl"] .search-box a {
     left: 8px;
 }
 
+html[dir="rtl"] .navbar-logo,
 html[dir="rtl"] .info-container,
 html[dir="rtl"] .modal-header .close,
 html[dir="rtl"] #modal-options .modal-header a {
     float: left;
 }
-
 
 /***
     Bootstrap overwrites

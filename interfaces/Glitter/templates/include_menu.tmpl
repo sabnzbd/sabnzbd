@@ -5,11 +5,9 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
         </button>
-<!--#unless $rtl #-->
         <a class="navbar-logo" href="./">
             #include $webdir + "/../../Config/templates/staticcfg/images/logo-small.svg"#
         </a>
-<!--#end unless#-->
         <div class="btn-group">
             <div class="btn-group">
                 <button type="button" class="btn btn-default navbar-btn" data-bind="click: pauseToggle, attr: { 'title': downloadsPaused() ? '$T('link-resume')' : '$T('link-pause')' }">
@@ -31,11 +29,6 @@
                 <span class="btn btn-default navbar-btn navbar-timeleft" data-bind="text: timeLeft"  data-toggle="dropdown">0:00</span>
             </div>
         </div>
-<!--#if $rtl #-->
-        <a class="navbar-logo" href="./">
-            #include $webdir + "/../../Config/templates/staticcfg/images/logo-small.svg"#
-        </a>
-<!--#end if#-->
     </div>
 
     <div class="collapse navbar-collapse <!--#if $have_rss_defined#-->navbar-have-rss<!--#end if#-->" id="navbar-collapse">
