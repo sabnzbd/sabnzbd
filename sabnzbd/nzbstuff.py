@@ -1174,7 +1174,7 @@ class NzbObject(TryList):
                 if cfg.fail_hopeless_jobs() and cfg.fast_fail():
                     job_can_succeed = self.check_first_article_availability()
                     if not job_can_succeed:
-                        abort_reason = "https://sabnzbd.org/not-complete (check_first_article_availability)"
+                        abort_reason = "check_first_article_availability"
 
         # Remove from file-tracking
         articles_left = nzf.remove_article(article, success)
@@ -1190,20 +1190,20 @@ class NzbObject(TryList):
 
         # Check if we can succeed when we have missing articles
         # Skip check if retry or first articles already deemed it hopeless
-        if not success and job_can_succeed and not self.reuse:
+        if not success and job_can_succeed and not self.reuse and cfg.fail_hopeless_jobs():
             # Abort if more than 50% is missing after reaching missing_threshold_mbytes
             job_can_succeed = self.check_missing_threshold_mbytes()
             if not job_can_succeed:
-                abort_reason = "https://sabnzbd.org/not-complete (missing_threshold_mbytes)"
+                abort_reason = "missing_threshold_mbytes"
 
-            if job_can_succeed and cfg.fail_hopeless_jobs():
+            if job_can_succeed:
                 job_can_succeed, _ = self.check_availability_ratio()
                 if not job_can_succeed:
-                    abort_reason = "https://sabnzbd.org/not-complete (check_availability_ratio)"
+                    abort_reason = "check_availability_ratio"
 
         # Abort the job due to failure
         if not job_can_succeed:
-            self.fail_msg = T("Aborted, cannot be completed") + " - " + abort_reason
+            self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
             self.set_unpack_info("Download", self.fail_msg, unique=False)
             logging.debug('Abort job "%s", due to impossibility to complete it (%s)', self.final_name, abort_reason)
             return True, True, True

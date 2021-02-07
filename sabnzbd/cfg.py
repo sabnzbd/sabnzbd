@@ -296,6 +296,7 @@ num_decoders = OptionNumber("misc", "num_decoders", 3)
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
 req_completion_rate = OptionNumber("misc", "req_completion_rate", 100.2, 100, 200)
+missing_threshold_mbytes = OptionNumber("misc", "missing_threshold_mbytes", 0)
 selftest_host = OptionStr("misc", "selftest_host", "self-test.sabnzbd.org")
 movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")
 size_limit = OptionStr("misc", "size_limit", "0")
@@ -310,7 +311,6 @@ host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
-missing_threshold_mbytes = OptionNumber("misc", "missing_threshold_mbytes", 0)
 
 
 ##############################################################################

@@ -1343,6 +1343,7 @@ SPECIAL_VALUE_LIST = (
     "nomedia_marker",
     "max_url_retries",
     "req_completion_rate",
+    "missing_threshold_mbytes",
     "wait_ext_drive",
     "max_foldername_length",
     "show_sysload",
@@ -1352,7 +1353,6 @@ SPECIAL_VALUE_LIST = (
     "selftest_host",
     "rating_host",
     "ssdp_broadcast_interval",
-    "missing_threshold_mbytes",
 )
 SPECIAL_LIST_LIST = ("rss_odd_titles", "quick_check_ext_ignore", "host_whitelist")
 
