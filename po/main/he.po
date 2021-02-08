@@ -4049,12 +4049,12 @@ msgstr "אלץ הורדה"
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
-msgstr ""
+msgstr "ערוך"
 
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py
 msgid "Next scan at"
-msgstr ""
+msgstr "הסריקה הבאה במועד"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
