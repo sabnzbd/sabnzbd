@@ -36,9 +36,9 @@ msgid ""
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
 msgstr ""
-"שירות SABnzbd Windows השתנה בגרסה SABnzbd 3.0.0. \\nתצטרך להתקין מחדש את "
-"השירות SABnzbd. \\n\\nלחץ `אשר` כדי להסיר את השירותים הקיימים או `בטל` כדי "
-"לבטל שדרוג זה."
+"שירות Windows של SABnzbd השתנה ב־SABnzbd 3.0.0. \\nתצטרך להתקין מחדש את "
+"השירות של SABnzbd. \\n\\nלחץ על `אישור` כדי להסיר את השירותים הקיימים או על "
+"`ביטול` כדי לבטל שדרוג זה."
 
 #: builder/win/NSIS_Installer.nsi
 msgid ""
@@ -58,19 +58,19 @@ msgstr ""
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
-msgstr "זה יסיר את SABnzbd ממערכתך"
+msgstr "זה יסיר את SABnzbd מהמערכת שלך"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Run at startup"
-msgstr "הפעלה בהזנק"
+msgstr "הרץ בהזנק"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Desktop Icon"
-msgstr "צלמית שולחן עבודה"
+msgstr "צור קיצור דרך בשולחן העבודה"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
-msgstr "NZB שיוך קבצי"
+msgstr "NZB שייך קבצי"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"
@@ -85,9 +85,9 @@ msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
-"אינך יכול לדרוס התקנה קיימת.\\n\\nלחץ על `אישור` כדי להסיר את הגרסה הקודמת "
+"אינך יכול לדרוס התקנה קיימת. \\n\\nלחץ על `אישור` כדי להסיר את הגרסה הקודמת "
 "או על `ביטול` כדי לבטל שדרוג זה."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
-msgstr "ההגדרות והנתונים שלך יישמרו."
+msgstr "ההגדרות והנתונים שלך ישתמרו."
