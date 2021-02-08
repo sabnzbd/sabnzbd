@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 3.2.0 Release Candidate 1
+Release Notes - SABnzbd 3.2.0 Release Candidate 2
 =========================================================
+
+## Changes and bugfixes since 3.2.0 RC 1
+- Added `Auto` option for Glitter that enables `Night` style 
+  based on system settings. Default for new installations.
+- Right-to-Left support (Hebrew) for Glitter and Config.
+- SSDP and Bonjour could be broadcasted on localhost settings.
+- Failed server connections would be retried too slowly.
 
 ## Changes since 3.1.1
 - Python 3.6 is the minimum required version. 
