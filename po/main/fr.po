@@ -4185,12 +4185,12 @@ msgstr "Forcer le téléchargement"
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py
 msgid "Next scan at"
-msgstr ""
+msgstr "Prochain scan à"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
