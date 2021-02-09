@@ -105,6 +105,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
+        self.article_queue = []
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
@@ -421,7 +422,13 @@ class Downloader(Thread):
             # Remove all connections to server
             for nw in server.idle_threads + server.busy_threads:
                 self.__reset_nw(
-                    nw, "forcing disconnect", warn=False, wait=False, count_article_try=False, send_quit=False
+                    nw,
+                    "forcing disconnect",
+                    warn=False,
+                    wait=False,
+                    count_article_try=False,
+                    send_quit=False,
+                    retry=False,
                 )
 
             # Make sure server address resolution is refreshed
@@ -531,7 +538,12 @@ class Downloader(Thread):
                             server.request_info()
                         break
 
-                    article = sabnzbd.NzbQueue.get_article(server, self.servers)
+                    try:
+                        article = server.article_queue.pop()
+                        article.tries += 1
+                        logging.debug("Retrying article %s from %s", article.article, article.nzf.filename)
+                    except IndexError:
+                        article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
                     if not article:
                         # Skip this server for 0.5 second
@@ -691,7 +703,8 @@ class Downloader(Thread):
                                     # Don't count this for the tries (max_art_tries) on this server
                                     self.__reset_nw(nw, count_article_try=False, send_quit=True)
                                     self.plan_server(server, _PENALTY_TOOMANY)
-                                    server.threads -= 1
+                                    if server.threads > 1:
+                                        server.threads -= 1
                             elif ecode in (502, 481, 482) and clues_too_many_ip(msg):
                                 # Account sharing?
                                 if server.active:
@@ -744,7 +757,7 @@ class Downloader(Thread):
                                     if penalty and (block or server.optional):
                                         self.plan_server(server, penalty)
                                 # Note that this will count towards the tries (max_art_tries) on this server!
-                                self.__reset_nw(nw, send_quit=True)
+                                self.__reset_nw(nw, send_quit=True, retry=False)
                             continue
                         except:
                             logging.error(
@@ -816,6 +829,7 @@ class Downloader(Thread):
         wait: bool = True,
         count_article_try: bool = True,
         send_quit: bool = False,
+        retry: bool = True,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
@@ -835,16 +849,17 @@ class Downloader(Thread):
 
         if nw.article:
             # Only some errors should count towards the total tries for each server
-            if (
+            if not retry or (
                 count_article_try
                 and nw.article.tries > cfg.max_art_tries()
                 and (nw.article.fetcher.optional or not cfg.max_art_opt())
             ):
                 # Too many tries on this server, consider article missing
                 self.decode(nw.article, None)
+                nw.article.tries = 0
             else:
-                # Allow all servers to iterate over this nzo/nzf again
-                sabnzbd.NzbQueue.reset_try_lists(nw.article)
+                # Retry again with the same server
+                nw.article.fetcher.article_queue.append(nw.article)
 
         # Reset connection object
         nw.hard_reset(wait, send_quit=send_quit)

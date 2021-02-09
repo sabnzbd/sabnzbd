@@ -688,6 +688,7 @@ class NzbQueue:
     def reset_try_lists(article: Article, article_reset=True):
         """ Let article get new fetcher and reset trylists """
         article.fetcher = None
+        article.tries = 0
         if article_reset:
             article.reset_try_list()
         article.nzf.reset_try_list()

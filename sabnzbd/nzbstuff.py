@@ -179,10 +179,8 @@ class Article(TryList):
                 )
             if server.priority == self.fetcher_priority:
                 self.fetcher = server
-                self.tries += 1
                 if log:
                     logging.debug("Article %s | Server: %s | same priority, use it", self.article, server.host)
-                    logging.debug("Article %s | Server: %s | Article-try: %s", self.article, server.host, self.tries)
                 return self
             else:
                 if log:
@@ -241,7 +239,6 @@ class Article(TryList):
         for server in sabnzbd.Downloader.servers:
             if server.active and not self.server_in_try_list(server):
                 if server.priority >= self.fetcher.priority:
-                    self.tries = 0
                     # Allow all servers for this nzo and nzf again (but not for this article)
                     sabnzbd.NzbQueue.reset_try_lists(self, article_reset=False)
                     return True
