@@ -163,6 +163,12 @@ class Server:
             self.request = True
             Thread(target=self._request_info_internal).start()
 
+    def reset_article_queue(self):
+        for article in self.article_queue:
+            article.fetcher = None
+            article.tries = 0
+        self.article_queue = []
+
     def _request_info_internal(self):
         """ Async attempt to run getaddrinfo() for specified server """
         logging.debug("Retrieving server address information for %s", self.host)
@@ -592,6 +598,7 @@ class Downloader(Thread):
                             )
                     # Make sure server address resolution is refreshed
                     server.info = None
+                    server.reset_article_queue()
                 self.force_disconnect = False
 
                 # Exit-point
