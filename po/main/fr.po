@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.2.0-develop\n"
+"Project-Id-Version: SABnzbd-3.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Fred L <88com88@gmail.com>, 2021\n"
 "Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -4181,6 +4181,16 @@ msgstr "Lire le flux RSS"
 #: sabnzbd/skintext.py
 msgid "Force Download"
 msgstr "Forcer le téléchargement"
+
+#. Config->RSS edit button
+#: sabnzbd/skintext.py
+msgid "Edit"
+msgstr "Modifier"
+
+#. Config->RSS when will be the next RSS scan
+#: sabnzbd/skintext.py
+msgid "Next scan at"
+msgstr "Prochain scan à"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py

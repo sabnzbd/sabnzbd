@@ -138,10 +138,10 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.json()
 
 
-def create_nzb(nzb_dir):
+def create_nzb(nzb_dir, metadata=None):
     """ Create NZB from directory using SABNews """
     nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
-    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full)
+    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata)
 
 
 def create_and_read_nzb(nzbdir):
@@ -220,7 +220,7 @@ class FakeHistoryDB(db.HistoryDB):
                 )
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
+@pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
 class SABnzbdBaseTest:
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test

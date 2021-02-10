@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--#set $active_lang=$active_lang.replace('_', '-').lower()#-->
-<html lang="$active_lang" id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
+<html lang="$active_lang" <!--#if $rtl#-->dir="rtl"<!--#end if#--> id="sabnzbd" data-bind="filedrop: { overlaySelector: '.main-filedrop', onFileDrop: addNZBFromFile }">
     <head>
         <!--
                 Glitter V2
@@ -36,7 +36,7 @@
         <link rel="stylesheet" type="text/css" href="./static/bootstrap/css/bootstrap.min.css?v=$version" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.css?v=$version" />
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/glitter.mobile.css?v=$version" media="all and (max-width: 768px)" />
-        <!--#if $color_scheme not in ('Default', '') #-->
+        <!--#if $color_scheme not in ('Light', '') #-->
         <link rel="stylesheet" type="text/css" href="./static/stylesheets/colorschemes/${color_scheme}.css?v=$version"/>
         <!--#end if#-->
 

@@ -75,7 +75,7 @@ DEF_INTERFACES = "interfaces"
 DEF_EMAIL_TMPL = "email"
 DEF_STDCONFIG = "Config"
 DEF_STDINTF = "Glitter"
-DEF_SKIN_COLORS = {"Glitter": "Default", "plush": "gold"}
+DEF_SKIN_COLORS = {"Glitter": "Auto", "plush": "gold"}
 DEF_MAIN_TMPL = os.path.normpath("templates/main.tmpl")
 DEF_INI_FILE = "sabnzbd.ini"
 DEF_HOST = "127.0.0.1"
@@ -124,8 +124,6 @@ CHEETAH_DIRECTIVES = {"directiveStartToken": "<!--#", "directiveEndToken": "#-->
 
 IGNORED_FOLDERS = ("@eaDir", ".appleDouble")
 
-LOCALHOSTS = ("localhost", "127.0.0.1", "[::1]", "::1")
-
 # (MATCHER, [EXTRA, MATCHERS])
 series_match = [
     (compile(r"( [sS]|[\d]+)x(\d+)"), [compile(r"^[-\.]+([sS]|[\d])+x(\d+)"), compile(r"^[-\.](\d+)")]),  # 1x01
@@ -142,6 +140,8 @@ date_match = [r"(\d{4})\W(\d{1,2})\W(\d{1,2})", r"(\d{1,2})\W(\d{1,2})\W(\d{4})"
 year_match = r"[\W]([1|2]\d{3})([^\w]|$)"  # Something '(YYYY)' or '.YYYY.' or ' YYYY '
 
 sample_match = r"((^|[\W_])(sample|proof))"  # something-sample or something-proof
+
+resolution_match = r"(^|[\W_])((240|360|480|540|576|720|900|1080|1440|2160|4320)[piP])([\W_]|$)"  # 576i, 720p, 1080P
 
 
 class Status:

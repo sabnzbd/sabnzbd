@@ -4,12 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
+# ION, 2021
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.2.0-develop\n"
+"Project-Id-Version: SABnzbd-3.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: ION, 2021\n"
 "Language-Team: Hebrew (https://www.transifex.com/sabnzbd/teams/111101/he/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -35,9 +36,9 @@ msgid ""
 "reinstall the SABnzbd service. \\n\\nClick `OK` to remove the existing "
 "services or `Cancel` to cancel this upgrade."
 msgstr ""
-"שירות SABnzbd Windows השתנה בגרסה SABnzbd 3.0.0. \\nתצטרך להתקין מחדש את "
-"השירות SABnzbd. \\n\\nלחץ `אשר` כדי להסיר את השירותים הקיימים או `בטל` כדי "
-"לבטל שדרוג זה."
+"שירות Windows של SABnzbd השתנה ב־SABnzbd 3.0.0. \\nתצטרך להתקין מחדש את "
+"השירות של SABnzbd. \\n\\nלחץ על `אישור` כדי להסיר את השירותים הקיימים או על "
+"`ביטול` כדי לבטל שדרוג זה."
 
 #: builder/win/NSIS_Installer.nsi
 msgid ""
@@ -52,22 +53,24 @@ msgid ""
 "The installer only supports Windows 8.1 and above, use the standalone legacy"
 " version to run on older Windows version."
 msgstr ""
+"המתקין תומך רק במערכת Windows 8.1 ומעלה, השתמש בגרסה העצמאית המיושנת כדי "
+"להריץ על גרסת Windows ישנה יותר."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
-msgstr "זה יסיר את SABnzbd ממערכתך"
+msgstr "זה יסיר את SABnzbd מהמערכת שלך"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Run at startup"
-msgstr "הפעלה בהזנק"
+msgstr "הרץ בהזנק"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Desktop Icon"
-msgstr "צלמית שולחן עבודה"
+msgstr "צור קיצור דרך בשולחן העבודה"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "NZB File association"
-msgstr "NZB שיוך קבצי"
+msgstr "NZB שייך קבצי"
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Delete Program"
@@ -82,9 +85,9 @@ msgid ""
 "You cannot overwrite an existing installation. \\n\\nClick `OK` to remove "
 "the previous version or `Cancel` to cancel this upgrade."
 msgstr ""
-"אינך יכול לדרוס התקנה קיימת.\\n\\nלחץ על `אישור` כדי להסיר את הגרסה הקודמת "
+"אינך יכול לדרוס התקנה קיימת. \\n\\nלחץ על `אישור` כדי להסיר את הגרסה הקודמת "
 "או על `ביטול` כדי לבטל שדרוג זה."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "Your settings and data will be preserved."
-msgstr "ההגדרות והנתונים שלך יישמרו."
+msgstr "ההגדרות והנתונים שלך ישתמרו."

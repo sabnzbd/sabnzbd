@@ -29,6 +29,7 @@ from sabnzbd.utils.certgen import generate_key, generate_local_cert
 from tests.testhelper import *
 
 
+@pytest.mark.usefixtures("clean_cache_dir")
 class TestCertGen:
     def test_generate_key_default(self):
         # Generate private key with default key_size and file name

@@ -2348,14 +2348,25 @@ def pre_queue(nzo: NzbObject, pp, cat):
 
         output = platform_btou(p.stdout.read())
         ret = p.wait()
-        logging.info("Pre-queue script returns %s and output=\n%s", ret, output)
+        logging.info("Pre-queue script returned %s and output=\n%s", ret, output)
         if ret == 0:
-            n = 0
-            for line in output.split("\n"):
-                line = line.strip("\r\n '\"")
-                if n < len(values) and line:
-                    values[n] = line
-                n += 1
+            split_output = output.splitlines()
+            try:
+                # Extract category line from pre-queue output
+                pre_queue_category = split_output[3].strip(" '\"")
+            except IndexError:
+                pre_queue_category = None
+
+            for index, line in enumerate(split_output):
+                line = line.strip(" '\"")
+                if index < len(values):
+                    if line:
+                        values[index] = line
+                    elif pre_queue_category and index in (2, 4, 5):
+                        # Preserve empty pp, script, and priority lines to prevent
+                        # pre-existing values from overriding category-based settings
+                        values[index] = ""
+
         accept = int_conv(values[0])
         if accept < 1:
             logging.info("Pre-Q refuses %s", nzo.final_name)

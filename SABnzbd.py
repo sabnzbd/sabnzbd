@@ -68,7 +68,9 @@ from sabnzbd.misc import (
     get_serv_parms,
     get_from_url,
     upload_file_to_sabnzbd,
-    probablyipv4,
+    is_ipv4_addr,
+    is_localhost,
+    is_lan_addr,
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
@@ -196,6 +198,7 @@ def print_help():
     print("      --no-login           Start with username and password reset")
     print("      --log-all            Log all article handling (for developers)")
     print("      --disable-file-log   Logging is only written to console")
+    print("      --console            Force logging to console")
     print("      --new                Run a new instance of SABnzbd")
     print()
     print("NZB (or related) file:")
@@ -533,7 +536,7 @@ def get_webhost(cherryhost, cherryport, https_port):
             # Valid user defined name?
             info = socket.getaddrinfo(cherryhost, None)
         except socket.error:
-            if cherryhost not in LOCALHOSTS:
+            if not is_localhost(cherryhost):
                 cherryhost = "0.0.0.0"
             try:
                 info = socket.getaddrinfo(localhost, None)
@@ -600,7 +603,7 @@ def get_webhost(cherryhost, cherryport, https_port):
             except socket.error:
                 cherryhost = cherryhost.strip("[]")
 
-    if ipv6 and ipv4 and browserhost not in LOCALHOSTS:
+    if ipv6 and ipv4 and not is_localhost(browserhost):
         sabnzbd.AMBI_LOCALHOST = True
         logging.info("IPV6 has priority on this system, potential Firefox issue")
 
@@ -846,6 +849,7 @@ def main():
     cherrypylogging = None
     clean_up = False
     logging_level = None
+    console_logging = False
     no_file_log = False
     web_dir = None
     vista_plus = False
@@ -901,6 +905,8 @@ def main():
             if logging_level < -1 or logging_level > 2:
                 print_help()
                 exit_sab(1)
+        elif opt == "--console":
+            console_logging = True
         elif opt in ("-v", "--version"):
             print_version()
             exit_sab(0)
@@ -942,8 +948,8 @@ def main():
     sabnzbd.DIR_LANGUAGE = real_path(sabnzbd.DIR_PROG, DEF_LANGUAGE)
     org_dir = os.getcwd()
 
-    # Need console logging for SABnzbd.py and SABnzbd-console.exe
-    console_logging = (not hasattr(sys, "frozen")) or (sabnzbd.MY_NAME.lower().find("-console") > 0)
+    # Need console logging if requested, for SABnzbd.py and SABnzbd-console.exe
+    console_logging = console_logging or sabnzbd.MY_NAME.lower().find("-console") > 0 or not hasattr(sys, "frozen")
     console_logging = console_logging and not sabnzbd.DAEMON
 
     LOGLEVELS = (logging.FATAL, logging.WARNING, logging.INFO, logging.DEBUG)
@@ -1486,34 +1492,37 @@ def main():
         check_latest_version()
     autorestarted = False
 
-    # bonjour/zeroconf needs an ip. Lets try to find it.
-    external_host = localipv4()  # IPv4 address of the LAN interface. This is the normal use case
-    if not external_host:
-        # None, so no network / default route, so let's set to ...
-        external_host = "127.0.0.1"
-    elif probablyipv4(cherryhost) and cherryhost not in LOCALHOSTS + ("0.0.0.0", "::"):
-        # a hard-configured cherryhost other than the usual, so let's take that (good or wrong)
-        external_host = cherryhost
-    logging.debug("bonjour/zeroconf/SSDP using host: %s", external_host)
-    sabnzbd.zconfig.set_bonjour(external_host, cherryport)
-
-    # Start SSDP if SABnzbd is running exposed
-    if cherryhost not in LOCALHOSTS:
-        # Set URL for browser for external hosts
-        if enable_https:
-            ssdp_url = "https://%s:%s%s" % (external_host, cherryport, sabnzbd.cfg.url_base())
+    # Start SSDP and Bonjour if SABnzbd isn't listening on localhost only
+    if sabnzbd.cfg.enable_broadcast() and not is_localhost(cherryhost):
+        # Try to find a LAN IP address for SSDP/Bonjour
+        if is_lan_addr(cherryhost):
+            # A specific listening address was configured, use that
+            external_host = cherryhost
         else:
-            ssdp_url = "http://%s:%s%s" % (external_host, cherryport, sabnzbd.cfg.url_base())
-        ssdp.start_ssdp(
-            external_host,
-            "SABnzbd",
-            ssdp_url,
-            "SABnzbd %s" % sabnzbd.__version__,
-            "SABnzbd Team",
-            "https://sabnzbd.org/",
-            "SABnzbd %s" % sabnzbd.__version__,
-            ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
-        )
+            # Fall back to the IPv4 address of the LAN interface
+            external_host = localipv4()
+        logging.debug("Using %s as host address for Bonjour and SSDP", external_host)
+
+        if is_lan_addr(external_host):
+            sabnzbd.zconfig.set_bonjour(external_host, cherryport)
+
+            # Set URL for browser for external hosts
+            ssdp_url = "%s://%s:%s%s" % (
+                ("https" if enable_https else "http"),
+                external_host,
+                cherryport,
+                sabnzbd.cfg.url_base(),
+            )
+            ssdp.start_ssdp(
+                external_host,
+                "SABnzbd",
+                ssdp_url,
+                "SABnzbd %s" % sabnzbd.__version__,
+                "SABnzbd Team",
+                "https://sabnzbd.org/",
+                "SABnzbd %s" % sabnzbd.__version__,
+                ssdp_broadcast_interval=sabnzbd.cfg.ssdp_broadcast_interval(),
+            )
 
     # Have to keep this running, otherwise logging will terminate
     timer = 0

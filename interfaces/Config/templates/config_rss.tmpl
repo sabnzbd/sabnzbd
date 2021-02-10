@@ -59,7 +59,7 @@
                                 <td class="controls">
                                     <button type="button" class="btn btn-default testFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-sort"></span> $T('button-preFeed')</button>
                                     <input type="hidden" name="uri" value="$rss[$feed_item]['uris']" />
-                                    <button type="button" class="btn btn-default editFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-pencil"></span> $T('Edit')</button>
+                                    <button type="button" class="btn btn-default editFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-pencil"></span> $T('rss-edit')</button>
                                     <button type="button" class="btn btn-default delFeed" rel="$feed_item_html"><span class="glyphicon glyphicon-trash"></span></button>
                                 </td>
                             </tr>
@@ -92,7 +92,7 @@
                         <label class="config narrow" for="rss_rate">$T('opt-rss_rate')</label>
                         <input type="number" name="rss_rate" id="rss_rate" value="$rss_rate" min="15" max="1440" />
                         <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-ok"></span> $T('button-save')</button>
-                        <span class="config narrow">&nbsp;&nbsp;$T('Next scan at:')&nbsp;$rss_next</span>
+                        <span class="config narrow">&nbsp;&nbsp;$T('rss-nextscan'): $rss_next</span>
                         <span class="desc narrow">$T('explain-rss_rate')</span>
                     </div>
                 </fieldset>

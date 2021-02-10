@@ -482,7 +482,7 @@ class Downloader(Thread):
 
             for server in self.servers:
                 # Skip this server if there's no point searching for new stuff to do
-                if server.next_article_search > now:
+                if not server.busy_threads and server.next_article_search > now:
                     continue
 
                 for nw in server.busy_threads[:]:
@@ -543,7 +543,7 @@ class Downloader(Thread):
                     if not article:
                         # Skip this server for 1 second
                         if not server.unpickle_break:
-                            server.next_article_search = now + 1
+                            server.next_article_search = now + 0.5
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:

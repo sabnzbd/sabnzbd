@@ -32,7 +32,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.constants import DEF_TIMEOUT
 from sabnzbd.encoding import utob
-from sabnzbd.misc import nntp_to_msg, probablyipv4, probablyipv6, get_server_addrinfo
+from sabnzbd.misc import nntp_to_msg, is_ipv4_addr, is_ipv6_addr, get_server_addrinfo
 
 # Set pre-defined socket timeout
 socket.setdefaulttimeout(DEF_TIMEOUT)
@@ -269,9 +269,9 @@ class NNTP:
         af, socktype, proto, canonname, sa = self.nw.server.info[0]
 
         # there will be a connect to host (or self.host, so let's force set 'af' to the correct value
-        if probablyipv4(self.host):
+        if is_ipv4_addr(self.host):
             af = socket.AF_INET
-        if probablyipv6(self.host):
+        if is_ipv6_addr(self.host):
             af = socket.AF_INET6
 
         # Secured or unsecured?
