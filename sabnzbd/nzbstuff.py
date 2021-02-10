@@ -1173,8 +1173,6 @@ class NzbObject(TryList):
                 # Check the availability of these first articles
                 if cfg.fail_hopeless_jobs() and cfg.fast_fail():
                     job_can_succeed = self.check_first_article_availability()
-                    if not job_can_succeed:
-                        abort_reason = "check_first_article_availability"
 
         # Remove from file-tracking
         articles_left = nzf.remove_article(article, success)
@@ -1191,21 +1189,13 @@ class NzbObject(TryList):
         # Check if we can succeed when we have missing articles
         # Skip check if retry or first articles already deemed it hopeless
         if not success and job_can_succeed and not self.reuse and cfg.fail_hopeless_jobs():
-            # Abort if more than 50% is missing after reaching missing_threshold_mbytes
-            job_can_succeed = self.check_missing_threshold_mbytes()
-            if not job_can_succeed:
-                abort_reason = "missing_threshold_mbytes"
-
-            if job_can_succeed:
-                job_can_succeed, _ = self.check_availability_ratio()
-                if not job_can_succeed:
-                    abort_reason = "check_availability_ratio"
+            job_can_succeed, _ = self.check_availability()
 
         # Abort the job due to failure
         if not job_can_succeed:
             self.fail_msg = T("Aborted, cannot be completed") + " - https://sabnzbd.org/not-complete"
             self.set_unpack_info("Download", self.fail_msg, unique=False)
-            logging.debug('Abort job "%s", due to impossibility to complete it (%s)', self.final_name, abort_reason)
+            logging.debug('Abort job "%s", due to impossibility to complete it', self.final_name)
             return True, True, True
 
         # Check if there are any files left here, so the check is inside the NZO_LOCK
@@ -1483,9 +1473,10 @@ class NzbObject(TryList):
         if self.direct_unpacker:
             self.direct_unpacker.abort()
 
-    def check_availability_ratio(self):
-        """ Determine if we are still meeting the required ratio """
+    def check_availability(self) -> Tuple[bool, float]:
+        """ Determine if we are still meeting the requirements for availability """
         availability_ratio = req_ratio = cfg.req_completion_rate()
+        missing_threshold = cfg.missing_threshold_mbytes() * MEBI
 
         # Rare case where the NZB only consists of par2 files
         if self.bytes > self.bytes_par2:
@@ -1493,10 +1484,11 @@ class NzbObject(TryList):
             availability_ratio = 100 * (self.bytes - self.bytes_missing) / (self.bytes - self.bytes_par2)
 
         logging.debug(
-            "Availability ratio=%.2f, bad articles=%d, total bytes=%d, missing bytes=%d, par2 bytes=%d",
+            "Availability ratio=%.2f, bad articles=%d, total bytes=%d, bytes tried=%d, missing bytes=%d, par2 bytes=%d",
             availability_ratio,
             self.bad_articles,
             self.bytes,
+            self.bytes_tried,
             self.bytes_missing,
             self.bytes_par2,
         )
@@ -1505,6 +1497,10 @@ class NzbObject(TryList):
         # This way RAR-only jobs might still succeed
         if self.bad_articles <= MAX_BAD_ARTICLES:
             return True, req_ratio
+
+        # Check specific MB threshold, if set
+        if missing_threshold and self.bytes_missing > self.bytes_downloaded and self.bytes_missing > missing_threshold:
+            return False, availability_ratio
 
         # Check based on availability ratio
         return availability_ratio >= req_ratio, availability_ratio
@@ -1516,18 +1512,11 @@ class NzbObject(TryList):
         # Ignore this check on retry
         if not self.reuse:
             # Ignore undamaged or small downloads
+            logging.debug("Firt articles=%d, bad articles=%d", self.bad_articles, self.first_articles_count)
             if self.bad_articles and self.first_articles_count >= 10:
                 # We need a float-division, see if more than 80% is there
                 if self.bad_articles / self.first_articles_count >= 0.8:
                     return False
-        return True
-
-    def check_missing_threshold_mbytes(self):
-        """ Return false if more than 50% is missing after downloading missing_threshold_mbytes MB """
-        if self.bytes_missing > self.bytes_downloaded:
-            missing_threshold = cfg.missing_threshold_mbytes() * MEBI
-            if missing_threshold and self.bytes_tried > missing_threshold:
-                return False
         return True
 
     @synchronized(NZO_LOCK)

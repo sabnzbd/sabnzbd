@@ -778,7 +778,7 @@ class NzbQueue:
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result
-                enough, _ = nzo.check_availability_ratio()
+                enough, _ = nzo.check_availability()
                 if enough:
                     # Enough data present, do real download
                     self.send_back(nzo)

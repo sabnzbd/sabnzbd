@@ -352,7 +352,7 @@ def process_job(nzo: NzbObject):
         # if no files are present (except __admin__), fail the job
         if all_ok and len(globber(workdir)) < 2:
             if nzo.precheck:
-                _, ratio = nzo.check_availability_ratio()
+                _, ratio = nzo.check_availability()
                 emsg = T("Download might fail, only %s of required %s available") % (ratio, cfg.req_completion_rate())
             else:
                 emsg = T("Download failed - Not on your server(s)")
