@@ -141,6 +141,8 @@ year_match = r"[\W]([1|2]\d{3})([^\w]|$)"  # Something '(YYYY)' or '.YYYY.' or '
 
 sample_match = r"((^|[\W_])(sample|proof))"  # something-sample or something-proof
 
+resolution_match = r"(^|[\W_])((240|360|480|540|576|720|900|1080|1440|2160|4320)[piP])([\W_]|$)"  # 576i, 720p, 1080P
+
 
 class Status:
     COMPLETED = "Completed"  # PP: Job is finished

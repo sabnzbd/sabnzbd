@@ -38,7 +38,7 @@ from sabnzbd.filesystem import (
     sanitize_foldername,
     clip_path,
 )
-from sabnzbd.constants import series_match, date_match, year_match, sample_match
+from sabnzbd.constants import series_match, date_match, year_match, sample_match, resolution_match
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject
 
@@ -359,6 +359,9 @@ class SeriesSorter:
             self.nzo, self.match_obj, self.original_job_name
         )
 
+    def get_show_resolution(self):
+        self.show_info["resolution"] = get_resolution(self.original_job_name)
+
     def get_values(self):
         """ Collect and construct all the values needed for path replacement """
         try:
@@ -373,6 +376,9 @@ class SeriesSorter:
 
             # - Episode Name
             self.get_showdescriptions()
+
+            # - Resolution
+            self.get_show_resolution()
 
             return True
 
@@ -421,6 +427,9 @@ class SeriesSorter:
         # Replace episode number
         mapping.append(("%e", self.show_info["episode_num"]))
         mapping.append(("%0e", self.show_info["episode_num_alt"]))
+
+        # Replace resolution
+        mapping.append(("%r", self.show_info["resolution"]))
 
         # Make sure unsupported %desc is removed
         mapping.append(("%desc", ""))
@@ -635,6 +644,9 @@ class MovieSorter:
                 year = ""
         self.movie_info["year"] = year
 
+        # Get resolution
+        self.movie_info["resolution"] = get_resolution(self.original_job_name)
+
         # - Get Decades
         self.movie_info["decade"], self.movie_info["decade_two"] = get_decades(year)
 
@@ -679,6 +691,9 @@ class MovieSorter:
 
         # Replace year
         mapping.append(("%y", self.movie_info["year"]))
+
+        # Replace resolution
+        mapping.append(("%r", self.movie_info["resolution"]))
 
         # Replace decades
         mapping.append(("%decade", self.movie_info["decade"]))
@@ -854,6 +869,9 @@ class DateSorter:
         # - Get Decades
         self.date_info["decade"], self.date_info["decade_two"] = get_decades(self.date_info["year"])
 
+        # - Get resolution
+        self.date_info["resolution"] = get_resolution(self.original_job_name)
+
         # - Get Title
         self.date_info["ttitle"], self.date_info["ttitle_two"], self.date_info["ttitle_three"] = get_titles(
             self.nzo, self.match_obj, self.original_job_name, True
@@ -898,6 +916,9 @@ class DateSorter:
         # Replace year
         mapping.append(("%year", self.date_info["year"]))
         mapping.append(("%y", self.date_info["year"]))
+
+        # Replace resolution
+        mapping.append(("%r", self.date_info["resolution"]))
 
         if self.date_info["ep_name"]:
             mapping.append(("%desc", self.date_info["ep_name"]))
@@ -1127,6 +1148,16 @@ def get_decades(year):
         decade = ""
         decade2 = ""
     return decade, decade2
+
+
+def get_resolution(job_name):
+    try:
+        RE_RESOLUTION = re.compile(resolution_match)
+        # Use the last match, lowercased
+        resolution = RE_RESOLUTION.findall(job_name)[-1][1].lower()
+    except Exception:
+        resolution = ""
+    return resolution
 
 
 def check_for_folder(path):
