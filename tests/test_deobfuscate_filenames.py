@@ -56,7 +56,6 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("abc.xyz.iso")  # lazy brother
         assert is_probably_obfuscated("0675e29e9abfd2.f7d069dab0b853283cc1b069a25f82.6547")
 
-        #
         # non-obfuscated names:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Distro S03E04.iso")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Distro (2020).iso")
