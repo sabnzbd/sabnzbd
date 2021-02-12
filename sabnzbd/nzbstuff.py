@@ -424,6 +424,7 @@ class NzbFile(TryList):
             logging.debug("unpickle %s, called by %s", self.filename, source)
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
             try:
+                # Make sure it's the new pickle format, if not try old finish_import
                 if temp_data[0][0].decoded == False:
                     for article in temp_data[1]:
                         article.nzf = self
