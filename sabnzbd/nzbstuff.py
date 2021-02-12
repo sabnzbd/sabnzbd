@@ -398,10 +398,7 @@ class NzbFile(TryList):
 
         logging.debug("pickle %s", self.filename)
         first_article = self.decodetable.pop(0)
-        removed_first = 0
-        if first_article == self.articles[0]:
-            self.articles.pop(0)
-            removed_first = 1
+        self.articles.pop(0)
         for article in self.decodetable:
             article.nzf = None
 
@@ -411,9 +408,7 @@ class NzbFile(TryList):
         # Restore nzf in case the articles are stored in articlecache or elsewhere
         for article in self.decodetable:
             article.nzf = self
-        self.articles = []
-        if removed_first:
-            self.articles.append(first_article)
+        self.articles = [first_article]
         self.decodetable = [first_article]
         self.import_finished = False
         return True
