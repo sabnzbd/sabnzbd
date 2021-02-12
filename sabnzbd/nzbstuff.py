@@ -26,6 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
+import time
 from typing import List, Dict, Any, Tuple, Optional
 
 # SABnzbd modules
@@ -312,6 +313,7 @@ NzbFileSaver = (
     "import_finished",
     "md5sum",
     "md5of16k",
+    "pickle_lock_time",
 )
 
 
@@ -348,13 +350,13 @@ class NzbFile(TryList):
         self.nzo: NzbObject = nzo
         self.nzf_id: str = sabnzbd.get_new_id("nzf", nzo.admin_path)
         self.deleted = False
-        self.valid = False
+        self.valid: bool = bool(raw_article_db)
         self.import_finished = False
+        self.pickle_lock_time: float = 0
 
         self.md5 = None
         self.md5sum: Optional[bytes] = None
         self.md5of16k: Optional[bytes] = None
-        self.valid = bool(raw_article_db)
 
         if self.valid and self.nzf_id:
             # Save first article separate so we can do
@@ -371,15 +373,76 @@ class NzbFile(TryList):
             # Any articles left?
             if raw_article_db:
                 # Save the rest
-                sabnzbd.save_data(raw_article_db, self.nzf_id, nzo.admin_path)
+                self.finish_import(raw_article_db)
+                self.pickle_articles(initial_pickle=True)
             else:
                 # All imported
                 self.import_finished = True
 
-    def finish_import(self):
-        """ Load the article objects from disk """
+    def pickle_articles(self, initial_pickle=False):
+        """ Pickle articles to file """
+        if not initial_pickle:
+            if (
+                not self.import_finished
+                # Don't pickle tiny files
+                or len(self.articles) < 3
+                # Don't pickle active files
+                or self.pickle_lock_time > time.time()
+                or len(self.articles) != len(self.decodetable)
+            ):
+                return False
+            # Don't pickle active files
+            for article in self.articles:
+                if article.fetcher:
+                    return False
+
+        logging.debug("pickle %s", self.filename)
+        first_article = self.decodetable.pop(0)
+        removed_first = 0
+        if first_article == self.articles[0]:
+            self.articles.pop(0)
+            removed_first = 1
+        for article in self.decodetable:
+            article.nzf = None
+
+        articles = (self.articles, self.decodetable)
+        sabnzbd.save_data(articles, self.nzf_id, self.nzo.admin_path)
+
+        # Restore nzf in case the articles are stored in articlecache or elsewhere
+        for article in self.decodetable:
+            article.nzf = self
+        self.articles = []
+        if removed_first:
+            self.articles.append(first_article)
+        self.decodetable = [first_article]
+        self.import_finished = False
+        return True
+
+    def unpickle_articles(self, source):
+        """ Unpickle articles from file """
+        if not self.import_finished:
+            logging.debug("unpickle %s, called by %s", self.filename, source)
+            temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
+            try:
+                if temp_data[0][0].decoded == False:
+                    for article in temp_data[1]:
+                        article.nzf = self
+                    self.articles = self.articles + temp_data[0]
+                    self.decodetable = self.decodetable + temp_data[1]
+                    # Make sure it isn't pickled again before it's had a chance to be used
+                    self.pickle_lock_time = time.time() + 10
+                    self.import_finished = True
+                    self.nzo.unpickled_files = True
+            except AttributeError:
+                self.finish_import(temp_data)
+            except TypeError:
+                # load_data will probably already have printed an info messsage
+                logging.debug("Could not load pickle data for %s", self.filename)
+                self.valid = False
+
+    def finish_import(self, raw_article_db):
+        """ Import raw articles to file object """
         logging.debug("Finishing import on %s", self.filename)
-        raw_article_db = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
         if raw_article_db:
             # Convert 2.x.x jobs
             if isinstance(raw_article_db, dict):
@@ -560,6 +623,7 @@ NzbObjectSaver = (
     "unwanted_ext",
     "renames",
     "rating_filtered",
+    "unpickled_files",
 )
 
 NzoAttributeSaver = ("cat", "pp", "script", "priority", "final_name", "password", "url")
@@ -650,6 +714,7 @@ class NzbObject(TryList):
         self.bytes_tried: int = 0  # Which bytes did we try
         self.bytes_missing: int = 0  # Bytes missing
         self.bad_articles: int = 0  # How many bad (non-recoverable) articles
+        self.unpickled_files: bool = False
 
         self.partable: Dict[str, NzbFile] = {}  # Holds one parfile-name for each set
         self.extrapars: Dict[str, List[NzbFile]] = {}  # Holds the extra parfile names for all sets
@@ -1582,6 +1647,7 @@ class NzbObject(TryList):
                     break
 
         # Move on to next ones
+        highest_server = None
         if not article:
             for nzf in self.files:
                 if nzf.deleted:
@@ -1591,9 +1657,12 @@ class NzbObject(TryList):
                     if not nzf.server_in_try_list(server):
                         if not nzf.import_finished:
                             # Only load NZF when it's a primary server
-                            # or when it's a backup server without active primaries
-                            if sabnzbd.Downloader.highest_server(server):
-                                nzf.finish_import()
+                            # or when it has already been accessed
+                            if highest_server == None:
+                                highest_server = sabnzbd.Downloader.highest_server(server)
+                            if nzf.pickle_lock_time or highest_server:
+                                nzf.unpickle_articles(server.displayname)
+                                nzf.pickle_lock_time = time.time() + 20
                                 # Still not finished? Something went wrong...
                                 if not nzf.import_finished and not self.is_gone():
                                     logging.error(T("Error importing %s"), nzf)
@@ -1605,6 +1674,7 @@ class NzbObject(TryList):
 
                         article = nzf.get_article(server, servers)
                         if article:
+                            nzf.pickle_lock_time = time.time() + 20
                             break
 
         # Remove all files for which admin could not be read

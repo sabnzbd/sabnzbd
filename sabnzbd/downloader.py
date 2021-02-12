@@ -510,10 +510,10 @@ class Downloader(Thread):
                 if (
                     not server.idle_threads
                     or server.restart
-                    or self.is_paused()
                     or self.shutdown
                     or self.paused_for_postproc
                     or not server.active
+                    or self.is_paused()
                 ):
                     continue
 
@@ -539,11 +539,16 @@ class Downloader(Thread):
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                        # Let's get rid of all the articles for this server at once
-                        logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
+                        # Only mark the articles in one file read for each loop to avoid stopping downloading
+                        # and have time to check for pickleable articles
+                        article.nzf.unpickle_articles(server.displayname + " (out of retention)")
+                        article_count = 0
                         while article:
+                            article_count += 1
                             self.decode(article, None)
-                            article = article.nzf.nzo.get_article(server, self.servers)
+                            article = article.nzf.get_article(server, self.servers)
+                        if len(self.servers) > 1:
+                            server.next_article_search = now + article_count * 0.001
                         break
 
                     server.idle_threads.remove(nw)

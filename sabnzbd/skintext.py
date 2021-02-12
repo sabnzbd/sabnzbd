@@ -370,6 +370,10 @@ SKIN_TEXT = {
     "explain-cache_limitstr": TT(
         'Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'
     ),
+    "opt-repickle_articles": TT("Write article-DB back to disk"),
+    "explain-repickle_articles": TT(
+        "If you have a large queue of NZBs, multiple servers, and the top server is missing a lot of articles, then enabling this option can reduce RAM usage significantly."
+    ),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
         "List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>"
