@@ -426,7 +426,7 @@ class NzbFile(TryList):
                     self.articles = self.articles + temp_data[0]
                     self.decodetable = self.decodetable + temp_data[1]
                     # Make sure it isn't pickled again before it's had a chance to be used
-                    self.pickle_lock_time = time.time() + 20
+                    self.pickle_lock_time = time.time() + 10
                     self.import_finished = True
                     self.nzo.unpickled_files = True
             except AttributeError:
@@ -481,7 +481,7 @@ class NzbFile(TryList):
         for article in self.articles:
             article = article.get_article(server, servers)
             if article:
-                self.pickle_lock_time = time.time() + 20
+                self.pickle_lock_time = time.time() + 10
                 return article
         self.add_to_try_list(server)
 
