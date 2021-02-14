@@ -3594,19 +3594,26 @@ msgid "Action when unwanted extension detected"
 msgstr "Action si une extension indésirable est détecté"
 
 #: sabnzbd/skintext.py
-msgid "Action when an unwanted extension is detected in RAR files"
-msgstr "Action si une extension indésirable est détecté dans les fichiers RAR"
+msgid "Action when an unwanted extension is detected"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
 msgstr "Extensions indésirables"
 
 #: sabnzbd/skintext.py
-msgid ""
-"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+msgid "Blacklist"
 msgstr ""
-"Afficher toutes les extensions indésirables. Par exemple :  <b>exe</b> or "
-"<b>exe, com</b>"
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
