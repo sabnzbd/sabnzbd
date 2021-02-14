@@ -983,3 +983,49 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
     def test_dir1755_umask4755_setting(self):
         # Sticky bit on directory, umask with setuid
         self._runner("1755", "4755")
+
+
+class TestUnwantedExtensions:
+    # Only test lowercase extensions without a leading dot: the unwanted_extensions
+    # setting is sanitized accordingly in interface.saveSwitches() before saving.
+    test_extensions = "iso, cmd, bat, sh"
+    # Test parameters as (filename, result) tuples, with result given for blacklist mode
+    test_params = [
+        ("ubuntu.iso", True),
+        ("par2.cmd", True),
+        ("freedos.BAT", True),
+        ("Debian.installer.SH", True),
+        ("FREEBSD.ISO", True),
+        ("par2.CmD", True),
+        ("freedos.baT", True),
+        ("Debian.Installer.sh", True),
+        ("ubuntu.torrent", False),
+        ("par2.cmd.notcmd", False),
+        ("freedos.tab", False),
+        (".SH.hs", False),
+        ("No_Extension", False),
+        (480, False),
+        (None, False),
+        ("", False),
+        ([], False),
+    ]
+
+    @set_config({"unwanted_extensions_mode": 0, "unwanted_extensions": test_extensions})
+    def test_has_unwanted_extension_blacklist_mode(self):
+        for filename, result in self.test_params:
+            assert filesystem.has_unwanted_extension(filename) is result
+
+    @set_config({"unwanted_extensions_mode": 1, "unwanted_extensions": test_extensions})
+    def test_has_unwanted_extension_whitelist_mode(self):
+        for filename, result in self.test_params:
+            assert filesystem.has_unwanted_extension(filename) is not result
+
+    @set_config({"unwanted_extensions_mode": 0, "unwanted_extensions": ""})
+    def test_has_unwanted_extension_empty_blacklist(self):
+        for filename, result in self.test_params:
+            assert filesystem.has_unwanted_extension(filename) is False
+
+    @set_config({"unwanted_extensions_mode": 1, "unwanted_extensions": ""})
+    def test_has_unwanted_extension_empty_whitelist(self):
+        for filename, result in self.test_params:
+            assert filesystem.has_unwanted_extension(filename) is True
