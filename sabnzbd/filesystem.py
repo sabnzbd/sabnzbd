@@ -60,7 +60,7 @@ def get_ext(filename: str) -> str:
 
 def has_unwanted_extension(filename: str) -> bool:
     """ Determine if a filename has an unwanted extension, given the configured mode """
-    extension = get_ext(filename).replace(".", "").lower()
+    extension = get_ext(filename).replace(".", "")
     if extension and sabnzbd.cfg.unwanted_extensions():
         return (
             # Blacklisted
