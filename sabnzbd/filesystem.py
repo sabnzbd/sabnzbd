@@ -58,6 +58,23 @@ def get_ext(filename: str) -> str:
         return ""
 
 
+def has_unwanted_extension(filename: str) -> bool:
+    """ Determine if a filename has an unwanted extension, given the configured mode """
+    extension = get_ext(filename).replace(".", "")
+    if extension and sabnzbd.cfg.unwanted_extensions():
+        return (
+            # Blacklisted
+            sabnzbd.cfg.unwanted_extensions_mode() == 0
+            and extension in sabnzbd.cfg.unwanted_extensions()
+        ) or (
+            # Not whitelisted
+            sabnzbd.cfg.unwanted_extensions_mode() == 1
+            and extension not in sabnzbd.cfg.unwanted_extensions()
+        )
+    else:
+        return bool(sabnzbd.cfg.unwanted_extensions_mode())
+
+
 def get_filename(path: str) -> str:
     """ Return path without the file extension """
     try:
