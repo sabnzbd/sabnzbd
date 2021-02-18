@@ -3595,7 +3595,7 @@ msgstr "Action si une extension indésirable est détecté"
 
 #: sabnzbd/skintext.py
 msgid "Action when an unwanted extension is detected"
-msgstr ""
+msgstr "Action lorsqu'une extension indésirable est détectée"
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
@@ -3603,17 +3603,19 @@ msgstr "Extensions indésirables"
 
 #: sabnzbd/skintext.py
 msgid "Blacklist"
-msgstr ""
+msgstr "Liste noire"
 
 #: sabnzbd/skintext.py
 msgid "Whitelist"
-msgstr ""
+msgstr "Liste blanche"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
 " <b>exe, com</b>"
 msgstr ""
+"Sélectionnez un mode et listez toutes les extensions (non) souhaitées. Par "
+"exemple: <b>exe</b> ou <b>exe, com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
