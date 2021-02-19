@@ -100,6 +100,7 @@ class BPSMeter:
         self.bps_list: List[int] = []
 
         self.server_bps: Dict[str, float] = {}
+        self.temp_amount: Dict[str, int] = {}
         self.day_total: Dict[str, int] = {}
         self.week_total: Dict[str, int] = {}
         self.month_total: Dict[str, int] = {}
@@ -204,9 +205,21 @@ class BPSMeter:
             self.update()
         return res
 
-    def update(self, server: Optional[str] = None, amount: int = 0):
+    def update(self, server: Optional[str] = None, amount: int = 0, force: bool = False):
         """ Update counters for "server" with "amount" bytes """
         t = time.time()
+
+        # Add amount to temporary storage
+        if server:
+            if server not in self.temp_amount:
+                self.temp_amount[server] = 0
+                self.server_bps[server] = 0.0
+            self.temp_amount[server] += amount
+
+        # Wait at least 0.021 seconds between each full update
+        if not force and t - self.last_update < 0.021:
+            return
+
         if t > self.end_of_day:
             # current day passed. get new end of day
             self.day_label = time.strftime("%Y-%m-%d")
@@ -221,56 +234,57 @@ class BPSMeter:
                 self.month_total = {}
                 self.end_of_month = next_month(t) - 1.0
 
-        if server:
-            if server not in self.day_total:
-                self.day_total[server] = 0
-            self.day_total[server] += amount
+        # Add amounts that have been stored temporarily to statistics
+        total_amount = 0
+        for srv in self.temp_amount:
+            temp_amount = self.temp_amount[srv]
+            if temp_amount:
+                self.temp_amount[srv] = 0
+                total_amount += temp_amount
+                if srv not in self.day_total:
+                    self.day_total[srv] = 0
+                self.day_total[srv] += temp_amount
 
-            if server not in self.week_total:
-                self.week_total[server] = 0
-            self.week_total[server] += amount
+                if srv not in self.week_total:
+                    self.week_total[srv] = 0
+                self.week_total[srv] += temp_amount
 
-            if server not in self.month_total:
-                self.month_total[server] = 0
-            self.month_total[server] += amount
+                if srv not in self.month_total:
+                    self.month_total[srv] = 0
+                self.month_total[srv] += temp_amount
 
-            if server not in self.grand_total:
-                self.grand_total[server] = 0
-            self.grand_total[server] += amount
+                if srv not in self.grand_total:
+                    self.grand_total[srv] = 0
+                self.grand_total[srv] += temp_amount
 
-            if server not in self.timeline_total:
-                self.timeline_total[server] = {}
-            if self.day_label not in self.timeline_total[server]:
-                self.timeline_total[server][self.day_label] = 0
-            self.timeline_total[server][self.day_label] += amount
+                if srv not in self.timeline_total:
+                    self.timeline_total[srv] = {}
+                if self.day_label not in self.timeline_total[srv]:
+                    self.timeline_total[srv][self.day_label] = 0
+                self.timeline_total[srv][self.day_label] += temp_amount
 
-            # Quota check
-            if self.have_quota and self.quota_enabled:
-                self.left -= amount
-                if self.left <= 0.0:
-                    if not sabnzbd.Downloader.paused:
-                        sabnzbd.Downloader.pause()
-                        logging.warning(T("Quota spent, pausing downloading"))
+            try:
+                # Update server bps
+                self.server_bps[srv] = (self.server_bps[srv] * (self.last_update - self.start_time) + temp_amount) / (
+                    t - self.start_time
+                )
+            except:
+                self.server_bps[srv] = 0.0
+
+        # Quota check
+        if self.have_quota and self.quota_enabled:
+            self.left -= total_amount
+            if self.left <= 0.0:
+                if not sabnzbd.Downloader.paused:
+                    sabnzbd.Downloader.pause()
+                    logging.warning(T("Quota spent, pausing downloading"))
 
         # Speedometer
         try:
-            self.bps = (self.bps * (self.last_update - self.start_time) + amount) / (t - self.start_time)
+            self.bps = (self.bps * (self.last_update - self.start_time) + total_amount) / (t - self.start_time)
         except:
             self.bps = 0.0
             self.server_bps = {}
-
-        if server and server not in self.server_bps:
-            self.server_bps[server] = 0.0
-
-        for server_to_update in self.server_bps:
-            try:
-                # Only add data to the current server, update the rest to get correct average speed
-                self.server_bps[server_to_update] = (
-                    self.server_bps[server_to_update] * (self.last_update - self.start_time)
-                    + amount * (server_to_update == server)
-                ) / (t - self.start_time)
-            except:
-                self.server_bps[server_to_update] = 0.0
 
         self.last_update = t
 

@@ -659,7 +659,7 @@ class Downloader(Thread):
                         if bytes_received + sabnzbd.BPSMeter.bps > limit:
                             while sabnzbd.BPSMeter.bps > limit:
                                 time.sleep(0.01)
-                                sabnzbd.BPSMeter.update()
+                                sabnzbd.BPSMeter.update(force=True)
                     sabnzbd.BPSMeter.update(server.id, bytes_received)
 
                 if not done and nw.status_code != 222:
