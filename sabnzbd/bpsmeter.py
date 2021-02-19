@@ -25,7 +25,7 @@ import re
 from typing import List, Dict, Optional
 
 import sabnzbd
-from sabnzbd.constants import BYTES_FILE_NAME, KIBI
+from sabnzbd.constants import BYTES_FILE_NAME, KIBI, MEBI
 import sabnzbd.cfg as cfg
 
 DAY = float(24 * 60 * 60)
@@ -297,7 +297,7 @@ class BPSMeter:
             self.reset()
 
         elif self.log_time < check_time:
-            logging.debug("bps: %s", self.bps)
+            logging.debug("MB/s: %.2f", self.bps / MEBI)
             self.log_time = t
 
         if self.speed_log_time < (t - 1.0):
