@@ -2079,15 +2079,16 @@ def quick_check_set(set, nzo):
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
                     # Let's check if there is a subdir in 'file', and if so, pre-create it
-                    new_path = re.search("(.*)/", file)
-                    if new_path:
-                        new_path = os.path.join(nzo.download_path, new_path.group(1))
-                        if not os.path.exists(new_path):
-                            logging.debug("Creating subdir %s", new_path)
+                    relative_new_path = re.search("(.*)/", file)
+                    # Proceed if subdir specified, and no malicous '..' in it
+                    if relative_new_path and not os.pardir in relative_new_path.group(1):
+                        full_new_path = os.path.join(nzo.download_path, relative_new_path.group(1))
+                        if not os.path.exists(full_new_path):
+                            logging.debug("Creating subdir %s", full_new_path)
                             try:
-                                os.makedirs(new_path)
+                                os.makedirs(full_new_path)
                             except:
-                                logging.debug("Failed to creating subdir path")
+                                logging.warning("Failed to creating subdir path %s", full_new_path)
 
                     renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
                     renames[file] = nzf.filename
