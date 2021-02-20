@@ -2078,16 +2078,16 @@ def quick_check_set(set, nzo):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
-                    # Let's check if there is a subdir in 'file'
-                    relative_new_path = re.search(r"(.*)(\\|/)", file)  # find directory separator \ or /
+                    # Let's check if there is a subdir in 'file', which SABs needs to create
+                    relative_new_path = re.search(r"(.*)[\\|/]", file)  # find directory before separator \ or /
                     # Proceed if subdir specified, and no malicous '..' in it
                     if relative_new_path and not os.pardir in relative_new_path.group(1):
                         full_new_path = os.path.join(nzo.download_path, relative_new_path.group(1))
-                        # to be sure, check again that subdir within path
+                        # to be sure, check again that subdir is within path
                         within_path = (
                             os.path.commonpath([nzo.download_path, os.path.abspath(full_new_path)]) == nzo.download_path
                         )
-                        if within_path and not os.path.exists(full_new_path):
+                        if (not os.path.exists(full_new_path)) and within_path:
                             logging.debug("Creating subdir %s", full_new_path)
                             try:
                                 os.makedirs(full_new_path)
