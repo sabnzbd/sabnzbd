@@ -2078,8 +2078,8 @@ def quick_check_set(set, nzo):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
-                    # Let's check if there is a subdir in 'file', and if so, pre-create it
-                    relative_new_path = re.search("(.*)/", file)
+                    # Let's check if there is a subdir in 'file'
+                    relative_new_path = re.search(r"(.*)(\\|/)", file) # find directory separator \ or /
                     # Proceed if subdir specified, and no malicous '..' in it
                     if relative_new_path and not os.pardir in relative_new_path.group(1):
                         full_new_path = os.path.join(nzo.download_path, relative_new_path.group(1))
