@@ -2085,7 +2085,7 @@ def quick_check_set(set, nzo):
                         if not os.path.exists(new_path):
                             logging.debug("Creating subdir %s", new_path)
                             try:
-                                os.mkdir(new_path)
+                                os.makedirs(new_path)
                             except:
                                 logging.debug("Failed to creating subdir path")
 
