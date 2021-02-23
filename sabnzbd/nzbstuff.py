@@ -901,6 +901,7 @@ class NzbObject(TryList):
         for kw in self.meta:
             if not self.nzo_info.get(kw):
                 self.nzo_info[kw] = self.meta[kw][0]
+        logging.debug("NZB nzo-info = %s", self.nzo_info)
 
         # Show first meta-password (if any), when there's no explicit password
         if not self.password and self.meta.get("password"):

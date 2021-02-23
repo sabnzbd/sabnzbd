@@ -58,7 +58,7 @@ def nzbfile_parser(raw_data, nzo):
                 if meta_type not in nzo.meta:
                     nzo.meta[meta_type] = []
                 nzo.meta[meta_type].append(meta.text)
-    logging.debug("NZB Meta-data = %s", nzo.meta)
+    logging.debug("NZB file meta-data = %s", nzo.meta)
 
     # Parse the files
     for file in nzb_tree.iter("file"):
