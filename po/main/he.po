@@ -3488,7 +3488,7 @@ msgstr "פעולה כאשר סיומת בלתי רצויה מתגלה"
 
 #: sabnzbd/skintext.py
 msgid "Action when an unwanted extension is detected"
-msgstr ""
+msgstr "פעולה כאשר סיומת בלתי רצויה מתגלה"
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
@@ -3496,17 +3496,19 @@ msgstr "סיומות בלתי רצויות"
 
 #: sabnzbd/skintext.py
 msgid "Blacklist"
-msgstr ""
+msgstr "רשימה שחורה"
 
 #: sabnzbd/skintext.py
 msgid "Whitelist"
-msgstr ""
+msgstr "רשימה לבנה"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
 " <b>exe, com</b>"
 msgstr ""
+"בחר מצב וכתוב את כל הסיומות הבלתי רצויות. לדוגמה: <b>exe</b> או <b>exe, "
+"com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
