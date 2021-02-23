@@ -35,6 +35,7 @@ from sabnzbd.filesystem import (
     get_unique_filename,
     get_ext,
     renamer,
+    sanitize_and_trim_path,
     sanitize_foldername,
     clip_path,
 )
@@ -501,6 +502,7 @@ class SeriesSorter:
             newpath = os.path.join(current_path, newname)
             # Replace %ext with extension
             newpath = newpath.replace("%ext", self.ext)
+            newpath = sanitize_and_trim_path(newpath)
             try:
                 logging.debug("Rename: %s to %s", filepath, newpath)
                 renamer(filepath, newpath)
