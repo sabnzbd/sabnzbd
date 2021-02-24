@@ -2079,21 +2079,25 @@ def quick_check_set(set, nzo):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
-                    # Let's check if there is a subdir in 'file', which SABs needs to created
+                    # Let's check if there is a subdir in 'file', which SABs needs to create
                     # This will only happen on POSIX (with par2)
                     # subdirs in par2 always contain "/" (not "\")
                     relative_new_path = re.search(r"(.*)/", file)  # find directory before separator "/"
-                    logging.debug("Subdir found: %s", relative_new_path)
                     # Proceed if subdir specified
                     if relative_new_path:
+                        logging.debug("Subdir found: %s", relative_new_path.group(1))
                         full_new_path = os.path.join(nzo.download_path, relative_new_path.group(1))
                         # Only create subdir if it does not yet exist, and it's a valid subdir
-                        if (not os.path.exists(full_new_path)) and same_file(nzo.download_path, full_new_path)==2:
-                            logging.debug("Creating subdir %s", full_new_path)
-                            try:
-                                os.makedirs(full_new_path)
-                            except:
-                                logging.warning("Failed to create subdir path %s", full_new_path)
+                        if not os.path.exists(full_new_path):
+                            if same_file(nzo.download_path, full_new_path) == 2:
+                                # Yes, a subdirectory
+                                logging.debug("Creating subdir %s", full_new_path)
+                                try:
+                                    os.makedirs(full_new_path)
+                                except:
+                                    logging.warning("Failed to create subdir path %s", full_new_path)
+                            else:
+                                logging.warning("par2 wanted to create a directory outside of main directory")
 
                     renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
                     renames[file] = nzf.filename
