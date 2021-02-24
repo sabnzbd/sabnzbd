@@ -55,6 +55,7 @@ from sabnzbd.filesystem import (
     setname_from_path,
     get_ext,
     get_filename,
+    same_file,
 )
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.sorting import SeriesSorter
@@ -2078,16 +2079,16 @@ def quick_check_set(set, nzo):
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
 
-                    # Let's check if there is a subdir in 'file', which SABs needs to create
-                    relative_new_path = re.search(r"(.*)[\\|/]", file)  # find directory before separator \ or /
-                    # Proceed if subdir specified, and no malicous '..' in it
-                    if relative_new_path and not os.pardir in relative_new_path.group(1):
+                    # Let's check if there is a subdir in 'file', which SABs needs to created
+                    # This will only happen on POSIX (with par2)
+                    # subdirs in par2 always contain "/" (not "\")
+                    relative_new_path = re.search(r"(.*)/", file)  # find directory before separator "/"
+                    logging.debug("Subdir found: %s", relative_new_path)
+                    # Proceed if subdir specified
+                    if relative_new_path:
                         full_new_path = os.path.join(nzo.download_path, relative_new_path.group(1))
-                        # to be sure, check again that subdir is within path
-                        within_path = (
-                            os.path.commonpath([nzo.download_path, os.path.abspath(full_new_path)]) == nzo.download_path
-                        )
-                        if (not os.path.exists(full_new_path)) and within_path:
+                        # Only create subdir if it does not yet exist, and it's a valid subdir
+                        if (not os.path.exists(full_new_path)) and same_file(nzo.download_path, full_new_path)==2:
                             logging.debug("Creating subdir %s", full_new_path)
                             try:
                                 os.makedirs(full_new_path)
