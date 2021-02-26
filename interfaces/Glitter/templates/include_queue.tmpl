@@ -67,8 +67,10 @@
             <tr>
                 <th style="width: 25px;"></th>
                 <th></th>
-                <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraQueueColumn }"></th>
-                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumn }"></th>
+                <!-- ko foreach: extraQueueColumns -->
+                <th class="table-header-extra"></th>
+                <!-- /ko -->
+                <th class="table-header-progress" data-bind="css: { 'table-header-progress-smaller' : extraQueueColumns().length }"></th>
                 <th style="width: 85px;"></th>
                 <th style="width: 60px;"></th>
             </tr>
@@ -76,7 +78,7 @@
         <!-- ko if: !hasQueue() -->
         <tbody class="no-downloads">
             <tr>
-                <td colspan="6">
+                <td colspan="6" data-bind="attr: { 'colspan': 5 + extraQueueColumns().length }">
                     <a href="#modal-add-nzb" class="hover-button" data-toggle="modal">
                         <span title="$T('Glitter-dragAndDrop')" data-tooltip="true"><span class="glyphicon glyphicon-plus-sign"></span> $T('Glitter-addNZB')</span>
                     </a>
@@ -118,10 +120,11 @@
                         <small data-bind="text: avg_age"></small>
                     </div>
                 </td>
+                <!-- ko foreach: parent.parent.extraQueueColumns -->
                 <td class="row-extra-text">
-                    <div class="row-wrap-text" data-bind="text: extraText">
-                    </div>
+                    <div class="row-wrap-text" data-bind="text: \$parent.showColumn(\$data)"></div>
                 </td>
+                <!-- /ko -->
                 <td class="progress-indicator">
                     <div class="progress">
                         <div class="progress-bar progress-bar-info" data-bind="attr: { 'style': 'width: ' + percentage() + '%; background-color: ' + progressColor() + ';' }">

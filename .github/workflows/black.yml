@@ -7,14 +7,15 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Black Code Formatter
-      uses: lgeiger/black-action@v1.0.1
+      uses: lgeiger/black-action@master
       with:
           args: >
             SABnzbd.py
             sabnzbd
             scripts
             tools
+            builder
             tests
             --line-length=120
-            --target-version=py35
+            --target-version=py36
             --check

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -29,6 +29,8 @@ import os
 import re
 import time
 
+from random import randint
+
 import sabyenc3
 
 logging.getLogger().setLevel(logging.INFO)
@@ -37,7 +39,7 @@ logging.getLogger().setLevel(logging.INFO)
 # Expecting the following message-id:
 # ARTICLE <file=folder/filename.mkv|part=4|start=5000|size=5000>\r\n
 ARTICLE_INFO = re.compile(
-    b"^(ARTICLE|BODY) (?P<message_id><file=(?P<file>.*)\|part=(?P<part>\d+)\|start=(?P<start>\d+)\|size=(?P<size>\d+)>)\\r\\n$",
+    b"^(ARTICLE|BODY) (?P<message_id><file=(?P<file>.*)\\|part=(?P<part>\\d+)\\|start=(?P<start>\\d+)\\|size=(?P<size>\\d+)>)\\r\\n$",
     re.MULTILINE,
 )
 YENC_ESCAPE = [0x00, 0x0A, 0x0D, ord("="), ord(".")]
@@ -166,12 +168,10 @@ def create_nzb(nzb_file=None, nzb_dir=None):
         nzb.write('<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.0//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.0.dtd">\n')
         nzb.write('<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">\n')
 
-        current_time = time.time()
+        nzb_time = time.time() - randint(0, int(time.time() - 746863566))
 
         for fl in files_for_nzb:
-            nzb.write(
-                '<file poster="SABNews" date="%d" subject="&quot;%s&quot;">\n' % (current_time, os.path.basename(fl))
-            )
+            nzb.write('<file poster="SABNews" date="%d" subject="&quot;%s&quot;">\n' % (nzb_time, os.path.basename(fl)))
             nzb.write("<groups><group>alt.binaries.test</group></groups>\n")
             nzb.write("<segments>\n")
 

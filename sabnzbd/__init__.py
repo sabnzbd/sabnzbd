@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -15,36 +15,33 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-# Imported to be referenced from other files directly
-from sabnzbd.version import __version__, __baseline__
-
 import os
 import logging
 import datetime
 import tempfile
 import pickle
+import ctypes
 import gzip
 import time
 import socket
 import cherrypy
+import platform
 import sys
-import re
 import ssl
-from threading import Lock, Thread
+from threading import Lock, Thread, Condition
+from typing import Any, AnyStr
 
 ##############################################################################
 # Determine platform flags
 ##############################################################################
 WIN32 = DARWIN = FOUNDATION = WIN64 = DOCKER = False
-KERNEL32 = None
+KERNEL32 = LIBC = None
 
 if os.name == "nt":
     WIN32 = True
     from sabnzbd.utils.apireg import del_connection_info
 
     try:
-        import ctypes
-
         KERNEL32 = ctypes.windll.LoadLibrary("Kernel32.dll")
     except:
         pass
@@ -59,8 +56,16 @@ elif os.name == "posix":
     except:
         pass
 
-    import platform
+    # See if we have Linux memory functions
+    try:
+        LIBC = ctypes.CDLL("libc.so.6")
+        LIBC.malloc_trim(0)
+    except:
+        # No malloc_trim(), probably because no libc
+        LIBC = None
+        pass
 
+    # Parse macOS version numbers
     if platform.system().lower() == "darwin":
         DARWIN = True
         # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
@@ -73,35 +78,41 @@ elif os.name == "posix":
         except:
             pass
 
+# Imported to be referenced from other files directly
+from sabnzbd.version import __version__, __baseline__
+
 # Now we can import safely
-from sabnzbd.nzbqueue import NzbQueue
-from sabnzbd.postproc import PostProcessor
-from sabnzbd.downloader import Downloader
-from sabnzbd.decoder import Decoder
-from sabnzbd.assembler import Assembler
-from sabnzbd.rating import Rating
 import sabnzbd.misc as misc
 import sabnzbd.filesystem as filesystem
 import sabnzbd.powersup as powersup
-from sabnzbd.dirscanner import DirScanner
-from sabnzbd.urlgrabber import URLGrabber
-import sabnzbd.scheduler as scheduler
 import sabnzbd.rss as rss
 import sabnzbd.emailer as emailer
-from sabnzbd.articlecache import ArticleCache
-import sabnzbd.newsunpack
 import sabnzbd.encoding as encoding
 import sabnzbd.config as config
-from sabnzbd.bpsmeter import BPSMeter
 import sabnzbd.cfg as cfg
 import sabnzbd.database
 import sabnzbd.lang as lang
-import sabnzbd.par2file as par2file
 import sabnzbd.nzbparser as nzbparser
+import sabnzbd.nzbstuff
+import sabnzbd.getipaddress
+import sabnzbd.newsunpack
+import sabnzbd.par2file
 import sabnzbd.api
 import sabnzbd.interface
-import sabnzbd.nzbstuff as nzbstuff
+import sabnzbd.zconfig
 import sabnzbd.directunpacker as directunpacker
+import sabnzbd.dirscanner
+import sabnzbd.urlgrabber
+import sabnzbd.nzbqueue
+import sabnzbd.postproc
+import sabnzbd.downloader
+import sabnzbd.decoder
+import sabnzbd.assembler
+import sabnzbd.rating
+import sabnzbd.articlecache
+import sabnzbd.bpsmeter
+import sabnzbd.scheduler as scheduler
+import sabnzbd.notifier as notifier
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import (
     DEFAULT_PRIORITY,
@@ -111,18 +122,29 @@ from sabnzbd.constants import (
     QUEUE_VERSION,
     QUEUE_FILE_TMPL,
 )
-import sabnzbd.getipaddress as getipaddress
+import sabnzbd.utils.ssdp
 
-LINUX_POWER = powersup.HAVE_DBUS
+# Storage for the threads, variables are filled during initialization
+ArticleCache: sabnzbd.articlecache.ArticleCache
+Rating: sabnzbd.rating.Rating
+Assembler: sabnzbd.assembler.Assembler
+Decoder: sabnzbd.decoder.Decoder
+Downloader: sabnzbd.downloader.Downloader
+PostProcessor: sabnzbd.postproc.PostProcessor
+NzbQueue: sabnzbd.nzbqueue.NzbQueue
+URLGrabber: sabnzbd.urlgrabber.URLGrabber
+DirScanner: sabnzbd.dirscanner.DirScanner
+BPSMeter: sabnzbd.bpsmeter.BPSMeter
+RSSReader: sabnzbd.rss.RSSReader
+Scheduler: sabnzbd.scheduler.Scheduler
 
+# Regular constants
 START = datetime.datetime.now()
-
 MY_NAME = None
 MY_FULLNAME = None
 RESTART_ARGS = []
 NEW_VERSION = (None, None)
 DIR_HOME = None
-DIR_APPDATA = None
 DIR_LCLDATA = None
 DIR_PROG = None
 DIR_INTERFACES = None
@@ -134,6 +156,7 @@ QUEUECOMPLETEACTION = None  # stores the name of the function to be called
 QUEUECOMPLETEARG = None  # stores an extra arguments that need to be passed
 
 DAEMON = None
+LINUX_POWER = powersup.HAVE_DBUS
 
 LOGFILE = None
 WEBLOGFILE = None
@@ -157,10 +180,11 @@ PAUSED_ALL = False
 TRIGGER_RESTART = False  # To trigger restart for Scheduler, WinService and Mac
 WINTRAY = None  # Thread for the Windows SysTray icon
 WEBUI_READY = False
-LAST_WARNING = None
-LAST_ERROR = None
 EXTERNAL_IPV6 = False
 LAST_HISTORY_UPDATE = 1
+
+# Condition used to handle the main loop in SABnzbd.py
+SABSTOP_CONDITION = Condition(Lock())
 
 # Performance measure for dashboard
 PYSTONE_SCORE = 0
@@ -179,25 +203,12 @@ __SHUTTING_DOWN__ = False
 # Signal Handler
 ##############################################################################
 def sig_handler(signum=None, frame=None):
-    global SABSTOP, WINTRAY
     if sabnzbd.WIN32 and signum is not None and DAEMON and signum == 5:
         # Ignore the "logoff" event when running as a Win32 daemon
         return True
     if signum is not None:
         logging.warning(T("Signal %s caught, saving and exiting..."), signum)
-    try:
-        save_state()
-        sabnzbd.zconfig.remove_server()
-    finally:
-        if sabnzbd.WIN32:
-            del_connection_info()
-            if sabnzbd.WINTRAY:
-                sabnzbd.WINTRAY.terminate = True
-                time.sleep(0.5)
-        else:
-            pid_file()
-        SABSTOP = True
-        os._exit(0)
+        sabnzbd.shutdown_program()
 
 
 ##############################################################################
@@ -214,13 +225,11 @@ def get_db_connection(thread_index=0):
 
 
 @synchronized(INIT_LOCK)
-def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0):
-    global __INITIALIZED__, __SHUTTING_DOWN__, LOGFILE, WEBLOGFILE, LOGHANDLER, GUIHANDLER, AMBI_LOCALHOST, WAITEXIT, DAEMON, MY_NAME, MY_FULLNAME, NEW_VERSION, DIR_HOME, DIR_APPDATA, DIR_LCLDATA, DIR_PROG, DIR_INTERFACES, DARWIN, RESTART_REQ
-
-    if __INITIALIZED__:
+def initialize(pause_downloader=False, clean_up=False, repair=0):
+    if sabnzbd.__INITIALIZED__:
         return False
 
-    __SHUTTING_DOWN__ = False
+    sabnzbd.__SHUTTING_DOWN__ = False
 
     # Set global database connection for Web-UI threads
     cherrypy.engine.subscribe("start_thread", get_db_connection)
@@ -271,11 +280,6 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     cfg.enable_https_verification.callback(guard_https_ver)
     guard_https_ver()
 
-    # Set cache limit
-    if not cfg.cache_limit() or (cfg.cache_limit() in ("200M", "450M") and (sabnzbd.WIN32 or sabnzbd.DARWIN)):
-        cfg.cache_limit.set(misc.get_cache_limit())
-    ArticleCache.do.new_limit(cfg.cache_limit.get_int())
-
     check_incomplete_vs_complete()
 
     # Set language files
@@ -283,25 +287,8 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
     lang.set_language(cfg.language())
     sabnzbd.api.clear_trans_cache()
 
+    # Set end-of-queue action
     sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
-
-    # One time conversion "speedlimit" in schedules.
-    if not cfg.sched_converted():
-        schedules = cfg.schedules()
-        newsched = []
-        for sched in schedules:
-            if "speedlimit" in sched:
-                newsched.append(re.sub(r"(speedlimit \d+)$", r"\1K", sched))
-            else:
-                newsched.append(sched)
-        cfg.schedules.set(newsched)
-        cfg.sched_converted.set(1)
-
-    # Second time schedule conversion
-    if cfg.sched_converted() != 2:
-        cfg.schedules.set(["%s %s" % (1, schedule) for schedule in cfg.schedules()])
-        cfg.sched_converted.set(2)
-        config.save_config()
 
     # Convert auto-sort
     if cfg.auto_sort() == "0":
@@ -319,126 +306,127 @@ def initialize(pause_downloader=False, clean_up=False, evalSched=False, repair=0
         pause_downloader = True
 
     # Initialize threads
-    rss.init()
+    sabnzbd.ArticleCache = sabnzbd.articlecache.ArticleCache()
+    sabnzbd.BPSMeter = sabnzbd.bpsmeter.BPSMeter()
+    sabnzbd.NzbQueue = sabnzbd.nzbqueue.NzbQueue()
+    sabnzbd.Downloader = sabnzbd.downloader.Downloader(sabnzbd.BPSMeter.read() or pause_downloader)
+    sabnzbd.Decoder = sabnzbd.decoder.Decoder()
+    sabnzbd.Assembler = sabnzbd.assembler.Assembler()
+    sabnzbd.PostProcessor = sabnzbd.postproc.PostProcessor()
+    sabnzbd.DirScanner = sabnzbd.dirscanner.DirScanner()
+    sabnzbd.Rating = sabnzbd.rating.Rating()
+    sabnzbd.URLGrabber = sabnzbd.urlgrabber.URLGrabber()
+    sabnzbd.RSSReader = sabnzbd.rss.RSSReader()
+    sabnzbd.Scheduler = sabnzbd.scheduler.Scheduler()
 
-    paused = BPSMeter.do.read()
+    # Run startup tasks
+    sabnzbd.NzbQueue.read_queue(repair)
+    sabnzbd.Scheduler.analyse(pause_downloader)
 
-    NzbQueue()
-
-    Downloader(pause_downloader or paused)
-
-    Decoder()
-
-    Assembler()
-
-    PostProcessor()
-
-    NzbQueue.do.read_queue(repair)
-
-    DirScanner()
-
-    Rating()
-
-    URLGrabber()
-
-    scheduler.init()
-
-    if evalSched:
-        scheduler.analyse(pause_downloader)
+    # Set cache limit for new users
+    if not cfg.cache_limit():
+        cfg.cache_limit.set(misc.get_cache_limit())
+    sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
     logging.info("All processes started")
-    RESTART_REQ = False
-    __INITIALIZED__ = True
-    return True
+    sabnzbd.RESTART_REQ = False
+    sabnzbd.__INITIALIZED__ = True
 
 
 @synchronized(INIT_LOCK)
 def start():
-    global __INITIALIZED__
-
-    if __INITIALIZED__:
+    if sabnzbd.__INITIALIZED__:
         logging.debug("Starting postprocessor")
-        PostProcessor.do.start()
+        sabnzbd.PostProcessor.start()
 
         logging.debug("Starting assembler")
-        Assembler.do.start()
+        sabnzbd.Assembler.start()
 
         logging.debug("Starting downloader")
-        Downloader.do.start()
+        sabnzbd.Downloader.start()
 
         logging.debug("Starting decoders")
-        Decoder.do.start()
+        sabnzbd.Decoder.start()
 
-        scheduler.start()
+        logging.debug("Starting scheduler")
+        sabnzbd.Scheduler.start()
 
         logging.debug("Starting dirscanner")
-        DirScanner.do.start()
+        sabnzbd.DirScanner.start()
 
-        Rating.do.start()
+        logging.debug("Starting rating")
+        sabnzbd.Rating.start()
 
         logging.debug("Starting urlgrabber")
-        URLGrabber.do.start()
+        sabnzbd.URLGrabber.start()
 
 
 @synchronized(INIT_LOCK)
 def halt():
-    global __INITIALIZED__, __SHUTTING_DOWN__
-
-    if __INITIALIZED__:
+    if sabnzbd.__INITIALIZED__:
         logging.info("SABnzbd shutting down...")
-        __SHUTTING_DOWN__ = True
+        sabnzbd.__SHUTTING_DOWN__ = True
 
         # Stop the windows tray icon
         if sabnzbd.WINTRAY:
-            sabnzbd.WINTRAY.terminate = True
+            sabnzbd.WINTRAY.stop()
+
+        # Remove registry information
+        if sabnzbd.WIN32:
+            del_connection_info()
 
         sabnzbd.zconfig.remove_server()
+        sabnzbd.utils.ssdp.stop_ssdp()
 
         sabnzbd.directunpacker.abort_all()
 
-        rss.stop()
+        logging.debug("Stopping RSSReader")
+        sabnzbd.RSSReader.stop()
 
         logging.debug("Stopping URLGrabber")
-        URLGrabber.do.stop()
+        sabnzbd.URLGrabber.stop()
         try:
-            URLGrabber.do.join()
+            sabnzbd.URLGrabber.join()
         except:
             pass
 
         logging.debug("Stopping rating")
-        Rating.do.stop()
+        sabnzbd.Rating.stop()
         try:
-            Rating.do.join()
+            sabnzbd.Rating.join()
         except:
             pass
 
         logging.debug("Stopping dirscanner")
-        DirScanner.do.stop()
+        sabnzbd.DirScanner.stop()
         try:
-            DirScanner.do.join()
+            sabnzbd.DirScanner.join()
         except:
             pass
 
-        # Stop Required Objects
         logging.debug("Stopping downloader")
-        sabnzbd.downloader.stop()
+        sabnzbd.Downloader.stop()
+        try:
+            sabnzbd.Downloader.join()
+        except:
+            pass
 
         # Decoder handles join gracefully
         logging.debug("Stopping decoders")
-        Decoder.do.stop()
-        Decoder.do.join()
+        sabnzbd.Decoder.stop()
+        sabnzbd.Decoder.join()
 
         logging.debug("Stopping assembler")
-        Assembler.do.stop()
+        sabnzbd.Assembler.stop()
         try:
-            Assembler.do.join()
+            sabnzbd.Assembler.join()
         except:
             pass
 
         logging.debug("Stopping postprocessor")
-        PostProcessor.do.stop()
+        sabnzbd.PostProcessor.stop()
         try:
-            PostProcessor.do.join()
+            sabnzbd.PostProcessor.join()
         except:
             pass
 
@@ -452,11 +440,28 @@ def halt():
         # Since all warm-restarts have been removed, it's not longer
         # needed to stop the scheduler.
         # We must tell the scheduler to deactivate.
-        scheduler.abort()
+        logging.debug("Terminating scheduler")
+        sabnzbd.Scheduler.abort()
 
         logging.info("All processes stopped")
 
-        __INITIALIZED__ = False
+        sabnzbd.__INITIALIZED__ = False
+
+
+def notify_shutdown_loop():
+    """ Trigger the main loop to wake up"""
+    with sabnzbd.SABSTOP_CONDITION:
+        sabnzbd.SABSTOP_CONDITION.notify()
+
+
+def shutdown_program():
+    """ Stop program after halting and saving """
+    if not sabnzbd.SABSTOP:
+        logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
+        sabnzbd.halt()
+        cherrypy.engine.exit()
+        sabnzbd.SABSTOP = True
+        notify_shutdown_loop()
 
 
 def trigger_restart(timeout=None):
@@ -465,25 +470,9 @@ def trigger_restart(timeout=None):
     if timeout:
         time.sleep(timeout)
 
-    if sabnzbd.WIN32:
-        # Remove connection info for faster restart
-        del_connection_info()
-
-    # Leave the harder restarts to the polling in SABnzbd.py
-    if hasattr(sys, "frozen"):
-        sabnzbd.TRIGGER_RESTART = True
-    else:
-        # Add extra arguments
-        if sabnzbd.downloader.Downloader.do.paused:
-            sabnzbd.RESTART_ARGS.append("-p")
-        sys.argv = sabnzbd.RESTART_ARGS
-
-        # Stop all services
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-
-        # Do the restart right now
-        cherrypy.engine._do_execv()
+    # Set the flag and wake up the main loop
+    sabnzbd.TRIGGER_RESTART = True
+    notify_shutdown_loop()
 
 
 ##############################################################################
@@ -491,18 +480,17 @@ def trigger_restart(timeout=None):
 ##############################################################################
 def new_limit():
     """ Callback for article cache changes """
-    ArticleCache.do.new_limit(cfg.cache_limit.get_int())
+    sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
 
 def guard_restart():
     """ Callback for config options requiring a restart """
-    global RESTART_REQ
     sabnzbd.RESTART_REQ = True
 
 
 def guard_top_only():
     """ Callback for change of top_only option """
-    NzbQueue.do.set_top_only(cfg.top_only())
+    sabnzbd.NzbQueue.set_top_only(cfg.top_only())
 
 
 def guard_pause_on_pp():
@@ -511,17 +499,17 @@ def guard_pause_on_pp():
         pass  # Not safe to idle downloader, because we don't know
         # if post-processing is active now
     else:
-        Downloader.do.resume_from_postproc()
+        sabnzbd.Downloader.resume_from_postproc()
 
 
 def guard_quota_size():
     """ Callback for change of quota_size """
-    BPSMeter.do.change_quota()
+    sabnzbd.BPSMeter.change_quota()
 
 
 def guard_quota_dp():
     """ Callback for change of quota_day or quota_period """
-    scheduler.restart(force=True)
+    sabnzbd.Scheduler.restart()
 
 
 def guard_language():
@@ -565,41 +553,40 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None, pa
         msg = "%s - %s" % (nzbname, msg)
 
     # Generate the placeholder
-    future_nzo = NzbQueue.do.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
+    future_nzo = sabnzbd.NzbQueue.generate_future(msg, pp, script, cat, url=url, priority=priority, nzbname=nzbname)
 
     # Set password
     if not future_nzo.password:
         future_nzo.password = password
 
     # Get it!
-    URLGrabber.do.add(url, future_nzo)
+    sabnzbd.URLGrabber.add(url, future_nzo)
     return future_nzo.nzo_id
 
 
 def save_state():
     """ Save all internal bookkeeping to disk """
-    ArticleCache.do.flush_articles()
-    NzbQueue.do.save()
-    BPSMeter.do.save()
-    rss.save()
-    Rating.do.save()
-    DirScanner.do.save()
-    PostProcessor.do.save()
+    config.save_config()
+    sabnzbd.ArticleCache.flush_articles()
+    sabnzbd.NzbQueue.save()
+    sabnzbd.BPSMeter.save()
+    sabnzbd.Rating.save()
+    sabnzbd.DirScanner.save()
+    sabnzbd.PostProcessor.save()
+    sabnzbd.RSSReader.save()
 
 
 def pause_all():
     """ Pause all activities than cause disk access """
-    global PAUSED_ALL
-    PAUSED_ALL = True
-    Downloader.do.pause()
+    sabnzbd.PAUSED_ALL = True
+    sabnzbd.Downloader.pause()
     logging.debug("PAUSED_ALL active")
 
 
 def unpause_all():
     """ Resume all activities """
-    global PAUSED_ALL
-    PAUSED_ALL = False
-    Downloader.do.resume()
+    sabnzbd.PAUSED_ALL = False
+    sabnzbd.Downloader.resume()
     logging.debug("PAUSED_ALL inactive")
 
 
@@ -608,20 +595,20 @@ def unpause_all():
 ##############################################################################
 
 
-def backup_exists(filename):
+def backup_exists(filename: str) -> bool:
     """ Return True if backup exists and no_dupes is set """
     path = cfg.nzb_backup_dir.get_path()
     return path and os.path.exists(os.path.join(path, filename + ".gz"))
 
 
-def backup_nzb(filename, data):
+def backup_nzb(filename: str, data: AnyStr):
     """ Backup NZB file """
     path = cfg.nzb_backup_dir.get_path()
     if path:
         save_compressed(path, filename, data)
 
 
-def save_compressed(folder, filename, data):
+def save_compressed(folder: str, filename: str, data: AnyStr):
     """ Save compressed NZB file in folder """
     if filename.endswith(".nzb"):
         filename += ".gz"
@@ -631,7 +618,7 @@ def save_compressed(folder, filename, data):
     try:
         # Have to get around the path being put inside the tgz
         with open(os.path.join(folder, filename), "wb") as tgz_file:
-            f = gzip.GzipFile(filename, fileobj=tgz_file)
+            f = gzip.GzipFile(filename, fileobj=tgz_file, mode="wb")
             f.write(encoding.utob(data))
             f.flush()
             f.close()
@@ -665,7 +652,7 @@ def add_nzbfile(
     """
     if pp == "-1":
         pp = None
-    if script and script.lower() == "default":
+    if script and (script.lower() == "default" or not filesystem.is_valid_script(script)):
         script = None
     if cat and cat.lower() == "default":
         cat = None
@@ -745,7 +732,7 @@ def enable_server(server):
         logging.warning(T("Trying to set status of non-existing server %s"), server)
         return
     config.save_config()
-    Downloader.do.update_server(server, server)
+    sabnzbd.Downloader.update_server(server, server)
 
 
 def disable_server(server):
@@ -756,7 +743,7 @@ def disable_server(server):
         logging.warning(T("Trying to set status of non-existing server %s"), server)
         return
     config.save_config()
-    Downloader.do.update_server(server, server)
+    sabnzbd.Downloader.update_server(server, server)
 
 
 def system_shutdown():
@@ -797,15 +784,6 @@ def system_standby():
         powersup.linux_standby()
 
 
-def shutdown_program():
-    """ Stop program after halting and saving """
-    if not sabnzbd.SABSTOP:
-        logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
-        sabnzbd.halt()
-        cherrypy.engine.exit()
-        sabnzbd.SABSTOP = True
-
-
 def restart_program():
     """ Restart program (used by scheduler) """
     logging.info("Scheduled restart request")
@@ -819,15 +797,13 @@ def change_queue_complete_action(action, new=True):
     Scripts are prefixed with 'script_'
     When "new" is False, check whether non-script actions are acceptable
     """
-    global QUEUECOMPLETE, QUEUECOMPLETEACTION, QUEUECOMPLETEARG
-
     _action = None
     _argument = None
-    if "script_" in action:
+    if action.startswith("script_") and filesystem.is_valid_script(action.replace("script_", "", 1)):
         # all scripts are labeled script_xxx
         _action = run_script
-        _argument = action.replace("script_", "")
-    elif new or cfg.queue_complete_pers.get():
+        _argument = action.replace("script_", "", 1)
+    elif new or cfg.queue_complete_pers():
         if action == "shutdown_pc":
             _action = system_shutdown
         elif action == "hibernate_pc":
@@ -846,9 +822,9 @@ def change_queue_complete_action(action, new=True):
         config.save_config()
 
     # keep the name of the action for matching the current select in queue.tmpl
-    QUEUECOMPLETE = action
-    QUEUECOMPLETEACTION = _action
-    QUEUECOMPLETEARG = _argument
+    sabnzbd.QUEUECOMPLETE = action
+    sabnzbd.QUEUECOMPLETEACTION = _action
+    sabnzbd.QUEUECOMPLETEARG = _argument
 
 
 def run_script(script):
@@ -862,20 +838,14 @@ def run_script(script):
             logging.info("Failed queue-complete script %s, Traceback: ", script, exc_info=True)
 
 
-def empty_queues():
-    """ Return True if queues empty or non-existent """
-    global __INITIALIZED__
-    return (not __INITIALIZED__) or (PostProcessor.do.empty() and NzbQueue.do.is_empty())
-
-
 def keep_awake():
-    """ If we still have work to do, keep Windows/OSX system awake """
+    """ If we still have work to do, keep Windows/macOS system awake """
     if KERNEL32 or FOUNDATION:
         if sabnzbd.cfg.keep_awake():
             ES_CONTINUOUS = 0x80000000
             ES_SYSTEM_REQUIRED = 0x00000001
-            if (not Downloader.do.is_paused() and not NzbQueue.do.is_empty()) or (
-                not PostProcessor.do.paused and not PostProcessor.do.empty()
+            if (not sabnzbd.Downloader.is_paused() and not sabnzbd.NzbQueue.is_empty()) or (
+                not sabnzbd.PostProcessor.paused and not sabnzbd.PostProcessor.empty()
             ):
                 if KERNEL32:
                     # Set ES_SYSTEM_REQUIRED until the next call
@@ -975,7 +945,7 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
     return data
 
 
-def remove_data(_id, path):
+def remove_data(_id: str, path: str):
     """ Remove admin file """
     path = os.path.join(path, _id)
     try:
@@ -985,13 +955,13 @@ def remove_data(_id, path):
         logging.debug("Failed to remove %s", path)
 
 
-def save_admin(data, data_id):
+def save_admin(data: Any, data_id: str):
     """ Save data in admin folder in specified format """
     logging.debug("[%s] Saving data for %s", misc.caller_name(), data_id)
     save_data(data, data_id, cfg.admin_dir.get_path())
 
 
-def load_admin(data_id, remove=False, silent=False):
+def load_admin(data_id: str, remove=False, silent=False) -> Any:
     """ Read data in admin folder in specified format """
     logging.debug("[%s] Loading data for %s", misc.caller_name(), data_id)
     return load_data(data_id, cfg.admin_dir.get_path(), remove=remove, silent=silent)
@@ -1027,67 +997,66 @@ def check_all_tasks():
         return True
 
     # Non-restartable threads, require program restart
-    if not sabnzbd.PostProcessor.do.is_alive():
+    if not sabnzbd.PostProcessor.is_alive():
         logging.info("Restarting because of crashed postprocessor")
         return False
-    if not Downloader.do.is_alive():
+    if not sabnzbd.Downloader.is_alive():
         logging.info("Restarting because of crashed downloader")
         return False
-    if not Decoder.do.is_alive():
+    if not sabnzbd.Decoder.is_alive():
         logging.info("Restarting because of crashed decoder")
         return False
-    if not Assembler.do.is_alive():
+    if not sabnzbd.Assembler.is_alive():
         logging.info("Restarting because of crashed assembler")
         return False
 
     # Kick the downloader, in case it missed the semaphore
-    Downloader.do.wakeup()
+    sabnzbd.Downloader.wakeup()
 
     # Make sure the right servers are active
-    Downloader.do.check_timers()
+    sabnzbd.Downloader.check_timers()
 
     # Restartable threads
-    if not DirScanner.do.is_alive():
+    if not sabnzbd.DirScanner.is_alive():
         logging.info("Restarting crashed dirscanner")
-        DirScanner.do.__init__()
-    if not URLGrabber.do.is_alive():
+        sabnzbd.DirScanner.__init__()
+    if not sabnzbd.URLGrabber.is_alive():
         logging.info("Restarting crashed urlgrabber")
-        URLGrabber.do.__init__()
-    if not Rating.do.is_alive():
+        sabnzbd.URLGrabber.__init__()
+    if not sabnzbd.Rating.is_alive():
         logging.info("Restarting crashed rating")
-        Rating.do.__init__()
-    if not sabnzbd.scheduler.sched_check():
+        sabnzbd.Rating.__init__()
+    if not sabnzbd.Scheduler.is_alive():
         logging.info("Restarting crashed scheduler")
-        sabnzbd.scheduler.init()
-        sabnzbd.downloader.Downloader.do.unblock_all()
+        sabnzbd.Scheduler.restart()
+        sabnzbd.Downloader.unblock_all()
 
     # Check one-shot pause
-    sabnzbd.scheduler.pause_check()
+    sabnzbd.Scheduler.pause_check()
 
     # Check (and terminate) idle jobs
-    sabnzbd.nzbqueue.NzbQueue.do.stop_idle_jobs()
+    sabnzbd.NzbQueue.stop_idle_jobs()
 
     return True
 
 
 def pid_file(pid_path=None, pid_file=None, port=0):
     """ Create or remove pid file """
-    global DIR_PID
     if not sabnzbd.WIN32:
         if pid_path and pid_path.startswith("/"):
-            DIR_PID = os.path.join(pid_path, "sabnzbd-%d.pid" % port)
+            sabnzbd.DIR_PID = os.path.join(pid_path, "sabnzbd-%d.pid" % port)
         elif pid_file and pid_file.startswith("/"):
-            DIR_PID = pid_file
+            sabnzbd.DIR_PID = pid_file
 
-    if DIR_PID:
+    if sabnzbd.DIR_PID:
         try:
             if port:
-                with open(DIR_PID, "w") as f:
+                with open(sabnzbd.DIR_PID, "w") as f:
                     f.write("%d\n" % os.getpid())
             else:
-                filesystem.remove_file(DIR_PID)
+                filesystem.remove_file(sabnzbd.DIR_PID)
         except:
-            logging.warning(T("Cannot access PID file %s"), DIR_PID)
+            logging.warning(T("Cannot access PID file %s"), sabnzbd.DIR_PID)
 
 
 def check_incomplete_vs_complete():
@@ -1111,18 +1080,13 @@ def wait_for_download_folder():
         time.sleep(2.0)
 
 
-# Required wrapper because nzbstuff.py cannot import downloader.py
-def highest_server(me):
-    return sabnzbd.downloader.Downloader.do.highest_server(me)
-
-
 def test_ipv6():
     """ Check if external IPv6 addresses are reachable """
     if not cfg.selftest_host():
         # User disabled the test, assume active IPv6
         return True
     try:
-        info = getipaddress.addresslookup6(cfg.selftest_host())
+        info = sabnzbd.getipaddress.addresslookup6(cfg.selftest_host())
     except:
         logging.debug(
             "Test IPv6: Disabling IPv6, because it looks like it's not available. Reason: %s", sys.exc_info()[0]

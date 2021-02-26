@@ -162,6 +162,7 @@ input[type="checkbox"]+.desc {
     float: none;
     overflow: hidden;
     min-width: 555px;
+    position: relative;
 }
 .Key tr:nth-child(odd),
 .tab-pane tr:nth-child(odd),
@@ -553,15 +554,10 @@ tr.separator {
 h2.activeRSS {
     margin-bottom: 10px;
 }
-.activeRSS a, .activeRSS a:visited {
-    text-decoration: none;
+.activeRSS a,
+.activeRSS a:visited {
     color: #000;
-}
-.activeRSS a:hover {
-    color: #4b4742;
-}
-.activeRSS a:first-of-type {
-    text-decoration: underline!important;
+    text-decoration: underline !important;
 }
 .favicon {
     background-position: center center!important;
@@ -795,6 +791,7 @@ input[type="submit"]:hover {
 input[type="text"],
 input[type="email"],
 input[type="url"],
+input[type="date"],
 input[type="number"],
 input[type="password"],
 textarea,
@@ -1170,6 +1167,27 @@ input[type="checkbox"] {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(359deg); }
+}
+
+/***
+    RTL Fixes
+***/
+html[dir="rtl"] .col1 input[type='checkbox'],
+html[dir="rtl"] .col2 h3 a {
+    left: 5px;
+}
+
+html[dir="rtl"] .modal-header .close {
+    float: left;
+}
+
+html[dir="rtl"] .Sorting .presets.float-left,
+html[dir="rtl"] .checkbox-days {
+    float: none;
+}
+
+html[dir="rtl"] .Scheduling form[action="addSchedule"] input[type="checkbox"] {
+    right: 5px;
 }
 
 @media screen and (min-width: 1200px) {

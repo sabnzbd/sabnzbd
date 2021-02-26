@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -36,90 +36,9 @@ import sabnzbd.emailer as emailer
 
 import feedparser
 
-__RSS = None  # Global pointer to RSS-scanner instance
-
 
 ##############################################################################
 # Wrapper functions
-##############################################################################
-
-
-def init():
-    global __RSS
-    __RSS = RSSQueue()
-
-
-def stop():
-    global __RSS
-    if __RSS:
-        __RSS.stop()
-        try:
-            __RSS.join()
-        except:
-            pass
-
-
-def run_feed(feed, download, ignoreFirst=False, force=False, readout=True):
-    global __RSS
-    if __RSS:
-        return __RSS.run_feed(feed, download, ignoreFirst, force=force, readout=readout)
-
-
-def show_result(feed):
-    global __RSS
-    if __RSS:
-        return __RSS.show_result(feed)
-
-
-def flag_downloaded(feed, fid):
-    global __RSS
-    if __RSS:
-        __RSS.flag_downloaded(feed, fid)
-
-
-def lookup_url(feed, fid):
-    global __RSS
-    if __RSS:
-        return __RSS.lookup_url(feed, fid)
-
-
-def run_method():
-    global __RSS
-    if __RSS:
-        return __RSS.run()
-    else:
-        return None
-
-
-def next_run(t=None):
-    global __RSS
-    if __RSS:
-        if t:
-            __RSS.next_run = t
-        else:
-            return __RSS.next_run
-    else:
-        return time.time()
-
-
-def save():
-    global __RSS
-    if __RSS:
-        __RSS.save()
-
-
-def clear_feed(feed):
-    global __RSS
-    if __RSS:
-        __RSS.clear_feed(feed)
-
-
-def clear_downloaded(feed):
-    global __RSS
-    if __RSS:
-        __RSS.clear_downloaded(feed)
-
-
 ##############################################################################
 
 
@@ -151,8 +70,7 @@ def remove_obsolete(jobs, new_jobs):
     """
     now = time.time()
     limit = now - 259200  # 3days (3x24x3600)
-    olds = list(jobs.keys())
-    for old in olds:
+    for old in list(jobs):
         tm = jobs[old]["time"]
         if old not in new_jobs:
             if jobs[old].get("status", " ")[0] in ("G", "B"):
@@ -162,13 +80,13 @@ def remove_obsolete(jobs, new_jobs):
             del jobs[old]
 
 
-LOCK = threading.RLock()
+RSS_LOCK = threading.RLock()
 _RE_SP = re.compile(r"s*(\d+)[ex](\d+)", re.I)
 _RE_SIZE1 = re.compile(r"Size:\s*(\d+\.\d+\s*[KMG]{0,1})B\W*", re.I)
 _RE_SIZE2 = re.compile(r"\W*(\d+\.\d+\s*[KMG]{0,1})B\W*", re.I)
 
 
-class RSSQueue:
+class RSSReader:
     def __init__(self):
         self.jobs = {}
         self.next_run = time.time()
@@ -178,7 +96,7 @@ class RSSQueue:
             self.jobs = sabnzbd.load_admin(RSS_FILE_NAME)
             if self.jobs:
                 for feed in self.jobs:
-                    remove_obsolete(self.jobs[feed], list(self.jobs[feed].keys()))
+                    remove_obsolete(self.jobs[feed], list(self.jobs[feed]))
         except:
             logging.warning(T("Cannot read %s"), RSS_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
@@ -212,7 +130,7 @@ class RSSQueue:
     def stop(self):
         self.shutdown = True
 
-    @synchronized(LOCK)
+    @synchronized(RSS_LOCK)
     def run_feed(self, feed=None, download=False, ignoreFirst=False, force=False, readout=True):
         """ Run the query for one URI and apply filters """
         self.shutdown = False
@@ -233,7 +151,6 @@ class RSSQueue:
 
         uris = feeds.uri()
         defCat = feeds.cat()
-        import sabnzbd.api
 
         if not notdefault(defCat) or defCat not in sabnzbd.api.list_cats(default=False):
             defCat = None
@@ -556,11 +473,11 @@ class RSSQueue:
         if not sabnzbd.PAUSED_ALL:
             active = False
             if self.next_run < time.time():
-                self.next_run = time.time() + cfg.rss_rate.get() * 60
+                self.next_run = time.time() + cfg.rss_rate() * 60
             feeds = config.get_rss()
             try:
                 for feed in feeds:
-                    if feeds[feed].enable.get():
+                    if feeds[feed].enable():
                         logging.info('Starting scheduled RSS read-out for "%s"', feed)
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
@@ -579,7 +496,7 @@ class RSSQueue:
                 self.save()
                 logging.info("Finished scheduled RSS read-outs")
 
-    @synchronized(LOCK)
+    @synchronized(RSS_LOCK)
     def show_result(self, feed):
         if feed in self.jobs:
             try:
@@ -589,16 +506,22 @@ class RSSQueue:
         else:
             return {}
 
-    @synchronized(LOCK)
+    @synchronized(RSS_LOCK)
     def save(self):
         sabnzbd.save_admin(self.jobs, RSS_FILE_NAME)
 
-    @synchronized(LOCK)
+    @synchronized(RSS_LOCK)
     def delete(self, feed):
         if feed in self.jobs:
             del self.jobs[feed]
 
-    @synchronized(LOCK)
+    @synchronized(RSS_LOCK)
+    def rename(self, old_feed, new_feed):
+        if old_feed in self.jobs:
+            old_data = self.jobs.pop(old_feed)
+            self.jobs[new_feed] = old_data
+
+    @synchronized(RSS_LOCK)
     def flag_downloaded(self, feed, fid):
         if feed in self.jobs:
             lst = self.jobs[feed]
@@ -607,7 +530,7 @@ class RSSQueue:
                     lst[link]["status"] = "D"
                     lst[link]["time_downloaded"] = time.localtime()
 
-    @synchronized(LOCK)
+    @synchronized(RSS_LOCK)
     def lookup_url(self, feed, url):
         if url and feed in self.jobs:
             lst = self.jobs[feed]
@@ -616,13 +539,13 @@ class RSSQueue:
                     return lst[link]
         return None
 
-    @synchronized(LOCK)
+    @synchronized(RSS_LOCK)
     def clear_feed(self, feed):
         # Remove any previous references to this feed name, and start fresh
         if feed in self.jobs:
             del self.jobs[feed]
 
-    @synchronized(LOCK)
+    @synchronized(RSS_LOCK)
     def clear_downloaded(self, feed):
         # Mark downloaded jobs, so that they won't be displayed any more.
         if feed in self.jobs:

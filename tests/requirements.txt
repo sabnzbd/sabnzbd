@@ -3,5 +3,10 @@ selenium
 requests
 pytest
 pyfakefs
-pytest_httpbin
+pytest-httpbin
+pytest-httpserver
 flaky
+xmltodict
+tavern
+tavalidate
+lxml>=4.5.0 # needed by tavalidate

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,11 +30,10 @@ Based on work by P1nGu1n
 
 import hashlib
 import logging
-import math
 import os
 import re
 
-from sabnzbd.filesystem import get_unique_filename, globber_full, renamer, get_ext
+from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
 from sabnzbd.par2file import is_parfile, parse_par2_file
 
 # Files to exclude and minimal file size for renaming
@@ -81,17 +80,26 @@ def is_probably_obfuscated(myinputfilename):
     path, filename = os.path.split(myinputfilename)
     filebasename, fileextension = os.path.splitext(filename)
 
+    # First fixed patterns that we know of:
+    logging.debug("Checking: %s", filebasename)
+
     # ...blabla.H.264/b082fa0beaa644d3aa01045d5b8d0b36.mkv is certainly obfuscated
-    if re.findall("^[a-f0-9]{32}$", filebasename):
+    if re.findall(r"^[a-f0-9]{32}$", filebasename):
         logging.debug("Obfuscated: 32 hex digit")
         # exactly 32 hex digits, so:
+        return True
+
+    # /some/thing/abc.xyz.a4c567edbcbf27.BLA is certainly obfuscated
+    if re.findall(r"^abc\.xyz", filebasename):
+        logging.debug("Obfuscated: starts with 'abc.xyz'")
+        # ... which we consider as obfuscated:
         return True
 
     # these are signals for the obfuscation versus non-obfuscation
     decimals = sum(1 for c in filebasename if c.isnumeric())
     upperchars = sum(1 for c in filebasename if c.isupper())
     lowerchars = sum(1 for c in filebasename if c.islower())
-    spacesdots = sum(1 for c in filebasename if c == " " or c == ".")
+    spacesdots = sum(1 for c in filebasename if c == " " or c == "." or c == "_")  # space-like symbols
 
     # Example: "Great Distro"
     if upperchars >= 2 and lowerchars >= 2 and spacesdots >= 1:

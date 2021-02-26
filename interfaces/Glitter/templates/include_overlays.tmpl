@@ -152,7 +152,9 @@
                             <div class="col-sm-6">$T('dashboard-testDownload')</div>
                             <div class="col-sm-6">
                                 <a href="#" class="btn btn-default" data-bind="click: testDownload" data-size="100MB" data-tooltip="true" data-placement="top" title="$T('dashboard-testDownload-explain')"><span class="glyphicon glyphicon-download-alt"></span> 100 MB</a>
-                                <a href="#" class="btn btn-default" data-bind="click: testDownload" data-size="1000MB" data-tooltip="true" data-placement="top" title="$T('dashboard-testDownload-explain')"><span class="glyphicon glyphicon-download-alt"></span> 1000 MB</a>
+                                <a href="#" class="btn btn-default" data-bind="click: testDownload" data-size="1000MB" data-tooltip="true" data-placement="top" title="$T('dashboard-testDownload-explain')"><span class="glyphicon glyphicon-download-alt"></span> 1 GB</a>
+                                <a href="#" class="btn btn-default" data-bind="click: testDownload" data-size="10GB" data-tooltip="true" data-placement="top" title="$T('dashboard-testDownload-explain')"><span class="glyphicon glyphicon-download-alt"></span> 10 GB</a>
+
                             </div>
                         </div>
                         <hr />
@@ -216,6 +218,10 @@
                                         <span data-bind="text: serverconnections().length"></span> /
                                         <span data-bind="text: servertotalconn"></span>
                                     </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-6">$T('Glitter-speed')</div>
+                                    <div class="col-sm-6"><span data-bind="text: serverbps"></span>B/s</div>
                                 </div>
                                 <div class="row" data-bind="visible: servererror()">
                                     <div class="col-sm-12">
@@ -367,8 +373,7 @@
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control" data-bind="value: extraQueueColumn">
-                                        <option value="">$T('none')</option>
+                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraQueueColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="priority">$T('priority')</option>
                                         <option value="processing">$T('swtag-pp')</option>
@@ -383,8 +388,7 @@
                                     <span class="label label-warning">&gt; 1200 pixels</span>
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="general-extra-column" class="form-control" data-bind="value: extraHistoryColumn">
-                                        <option value="">$T('none')</option>
+                                    <select name="general-extra-column" class="form-control-multiselect form-control" data-bind="selectedOptions: extraHistoryColumns" multiple="true">
                                         <option value="category">$T('category')</option>
                                         <option value="size">$T('size')</option>
                                         <option value="speed">$T('Glitter-speed')</option>
@@ -397,6 +401,14 @@
                                 </label>
                                 <div class="col-sm-4">
                                     <input type="checkbox" name="displayCompact" value="true" data-bind="checked: displayCompact" />
+                                </div>
+                            </div>
+                            <div class="form-group form-checkbox">
+                                <label class="col-sm-6 control-label">
+                                    $T("Glitter-displayFullWidth")
+                                </label>
+                                <div class="col-sm-4">
+                                    <input type="checkbox" name="displayFullWidth" value="true" data-bind="checked: displayFullWidth" />
                                 </div>
                             </div>
                             <div class="form-group form-checkbox">
@@ -434,14 +446,14 @@
 
 <div id="modal-add-nzb" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <form class="modal-content" data-bind="submit: addNZB">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">$T('Glitter-addNZB')</h4>
             </div>
             <div class="modal-body form-horizontal">
                 <div class="row">
-                    <form data-bind="submit: addNZBFromURL" class="col-sm-6">
+                    <div class="col-sm-6">
                         <fieldset>
                             <legend class="row-wrap-text">$T('Glitter-addFromURL')</legend>
                             <div class="input-group" data-tooltip="true" data-placement="bottom" title="$file_exts">
@@ -451,8 +463,8 @@
                                 </span>
                             </div>
                         </fieldset>
-                    </form>
-                    <form data-bind="submit: addNZBFromFileForm" class="col-sm-6">
+                    </div>
+                    <div class="col-sm-6">
                         <fieldset>
                             <legend class="row-wrap-text">$T('Glitter-addFromFile')</legend>
                             <div class="input-group" data-tooltip="true" data-placement="bottom" title="$file_exts">
@@ -466,7 +478,7 @@
                                 </span>
                             </div>
                         </fieldset>
-                    </form>
+                    </div>
                 </div>
                 <div class="clearfix"></div>
                 <hr />
@@ -512,7 +524,7 @@
                 </div>
                 <div class="clearfix"></div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 
@@ -667,7 +679,7 @@
                     </tbody>
                 </table>
                 <hr/>
-                <p><small>Copyright (C) 2007-2020 The SABnzbd Team &lt;team@sabnzbd.org&gt;<br/>$T('yourRights') </small></p>
+                <p><small>Copyright (C) 2007-2021 The SABnzbd Team &lt;team@sabnzbd.org&gt;<br/>$T('yourRights') </small></p>
             </div>
         </div>
     </div>

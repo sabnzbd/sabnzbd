@@ -1,10 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 # Example Post-Processing Script for SABnzbd (3.0.0 and higher), written in Python.
 # For Linux, MacOS, Windows and any other platform with Python
 # See https://sabnzbd.org/wiki/scripts/post-processing-scripts for details
 #
 # Example test run on Linux:
-# env SAB_VERSION=X.Y SAB_AVG_BPS=666 python ./Sample-PostProc.py somedir222 nzbname CleanJobName123 Index12 Cat88 MyGroup PP0 https://example.com/
+# env SAB_VERSION=X.Y SAB_AVG_BPS=666 python3 ./Sample-PostProc.py somedir222 nzbname CleanJobName123 Index12 Cat88 MyGroup PP0 https://example.com/
 
 import sys, os
 

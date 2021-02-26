@@ -228,11 +228,11 @@ function QueueListModel(parent) {
         switch($(event.currentTarget).data('action')) {
             case 'sortAgeAsc':
                 sort = 'avg_age';
-                dir = 'asc';
+                dir = 'desc';
                 break;
             case 'sortAgeDesc':
                 sort = 'avg_age';
-                dir = 'desc';
+                dir = 'asc';
                 break;
             case 'sortNameAsc':
                 sort = 'name';
@@ -440,7 +440,6 @@ function QueueListModel(parent) {
                 if(response.status) {
                     // Make sure the queue doesnt flicker and then fade-out
                     self.isLoading(true)
-                    $('.delete input:checked').parents('tr').fadeOut(fadeOnDeleteDuration)
                     self.parent.refresh()
                     // Empty it
                     self.multiEditItems.removeAll();
@@ -567,10 +566,9 @@ function QueueModel(parent, data) {
         return 'glyphicon-pause'
     })
 
-    // Extra queue column
-    self.extraText = ko.pureComputed(function() {
-        // Picked anything?
-        switch(self.parent.parent.extraQueueColumn()) {
+    // Extra queue columns
+    self.showColumn = function(param) {
+        switch(param) {
             case 'category':
                 // Exception for *
                 if(self.category() == "*")
@@ -590,7 +588,7 @@ function QueueModel(parent, data) {
                 return self.avg_age();
         }
         return;
-    })
+    };
 
     // Every update
     self.updateFromData = function(data) {
@@ -738,16 +736,13 @@ function QueueModel(parent, data) {
                 del_files: 1,
                 value: item.id
             }).then(function(response) {
-                // Fade and remove
-                $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
-                    // Make sure no flickering (if there are more items left) and then remove
-                    self.parent.isLoading(self.parent.totalItems() > 1)
-                    parent.queueItems.remove(itemToDelete);
-                    parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
-                    self.parent.parent.refresh();
-                    // Hide notifcation
-                    hideNotification(true)
-                })
+                // Make sure no flickering (if there are more items left) and then remove
+                self.parent.isLoading(self.parent.totalItems() > 1)
+                parent.queueItems.remove(itemToDelete);
+                parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
+                self.parent.parent.refresh();
+                // Hide notifcation
+                hideNotification(true)
             });
         }
     };

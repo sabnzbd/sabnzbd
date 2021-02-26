@@ -1568,7 +1568,7 @@ class Rar5Info(RarInfo):
 
 
 class Rar5BaseFile(Rar5Info):
-    """Shared sturct for file & service record."""
+    """Shared struct for file & service record."""
 
     type = -1
     file_flags = None

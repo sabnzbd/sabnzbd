@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,15 +18,17 @@
 """
 sabnzbd.postproc - threaded post-processing of jobs
 """
-
 import os
 import logging
-import sabnzbd
 import functools
+import subprocess
 import time
 import re
+import gc
 import queue
+from typing import List, Optional
 
+import sabnzbd
 from sabnzbd.newsunpack import (
     unpack_magic,
     par2_repair,
@@ -62,6 +64,7 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
+from sabnzbd.nzbstuff import NzbObject
 from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
@@ -74,7 +77,6 @@ from sabnzbd.constants import (
     VERIFIED_FILE,
 )
 from sabnzbd.nzbparser import process_single_nzb
-from sabnzbd.rating import Rating
 import sabnzbd.emailer as emailer
 import sabnzbd.downloader
 import sabnzbd.config as config
@@ -98,27 +100,26 @@ RE_SAMPLE = re.compile(sample_match, re.I)
 class PostProcessor(Thread):
     """ PostProcessor thread, designed as Singleton """
 
-    do = None  # Link to instance of the thread
-
     def __init__(self):
         """ Initialize PostProcessor thread """
-        Thread.__init__(self)
+        super().__init__()
 
         # This history queue is simply used to log what active items to display in the web_ui
+        self.history_queue: List[NzbObject] = []
         self.load()
 
-        if self.history_queue is None:
-            self.history_queue = []
-
         # Fast-queue for jobs already finished by DirectUnpack
-        self.fast_queue = queue.Queue()
+        self.fast_queue: queue.Queue[Optional[NzbObject]] = queue.Queue()
 
         # Regular queue for jobs that might need more attention
-        self.slow_queue = queue.Queue()
+        self.slow_queue: queue.Queue[Optional[NzbObject]] = queue.Queue()
 
         # Load all old jobs
         for nzo in self.history_queue:
             self.process(nzo)
+
+        # So we can always cancel external processes
+        self.external_process: Optional[subprocess.Popen] = None
 
         # Counter to not only process fast-jobs
         self.__fast_job_count = 0
@@ -127,7 +128,6 @@ class PostProcessor(Thread):
         self.__stop = False
         self.__busy = False
         self.paused = False
-        PostProcessor.do = self
 
     def save(self):
         """ Save postproc queue """
@@ -136,7 +136,6 @@ class PostProcessor(Thread):
 
     def load(self):
         """ Save postproc queue """
-        self.history_queue = []
         logging.info("Loading postproc queue")
         data = sabnzbd.load_admin(POSTPROC_QUEUE_FILE_NAME)
         if data is None:
@@ -146,7 +145,7 @@ class PostProcessor(Thread):
             if POSTPROC_QUEUE_VERSION != version:
                 logging.warning(T("Old queue detected, use Status->Repair to convert the queue"))
             elif isinstance(history_queue, list):
-                self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.downpath)]
+                self.history_queue = [nzo for nzo in history_queue if os.path.exists(nzo.download_path)]
         except:
             logging.info("Corrupt %s file, discarding", POSTPROC_QUEUE_FILE_NAME)
             logging.info("Traceback: ", exc_info=True)
@@ -164,7 +163,7 @@ class PostProcessor(Thread):
                     nzo.work_name = ""  # Mark as deleted job
                 break
 
-    def process(self, nzo):
+    def process(self, nzo: NzbObject):
         """ Push on finished job in the queue """
         # Make sure we return the status "Waiting"
         nzo.status = Status.QUEUED
@@ -179,7 +178,7 @@ class PostProcessor(Thread):
         self.save()
         sabnzbd.history_updated()
 
-    def remove(self, nzo):
+    def remove(self, nzo: NzbObject):
         """ Remove given nzo from the queue """
         try:
             self.history_queue.remove(nzo)
@@ -201,6 +200,12 @@ class PostProcessor(Thread):
                 nzo.abort_direct_unpacker()
                 if nzo.pp_active:
                     nzo.pp_active = False
+                    try:
+                        # Try to kill any external running process
+                        self.external_process.kill()
+                        logging.info("Killed external process %s", self.external_process.args[0])
+                    except:
+                        pass
                 return True
         return None
 
@@ -216,7 +221,7 @@ class PostProcessor(Thread):
         """ Return download path for given nzo_id or None when not found """
         for nzo in self.history_queue:
             if nzo.nzo_id == nzo_id:
-                return nzo.downpath
+                return nzo.download_path
         return None
 
     def run(self):
@@ -239,6 +244,10 @@ class PostProcessor(Thread):
             if self.paused:
                 time.sleep(5)
                 continue
+
+            # Set NzbObject object to None so references from this thread do not keep the
+            # object alive until the next job is added to post-processing (see #1628)
+            nzo = None
 
             # Something in the fast queue?
             try:
@@ -277,29 +286,29 @@ class PostProcessor(Thread):
 
             # Pause downloader, if users wants that
             if cfg.pause_on_post_processing():
-                sabnzbd.downloader.Downloader.do.wait_for_postproc()
+                sabnzbd.Downloader.wait_for_postproc()
 
             self.__busy = True
 
             process_job(nzo)
 
             if nzo.to_be_removed:
-                history_db = database.HistoryDB()
-                history_db.remove_history(nzo.nzo_id)
-                history_db.close()
+                with database.HistoryDB() as history_db:
+                    history_db.remove_history(nzo.nzo_id)
                 nzo.purge_data()
 
             # Processing done
             nzo.pp_active = False
 
             self.remove(nzo)
+            self.external_process = None
             check_eoq = True
 
             # Allow download to proceed
-            sabnzbd.downloader.Downloader.do.resume_from_postproc()
+            sabnzbd.Downloader.resume_from_postproc()
 
 
-def process_job(nzo):
+def process_job(nzo: NzbObject):
     """ Process one job """
     start = time.time()
 
@@ -329,17 +338,15 @@ def process_job(nzo):
     # Get the NZB name
     filename = nzo.final_name
 
-    # Download-processes can mark job as failed
+    # Download-processes can mark job as failed, skip all steps
     if nzo.fail_msg:
-        nzo.status = Status.FAILED
-        nzo.save_attribs()
         all_ok = False
         par_error = True
         unpack_error = 1
 
     try:
         # Get the folder containing the download result
-        workdir = nzo.downpath
+        workdir = nzo.download_path
         tmp_workdir_complete = None
 
         # if no files are present (except __admin__), fail the job
@@ -352,7 +359,7 @@ def process_job(nzo):
                 empty = True
             emsg += " - https://sabnzbd.org/not-complete"
             nzo.fail_msg = emsg
-            nzo.set_unpack_info("Fail", emsg)
+            nzo.set_unpack_info("Download", emsg)
             nzo.status = Status.FAILED
             # do not run unpacking or parity verification
             flag_repair = flag_unpack = False
@@ -386,9 +393,9 @@ def process_job(nzo):
                 return False
 
         # If we don't need extra par2, we can disconnect
-        if sabnzbd.nzbqueue.NzbQueue.do.actives(grabs=False) == 0 and cfg.autodisconnect():
+        if sabnzbd.NzbQueue.actives(grabs=False) == 0 and cfg.autodisconnect():
             # This was the last job, close server connections
-            sabnzbd.downloader.Downloader.do.disconnect()
+            sabnzbd.Downloader.disconnect()
 
         # Sanitize the resulting files
         if sabnzbd.WIN32:
@@ -519,7 +526,7 @@ def process_job(nzo):
                     all_ok = False
 
             if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list:
-                # deobfuscate the filenames
+                # Deobfuscate the filenames
                 logging.info("Running deobfuscate")
                 deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
 
@@ -596,19 +603,19 @@ def process_job(nzo):
         # Update indexer with results
         if cfg.rating_enable():
             if nzo.encrypted > 0:
-                Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_ENCRYPTED)
+                sabnzbd.Rating.update_auto_flag(nzo.nzo_id, sabnzbd.Rating.FLAG_ENCRYPTED)
             if empty:
-                hosts = [s.host for s in sabnzbd.downloader.Downloader.do.nzo_servers(nzo)]
+                hosts = [s.host for s in sabnzbd.Downloader.nzo_servers(nzo)]
                 if not hosts:
                     hosts = [None]
                 for host in hosts:
-                    Rating.do.update_auto_flag(nzo.nzo_id, Rating.FLAG_EXPIRED, host)
+                    sabnzbd.Rating.update_auto_flag(nzo.nzo_id, sabnzbd.Rating.FLAG_EXPIRED, host)
 
     except:
         logging.error(T("Post Processing Failed for %s (%s)"), filename, T("see logfile"))
         logging.info("Traceback: ", exc_info=True)
 
-        nzo.fail_msg = T("PostProcessing was aborted (%s)") % T("see logfile")
+        nzo.fail_msg = T("Post-processing was aborted")
         notifier.send_notification(T("Download Failed"), filename, "failed", nzo.cat)
         nzo.status = Status.FAILED
         par_error = True
@@ -645,6 +652,11 @@ def process_job(nzo):
     if par_error or unpack_error in (2, 3):
         try_alt_nzb(nzo)
 
+    # Check if it was aborted
+    if not nzo.pp_active:
+        nzo.fail_msg = T("Post-processing was aborted")
+        all_ok = False
+
     # Show final status in history
     if all_ok:
         notifier.send_notification(T("Download Completed"), filename, "complete", nzo.cat)
@@ -656,20 +668,18 @@ def process_job(nzo):
     # Log the overall time taken for postprocessing
     postproc_time = int(time.time() - start)
 
-    # Create the history DB instance
-    history_db = database.HistoryDB()
-    # Add the nzo to the database. Only the path, script and time taken is passed
-    # Other information is obtained from the nzo
-    history_db.add_history_db(nzo, workdir_complete, postproc_time, script_log, script_line)
-    # Purge items
-    history_db.auto_history_purge()
-    # The connection is only used once, so close it here
-    history_db.close()
+    with database.HistoryDB() as history_db:
+        # Add the nzo to the database. Only the path, script and time taken is passed
+        # Other information is obtained from the nzo
+        history_db.add_history_db(nzo, workdir_complete, postproc_time, script_log, script_line)
+        # Purge items
+        history_db.auto_history_purge()
+
     sabnzbd.history_updated()
     return True
 
 
-def prepare_extraction_path(nzo):
+def prepare_extraction_path(nzo: NzbObject):
     """Based on the information that we have, generate
     the extraction path and create the directory.
     Separated so it can be called from DirectUnpacker
@@ -677,7 +687,7 @@ def prepare_extraction_path(nzo):
     one_folder = False
     marker_file = None
     # Determine class directory
-    catdir = config.get_categories(nzo.cat).dir()
+    catdir = config.get_category(nzo.cat).dir()
     if catdir.endswith("*"):
         catdir = catdir.strip("*")
         one_folder = True
@@ -723,14 +733,14 @@ def prepare_extraction_path(nzo):
     return tmp_workdir_complete, workdir_complete, file_sorter, one_folder, marker_file
 
 
-def parring(nzo, workdir):
+def parring(nzo: NzbObject, workdir: str):
     """ Perform par processing. Returns: (par_error, re_add) """
     logging.info("Starting verification and repair of %s", nzo.final_name)
     par_error = False
     re_add = False
 
     # Get verification status of sets
-    verified = sabnzbd.load_data(VERIFIED_FILE, nzo.workpath, remove=False) or {}
+    verified = sabnzbd.load_data(VERIFIED_FILE, nzo.admin_path, remove=False) or {}
 
     # If all were verified successfully, we skip the rest of the checks
     if verified and all(verified.values()):
@@ -749,15 +759,8 @@ def parring(nzo, workdir):
                 parfile_nzf = nzo.partable[setname]
 
                 # Check if file maybe wasn't deleted and if we maybe have more files in the parset
-                if os.path.exists(os.path.join(nzo.downpath, parfile_nzf.filename)) or nzo.extrapars[setname]:
+                if os.path.exists(os.path.join(nzo.download_path, parfile_nzf.filename)) or nzo.extrapars[setname]:
                     need_re_add, res = par2_repair(parfile_nzf, nzo, workdir, setname, single=single)
-
-                    # Was it aborted?
-                    if not nzo.pp_active:
-                        re_add = False
-                        par_error = True
-                        break
-
                     re_add = re_add or need_re_add
                     verified[setname] = res
                 else:
@@ -796,16 +799,16 @@ def parring(nzo, workdir):
         if nzo.priority != FORCE_PRIORITY:
             nzo.priority = REPAIR_PRIORITY
         nzo.status = Status.FETCHING
-        sabnzbd.nzbqueue.NzbQueue.do.add(nzo)
-        sabnzbd.downloader.Downloader.do.resume_from_postproc()
+        sabnzbd.NzbQueue.add(nzo)
+        sabnzbd.Downloader.resume_from_postproc()
 
-    sabnzbd.save_data(verified, VERIFIED_FILE, nzo.workpath)
+    sabnzbd.save_data(verified, VERIFIED_FILE, nzo.admin_path)
 
     logging.info("Verification and repair finished for %s", nzo.final_name)
     return par_error, re_add
 
 
-def try_sfv_check(nzo, workdir):
+def try_sfv_check(nzo: NzbObject, workdir):
     """Attempt to verify set using SFV file
     Return None if no SFV-sets, True/False based on verification
     """
@@ -837,7 +840,7 @@ def try_sfv_check(nzo, workdir):
     return True
 
 
-def try_rar_check(nzo, rars):
+def try_rar_check(nzo: NzbObject, rars):
     """Attempt to verify set using the RARs
     Return True if verified, False when failed
     When setname is '', all RAR files will be used, otherwise only the matching one
@@ -882,11 +885,11 @@ def try_rar_check(nzo, rars):
         return True
 
 
-def rar_renamer(nzo, workdir):
+def rar_renamer(nzo: NzbObject, workdir):
     """ Deobfuscate rar file names: Use header and content information to give RAR-files decent names """
     nzo.status = Status.VERIFYING
-    nzo.set_unpack_info("Repair", T("Trying RAR-based verification"))
-    nzo.set_action_line(T("Trying RAR-based verification"), "...")
+    nzo.set_unpack_info("Repair", T("Trying RAR renamer"))
+    nzo.set_action_line(T("Trying RAR renamer"), "...")
 
     renamed_files = 0
 
@@ -933,10 +936,14 @@ def rar_renamer(nzo, workdir):
     if not len(rarvolnr):
         return renamed_files
 
-    # Check number of different obfuscated rar sets:
-    numberofrarsets = len(rarvolnr[1])
+    # this can probably done with a max-key-lambda oneliner, but ... how?
+    numberofrarsets = 0
+    for mykey in rarvolnr.keys():
+        numberofrarsets = max(numberofrarsets, len(rarvolnr[mykey]))
+    logging.debug("Number of rarset is %s", numberofrarsets)
+
     if numberofrarsets == 1:
-        # Just one obfuscated rarset
+        # Just one obfuscated rarset ... that's easy
         logging.debug("Deobfuscate: Just one obfuscated rarset")
         for filename in volnrext:
             new_rar_name = "%s.%s" % (nzo.final_name, volnrext[filename][1])
@@ -945,47 +952,70 @@ def rar_renamer(nzo, workdir):
             logging.debug("Deobfuscate: Renaming %s to %s" % (filename, new_rar_name))
             renamer(filename, new_rar_name)
             renamed_files += 1
-    else:
-        # More than one obfuscated rarset, so we must do matching based of files inside the rar files
-        logging.debug("Number of obfuscated rarsets: %s", numberofrarsets)
+        return renamed_files
 
-        # Assign (random) rar set names
-        rarsetname = {}  # in which rar set it should be, so rar set 'A', or 'B', or ...
-        mychar = "A"
-        # First things first: Assigning a rarsetname to the rar file which have volume number 1
-        for base_obfuscated_filename in rarvolnr[1]:
-            rarsetname[base_obfuscated_filename] = mychar + "--" + nzo.final_name
-            mychar = chr(ord(mychar) + 1)
-        logging.debug("Deobfuscate: rarsetname %s", rarsetname)
+    # numberofrarsets bigger than 1, so a mixed rar set, so we need pre-checking
 
-        # Do the matching, layer by layer (read: rarvolnumber)
-        # So, all rar files with rarvolnr 1, find the contents (files inside the rar),
-        # and match with rarfiles with rarvolnr 2, and put them in the correct rarset.
-        # And so on, until the highest rarvolnr minus 1 matched against highest rarvolnr
-        for n in range(1, len(rarvolnr.keys())):
-            logging.debug("Deobfuscate: Finding matches between rar sets %s and %s" % (n, n + 1))
-            for base_obfuscated_filename in rarvolnr[n]:
-                matchcounter = 0
-                for next_obfuscated_filename in rarvolnr[n + 1]:
-                    # set() method with intersection (less strict): set(rarvolnr[n][base_obfuscated_filename]).intersection(set(rarvolnr[n+1][next_obfuscated_filename]))
-                    # check if the last filename inside the existing rar matches with the first filename in the following rar
-                    if rarvolnr[n][base_obfuscated_filename][-1] == rarvolnr[n + 1][next_obfuscated_filename][0]:
-                        try:
-                            rarsetname[next_obfuscated_filename] = rarsetname[base_obfuscated_filename]
-                            matchcounter += 1
-                        except KeyError:
-                            logging.warning(T("No matching earlier rar file for %s"), next_obfuscated_filename)
-                if matchcounter > 1:
-                    logging.info("Deobfuscate: more than one match, so risk on false positive matching.")
+    # Sanity check of the rar set
+    # Get the highest rar part number (that's the upper limit):
+    highest_rar = sorted(rarvolnr.keys())[-1]
+    # A staircase check: number of rarsets should no go up, but stay the same or go down
+    how_many_previous = 1000  # 1000 rarset mixed ... should be enough ... typical is 1, 2 or maybe 3
+    # Start at part001.rar and go the highest
+    for rar_set_number in range(1, highest_rar + 1):
+        try:
+            how_many_here = len(rarvolnr[rar_set_number])
+        except:
+            # rarset does not exist at all
+            logging.warning("rarset %s is missing completely, so I can't deobfuscate.", rar_set_number)
+            return 0
+        # OK, it exists, now let's check it's not higher
+        if how_many_here > how_many_previous:
+            # this should not happen: higher number of rarset than previous number of rarset
+            logging.warning("no staircase! rarset %s is higher than previous, so I can't deobfuscate.", rar_set_number)
+            return 0
+        how_many_previous = how_many_here
 
-        # Do the renaming:
-        for filename in rarsetname:
-            new_rar_name = "%s.%s" % (rarsetname[filename], volnrext[filename][1])
-            new_rar_name = os.path.join(workdir, new_rar_name)
-            new_rar_name = get_unique_filename(new_rar_name)
-            logging.debug("Deobfuscate: Renaming %s to %s" % (filename, new_rar_name))
-            renamer(filename, new_rar_name)
-            renamed_files += 1
+    # OK, that looked OK (a declining staircase), so we can safely proceed
+    # More than one obfuscated rarset, so we must do matching based of files inside the rar files
+
+    # Assign (random) rar set names, first come first serve basis
+    rarsetname = {}  # in which rar set it should be, so rar set 'A', or 'B', or ...
+    mychar = "A"
+    # First things first: Assigning a rarsetname to the rar file which have volume number 1
+    for base_obfuscated_filename in rarvolnr[1]:
+        rarsetname[base_obfuscated_filename] = mychar + "--" + nzo.final_name
+        mychar = chr(ord(mychar) + 1)
+    logging.debug("Deobfuscate: rarsetname %s", rarsetname)
+
+    # Do the matching, layer by layer (read: rarvolnumber)
+    # So, all rar files with rarvolnr 1, find the contents (files inside the rar),
+    # and match with rarfiles with rarvolnr 2, and put them in the correct rarset.
+    # And so on, until the highest rarvolnr minus 1 matched against highest rarvolnr
+    for n in range(1, len(rarvolnr)):
+        logging.debug("Deobfuscate: Finding matches between rar sets %s and %s" % (n, n + 1))
+        for base_obfuscated_filename in rarvolnr[n]:
+            matchcounter = 0
+            for next_obfuscated_filename in rarvolnr[n + 1]:
+                # set() method with intersection (less strict): set(rarvolnr[n][base_obfuscated_filename]).intersection(set(rarvolnr[n+1][next_obfuscated_filename]))
+                # check if the last filename inside the existing rar matches with the first filename in the following rar
+                if rarvolnr[n][base_obfuscated_filename][-1] == rarvolnr[n + 1][next_obfuscated_filename][0]:
+                    try:
+                        rarsetname[next_obfuscated_filename] = rarsetname[base_obfuscated_filename]
+                        matchcounter += 1
+                    except KeyError:
+                        logging.warning(T("No matching earlier rar file for %s"), next_obfuscated_filename)
+            if matchcounter > 1:
+                logging.info("Deobfuscate: more than one match, so risk on false positive matching.")
+
+    # Do the renaming:
+    for filename in rarsetname:
+        new_rar_name = "%s.%s" % (rarsetname[filename], volnrext[filename][1])
+        new_rar_name = os.path.join(workdir, new_rar_name)
+        new_rar_name = get_unique_filename(new_rar_name)
+        logging.debug("Deobfuscate: Renaming %s to %s" % (filename, new_rar_name))
+        renamer(filename, new_rar_name)
+        renamed_files += 1
 
     # Done: The obfuscated rar files have now been renamed to regular formatted filenames
     return renamed_files
@@ -993,7 +1023,7 @@ def rar_renamer(nzo, workdir):
 
 def handle_empty_queue():
     """ Check if empty queue calls for action """
-    if sabnzbd.nzbqueue.NzbQueue.do.actives() == 0:
+    if sabnzbd.NzbQueue.actives() == 0:
         sabnzbd.save_state()
         notifier.send_notification("SABnzbd", T("Queue finished"), "queue_done")
 
@@ -1007,6 +1037,12 @@ def handle_empty_queue():
             else:
                 Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
             sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
+
+        # Trigger garbage collection and release of memory
+        logging.debug("Triggering garbage collection and release of memory")
+        gc.collect()
+        if sabnzbd.LIBC:
+            sabnzbd.LIBC.malloc_trim(0)
 
 
 def cleanup_list(wdir, skip_nzb):

@@ -1,6 +1,6 @@
 #!/usr/bin/python3 -OO
 # -*- coding: UTF-8 -*-
-# Copyright 2012-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2012-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -113,8 +113,11 @@ SKIN_TEXT = {
     "day-of-month": TT("Day of month"),
     "thisWeek": TT("This week"),
     "thisMonth": TT("This month"),
+    "selectedDates": TT("Selected date range"),
     "today": TT("Today"),
     "total": TT("Total"),
+    "custom": TT("Custom"),
+    "speed": TT("Speed"),
     "on": TT("on"),
     "off": TT("off"),
     "parameters": TT("Parameters"),  #: Config: startup parameters of SABnzbd
@@ -345,6 +348,9 @@ SKIN_TEXT = {
     "opt-enable_https": TT("Enable HTTPS"),
     "opt-notInstalled": TT("not installed"),
     "explain-enable_https": TT("Enable accessing the interface from a HTTPS address."),
+    "explain-enable_https_warning": TT(
+        "Modern web browsers and other clients will not accept self-signed certificates and will give a warning and/or won't connect at all."
+    ),
     "opt-https_port": TT("HTTPS Port"),
     "explain-https_port": TT("If empty, the standard port will only listen to HTTPS."),
     "opt-https_cert": TT("HTTPS Certificate"),
@@ -422,6 +428,12 @@ SKIN_TEXT = {
     "explain-complete_dir": TT(
         "Location to store finished, fully processed downloads.<br /><i>Can be overruled by user-defined categories.</i>"
     ),
+    "opt-complete_free": TT("Minimum Free Space for Completed Download Folder"),
+    "explain-complete_free": TT("Will not work if a category folder is on a different disk."),
+    "opt-fulldisk_autoresume": TT("Auto resume"),
+    "explain-fulldisk_autoresume": TT(
+        "Downloading will automatically resume if the minimum free space is available again.<br />Applies to both the Temporary and Complete Download Folder.<br />Checked every few minutes."
+    ),
     "opt-permissions": TT("Permissions for completed downloads"),
     "explain-permissions": TT(
         'Set permissions pattern for completed files/folders.<br /><i>In octal notation. For example: "755" or "777"</i>'
@@ -459,7 +471,9 @@ SKIN_TEXT = {
     "opt-top_only": TT("Only Get Articles for Top of Queue"),
     "explain-top_only": TT("Enable for less memory usage. Disable to prevent slow jobs from blocking the queue."),
     "opt-safe_postproc": TT("Post-Process Only Verified Jobs"),
-    "explain-safe_postproc": TT("Only perform post-processing on jobs that passed all PAR2 checks."),
+    "explain-safe_postproc": TT(
+        "Only unpack and run scripts on jobs that passed the verification stage. If turned off, all jobs will be marked as Completed even if they are incomplete."
+    ),
     "opt-pause_on_pwrar": TT("Action when encrypted RAR is downloaded"),
     "explain-pause_on_pwrar": TT('In case of "Pause", you\'ll need to set a password and resume the job.'),
     "opt-no_dupes": TT("Detect Duplicate Downloads"),
@@ -610,6 +624,11 @@ SKIN_TEXT = {
     "srv-password": TT("Password"),  #: Server password
     "srv-timeout": TT("Timeout"),  #: Server timeout
     "srv-connections": TT("Connections"),  #: Server: amount of connections
+    "srv-expire_date": TT("Account expiration date"),
+    "srv-explain-expire_date": TT("Warn 5 days in advance of account expiration date."),
+    "srv-explain-quota": TT(
+        "Quota for this account, counted from the time it is set. In bytes, optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few minutes."
+    ),
     "srv-retention": TT("Retention time"),  #: Server's retention time in days
     "srv-ssl": TT("SSL"),  #: Server SSL tickbox
     "explain-ssl": TT("Secure connection to server"),  #: Server SSL tickbox
@@ -636,6 +655,10 @@ SKIN_TEXT = {
     "srv-send_group": TT("Send Group"),
     "srv-explain-send_group": TT("Send group command before requesting articles."),
     "srv-notes": TT("Personal notes"),
+    "srv-article-availability": TT("Article availability"),
+    "srv-articles-tried": TT(
+        "%f% available of %d requested articles"
+    ),  #: Server article availability, %f=percentage, %d=number of articles
     # Config->Scheduling
     "addSchedule": TT("Add Schedule"),  #:Config->Scheduling
     "sch-frequency": TT("Frequency"),  #:Config->Scheduling
@@ -655,6 +678,8 @@ SKIN_TEXT = {
     "addMultipleFeeds": TT("Seperate multiple URLs by a comma"),  #: Config->RSS, placeholder (cannot be too long)
     "button-preFeed": TT("Read Feed"),  #: Config->RSS button
     "button-forceFeed": TT("Force Download"),  #: Config->RSS button
+    "rss-edit": TT("Edit"),  #: Config->RSS edit button
+    "rss-nextscan": TT("Next scan at"),  #: Config->RSS when will be the next RSS scan
     "rss-order": TT("Order"),  #: Config->RSS table column header
     "rss-type": TT("Type"),  #: Config->RSS table column header
     "rss-filter": TT("Filter"),  #: Config->RSS table column header
@@ -696,7 +721,7 @@ SKIN_TEXT = {
     "opt-ncenter_enable": TT("Notification Center"),
     "opt-acenter_enable": TT("Enable Windows Notifications"),
     "testNotify": TT("Test Notification"),
-    "section-NC": TT("Notification Center"),  #: Header for OSX Notfication Center section
+    "section-NC": TT("Notification Center"),  #: Header for macOS Notfication Center section
     "section-AC": TT("Windows Notifications"),
     "section-OSD": TT("NotifyOSD"),  #: Header for Ubuntu's NotifyOSD notifications section
     "section-Prowl": TT("Prowl"),  #: Header for Prowl notification section
@@ -865,8 +890,8 @@ SKIN_TEXT = {
     "Glitter-queueItemLimit": TT("Queue item limit"),
     "Glitter-historyItemLimit": TT("History item limit"),
     "Glitter-dateFormat": TT("Date format"),
-    "Glitter-showExtraQueueColumn": TT("Extra queue column"),
-    "Glitter-showExtraHistoryColumn": TT("Extra history column"),
+    "Glitter-showExtraQueueColumn": TT("Extra queue columns"),
+    "Glitter-showExtraHistoryColumn": TT("Extra history columns"),
     "Glitter-page": TT("page"),
     "Glitter-loading": TT("Loading"),
     "Glitter-articles": TT("articles"),
@@ -905,6 +930,7 @@ SKIN_TEXT = {
     "Glitter-glitterTips": TT("Glitter has some (new) features you might like!"),
     "Glitter-custom": TT("Custom"),
     "Glitter-displayCompact": TT("Compact layout"),
+    "Glitter-displayFullWidth": TT("Always use full screen width"),
     "Glitter-displayTabbed": TT("Tabbed layout <br/>(separate queue and history)"),
     "Glitter-speed": TT("Speed"),
     "Glitter-confirmDeleteQueue": TT("Confirm Queue Deletions"),

@@ -1,0 +1,9 @@
+# Basic build requirements
+pyinstaller
+setuptools
+pkginfo
+certifi
+pygithub
+
+# For the OSX build specific
+dmgbuild; sys_platform == 'darwin'

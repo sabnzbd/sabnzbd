@@ -1,57 +1,69 @@
-Release Notes - SABnzbd 3.1.1
+Release Notes - SABnzbd 3.2.0
 =========================================================
 
-## Changes and bugfixes since 3.1.1
-- Enforce CRLF line endings on outgoing email messages.
-- Queue Repair would fail if Rating is enabled.
-- It was not possible to set directory-settings to empty values.
-- Deobfuscate-during-download was not triggered.
-- Failed to start on Python 3.5 with HTTPS enabled.
-- Could show traceback when formatting error/warnings messages.
-- Windows/macOS: improve handling of program restart.
+## Changes since 3.1.1
+- Python 3.6 is the minimum required version. 
+- The Windows installer can only be used on 64bit Windows 8.1 and 
+  above. For 32bit systems or older Windows versions, the 
+  standalone 32bit legacy version can be used.
+- Post-processing can be aborted at any stage, including scripts.
+- Improvements in the downloader to reduce CPU-load.
+- Increased garbage collection rate to reduce memory usage.
+- Custom date ranges for server graphs can be selected.
+- Keep track of article fetching success-rate of each server.
+- Added option to add download quota warning for each server.
+- Added option to add expiration warning for each server.
+- Added `Minimum Free Space for Completed Download Folder` option.
+- Added option to `Auto resume` for both `Minimum Free Space` settings.
+- Added `Auto` option for Glitter that enables `Night` style 
+  based on system settings. Default for new installations.
+- Multiple additional Queue and History columns can be added.
+- Added option to always use full-screen width.
+- Additional interface settings can be stored server-side.
+- Right-to-Left support (Hebrew) for Glitter and Config.
+- Using SSDP, SABnzbd instances are now listed in `Network` on Windows.
+- Improvements to parsing of job name and filenames listed in the NZB.
+- RSS titles can be edited.
+- Prospective par2 will add blocks from all sets in a job.
+- Sanitize all filenames to a maximum of 245 characters.
+- Show commit hash when running from `git` sources.
+- Notify through Notifications if a new version is available.
+- Program shutdown time reduced to almost instant.
+- Added `10 GB` test download.
+- IPv6 is no longer preferred in HappyEyeballs address selection.
+- API-calls `queue` and `history` can now be filtered by `nzo_id`.
+- Windows: `Temporary Download` job folders no longer have a maximum length.
+- Windows/macOS: Update UnRar to 6.0.0 and MultiPar to 1.3.1.3.
 
-## Changes since 3.0.2
-- Added option to automatically deobfuscate final filenames: after unpacking, 
-  detect and rename obfuscated or meaningless filenames to the job name, 
-  similar to the `Deobfuscate.py` post-processing script. 
-- Switched to Transifex as our translations platform:
-  Help us translate SABnzbd in your language! Add untranslated texts or 
-  improved existing translations here: https://sabnzbd.org/wiki/translate
-- Redesigned job availability-check to be more efficient and reliable.
-- Scheduled readouts of RSS-feeds would fail silently, they now show a warning.
-- Skip repair on Retry if all sets were previously successfully verified.
-- Passwords included in the filename no longer have to be at the end.
-- Restore limit on length of foldernames (`max_foldername_length`).
-- Added password input box on the Add NZB screen. 
-- Clear error if `Complete Folder` is set as a subfolder of the `Temporary Folder`.
-- Show warning that Pyton 3.5 support will be dropped after 3.1.0.
-- Windows/macOS: update UnRar to 5.91 and MultiPar to 1.3.1.0.
-- Windows: retry `Access Denied` when renaming files on Windows. 
-
-## Bugfixes since 3.0.2
-- Assembler crashes could occur due to race condition in `ArticleCache`.
-- On HTTP-redirects the scheme/hostname/port were ignored when behind a proxy.
-- Strip slash of the end of `url_base` as it could break other code.
-- `Temporary Folder` with unicode characters could result in duplicate unpacking.
-- Unpacking with a relative folder set for a category could fail.
-- Existing files were not parsed when retrying a job.
-- Reading attributes when retrying a job could result in crash.
-- Paused priority of pre-queue script was ignored.
-- Duplicate Detection did not check filenames in History.
-- Downloaded bytes could show as exceeding the total bytes of a job.
-- Filtering of history by category would not filter jobs in post-processing.
-- Windows: non-Latin languages were displayed incorrectly in the installer.
-- Windows: could fail to create folders on some network shares.
-- Windows: folders could end in a period, breaking Windows Explorer.
+## Bugfixes since 3.1.1
+- Memory could leak after jobs were removed from the queue.
+- The active browser URL is used during the wizard.
+- Repairing or Retrying jobs could result in a crash.  
+- API-call `reset_quota` returned nothing.
+- New categories were not always forced to lowercase.
+- Broken downloads could result in a crash during RAR-renaming  
+- Improved obfuscation detection for `Deobfuscate final filenames`.
+- Keep original priority of duplicate jobs.
+- Increase the maximum number of connections per server to `1000`.
+- Update encryption check to handle partially assembled files.
+- Don't activate Windows notifications when running as a service.
+- Command-line option `--console` did not work.
+- Crash in API-call to delete history items for nonexistent `nzo_id`.
+- Prevent repetition of unwanted extension warnings.
+- Correct notification category for failed URL fetches.
+- Improvements to the `Add NZB` modal window.
+- Sort script drop-down list alphabetically.
+- Default Bandwidth percentage was not set to `100`.
+- Direct Unpack stability fixes.
+- macOS: Program shutdown could fail.
+- macOS: Tray text was misaligned on macOS 11 (Big Sur).
+- Windows: Improved handling of some MultiPar output.
+- Windows: Program restart failed.
 
 ## Upgrade notices
-- Jobs that failed on versions before 3.1.x, will throw an error about the 
-  attribute file failing to load when they are retried on 3.1.0+. This error 
-  can be ignored.
-- When upgrading from 2.x.x or older the queue will be converted. Job order,
-  settings and data will be preserved, but if you decide to go back to 2.x.x
-  your queue cannot be downgraded again. But you can restore the jobs by going
-  to the Status page and running Queue Repair.
+- The download statistics file `totals10.sab` is updated in this 
+  version. If you downgrade to 3.1.x or lower, detailed download 
+  statistics will be lost.
 
 ## Known problems and solutions
 - Read the file "ISSUES.txt"
@@ -63,4 +75,4 @@ Release Notes - SABnzbd 3.1.1
   that automatically verify, repair, extract and clean up posts downloaded
   from Usenet.
 
-  (c) Copyright 2007-2020 by "The SABnzbd-team" \<team@sabnzbd.org\>
+  (c) Copyright 2007-2021 by "The SABnzbd-team" \<team@sabnzbd.org\>

@@ -1735,7 +1735,6 @@ input[name="nzbURL"] {
 .container-compact .search-box .form-control {
     height: 28px;
 }
-
 .container-compact,
 .container-compact .dropdown-menu,
 .container-compact .btn,
@@ -1760,6 +1759,9 @@ input[name="nzbURL"] {
 }
 .container-compact .form-control {
     height: 29px;
+}
+.container-compact .form-control-multiselect {
+    height: 60px;
 }
 .container-compact .modal-header {
     padding: 5px 12px;
@@ -1840,18 +1842,22 @@ input[name="nzbURL"] {
     padding-top: 5px;
 }
 
+.container-full-width .container {
+    width: calc(100% - 60px);
+}
+
 /***
     Dynamic sizing
 ***/
 @media screen and (min-width: 1200px) {
-    .queue-table .table-extra-header-visible,
-    .history-table .table-extra-header-visible {
-        width: 10%;
+    .queue-table .table-header-extra,
+    .history-table .table-header-extra {
+        width: 6%;
     }
 
     .queue-table .table-header-progress-smaller,
     .history-table .table-header-progress-smaller {
-        width: 35%;
+        width: 25%;
     }
 
     #options-interface .label {
@@ -1973,6 +1979,45 @@ input[name="nzbURL"] {
     }
 }
 
+/***
+    RTL Fixes
+***/
+
+html[dir="rtl"] .navbar-nav {
+    padding-right: 0;
+}
+
+html[dir="rtl"] .queue h2,
+html[dir="rtl"] .history h2 {
+    float: right;
+}
+
+html[dir="rtl"] .dropdown-menu {
+    text-align: right;
+    direction: rtl;
+}
+
+html[dir="rtl"] .speedlimit-dropdown,
+html[dir="rtl"] .progress-indicator,
+html[dir="rtl"] #modal-item-filelist,
+html[dir="rtl"] #modal-item-files .modal-title,
+html[dir="rtl"] .info-container-box,
+html[dir="rtl"] .queue-table,
+html[dir="rtl"] .history-table {
+    direction: ltr;
+}
+
+html[dir="rtl"] .search-box a {
+    right: initial;
+    left: 8px;
+}
+
+html[dir="rtl"] .navbar-logo,
+html[dir="rtl"] .info-container,
+html[dir="rtl"] .modal-header .close,
+html[dir="rtl"] #modal-options .modal-header a {
+    float: left;
+}
 
 /***
     Bootstrap overwrites

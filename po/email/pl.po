@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file EMAIL
-# Copyright 2011-2020 The SABnzbd-Team
+# Copyright 2011-2021 The SABnzbd-Team
 #   team@sabnzbd.org
 # 
 # Translators:
@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.1.0-develop\n"
+"Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Polish (https://www.transifex.com/sabnzbd/teams/111101/pl/)\n"

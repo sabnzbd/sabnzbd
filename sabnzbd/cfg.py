@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@ from sabnzbd.constants import (
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
     DEF_FOLDER_MAX,
+    DEF_FILE_MAX,
 )
 
 ##############################################################################
@@ -76,20 +77,30 @@ def validate_server(value):
         return None, value
 
 
+def validate_script(value):
+    """ Check if value is a valid script """
+    if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
+        return None, value
+    elif (value and value == "None") or not value:
+        return None, "None"
+    return T("%s is not a valid script") % value, None
+
+
 ##############################################################################
 # Special settings
 ##############################################################################
-pre_script = OptionStr("misc", "pre_script", "None")
+pre_script = OptionStr("misc", "pre_script", "None", validation=validate_script)
 queue_complete = OptionStr("misc", "queue_complete")
 queue_complete_pers = OptionBool("misc", "queue_complete_pers", False)
-bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 0, 0, 100)
+bandwidth_perc = OptionNumber("misc", "bandwidth_perc", 100, 0, 100)
 refresh_rate = OptionNumber("misc", "refresh_rate", 0)
+interface_settings = OptionStr("misc", "interface_settings")
 log_level = OptionNumber("logging", "log_level", 1, -1, 2)
-log_size = OptionStr("logging", "max_log_size", "5242880")
+log_size = OptionNumber("logging", "max_log_size", 5242880)
 log_backups = OptionNumber("logging", "log_backups", 5, 1, 1024)
 queue_limit = OptionNumber("misc", "queue_limit", 20, 0)
 
-configlock = OptionBool("misc", "config_lock", 0)
+configlock = OptionBool("misc", "config_lock", False)
 
 
 ##############################################################################
@@ -115,7 +126,7 @@ password = OptionPassword("misc", "password")
 bandwidth_max = OptionStr("misc", "bandwidth_max")
 cache_limit = OptionStr("misc", "cache_limit")
 web_dir = OptionStr("misc", "web_dir", DEF_STDINTF)
-web_color = OptionStr("misc", "web_color", "")
+web_color = OptionStr("misc", "web_color")
 https_cert = OptionDir("misc", "https_cert", "server.cert", create=False)
 https_key = OptionDir("misc", "https_key", "server.key", create=False)
 https_chain = OptionDir("misc", "https_chain", create=False)
@@ -130,12 +141,14 @@ nzb_key = OptionStr("misc", "nzb_key", create_api_key())
 ##############################################################################
 # Config - Folders
 ##############################################################################
-umask = OptionStr("misc", "permissions", "", validation=validate_octal)
+umask = OptionStr("misc", "permissions", validation=validate_octal)
 download_dir = OptionDir("misc", "download_dir", DEF_DOWNLOAD_DIR, create=False, validation=validate_safedir)
 download_free = OptionStr("misc", "download_free")
 complete_dir = OptionDir(
     "misc", "complete_dir", DEF_COMPLETE_DIR, create=False, apply_umask=True, validation=validate_notempty
 )
+complete_free = OptionStr("misc", "complete_free")
+fulldisk_autoresume = OptionBool("misc", "fulldisk_autoresume", False)
 script_dir = OptionDir("misc", "script_dir", create=True, writable=False)
 nzb_backup_dir = OptionDir("misc", "nzb_backup_dir", DEF_NZBBACK_DIR)
 admin_dir = OptionDir("misc", "admin_dir", DEF_ADMIN_DIR, validation=validate_safedir)
@@ -154,14 +167,13 @@ top_only = OptionBool("misc", "top_only", False)
 sfv_check = OptionBool("misc", "sfv_check", True)
 quick_check_ext_ignore = OptionList("misc", "quick_check_ext_ignore", ["nfo", "sfv", "srr"])
 script_can_fail = OptionBool("misc", "script_can_fail", False)
-ssl_ciphers = OptionStr("misc", "ssl_ciphers", "")  # Now per-server setting
 enable_recursive = OptionBool("misc", "enable_recursive", True)
 flat_unpack = OptionBool("misc", "flat_unpack", False)
-par_option = OptionStr("misc", "par_option", "")
+par_option = OptionStr("misc", "par_option")
 pre_check = OptionBool("misc", "pre_check", False)
-nice = OptionStr("misc", "nice", "", validation=clean_nice_ionice_parameters)
+nice = OptionStr("misc", "nice", validation=clean_nice_ionice_parameters)
 win_process_prio = OptionNumber("misc", "win_process_prio", 3)
-ionice = OptionStr("misc", "ionice", "", validation=clean_nice_ionice_parameters)
+ionice = OptionStr("misc", "ionice", validation=clean_nice_ionice_parameters)
 fail_hopeless_jobs = OptionBool("misc", "fail_hopeless_jobs", True)
 fast_fail = OptionBool("misc", "fast_fail", True)
 autodisconnect = OptionBool("misc", "auto_disconnect", True)
@@ -270,7 +282,7 @@ helpfull_warnings = OptionBool("misc", "helpfull_warnings", True)
 keep_awake = OptionBool("misc", "keep_awake", True)
 win_menu = OptionBool("misc", "win_menu", True)
 allow_incomplete_nzb = OptionBool("misc", "allow_incomplete_nzb", False)
-enable_bonjour = OptionBool("misc", "enable_bonjour", True)
+enable_broadcast = OptionBool("misc", "enable_broadcast", True)
 max_art_opt = OptionBool("misc", "max_art_opt", False)
 ipv6_hosting = OptionBool("misc", "ipv6_hosting", False)
 fixed_ports = OptionBool("misc", "fixed_ports", False)
@@ -291,11 +303,14 @@ show_sysload = OptionNumber("misc", "show_sysload", 2, 0, 2)
 history_limit = OptionNumber("misc", "history_limit", 10, 0)
 wait_ext_drive = OptionNumber("misc", "wait_ext_drive", 5, 1, 60)
 max_foldername_length = OptionNumber("misc", "max_foldername_length", DEF_FOLDER_MAX, 20, 65000)
-marker_file = OptionStr("misc", "nomedia_marker", "")
+marker_file = OptionStr("misc", "nomedia_marker")
 ipv6_servers = OptionNumber("misc", "ipv6_servers", 1, 0, 2)
 url_base = OptionStr("misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
+downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
+ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
+
 
 ##############################################################################
 # Config - Notifications
@@ -326,7 +341,7 @@ ncenter_prio_new_login = OptionBool("ncenter", "ncenter_prio_new_login", False)
 ncenter_prio_warning = OptionBool("ncenter", "ncenter_prio_warning", False)
 ncenter_prio_error = OptionBool("ncenter", "ncenter_prio_error", False)
 ncenter_prio_queue_done = OptionBool("ncenter", "ncenter_prio_queue_done", True)
-ncenter_prio_other = OptionBool("ncenter", "ncenter_prio_other", False)
+ncenter_prio_other = OptionBool("ncenter", "ncenter_prio_other", True)
 
 # [acenter]
 acenter_enable = OptionBool("acenter", "acenter_enable", sabnzbd.WIN32)
@@ -342,7 +357,7 @@ acenter_prio_new_login = OptionBool("acenter", "acenter_prio_new_login", False)
 acenter_prio_warning = OptionBool("acenter", "acenter_prio_warning", False)
 acenter_prio_error = OptionBool("acenter", "acenter_prio_error", False)
 acenter_prio_queue_done = OptionBool("acenter", "acenter_prio_queue_done", True)
-acenter_prio_other = OptionBool("acenter", "acenter_prio_other", False)
+acenter_prio_other = OptionBool("acenter", "acenter_prio_other", True)
 
 # [ntfosd]
 ntfosd_enable = OptionBool("ntfosd", "ntfosd_enable", not sabnzbd.WIN32 and not sabnzbd.DARWIN)
@@ -358,7 +373,7 @@ ntfosd_prio_new_login = OptionBool("ntfosd", "ntfosd_prio_new_login", False)
 ntfosd_prio_warning = OptionBool("ntfosd", "ntfosd_prio_warning", False)
 ntfosd_prio_error = OptionBool("ntfosd", "ntfosd_prio_error", False)
 ntfosd_prio_queue_done = OptionBool("ntfosd", "ntfosd_prio_queue_done", True)
-ntfosd_prio_other = OptionBool("ntfosd", "ntfosd_prio_other", False)
+ntfosd_prio_other = OptionBool("ntfosd", "ntfosd_prio_other", True)
 
 # [prowl]
 prowl_enable = OptionBool("prowl", "prowl_enable", False)
@@ -375,7 +390,7 @@ prowl_prio_new_login = OptionNumber("prowl", "prowl_prio_new_login", -3)
 prowl_prio_warning = OptionNumber("prowl", "prowl_prio_warning", -3)
 prowl_prio_error = OptionNumber("prowl", "prowl_prio_error", -3)
 prowl_prio_queue_done = OptionNumber("prowl", "prowl_prio_queue_done", 0)
-prowl_prio_other = OptionNumber("prowl", "prowl_prio_other", -3)
+prowl_prio_other = OptionNumber("prowl", "prowl_prio_other", 0)
 
 # [pushover]
 pushover_token = OptionStr("pushover", "pushover_token")
@@ -396,7 +411,7 @@ pushover_prio_new_login = OptionNumber("pushover", "pushover_prio_new_login", -3
 pushover_prio_warning = OptionNumber("pushover", "pushover_prio_warning", 1)
 pushover_prio_error = OptionNumber("pushover", "pushover_prio_error", 1)
 pushover_prio_queue_done = OptionNumber("pushover", "pushover_prio_queue_done", -1)
-pushover_prio_other = OptionNumber("pushover", "pushover_prio_other", -3)
+pushover_prio_other = OptionNumber("pushover", "pushover_prio_other", -1)
 
 # [pushbullet]
 pushbullet_enable = OptionBool("pushbullet", "pushbullet_enable")
@@ -414,12 +429,12 @@ pushbullet_prio_new_login = OptionBool("pushbullet", "pushbullet_prio_new_login"
 pushbullet_prio_warning = OptionBool("pushbullet", "pushbullet_prio_warning", False)
 pushbullet_prio_error = OptionBool("pushbullet", "pushbullet_prio_error", False)
 pushbullet_prio_queue_done = OptionBool("pushbullet", "pushbullet_prio_queue_done", False)
-pushbullet_prio_other = OptionBool("pushbullet", "pushbullet_prio_other", False)
+pushbullet_prio_other = OptionBool("pushbullet", "pushbullet_prio_other", True)
 
 # [nscript]
 nscript_enable = OptionBool("nscript", "nscript_enable")
 nscript_cats = OptionList("nscript", "nscript_cats", ["*"])
-nscript_script = OptionStr("nscript", "nscript_script")
+nscript_script = OptionStr("nscript", "nscript_script", validation=validate_script)
 nscript_parameters = OptionStr("nscript", "nscript_parameters")
 nscript_prio_startup = OptionBool("nscript", "nscript_prio_startup", True)
 nscript_prio_download = OptionBool("nscript", "nscript_prio_download", False)
@@ -432,7 +447,7 @@ nscript_prio_new_login = OptionBool("nscript", "nscript_prio_new_login", False)
 nscript_prio_warning = OptionBool("nscript", "nscript_prio_warning", False)
 nscript_prio_error = OptionBool("nscript", "nscript_prio_error", False)
 nscript_prio_queue_done = OptionBool("nscript", "nscript_prio_queue_done", True)
-nscript_prio_other = OptionBool("nscript", "nscript_prio_other", False)
+nscript_prio_other = OptionBool("nscript", "nscript_prio_other", True)
 
 
 ##############################################################################

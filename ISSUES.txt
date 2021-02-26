@@ -14,15 +14,15 @@
   For these the server blocking method is not very favourable.
   There is an INI-only option that will limit blocks to 1 minute.
       no_penalties = 1
-  See: https://sabnzbd.org/wiki/configuration/3.1/special
+  See: https://sabnzbd.org/wiki/configuration/3.2/special
 
 - Some third-party utilties try to probe SABnzbd API in such a way that you will
   often see warnings about unauthenticated access.
   If you are sure these probes are harmless, you can suppress the warnings by
   setting the option "api_warnings" to 0.
-  See: https://sabnzbd.org/wiki/configuration/3.1/special
+  See: https://sabnzbd.org/wiki/configuration/3.2/special
 
-- On OSX you may encounter downloaded files with foreign characters.
+- On macOS you may encounter downloaded files with foreign characters.
   The par2 repair may fail when the files were created on a Windows system.
   The problem is caused by the PAR2 utility and we cannot fix this now.
   This does not apply to files inside RAR files.
@@ -33,25 +33,14 @@
   We cannot solve this problem, because the Operating System (read Windows)
   prevents the removal.
 
-- Memory usage can sometimes have high peaks. This makes using SABnzbd on very low
-  memory systems (e.g. a NAS device or a router) a challenge.
-  In particular on Synology (SynoCommunity) the device may report that SABnzbd is using
-  a lot of memory even when idle. In this case the memory is usually not actually used by
-  SABnzbd and will be available if required by other apps or the system. More information
-  can be found in the discussion here: https://github.com/SynoCommunity/spksrc/issues/2856
-
-- SABnzbd is not compatible with some software firewall versions.
-  The Microsoft Windows Firewall works fine, but remember to tell this
-  firewall that SABnzbd is allowed to talk to other computers.
-
 - When SABnzbd cannot send notification emails, check your virus scanner,
   firewall or security suite. It may be blocking outgoing email.
 
-- When you are using external drives or network shares on OSX or Linux
+- When you are using external drives or network shares on macOS or Linux
   make sure that the drives are mounted.
   The operating system will simply redirect your files to alternative locations.
   You may have trouble finding the files when mounting the drive later.
-  On OSX, SABnzbd will not create new folders in /Volumes.
+  On macOS, SABnzbd will not create new folders in /Volumes.
   The result will be a failed job that can be retried once the volume has been mounted.
 
 - If you use a mounted drive as "temporary download folder", it must be present when SABnzbd

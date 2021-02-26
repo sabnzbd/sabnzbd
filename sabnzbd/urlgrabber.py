@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -27,21 +27,20 @@ import queue
 import urllib.request
 import urllib.error
 import urllib.parse
-from http.client import IncompleteRead
+from http.client import IncompleteRead, HTTPResponse
 from threading import Thread
 import base64
+from typing import Tuple, Optional
 
 import sabnzbd
 from sabnzbd.constants import DEF_TIMEOUT, FUTURE_Q_FOLDER, VALID_NZB_FILES, Status, VALID_ARCHIVES
 import sabnzbd.misc as misc
 import sabnzbd.filesystem
-from sabnzbd.nzbqueue import NzbQueue
-from sabnzbd.postproc import PostProcessor
 import sabnzbd.cfg as cfg
 import sabnzbd.emailer as emailer
 import sabnzbd.notifier as notifier
 from sabnzbd.encoding import ubtou, utob
-
+from sabnzbd.nzbstuff import NzbObject
 
 _RARTING_FIELDS = (
     "x-rating-id",
@@ -61,18 +60,14 @@ _RARTING_FIELDS = (
 
 
 class URLGrabber(Thread):
-    do = None  # Link to instance of the thread
-
     def __init__(self):
-        Thread.__init__(self)
-        self.queue = queue.Queue()
-        for tup in NzbQueue.do.get_urls():
-            url, nzo = tup
-            self.queue.put((url, nzo))
+        super().__init__()
+        self.queue: queue.Queue[Tuple[Optional[str], Optional[NzbObject]]] = queue.Queue()
+        for url_nzo_tup in sabnzbd.NzbQueue.get_urls():
+            self.queue.put(url_nzo_tup)
         self.shutdown = False
-        URLGrabber.do = self
 
-    def add(self, url, future_nzo, when=None):
+    def add(self, url: str, future_nzo: NzbObject, when: Optional[int] = None):
         """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
         if future_nzo and when:
             # Always increase counter
@@ -88,16 +83,16 @@ class URLGrabber(Thread):
         self.queue.put((url, future_nzo))
 
     def stop(self):
-        logging.info("URLGrabber shutting down")
         self.shutdown = True
-        self.add(None, None)
+        self.queue.put((None, None))
 
     def run(self):
-        logging.info("URLGrabber starting up")
         self.shutdown = False
-
         while not self.shutdown:
-            (url, future_nzo) = self.queue.get()
+            # Set NzbObject object to None so reference from this thread
+            # does not keep the object alive in the future (see #1628)
+            future_nzo = None
+            url, future_nzo = self.queue.get()
 
             if not url:
                 # stop signal, go test self.shutdown
@@ -220,10 +215,10 @@ class URLGrabber(Thread):
                     # URL was redirected, maybe the redirect has better filename?
                     # Check if the original URL has extension
                     if (
-                        url != fetch_request.url
+                        url != fetch_request.geturl()
                         and sabnzbd.filesystem.get_ext(filename) not in VALID_NZB_FILES + VALID_ARCHIVES
                     ):
-                        filename = os.path.basename(urllib.parse.unquote(fetch_request.url))
+                        filename = os.path.basename(urllib.parse.unquote(fetch_request.geturl()))
                 elif "&nzbname=" in filename:
                     # Sometimes the filename contains the full URL, duh!
                     filename = filename[filename.find("&nzbname=") + 9 :]
@@ -300,7 +295,7 @@ class URLGrabber(Thread):
                 logging.debug("URLGRABBER Traceback: ", exc_info=True)
 
     @staticmethod
-    def fail_to_history(nzo, url, msg="", content=False):
+    def fail_to_history(nzo: NzbObject, url: str, msg="", content=False):
         """Create History entry for failed URL Fetch
         msg: message to be logged
         content: report in history that cause is a bad NZB file
@@ -321,7 +316,7 @@ class URLGrabber(Thread):
         nzo.set_unpack_info("Source", msg)
         nzo.fail_msg = msg
 
-        notifier.send_notification(T("URL Fetching failed; %s") % "", "%s\n%s" % (msg, url), "other", nzo.cat)
+        notifier.send_notification(T("URL Fetching failed; %s") % "", "%s\n%s" % (msg, url), "failed", nzo.cat)
         if cfg.email_endjob() > 0:
             emailer.badfetch_mail(msg, url)
 
@@ -329,11 +324,11 @@ class URLGrabber(Thread):
         nzo.cat, _, nzo.script, _ = misc.cat_to_opts(nzo.cat, script=nzo.script)
 
         # Add to history and run script if desired
-        NzbQueue.do.remove(nzo.nzo_id, add_to_history=False)
-        PostProcessor.do.process(nzo)
+        sabnzbd.NzbQueue.remove(nzo.nzo_id)
+        sabnzbd.PostProcessor.process(nzo)
 
 
-def _build_request(url):
+def _build_request(url: str) -> HTTPResponse:
     # Detect basic auth
     # Adapted from python-feedparser
     user_passwd = None
@@ -357,12 +352,12 @@ def _build_request(url):
     return urllib.request.urlopen(req)
 
 
-def _analyse(fetch_request, future_nzo):
+def _analyse(fetch_request: HTTPResponse, future_nzo: NzbObject):
     """Analyze response of indexer
     returns fetch_request|None, error-message|None, retry, wait-seconds, data
     """
     data = None
-    if not fetch_request or fetch_request.code != 200:
+    if not fetch_request or fetch_request.getcode() != 200:
         if fetch_request:
             msg = fetch_request.msg
         else:

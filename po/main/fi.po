@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2011-2020 The SABnzbd-Team
+# Copyright 2011-2021 The SABnzbd-Team
 #   team@sabnzbd.org
 # 
 # Translators:
@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.1.0-develop\n"
+"Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Finnish (https://www.transifex.com/sabnzbd/teams/111101/fi/)\n"
@@ -16,6 +16,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Notification - Status page, table column header, actual message
+#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Warning"
+msgstr "Varoitus"
+
+#. Notification
+#: SABnzbd.py, sabnzbd/notifier.py
+msgid "Error"
+msgstr "Virhe"
 
 #. Error message
 #: SABnzbd.py
@@ -116,16 +126,6 @@ msgstr "Web-käyttöliittymän käynnistys epäonnistui : "
 #: SABnzbd.py
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s käynnistetty"
-
-#. Notification - Status page, table column header, actual message
-#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
-msgid "Warning"
-msgstr "Varoitus"
-
-#. Notification
-#: SABnzbd.py, sabnzbd/notifier.py
-msgid "Error"
-msgstr "Virhe"
 
 #: SABnzbd.py, sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
@@ -318,6 +318,10 @@ msgstr "%s ei ole kelvollinen sähköpostiosoite"
 msgid "Server address required"
 msgstr "Palvelimen osoite vaaditaan"
 
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
@@ -349,10 +353,6 @@ msgstr "%s ei ole oikea oktaalinen arvo"
 #: sabnzbd/config.py
 msgid "UNC path \"%s\" not allowed here"
 msgstr "TUNT polku \"%s\" ei ole sallittu"
-
-#: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Virhe: Polun pituus täytyy olla alle %s."
 
 #: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
@@ -489,6 +489,16 @@ msgstr "Mahdollinen virhe lataajassa"
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "Sammutetaan"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr ""
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -741,6 +751,10 @@ msgstr "t"
 msgid "m"
 msgstr "m"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "Päivitys saatavilla!"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -776,15 +790,6 @@ msgstr ""
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
 msgstr "Ajetaan skripti"
-
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr "Jälkikäsittely peruutettiin (%s)"
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr "Skripti"
 
 #. Warning message
 #: sabnzbd/newsunpack.py
@@ -846,11 +851,6 @@ msgstr "Purkaminen epäonnistui, arkisto vaatii salasanan"
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Puretaan"
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
-msgstr "Pura"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -1295,10 +1295,6 @@ msgstr "Varoitukset"
 msgid "Idle"
 msgstr "Toimeton"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Asetukset"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1323,9 +1319,10 @@ msgstr "Tyhjennä historia"
 msgid "Limit Speed"
 msgstr "Nopeusrajoitus"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "min."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "minuutti"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1373,10 +1370,6 @@ msgstr "Tyhjä"
 #: sabnzbd/osxmenu.py
 msgid "History Last 10 Items"
 msgstr "Vie viimeiset 10 kohdetta historiaan"
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Uusi versio saatavilla"
 
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
@@ -1578,6 +1571,10 @@ msgid "see logfile"
 msgstr "katso lokitiedosto"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr "Lataus epäonnistui"
 
@@ -1626,6 +1623,10 @@ msgstr "RAR arkistot varmennettiin onnistuneesti"
 #: sabnzbd/postproc.py
 msgid "RAR files failed to verify"
 msgstr "RAR arkistoja ei voitu varmentaa"
+
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -1682,10 +1683,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Virheellinen RSS syötteen kuvaus \"%s\""
 
 #: sabnzbd/rss.py
-msgid "Failed to retrieve RSS from %s: %s"
-msgstr "RSS noutaminen epäonnistui kohteesta %s: %s"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "Ei ole käyttöoikeutta syötteeseen %s"
 
@@ -1693,10 +1690,15 @@ msgstr "Ei ole käyttöoikeutta syötteeseen %s"
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr "Palvelinpään virhe (virhekoodi %s); ei voitu noutaa %s kohteesta %s"
 
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "RSS noutaminen epäonnistui kohteesta %s: %s"
+
 #: sabnzbd/rss.py, sabnzbd/urlgrabber.py
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr "Palvelin %s käyttää epäluotettavaa HTTPS sertifikaattia"
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS syöte %s oli tyhjä"
@@ -1785,6 +1787,16 @@ msgstr "Lataa"
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr "Yhdistä tiedostot"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "Pura"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "Skripti"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2010,11 +2022,6 @@ msgstr "tunti"
 msgid "hours"
 msgstr "tuntia"
 
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "minuutti"
-
 #. Multiple minutes
 #: sabnzbd/skintext.py
 msgid "mins"
@@ -2111,12 +2118,24 @@ msgid "This month"
 msgstr "Tässä kuussa"
 
 #: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Today"
 msgstr "Tänään"
 
 #: sabnzbd/skintext.py
 msgid "Total"
 msgstr "Yhteensä"
+
+#: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "Mukautettu"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Nopeus"
 
 #: sabnzbd/skintext.py
 msgid "on"
@@ -2952,6 +2971,12 @@ msgid "Enable accessing the interface from a HTTPS address."
 msgstr "Ota käyttöön käyttöliittymän käyttäminen HTTPS-osoitteesta."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Modern web browsers and other clients will not accept self-signed "
+"certificates and will give a warning and/or won't connect at all."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "HTTPS Port"
 msgstr "HTTPS portti"
 
@@ -3231,6 +3256,26 @@ msgstr ""
 "kohteet.<br /><i>Käyttäjän asettamat kategoriat voivat kumota tämän.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr ""
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr "Jatka automaattisesti"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
 msgstr "Käyttöoikeudet valmistuneille latauksille"
 
@@ -3376,10 +3421,11 @@ msgid "Post-Process Only Verified Jobs"
 msgstr "Jälkikäsittele vain onnistuneet lataukset"
 
 #: sabnzbd/skintext.py
-msgid "Only perform post-processing on jobs that passed all PAR2 checks."
+msgid ""
+"Only unpack and run scripts on jobs that passed the verification stage. If "
+"turned off, all jobs will be marked as Completed even if they are "
+"incomplete."
 msgstr ""
-"Suorittaa jälkikäsittelyn vain niille latauksille jotka läpäisevät kaikki "
-"PAR2 tarkistukset."
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3688,11 +3734,6 @@ msgstr ""
 "Minä päivänä kuusta tai viikosta (1=Maanantai) palveluntarjoajasi resetoi "
 "rajoituksen? (Voit syöttää kellonajan perään hh:mm)"
 
-#. Auto-resume download on the reset day
-#: sabnzbd/skintext.py
-msgid "Auto resume"
-msgstr "Jatka automaattisesti"
-
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"
 msgstr "Pitäisikö latauksia jatkaa kun latausrajoitus on resetoitu?"
@@ -3846,6 +3887,21 @@ msgstr "Salasana"
 msgid "Timeout"
 msgstr "Aikakatkaisu"
 
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
+
 #. Server's retention time in days
 #: sabnzbd/skintext.py
 msgid "Retention time"
@@ -3937,6 +3993,14 @@ msgstr "Lähettää ryhmäkomennon ennen artikkeleiden pyytämistä."
 msgid "Personal notes"
 msgstr "Henkilökohtaiset huomautukset"
 
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr ""
+
 #. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Add Schedule"
@@ -3988,6 +4052,16 @@ msgstr "Lue syöte"
 #: sabnzbd/skintext.py
 msgid "Force Download"
 msgstr "Pakota lataus"
+
+#. Config->RSS edit button
+#: sabnzbd/skintext.py
+msgid "Edit"
+msgstr ""
+
+#. Config->RSS when will be the next RSS scan
+#: sabnzbd/skintext.py
+msgid "Next scan at"
+msgstr ""
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4138,7 +4212,7 @@ msgstr "Ilmoitus lähetetty!"
 msgid "Enable NotifyOSD"
 msgstr "NotifyOSD käytössä"
 
-#. Header for OSX Notfication Center section
+#. Header for macOS Notfication Center section
 #: sabnzbd/skintext.py
 msgid "Notification Center"
 msgstr "Ilmoituskeskus"
@@ -4692,12 +4766,12 @@ msgid "Date format"
 msgstr "Päivämäärän muoto"
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
-msgstr "Ylimääräisen jonon sarake"
+msgid "Extra queue columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
-msgstr "Ylimääräinen historiasarake"
+msgid "Extra history columns"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "page"
@@ -4780,10 +4854,6 @@ msgid "View Script Log"
 msgstr "Näytä skriptien loki"
 
 #: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr "Päivitys saatavilla!"
-
-#: sabnzbd/skintext.py
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will"
 " be lost after you close the browser!"
@@ -4797,20 +4867,16 @@ msgstr ""
 "Glitter-teemassa on muutamia (uusia) ominaisuuksia joista saatat pitää!"
 
 #: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "Mukautettu"
-
-#: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr "Tiivis käyttöliittymä"
 
 #: sabnzbd/skintext.py
-msgid "Tabbed layout <br/>(separate queue and history)"
-msgstr "Välilehditetty käyttöliittymä <br/>(erillinen jono ja historia)"
+msgid "Always use full screen width"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Nopeus"
+msgid "Tabbed layout <br/>(separate queue and history)"
+msgstr "Välilehditetty käyttöliittymä <br/>(erillinen jono ja historia)"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"

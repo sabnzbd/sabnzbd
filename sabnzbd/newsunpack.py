@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@ from sabnzbd.filesystem import (
     get_ext,
     get_filename,
 )
+from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.sorting import SeriesSorter
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
@@ -167,7 +168,7 @@ ENV_NZO_FIELDS = [
 ]
 
 
-def external_processing(extern_proc, nzo, complete_dir, nicename, status):
+def external_processing(extern_proc, nzo: NzbObject, complete_dir, nicename, status):
     """ Run a user postproc script, return console output and exit value """
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
@@ -184,7 +185,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     ]
 
     # Add path to original NZB
-    nzb_paths = globber_full(nzo.workpath, "*.gz")
+    nzb_paths = globber_full(nzo.admin_path, "*.gz")
 
     # Fields not in the NZO directly
     extra_env_fields = {
@@ -199,6 +200,7 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
 
     try:
         p = build_and_run_command(command, env=create_env(nzo, extra_env_fields))
+        sabnzbd.PostProcessor.external_process = p
 
         # Follow the output, so we can abort it
         proc = p.stdout
@@ -215,14 +217,6 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
 
             # Show current line in history
             nzo.set_action_line(T("Running script"), line)
-
-            # Check if we should still continue
-            if not nzo.pp_active:
-                p.kill()
-                lines.append(T("PostProcessing was aborted (%s)") % T("Script"))
-                # Print at least what we got
-                output = "\n".join(lines)
-                return output, 1
     except:
         logging.debug("Failed script %s, Traceback: ", extern_proc, exc_info=True)
         return "Cannot run script %s\r\n" % extern_proc, -1
@@ -232,7 +226,9 @@ def external_processing(extern_proc, nzo, complete_dir, nicename, status):
     return output, ret
 
 
-def unpack_magic(nzo, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0):
+def unpack_magic(
+    nzo: NzbObject, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0
+):
     """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete' """
     if depth > 5:
         logging.warning(T("Unpack nesting too deep [%s]"), nzo.final_name)
@@ -380,7 +376,7 @@ def get_seq_number(name):
         return 0
 
 
-def file_join(nzo, workdir, workdir_complete, delete, joinables):
+def file_join(nzo: NzbObject, workdir, workdir_complete, delete, joinables):
     """Join and joinable files in 'workdir' to 'workdir_complete' and
     when successful, delete originals
     """
@@ -471,7 +467,7 @@ def file_join(nzo, workdir, workdir_complete, delete, joinables):
 ##############################################################################
 # (Un)Rar Functions
 ##############################################################################
-def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
+def rar_unpack(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, rars):
     """Unpack multiple sets 'rars' of RAR files from 'workdir' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     When 'one_folder' is set, all files will be in a single folder
@@ -534,10 +530,6 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
                 fail, newfiles, rars = rar_extract(
                     rarpath, len(rar_sets[rar_set]), one_folder, nzo, rar_set, extraction_path
                 )
-                # Was it aborted?
-                if not nzo.pp_active:
-                    fail = True
-                    break
                 success = not fail
             except:
                 success = False
@@ -594,7 +586,7 @@ def rar_unpack(nzo, workdir, workdir_complete, delete, one_folder, rars):
     return fail, extracted_files
 
 
-def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path):
+def rar_extract(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extraction_path):
     """Unpack single rar set 'rarfile' to 'extraction_path',
     with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, rars
@@ -621,7 +613,7 @@ def rar_extract(rarfile_path, numrars, one_folder, nzo, setname, extraction_path
     return fail, new_files, rars
 
 
-def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction_path, password):
+def rar_extract_core(rarfile_path, numrars, one_folder, nzo: NzbObject, setname, extraction_path, password):
     """Unpack single rar set 'rarfile_path' to 'extraction_path'
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password)/fail==3(crc-error), new_files, rars
     """
@@ -648,22 +640,25 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         rename = "-or"  # Auto renaming
 
     if sabnzbd.WIN32:
-        # For Unrar to support long-path, we need to cricumvent Python's list2cmdline
+        # For Unrar to support long-path, we need to circumvent Python's list2cmdline
         # See: https://github.com/sabnzbd/sabnzbd/issues/1043
+        # The -scf forces the output to be UTF8
         command = [
             "%s" % RAR_COMMAND,
             action,
             "-idp",
+            "-scf",
             overwrite,
             rename,
             "-ai",
             password_command,
-            "%s" % clip_path(rarfile_path),
+            rarfile_path,
             "%s\\" % long_path(extraction_path),
         ]
 
     elif RAR_PROBLEM:
-        # Use only oldest options (specifically no "-or")
+        # Use only oldest options, specifically no "-or" or "-scf"
+        # Luckily platform_btou has a fallback for non-UTF-8
         command = [
             "%s" % RAR_COMMAND,
             action,
@@ -675,10 +670,12 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         ]
     else:
         # Don't use "-ai" (not needed for non-Windows)
+        # The -scf forces the output to be UTF8
         command = [
             "%s" % RAR_COMMAND,
             action,
             "-idp",
+            "-scf",
             overwrite,
             rename,
             password_command,
@@ -692,6 +689,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
     # Get list of all the volumes part of this set
     logging.debug("Analyzing rar file ... %s found", rarfile.is_rarfile(rarfile_path))
     p = build_and_run_command(command, flatten_command=True)
+    sabnzbd.PostProcessor.external_process = p
 
     proc = p.stdout
     if p.stdin:
@@ -711,15 +709,6 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
         line = platform_btou(proc.readline())
         if not line:
             break
-
-        # Check if we should still continue
-        if not nzo.pp_active:
-            p.kill()
-            msg = T("PostProcessing was aborted (%s)") % T("Unpack")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Unpack", msg, setname)
-            nzo.status = Status.FAILED
-            return fail, (), ()
 
         line = line.strip()
         lines.append(line)
@@ -856,7 +845,7 @@ def rar_extract_core(rarfile_path, numrars, one_folder, nzo, setname, extraction
 ##############################################################################
 # (Un)Zip Functions
 ##############################################################################
-def unzip(nzo, workdir, workdir_complete, delete, one_folder, zips):
+def unzip(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, zips):
     """Unpack multiple sets 'zips' of ZIP files from 'workdir' to 'workdir_complete.
     When 'delete' is ste, originals will be deleted.
     """
@@ -934,7 +923,7 @@ def ZIP_Extract(zipfile, extraction_path, one_folder):
 ##############################################################################
 # 7Zip Functions
 ##############################################################################
-def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
+def unseven(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, sevens):
     """Unpack multiple sets '7z' of 7Zip files from 'workdir' to 'workdir_complete.
     When 'delete' is set, originals will be deleted.
     """
@@ -982,7 +971,7 @@ def unseven(nzo, workdir, workdir_complete, delete, one_folder, sevens):
     return unseven_failed, new_files
 
 
-def seven_extract(nzo, sevenset, extensions, extraction_path, one_folder, delete):
+def seven_extract(nzo: NzbObject, sevenset, extensions, extraction_path, one_folder, delete):
     """Unpack single set 'sevenset' to 'extraction_path', with password tries
     Return fail==0(ok)/fail==1(error)/fail==2(wrong password), new_files, sevens
     """
@@ -1051,6 +1040,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 
     command = [SEVEN_COMMAND, method, "-y", overwrite, parm, case, password, "-o%s" % extraction_path, name]
     p = build_and_run_command(command)
+    sabnzbd.PostProcessor.external_process = p
     output = platform_btou(p.stdout.read())
     logging.debug("7za output: %s", output)
 
@@ -1089,7 +1079,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 ##############################################################################
 # PAR2 Functions
 ##############################################################################
-def par2_repair(parfile_nzf, nzo, workdir, setname, single):
+def par2_repair(parfile_nzf: NzbFile, nzo: NzbObject, workdir, setname, single):
     """ Try to repair a set, return readd or correctness """
     # Check if file exists, otherwise see if another is done
     parfile_path = os.path.join(workdir, parfile_nzf.filename)
@@ -1215,7 +1205,7 @@ _RE_LOADING_PAR2 = re.compile(r'Loading "([^"]+)"\.')
 _RE_LOADED_PAR2 = re.compile(r"Loaded (\d+) new packets")
 
 
-def PAR_Verify(parfile, nzo, setname, joinables, single=False):
+def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
     """ Run par2 on par-set """
     used_joinables = []
     used_for_repair = []
@@ -1262,6 +1252,7 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
 
     # Run the external command
     p = build_and_run_command(command)
+    sabnzbd.PostProcessor.external_process = p
     proc = p.stdout
 
     if p.stdin:
@@ -1296,16 +1287,6 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
 
         line = linebuf.strip()
         linebuf = ""
-
-        # Check if we should still continue
-        if not nzo.pp_active:
-            p.kill()
-            msg = T("PostProcessing was aborted (%s)") % T("Repair")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Repair", msg, setname)
-            nzo.status = Status.FAILED
-            readd = False
-            break
 
         # Skip empty lines
         if line == "":
@@ -1350,7 +1331,7 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
                     block_table[nzf.blocks] = nzf
 
             if block_table:
-                nzf = block_table[min(block_table.keys())]
+                nzf = block_table[min(block_table)]
                 logging.info("Found new par2file %s", nzf.filename)
 
                 # Move from extrapar list to files to be downloaded
@@ -1536,7 +1517,7 @@ def PAR_Verify(parfile, nzo, setname, joinables, single=False):
 _RE_FILENAME = re.compile(r'"([^"]+)"')
 
 
-def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
+def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
     """ Run par2 on par-set """
     parfolder = os.path.split(parfile)[0]
     used_joinables = []
@@ -1546,9 +1527,10 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
     nzo.status = Status.VERIFYING
     start = time.time()
 
-    # Caching of verification implemented by adding:
+    # Caching of verification implemented by adding -vs/-vd
+    # Force output of utf-8 by adding -uo
     # But not really required due to prospective-par2
-    command = [str(MULTIPAR_COMMAND), "r", "-vs2", "-vd%s" % parfolder, parfile]
+    command = [str(MULTIPAR_COMMAND), "r", "-uo", "-vs2", "-vd%s" % parfolder, parfile]
 
     # Check if there are maybe par2cmdline/par2tbb commands supplied
     if "-t" in cfg.par_option() or "-p" in cfg.par_option():
@@ -1573,6 +1555,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
 
     # Run MultiPar
     p = build_and_run_command(command)
+    sabnzbd.PostProcessor.external_process = p
     proc = p.stdout
     if p.stdin:
         p.stdin.close()
@@ -1583,7 +1566,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
     renames = {}
     reconstructed = []
 
-    linebuf = ""
+    linebuf = b""
     finished = 0
     readd = False
 
@@ -1599,27 +1582,17 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
 
     # Loop over the output, whee
     while 1:
-        char = platform_btou(proc.read(1))
+        char = proc.read(1)
         if not char:
             break
 
         # Line not complete yet
-        if char not in ("\n", "\r"):
+        if char not in (b"\n", b"\r"):
             linebuf += char
             continue
 
-        line = linebuf.strip()
-        linebuf = ""
-
-        # Check if we should still continue
-        if not nzo.pp_active:
-            p.kill()
-            msg = T("PostProcessing was aborted (%s)") % T("Repair")
-            nzo.fail_msg = msg
-            nzo.set_unpack_info("Repair", msg, setname)
-            nzo.status = Status.FAILED
-            readd = False
-            break
+        line = ubtou(linebuf).strip()
+        linebuf = b""
 
         # Skip empty lines
         if line == "":
@@ -1650,7 +1623,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
                     block_table[nzf.blocks] = nzf
 
             if block_table:
-                nzf = block_table[min(block_table.keys())]
+                nzf = block_table[min(block_table)]
                 logging.info("Found new par2file %s", nzf.filename)
 
                 # Move from extrapar list to files to be downloaded
@@ -1880,7 +1853,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
             verifynum += 1
             nzo.set_action_line(T("Verifying repair"), "%02d/%02d" % (verifynum, verifytotal))
 
-        elif line.startswith("Failed to repair"):
+        elif line.startswith("Failed to repair") and not readd:
             # Unknown repair problem
             msg = T("Repairing failed, %s") % line
             nzo.fail_msg = msg
@@ -1917,7 +1890,7 @@ def MultiPar_Verify(parfile, nzo, setname, joinables, single=False):
 
 def create_env(nzo=None, extra_env_fields={}):
     """Modify the environment for pp-scripts with extra information
-    OSX: Return copy of environment without PYTHONPATH and PYTHONHOME
+    macOS: Return copy of environment without PYTHONPATH and PYTHONHOME
     other: return None
     """
     env = os.environ.copy()
@@ -2104,7 +2077,7 @@ def quick_check_set(set, nzo):
             if nzf.md5sum == md5pack[file]:
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
-                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file))
+                    renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
                     renames[file] = nzf.filename
                     nzf.filename = file
                     result &= True
@@ -2207,7 +2180,7 @@ def is_sfv_file(myfile):
     return sfv_info_line_counter >= 1
 
 
-def sfv_check(sfvs, nzo, workdir):
+def sfv_check(sfvs, nzo: NzbObject, workdir):
     """ Verify files using SFV files """
     # Update status
     nzo.status = Status.VERIFYING
@@ -2264,7 +2237,7 @@ def sfv_check(sfvs, nzo, workdir):
             if nzf.filename in calculated_crc32 and calculated_crc32[nzf.filename] == sfv_parse_results[file]:
                 try:
                     logging.debug("SFV-check will rename %s to %s", nzf.filename, file)
-                    renamer(os.path.join(nzo.downpath, nzf.filename), os.path.join(nzo.downpath, file))
+                    renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
                     renames[file] = nzf.filename
                     nzf.filename = file
                     result &= True
@@ -2330,7 +2303,7 @@ def analyse_show(name):
     return show_name, info.get("season_num", ""), info.get("episode_num", ""), info.get("ep_name", "")
 
 
-def pre_queue(nzo, pp, cat):
+def pre_queue(nzo: NzbObject, pp, cat):
     """Run pre-queue script (if any) and process results.
     pp and cat are supplied seperate since they can change.
     """
@@ -2394,17 +2367,6 @@ def pre_queue(nzo, pp, cat):
     return values
 
 
-def list2cmdline(lst):
-    """ convert list to a cmd.exe-compatible command string """
-    nlst = []
-    for arg in lst:
-        if not arg:
-            nlst.append('""')
-        else:
-            nlst.append('"%s"' % arg)
-    return " ".join(nlst)
-
-
 def is_sevenfile(path):
     """ Return True if path has proper extension and 7Zip is installed """
     return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == ".7z"
@@ -2437,10 +2399,7 @@ class SevenZip:
         """ Read named file from 7Zip and return data """
         command = [SEVEN_COMMAND, "e", "-p", "-y", "-so", self.path, name]
         # Ignore diagnostic output, otherwise it will be appended to content
-        p = build_and_run_command(command, stderr=subprocess.DEVNULL)
-        output = platform_btou(p.stdout.read())
-        p.wait()
-        return output
+        return run_command(command, stderr=subprocess.DEVNULL)
 
     def close(self):
         """ Close file """

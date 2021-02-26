@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2011-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2011-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -31,7 +31,7 @@ with open("sabnzbd/version.py") as version_file:
 HEADER = (
     r"""#
 # SABnzbd Translation Template file __TYPE__
-# Copyright 2011-2020 The SABnzbd-Team
+# Copyright 2011-2021 The SABnzbd-Team
 #   team@sabnzbd.org
 #
 msgid ""
@@ -177,7 +177,7 @@ print("Finished creating email POT file")
 
 
 # Create the NSIS POT file
-NSIS = "NSIS_Installer.nsi"
+NSIS = "builder/win/NSIS_Installer.nsi"
 RE_NSIS = re.compile(r'LangString\s+\w+\s+\$\{LANG_ENGLISH\}\s+(".*)', re.I)
 
 if os.path.exists(NSIS):

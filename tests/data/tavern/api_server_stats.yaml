@@ -1,0 +1,81 @@
+---
+test_name: Check server stats
+
+strict:
+  - json:on
+
+stages:
+  - name: server_stats (json output)
+    request:
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      method: GET
+      params:
+        mode: server_stats
+        apikey: "{SAB_APIKEY}"
+        output: json
+    response:
+      status_code: 200
+      headers:
+        content-type: !re_match "application/json"
+        content-type: !re_search "charset=(UTF|utf)-8"
+      json:
+        total: !anyint
+        month: !anyint
+        week: !anyint
+        day: !anyint
+        servers: !anydict
+          - total: !anyint
+            month: !anyint
+            week: !anyint
+            day: !anyint
+            daily: !anydict
+
+  - name: server_stats (text output)
+    request:
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      method: GET
+      params:
+        mode: server_stats
+        apikey: "{SAB_APIKEY}"
+        output: text
+    response:
+      headers:
+        content-type: !re_match "text/plain"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      status_code: 200
+      verify_response_with:
+        function: tavern.testutils.helpers:validate_regex
+        extra_kwargs:
+          expression: "{{(?=.*'total': [0-9]+)(?=.*'month': [0-9]+)(?=.*'week': [0-9]+)(?=.*'day': [0-9]+)(?=.*'servers': .*).*}}"
+
+  - name: server_stats (xml output)
+    request:
+      url: "http://{SAB_HOST}:{SAB_PORT}/sabnzbd/api"
+      method: GET
+      params:
+        mode: server_stats
+        apikey: "{SAB_APIKEY}"
+        output: xml
+    response:
+      headers:
+        content-type: !re_match "text/xml"
+        content-type: !re_search "charset=(UTF|utf)-8"
+        pragma: "no-cache"
+        access-control-allow-origin: "*"
+        content-length: !re_match "[0-9]+"
+      status_code: 200
+      verify_response_with:
+        function: tavalidate:assert_xml
+        extra_kwargs:
+          expected: |
+            <?xml version="1.0" encoding="UTF-8" ?>
+            <result>
+            <total>!anyint</total>
+            <month>!anyint</month>
+            <week>!anyint</week>
+            <day>!anyint</day>
+            <servers>!anything</servers>
+            </result>

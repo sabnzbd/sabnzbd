@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -33,12 +33,10 @@ import functools
 from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
+from Cheetah.Template import Template
 
 import sabnzbd
 import sabnzbd.rss
-import sabnzbd.scheduler as scheduler
-
-from Cheetah.Template import Template
 from sabnzbd.misc import (
     to_units,
     from_units,
@@ -46,30 +44,25 @@ from sabnzbd.misc import (
     calc_age,
     int_conv,
     get_base_url,
-    probablyipv4,
-    probablyipv6,
+    is_ipv4_addr,
+    is_ipv6_addr,
     opts_to_pp,
+    get_server_addrinfo,
+    is_lan_addr,
 )
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
-from sabnzbd.newswrapper import GetServerParms
-from sabnzbd.bpsmeter import BPSMeter
 from sabnzbd.encoding import xml_name, utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
-from sabnzbd.downloader import Downloader
-from sabnzbd.nzbqueue import NzbQueue
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.decoder import SABYENC_ENABLED
 from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
-
+import sabnzbd.utils.ssdp
 from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
-
 from sabnzbd.lang import list_languages
-
 from sabnzbd.api import (
     list_scripts,
     list_cats,
@@ -84,11 +77,6 @@ from sabnzbd.api import (
     Ttemplate,
     build_queue_header,
 )
-
-##############################################################################
-# Global constants
-##############################################################################
-
 
 ##############################################################################
 # Security functions
@@ -178,7 +166,7 @@ def check_hostname():
     host = re.sub(":[0123456789]+$", "", host).lower()
 
     # Fine if localhost or IP
-    if host == "localhost" or probablyipv4(host) or probablyipv6(host):
+    if host == "localhost" or is_ipv4_addr(host) or is_ipv6_addr(host):
         return True
 
     # Check on the whitelist
@@ -408,7 +396,7 @@ class MainPage:
                 )
             )
 
-            bytespersec_list = BPSMeter.do.get_bps_list()
+            bytespersec_list = sabnzbd.BPSMeter.get_bps_list()
             info["bytespersec_list"] = ",".join([str(bps) for bps in bytespersec_list])
 
             template = Template(
@@ -431,13 +419,13 @@ class MainPage:
 
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
-        scheduler.plan_resume(0)
-        Downloader.do.pause()
+        sabnzbd.Scheduler.plan_resume(0)
+        sabnzbd.Downloader.pause()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
     def resume(self, **kwargs):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.unpause_all()
         raise Raiser(self.__root)
 
@@ -482,6 +470,20 @@ class MainPage:
         cherrypy.response.headers["Content-Type"] = "text/plain"
         return "User-agent: *\nDisallow: /\n"
 
+    @secured_expose
+    def description_xml(self, **kwargs):
+        """ Provide the description.xml which was broadcast via SSDP """
+        logging.debug(
+            "description.xml was requested from %s by %s",
+            cherrypy.request.remote.ip,
+            cherrypy.request.headers.get("User-Agent", "??"),
+        )
+        if is_lan_addr(cherrypy.request.remote.ip):
+            cherrypy.response.headers["Content-Type"] = "application/xml"
+            return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
+        else:
+            return None
+
 
 ##############################################################################
 class Wizard:
@@ -511,7 +513,7 @@ class Wizard:
             cfg.language.set(kwargs.get("lang"))
 
         # Always setup Glitter
-        change_web_dir("Glitter - Default")
+        change_web_dir("Glitter - Auto")
 
         info = build_header(sabnzbd.WIZARD_DIR)
         info["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
@@ -529,7 +531,7 @@ class Wizard:
         else:
             # Sort servers to get the first enabled one
             server_names = sorted(
-                servers.keys(),
+                servers,
                 key=lambda svr: "%d%02d%s"
                 % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
             )
@@ -581,13 +583,12 @@ class Wizard:
 
 def get_access_info():
     """ Build up a list of url's that sabnzbd can be accessed from """
-    # Access_url is used to provide the user a link to sabnzbd depending on the host
-    access_uri = "localhost"
+    # Access_url is used to provide the user a link to SABnzbd depending on the host
     cherryhost = cfg.cherryhost()
+    host = socket.gethostname().lower()
+    socks = [host]
 
     if cherryhost == "0.0.0.0":
-        host = socket.gethostname()
-        socks = [host]
         # Grab a list of all ips for the hostname
         try:
             addresses = socket.getaddrinfo(host, None)
@@ -598,17 +599,8 @@ def get_access_info():
             # Filter out ipv6 addresses (should not be allowed)
             if ":" not in address and address not in socks:
                 socks.append(address)
-        if "host" in cherrypy.request.headers:
-            host = cherrypy.request.headers["host"]
-            host = host.rsplit(":")[0]
-            access_uri = host
-            socks.insert(0, host)
-        else:
-            socks.insert(0, "localhost")
-
+        socks.insert(0, "localhost")
     elif cherryhost == "::":
-        host = socket.gethostname()
-        socks = [host]
         # Grab a list of all ips for the hostname
         addresses = socket.getaddrinfo(host, None)
         for addr in addresses:
@@ -618,22 +610,14 @@ def get_access_info():
                 address = "[%s]" % address
                 if address not in socks:
                     socks.append(address)
-        if "host" in cherrypy.request.headers:
-            host = cherrypy.request.headers["host"]
-            host = host.rsplit(":")[0]
-            access_uri = host
-            socks.insert(0, host)
-        else:
-            socks.insert(0, "localhost")
-
-    elif not cherryhost:
-        socks = [socket.gethostname()]
-        access_uri = socket.gethostname()
-    else:
+        socks.insert(0, "localhost")
+    elif cherryhost:
         socks = [cherryhost]
-        access_uri = cherryhost
 
-    urls = []
+    # Add the current requested URL as the base
+    access_url = urllib.parse.urljoin(cherrypy.request.base, cfg.url_base())
+
+    urls = [access_url]
     for sock in socks:
         if sock:
             if cfg.enable_https() and cfg.https_port():
@@ -642,17 +626,10 @@ def get_access_info():
                 url = "https://%s:%s%s" % (sock, cfg.cherryport(), cfg.url_base())
             else:
                 url = "http://%s:%s%s" % (sock, cfg.cherryport(), cfg.url_base())
-
             urls.append(url)
 
-    if cfg.enable_https() and cfg.https_port():
-        access_url = "https://%s:%s%s" % (sock, cfg.https_port(), cfg.url_base())
-    elif cfg.enable_https():
-        access_url = "https://%s:%s%s" % (access_uri, cfg.cherryport(), cfg.url_base())
-    else:
-        access_url = "http://%s:%s%s" % (access_uri, cfg.cherryport(), cfg.url_base())
-
-    return access_url, urls
+    # Return a unique list
+    return access_url, set(urls)
 
 
 ##############################################################################
@@ -723,7 +700,7 @@ class NzoPage:
                 nzo_id = a
                 break
 
-        nzo = NzbQueue.do.get_nzo(nzo_id)
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
         if nzo_id and nzo:
             info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header()
 
@@ -762,7 +739,7 @@ class NzoPage:
         n = 0
         for pnfo in pnfo_list:
             if pnfo.nzo_id == nzo_id:
-                nzo = NzbQueue.do.get_nzo(nzo_id)
+                nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
                 repair = pnfo.repair
                 unpack = pnfo.unpack
                 delete = pnfo.delete
@@ -795,7 +772,7 @@ class NzoPage:
 
     def nzo_files(self, info, nzo_id):
         active = []
-        nzo = NzbQueue.do.get_nzo(nzo_id)
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
         if nzo:
             pnfo = nzo.gather_info(full=True)
             info["nzo_id"] = pnfo.nzo_id
@@ -831,15 +808,15 @@ class NzoPage:
         script = kwargs.get("script", None)
         cat = kwargs.get("cat", None)
         priority = kwargs.get("priority", None)
-        nzo = NzbQueue.do.get_nzo(nzo_id)
+        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
 
         if index is not None:
-            NzbQueue.do.switch(nzo_id, index)
+            sabnzbd.NzbQueue.switch(nzo_id, index)
         if name is not None:
-            NzbQueue.do.change_name(nzo_id, name, password)
+            sabnzbd.NzbQueue.change_name(nzo_id, name, password)
 
         if cat is not None and nzo.cat is not cat and not (nzo.cat == "*" and cat == "Default"):
-            NzbQueue.do.change_cat(nzo_id, cat, priority)
+            sabnzbd.NzbQueue.change_cat(nzo_id, cat, priority)
             # Category changed, so make sure "Default" attributes aren't set again
             if script == "Default":
                 script = None
@@ -849,11 +826,11 @@ class NzoPage:
                 pp = None
 
         if script is not None and nzo.script != script:
-            NzbQueue.do.change_script(nzo_id, script)
+            sabnzbd.NzbQueue.change_script(nzo_id, script)
         if pp is not None and nzo.pp != pp:
-            NzbQueue.do.change_opts(nzo_id, pp)
+            sabnzbd.NzbQueue.change_opts(nzo_id, pp)
         if priority is not None and nzo.priority != int(priority):
-            NzbQueue.do.set_priority(nzo_id, priority)
+            sabnzbd.NzbQueue.set_priority(nzo_id, priority)
 
         raise Raiser(urllib.parse.urljoin(self.__root, "../queue/"))
 
@@ -862,7 +839,7 @@ class NzoPage:
         if kwargs["action_key"] == "Delete":
             for key in kwargs:
                 if kwargs[key] == "on":
-                    NzbQueue.do.remove_nzf(nzo_id, key, force_delete=True)
+                    sabnzbd.NzbQueue.remove_nzf(nzo_id, key, force_delete=True)
 
         elif kwargs["action_key"] in ("Top", "Up", "Down", "Bottom"):
             nzf_ids = []
@@ -871,15 +848,15 @@ class NzoPage:
                     nzf_ids.append(key)
             size = int_conv(kwargs.get("action_size", 1))
             if kwargs["action_key"] == "Top":
-                NzbQueue.do.move_top_bulk(nzo_id, nzf_ids)
+                sabnzbd.NzbQueue.move_top_bulk(nzo_id, nzf_ids)
             elif kwargs["action_key"] == "Up":
-                NzbQueue.do.move_up_bulk(nzo_id, nzf_ids, size)
+                sabnzbd.NzbQueue.move_up_bulk(nzo_id, nzf_ids, size)
             elif kwargs["action_key"] == "Down":
-                NzbQueue.do.move_down_bulk(nzo_id, nzf_ids, size)
+                sabnzbd.NzbQueue.move_down_bulk(nzo_id, nzf_ids, size)
             elif kwargs["action_key"] == "Bottom":
-                NzbQueue.do.move_bottom_bulk(nzo_id, nzf_ids)
+                sabnzbd.NzbQueue.move_bottom_bulk(nzo_id, nzf_ids)
 
-        if NzbQueue.do.get_nzo(nzo_id):
+        if sabnzbd.NzbQueue.get_nzo(nzo_id):
             url = urllib.parse.urljoin(self.__root, nzo_id)
         else:
             url = urllib.parse.urljoin(self.__root, "../queue")
@@ -910,12 +887,12 @@ class QueuePage:
         uid = kwargs.get("uid")
         del_files = int_conv(kwargs.get("del_files"))
         if uid:
-            NzbQueue.do.remove(uid, add_to_history=False, delete_all_data=del_files)
+            sabnzbd.NzbQueue.remove(uid, delete_all_data=del_files)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def purge(self, **kwargs):
-        NzbQueue.do.remove_all(kwargs.get("search"))
+        sabnzbd.NzbQueue.remove_all(kwargs.get("search"))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -932,7 +909,7 @@ class QueuePage:
         uid1 = kwargs.get("uid1")
         uid2 = kwargs.get("uid2")
         if uid1 and uid2:
-            NzbQueue.do.switch(uid1, uid2)
+            sabnzbd.NzbQueue.switch(uid1, uid2)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -940,7 +917,7 @@ class QueuePage:
         nzo_id = kwargs.get("nzo_id")
         pp = kwargs.get("pp", "")
         if nzo_id and pp and pp.isdigit():
-            NzbQueue.do.change_opts(nzo_id, int(pp))
+            sabnzbd.NzbQueue.change_opts(nzo_id, int(pp))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -950,7 +927,7 @@ class QueuePage:
         if nzo_id and script:
             if script == "None":
                 script = None
-            NzbQueue.do.change_script(nzo_id, script)
+            sabnzbd.NzbQueue.change_script(nzo_id, script)
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
@@ -960,7 +937,7 @@ class QueuePage:
         if nzo_id and cat:
             if cat == "None":
                 cat = None
-            NzbQueue.do.change_cat(nzo_id, cat)
+            sabnzbd.NzbQueue.change_cat(nzo_id, cat)
 
         raise queueRaiser(self.__root, kwargs)
 
@@ -971,46 +948,46 @@ class QueuePage:
 
     @secured_expose(check_api_key=True)
     def pause(self, **kwargs):
-        scheduler.plan_resume(0)
-        Downloader.do.pause()
+        sabnzbd.Scheduler.plan_resume(0)
+        sabnzbd.Downloader.pause()
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def resume(self, **kwargs):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.unpause_all()
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def pause_nzo(self, **kwargs):
         uid = kwargs.get("uid", "")
-        NzbQueue.do.pause_multiple_nzo(uid.split(","))
+        sabnzbd.NzbQueue.pause_multiple_nzo(uid.split(","))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def resume_nzo(self, **kwargs):
         uid = kwargs.get("uid", "")
-        NzbQueue.do.resume_multiple_nzo(uid.split(","))
+        sabnzbd.NzbQueue.resume_multiple_nzo(uid.split(","))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def set_priority(self, **kwargs):
-        NzbQueue.do.set_priority(kwargs.get("nzo_id"), kwargs.get("priority"))
+        sabnzbd.NzbQueue.set_priority(kwargs.get("nzo_id"), kwargs.get("priority"))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def sort_by_avg_age(self, **kwargs):
-        NzbQueue.do.sort_queue("avg_age", kwargs.get("dir"))
+        sabnzbd.NzbQueue.sort_queue("avg_age", kwargs.get("dir"))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def sort_by_name(self, **kwargs):
-        NzbQueue.do.sort_queue("name", kwargs.get("dir"))
+        sabnzbd.NzbQueue.sort_queue("name", kwargs.get("dir"))
         raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def sort_by_size(self, **kwargs):
-        NzbQueue.do.sort_queue("size", kwargs.get("dir"))
+        sabnzbd.NzbQueue.sort_queue("size", kwargs.get("dir"))
         raise queueRaiser(self.__root, kwargs)
 
 
@@ -1031,7 +1008,7 @@ class HistoryPage:
         history["rating_enable"] = bool(cfg.rating_enable())
 
         postfix = T("B")  # : Abbreviation for bytes, as in GB
-        grand, month, week, day = BPSMeter.do.get_sums()
+        grand, month, week, day = sabnzbd.BPSMeter.get_sums()
         history["total_size"], history["month_size"], history["week_size"], history["day_size"] = (
             to_units(grand, postfix=postfix),
             to_units(month, postfix=postfix),
@@ -1110,7 +1087,7 @@ class ConfigPage:
 
         conf["have_unzip"] = bool(sabnzbd.newsunpack.ZIP_COMMAND)
         conf["have_7zip"] = bool(sabnzbd.newsunpack.SEVEN_COMMAND)
-        conf["have_sabyenc"] = SABYENC_ENABLED
+        conf["have_sabyenc"] = sabnzbd.decoder.SABYENC_ENABLED
         conf["have_mt_par2"] = sabnzbd.newsunpack.PAR2_MT
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
@@ -1121,7 +1098,7 @@ class ConfigPage:
             new[svr] = {}
         conf["servers"] = new
 
-        conf["folders"] = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
+        conf["folders"] = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
@@ -1155,6 +1132,7 @@ LIST_DIRPAGE = (
     "download_dir",
     "download_free",
     "complete_dir",
+    "complete_free",
     "admin_dir",
     "nzb_backup_dir",
     "dirscan_dir",
@@ -1166,6 +1144,8 @@ LIST_DIRPAGE = (
     "password_file",
 )
 
+LIST_BOOL_DIRPAGE = ("fulldisk_autoresume",)
+
 
 class ConfigFolders:
     def __init__(self, root):
@@ -1175,7 +1155,7 @@ class ConfigFolders:
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
-        for kw in LIST_DIRPAGE:
+        for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
             conf[kw] = config.get_config("misc", kw)()
 
         template = Template(
@@ -1187,9 +1167,9 @@ class ConfigFolders:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveDirectories(self, **kwargs):
-        for kw in LIST_DIRPAGE:
+        for kw in LIST_DIRPAGE + LIST_BOOL_DIRPAGE:
             value = kwargs.get(kw)
-            if value is not None:
+            if value is not None or kw in LIST_BOOL_DIRPAGE:
                 if kw in ("complete_dir", "dirscan_dir"):
                     msg = config.get_config("misc", kw).set(value, create=True)
                 else:
@@ -1351,7 +1331,7 @@ SPECIAL_BOOL_LIST = (
     "html_login",
     "wait_for_dfolder",
     "max_art_opt",
-    "enable_bonjour",
+    "enable_broadcast",
     "warn_dupl_jobs",
     "replace_illegal",
     "backup_for_duplicates",
@@ -1361,6 +1341,7 @@ SPECIAL_BOOL_LIST = (
     "require_modern_tls",
 )
 SPECIAL_VALUE_LIST = (
+    "downloader_sleep_time",
     "size_limit",
     "movie_rename_limit",
     "nomedia_marker",
@@ -1374,6 +1355,7 @@ SPECIAL_VALUE_LIST = (
     "ipv6_servers",
     "selftest_host",
     "rating_host",
+    "ssdp_broadcast_interval",
 )
 SPECIAL_LIST_LIST = ("rss_odd_titles", "quick_check_ext_ignore", "host_whitelist")
 
@@ -1580,15 +1562,27 @@ class ConfigServer:
         new = []
         servers = config.get_servers()
         server_names = sorted(
-            list(servers.keys()),
+            servers,
             key=lambda svr: "%d%02d%s"
             % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
         )
         for svr in server_names:
             new.append(servers[svr].get_dict(safe=True))
-            t, m, w, d, timeline = BPSMeter.do.amounts(svr)
+            t, m, w, d, daily, articles_tried, articles_success = sabnzbd.BPSMeter.amounts(svr)
             if t:
-                new[-1]["amounts"] = to_units(t), to_units(m), to_units(w), to_units(d), timeline
+                new[-1]["amounts"] = (
+                    to_units(t),
+                    to_units(m),
+                    to_units(w),
+                    to_units(d),
+                    daily,
+                    articles_tried,
+                    articles_success,
+                )
+            new[-1]["quota_left"] = to_units(
+                servers[svr].quota.get_int() - sabnzbd.BPSMeter.grand_total.get(svr, 0) + servers[svr].usage_at_start()
+            )
+
         conf["servers"] = new
         conf["cats"] = list_cats(default=True)
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
@@ -1623,7 +1617,7 @@ class ConfigServer:
     def clrServer(self, **kwargs):
         server = kwargs.get("server")
         if server:
-            BPSMeter.do.clear_server(server)
+            sabnzbd.BPSMeter.clear_server(server)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1634,7 +1628,7 @@ class ConfigServer:
             if svr:
                 svr.enable.set(not svr.enable())
                 config.save_config()
-                Downloader.do.update_server(server, server)
+                sabnzbd.Downloader.update_server(server, server)
         raise Raiser(self.__root)
 
 
@@ -1658,7 +1652,7 @@ def check_server(host, port, ajax):
     if host.lower() == "localhost" and sabnzbd.AMBI_LOCALHOST:
         return badParameterResponse(T("Warning: LOCALHOST is ambiguous, use numerical IP-address."), ajax)
 
-    if GetServerParms(host, int_conv(port)):
+    if get_server_addrinfo(host, int_conv(port)):
         return ""
     else:
         return badParameterResponse(T('Server address "%s:%s" is not valid.') % (host, port), ajax)
@@ -1712,7 +1706,7 @@ def handle_server(kwargs, root=None, new_svr=False):
         config.ConfigServer(server, kwargs)
 
     config.save_config()
-    Downloader.do.update_server(old_server, server)
+    sabnzbd.Downloader.update_server(old_server, server)
     if root:
         if ajax:
             return sabnzbd.api.report("json")
@@ -1760,14 +1754,14 @@ class ConfigRss:
 
             rss[feed]["pick_cat"] = pick_cat
             rss[feed]["pick_script"] = pick_script
-            rss[feed]["link"] = urllib.parse.quote_plus(feed.encode("utf-8"))
+            rss[feed]["link"] = urllib.parse.quote_plus(feed)
             rss[feed]["baselink"] = [get_base_url(uri) for uri in rss[feed]["uri"]]
             rss[feed]["uris"] = feeds[feed].uri.get_string()
 
         active_feed = kwargs.get("feed", "")
         conf["active_feed"] = active_feed
         conf["rss"] = rss
-        conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.rss.next_run()))
+        conf["rss_next"] = time.strftime(time_format("%H:%M"), time.localtime(sabnzbd.RSSReader.next_run))
 
         if active_feed:
             readout = bool(self.__refresh_readout)
@@ -1777,7 +1771,7 @@ class ConfigRss:
                 self.__refresh_force = False
                 self.__refresh_ignore = False
             if self.__evaluate:
-                msg = sabnzbd.rss.run_feed(
+                msg = sabnzbd.RSSReader.run_feed(
                     active_feed,
                     download=self.__refresh_download,
                     force=self.__refresh_force,
@@ -1788,7 +1782,7 @@ class ConfigRss:
                 msg = ""
             self.__evaluate = False
             if readout:
-                sabnzbd.rss.save()
+                sabnzbd.RSSReader.save()
                 self.__last_msg = msg
             else:
                 msg = self.__last_msg
@@ -1819,7 +1813,7 @@ class ConfigRss:
         """ Save changed RSS automatic readout rate """
         cfg.rss_rate.set(kwargs.get("rss_rate"))
         config.save_config()
-        scheduler.restart()
+        sabnzbd.Scheduler.restart()
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1846,8 +1840,9 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_feed(self, **kwargs):
         """ Update Feed level attributes """
+        feed_name = kwargs.get("feed")
         try:
-            cf = config.get_rss()[kwargs.get("feed")]
+            cf = config.get_rss()[feed_name]
         except KeyError:
             cf = None
         if "enable" not in kwargs:
@@ -1856,6 +1851,14 @@ class ConfigRss:
         if cf and uri:
             kwargs["uri"] = uri
             cf.set_dict(kwargs)
+
+            # Did we get a new name for this feed?
+            new_name = kwargs.get("feed_new_name")
+            if new_name and new_name != feed_name:
+                cf.rename(new_name)
+                # Update the feed name for the redirect
+                kwargs["feed"] = new_name
+
             config.save_config()
 
         raise rssRaiser(self.__root, kwargs)
@@ -1891,7 +1894,7 @@ class ConfigRss:
                 config.ConfigRSS(feed, kwargs)
                 # Clear out any existing reference to this feed name
                 # Otherwise first-run detection can fail
-                sabnzbd.rss.clear_feed(feed)
+                sabnzbd.RSSReader.clear_feed(feed)
                 config.save_config()
                 self.__refresh_readout = feed
                 self.__refresh_download = False
@@ -1947,7 +1950,7 @@ class ConfigRss:
         kwargs["section"] = "rss"
         kwargs["keyword"] = kwargs.get("feed")
         del_from_section(kwargs)
-        sabnzbd.rss.clear_feed(kwargs.get("feed"))
+        sabnzbd.RSSReader.clear_feed(kwargs.get("feed"))
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -1983,7 +1986,7 @@ class ConfigRss:
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
         """ Remove processed RSS jobs from UI """
-        sabnzbd.rss.clear_downloaded(kwargs["feed"])
+        sabnzbd.RSSReader.clear_downloaded(kwargs["feed"])
         self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
@@ -2018,7 +2021,7 @@ class ConfigRss:
         feed = kwargs.get("feed")
         url = kwargs.get("url")
         nzbname = kwargs.get("nzbname")
-        att = sabnzbd.rss.lookup_url(feed, url)
+        att = sabnzbd.RSSReader.lookup_url(feed, url)
         if att:
             pp = att.get("pp")
             cat = att.get("cat")
@@ -2028,13 +2031,13 @@ class ConfigRss:
             if url:
                 sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
-            sabnzbd.rss.flag_downloaded(feed, url)
+            sabnzbd.RSSReader.flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def rss_now(self, *args, **kwargs):
         """ Run an automatic RSS run now """
-        scheduler.force_rss()
+        sabnzbd.Scheduler.force_rss()
         raise rssRaiser(self.__root, kwargs)
 
 
@@ -2113,7 +2116,7 @@ class ConfigScheduling:
         snum = 1
         conf["schedlines"] = []
         conf["taskinfo"] = []
-        for ev in scheduler.sort_schedules(all_events=False):
+        for ev in sabnzbd.scheduler.sort_schedules(all_events=False):
             line = ev[3]
             conf["schedlines"].append(line)
             try:
@@ -2229,7 +2232,7 @@ class ConfigScheduling:
                 cfg.schedules.set(sched)
 
         config.save_config()
-        scheduler.restart(force=True)
+        sabnzbd.Scheduler.restart()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -2240,7 +2243,7 @@ class ConfigScheduling:
             schedules.remove(line)
             cfg.schedules.set(schedules)
             config.save_config()
-            scheduler.restart(force=True)
+            sabnzbd.Scheduler.restart()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
@@ -2257,7 +2260,7 @@ class ConfigScheduling:
                     break
             cfg.schedules.set(schedules)
             config.save_config()
-            scheduler.restart(force=True)
+            sabnzbd.Scheduler.restart()
         raise Raiser(self.__root)
 
 
@@ -2417,12 +2420,12 @@ class Status:
 
     @secured_expose(check_api_key=True)
     def reset_quota(self, **kwargs):
-        BPSMeter.do.reset_quota(force=True)
+        sabnzbd.BPSMeter.reset_quota(force=True)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
     def disconnect(self, **kwargs):
-        Downloader.do.disconnect()
+        sabnzbd.Downloader.disconnect()
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
@@ -2484,7 +2487,7 @@ class Status:
 
     @secured_expose(check_api_key=True)
     def unblock_server(self, **kwargs):
-        Downloader.do.unblock(kwargs.get("server"))
+        sabnzbd.Downloader.unblock(kwargs.get("server"))
         # Short sleep so that UI shows new server status
         time.sleep(1.0)
         raise Raiser(self.__root)
@@ -2547,7 +2550,7 @@ def orphan_delete(kwargs):
 
 
 def orphan_delete_all():
-    paths = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
+    paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     for path in paths:
         kwargs = {"name": path}
         orphan_delete(kwargs)
@@ -2558,11 +2561,11 @@ def orphan_add(kwargs):
     if path:
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         logging.info("Re-adding orphaned job %s", path)
-        NzbQueue.do.repair_job(path, None, None)
+        sabnzbd.NzbQueue.repair_job(path, None, None)
 
 
 def orphan_add_all():
-    paths = NzbQueue.do.scan_jobs(all_jobs=False, action=False)
+    paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     for path in paths:
         kwargs = {"name": path}
         orphan_add(kwargs)
@@ -2663,7 +2666,7 @@ def GetRssLog(feed):
 
         return job
 
-    jobs = list(sabnzbd.rss.show_result(feed).values())
+    jobs = sabnzbd.RSSReader.show_result(feed).values()
     good, bad, done = ([], [], [])
     for job in jobs:
         if job["status"][0] == "G":

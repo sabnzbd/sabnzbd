@@ -1,7 +1,0 @@
-path_classifiers:
-  oldinterfaces:
-    - interfaces/smpl
-    - interfaces/Plush
-  library:
-    - "*knockout*"
-    - "**/*min*"

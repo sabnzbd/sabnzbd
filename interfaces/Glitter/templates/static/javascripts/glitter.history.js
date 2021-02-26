@@ -333,10 +333,10 @@ function HistoryModel(parent, data) {
         return self.script_line();
     });
 
-    // Extra history column
-    self.extraText = ko.pureComputed(function() {
+    // Extra history columns
+    self.showColumn = function(param) {
         // Picked anything?
-        switch(self.parent.parent.extraHistoryColumn()) {
+        switch(param) {
             case 'speed':
                 // Anything to calculate?
                 if(self.historyStatus.bytes() > 0 && self.historyStatus.download_time() > 0) {
@@ -359,7 +359,7 @@ function HistoryModel(parent, data) {
                 return self.historyStatus.size();
         }
         return;
-    })
+    };
 
     // Format completion time
     self.completedOn = ko.pureComputed(function() {
@@ -438,13 +438,10 @@ function HistoryModel(parent, data) {
                     value: self.nzo_id
                 }).then(function(response) {
                     if(response.status) {
-                        // Fade and remove
-                        $(event.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration, function() {
-                            // Make sure no flickering (if there are more items left) and then remove
-                            self.parent.isLoading(self.parent.totalItems() > 1)
-                            self.parent.historyItems.remove(self);
-                            self.parent.parent.refresh();
-                        })
+                        // Make sure no flickering (if there are more items left) and then remove
+                        self.parent.isLoading(self.parent.totalItems() > 1)
+                        self.parent.historyItems.remove(self);
+                        self.parent.parent.refresh();
                     }
                 });
             }

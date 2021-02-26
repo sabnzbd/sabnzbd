@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,13 +23,12 @@ import logging
 import hashlib
 import queue
 from threading import Thread
+from typing import Tuple, List, Optional
 
 import sabnzbd
-from sabnzbd.constants import SABYENC_VERSION_REQUIRED
-from sabnzbd.articlecache import ArticleCache
-from sabnzbd.downloader import Downloader
-from sabnzbd.nzbqueue import NzbQueue
 import sabnzbd.cfg as cfg
+from sabnzbd.constants import SABYENC_VERSION_REQUIRED
+from sabnzbd.nzbstuff import Article
 from sabnzbd.misc import match_str
 
 # Check for correct SABYenc version
@@ -48,7 +47,7 @@ except ImportError:
 
 class CrcError(Exception):
     def __init__(self, needcrc, gotcrc, data):
-        Exception.__init__(self)
+        super().__init__()
         self.needcrc = needcrc
         self.gotcrc = gotcrc
         self.data = data
@@ -56,13 +55,11 @@ class CrcError(Exception):
 
 class BadYenc(Exception):
     def __init__(self):
-        Exception.__init__(self)
+        super().__init__()
 
 
 class Decoder:
     """ Implement thread-like coordinator for the decoders """
-
-    do = None
 
     def __init__(self):
         logging.debug("Initializing decoders")
@@ -73,13 +70,12 @@ class Decoder:
         self.decoder_workers = []
         for i in range(cfg.num_decoders()):
             self.decoder_workers.append(DecoderWorker(self.decoder_queue))
-        Decoder.do = self
 
     def start(self):
         for decoder_worker in self.decoder_workers:
             decoder_worker.start()
 
-    def is_alive(self):
+    def is_alive(self) -> bool:
         # Check all workers
         for decoder_worker in self.decoder_workers:
             if not decoder_worker.is_alive():
@@ -89,7 +85,7 @@ class Decoder:
     def stop(self):
         # Put multiple to stop all decoders
         for _ in self.decoder_workers:
-            self.decoder_queue.put(None)
+            self.decoder_queue.put((None, None))
 
     def join(self):
         # Wait for all decoders to finish
@@ -99,47 +95,42 @@ class Decoder:
             except:
                 pass
 
-    def process(self, article, raw_data):
+    def process(self, article: Article, raw_data: List[bytes]):
         # We use reported article-size, just like sabyenc does
-        ArticleCache.do.reserve_space(article.bytes)
+        sabnzbd.ArticleCache.reserve_space(article.bytes)
         self.decoder_queue.put((article, raw_data))
 
-    def queue_full(self):
+    def queue_full(self) -> bool:
         # Check if the queue size exceeds the limits
-        return self.decoder_queue.qsize() >= ArticleCache.do.decoder_cache_article_limit
+        return self.decoder_queue.qsize() >= sabnzbd.ArticleCache.decoder_cache_article_limit
 
 
 class DecoderWorker(Thread):
     """ The actuall workhorse that handles decoding! """
 
     def __init__(self, decoder_queue):
-        Thread.__init__(self)
+        super().__init__()
         logging.debug("Initializing decoder %s", self.name)
 
-        self.decoder_queue = decoder_queue
-
-    def stop(self):
-        # Put multiple to stop all decoders
-        self.decoder_queue.put(None)
-        self.decoder_queue.put(None)
+        self.decoder_queue: queue.Queue[Tuple[Optional[Article], Optional[List[bytes]]]] = decoder_queue
 
     def run(self):
         while 1:
-            # Let's get to work!
-            art_tup = self.decoder_queue.get()
-            if not art_tup:
+            # Set Article and NzbObject objects to None so references from this
+            # thread do not keep the parent objects alive (see #1628)
+            decoded_data = raw_data = article = nzo = None
+            article, raw_data = self.decoder_queue.get()
+            if not article:
                 logging.info("Shutting down decoder %s", self.name)
                 break
 
-            article, raw_data = art_tup
             nzo = article.nzf.nzo
             art_id = article.article
 
             # Free space in the decoder-queue
-            ArticleCache.do.free_reserved_space(article.bytes)
+            sabnzbd.ArticleCache.free_reserved_space(article.bytes)
 
             # Keeping track
-            decoded_data = None
             article_success = False
 
             try:
@@ -155,12 +146,12 @@ class DecoderWorker(Thread):
             except MemoryError:
                 logging.warning(T("Decoder failure: Out of memory"))
                 logging.info("Decoder-Queue: %d", self.decoder_queue.qsize())
-                logging.info("Cache: %d, %d, %d", *ArticleCache.do.cache_info())
+                logging.info("Cache: %d, %d, %d", *sabnzbd.ArticleCache.cache_info())
                 logging.info("Traceback: ", exc_info=True)
-                Downloader.do.pause()
+                sabnzbd.Downloader.pause()
 
                 # This article should be fetched again
-                NzbQueue.do.reset_try_lists(article)
+                sabnzbd.NzbQueue.reset_try_lists(article)
                 continue
 
             except CrcError:
@@ -183,7 +174,7 @@ class DecoderWorker(Thread):
                         lline = line.lower()
                         if b"message-id:" in lline:
                             article_success = True
-                        if not lline.startswith(b"X-") and match_str(
+                        if not lline.startswith(b"x-") and match_str(
                             lline, (b"dmca", b"removed", b"cancel", b"blocked")
                         ):
                             article_success = False
@@ -193,7 +184,7 @@ class DecoderWorker(Thread):
                             logme = T("UUencode detected, only yEnc encoding is supported [%s]") % nzo.final_name
                             logging.error(logme)
                             nzo.fail_msg = logme
-                            NzbQueue.do.end_job(nzo)
+                            sabnzbd.NzbQueue.end_job(nzo)
                             break
 
                 # Pre-check, proper article found so just register
@@ -219,12 +210,12 @@ class DecoderWorker(Thread):
             if decoded_data:
                 # If the data needs to be written to disk due to full cache, this will be slow
                 # Causing the decoder-queue to fill up and delay the downloader
-                ArticleCache.do.save_article(article, decoded_data)
+                sabnzbd.ArticleCache.save_article(article, decoded_data)
 
-            NzbQueue.do.register_article(article, article_success)
+            sabnzbd.NzbQueue.register_article(article, article_success)
 
 
-def decode(article, raw_data):
+def decode(article: Article, raw_data: List[bytes]) -> bytes:
     # Let SABYenc do all the heavy lifting
     decoded_data, yenc_filename, crc, crc_expected, crc_correct = sabyenc3.decode_usenet_chunks(raw_data, article.bytes)
 
@@ -251,7 +242,7 @@ def decode(article, raw_data):
     return decoded_data
 
 
-def search_new_server(article):
+def search_new_server(article: Article) -> bool:
     """ Shorthand for searching new server or else increasing bad_articles """
     # Continue to the next one if we found new server
     if not article.search_new_server():

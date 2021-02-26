@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,9 +20,10 @@ tests.test_misc - Testing functions in misc.py
 """
 import datetime
 import time
+import configobj
 
 import sabnzbd.rss as rss
-from sabnzbd.config import CFG, define_rss, ConfigCat
+import sabnzbd.config
 
 
 class TestRSS:
@@ -30,16 +31,14 @@ class TestRSS:
     def setup_rss(feed_name, feed_url):
         """ Setup the basic settings to get things going"""
         # Setup the config settings
-        CFG["rss"] = {}
-        CFG["rss"][feed_name] = {}
-        CFG["rss"][feed_name]["uri"] = feed_url
-        define_rss()
+        sabnzbd.config.CFG = configobj.ConfigObj()
+        sabnzbd.config.ConfigRSS(feed_name, {"uri": feed_url})
 
         # Need to create the Default category
         # Otherwise it will try to save the config
-        ConfigCat("*", {})
-        ConfigCat("tv", {})
-        ConfigCat("movies", {})
+        sabnzbd.config.ConfigCat("*", {})
+        sabnzbd.config.ConfigCat("tv", {})
+        sabnzbd.config.ConfigCat("movies", {})
 
     def test_rss_newznab_parser(self):
         """Test basic RSS-parsing of custom elements
@@ -49,7 +48,7 @@ class TestRSS:
         self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_newznab_test.xml")
 
         # Start the RSS reader
-        rss_obj = rss.RSSQueue()
+        rss_obj = rss.RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?
@@ -76,7 +75,7 @@ class TestRSS:
         self.setup_rss(feed_name, "https://sabnzbd.org/tests/rss_nzedb_test.xml")
 
         # Start the RSS reader
-        rss_obj = rss.RSSQueue()
+        rss_obj = rss.RSSReader()
         rss_obj.run_feed(feed_name)
 
         # Is the feed processed?

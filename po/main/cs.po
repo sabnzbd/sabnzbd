@@ -1,21 +1,32 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2011-2020 The SABnzbd-Team
+# Copyright 2011-2021 The SABnzbd-Team
 #   team@sabnzbd.org
 # 
 # Translators:
-# Pavel C <quoing_transifex@mess.cz>, 2020
+# Safihre <safihre@sabnzbd.org>, 2020
+# Pavel C <quoing_transifex@mess.cz>, 2021
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.1.0-develop\n"
+"Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2020\n"
+"Last-Translator: Pavel C <quoing_transifex@mess.cz>, 2021\n"
 "Language-Team: Czech (https://www.transifex.com/sabnzbd/teams/111101/cs/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: cs\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#. Notification - Status page, table column header, actual message
+#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Warning"
+msgstr "Výstrahy"
+
+#. Notification
+#: SABnzbd.py, sabnzbd/notifier.py
+msgid "Error"
+msgstr "Chyba"
 
 #. Error message
 #: SABnzbd.py
@@ -31,6 +42,7 @@ msgstr ""
 #: SABnzbd.py
 msgid "SABYenc disabled: no correct version found! (Found v%s, expecting v%s)"
 msgstr ""
+"SABYenc vypnut: Nenalezena správná verze! (Nalezena v%s, očekávána v%s)"
 
 #. Error message
 #: SABnzbd.py
@@ -46,20 +58,20 @@ msgstr "Program par2... nenalezeno!"
 #. Warning message
 #: SABnzbd.py
 msgid "Your UNRAR version is %s, we recommend version %s or higher.<br />"
-msgstr ""
+msgstr "Nalezen UNRAR verze %s, doporučujeme verzi %s nebo vyšší. <br />"
 
 #. Error message
 #: SABnzbd.py
 msgid "unrar binary... NOT found"
-msgstr "Program unrar... nenalezeno!"
+msgstr "Program unrar... nenalezen!"
 
 #: SABnzbd.py
 msgid "7za binary... NOT found!"
-msgstr "Program 7za... nenalezeno!"
+msgstr "Program 7za... nenalezen!"
 
 #: SABnzbd.py
 msgid "unzip binary... NOT found!"
-msgstr "Program unizip... nenalezeno!"
+msgstr "Program unizip... nenalezen!"
 
 #. Error message
 #: SABnzbd.py
@@ -84,11 +96,13 @@ msgid ""
 "SABnzbd was started with encoding %s, this should be UTF-8. Expect problems "
 "with Unicoded file and directory names in downloads."
 msgstr ""
+"SABnzbd spuštěno s kódováním %s, zatímco doporučené je UTF-8. Očekávejte "
+"problémy se jmény souborů a adresářů při stahování."
 
 #. Warning message
 #: SABnzbd.py
 msgid "Could not load additional certificates from certifi package"
-msgstr ""
+msgstr "Nezdařilo se nahrát dodatečné certifikáty z balíku certifi."
 
 #. Warning message
 #: SABnzbd.py
@@ -109,16 +123,6 @@ msgstr "Nepodařilo se spustit webové rozhraní:"
 msgid "SABnzbd %s started"
 msgstr "SABnzbd %s spustěno"
 
-#. Notification - Status page, table column header, actual message
-#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
-msgid "Warning"
-msgstr "Výstrahy"
-
-#. Notification
-#: SABnzbd.py, sabnzbd/notifier.py
-msgid "Error"
-msgstr "Chyba"
-
 #: SABnzbd.py, sabnzbd/interface.py
 msgid "SABnzbd shutdown finished"
 msgstr "Vypnutí SABnzbd dokončeno"
@@ -131,11 +135,11 @@ msgstr "Zachycen signál %s, ukládám a ukončuji..."
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Fatal error at saving state"
-msgstr ""
+msgstr "Neopravitelná chyba při ukládání  stavového souboru"
 
 #: sabnzbd/__init__.py
 msgid "Trying to fetch NZB from %s"
-msgstr ""
+msgstr "Zkouším stáhnout NZB z %s"
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -150,12 +154,12 @@ msgstr "Nelze vytvořit dočasný soubor pro %s"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Trying to set status of non-existing server %s"
-msgstr ""
+msgstr "Zkouším aktualizovat stav neexistujícího serveru %s"
 
 #. Error message
 #: sabnzbd/__init__.py
 msgid "Failure in tempfile.mkstemp"
-msgstr ""
+msgstr "Chyba v tempfile.mkstemp"
 
 #. Error message
 #: sabnzbd/__init__.py
@@ -169,7 +173,7 @@ msgstr "Nelze přistoupit k PID souboru %s"
 
 #: sabnzbd/api.py, sabnzbd/emailer.py
 msgid "Email succeeded"
-msgstr ""
+msgstr "Email funční"
 
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "Test Notification"
@@ -247,25 +251,25 @@ msgstr ""
 
 #: sabnzbd/assembler.py
 msgid "Unwanted extension is in rar file %s"
-msgstr ""
+msgstr "Neočekávaná přípona v rar souboru %s"
 
 #: sabnzbd/assembler.py, sabnzbd/nzbstuff.py
 msgid "Aborted, unwanted extension detected"
-msgstr ""
+msgstr "Přerušeno, nalezena neočekávaná připona"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Paused job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Pozastavený úkol \"%s\" kvůli hodnocení (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
 msgid "Aborted job \"%s\" because of rating (%s)"
-msgstr ""
+msgstr "Zrušený úkol \"%s\" kvůli hodnocení (%s)"
 
 #: sabnzbd/assembler.py
 msgid "Aborted, rating filter matched (%s)"
-msgstr ""
+msgstr "Zrušeno, zachyceno hodnotícím filtrem (%s)"
 
 #. Warning message
 #: sabnzbd/assembler.py
@@ -291,7 +295,7 @@ msgstr "spam"
 
 #: sabnzbd/assembler.py
 msgid "passworded"
-msgstr ""
+msgstr "zaheslováno"
 
 #: sabnzbd/assembler.py
 msgid "downvoted"
@@ -304,7 +308,7 @@ msgstr "klíčová slova"
 #. Warning message
 #: sabnzbd/bpsmeter.py
 msgid "Quota spent, pausing downloading"
-msgstr ""
+msgstr "Kvóta přesažena, pozastavuji stahování"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid email address"
@@ -314,10 +318,14 @@ msgstr "%s není validní emailová adresa"
 msgid "Server address required"
 msgstr "Adresa serveru je vyžadována"
 
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
-msgstr ""
+msgstr "Konfigurace uzamčena, nelze uložit nastavení"
 
 #. Error message
 #: sabnzbd/config.py
@@ -344,11 +352,7 @@ msgstr "%s není hodnota v osmičkové soustavě"
 
 #: sabnzbd/config.py
 msgid "UNC path \"%s\" not allowed here"
-msgstr ""
-
-#: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr "Chyba: délka cesty by měla být kratší než %s."
+msgstr "UNC cesta \"%s\" zde není povolena"
 
 #: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
@@ -416,6 +420,8 @@ msgid ""
 "Jobs will start unpacking during the downloading to reduce post-processing "
 "time. Only works for jobs that do not need repair."
 msgstr ""
+"Úkol se začne rozbalovat během stahování pro redukci času post-procesingu. "
+"Funguje pouze pro úkoly, které nepotřebují opravu."
 
 #. Error message
 #: sabnzbd/dirscanner.py
@@ -466,7 +472,7 @@ msgstr "Příliš mnoho spojení k serveru %s"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Probable account sharing"
-msgstr ""
+msgstr "Pravděpodobné sdílení účtu"
 
 #. Error message
 #: sabnzbd/downloader.py
@@ -481,10 +487,20 @@ msgstr ""
 #. Error message
 #: sabnzbd/downloader.py
 msgid "Suspect error in downloader"
-msgstr ""
+msgstr "Nejspíše chyba downloaderu"
 
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
+msgstr "Vypínání"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
 msgstr ""
 
 #: sabnzbd/emailer.py
@@ -509,28 +525,28 @@ msgstr "Žádná použitelná autentizační metoda nenalezena"
 
 #: sabnzbd/emailer.py
 msgid "Unknown authentication failure in mail server"
-msgstr ""
+msgstr "Neznámá chyba přihlášení k poštovnímu serveru"
 
 #: sabnzbd/emailer.py
 msgid "Failed to send e-mail"
-msgstr ""
+msgstr "Nezdařilo se odeslat e-mail"
 
 #: sabnzbd/emailer.py
 msgid "Failed to close mail connection"
-msgstr ""
+msgstr "Nezdařilo se uzavřít spojení pro mail"
 
 #: sabnzbd/emailer.py, sabnzbd/notifier.py, sabnzbd/rating.py
 msgid "Cannot send, missing required data"
-msgstr ""
+msgstr "Nelze odeslat, chybějí požadovaná data"
 
 #. Error message
 #: sabnzbd/emailer.py
 msgid "Cannot find email templates in %s"
-msgstr ""
+msgstr "Nepodařilo se najít poštovní šablony v %s"
 
 #: sabnzbd/emailer.py
 msgid "No recipients given, no email sent"
-msgstr ""
+msgstr "Nebyli zadáni přijemci, žádný email neodeslán"
 
 #. Error message - Warning message
 #: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
@@ -540,7 +556,7 @@ msgstr "Nelze číst %s"
 
 #: sabnzbd/emailer.py
 msgid "No email templates found"
-msgstr ""
+msgstr "Nenalezeny poštovní šablony"
 
 #: sabnzbd/emailer.py
 msgid ""
@@ -559,34 +575,34 @@ msgstr ""
 #. Error message
 #: sabnzbd/filesystem.py, sabnzbd/sorting.py
 msgid "Cannot create directory %s"
-msgstr ""
+msgstr "Nelze vytvořit adresář %s"
 
 #: sabnzbd/filesystem.py
 msgid "%s directory: %s error accessing"
-msgstr ""
+msgstr "Adresář %s: chyba přístupu k %s"
 
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Cannot change permissions of %s"
-msgstr ""
+msgstr "Nelze změnit oprávnění adresáře %s"
 
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Failed making (%s)"
-msgstr ""
+msgstr "Chyba vytváření (%s)"
 
 #. Error message
 #: sabnzbd/filesystem.py, sabnzbd/postproc.py
 msgid "Failed moving %s to %s"
-msgstr ""
+msgstr "Chyba přesunu %s do %s"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
-msgstr ""
+msgstr "Odmítnuté spojení s hostem \"%s\" z:"
 
 #: sabnzbd/interface.py
 msgid "User logged in to the web interface"
-msgstr ""
+msgstr "Uživatel přihlášen do webového rozhraní"
 
 #. Notification
 #: sabnzbd/interface.py, sabnzbd/notifier.py
@@ -598,22 +614,28 @@ msgid ""
 "API Key missing, please enter the api key from Config->General into your 3rd"
 " party program:"
 msgstr ""
+"Chybějící API klíč , prosím zadejte api klíč z Nastavení->Obecné do svého "
+"programu třetí strany:"
 
 #: sabnzbd/interface.py
 msgid ""
 "API Key incorrect, Use the api key from Config->General in your 3rd party "
 "program:"
 msgstr ""
+"Nesprávný API klíč, použijte api klíč z Nastavení->Obecné ve vašem programu "
+"třetí strany:"
 
 #: sabnzbd/interface.py
 msgid ""
 "Authentication missing, please enter username/password from Config->General "
 "into your 3rd party program:"
 msgstr ""
+"Chybějící přihlašovací údaje, prosím zadejte jméno/heslo z Nastavení->Obecné"
+" do vašeho programu třetí strany:"
 
 #: sabnzbd/interface.py, sabnzbd/newswrapper.py, sabnzbd/utils/servertests.py
 msgid "Authentication failed, check username/password."
-msgstr ""
+msgstr "Přihlášené selhalo, zkontrolujte jméno a heslo."
 
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
@@ -622,7 +644,7 @@ msgstr "Nezdařený pokus o přihlášení od %s"
 #. Bytes (used as postfix, as in "GB", "TB")
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -640,15 +662,16 @@ msgstr ""
 #: sabnzbd/interface.py
 msgid "Warning: LOCALHOST is ambiguous, use numerical IP-address."
 msgstr ""
+"Upozornění: LOCALHOST je nejednoznačný, použijte numerickou IP adresu."
 
 #: sabnzbd/interface.py
 msgid "Server address \"%s:%s\" is not valid."
-msgstr ""
+msgstr "Adresa serveru \"%s:%s\" není správná."
 
 #. Config->RSS, tab header
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Feed"
-msgstr ""
+msgstr "Kanál"
 
 #: sabnzbd/interface.py
 msgid "Daily"
@@ -688,7 +711,7 @@ msgstr "vypnuto"
 
 #: sabnzbd/interface.py
 msgid "Undefined server!"
-msgstr ""
+msgstr "Nedefinovaný server!"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -697,7 +720,7 @@ msgstr ""
 
 #: sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "ERROR:"
-msgstr ""
+msgstr "CHYBA:"
 
 #: sabnzbd/interface.py
 msgid "Back"
@@ -705,19 +728,23 @@ msgstr "Zpět"
 
 #: sabnzbd/interface.py
 msgid "Incorrect value for %s: %s"
-msgstr ""
+msgstr "Nesprávná hodnota pro %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"
-msgstr ""
+msgstr "d"
 
 #: sabnzbd/misc.py
 msgid "h"
-msgstr ""
+msgstr "h"
 
 #: sabnzbd/misc.py
 msgid "m"
-msgstr ""
+msgstr "m"
+
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "Dostupná aktualizace!"
 
 #. Error message
 #: sabnzbd/misc.py
@@ -755,16 +782,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
-msgstr ""
-
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr ""
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr ""
+msgstr "Běžící skript"
 
 #. Warning message
 #: sabnzbd/newsunpack.py
@@ -785,34 +803,34 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Error \"%s\" while joining files"
-msgstr ""
+msgstr "[%s] Chyba \"%s\" během spojování souborů"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "Error \"%s\" while running file_join on %s"
-msgstr ""
+msgstr "Chyba \"%s\" v průběhu file_join pro %s"
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Joined %s files"
-msgstr ""
+msgstr "[%s] Spojeno %s souborů"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, %s"
-msgstr ""
+msgstr "Rozbalení selhalo, %s"
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Error \"%s\" while unpacking RAR files"
-msgstr ""
+msgstr "[%s] Chyba \"%s\" během rozbalování RAR souborů"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "Error \"%s\" while running rar_unpack on %s"
-msgstr ""
+msgstr "Chyba \"%s\" v průběhu rar_unpack pro %s"
 
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "Deleting %s failed!"
-msgstr ""
+msgstr "Mazání %s selhalo!"
 
 #: sabnzbd/newsunpack.py
 msgid "Trying unrar with password \"%s\""
@@ -825,12 +843,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
-msgstr ""
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
-msgstr ""
+msgstr "Rozbaluji"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -839,44 +852,45 @@ msgstr ""
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: unable to find \"%s\""
-msgstr ""
+msgstr "CHYBA: nepodařilo se najít \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, CRC error"
-msgstr ""
+msgstr "Rozbalování selhalo, CRC chyba"
 
 #. Warning message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: CRC failed in \"%s\""
-msgstr ""
+msgstr "CHYBA: CRC selhalo pro \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, file too large for filesystem (FAT?)"
 msgstr ""
+"Rozbalování selhalo, soubor je příliš velký pro souborový systém (FAT?)"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: File too large for filesystem (%s)"
-msgstr ""
+msgstr "CHYBA: Soubor je příliš velký pro souborový systém (%s)"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, write error or disk is full?"
-msgstr ""
+msgstr "Rozbalování selhalo, chyba zápisu nebo plný disk?"
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: write error (%s)"
-msgstr ""
+msgstr "CHYBA: chyba zápisu (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, path is too long"
-msgstr ""
+msgstr "Rozbalování selhalo, cesta k souboru je příliš dlouhá."
 
 #. Error message
 #: sabnzbd/newsunpack.py
 msgid "ERROR: path too long (%s)"
-msgstr ""
+msgstr "CHYBA: cesta k souboru je příliš dlouhá (%s)"
 
 #: sabnzbd/newsunpack.py
 msgid "ERROR: %s"
@@ -905,7 +919,7 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Trying 7zip with password \"%s\""
-msgstr ""
+msgstr "Zkouším 7zip s heslem \"%s\""
 
 #: sabnzbd/newsunpack.py
 msgid "7ZIP set \"%s\" is incomplete, cannot unpack"
@@ -913,11 +927,11 @@ msgstr ""
 
 #: sabnzbd/newsunpack.py
 msgid "Could not unpack %s"
-msgstr ""
+msgstr "Nelze robalit %s"
 
 #: sabnzbd/newsunpack.py
 msgid "Quick Checking"
-msgstr ""
+msgstr "Rychlá kontrola"
 
 #. PP phase "repair"
 #: sabnzbd/newsunpack.py, sabnzbd/skintext.py
@@ -984,7 +998,7 @@ msgstr "Opravuji"
 
 #: sabnzbd/newsunpack.py
 msgid "[%s] Repaired in %s"
-msgstr ""
+msgstr "[%s] opraveno v %s"
 
 #: sabnzbd/newsunpack.py
 msgid "Verifying repair"
@@ -1026,11 +1040,11 @@ msgstr ""
 
 #: sabnzbd/newswrapper.py
 msgid "Certificate not valid. This is most probably a server issue."
-msgstr ""
+msgstr "Certifikát není validní. Pravděpodobně chyba serveru."
 
 #: sabnzbd/newswrapper.py
 msgid "Server %s uses an untrusted certificate [%s]"
-msgstr ""
+msgstr "Server %s používá nedůvěryhodný certifikát [%s]"
 
 #. Main menu item
 #: sabnzbd/newswrapper.py, sabnzbd/skintext.py
@@ -1040,7 +1054,7 @@ msgstr "Wiki"
 #. Notification
 #: sabnzbd/notifier.py
 msgid "Startup/Shutdown"
-msgstr ""
+msgstr "Spuštění/Vypnutí"
 
 #. Notification - Pause downloading - Four way switch for duplicates -
 #. Config->Scheduling
@@ -1148,7 +1162,7 @@ msgstr "Chyba při odstraňování %s"
 #. Error message
 #: sabnzbd/nzbqueue.py
 msgid "Incompatible queuefile found, cannot proceed"
-msgstr ""
+msgstr "Nekompatibilní soubor fronty, nelze pokračovat"
 
 #. Error message
 #: sabnzbd/nzbqueue.py
@@ -1162,7 +1176,7 @@ msgstr "NZB přidáno do fronty"
 #. Warning message
 #: sabnzbd/nzbqueue.py
 msgid "%s -> Unknown encoding"
-msgstr ""
+msgstr "%s -> Neznámé kódování"
 
 #: sabnzbd/nzbstuff.py
 msgid "%s => missing from all servers, discarding"
@@ -1171,7 +1185,7 @@ msgstr ""
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr ""
+msgstr "Nesprávný NZB soubor %s, přeskakuji (důvod=%s, řádek=%s)"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
@@ -1190,7 +1204,7 @@ msgstr "Ignoruji duplikátní NZB \"%s\""
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Failing duplicate NZB \"%s\""
-msgstr ""
+msgstr "Nezdařilo se duplikovat NZB \"%s\""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1205,7 +1219,7 @@ msgstr "Pozastavuji duplikátní NZB \"%s\""
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Unwanted Extension in file %s (%s)"
-msgstr ""
+msgstr "Nechtěná přípona v souboru %s (%s)"
 
 #: sabnzbd/nzbstuff.py
 msgid "Aborted, cannot be completed"
@@ -1214,48 +1228,48 @@ msgstr "Zrušeno, nelze dokončit"
 #. Error message
 #: sabnzbd/nzbstuff.py
 msgid "Error importing %s"
-msgstr ""
+msgstr "Chyba při importu %s"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "DUPLICATE"
-msgstr ""
+msgstr "DUPLIKÁT"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "ENCRYPTED"
-msgstr ""
+msgstr "ŠIFROVANÉ"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "TOO LARGE"
-msgstr ""
+msgstr "PŘÍLIŠ VELKÝ"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "INCOMPLETE"
-msgstr ""
+msgstr "NEKOMPLETNÍ"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "UNWANTED"
-msgstr ""
+msgstr "NECHTĚNÝ"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "FILTERED"
-msgstr ""
+msgstr "FILTROVANÝ"
 
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "WAIT %s sec"
-msgstr ""
+msgstr "ČEKÁNÍ %s s"
 
 #: sabnzbd/nzbstuff.py
 msgid "PROPAGATING %s min"
-msgstr ""
+msgstr "PROPAGUJI %s min"
 
 #: sabnzbd/nzbstuff.py
 msgid "Downloaded in %s at an average of %sB/s"
-msgstr ""
+msgstr "Staženo do %s s průměrnou rychlostí %s B/s"
 
 #. Job details page, file age column header
 #: sabnzbd/nzbstuff.py, sabnzbd/skintext.py
 msgid "Age"
-msgstr ""
+msgstr "Stáří"
 
 #: sabnzbd/nzbstuff.py
 msgid "%s articles were malformed"
@@ -1278,10 +1292,6 @@ msgstr "Výstrahy"
 #: sabnzbd/skintext.py
 msgid "Idle"
 msgstr "Nečinný"
-
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Konfigurace"
 
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1307,14 +1317,15 @@ msgstr "Vyprázdnit historii"
 msgid "Limit Speed"
 msgstr "Omezit rychlost"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr ""
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "minuta"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Scan watched folder"
-msgstr ""
+msgstr "Zkontrolovat sledovanou složku"
 
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Read all RSS feeds"
@@ -1336,11 +1347,11 @@ msgstr ""
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py,
 #: sabnzbd/skintext.py
 msgid "Restart"
-msgstr ""
+msgstr "Restart"
 
 #: sabnzbd/osxmenu.py, sabnzbd/sabtray.py
 msgid "Restart without login"
-msgstr ""
+msgstr "Restart bez přihlášení"
 
 #: sabnzbd/osxmenu.py
 msgid "Quit"
@@ -1352,14 +1363,10 @@ msgstr ""
 
 #: sabnzbd/osxmenu.py
 msgid "Empty"
-msgstr ""
+msgstr "Prázdný"
 
 #: sabnzbd/osxmenu.py
 msgid "History Last 10 Items"
-msgstr ""
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
 msgstr ""
 
 #: sabnzbd/osxmenu.py
@@ -1368,7 +1375,7 @@ msgstr ""
 
 #: sabnzbd/osxmenu.py
 msgid "Stopping..."
-msgstr ""
+msgstr "Zastavuji..."
 
 #: sabnzbd/panic.py
 msgid "Problem with"
@@ -1445,7 +1452,7 @@ msgstr ""
 
 #: sabnzbd/panic.py
 msgid "Fatal error"
-msgstr ""
+msgstr "Neopravitelná chyba"
 
 #: sabnzbd/panic.py
 msgid ""
@@ -1460,7 +1467,7 @@ msgstr ""
 
 #: sabnzbd/panic.py
 msgid "Access denied"
-msgstr ""
+msgstr "Přístup odepřen"
 
 #: sabnzbd/panic.py
 msgid "Error %s: You need to provide a valid username and password."
@@ -1492,32 +1499,32 @@ msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Moving"
-msgstr ""
+msgstr "Přesun"
 
 #: sabnzbd/postproc.py
 msgid "Sent %s to queue"
-msgstr ""
+msgstr "Odesláno %s do fronty"
 
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Error renaming \"%s\" to \"%s\""
-msgstr ""
+msgstr "Nezdařilo se přejmenovat \"%s\" na \"%s\""
 
 #: sabnzbd/postproc.py
 msgid "Failed to move files"
-msgstr ""
+msgstr "Nezdařilo se přesunout soubory"
 
 #: sabnzbd/postproc.py
 msgid "Running user script %s"
-msgstr ""
+msgstr "Spouštím uživatelský skript %s"
 
 #: sabnzbd/postproc.py
 msgid "Ran %s"
-msgstr ""
+msgstr "Spuštěno %s"
 
 #: sabnzbd/postproc.py
 msgid "Script exit code is %s"
-msgstr ""
+msgstr "Navratový kód skriptu je %s"
 
 #: sabnzbd/postproc.py, sabnzbd/skintext.py
 msgid "More"
@@ -1526,16 +1533,20 @@ msgstr "Více"
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Post Processing Failed for %s (%s)"
-msgstr ""
+msgstr "Postprocesing selhal pro %s (%s)"
 
 #. Error message
 #: sabnzbd/postproc.py
 msgid "see logfile"
+msgstr "více v protokolovacím souboru"
+
+#: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
 msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download Failed"
-msgstr ""
+msgstr "Stahování selhalo"
 
 #. Error message
 #: sabnzbd/postproc.py
@@ -1544,7 +1555,7 @@ msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "Download Completed"
-msgstr ""
+msgstr "Stahování dokončeno"
 
 #. Error message
 #: sabnzbd/postproc.py
@@ -1583,6 +1594,10 @@ msgstr ""
 msgid "RAR files failed to verify"
 msgstr ""
 
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/postproc.py
 msgid "No matching earlier rar file for %s"
@@ -1591,12 +1606,12 @@ msgstr ""
 #. Error message
 #: sabnzbd/postproc.py
 msgid "Removing %s failed"
-msgstr ""
+msgstr "Odstraňování %s selhalo"
 
 #. Error message
 #: sabnzbd/powersup.py
 msgid "Failed to hibernate system"
-msgstr ""
+msgstr "Nezdařilo se hibernovat systém"
 
 #. Error message
 #: sabnzbd/powersup.py
@@ -1624,7 +1639,7 @@ msgstr ""
 
 #: sabnzbd/rating.py, sabnzbd/skintext.py
 msgid "API Key"
-msgstr ""
+msgstr "API klíč"
 
 #: sabnzbd/rating.py, sabnzbd/skintext.py
 msgid ""
@@ -1638,10 +1653,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr ""
 
 #: sabnzbd/rss.py
-msgid "Failed to retrieve RSS from %s: %s"
-msgstr ""
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr ""
 
@@ -1649,10 +1660,15 @@ msgstr ""
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr ""
+
 #: sabnzbd/rss.py, sabnzbd/urlgrabber.py
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr ""
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr ""
@@ -1741,6 +1757,16 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr ""
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr ""
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "Skript"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -1929,12 +1955,12 @@ msgstr ""
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "Normal"
-msgstr ""
+msgstr "Normální"
 
 #. Prowl priority - Priority pick list
 #: sabnzbd/skintext.py
 msgid "High"
-msgstr ""
+msgstr "Vysoká"
 
 #. Prowl priority
 #: sabnzbd/skintext.py
@@ -1949,58 +1975,53 @@ msgstr "Nízká"
 #. Megabytes
 #: sabnzbd/skintext.py
 msgid "MB"
-msgstr ""
+msgstr "MB"
 
 #. Gigabytes
 #: sabnzbd/skintext.py
 msgid "GB"
-msgstr ""
+msgstr "GB"
 
 #. One hour
 #: sabnzbd/skintext.py
 msgid "hour"
-msgstr ""
+msgstr "hodina"
 
 #. Multiple hours
 #: sabnzbd/skintext.py
 msgid "hours"
 msgstr "hodin"
 
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr ""
-
 #. Multiple minutes
 #: sabnzbd/skintext.py
 msgid "mins"
-msgstr ""
+msgstr "minut"
 
 #. One second
 #: sabnzbd/skintext.py
 msgid "sec"
-msgstr ""
+msgstr "sekunda"
 
 #. Multiple seconds
 #: sabnzbd/skintext.py
 msgid "seconds"
-msgstr ""
+msgstr "sekund"
 
 #: sabnzbd/skintext.py
 msgid "day"
-msgstr ""
+msgstr "den"
 
 #: sabnzbd/skintext.py
 msgid "days"
-msgstr ""
+msgstr "dní"
 
 #: sabnzbd/skintext.py
 msgid "week"
-msgstr ""
+msgstr "týden"
 
 #: sabnzbd/skintext.py
 msgid "Month"
-msgstr ""
+msgstr "měsíc"
 
 #: sabnzbd/skintext.py
 msgid "Year"
@@ -2008,15 +2029,15 @@ msgstr "Rok"
 
 #: sabnzbd/skintext.py
 msgid "January"
-msgstr ""
+msgstr "Leden"
 
 #: sabnzbd/skintext.py
 msgid "February"
-msgstr ""
+msgstr "Únor"
 
 #: sabnzbd/skintext.py
 msgid "March"
-msgstr ""
+msgstr "Březen"
 
 #: sabnzbd/skintext.py
 msgid "April"
@@ -2028,27 +2049,27 @@ msgstr "Květen"
 
 #: sabnzbd/skintext.py
 msgid "June"
-msgstr ""
+msgstr "Červen"
 
 #: sabnzbd/skintext.py
 msgid "July"
-msgstr ""
+msgstr "Červenec"
 
 #: sabnzbd/skintext.py
 msgid "August"
-msgstr ""
+msgstr "Srpen"
 
 #: sabnzbd/skintext.py
 msgid "September"
-msgstr ""
+msgstr "Září"
 
 #: sabnzbd/skintext.py
 msgid "October"
-msgstr ""
+msgstr "Říjen"
 
 #: sabnzbd/skintext.py
 msgid "November"
-msgstr ""
+msgstr "Listopad"
 
 #: sabnzbd/skintext.py
 msgid "December"
@@ -2056,22 +2077,34 @@ msgstr "Prosinec"
 
 #: sabnzbd/skintext.py
 msgid "Day of month"
-msgstr ""
+msgstr "Den v měsíci"
 
 #: sabnzbd/skintext.py
 msgid "This week"
-msgstr ""
+msgstr "Tento týden"
 
 #: sabnzbd/skintext.py
 msgid "This month"
+msgstr "Tento měsíc"
+
+#: sabnzbd/skintext.py
+msgid "Selected date range"
 msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Today"
-msgstr ""
+msgstr "Dnes"
 
 #: sabnzbd/skintext.py
 msgid "Total"
+msgstr "Celkem"
+
+#: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "Vlastní"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -2081,21 +2114,21 @@ msgstr ""
 #. Config: startup parameters of SABnzbd - Notification Script settings
 #: sabnzbd/skintext.py
 msgid "Parameters"
-msgstr ""
+msgstr "Parametry"
 
 #: sabnzbd/skintext.py
 msgid "Python Version"
-msgstr ""
+msgstr "Verze pythonu"
 
 #. Home page of the SABnzbd project
 #: sabnzbd/skintext.py
 msgid "Home page"
-msgstr ""
+msgstr "Domovská stránka"
 
 #. Used in "IRC or IRC-Webaccess"
 #: sabnzbd/skintext.py
 msgid "or"
-msgstr ""
+msgstr "nebo"
 
 #. Server hostname or IP
 #: sabnzbd/skintext.py
@@ -2108,11 +2141,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Send"
-msgstr ""
+msgstr "Odeslat"
 
 #: sabnzbd/skintext.py
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušit"
 
 #: sabnzbd/skintext.py
 msgid "Other"
@@ -2124,11 +2157,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Video"
-msgstr ""
+msgstr "Video"
 
 #: sabnzbd/skintext.py
 msgid "Audio"
-msgstr ""
+msgstr "Audio"
 
 #: sabnzbd/skintext.py
 msgid "Not used"
@@ -2140,7 +2173,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Log in"
-msgstr ""
+msgstr "Přihlásit"
 
 #: sabnzbd/skintext.py
 msgid "Log out"
@@ -2148,7 +2181,7 @@ msgstr "Odhlásit"
 
 #: sabnzbd/skintext.py
 msgid "Remember me"
-msgstr ""
+msgstr "Zapamatuj si mě"
 
 #. SABnzbd's theme line
 #: sabnzbd/skintext.py
@@ -2172,7 +2205,7 @@ msgstr ""
 #. Used in confirmation popups
 #: sabnzbd/skintext.py
 msgid "Delete all downloaded files?"
-msgstr ""
+msgstr "Smazat všechny stažené soubory?"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2182,12 +2215,12 @@ msgstr ""
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Config"
-msgstr ""
+msgstr "Nastavení"
 
 #. Main menu item - History table header
 #: sabnzbd/skintext.py
 msgid "Status"
-msgstr ""
+msgstr "Stav"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2197,12 +2230,12 @@ msgstr ""
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Forum"
-msgstr ""
+msgstr "Fórum"
 
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "IRC"
-msgstr ""
+msgstr "IRC"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2227,7 +2260,7 @@ msgstr "Složky"
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Switches"
-msgstr ""
+msgstr "Přepínače"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2237,27 +2270,27 @@ msgstr ""
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "RSS"
-msgstr ""
+msgstr "RSS"
 
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Notifications"
-msgstr ""
+msgstr "Upozornění"
 
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Email"
-msgstr ""
+msgstr "Email"
 
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Categories"
-msgstr ""
+msgstr "Kategorie"
 
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Sorting"
-msgstr ""
+msgstr "Řazení"
 
 #. Main menu item
 #: sabnzbd/skintext.py
@@ -2267,7 +2300,7 @@ msgstr ""
 #. Main menu item
 #: sabnzbd/skintext.py
 msgid "Search"
-msgstr ""
+msgstr "Vyhledávání"
 
 #: sabnzbd/skintext.py
 msgid "Download Dir"
@@ -2306,7 +2339,7 @@ msgstr "Přidat soubor"
 #. Job category
 #: sabnzbd/skintext.py
 msgid "Category"
-msgstr ""
+msgstr "Kategorie"
 
 #. Queue page table column header
 #: sabnzbd/skintext.py
@@ -2321,17 +2354,17 @@ msgstr "Priorita"
 #. Post processing pick list
 #: sabnzbd/skintext.py
 msgid "+Repair"
-msgstr ""
+msgstr "+Opravit"
 
 #. Post processing pick list
 #: sabnzbd/skintext.py
 msgid "+Unpack"
-msgstr ""
+msgstr "+Rozbalit"
 
 #. Post processing pick list
 #: sabnzbd/skintext.py
 msgid "+Delete"
-msgstr ""
+msgstr "+Smazat"
 
 #. Post processing pick list: abbreviation for "+Repair"
 #: sabnzbd/skintext.py
@@ -2351,12 +2384,12 @@ msgstr ""
 #. Priority pick list
 #: sabnzbd/skintext.py
 msgid "Force"
-msgstr ""
+msgstr "Vynucené"
 
 #. Priority pick list
 #: sabnzbd/skintext.py
 msgid "Stop"
-msgstr ""
+msgstr "Zastaveno"
 
 #. Add NZB Dialog
 #: sabnzbd/skintext.py
@@ -2371,17 +2404,17 @@ msgstr ""
 #. Queue page end-of-queue action
 #: sabnzbd/skintext.py
 msgid "Shutdown PC"
-msgstr ""
+msgstr "Vypnout PC"
 
 #. Queue page end-of-queue action
 #: sabnzbd/skintext.py
 msgid "Standby PC"
-msgstr ""
+msgstr "Uspat PC"
 
 #. Queue page end-of-queue action
 #: sabnzbd/skintext.py
 msgid "Hibernate PC"
-msgstr ""
+msgstr "Hibernovat PC"
 
 #. Queue page end-of-queue action
 #: sabnzbd/skintext.py
@@ -2391,7 +2424,7 @@ msgstr "Vypnout SABnzbd"
 #. Queue page selection menu or entry box
 #: sabnzbd/skintext.py
 msgid "Speed Limit"
-msgstr ""
+msgstr "Limit rychlosti"
 
 #. Queue page table column header - Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -2401,7 +2434,7 @@ msgstr ""
 #. Queue page table column header - Job details page
 #: sabnzbd/skintext.py
 msgid "Name"
-msgstr ""
+msgstr "Jméno"
 
 #. Queue page table column header, "estimated time of arrival"
 #: sabnzbd/skintext.py
@@ -2411,7 +2444,7 @@ msgstr ""
 #. Queue page table column header, "age of the NZB"
 #: sabnzbd/skintext.py
 msgid "AGE"
-msgstr ""
+msgstr "Stáří"
 
 #. Queue page table, "Delete" button
 #: sabnzbd/skintext.py
@@ -2426,12 +2459,12 @@ msgstr "Opakovat"
 #. Queue end-of-queue selection box
 #: sabnzbd/skintext.py
 msgid "Actions"
-msgstr ""
+msgstr "Akce"
 
 #. Queue page table, script selection menu
 #: sabnzbd/skintext.py
 msgid "Scripts"
-msgstr ""
+msgstr "Skripty"
 
 #. Confirmation popup
 #: sabnzbd/skintext.py
@@ -2441,12 +2474,12 @@ msgstr ""
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs"
-msgstr ""
+msgstr "Vymazat všechny NZB"
 
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Purge NZBs & Delete Files"
-msgstr ""
+msgstr "Vymazat všechny NZB a smazat soubory"
 
 #. Retry all failed jobs dialog box
 #: sabnzbd/skintext.py
@@ -2456,12 +2489,12 @@ msgstr "Opakovat všechny nedokončené úkoly"
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Remove NZB"
-msgstr ""
+msgstr "Odstranit NZB"
 
 #. Queue page button
 #: sabnzbd/skintext.py
 msgid "Remove NZB & Delete Files"
-msgstr ""
+msgstr "Odstranit NZB a smazat soubory"
 
 #. Queue page, as in "4G *of* 10G"
 #: sabnzbd/skintext.py
@@ -2485,7 +2518,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Reset Quota now"
-msgstr ""
+msgstr "Vynulovat kvótu"
 
 #. Confirmation popup
 #: sabnzbd/skintext.py
@@ -2495,22 +2528,22 @@ msgstr ""
 #. Button/link hiding History job details
 #: sabnzbd/skintext.py
 msgid "Hide details"
-msgstr ""
+msgstr "Skrýt detaily"
 
 #. Button/link showing History job details
 #: sabnzbd/skintext.py
 msgid "Show details"
-msgstr ""
+msgstr "Zobrazit detaily"
 
 #. Button or link showing only failed History jobs. DON'T MAKE THIS VERY LONG!
 #: sabnzbd/skintext.py
 msgid "Show Failed"
-msgstr ""
+msgstr "Zobrazit neúspěšné"
 
 #. Button or link showing all History jobs
 #: sabnzbd/skintext.py
 msgid "Show All"
-msgstr ""
+msgstr "Zobrazit vše"
 
 #. History table header - Size of the download quota
 #: sabnzbd/skintext.py
@@ -2520,21 +2553,21 @@ msgstr "Velikost"
 #. Button to delete all failed jobs in History
 #: sabnzbd/skintext.py
 msgid "Purge Failed NZBs"
-msgstr ""
+msgstr "Vymazat všechny selhalé NZB"
 
 #: sabnzbd/skintext.py
 msgid "Purge Failed NZBs & Delete Files"
-msgstr ""
+msgstr "Vymazat všechny selhalé NZB a smazat soubory"
 
 #. Button to delete all completed jobs in History
 #: sabnzbd/skintext.py
 msgid "Purge Completed NZBs"
-msgstr ""
+msgstr "Vymazat všechny dokončené NZB"
 
 #. Button to delete jobs on current page in History
 #: sabnzbd/skintext.py
 msgid "Purge NZBs on the current page"
-msgstr ""
+msgstr "Vymazat NZB na aktuální stránce"
 
 #. Button to add NZB to failed job in History
 #: sabnzbd/skintext.py
@@ -2544,7 +2577,7 @@ msgstr ""
 #. Path as displayed in History details
 #: sabnzbd/skintext.py
 msgid "Path"
-msgstr ""
+msgstr "Cesta"
 
 #. Retry all failed jobs in History
 #: sabnzbd/skintext.py
@@ -2558,7 +2591,7 @@ msgstr "Opakovat všechny"
 
 #: sabnzbd/skintext.py
 msgid "Virus/spam"
-msgstr ""
+msgstr "Virus/spam"
 
 #: sabnzbd/skintext.py
 msgid "Out of retention"
@@ -2586,17 +2619,17 @@ msgstr ""
 #. Status page button
 #: sabnzbd/skintext.py
 msgid "Show Logging"
-msgstr ""
+msgstr "Zobrazit protokol"
 
 #. Status page button
 #: sabnzbd/skintext.py
 msgid "Test Email"
-msgstr ""
+msgstr "Otestovat email"
 
 #. Status page selection menu
 #: sabnzbd/skintext.py
 msgid "Logging"
-msgstr ""
+msgstr "Protokol"
 
 #. Status page table header
 #: sabnzbd/skintext.py
@@ -2606,17 +2639,17 @@ msgstr "Chyby/výstrahy"
 #. Status page logging selection value
 #: sabnzbd/skintext.py
 msgid "+ Info"
-msgstr ""
+msgstr "+ Info"
 
 #. Status page logging selection value
 #: sabnzbd/skintext.py
 msgid "+ Debug"
-msgstr ""
+msgstr "+ Ladění"
 
 #. Status page tab header - Server: amount of connections
 #: sabnzbd/skintext.py
 msgid "Connections"
-msgstr ""
+msgstr "Spojení"
 
 #. Status page, table header
 #: sabnzbd/skintext.py
@@ -2626,12 +2659,12 @@ msgstr "Poslední výstrahy"
 #. Status page button
 #: sabnzbd/skintext.py
 msgid "clear"
-msgstr ""
+msgstr "vymazat"
 
 #. Status page button
 #: sabnzbd/skintext.py
 msgid "Unblock"
-msgstr ""
+msgstr "Odblokovat"
 
 #. Status page, article identifier
 #: sabnzbd/skintext.py
@@ -2657,7 +2690,7 @@ msgstr ""
 #. Status page, indicator that server is enabled
 #: sabnzbd/skintext.py
 msgid "Enabled"
-msgstr ""
+msgstr "Zapnuto"
 
 #: sabnzbd/skintext.py
 msgid "Dashboard"
@@ -2669,7 +2702,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Local IPv4 address"
-msgstr "Lokální IPv4 adresa"
+msgstr "Místní IPv4 adresa"
 
 #: sabnzbd/skintext.py
 msgid "Public IPv4 address"
@@ -2681,24 +2714,24 @@ msgstr "IPv6 adresa"
 
 #: sabnzbd/skintext.py
 msgid "Nameserver / DNS Lookup"
-msgstr ""
+msgstr "DNS server / DNS dotazy"
 
 #: sabnzbd/skintext.py
 msgid "CPU Model"
-msgstr ""
+msgstr "Model procesoru"
 
 #. Do not translate Pystone
 #: sabnzbd/skintext.py
 msgid "System Performance (Pystone)"
-msgstr ""
+msgstr "Výkon systému (Pystone)"
 
 #: sabnzbd/skintext.py
 msgid "Download folder speed"
-msgstr ""
+msgstr "Rychlost složky pro download"
 
 #: sabnzbd/skintext.py
 msgid "Complete folder speed"
-msgstr ""
+msgstr "Rychlost složko pro dokončené"
 
 #: sabnzbd/skintext.py
 msgid "Writing speed"
@@ -2710,7 +2743,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Internet Bandwidth"
-msgstr ""
+msgstr "Rychlost internetu"
 
 #: sabnzbd/skintext.py
 msgid "Click on Repeat test button below to determine"
@@ -2718,11 +2751,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Repeat test"
-msgstr ""
+msgstr "Opakovat test"
 
 #: sabnzbd/skintext.py
 msgid "Test download"
-msgstr ""
+msgstr "Otestovat rychlost stahování"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2737,7 +2770,7 @@ msgstr ""
 #. Main config page, how much cache is in use
 #: sabnzbd/skintext.py
 msgid "Used cache"
-msgstr ""
+msgstr "Využití cache"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -2779,11 +2812,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable Unzip"
-msgstr ""
+msgstr "Povolit Unzip"
 
 #: sabnzbd/skintext.py
 msgid "Enable 7zip"
-msgstr ""
+msgstr "Povolit 7zip"
 
 #: sabnzbd/skintext.py
 msgid "Multicore Par2"
@@ -2805,7 +2838,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Version"
-msgstr ""
+msgstr "Verze"
 
 #: sabnzbd/skintext.py
 msgid "Uptime"
@@ -2814,7 +2847,7 @@ msgstr ""
 #. Indicates that server is Backup server in Status page
 #: sabnzbd/skintext.py
 msgid "Backup"
-msgstr ""
+msgstr "Záloha"
 
 #. Notification Script settings
 #: sabnzbd/skintext.py
@@ -2851,7 +2884,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Web Interface"
-msgstr ""
+msgstr "Webové rozhraní"
 
 #: sabnzbd/skintext.py
 msgid "Choose a skin."
@@ -2881,23 +2914,29 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Security"
-msgstr ""
+msgstr "Bezpečnost"
 
 #: sabnzbd/skintext.py
 msgid "Enable HTTPS"
-msgstr ""
+msgstr "Povolit HTTPS"
 
 #: sabnzbd/skintext.py
 msgid "not installed"
-msgstr ""
+msgstr "není nainstalováno"
 
 #: sabnzbd/skintext.py
 msgid "Enable accessing the interface from a HTTPS address."
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "HTTPS Port"
+msgid ""
+"Modern web browsers and other clients will not accept self-signed "
+"certificates and will give a warning and/or won't connect at all."
 msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "HTTPS Port"
+msgstr "HTTPS port"
 
 #: sabnzbd/skintext.py
 msgid "If empty, the standard port will only listen to HTTPS."
@@ -2905,7 +2944,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "HTTPS Certificate"
-msgstr ""
+msgstr "HTTPS certifikát"
 
 #: sabnzbd/skintext.py
 msgid "File name or path to HTTPS Certificate."
@@ -2948,11 +2987,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Maximum line speed"
-msgstr ""
+msgstr "Maximální rychlost linky"
 
 #: sabnzbd/skintext.py
 msgid "Percentage of line speed"
-msgstr ""
+msgstr "Procento rychlosti linky"
 
 #: sabnzbd/skintext.py
 msgid "Which percentage of the linespeed should SABnzbd use, e.g. 50"
@@ -3006,19 +3045,19 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Jobs"
-msgstr ""
+msgstr "Úlohy"
 
 #: sabnzbd/skintext.py
 msgid "Save Changes"
-msgstr ""
+msgstr "Uložit změny"
 
 #: sabnzbd/skintext.py
 msgid "Restore Defaults"
-msgstr ""
+msgstr "Obnovit výchozí"
 
 #: sabnzbd/skintext.py
 msgid "Reset"
-msgstr ""
+msgstr "Reset"
 
 #: sabnzbd/skintext.py
 msgid "Language"
@@ -3026,7 +3065,7 @@ msgstr "Jazyk"
 
 #: sabnzbd/skintext.py
 msgid "Select a web interface language."
-msgstr ""
+msgstr "Vyberte jazyk webového rozhraní."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3050,7 +3089,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Generate New Key"
-msgstr ""
+msgstr "Generovat nový klíč"
 
 #. Explanation for QR code of APIKEY
 #: sabnzbd/skintext.py
@@ -3108,7 +3147,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "User Folders"
-msgstr ""
+msgstr "Uživatelská složka"
 
 #: sabnzbd/skintext.py
 msgid "Browse"
@@ -3149,6 +3188,26 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr ""
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
 msgstr ""
 
@@ -3178,7 +3237,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Scripts Folder"
-msgstr ""
+msgstr "Složka se skripty"
 
 #: sabnzbd/skintext.py
 msgid "Folder containing user scripts."
@@ -3280,7 +3339,10 @@ msgid "Post-Process Only Verified Jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Only perform post-processing on jobs that passed all PAR2 checks."
+msgid ""
+"Only unpack and run scripts on jobs that passed the verification stage. If "
+"turned off, all jobs will be marked as Completed even if they are "
+"incomplete."
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3293,7 +3355,7 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Detect Duplicate Downloads"
-msgstr ""
+msgstr "Detekovat duplicitní stahování"
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -3571,11 +3633,6 @@ msgid ""
 "(Optionally with hh:mm)"
 msgstr ""
 
-#. Auto-resume download on the reset day
-#: sabnzbd/skintext.py
-msgid "Auto resume"
-msgstr ""
-
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"
 msgstr ""
@@ -3727,6 +3784,21 @@ msgstr ""
 msgid "Timeout"
 msgstr ""
 
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
+
 #. Server's retention time in days
 #: sabnzbd/skintext.py
 msgid "Retention time"
@@ -3818,6 +3890,14 @@ msgstr ""
 msgid "Personal notes"
 msgstr ""
 
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr ""
+
 #. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Add Schedule"
@@ -3864,6 +3944,16 @@ msgstr ""
 #. Config->RSS button
 #: sabnzbd/skintext.py
 msgid "Force Download"
+msgstr ""
+
+#. Config->RSS edit button
+#: sabnzbd/skintext.py
+msgid "Edit"
+msgstr ""
+
+#. Config->RSS when will be the next RSS scan
+#: sabnzbd/skintext.py
+msgid "Next scan at"
 msgstr ""
 
 #. Config->RSS table column header
@@ -4015,7 +4105,7 @@ msgstr ""
 msgid "Enable NotifyOSD"
 msgstr ""
 
-#. Header for OSX Notfication Center section
+#. Header for macOS Notfication Center section
 #: sabnzbd/skintext.py
 msgid "Notification Center"
 msgstr ""
@@ -4557,11 +4647,11 @@ msgid "Date format"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
+msgid "Extra queue columns"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
+msgid "Extra history columns"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4645,10 +4735,6 @@ msgid "View Script Log"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will"
 " be lost after you close the browser!"
@@ -4659,19 +4745,15 @@ msgid "Glitter has some (new) features you might like!"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "Vlastní"
-
-#: sabnzbd/skintext.py
 msgid "Compact layout"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Tabbed layout <br/>(separate queue and history)"
+msgid "Always use full screen width"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Speed"
+msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr ""
 
 #: sabnzbd/skintext.py

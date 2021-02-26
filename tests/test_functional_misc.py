@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,6 +23,8 @@ import subprocess
 import sys
 
 import sabnzbd.encoding
+from sabnzbd import save_compressed
+from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import *
 
 
@@ -39,6 +41,53 @@ class TestShowLogging(SABnzbdBaseTest):
         # Make sure sabnzbd.ini was appended
         assert "__encoding__ = utf-8" in log_result
         assert "[misc]" in log_result
+
+
+class TestQueueRepair(SABnzbdBaseTest):
+    def test_queue_repair(self):
+        """Test full queue repair by manually adding an orphaned job"""
+        nzb_data = create_and_read_nzb("basic_rar5")
+        test_job_name = "testfile_%s" % time.time()
+
+        # Create folder and save compressed NZB like SABnzbd would do
+        admin_path = os.path.join(SAB_INCOMPLETE_DIR, test_job_name, JOB_ADMIN)
+        os.makedirs(admin_path)
+        save_compressed(admin_path, test_job_name, nzb_data)
+        assert os.path.exists(os.path.join(admin_path, test_job_name + ".nzb.gz"))
+
+        # Pause the queue do we don't download stuff
+        assert get_api_result("pause") == {"status": True}
+
+        # Request queue repair
+        assert get_api_result("restart_repair") == {"status": True}
+
+        # Let's check the queue, this can take long on GitHub Actions
+        for _ in range(60):
+            queue_result_slots = {}
+            try:
+                # Can give timeout if still restarting
+                queue_result_slots = get_api_result("queue", extra_arguments={"limit": 10000})["queue"]["slots"]
+            except requests.exceptions.RequestException:
+                pass
+
+            # Check if the repaired job was added to the queue
+            if queue_result_slots:
+                break
+            time.sleep(1)
+        else:
+            # The loop never stopped, so we fail
+            pytest.fail("Did not find the repaired job in the queue")
+            return
+
+        # Verify filename
+        assert test_job_name in [slot["filename"] for slot in queue_result_slots]
+
+        # Let's remove this thing
+        get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})
+        assert len(get_api_result("queue")["queue"]["slots"]) == 0
+
+        # Unpause
+        assert get_api_result("resume") == {"status": True}
 
 
 class TestSamplePostProc:
@@ -99,6 +148,15 @@ class TestExtractPot:
         assert (cur_time - os.path.getmtime("po/main/SABnzbd.pot")) < 30
         assert (cur_time - os.path.getmtime("po/email/SABemail.pot")) < 30
 
+        # Reset the translation updates
+        try:
+            lang_command = "git checkout @ -- %s/../po/main/SABnzbd.pot" % SAB_BASE_DIR
+            subprocess.Popen(lang_command.split()).communicate(timeout=30)
+            lang_command = "git checkout @ -- %s/../po/email/SABemail.pot" % SAB_BASE_DIR
+            subprocess.Popen(lang_command.split()).communicate(timeout=30)
+        except:
+            pass
+
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Skipping on Windows")
 @pytest.mark.skipif(sys.platform.startswith("darwin"), reason="Fails for now due to PyObjC problem")
@@ -156,6 +214,10 @@ class TestDaemonizing(SABnzbdBaseTest):
         assert os.path.exists(error_log_path)
         assert os.path.getsize(error_log_path) < 1024
 
-        # Let's shut it down and give it some time to do so
-        get_url_result("shutdown", daemon_host, daemon_port)
-        time.sleep(3.0)
+        try:
+            # Let's shut it down and give it some time to do so
+            get_url_result("shutdown", daemon_host, daemon_port)
+            time.sleep(3.0)
+        except requests.exceptions.RequestException:
+            # Shutdown can be faster than the request
+            pass

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,15 +19,41 @@
 tests.test_utils.test_diskspeed - Testing SABnzbd diskspeed
 """
 
+import os
+import tempfile
 from sabnzbd.utils.diskspeed import diskspeedmeasure
-from tests.testhelper import *
+from tests.testhelper import SAB_CACHE_DIR
 
 
 class TestDiskSpeed:
+    """ test sabnzbd.utils.diskspeed """
+
     def test_disk_speed(self):
+        """ Test the normal use case: writable directory"""
         speed = diskspeedmeasure(SAB_CACHE_DIR)
-        assert speed
+        assert speed > 0.0
         assert isinstance(speed, float)
 
         # Make sure the test-file was cleaned up after the test
         assert not os.path.exists(os.path.join(SAB_CACHE_DIR, "outputTESTING.txt"))
+
+    def test_non_existing_dir(self):
+        """ testing a non-existing dir should result in 0"""
+        speed = diskspeedmeasure("such_a_dir_does_not_exist")
+        assert speed == 0
+
+    def test_non_writable_dir(self):
+        """testing a non-writable dir should result in 0.
+        Only useful on Linux, and only if not-writable
+        """
+        non_writable_dir = "/usr"
+        if os.path.isdir(non_writable_dir) and not os.access(non_writable_dir, os.W_OK):
+            speed = diskspeedmeasure(non_writable_dir)
+            assert speed == 0
+
+    def test_file_not_dir_specified(self):
+        """ testing a file should result in 0"""
+        with tempfile.NamedTemporaryFile() as temp_file:
+            speed = diskspeedmeasure(temp_file.name)
+        assert speed == 0
+        assert not os.path.exists(temp_file.name)

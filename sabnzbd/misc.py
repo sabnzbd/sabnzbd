@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -30,19 +30,21 @@ import time
 import datetime
 import inspect
 import ctypes
+import ipaddress
+from typing import Union, Tuple, Any, AnyStr, Optional, List
 
 import sabnzbd
 from sabnzbd.constants import DEFAULT_PRIORITY, MEBI, DEF_ARTICLE_CACHE_DEFAULT, DEF_ARTICLE_CACHE_MAX
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.encoding import ubtou, platform_btou
-from sabnzbd.filesystem import get_ext, userxbit
+from sabnzbd.filesystem import userxbit
 
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
-RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]{0,1})", re.I)
+RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
 RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
-RE_IP4 = re.compile(r"inet\s+(addr:\s*){0,1}(\d+\.\d+\.\d+\.\d+)")
-RE_IP6 = re.compile(r"inet6\s+(addr:\s*){0,1}([0-9a-f:]+)", re.I)
+RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
+RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 
 # Check if strings are defined for AM and PM
 HAVE_AMPM = bool(time.strftime("%p", time.localtime()))
@@ -62,6 +64,9 @@ if sabnzbd.WIN32:
     except ImportError:
         pass
 
+if sabnzbd.DARWIN:
+    from PyObjCTools import AppHelper
+
 
 def time_format(fmt):
     """ Return time-format string adjusted for 12/24 hour clock setting """
@@ -71,7 +76,7 @@ def time_format(fmt):
         return fmt
 
 
-def calc_age(date, trans=False):
+def calc_age(date: datetime.datetime, trans=False) -> str:
     """Calculate the age difference between now and date.
     Value is returned as either days, hours, or minutes.
     When 'trans' is True, time symbols will be translated.
@@ -105,16 +110,7 @@ def calc_age(date, trans=False):
     return age
 
 
-def monthrange(start, finish):
-    """ Calculate months between 2 dates, used in the Config template """
-    months = (finish.year - start.year) * 12 + finish.month + 1
-    for i in range(start.month, months):
-        year = (i - 1) / 12 + start.year
-        month = (i - 1) % 12 + 1
-        yield datetime.date(int(year), int(month), 1)
-
-
-def safe_lower(txt):
+def safe_lower(txt: Any) -> str:
     """ Return lowercased string. Return '' for None """
     if txt:
         return txt.lower()
@@ -146,20 +142,19 @@ def name_to_cat(fname, cat=None):
     return fname, cat
 
 
-def cat_to_opts(cat, pp=None, script=None, priority=None):
+def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str, int]:
     """Derive options from category, if options not already defined.
     Specified options have priority over category-options.
     If no valid category is given, special category '*' will supply default values
     """
-    def_cat = config.get_categories("*")
+    def_cat = config.get_category()
     cat = safe_lower(cat)
     if cat in ("", "none", "default"):
         cat = "*"
-    try:
-        my_cat = config.get_categories()[cat]
-    except KeyError:
+    my_cat = config.get_category(cat)
+    # Ignore the input category if we don't know it
+    if my_cat == def_cat:
         cat = "*"
-        my_cat = def_cat
 
     if pp is None:
         pp = my_cat.pp()
@@ -176,11 +171,11 @@ def cat_to_opts(cat, pp=None, script=None, priority=None):
         if priority == DEFAULT_PRIORITY:
             priority = def_cat.priority()
 
-    logging.debug("Cat->Attrib cat=%s pp=%s script=%s prio=%s", cat, pp, script, priority)
+    logging.debug("Parsing category %s to attributes: pp=%s script=%s prio=%s", cat, pp, script, priority)
     return cat, pp, script, priority
 
 
-def pp_to_opts(pp):
+def pp_to_opts(pp: int) -> Tuple[bool, bool, bool]:
     """ Convert numeric processing options to (repair, unpack, delete) """
     # Convert the pp to an int
     pp = sabnzbd.interface.int_conv(pp)
@@ -193,10 +188,8 @@ def pp_to_opts(pp):
     return True, True, True
 
 
-def opts_to_pp(repair, unpack, delete):
+def opts_to_pp(repair: bool, unpack: bool, delete: bool) -> int:
     """ Convert (repair, unpack, delete) to numeric process options """
-    if repair is None:
-        return None
     pp = 0
     if repair:
         pp = 1
@@ -345,7 +338,7 @@ def set_serv_parms(service, args):
     return True
 
 
-def get_from_url(url):
+def get_from_url(url: str) -> Optional[str]:
     """ Retrieve URL and return content """
     try:
         req = urllib.request.Request(url)
@@ -446,16 +439,20 @@ def check_latest_version():
         latest_label = latest_testlabel
         url = url_beta
 
-    if testver and current < latest:
+    notify_version = None
+    if current < latest:
         # This is a test version, but user hasn't seen the
         # "Final" of this one yet, so show the Final
+        # Or this one is behind, show latest final
         sabnzbd.NEW_VERSION = (latest_label, url)
-    elif current < latest:
-        # This one is behind, show latest final
-        sabnzbd.NEW_VERSION = (latest_label, url)
+        notify_version = latest_label
     elif testver and current < latest_test:
         # This is a test version beyond the latest Final, so show latest Alpha/Beta/RC
         sabnzbd.NEW_VERSION = (latest_testlabel, url_beta)
+        notify_version = latest_testlabel
+
+    if notify_version:
+        sabnzbd.notifier.send_notification(T("Update Available!"), "SABnzbd %s" % notify_version, "other")
 
 
 def upload_file_to_sabnzbd(url, fp):
@@ -479,7 +476,7 @@ def upload_file_to_sabnzbd(url, fp):
         logging.info("Traceback: ", exc_info=True)
 
 
-def from_units(val):
+def from_units(val: str) -> float:
     """ Convert K/M/G/T/P notation to float """
     val = str(val).strip().upper()
     if val == "-1":
@@ -503,7 +500,7 @@ def from_units(val):
         return 0.0
 
 
-def to_units(val, postfix=""):
+def to_units(val: Union[int, float], postfix="") -> str:
     """Convert number to K/M/G/T/P notation
     Show single decimal for M and higher
     """
@@ -557,16 +554,12 @@ def caller_name(skip=2):
     return ".".join([module_name, function_name])
 
 
-def exit_sab(value):
+def exit_sab(value: int):
     """ Leave the program after flushing stderr/stdout """
     sys.stderr.flush()
     sys.stdout.flush()
-    if hasattr(sys, "frozen") and sabnzbd.DARWIN:
-        sabnzbd.SABSTOP = True
-        from PyObjCTools import AppHelper
-
-        AppHelper.stopEventLoop()
-    sys.exit(value)
+    # Cannot use sys.exit as it will not work inside the macOS-runner-thread
+    os._exit(value)
 
 
 def split_host(srv):
@@ -749,7 +742,7 @@ def format_time_string(seconds):
     return " ".join(completestr)
 
 
-def int_conv(value):
+def int_conv(value: Any) -> int:
     """ Safe conversion to int (can handle None) """
     try:
         value = int(value)
@@ -844,23 +837,50 @@ def find_on_path(targets):
     return None
 
 
-def probablyipv4(ip):
-    if ip.count(".") == 3 and re.sub("[0123456789.]", "", ip) == "":
-        return True
-    else:
+def is_ipv4_addr(ip: str) -> bool:
+    """ Determine if the ip is an IPv4 address """
+    try:
+        return ipaddress.ip_address(ip).version == 4
+    except ValueError:
         return False
 
 
-def probablyipv6(ip):
-    # Returns True if the given input is probably an IPv6 address
-    # Square Brackets like '[2001::1]' are OK
-    if ip.count(":") >= 2 and re.sub(r"[0123456789abcdefABCDEF:\[\]]", "", ip) == "":
-        return True
-    else:
+def is_ipv6_addr(ip: str) -> bool:
+    """ Determine if the ip is an IPv6 address; square brackets ([2001::1]) are OK """
+    try:
+        return ipaddress.ip_address(ip.strip("[]")).version == 6
+    except (ValueError, AttributeError):
         return False
 
 
-def ip_extract():
+def is_loopback_addr(ip: str) -> bool:
+    """ Determine if the ip is an IPv4 or IPv6 local loopback address """
+    try:
+        if ip.find(".") < 0:
+            ip = ip.strip("[]")
+        return ipaddress.ip_address(ip).is_loopback
+    except (ValueError, AttributeError):
+        return False
+
+
+def is_localhost(value: str) -> bool:
+    """ Determine if the input is some variety of 'localhost' """
+    return (value == "localhost") or is_loopback_addr(value)
+
+
+def is_lan_addr(ip: str) -> bool:
+    """ Determine if the ip is a local area network address """
+    try:
+        return (
+            ip not in ("0.0.0.0", "255.255.255.255", "::")
+            and ipaddress.ip_address(ip).is_private
+            and not is_loopback_addr(ip)
+        )
+    except ValueError:
+        return False
+
+
+def ip_extract() -> List[str]:
     """ Return list of IP addresses of this system """
     ips = []
     program = find_on_path("ip")
@@ -890,7 +910,43 @@ def ip_extract():
     return ips
 
 
-def get_base_url(url):
+def get_server_addrinfo(host: str, port: int) -> socket.getaddrinfo:
+    """ Return processed getaddrinfo() """
+    try:
+        int(port)
+    except:
+        port = 119
+    opt = sabnzbd.cfg.ipv6_servers()
+    """ ... with the following meaning for 'opt':
+    Control the use of IPv6 Usenet server addresses. Meaning:
+    0 = don't use
+    1 = use when available and reachable (DEFAULT)
+    2 = force usage (when SABnzbd's detection fails)
+    """
+    try:
+        # Standard IPV4 or IPV6
+        ips = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
+            # IPv6 forced by user, or IPv6 allowed and reachable, or IPv6 allowed and loadbalancing-with-IPv6 activated
+            # So return all IP addresses, no matter IPv4 or IPv6:
+            return ips
+        else:
+            # IPv6 unreachable or not allowed by user, so only return IPv4 address(es):
+            return [ip for ip in ips if ":" not in ip[4][0]]
+    except:
+        if opt == 2 or (opt == 1 and sabnzbd.EXTERNAL_IPV6) or (opt == 1 and sabnzbd.cfg.load_balancing() == 2):
+            try:
+                # Try IPV6 explicitly
+                return socket.getaddrinfo(
+                    host, port, socket.AF_INET6, socket.SOCK_STREAM, socket.IPPROTO_IP, socket.AI_CANONNAME
+                )
+            except:
+                # Nothing found!
+                pass
+        return []
+
+
+def get_base_url(url: str) -> str:
     """Return only the true root domain for the favicon, so api.oznzb.com -> oznzb.com
     But also api.althub.co.za -> althub.co.za
     """
@@ -905,7 +961,7 @@ def get_base_url(url):
         return ""
 
 
-def match_str(text, matches):
+def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
     """ Return first matching element of list 'matches' in 'text', otherwise None """
     for match in matches:
         if match in text:
@@ -913,7 +969,7 @@ def match_str(text, matches):
     return None
 
 
-def nntp_to_msg(text):
+def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
     """ Format raw NNTP bytes data for display """
     if isinstance(text, list):
         text = text[0]
@@ -927,7 +983,18 @@ def nntp_to_msg(text):
         return ubtou(lines[0])
 
 
-def build_and_run_command(command, flatten_command=False, **kwargs):
+def list2cmdline(lst: List[str]) -> str:
+    """ convert list to a cmd.exe-compatible command string """
+    nlst = []
+    for arg in lst:
+        if not arg:
+            nlst.append('""')
+        else:
+            nlst.append('"%s"' % arg)
+    return " ".join(nlst)
+
+
+def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
     """Builds and then runs command with nessecary flags and optional
     IONice and Nice commands. Optional Popen arguments can be supplied.
     On Windows we need to run our own list2cmdline for Unrar.
@@ -964,7 +1031,7 @@ def build_and_run_command(command, flatten_command=False, **kwargs):
         if command[0].endswith(".py"):
             command.insert(0, "python.exe")
         if flatten_command:
-            command = sabnzbd.newsunpack.list2cmdline(command)
+            command = list2cmdline(command)
         # On some Windows platforms we need to supress a quick pop-up of the command window
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
@@ -988,9 +1055,9 @@ def build_and_run_command(command, flatten_command=False, **kwargs):
     return subprocess.Popen(command, **popen_kwargs)
 
 
-def run_command(cmd):
+def run_command(cmd: List[str], **kwargs):
     """ Run simple external command and return output as a string. """
-    with build_and_run_command(cmd) as p:
+    with build_and_run_command(cmd, **kwargs) as p:
         txt = platform_btou(p.stdout.read())
         p.wait()
     return txt

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,6 +20,8 @@ tests.test_functional_config - Basic testing if Config pages work
 """
 
 from selenium.common.exceptions import NoSuchElementException, UnexpectedAlertPresentException, NoAlertPresentException
+from pytest_httpserver import HTTPServer
+
 
 from tests.testhelper import *
 
@@ -173,10 +175,21 @@ class TestConfigCategories(SABnzbdBaseTest):
 
 class TestConfigRSS(SABnzbdBaseTest):
 
-    rss_url = "https://sabnzbd.org/tests/rss_feed_test.xml"
     rss_name = "_SeleniumFeed"
 
-    def test_rss_basic_flow(self):
+    def test_rss_basic_flow(self, httpserver: HTTPServer):
+        # Setup the response for the NZB
+        nzb_data = create_and_read_nzb("basic_rar5")
+        httpserver.expect_request("/test_nzb.nzb").respond_with_data(nzb_data)
+        nzb_url = httpserver.url_for("/test_nzb.nzb")
+
+        # Set the response for the RSS-feed, replacing the URL to the NZB
+        with open(os.path.join(SAB_DATA_DIR, "rss_feed_test.xml")) as rss_file:
+            rss_data = rss_file.read()
+        rss_data = rss_data.replace("NZB_URL", nzb_url)
+        httpserver.expect_request("/rss_feed.xml").respond_with_data(rss_data)
+        rss_url = httpserver.url_for("/rss_feed.xml")
+
         # Test if base page works
         self.open_page("http://%s:%s/sabnzbd/config/rss" % (SAB_HOST, SAB_PORT))
 
@@ -191,7 +204,7 @@ class TestConfigRSS(SABnzbdBaseTest):
         input_name.send_keys(self.rss_name)
         self.selenium_wrapper(
             self.driver.find_element_by_xpath, '//form[@action="add_rss_feed"]//input[@name="uri"]'
-        ).send_keys(self.rss_url)
+        ).send_keys(rss_url)
         self.selenium_wrapper(self.driver.find_element_by_xpath, '//form[@action="add_rss_feed"]//button').click()
 
         # Check if we have results
@@ -217,11 +230,13 @@ class TestConfigRSS(SABnzbdBaseTest):
         # Does the page think it's a success?
         assert "Added NZB" in download_btn.text
 
-        # Let's check the queue, it can take 60 seconds to fetch the URL in case it needs a retry
-        for _ in range(60):
+        # Wait 2 seconds for the fetch
+        time.sleep(2)
+
+        # Let's check the queue
+        for _ in range(10):
             queue_result_slots = get_api_result("queue")["queue"]["slots"]
             # Check if the fetch-request was added to the queue
-            # The URL provided by the RSS is invalid, so it will be stuck fetching
             if queue_result_slots:
                 break
             time.sleep(1)
@@ -231,9 +246,8 @@ class TestConfigRSS(SABnzbdBaseTest):
             return
 
         # Let's remove this thing
-        get_api_result("queue", extra_arguments={"name": "delete", "value": queue_result_slots[0]["nzo_id"]})
-        queue_result_slots = get_api_result("queue")["queue"]["slots"]
-        assert len(queue_result_slots) == 0
+        get_api_result("queue", extra_arguments={"name": "delete", "value": "all"})
+        assert len(get_api_result("queue")["queue"]["slots"]) == 0
 
         # Unpause
         assert get_api_result("resume") == {"status": True}

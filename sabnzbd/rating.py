@@ -27,7 +27,9 @@ import copy
 import queue
 import collections
 from threading import RLock, Thread
+
 import sabnzbd
+from sabnzbd.constants import RATING_FILE_NAME
 from sabnzbd.decorators import synchronized
 import sabnzbd.cfg as cfg
 
@@ -76,19 +78,14 @@ class NzbRating:
         self.user_flag = {}
         self.auto_flag = {}
         self.changed = 0
-
-
-class NzbRatingV2(NzbRating):
-    def __init__(self):
-        super(NzbRatingV2, self).__init__()
         self.avg_spam_cnt = 0
         self.avg_spam_confirm = False
         self.avg_encrypted_cnt = 0
         self.avg_encrypted_confirm = False
 
-    def to_v2(self, rating):
-        self.__dict__.update(rating.__dict__)
-        return self
+
+# TODO: Can be removed in version 3.3.0, needed for backwards compatibility
+NzbRatingV2 = NzbRating
 
 
 class Rating(Thread):
@@ -110,29 +107,20 @@ class Rating(Thread):
     CHANGED_USER_FLAG = 0x08
     CHANGED_AUTO_FLAG = 0x10
 
-    do = None
-
     def __init__(self):
-        Rating.do = self
         self.shutdown = False
         self.queue = OrderedSetQueue()
+        self.version = Rating.VERSION
+        self.ratings = {}
+        self.nzo_indexer_map = {}
         try:
-            self.version, self.ratings, self.nzo_indexer_map = sabnzbd.load_admin(
-                "Rating.sab", silent=not cfg.rating_enable()
-            )
-            if self.version == 1:
-                ratings = {}
-                for k, v in self.ratings.items():
-                    ratings[k] = NzbRatingV2().to_v2(v)
-                self.ratings = ratings
-                self.version = 2
-            if self.version != Rating.VERSION:
-                raise Exception()
+            rating_data = sabnzbd.load_admin(RATING_FILE_NAME)
+            if rating_data:
+                self.version, self.ratings, self.nzo_indexer_map = rating_data
         except:
-            self.version = Rating.VERSION
-            self.ratings = {}
-            self.nzo_indexer_map = {}
-        Thread.__init__(self)
+            logging.info("Corrupt %s file, discarding", RATING_FILE_NAME)
+            logging.info("Traceback: ", exc_info=True)
+        super().__init__()
 
     def stop(self):
         self.shutdown = True
@@ -158,8 +146,7 @@ class Rating(Thread):
 
     @synchronized(RATING_LOCK)
     def save(self):
-        if self.ratings and self.nzo_indexer_map:
-            sabnzbd.save_admin((self.version, self.ratings, self.nzo_indexer_map), "Rating.sab")
+        sabnzbd.save_admin((self.version, self.ratings, self.nzo_indexer_map), RATING_FILE_NAME)
 
     # The same file may be uploaded multiple times creating a new nzo_id each time
     @synchronized(RATING_LOCK)
@@ -175,7 +162,7 @@ class Rating(Thread):
                 fields["votedown"],
             )
             try:
-                rating = self.ratings.get(indexer_id, NzbRatingV2())
+                rating = self.ratings.get(indexer_id, NzbRating())
                 if fields["video"] and fields["videocnt"]:
                     rating.avg_video = int(float(fields["video"]))
                     rating.avg_video_cnt = int(float(fields["videocnt"]))

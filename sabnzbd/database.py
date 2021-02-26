@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -26,6 +26,7 @@ import logging
 import sys
 import threading
 import sqlite3
+from typing import Union, Dict
 
 import sabnzbd
 import sabnzbd.cfg
@@ -84,7 +85,7 @@ class HistoryDB:
         """ Create a connection to the database """
         create_table = not os.path.exists(HistoryDB.db_path)
         self.con = sqlite3.connect(HistoryDB.db_path)
-        self.con.row_factory = dict_factory
+        self.con.row_factory = sqlite3.Row
         self.c = self.con.cursor()
         if create_table:
             self.create_history_db()
@@ -98,7 +99,7 @@ class HistoryDB:
         self.execute("PRAGMA user_version;")
         try:
             version = self.c.fetchone()["user_version"]
-        except TypeError:
+        except IndexError:
             version = 0
         if version < 1:
             # Add any missing columns added since first DB version
@@ -220,7 +221,7 @@ class HistoryDB:
             """SELECT path FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED)
         )
         if fetch_ok:
-            return [item.get("path") for item in self.c.fetchall()]
+            return [item["path"] for item in self.c.fetchall()]
         else:
             return []
 
@@ -270,7 +271,9 @@ class HistoryDB:
             if to_keep > 0:
                 logging.info("Removing all but last %s completed jobs from history", to_keep)
                 return self.execute(
-                    """DELETE FROM history WHERE status = ? AND id NOT IN ( SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ? )""",
+                    """DELETE FROM history WHERE status = ? AND id NOT IN ( 
+                        SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ? 
+                    )""",
                     (Status.COMPLETED, Status.COMPLETED, to_keep),
                     save=True,
                 )
@@ -289,7 +292,7 @@ class HistoryDB:
         )
         logging.info("Added job %s to history", nzo.final_name)
 
-    def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None):
+    def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None, nzo_ids=None):
         """ Return records for specified jobs """
         command_args = [convert_search(search)]
 
@@ -300,18 +303,20 @@ class HistoryDB:
             post += " OR CATEGORY = ? " * (len(categories) - 1)
             post += ")"
             command_args.extend(categories)
+        if nzo_ids:
+            nzo_ids = nzo_ids.split(",")
+            post += " AND (NZO_ID = ?"
+            post += " OR NZO_ID = ? " * (len(nzo_ids) - 1)
+            post += ")"
+            command_args.extend(nzo_ids)
         if failed_only:
             post += " AND STATUS = ?"
             command_args.append(Status.FAILED)
 
         cmd = "SELECT COUNT(*) FROM history WHERE name LIKE ?"
-        res = self.execute(cmd + post, tuple(command_args))
         total_items = -1
-        if res:
-            try:
-                total_items = self.c.fetchone().get("COUNT(*)")
-            except AttributeError:
-                pass
+        if self.execute(cmd + post, tuple(command_args)):
+            total_items = self.c.fetchone()["COUNT(*)"]
 
         if not start:
             start = 0
@@ -320,9 +325,7 @@ class HistoryDB:
 
         command_args.extend([start, limit])
         cmd = "SELECT * FROM history WHERE name LIKE ?"
-        fetch_ok = self.execute(cmd + post + " ORDER BY completed desc LIMIT ?, ?", tuple(command_args))
-
-        if fetch_ok:
+        if self.execute(cmd + post + " ORDER BY completed desc LIMIT ?, ?", tuple(command_args)):
             items = self.c.fetchall()
         else:
             items = []
@@ -341,28 +344,20 @@ class HistoryDB:
         series = series.lower().replace(".", " ").replace("_", " ").replace("  ", " ")
         if series and season and episode:
             pattern = "%s/%s/%s" % (series, season, episode)
-            res = self.execute(
+            if self.execute(
                 """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (pattern, Status.FAILED)
-            )
-            if res:
-                try:
-                    total = self.c.fetchone().get("COUNT(*)")
-                except AttributeError:
-                    pass
+            ):
+                total = self.c.fetchone()["COUNT(*)"]
         return total > 0
 
     def have_name_or_md5sum(self, name, md5sum):
         """ Check whether this name or md5sum is already in History """
         total = 0
-        res = self.execute(
+        if self.execute(
             """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != ?""",
             (name, md5sum, Status.FAILED),
-        )
-        if res:
-            try:
-                total = self.c.fetchone().get("COUNT(*)")
-            except AttributeError:
-                pass
+        ):
+            total = self.c.fetchone()["COUNT(*)"]
         return total > 0
 
     def get_history_size(self):
@@ -372,32 +367,21 @@ class HistoryDB:
         # Total Size of the history
         total = 0
         if self.execute("""SELECT sum(bytes) FROM history"""):
-            try:
-                total = self.c.fetchone().get("sum(bytes)")
-            except AttributeError:
-                pass
+            total = self.c.fetchone()["sum(bytes)"]
 
         # Amount downloaded this month
-        # r = time.gmtime(time.time())
-        # month_timest = int(time.mktime((r.tm_year, r.tm_mon, 0, 0, 0, 1, r.tm_wday, r.tm_yday, r.tm_isdst)))
         month_timest = int(this_month(time.time()))
 
         month = 0
         if self.execute("""SELECT sum(bytes) FROM history WHERE completed > ?""", (month_timest,)):
-            try:
-                month = self.c.fetchone().get("sum(bytes)")
-            except AttributeError:
-                pass
+            month = self.c.fetchone()["sum(bytes)"]
 
         # Amount downloaded this week
         week_timest = int(this_week(time.time()))
 
         week = 0
         if self.execute("""SELECT sum(bytes) FROM history WHERE completed > ?""", (week_timest,)):
-            try:
-                week = self.c.fetchone().get("sum(bytes)")
-            except AttributeError:
-                pass
+            week = self.c.fetchone()["sum(bytes)"]
 
         return total, month, week
 
@@ -407,7 +391,7 @@ class HistoryDB:
         t = (nzo_id,)
         if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", t):
             try:
-                data = ubtou(zlib.decompress(self.c.fetchone().get("script_log")))
+                data = ubtou(zlib.decompress(self.c.fetchone()["script_log"]))
             except:
                 pass
         return data
@@ -418,19 +402,21 @@ class HistoryDB:
         name = ""
         if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
             try:
-                name = self.c.fetchone().get("name")
-            except AttributeError:
+                name = self.c.fetchone()["name"]
+            except TypeError:
+                # No records found
                 pass
         return name
 
-    def get_path(self, nzo_id):
+    def get_path(self, nzo_id: str):
         """ Return the `incomplete` path of the job `nzo_id` if it is still there """
         t = (nzo_id,)
         path = ""
         if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
             try:
-                path = self.c.fetchone().get("path")
-            except AttributeError:
+                path = self.c.fetchone()["path"]
+            except TypeError:
+                # No records found
                 pass
         if os.path.exists(path):
             return path
@@ -441,24 +427,20 @@ class HistoryDB:
         t = (nzo_id,)
         if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", t):
             try:
-                items = self.c.fetchone()
-                dtype = items.get("report")
-                url = items.get("url")
-                pp = items.get("pp")
-                script = items.get("script")
-                cat = items.get("category")
-                return dtype, url, pp, script, cat
-            except (AttributeError, IndexError):
+                item = self.c.fetchone()
+                return item["report"], item["url"], item["pp"], item["script"], item["category"]
+            except TypeError:
+                # No records found
                 pass
         return "", "", "", "", ""
 
+    def __enter__(self):
+        """ For context manager support """
+        return self
 
-def dict_factory(cursor, row):
-    """ Return a dictionary for the current database position """
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """ For context manager support, ignore any exception """
+        self.close()
 
 
 _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
@@ -506,7 +488,7 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
         nzo.status,
         nzo.nzo_id,
         clip_path(workdir_complete),
-        clip_path(nzo.downpath),
+        clip_path(nzo.download_path),
         script_output,
         script_line,
         download_time,
@@ -522,44 +504,42 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
     )
 
 
-def unpack_history_info(item):
+def unpack_history_info(item: Union[Dict, sqlite3.Row]):
     """Expands the single line stage_log from the DB
     into a python dictionary for use in the history display
     """
+    # Convert result to dictionary
+    if isinstance(item, sqlite3.Row):
+        item = dict(item)
+
     # Stage Name is separated by ::: stage lines by ; and stages by \r\n
     lst = item["stage_log"]
     if lst:
+        parsed_stage_log = []
         try:
-            lines = lst.split("\r\n")
+            all_stages_lines = lst.split("\r\n")
         except:
-            logging.error(T("Invalid stage logging in history for %s") + " (\\r\\n)", item["name"])
+            logging.error(T("Invalid stage logging in history for %s"), item["name"])
             logging.debug("Lines: %s", lst)
-            lines = []
-        lst = [None for _ in STAGES]
-        for line in lines:
-            stage = {}
+            all_stages_lines = []
+
+        for stage_lines in all_stages_lines:
             try:
-                key, logs = line.split(":::")
+                key, logs = stage_lines.split(":::")
             except:
-                logging.debug('Missing key:::logs "%s"', line)
-                key = line
-                logs = ""
-            stage["name"] = key
-            stage["actions"] = []
+                logging.info('Missing key:::logs "%s"', stage_lines)
+                continue
+            stage = {"name": key, "actions": []}
             try:
-                logs = logs.split(";")
+                stage["actions"] = logs.split(";")
             except:
-                logging.error(T("Invalid stage logging in history for %s") + " (;)", item["name"])
+                logging.error(T("Invalid stage logging in history for %s"), item["name"])
                 logging.debug("Logs: %s", logs)
-                logs = []
-            for log in logs:
-                stage["actions"].append(log)
-            try:
-                lst[STAGES[key]] = stage
-            except KeyError:
-                lst.append(stage)
-        # Remove unused stages
-        item["stage_log"] = [x for x in lst if x is not None]
+            parsed_stage_log.append(stage)
+
+        # Sort it so it is more logical
+        parsed_stage_log.sort(key=lambda stage_log: STAGES.get(stage_log["name"], 100))
+        item["stage_log"] = parsed_stage_log
 
     if item["script_log"]:
         item["script_log"] = ""
@@ -571,6 +551,5 @@ def unpack_history_info(item):
 
 def midnight_history_purge():
     logging.info("Scheduled history purge")
-    history_db = HistoryDB()
-    history_db.auto_history_purge()
-    history_db.close()
+    with HistoryDB() as history_db:
+        history_db.auto_history_purge()

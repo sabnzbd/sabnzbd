@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -39,6 +39,9 @@ class TestDeobfuscateFinalResult:
         # obfuscated names
         assert is_probably_obfuscated("599c1c9e2bdfb5114044bf25152b7eaa.mkv")
         assert is_probably_obfuscated("/my/blabla/directory/stuff/599c1c9e2bdfb5114044bf25152b7eaa.mkv")
+        assert is_probably_obfuscated(
+            "/my/blabla/directory/A Directory Should Not Count 2020/599c1c9e2bdfb5114044bf25152b7eaa.mkv"
+        )
         assert is_probably_obfuscated("/my/blabla/directory/stuff/afgm.avi")
         assert is_probably_obfuscated("/my/blabla/directory/stuff/afgm2020.avi")
         assert is_probably_obfuscated("MUGNjK3zi65TtN.mkv")
@@ -48,15 +51,23 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q.bin")
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q")  # no ext
         assert is_probably_obfuscated("greatdistro.iso")
+        assert is_probably_obfuscated("abc.xyz.a4c567edbcbf27.BLA")  # by definition
+        assert is_probably_obfuscated("abc.xyz.iso")  # lazy brother
+
         #
         # non-obfuscated names:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Distro S03E04.iso")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Distro (2020).iso")
+        assert not is_probably_obfuscated("ubuntu.2004.iso")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/GreatDistro2020.iso")
         assert not is_probably_obfuscated("Catullus.avi")
         assert not is_probably_obfuscated("Der.Mechaniker.HDRip.XviD-SG.avi")
         assert not is_probably_obfuscated("Bonjour.1969.FRENCH.BRRiP.XviD.AC3-HuSh.avi")
         assert not is_probably_obfuscated("Bonjour.1969.avi")
+        assert not is_probably_obfuscated("This That S01E11")
+        assert not is_probably_obfuscated("This_That_S01E11")
+        assert not is_probably_obfuscated("this_that_S01E11")
+        assert not is_probably_obfuscated("this_that_there_here.avi")
         assert not is_probably_obfuscated("Lorem Ipsum.avi")
         assert not is_probably_obfuscated("Lorem Ipsum")  # no ext
 

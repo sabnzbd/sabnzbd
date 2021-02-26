@@ -15,10 +15,11 @@ function ViewModel() {
     self.dateFormat = ko.observable('fromNow').extend({ persist: 'pageDateFormat' });
     self.displayTabbed = ko.observable().extend({ persist: 'displayTabbed' });
     self.displayCompact = ko.observable(false).extend({ persist: 'displayCompact' });
+    self.displayFullWidth = ko.observable(false).extend({ persist: 'displayFullWidth' });
     self.confirmDeleteQueue = ko.observable(true).extend({ persist: 'confirmDeleteQueue' });
     self.confirmDeleteHistory = ko.observable(true).extend({ persist: 'confirmDeleteHistory' });
-    self.extraQueueColumn = ko.observable('').extend({ persist: 'extraColumn' });
-    self.extraHistoryColumn = ko.observable('').extend({ persist: 'extraHistoryColumn' });
+    self.extraQueueColumns = ko.observableArray([]).extend({ persist: 'extraColumns' });
+    self.extraHistoryColumns = ko.observableArray([]).extend({ persist: 'extraHistoryColumns' });
     self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
     self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
 
@@ -628,6 +629,37 @@ function ViewModel() {
         }
     })
 
+    // Save the rest in config if global-settings
+    var saveInterfaceSettings = function(newValue) {
+        if(self.useGlobalOptions()) {
+            var interfaceSettings = {
+                "dateFormat": self.dateFormat,
+                "extraQueueColumns": self.extraQueueColumns,
+                "extraHistoryColumns": self.extraHistoryColumns,
+                "displayCompact": self.displayCompact,
+                "displayFullWidth": self.displayFullWidth,
+                "displayTabbed": self.displayTabbed,
+                "confirmDeleteQueue": self.confirmDeleteQueue,
+                "confirmDeleteHistory": self.confirmDeleteHistory
+            };
+            callAPI({
+                mode: "set_config",
+                section: "misc",
+                keyword: "interface_settings",
+                value: ko.toJSON(interfaceSettings)
+            })
+        }
+    }
+
+    self.dateFormat.subscribe(saveInterfaceSettings);
+    self.extraQueueColumns.subscribe(saveInterfaceSettings);
+    self.extraHistoryColumns.subscribe(saveInterfaceSettings);
+    self.displayCompact.subscribe(saveInterfaceSettings);
+    self.displayFullWidth.subscribe(saveInterfaceSettings);
+    self.displayTabbed.subscribe(saveInterfaceSettings);
+    self.confirmDeleteQueue.subscribe(saveInterfaceSettings);
+    self.confirmDeleteHistory.subscribe(saveInterfaceSettings);
+
     /***
          Add NZB's
     ***/
@@ -639,55 +671,47 @@ function ViewModel() {
         if(fileName) $('.btn-file em').text(fileName)
     }
 
-    // From the upload
-    self.addNZBFromFileForm = function(form) {
+    // Add NZB form
+    self.addNZB = function(form) {
         // Anything?
-        if(!$(form.nzbFile)[0].files[0]) {
-            $('.btn-file').attr('style', 'border-color: red !important')
-            setTimeout(function() { $('.btn-file').css('border-color', '') }, 2000)
+        if(!$(form.nzbFile)[0].files[0] && !$(form.nzbURL).val()) {
+            $('.btn-file, input[name="nzbURL"]').attr('style', 'border-color: red !important')
+            setTimeout(function() { $('.btn-file, input[name="nzbURL"]').css('border-color', '') }, 2000)
             return false;
         }
 
-        // Upload
-        self.addNZBFromFile($(form.nzbFile)[0].files);
-
-        // Hide modal, upload will reset the form
-        $("#modal-add-nzb").modal("hide");
-    }
-    // From URL
-    self.addNZBFromURL = function(form) {
-        // Anything?
-        if(!$(form.nzbURL).val()) {
-            $(form.nzbURL).attr('style', 'border-color: red !important')
-            setTimeout(function() { $(form.nzbURL).css('border-color', '') }, 2000)
-            return false;
-        }
-
-        // Build request
-        var theCall = {
-            mode: "addurl",
-            name: $(form.nzbURL).val(),
-            nzbname: $('#nzbname').val(),
-            password: $('#password').val(),
-            script: $('#modal-add-nzb select[name="Post-processing"]').val(),
-            priority: $('#modal-add-nzb select[name="Priority"]').val(),
-            pp: $('#modal-add-nzb select[name="Processing"]').val()
-        }
-
-        // Optional, otherwise they get mis-labeled if left empty
-        if($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
-        if($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
-
-        // Add
-        callAPI(theCall).then(function(r) {
-            // Hide and reset/refresh
-            self.refresh()
+        // Upload file using the method we also use for drag-and-drop
+        if($(form.nzbFile)[0].files[0]) {
+            self.addNZBFromFile($(form.nzbFile)[0].files);
+            // Hide modal, upload will reset the form
             $("#modal-add-nzb").modal("hide");
-            form.reset()
-            $('#nzbname').val('')
-        });
+        } else if($(form.nzbURL).val()) {
+            // Or add URL
+            var theCall = {
+                mode: "addurl",
+                name: $(form.nzbURL).val(),
+                nzbname: $('#nzbname').val(),
+                password: $('#password').val(),
+                script: $('#modal-add-nzb select[name="Post-processing"]').val(),
+                priority: $('#modal-add-nzb select[name="Priority"]').val(),
+                pp: $('#modal-add-nzb select[name="Processing"]').val()
+            }
 
+            // Optional, otherwise they get mis-labeled if left empty
+            if($('#modal-add-nzb select[name="Category"]').val() != '*') theCall.cat = $('#modal-add-nzb select[name="Category"]').val()
+            if($('#modal-add-nzb select[name="Processing"]').val()) theCall.pp = $('#modal-add-nzb select[name="Category"]').val()
+
+            // Add
+            callAPI(theCall).then(function(r) {
+                // Hide and reset/refresh
+                self.refresh()
+                $("#modal-add-nzb").modal("hide");
+                form.reset()
+                $('#nzbname').val('')
+            });
+        }
     }
+
     // From the upload or filedrop
     self.addNZBFromFile = function(files, fileindex) {
         // First file
@@ -734,14 +758,13 @@ function ViewModel() {
                 // Refresh
                 self.refresh();
                 // Hide notification
-                hideNotification('.main-notification-box-uploading')
+                hideNotification(true)
                 // Reset the form
                 $('#modal-add-nzb form').trigger('reset');
                 $('#nzbname').val('')
                 $('.btn-file em').html(glitterTranslate.chooseFile + '&hellip;')
             }
         });
-
     }
 
     // Load status info
@@ -749,8 +772,11 @@ function ViewModel() {
         // Full refresh? Only on click and for the status-screen
         var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
 
-        // Make it spin
-        self.hasStatusInfo(false)
+        // Make it spin if the user requested it otherwise we don't,
+        // because browsers use a lot of CPU for the animation
+        if(statusFullRefresh) {
+            self.hasStatusInfo(false)
+        }
 
         // Load the custom status info
         callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {
@@ -802,7 +828,8 @@ function ViewModel() {
                         'serveractiveconn': ko.observable(this.serveractiveconn),
                         'servererror': ko.observable(this.servererror),
                         'serveractive': ko.observable(this.serveractive),
-                        'serverconnections': ko.observableArray(this.serverconnections)
+                        'serverconnections': ko.observableArray(this.serverconnections),
+                        'serverbps': ko.observable(this.serverbps)
                     })
                 })
             } else {
@@ -818,7 +845,8 @@ function ViewModel() {
                     activeServer.serveractiveconn(this.serveractiveconn),
                     activeServer.servererror(this.servererror),
                     activeServer.serveractive(this.serveractive),
-                    activeServer.serverconnections(this.serverconnections)
+                    activeServer.serverconnections(this.serverconnections),
+                    activeServer.serverbps(this.serverbps)
                 })
             }
 
@@ -890,10 +918,9 @@ function ViewModel() {
                 clearInterval(connectionRefresh)
                 return
             }
-            // Only when we show them
-            if(self.showActiveConnections()) {
-                self.loadStatusInfo()
-            }
+            // Update the server stats (speed/connections)
+            self.loadStatusInfo()
+
         }, self.refreshRate() * 1000)
     })
 
@@ -937,8 +964,6 @@ function ViewModel() {
         callSpecialAPI("./status/" + $(htmlElement.currentTarget).data('action'), {
             name: $("<div/>").html(folder).text()
         }).then(function() {
-            // Remove item and load status data
-            $(htmlElement.currentTarget).parent().parent().fadeOut(fadeOnDeleteDuration)
             // Refresh
             self.loadStatusInfo(true, true)
             // Hide notification
@@ -977,6 +1002,11 @@ function ViewModel() {
     // Toggle Glitter's compact layout dynamically
     self.displayCompact.subscribe(function() {
         $('body').toggleClass('container-compact')
+    })
+
+    // Toggle full width
+    self.displayFullWidth.subscribe(function() {
+        $('body').toggleClass('container-full-width')
     })
 
     // Toggle Glitter's tabbed modus
@@ -1049,6 +1079,11 @@ function ViewModel() {
         $('body').addClass('container-compact')
     }
 
+    if(localStorageGetItem('displayFullWidth') === 'true') {
+        // Add extra class
+        $('body').addClass('container-full-width')
+    }
+
     // Tabbed layout?
     if(localStorageGetItem('displayTabbed') === 'true') {
         $('body').addClass('container-tabbed')
@@ -1069,6 +1104,19 @@ function ViewModel() {
 
             // Set queue limit
             self.queue.paginationLimit(response.config.misc.queue_limit.toString())
+
+            // Import the rest of the settings
+            if(response.config.misc.interface_settings) {
+                var interfaceSettings = JSON.parse(response.config.misc.interface_settings);
+                self.dateFormat(interfaceSettings['dateFormat']);
+                self.extraQueueColumns(interfaceSettings['extraQueueColumns']);
+                self.extraHistoryColumns(interfaceSettings['extraHistoryColumns']);
+                self.displayCompact(interfaceSettings['displayCompact']);
+                self.displayFullWidth(interfaceSettings['displayFullWidth']);
+                self.displayTabbed(interfaceSettings['displayTabbed']);
+                self.confirmDeleteQueue(interfaceSettings['confirmDeleteQueue']);
+                self.confirmDeleteHistory(interfaceSettings['confirmDeleteHistory']);
+            }
         }
 
         // Set bandwidth limit

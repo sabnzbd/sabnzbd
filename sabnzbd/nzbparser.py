@@ -58,7 +58,7 @@ def nzbfile_parser(raw_data, nzo):
                 if meta_type not in nzo.meta:
                     nzo.meta[meta_type] = []
                 nzo.meta[meta_type].append(meta.text)
-    logging.debug("NZB Meta-data = %s", nzo.meta)
+    logging.debug("NZB file meta-data = %s", nzo.meta)
 
     # Parse the files
     for file in nzb_tree.iter("file"):
@@ -118,7 +118,7 @@ def nzbfile_parser(raw_data, nzo):
                     pass
 
         # Sort the articles by part number, compatible with Python 3.5
-        raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db.keys())]
+        raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
 
         # Create NZF
         nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
@@ -139,7 +139,7 @@ def nzbfile_parser(raw_data, nzo):
         else:
             logging.info("Error importing %s, skipping", file_name)
             if nzf.nzf_id:
-                sabnzbd.remove_data(nzf.nzf_id, nzo.workpath)
+                sabnzbd.remove_data(nzf.nzf_id, nzo.admin_path)
             skipped_files += 1
 
     # Final bookkeeping
@@ -234,10 +234,10 @@ def process_nzb_archive_file(
                     if nzo:
                         if nzo_id:
                             # Re-use existing nzo_id, when a "future" job gets it payload
-                            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False, delete_all_data=False)
+                            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
                             nzo.nzo_id = nzo_id
                             nzo_id = None
-                        nzo_ids.append(sabnzbd.nzbqueue.NzbQueue.do.add(nzo))
+                        nzo_ids.append(sabnzbd.NzbQueue.add(nzo))
                         nzo.update_rating()
         zf.close()
         try:
@@ -329,7 +329,7 @@ def process_single_nzb(
     except TypeError:
         # Duplicate, ignore
         if nzo_id:
-            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False)
+            sabnzbd.NzbQueue.remove(nzo_id)
         nzo = None
     except ValueError:
         # Empty
@@ -346,9 +346,9 @@ def process_single_nzb(
     if nzo:
         if nzo_id:
             # Re-use existing nzo_id, when a "future" job gets it payload
-            sabnzbd.nzbqueue.NzbQueue.do.remove(nzo_id, add_to_history=False, delete_all_data=False)
+            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
             nzo.nzo_id = nzo_id
-        nzo_ids.append(sabnzbd.nzbqueue.NzbQueue.do.add(nzo, quiet=reuse))
+        nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=reuse))
         nzo.update_rating()
 
     try:

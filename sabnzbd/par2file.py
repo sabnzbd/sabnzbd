@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,17 +23,18 @@ import logging
 import os
 import re
 import struct
+from typing import Dict, Optional, Tuple
 
 from sabnzbd.encoding import correct_unknown_encoding
 
-PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[\+\-](\d*)\.par2", re.I)
+PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 PAR_PKT_ID = b"PAR2\x00PKT"
 PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
 PAR_CREATOR_ID = b"PAR 2.0\x00Creator"
 PAR_RECOVERY_ID = b"RecvSlic"
 
 
-def is_parfile(filename):
+def is_parfile(filename: str) -> bool:
     """Check quickly whether file has par2 signature
     or if the filename has '.par2' in it
     """
@@ -49,7 +50,7 @@ def is_parfile(filename):
     return False
 
 
-def analyse_par2(name, filepath=None):
+def analyse_par2(name: str, filepath: Optional[str] = None) -> Tuple[str, int, int]:
     """Check if file is a par2-file and determine vol/block
     return setname, vol, block
     setname is empty when not a par2 file
@@ -82,7 +83,7 @@ def analyse_par2(name, filepath=None):
     return setname, vol, block
 
 
-def parse_par2_file(fname, md5of16k):
+def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
     """Get the hash table and the first-16k hash table from a PAR2 file
     Return as dictionary, indexed on names or hashes for the first-16 table
     The input md5of16k is modified in place and thus not returned!
@@ -128,7 +129,7 @@ def parse_par2_file(fname, md5of16k):
     return table
 
 
-def parse_par2_file_packet(f, header):
+def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], Optional[bytes]]:
     """ Look up and analyze a FileDesc package """
 
     nothing = None, None, None

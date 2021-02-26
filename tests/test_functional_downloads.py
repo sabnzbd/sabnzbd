@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,7 +18,9 @@
 """
 tests.test_functional_downloads - Test the downloading flow
 """
+import sys
 
+import sabnzbd.filesystem as filesystem
 from tests.testhelper import *
 
 
@@ -28,7 +30,7 @@ class TestDownloadFlow(SABnzbdBaseTest):
         If not: run the wizard!
         """
         with open(os.path.join(SAB_CACHE_DIR, "sabnzbd.ini"), "r") as config_file:
-            if SAB_NEWSSERVER_HOST not in config_file.read():
+            if f"[[{SAB_NEWSSERVER_HOST}]]" not in config_file.read():
                 self.start_wizard()
 
     def start_wizard(self):
@@ -66,7 +68,10 @@ class TestDownloadFlow(SABnzbdBaseTest):
         self.selenium_wrapper(self.driver.find_element_by_css_selector, ".btn.btn-success").click()
         self.no_page_crash()
 
-    def add_test_nzb(self, nzb_dir, file_output):
+    def download_nzb(self, nzb_dir, file_output):
+        # Verify if the server was setup before we start
+        self.is_server_configured()
+
         # Create NZB
         nzb_path = create_nzb(nzb_dir)
 
@@ -81,8 +86,8 @@ class TestDownloadFlow(SABnzbdBaseTest):
         # See how it's doing
         self.open_page("http://%s:%s/sabnzbd/" % (SAB_HOST, SAB_PORT))
 
-        # We wait for 60 seconds to let it complete
-        for _ in range(60):
+        # We wait for 20 seconds to let it complete
+        for _ in range(20):
             try:
                 # Locate status of our job
                 status_text = self.driver.find_element_by_xpath(
@@ -98,36 +103,39 @@ class TestDownloadFlow(SABnzbdBaseTest):
         else:
             pytest.fail("Download did not complete")
 
-        # Check if the expected file exists on disk
-        file_to_find = os.path.join(SAB_COMPLETE_DIR, test_job_name, file_output)
-        assert os.path.exists(file_to_find)
+        # Check if there is only 1 of the expected file
+        # Sometimes par2 can also be included, but we accept that. For example when small
+        # par2 files get assembled in after the download already finished (see #1509)
+        assert [file_output] == filesystem.globber(
+            os.path.join(SAB_COMPLETE_DIR, test_job_name), "*" + filesystem.get_ext(file_output)
+        )
+
+        # Verify if the garbage collection works (see #1628)
+        # We need to give it a second to calm down and clear the variables
+        time.sleep(2)
+        gc_results = get_api_result("gc_stats")["value"]
+        if gc_results:
+            pytest.fail(f"Objects were left in memory after the job finished! {gc_results}")
 
     def test_download_basic_rar5(self):
-        self.is_server_configured()
-        self.add_test_nzb("basic_rar5", "testfile.bin")
+        self.download_nzb("basic_rar5", "testfile.bin")
 
     def test_download_zip(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_zip", "testfile.bin")
+        self.download_nzb("test_zip", "testfile.bin")
 
     def test_download_7zip(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_7zip", "testfile.bin")
+        self.download_nzb("test_7zip", "testfile.bin")
 
     def test_download_passworded(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_passworded{{secret}}", "testfile.bin")
+        self.download_nzb("test_passworded{{secret}}", "testfile.bin")
 
+    @pytest.mark.xfail(reason="Probably #1633")
     def test_download_unicode_made_on_windows(self):
-        self.is_server_configured()
-        self.add_test_nzb("test_win_unicode", "frènch_german_demö.bin")
+        self.download_nzb("test_win_unicode", "frènch_german_demö.bin")
 
     def test_download_fully_obfuscated(self):
         # This is also covered by a unit test but added to test full flow
-        self.is_server_configured()
-        self.add_test_nzb("obfuscated_single_rar_set", "100k.bin")
+        self.download_nzb("obfuscated_single_rar_set", "100k.bin")
 
-    @pytest.mark.xfail(reason="https://github.com/sabnzbd/sabnzbd/issues/1509")
     def test_download_unicode_rar(self):
-        self.is_server_configured()
-        self.add_test_nzb("unicode_rar", "我喜欢编程.bin")
+        self.download_nzb("unicode_rar", "我喜欢编程.bin")

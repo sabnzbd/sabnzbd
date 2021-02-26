@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ Generic Sorting - Sorting large files by a custom matching
 import os
 import logging
 import re
+from typing import Optional
 
 import sabnzbd
 from sabnzbd.filesystem import (
@@ -39,6 +40,7 @@ from sabnzbd.filesystem import (
 )
 from sabnzbd.constants import series_match, date_match, year_match, sample_match
 import sabnzbd.cfg as cfg
+from sabnzbd.nzbstuff import NzbObject
 
 RE_SAMPLE = re.compile(sample_match, re.I)
 # Do not rename .vob files as they are usually DVD's
@@ -147,7 +149,7 @@ def move_to_parent_folder(workdir):
 class Sorter:
     """ Generic Sorter class """
 
-    def __init__(self, nzo, cat):
+    def __init__(self, nzo: Optional[NzbObject], cat):
         self.sorter = None
         self.type = None
         self.sort_file = False
@@ -231,7 +233,7 @@ class Sorter:
 class SeriesSorter:
     """ Methods for Series Sorting """
 
-    def __init__(self, nzo, job_name, path, cat):
+    def __init__(self, nzo: Optional[NzbObject], job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
@@ -532,7 +534,7 @@ def check_for_sequence(regex, files):
                 prefix = name[: match1.start()]
 
     # Don't do anything if only one or no files matched
-    if len(list(matches.keys())) < 2:
+    if len(list(matches)) < 2:
         return {}
 
     key_prev = 0
@@ -540,7 +542,7 @@ def check_for_sequence(regex, files):
     alphabet = "abcdefghijklmnopqrstuvwxyz"
 
     # Check the dictionary to see if the keys are in a numeric or alphabetic sequence
-    for akey in sorted(matches.keys()):
+    for akey in sorted(matches):
         if akey.isdigit():
             key = int(akey)
         elif akey in alphabet:
@@ -570,7 +572,7 @@ def check_for_sequence(regex, files):
 class MovieSorter:
     """ Methods for Generic Sorting """
 
-    def __init__(self, nzo, job_name, path, cat):
+    def __init__(self, nzo: Optional[NzbObject], job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
@@ -784,7 +786,7 @@ class MovieSorter:
 class DateSorter:
     """ Methods for Date Sorting """
 
-    def __init__(self, nzo, job_name, path, cat):
+    def __init__(self, nzo: Optional[NzbObject], job_name, path, cat):
         self.matched = False
 
         self.original_job_name = job_name
@@ -1001,7 +1003,7 @@ def path_subst(path, mapping):
     return "".join(newpath)
 
 
-def get_titles(nzo, match, name, titleing=False):
+def get_titles(nzo: NzbObject, match, name, titleing=False):
     """The title will be the part before the match
     Clean it up and title() it
 
@@ -1082,12 +1084,12 @@ def replace_word(word_input, one, two):
     regex = re.compile(r"\W(%s)(\W|$)" % one, re.I)
     matches = regex.findall(word_input)
     if matches:
-        for unused in matches:
+        for _ in matches:
             word_input = word_input.replace(one, two)
     return word_input
 
 
-def get_descriptions(nzo, match, name):
+def get_descriptions(nzo: NzbObject, match, name):
     """If present, get a description from the nzb name.
     A description has to be after the matched item, separated either
     like ' - Description' or '_-_Description'
@@ -1165,7 +1167,7 @@ def strip_folders(path):
         """ Strip all leading/trailing underscores also dots for Windows """
         x = x.strip().strip("_")
         if sabnzbd.WIN32:
-            # OSX and Linux should keep dots, because leading dots are significant
+            # macOS and Linux should keep dots, because leading dots are significant
             # while Windows cannot handle trailing dots
             x = x.strip(".")
         x = x.strip()

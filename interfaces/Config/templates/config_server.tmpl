@@ -1,49 +1,15 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configuration/3.1/servers"#-->
+<!--#set global $help_uri="configuration/3.2/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
-<!--
-    We need to find how many months we have recorded so far, so we
-    loop over all the dates to find the lowest value and then use
-    this to calculate the date-selector and maximum value per month.
--->
 <!--#import json#-->
 <!--#import datetime#-->
-<!--#import sabnzbd.misc#-->
 
-<!--#set month_names = [$T('January'), $T('February'), $T('March'), $T('April'), $T('May'), $T('June'), $T('July'), $T('August'), $T('September'), $T('October'), $T('November'), $T('December')] #-->
-<!--#set min_date = datetime.date.today()#-->
-<!--#set max_data_all = {}#-->
-
-<!--#for $server in $servers #-->
-    <!--#if 'amounts' in $server#-->
-        <!--#set max_data_server = {}#-->
-        <!--#for date in $server['amounts'][4]#-->
-            <!--#set split_date = $date.split('-')#-->
-            <!--#set min_date = min(min_date, datetime.date(int(split_date[0]), int(split_date[1]), 1))#-->
-
-            <!--#set month_date = $date[:7]#-->
-            <!--#if $month_date not in $max_data_server#-->
-                <!--#set max_data_server[$month_date] = 0#-->
-             <!--#end if#-->
-             <!--#set max_data_server[$month_date] = max(max_data_server[$month_date], $server['amounts'][4][$date])#-->
-        <!--#end for#-->
-
-        <!--#for month_date in max_data_server#-->
-            <!--#if $month_date not in $max_data_all#-->
-                <!--#set max_data_all[$month_date] = 0#-->
-             <!--#end if#-->
-             <!--#set max_data_all[$month_date] = max(max_data_all[$month_date], max_data_server[$month_date])#-->
-        <!--#end for#-->
-    <!--#end if#-->
-<!--#end for#-->
-
-<!--#set months_recorded = list(sabnzbd.misc.monthrange(min_date, datetime.date.today()))#-->
-<!--#$months_recorded.reverse()#-->
-
-<script type="text/javascript">
-    // Define variable needed for the server-plots
-    var serverData = {}
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    // Define variable needed for the server-statistics
+    var serverBandwithData = {}
+    var serverArticleTries = {}
+    var serverArticleFailed = {}
 </script>
 
 <div class="colmask">
@@ -53,21 +19,13 @@
             <input type="checkbox" id="advanced-settings-button" name="advanced-settings-button"> $T('button-advanced')
         </label>
 
-        <!--#if $months_recorded#-->
         <div class="advanced-buttonSeperator"></div>
-        <div class="chart-selector-container" title="$T('srv-bandwidth')">
+        <div class="chart-selector-container" title="$T('selectedDates')">
             <span class="glyphicon glyphicon-signal"></span>
-            <select name="chart-selector" id="chart-selector">
-                <!--#for $cur_date in months_recorded#-->
-                    <!--#set month_date = '%d-%02d' % ($cur_date.year, $cur_date.month)#-->
-                    <!--#if $month_date not in $max_data_all#-->
-                        <!--#set max_data_all[$month_date] = 0#-->
-                     <!--#end if#-->
-                    <option value="$month_date" data-max="$max_data_all[$month_date]">$month_names[$cur_date.month-1] $cur_date.year</option>
-                <!--#end for#-->
-            </select>
+            <!--#set today = datetime.date.today()#-->
+            <input type="date" name="chart-start" id="chart-start" value="<!--#echo (today-datetime.timedelta(days=30)).strftime('%Y-%m-%d')#-->"> -
+            <input type="date" name="chart-end" id="chart-end" value="<!--#echo today.strftime('%Y-%m-%d')#-->">
         </div>
-        <!--#end if#-->
     </div>
     <div class="section" id="addServerContent" style="display: none;">
         <div class="col2">
@@ -81,6 +39,10 @@
                         <label class="config" for="enable">$T('srv-enable')</label>
                         <input type="checkbox" name="enable" id="enable" value="1" checked="checked" />
                         <span class="desc">$T('srv-enable')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="displayname">$T('srv-displayname')</label>
+                        <input type="text" name="displayname" id="displayname" />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="host">$T('srv-host')</label>
@@ -106,7 +68,7 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="connections">$T('srv-connections')</label>
-                        <input type="number" name="connections" id="connections" min="1" max="100" value="8" required />
+                        <input type="number" name="connections" id="connections" min="1" max="1000" value="8" required />
                     </div>
                     <div class="field-pair">
                         <label class="config" for="priority">$T('srv-priority')</label>
@@ -146,8 +108,14 @@
                         <span class="desc">$T('explain-optional')</span>
                     </div>
                     <div class="field-pair advanced-settings">
-                        <label class="config" for="displayname">$T('srv-displayname')</label>
-                        <input type="text" name="displayname" id="displayname" />
+                        <label class="config" for="expire_date">$T('srv-expire_date')</label>
+                        <input type="date" name="expire_date" id="expire_date" />
+                        <span class="desc">$T('srv-explain-expire_date')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="quota">$T('swtag-quota')</label>
+                        <input type="text" name="quota" id="quota" class="smaller_input" />
+                        <span class="desc">$T('srv-explain-quota')</span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="notes">$T('srv-notes')</label>
@@ -197,6 +165,10 @@
                 <div class="col1" style="display:none;">
                     <input type="hidden" name="enable" id="enable$cur" value="$int($server['enable'])" />
                     <fieldset>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="displayname$cur">$T('srv-displayname')</label>
+                            <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
+                        </div>
                         <div class="field-pair">
                             <label class="config" for="host$cur">$T('srv-host')</label>
                             <input type="text" name="host" id="host$cur" value="$server['host']" required />
@@ -221,7 +193,7 @@
                         </div>
                         <div class="field-pair">
                             <label class="config" for="connections$cur">$T('srv-connections')</label>
-                            <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="100" required />
+                            <input type="number" name="connections" id="connections$cur" value="$server['connections']" min="1" max="1000" required />
                         </div>
                         <div class="field-pair">
                             <label class="config" for="priority$cur">$T('srv-priority')</label>
@@ -262,8 +234,14 @@
                             <span class="desc">$T('srv-explain-send_group')</span>
                         </div>
                         <div class="field-pair advanced-settings">
-                            <label class="config" for="displayname$cur">$T('srv-displayname')</label>
-                            <input type="text" name="displayname" id="displayname$cur" value="$server['displayname']" />
+                            <label class="config" for="expire_date$cur">$T('srv-expire_date')</label>
+                            <input type="date" name="expire_date" id="expire_date$cur"  value="$server['expire_date']" />
+                            <span class="desc">$T('srv-explain-expire_date')</span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="quota$cur">$T('swtag-quota')</label>
+                            <input type="text" name="quota" id="quota$cur" value="$server['quota']" class="smaller_input" />
+                            <span class="desc">$T('srv-explain-quota')</span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="notes$cur">$T('srv-notes')</label>
@@ -282,19 +260,31 @@
                 <div class="col1" style="display:block;">
                     <!--#if 'amounts' in $server#-->
                         <div class="server-amounts-text">
-                            <b>$T('srv-bandwidth'):</b><br/>
-                            $T('total'): $(server['amounts'][0])B<br/>
-                            $T('today'): $(server['amounts'][3])B<br/>
-                            $T('thisWeek'): $(server['amounts'][2])B<br/>
-                            $T('thisMonth'): $(server['amounts'][1])B<br/>
-                            <span id="server-data-label-${cur}"></span>: <span id="server-data-value-${cur}"></span>
+                            <p>
+                                <b>$T('srv-bandwidth'):</b><br/>
+                                $T('total'): $(server['amounts'][0])B<br/>
+                                $T('today'): $(server['amounts'][3])B<br/>
+                                $T('thisWeek'): $(server['amounts'][2])B<br/>
+                                $T('thisMonth'): $(server['amounts'][1])B<br/>
+                                $T('selectedDates'): <span id="server-bandwith-value-${cur}"></span>
+                            </p>
+
+                            <p title="$T('readwiki')">
+                                <b>$T('srv-article-availability'):</b><br/>
+                                $T('selectedDates'): <span id="server-article-value-${cur}"></span>
+                            </p>
+                            <!--#if $server['quota']#-->
+                            <p><b>$T('quota-left'):</b> $(server['quota_left'])B</p>
+                            <!--#end if#-->
                         </div>
-                        <div class="server-chart" data-serverid="${cur}"s>
+                        <div class="server-chart" data-serverid="${cur}">
                             <div id="server-chart-${cur}" class="ct-chart"></div>
                         </div>
                         <script type="text/javascript">
                             // Server data
-                            serverData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
+                            serverBandwithData[${cur}] = <!--#echo json.dumps($server['amounts'][4])#-->
+                            serverArticleTries[${cur}] = <!--#echo json.dumps($server['amounts'][5])#-->
+                            serverArticleFailed[${cur}] = <!--#echo json.dumps($server['amounts'][6])#-->
                         </script>
                     <!--#end if#-->
                 </div>
@@ -331,58 +321,90 @@
     }
 
     function showCharts() {
-        // This month
-        var theMonth = \$('#chart-selector').val()
-        var thisDay = new Date()
+        // Get the constants
+        const startDate = new Date(\$('#chart-start').val())
+        const endDate = new Date(\$('#chart-end').val())
+        const oneDay = 24 * 60 * 60 * 1000
+        const nrDays = Math.round((endDate-startDate)/oneDay)
 
-        // What month are we doing?
-        var inputDate = new Date(theMonth+'-01')
-        var baseDate = new Date(inputDate.getUTCFullYear(), inputDate.getUTCMonth(), 1)
-        var maxDaysInMonth = new Date(baseDate.getFullYear(), baseDate.getMonth()+1, 0).getDate()
+        // Show only maximum 10 labels to avoid cluttering
+        const labelStep = Math.round(nrDays/10)
 
-        // Set the new maximum
-        chartOptions.axisY.high = \$('#chart-selector :selected').data('max');
-        chartOptions.axisY.low = 0
+        // Save largest value
+        var maxBandwith = 0
 
         // For each chart
-        \$('.server-chart').each(function(i, elemn) {
-            var server_id = \$(elemn).data('serverid')
+        \$('.server-chart').each(function(j, elemn) {
+            const server_id = \$(elemn).data('serverid')
+            var totalBandwithThisRange = 0
+            var totalArticlesTriedThisRange = 0
+            var totalArticlesFailedThisRange = 0
 
             // Fill the data array
             var data = {
                 labels: [],
                 series: [[]]
             };
-            var totalThisMonth = 0
-            for(var i = 1; i < maxDaysInMonth+1; i++) {
+
+            for(var i = 0; i < nrDays+1; i++) {
+                // Update the date
+                const checkDate = new Date(startDate)
+                checkDate.setDate(checkDate.getDate() + i);
+
                 // Add X-label
-                if(i % 3 == 1) {
-                    data['labels'].push(i)
+                if(i % labelStep === 0) {
+                    data['labels'].push(checkDate.getDate())
                 } else {
                     data['labels'].push(NaN)
                 }
 
-                // Get formatted date
-                baseDate.setDate(i)
-                var dateCheck = toFormattedDate(baseDate)
+                // Date we can check in the array
+                const dateCheck = toFormattedDate(checkDate)
 
                 // Add data if we have it
-                if(dateCheck in serverData[server_id]) {
-                    data['series'][0].push(serverData[server_id][dateCheck])
-                    totalThisMonth += serverData[server_id][dateCheck]
-                } else if(thisDay.getYear() == baseDate.getYear() && thisDay.getMonth() == baseDate.getMonth() && thisDay.getDate() < i) {
-                    data['series'][0].push(NaN)
+                if(dateCheck in serverBandwithData[server_id]) {
+                    data['series'][0].push(serverBandwithData[server_id][dateCheck])
+                    totalBandwithThisRange += serverBandwithData[server_id][dateCheck]
+                    maxBandwith = Math.max(maxBandwith, serverBandwithData[server_id][dateCheck])
                 } else {
                     data['series'][0].push(0)
+                }
+
+                // Article stats
+                if(dateCheck in serverArticleTries[server_id]) {
+                    totalArticlesTriedThisRange += serverArticleTries[server_id][dateCheck]
+                    totalArticlesFailedThisRange += serverArticleFailed[server_id][dateCheck]
                 }
             }
 
             // Update the text value
-            \$('#server-data-label-' + server_id).text(\$('#chart-selector :selected').text())
-            \$('#server-data-value-' + server_id).text(filesize(totalThisMonth, {round: 1}))
+            \$('#server-bandwith-value-' + server_id).text(filesize(totalBandwithThisRange, {round: 1}))
+
+            // Calculate article success ratio, if available
+            var articleRatio = Math.round(100 * (1 - totalArticlesFailedThisRange/totalArticlesTriedThisRange))
+
+            // If values were missing
+            if(!isNaN(articleRatio)) {
+                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', totalArticlesTriedThisRange))
+            } else {
+                \$('#server-article-value-' + server_id).text('$T("notAvailable")')
+            }
+
+            // Save bandwidth data in a very ugly way, but we need to do this
+            // so we can calculate the maximum Y-axis for all graphs
+            \$(elemn).data("chart-data", data)
+        })
+
+        // Set the maximum
+        chartOptions.axisY.high = maxBandwith
+        chartOptions.axisY.low = 0
+
+        // Update all the axis with the largest value and draw the graph
+        \$('.server-chart').each(function(j, elemn) {
+            const server_id = \$(elemn).data('serverid')
 
             // Show the chart
-            chart = new Chartist.Line('#server-chart-'+server_id, data, chartOptions);
+            chart = new Chartist.Line('#server-chart-'+server_id, \$(elemn).data("chart-data"), chartOptions)
             chart.on('created', function(context) {
                 // Make sure to add this as the first child so it's at the bottom
                 context.svg.elem('rect', {
@@ -391,7 +413,7 @@
                     width: context.chartRect.width(),
                     height: context.chartRect.height()+2,
                     fill: 'none',
-                    stroke: '#B9B9B9',
+                    stroke: '#b9b9b9',
                     'stroke-width': '1px'
                 }, '', context.svg, true)
                 \$('#server-chart-'+server_id+' .ct-label.ct-vertical').each(function(index, elmn) {
@@ -399,6 +421,10 @@
                 })
             });
         })
+
+        // Limit input to sensible values
+        \$('#chart-start').attr("max", \$('#chart-end').val())
+        \$('#chart-end').attr("min", \$('#chart-start').val())
     }
 
     // Need to mitigate timezone effects!
@@ -425,7 +451,7 @@
         /**
             Update charts when changed
         **/
-        \$('#chart-selector').on('change', function(elemn) {
+        \$('#chart-start, #chart-end').on('change', function(elemn) {
             showCharts()
 
             // Lets us leave (needs to be called after the change event)

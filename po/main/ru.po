@@ -1,5 +1,5 @@
 # SABnzbd Translation Template file MAIN
-# Copyright 2011-2020 The SABnzbd-Team
+# Copyright 2011-2021 The SABnzbd-Team
 #   team@sabnzbd.org
 # 
 # Translators:
@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.1.0-develop\n"
+"Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Russian (https://www.transifex.com/sabnzbd/teams/111101/ru/)\n"
@@ -16,6 +16,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: ru\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
+
+#. Notification - Status page, table column header, actual message
+#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
+msgid "Warning"
+msgstr "Предупреждение"
+
+#. Notification
+#: SABnzbd.py, sabnzbd/notifier.py
+msgid "Error"
+msgstr ""
 
 #. Error message
 #: SABnzbd.py
@@ -111,16 +121,6 @@ msgstr ""
 
 #: SABnzbd.py
 msgid "SABnzbd %s started"
-msgstr ""
-
-#. Notification - Status page, table column header, actual message
-#: SABnzbd.py, sabnzbd/notifier.py, sabnzbd/skintext.py
-msgid "Warning"
-msgstr "Предупреждение"
-
-#. Notification
-#: SABnzbd.py, sabnzbd/notifier.py
-msgid "Error"
 msgstr ""
 
 #: SABnzbd.py, sabnzbd/interface.py
@@ -314,6 +314,10 @@ msgstr "%s не является допустимым адресом элект�
 msgid "Server address required"
 msgstr "Требуется адрес сервера"
 
+#: sabnzbd/cfg.py
+msgid "%s is not a valid script"
+msgstr ""
+
 #. Warning message
 #: sabnzbd/config.py
 msgid "Configuration locked, cannot save settings"
@@ -345,10 +349,6 @@ msgstr "%s не является правильным восьмеричным �
 #: sabnzbd/config.py
 msgid "UNC path \"%s\" not allowed here"
 msgstr "UNC-путь «%s» здесь не допускается"
-
-#: sabnzbd/config.py
-msgid "Error: Path length should be below %s."
-msgstr ""
 
 #: sabnzbd/config.py
 msgid "Error: Queue not empty, cannot change folder."
@@ -484,6 +484,16 @@ msgstr ""
 #: sabnzbd/downloader.py, sabnzbd/skintext.py
 msgid "Shutting down"
 msgstr "Завершение работы"
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s is expiring in %s day(s)"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/downloader.py
+msgid "Server %s has used the specified quota"
+msgstr ""
 
 #: sabnzbd/emailer.py
 msgid "Failed to connect to mail server"
@@ -738,6 +748,10 @@ msgstr "ч"
 msgid "m"
 msgstr "м"
 
+#: sabnzbd/misc.py, sabnzbd/skintext.py
+msgid "Update Available!"
+msgstr "Доступно обновление!"
+
 #. Error message
 #: sabnzbd/misc.py
 msgid "Failed to upload file: %s"
@@ -773,15 +787,6 @@ msgstr ""
 #: sabnzbd/newsunpack.py, sabnzbd/postproc.py
 msgid "Running script"
 msgstr "Запуск сценария"
-
-#: sabnzbd/newsunpack.py, sabnzbd/postproc.py
-msgid "PostProcessing was aborted (%s)"
-msgstr "Пост-обработка была прервана (%s)"
-
-#. PP phase "script" - Notification Script settings
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Script"
-msgstr "Сценарий"
 
 #. Warning message
 #: sabnzbd/newsunpack.py
@@ -843,11 +848,6 @@ msgstr "Ошибка распаковки: архив защищён парол�
 #: sabnzbd/newsunpack.py
 msgid "Unpacking"
 msgstr "Распаковка"
-
-#. PP phase "unpack"
-#: sabnzbd/newsunpack.py, sabnzbd/skintext.py
-msgid "Unpack"
-msgstr "Распаковать"
 
 #: sabnzbd/newsunpack.py
 msgid "Unpacking failed, unable to find %s"
@@ -1294,10 +1294,6 @@ msgstr "предупреждений"
 msgid "Idle"
 msgstr "Бездействие"
 
-#: sabnzbd/osxmenu.py
-msgid "Configuration"
-msgstr "Конфигурация"
-
 #. Main menu item
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
 msgid "Queue"
@@ -1322,9 +1318,10 @@ msgstr "Очистить историю"
 msgid "Limit Speed"
 msgstr "Ограничение скорости"
 
-#: sabnzbd/osxmenu.py
-msgid "min."
-msgstr "мин."
+#. One minute
+#: sabnzbd/osxmenu.py, sabnzbd/skintext.py
+msgid "min"
+msgstr "мин"
 
 #. #: Config->Scheduler
 #: sabnzbd/osxmenu.py, sabnzbd/skintext.py
@@ -1372,10 +1369,6 @@ msgstr "Пусто"
 #: sabnzbd/osxmenu.py
 msgid "History Last 10 Items"
 msgstr "Последние 10 элементов истории"
-
-#: sabnzbd/osxmenu.py
-msgid "New release available"
-msgstr "Доступна новая версия"
 
 #: sabnzbd/osxmenu.py
 msgid "Go to wizard"
@@ -1579,6 +1572,10 @@ msgid "see logfile"
 msgstr "см. журнал"
 
 #: sabnzbd/postproc.py
+msgid "Post-processing was aborted"
+msgstr ""
+
+#: sabnzbd/postproc.py
 msgid "Download Failed"
 msgstr "Не удалось загрузить"
 
@@ -1626,6 +1623,10 @@ msgstr ""
 
 #: sabnzbd/postproc.py
 msgid "RAR files failed to verify"
+msgstr ""
+
+#: sabnzbd/postproc.py
+msgid "Trying RAR renamer"
 msgstr ""
 
 #. Warning message
@@ -1683,10 +1684,6 @@ msgid "Incorrect RSS feed description \"%s\""
 msgstr "Неправильное описание RSS-ленты «%s»"
 
 #: sabnzbd/rss.py
-msgid "Failed to retrieve RSS from %s: %s"
-msgstr "Не удалось получить RSS-ленту из %s: %s"
-
-#: sabnzbd/rss.py
 msgid "Do not have valid authentication for feed %s"
 msgstr "Неправильные учётные данные для ленты %s"
 
@@ -1694,10 +1691,15 @@ msgstr "Неправильные учётные данные для ленты %
 msgid "Server side error (server code %s); could not get %s on %s"
 msgstr ""
 
+#: sabnzbd/rss.py
+msgid "Failed to retrieve RSS from %s: %s"
+msgstr "Не удалось получить RSS-ленту из %s: %s"
+
 #: sabnzbd/rss.py, sabnzbd/urlgrabber.py
 msgid "Server %s uses an untrusted HTTPS certificate"
 msgstr ""
 
+#. Warning message
 #: sabnzbd/rss.py
 msgid "RSS Feed %s was empty"
 msgstr "RSS-лента %s была пустой"
@@ -1786,6 +1788,16 @@ msgstr "Загрузить"
 #: sabnzbd/skintext.py
 msgid "Join files"
 msgstr "Объединить файлы"
+
+#. PP phase "unpack"
+#: sabnzbd/skintext.py
+msgid "Unpack"
+msgstr "Распаковать"
+
+#. PP phase "script" - Notification Script settings
+#: sabnzbd/skintext.py
+msgid "Script"
+msgstr "Сценарий"
 
 #. PP Source of the NZB (path or URL) - Where to find the SABnzbd sourcecode
 #: sabnzbd/skintext.py
@@ -2011,11 +2023,6 @@ msgstr "час"
 msgid "hours"
 msgstr "часов"
 
-#. One minute
-#: sabnzbd/skintext.py
-msgid "min"
-msgstr "мин"
-
 #. Multiple minutes
 #: sabnzbd/skintext.py
 msgid "mins"
@@ -2112,12 +2119,24 @@ msgid "This month"
 msgstr "за этот месяц"
 
 #: sabnzbd/skintext.py
+msgid "Selected date range"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Today"
 msgstr "за сегодня"
 
 #: sabnzbd/skintext.py
 msgid "Total"
 msgstr "всего"
+
+#: sabnzbd/skintext.py
+msgid "Custom"
+msgstr "Другой"
+
+#: sabnzbd/skintext.py
+msgid "Speed"
+msgstr "Скорость"
 
 #: sabnzbd/skintext.py
 msgid "on"
@@ -2949,6 +2968,12 @@ msgid "Enable accessing the interface from a HTTPS address."
 msgstr "Доступ к интерфейсу по протоколу HTTPS."
 
 #: sabnzbd/skintext.py
+msgid ""
+"Modern web browsers and other clients will not accept self-signed "
+"certificates and will give a warning and/or won't connect at all."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "HTTPS Port"
 msgstr "Порт HTTPS"
 
@@ -3218,6 +3243,26 @@ msgstr ""
 " переопределить в пользовательских категориях.</i>"
 
 #: sabnzbd/skintext.py
+msgid "Minimum Free Space for Completed Download Folder"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Will not work if a category folder is on a different disk."
+msgstr ""
+
+#. Auto-resume download on the reset day
+#: sabnzbd/skintext.py
+msgid "Auto resume"
+msgstr "Автоматически возобновлять"
+
+#: sabnzbd/skintext.py
+msgid ""
+"Downloading will automatically resume if the minimum free space is available"
+" again.<br />Applies to both the Temporary and Complete Download Folder.<br "
+"/>Checked every few minutes."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Permissions for completed downloads"
 msgstr "Права доступа для завершённых загрузок"
 
@@ -3362,8 +3407,11 @@ msgid "Post-Process Only Verified Jobs"
 msgstr "Обрабатывать только проверенные задания"
 
 #: sabnzbd/skintext.py
-msgid "Only perform post-processing on jobs that passed all PAR2 checks."
-msgstr "Обрабатывать только задания, успешно прошедшие все проверки PAR2."
+msgid ""
+"Only unpack and run scripts on jobs that passed the verification stage. If "
+"turned off, all jobs will be marked as Completed even if they are "
+"incomplete."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Action when encrypted RAR is downloaded"
@@ -3660,11 +3708,6 @@ msgstr ""
 "День месяца или недели (1 — понедельник), когда провайдер сбрасывает квоту. "
 "(дополнительно можно указать чч:мм)"
 
-#. Auto-resume download on the reset day
-#: sabnzbd/skintext.py
-msgid "Auto resume"
-msgstr "Автоматически возобновлять"
-
 #: sabnzbd/skintext.py
 msgid "Should downloading resume after the quota is reset?"
 msgstr "Возобновлять загрузку после сброса квоты?"
@@ -3818,6 +3861,21 @@ msgstr "Пароль"
 msgid "Timeout"
 msgstr "Время ожидания"
 
+#: sabnzbd/skintext.py
+msgid "Account expiration date"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Warn 5 days in advance of account expiration date."
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Quota for this account, counted from the time it is set. In bytes, "
+"optionally follow with K,M,G.<br />Warn when it reaches 0, checked every few"
+" minutes."
+msgstr ""
+
 #. Server's retention time in days
 #: sabnzbd/skintext.py
 msgid "Retention time"
@@ -3909,6 +3967,14 @@ msgstr "Отправлять команду группы перед запрос
 msgid "Personal notes"
 msgstr ""
 
+#: sabnzbd/skintext.py
+msgid "Article availability"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "%f% available of %d requested articles"
+msgstr ""
+
 #. Config->Scheduling
 #: sabnzbd/skintext.py
 msgid "Add Schedule"
@@ -3960,6 +4026,16 @@ msgstr "Прочитать ленту"
 #: sabnzbd/skintext.py
 msgid "Force Download"
 msgstr "Загрузить принудительно"
+
+#. Config->RSS edit button
+#: sabnzbd/skintext.py
+msgid "Edit"
+msgstr ""
+
+#. Config->RSS when will be the next RSS scan
+#: sabnzbd/skintext.py
+msgid "Next scan at"
+msgstr ""
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4117,7 +4193,7 @@ msgstr "Уведомление отправлено"
 msgid "Enable NotifyOSD"
 msgstr "Использовать NotifyOSD"
 
-#. Header for OSX Notfication Center section
+#. Header for macOS Notfication Center section
 #: sabnzbd/skintext.py
 msgid "Notification Center"
 msgstr ""
@@ -4664,11 +4740,11 @@ msgid "Date format"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra queue column"
+msgid "Extra queue columns"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Extra history column"
+msgid "Extra history columns"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -4752,10 +4828,6 @@ msgid "View Script Log"
 msgstr "Просмотреть журнал сценария"
 
 #: sabnzbd/skintext.py
-msgid "Update Available!"
-msgstr "Доступно обновление!"
-
-#: sabnzbd/skintext.py
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will"
 " be lost after you close the browser!"
@@ -4766,20 +4838,16 @@ msgid "Glitter has some (new) features you might like!"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Custom"
-msgstr "Другой"
+msgid "Compact layout"
+msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Compact layout"
+msgid "Always use full screen width"
 msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Tabbed layout <br/>(separate queue and history)"
 msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Speed"
-msgstr "Скорость"
 
 #: sabnzbd/skintext.py
 msgid "Confirm Queue Deletions"

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,13 +21,12 @@ sabtray.py - Systray icon for SABnzbd on Windows, contributed by Jan Schejbal
 
 import os
 import logging
+from threading import Thread
 from time import sleep
 
 import sabnzbd
 from sabnzbd.panic import launch_a_browser
 import sabnzbd.api as api
-import sabnzbd.scheduler as scheduler
-from sabnzbd.downloader import Downloader
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import to_units
 
@@ -84,7 +83,7 @@ class SABTrayThread(SysTrayIconThread):
             (T("Shutdown"), None, self.shutdown),
         )
 
-        SysTrayIconThread.__init__(self, self.sabicons["default"], "SABnzbd", menu_options, None, 0, "SabTrayIcon")
+        super().__init__(self.sabicons["default"], "SABnzbd", menu_options, None, 0, "SabTrayIcon")
 
     def set_texts(self):
         """ Cache texts for performance, doUpdates is called often """
@@ -145,7 +144,7 @@ class SABTrayThread(SysTrayIconThread):
 
     def pausefor(self, minutes):
         """ Need function for each pause-timer """
-        scheduler.plan_resume(minutes)
+        sabnzbd.Scheduler.plan_resume(minutes)
 
     def pausefor5min(self, icon):
         self.pausefor(5)
@@ -172,7 +171,7 @@ class SABTrayThread(SysTrayIconThread):
 
     def rss(self, icon):
         self.hover_text = T("Read all RSS feeds")
-        scheduler.force_rss()
+        sabnzbd.Scheduler.force_rss()
 
     def nologin(self, icon):
         sabnzbd.cfg.username.set("")
@@ -190,12 +189,13 @@ class SABTrayThread(SysTrayIconThread):
 
     def shutdown(self, icon):
         self.hover_text = T("Shutdown")
-        sabnzbd.shutdown_program()
+        # In seperate thread, because the shutdown also stops the tray icon
+        Thread(target=sabnzbd.shutdown_program).start()
 
     def pause(self):
-        scheduler.plan_resume(0)
-        Downloader.do.pause()
+        sabnzbd.Scheduler.plan_resume(0)
+        sabnzbd.Downloader.pause()
 
     def resume(self):
-        scheduler.plan_resume(0)
+        sabnzbd.Scheduler.plan_resume(0)
         sabnzbd.unpause_all()

@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@ sabnzbd.zconfig - bonjour/zeroconfig support
 
 import os
 import logging
+import socket
 
 _HOST_PORT = (None, None)
 
@@ -34,19 +35,9 @@ except:
 
 import sabnzbd
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import match_str
+from sabnzbd.misc import is_localhost
 
 _BONJOUR_OBJECT = None
-
-
-def hostname():
-    """ Return host's pretty name """
-    if sabnzbd.WIN32:
-        return os.environ.get("computername", "unknown")
-    try:
-        return os.uname()[1]
-    except:
-        return "unknown"
 
 
 def _zeroconf_callback(sdRef, flags, errorCode, name, regtype, domain):
@@ -67,8 +58,8 @@ def set_bonjour(host=None, port=None):
     """ Publish host/port combo through Bonjour """
     global _HOST_PORT, _BONJOUR_OBJECT
 
-    if not _HAVE_BONJOUR or not cfg.enable_bonjour():
-        logging.info("No Bonjour/ZeroConfig support installed")
+    if not _HAVE_BONJOUR or not cfg.enable_broadcast():
+        logging.info("No bonjour/zeroconf support installed")
         return
 
     if host is None and port is None:
@@ -80,13 +71,13 @@ def set_bonjour(host=None, port=None):
     zhost = None
     domain = None
 
-    if match_str(host, ("localhost", "127.0.", "::1")):
-        logging.info('Bonjour/ZeroConfig does not support "localhost"')
+    if is_localhost(host):
+        logging.info("Cannot setup bonjour/zeroconf for localhost (%s)", host)
         # All implementations fail to implement "localhost" properly
         # A false address is published even when scope==kDNSServiceInterfaceIndexLocalOnly
         return
 
-    name = hostname()
+    name = socket.gethostname()
     logging.debug('Try to publish in Bonjour as "%s" (%s:%s)', name, host, port)
     try:
         refObject = pybonjour.DNSServiceRegister(

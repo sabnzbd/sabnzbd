@@ -1,10 +1,10 @@
-                            SABnzbd 3.1.0
+                            SABnzbd 3.2.0
 
 -------------------------------------------------------------------------------
 0) LICENSE
 -------------------------------------------------------------------------------
 
-(c) Copyright 2007-2020 by "The SABnzbd-team" <team@sabnzbd.org>
+(c) Copyright 2007-2021 by "The SABnzbd-team" <team@sabnzbd.org>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -52,7 +52,7 @@ Specific guides to install from source are available for Windows and macOS:
     https://sabnzbd.org/wiki/installation/install-macos
     https://sabnzbd.org/wiki/installation/install-from-source-windows
 
-Only Python 3.5 and above is supported.
+Only Python 3.6 and above is supported.
 
 On Linux systems you need to install:
     par2 unrar unzip python3-setuptools python3-pip

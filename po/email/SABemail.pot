@@ -1,11 +1,11 @@
 #
 # SABnzbd Translation Template file EMAIL
-# Copyright 2011-2020 The SABnzbd-Team
+# Copyright 2011-2021 The SABnzbd-Team
 #   team@sabnzbd.org
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.1.0-develop\n"
+"Project-Id-Version: SABnzbd-3.2.0-develop\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: team@sabnzbd.org\n"
 "Language-Team: SABnzbd <team@sabnzbd.org>\n"

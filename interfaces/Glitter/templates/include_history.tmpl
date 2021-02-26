@@ -5,8 +5,10 @@
             <tr>
                 <th style="width: 25px;"></th>
                 <th></th>
-                <th class="table-status-header" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumn }"></th>
-                <th class="table-header-extra" data-bind="css: { 'table-extra-header-visible' : extraHistoryColumn }"></th>
+                <th class="table-status-header" data-bind="css: { 'table-header-status-smaller' : extraHistoryColumns().length }"></th>
+                <!-- ko foreach: extraHistoryColumns -->
+                <th class="table-header-extra"></th>
+                <!-- /ko -->
                 <th style="width: 130px;"></th>
                 <th style="width: 60px;"></th>
             </tr>
@@ -137,10 +139,11 @@
                     <!-- /ko -->
                 </td>
                 <td class="status row-wrap-text" data-bind="text: statusText()" onclick="showDetails(this)"></td>
+                <!-- ko foreach: parent.parent.extraHistoryColumns -->
                 <td class="row-extra-text" onclick="showDetails(this)">
-                    <div class="row-wrap-text" data-bind="text: extraText">
-                    </div>
+                    <div class="row-wrap-text" data-bind="text: \$parent.showColumn(\$data)"></div>
                 </td>
+                <!-- /ko -->
                 <td class="history-completedon row-wrap-text" data-bind="text: completedOn(), attr: { 'data-timestamp': completed }" onclick="showDetails(this)"></td>
                 <td class="delete">
                     <div class="dropdown">

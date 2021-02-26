@@ -42,9 +42,11 @@ The version in Turbogears is based on the original stand-alone Kronos.
 This is open-source software, released under the MIT Software License:
 http://www.opensource.org/licenses/mit-license.php
 
+Adapted to work on Python 3 by the SABnzbd-Team.
+
 """
 
-__version__ = "2.0"
+__version__ = "2.1"
 
 __all__ = [
     "DayTaskRescheduler",
@@ -66,20 +68,15 @@ __all__ = [
     "ThreadedTaskMixin",
     "ThreadedWeekdayTask",
     "WeekdayTask",
-    "add_interval_task",
-    "add_monthday_task",
-    "add_single_task",
-    "add_weekday_task",
-    "cancel",
     "method",
 ]
 
 import os
-import sys
 import sched
 import time
 import weakref
 import logging
+import threading
 
 
 class method:
@@ -121,7 +118,9 @@ class Scheduler:
     def _release_lock(self):
         pass
 
-    def add_interval_task(self, action, taskname, initialdelay, interval, processmethod, args, kw):
+    def add_interval_task(
+        self, action, taskname, initialdelay, interval, processmethod=method.sequential, args=None, kw=None
+    ):
         """Add a new Interval Task to the schedule.
 
         A very short initialdelay or one of zero cannot be honored, you will
@@ -148,7 +147,7 @@ class Scheduler:
         self.schedule_task(task, initialdelay)
         return task
 
-    def add_single_task(self, action, taskname, initialdelay, processmethod, args, kw):
+    def add_single_task(self, action, taskname, initialdelay, processmethod=method.sequential, args=None, kw=None):
         """Add a new task to the scheduler that will only be executed once."""
         if initialdelay < 0:
             raise ValueError("Delay must be >0")
@@ -169,7 +168,9 @@ class Scheduler:
         self.schedule_task(task, initialdelay)
         return task
 
-    def add_daytime_task(self, action, taskname, weekdays, monthdays, timeonday, processmethod, args, kw):
+    def add_daytime_task(
+        self, action, taskname, weekdays, monthdays, timeonday, processmethod=method.sequential, args=None, kw=None
+    ):
         """Add a new Day Task (Weekday or Monthday) to the schedule."""
         if weekdays and monthdays:
             raise ValueError("You can only specify weekdays or monthdays, " "not both")
@@ -250,35 +251,23 @@ class Scheduler:
         """Cancel given scheduled task."""
         self.sched.cancel(task.event)
 
-    if sys.version_info >= (2, 6):
-        # code for sched module of python 2.6+
-        def _getqueuetoptime(self):
-            try:
-                return self.sched._queue[0].time
-            except IndexError:
-                return 0.0
+    def _getqueuetoptime(self):
+        try:
+            return self.sched._queue[0].time
+        except IndexError:
+            return 0.0
 
-        def _clearschedqueue(self):
-            self.sched._queue[:] = []
-
-    else:
-        # code for sched module of python 2.5 and older
-        def _getqueuetoptime(self):
-            try:
-                return self.sched.queue[0][0]
-            except IndexError:
-                return 0.0
-
-        def _clearschedqueue(self):
-            self.sched.queue[:] = []
+    def _clearschedqueue(self):
+        self.sched._queue[:] = []
 
     def _run(self):
         # Low-level run method to do the actual scheduling loop.
+        self.running = True
         while self.running:
             try:
                 self.sched.run()
             except Exception as x:
-                logging.error("ERROR DURING SCHEDULER EXECUTION %s" % str(x), exc_info=True)
+                logging.error("Error during scheduler execution: %s" % str(x), exc_info=True)
             # queue is empty; sleep a short while before checking again
             if self.running:
                 time.sleep(5)
@@ -312,7 +301,7 @@ class Task:
 
     def handle_exception(self, exc):
         """Handle any exception that occured during task execution."""
-        logging.error("ERROR DURING SCHEDULER EXECUTION %s" % str(exc), exc_info=True)
+        logging.error("Error during scheduler execution: %s" % str(exc), exc_info=True)
 
 
 class SingleTask(Task):
@@ -414,78 +403,75 @@ class MonthdayTask(DayTaskRescheduler, Task):
             self.action(*self.args, **self.kw)
 
 
-try:
-    import threading
+class ThreadedScheduler(Scheduler):
+    """A Scheduler that runs in its own thread."""
 
-    class ThreadedScheduler(Scheduler):
-        """A Scheduler that runs in its own thread."""
+    def __init__(self):
+        super().__init__()
+        # we require a lock around the task queue
+        self._lock = threading.Lock()
 
-        def __init__(self):
-            Scheduler.__init__(self)
-            # we require a lock around the task queue
-            self._lock = threading.Lock()
+    def start(self):
+        """Splice off a thread in which the scheduler will run."""
+        self.thread = threading.Thread(target=self._run)
+        self.thread.setDaemon(True)
+        self.thread.start()
 
-        def start(self):
-            """Splice off a thread in which the scheduler will run."""
-            self.thread = threading.Thread(target=self._run)
-            self.thread.setDaemon(True)
-            self.thread.start()
+    def stop(self):
+        """Stop the scheduler and wait for the thread to finish."""
+        Scheduler.stop(self)
+        try:
+            self.thread.join()
+        except AttributeError:
+            pass
 
-        def stop(self):
-            """Stop the scheduler and wait for the thread to finish."""
-            Scheduler.stop(self)
-            try:
-                self.thread.join()
-            except AttributeError:
-                pass
+    def _acquire_lock(self):
+        """Lock the thread's task queue."""
+        self._lock.acquire()
 
-        def _acquire_lock(self):
-            """Lock the thread's task queue."""
-            self._lock.acquire()
-
-        def _release_lock(self):
-            """Release the lock on th ethread's task queue."""
-            self._lock.release()
-
-    class ThreadedTaskMixin:
-        """A mixin class to make a Task execute in a separate thread."""
-
-        def __call__(self, schedulerref):
-            """Execute the task action in its own thread."""
-            threading.Thread(target=self.threadedcall).start()
-            self.reschedule(schedulerref())
-
-        def threadedcall(self):
-            # This method is run within its own thread, so we have to
-            # do the execute() call and exception handling here.
-            try:
-                self.execute()
-            except Exception as x:
-                self.handle_exception(x)
-
-    class ThreadedIntervalTask(ThreadedTaskMixin, IntervalTask):
-        """Interval Task that executes in its own thread."""
-
-        pass
-
-    class ThreadedSingleTask(ThreadedTaskMixin, SingleTask):
-        """Single Task that executes in its own thread."""
-
-        pass
-
-    class ThreadedWeekdayTask(ThreadedTaskMixin, WeekdayTask):
-        """Weekday Task that executes in its own thread."""
-
-        pass
-
-    class ThreadedMonthdayTask(ThreadedTaskMixin, MonthdayTask):
-        """Monthday Task that executes in its own thread."""
-
-        pass
+    def _release_lock(self):
+        """Release the lock on th ethread's task queue."""
+        self._lock.release()
 
 
-except ImportError:
-    # threading is not available
+class ThreadedTaskMixin:
+    """A mixin class to make a Task execute in a separate thread."""
+
+    def __call__(self, schedulerref):
+        """Execute the task action in its own thread."""
+        threading.Thread(target=self.threadedcall).start()
+        self.reschedule(schedulerref())
+
+    def threadedcall(self):
+        # This method is run within its own thread, so we have to
+        #         # do the execute() call and exception handling here.
+        try:
+            self.execute()
+        except Exception as x:
+            self.handle_exception(x)
+
+
+class ThreadedIntervalTask(ThreadedTaskMixin, IntervalTask):
+    """Interval Task that executes in its own thread."""
+
+    pass
+
+
+class ThreadedSingleTask(ThreadedTaskMixin, SingleTask):
+    """Single Task that executes in its own thread."""
+
+    pass
+
+
+class ThreadedWeekdayTask(ThreadedTaskMixin, WeekdayTask):
+    """Weekday Task that executes in its own thread."""
+
+    pass
+
+
+class ThreadedMonthdayTask(ThreadedTaskMixin, MonthdayTask):
+    """Monthday Task that executes in its own thread."""
+
     pass
 
 

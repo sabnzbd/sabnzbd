@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@ CONFIG_VERSION = 19
 QUEUE_VERSION = 10
 POSTPROC_QUEUE_VERSION = 2
 
-REC_RAR_VERSION = 500
+REC_RAR_VERSION = 550
 
 PNFO = namedtuple(
     "PNFO",
@@ -40,6 +40,7 @@ ANFO = namedtuple("ANFO", "article_sum cache_size cache_limit")
 # Leave some space for "_UNPACK_" which we append during post-proc
 # Or, when extra ".1", ".2" etc. are added for identically named jobs
 DEF_FOLDER_MAX = 256 - 10
+DEF_FILE_MAX = 255 - 10  # max filename length on modern filesystems, minus some room for extra chars later on
 
 GIGI = float(2 ** 30)
 MEBI = float(2 ** 20)
@@ -52,6 +53,7 @@ QUEUE_FILE_NAME = QUEUE_FILE_TMPL % QUEUE_VERSION
 POSTPROC_QUEUE_FILE_NAME = "postproc%s.sab" % POSTPROC_QUEUE_VERSION
 RSS_FILE_NAME = "rss_data.sab"
 SCAN_FILE_NAME = "watched_data2.sab"
+RATING_FILE_NAME = "Rating.sab"
 FUTURE_Q_FOLDER = "future"
 JOB_ADMIN = "__ADMIN__"
 VERIFIED_FILE = "__verified__"
@@ -73,7 +75,7 @@ DEF_INTERFACES = "interfaces"
 DEF_EMAIL_TMPL = "email"
 DEF_STDCONFIG = "Config"
 DEF_STDINTF = "Glitter"
-DEF_SKIN_COLORS = {"Glitter": "Default", "plush": "gold"}
+DEF_SKIN_COLORS = {"Glitter": "Auto", "plush": "gold"}
 DEF_MAIN_TMPL = os.path.normpath("templates/main.tmpl")
 DEF_INI_FILE = "sabnzbd.ini"
 DEF_HOST = "127.0.0.1"
@@ -87,7 +89,6 @@ DEF_ARTICLE_CACHE_MAX = "1G"
 DEF_TIMEOUT = 60
 DEF_SCANRATE = 5
 MAX_WARNINGS = 20
-MAX_WIN_DFOLDER = 60
 MAX_BAD_ARTICLES = 5
 
 # Constants affecting download performance

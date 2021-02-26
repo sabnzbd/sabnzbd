@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -25,12 +25,13 @@ import re
 import shutil
 import threading
 import uuid
+from typing import List, Dict, Any, Callable, Optional, Union, Tuple
 from urllib.parse import urlparse
 
 import configobj
 
 import sabnzbd.misc
-from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY, MAX_WIN_DFOLDER
+from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
 
@@ -38,7 +39,7 @@ CONFIG_LOCK = threading.Lock()
 SAVE_CONFIG_LOCK = threading.Lock()
 
 
-CFG = {}  # Holds INI structure
+CFG: configobj.ConfigObj  # Holds INI structure
 # during re-write this variable is global
 # to allow direct access to INI structure
 
@@ -47,13 +48,13 @@ database = {}  # Holds the option dictionary
 modified = False  # Signals a change in option dictionary
 # Should be reset after saving to settings file
 
-paramfinder = re.compile(r"""(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)""")
+RE_PARAMFINDER = re.compile(r"""(?:'.*?')|(?:".*?")|(?:[^'",\s][^,]*)""")
 
 
 class Option:
     """ Basic option class, basic fields """
 
-    def __init__(self, section, keyword, default_val=None, add=True, protect=False):
+    def __init__(self, section: str, keyword: str, default_val: Any = None, add: bool = True, protect: bool = False):
         """Basic option
         `section`     : single section or comma-separated list of sections
                         a list will be a hierarchy: "foo, bar" --> [foo][[bar]]
@@ -63,10 +64,10 @@ class Option:
         `protect`     : Do not allow setting via the API (specifically set_dict)
         """
         self.__sections = section.split(",")
-        self.__keyword = keyword
-        self.__default_val = default_val
-        self.__value = None
-        self.__callback = None
+        self.__keyword: str = keyword
+        self.__default_val: Any = default_val
+        self.__value: Any = None
+        self.__callback: Optional[Callable] = None
         self.__protect = protect
 
         # Add myself to the config dictionary
@@ -79,34 +80,29 @@ class Option:
                 anchor = anchor[section]
             anchor[keyword] = self
 
-    def __call__(self):
-        """ get() replacement """
-        return self.get()
-
-    def get(self):
+    def get(self) -> Any:
         """ Retrieve value field """
         if self.__value is not None:
             return self.__value
         else:
             return self.__default_val
 
-    def get_string(self):
+    def get_string(self) -> str:
         return str(self.get())
 
-    def get_dict(self, safe=False):
+    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
         """ Return value a dictionary """
         return {self.__keyword: self.get()}
 
-    def set_dict(self, input_dict):
+    def set_dict(self, values: Dict[str, Any]):
         """ Set value based on dictionary """
-        if self.__protect:
-            return False
-        try:
-            return self.set(input_dict["value"])
-        except KeyError:
-            return False
+        if not self.__protect:
+            try:
+                self.set(values["value"])
+            except KeyError:
+                pass
 
-    def __set(self, value):
+    def set(self, value: Any):
         """ Set new value, no validation """
         global modified
         if value is not None:
@@ -115,15 +111,11 @@ class Option:
                 modified = True
                 if self.__callback:
                     self.__callback()
-        return None
 
-    def set(self, value):
-        return self.__set(value)
-
-    def default(self):
+    def default(self) -> Any:
         return self.__default_val
 
-    def callback(self, callback):
+    def callback(self, callback: Callable):
         """ Set callback function """
         self.__callback = callback
 
@@ -133,18 +125,26 @@ class Option:
 
 
 class OptionNumber(Option):
-    """ Numeric option class, int/float is determined from default value """
+    """Numeric option class, int/float is determined from default value."""
 
     def __init__(
-        self, section, keyword, default_val=0, minval=None, maxval=None, validation=None, add=True, protect=False
+        self,
+        section: str,
+        keyword: str,
+        default_val: Union[int, float] = 0,
+        minval: Optional[int] = None,
+        maxval: Optional[int] = None,
+        validation: Optional[Callable] = None,
+        add: bool = True,
+        protect: bool = False,
     ):
-        self.__minval = minval
-        self.__maxval = maxval
-        self.__validation = validation
-        self.__int = isinstance(default_val, int)
+        self.__minval: Optional[int] = minval
+        self.__maxval: Optional[int] = maxval
+        self.__validation: Optional[Callable] = validation
+        self.__int: bool = isinstance(default_val, int)
         super().__init__(section, keyword, default_val, add=add, protect=protect)
 
-    def set(self, value):
+    def set(self, value: Any):
         """ set new value, limited by range """
         if value is not None:
             try:
@@ -155,7 +155,7 @@ class OptionNumber(Option):
             except ValueError:
                 value = super().default()
             if self.__validation:
-                error, val = self.__validation(value)
+                _, val = self.__validation(value)
                 super().set(val)
             else:
                 if self.__maxval is not None and value > self.__maxval:
@@ -163,39 +163,49 @@ class OptionNumber(Option):
                 elif self.__minval is not None and value < self.__minval:
                     value = self.__minval
                 super().set(value)
-        return None
+
+    def __call__(self) -> Union[int, float]:
+        """ get() replacement """
+        return self.get()
 
 
 class OptionBool(Option):
-    """ Boolean option class """
+    """ Boolean option class, always returns 0 or 1."""
 
-    def __init__(self, section, keyword, default_val=False, add=True, protect=False):
+    def __init__(self, section: str, keyword: str, default_val: bool = False, add: bool = True, protect: bool = False):
         super().__init__(section, keyword, int(default_val), add=add, protect=protect)
 
-    def set(self, value):
-        if value is None:
-            value = 0
-        try:
-            super().set(int(value))
-        except ValueError:
-            super().set(0)
-        return None
+    def set(self, value: Any):
+        # Store the value as integer, easier to parse when reading the config.
+        super().set(sabnzbd.misc.int_conv(value))
+
+    def __call__(self) -> int:
+        """ get() replacement """
+        return int(self.get())
 
 
 class OptionDir(Option):
     """ Directory option class """
 
     def __init__(
-        self, section, keyword, default_val="", apply_umask=False, create=True, validation=None, writable=True, add=True
+        self,
+        section: str,
+        keyword: str,
+        default_val: str = "",
+        apply_umask: bool = False,
+        create: bool = True,
+        validation: Optional[Callable] = None,
+        writable: bool = True,
+        add: bool = True,
     ):
-        self.__validation = validation
-        self.__root = ""  # Base directory for relative paths
-        self.__apply_umask = apply_umask
-        self.__create = create
-        self.__writable = writable
+        self.__validation: Optional[Callable] = validation
+        self.__root: str = ""  # Base directory for relative paths
+        self.__apply_umask: bool = apply_umask
+        self.__create: bool = create
+        self.__writable: bool = writable
         super().__init__(section, keyword, default_val, add=add)
 
-    def get(self):
+    def get(self) -> str:
         """ Return value, corrected for platform """
         p = super().get()
         if sabnzbd.WIN32:
@@ -203,7 +213,7 @@ class OptionDir(Option):
         else:
             return p.replace("\\", "/") if "\\" in p else p
 
-    def get_path(self):
+    def get_path(self) -> str:
         """ Return full absolute path """
         value = self.get()
         path = ""
@@ -213,11 +223,11 @@ class OptionDir(Option):
                 _, path, _ = create_real_path(self.ident()[1], self.__root, value, self.__apply_umask, self.__writable)
         return path
 
-    def get_clipped_path(self):
+    def get_clipped_path(self) -> str:
         """ Return clipped full absolute path """
         return clip_path(self.get_path())
 
-    def test_path(self):
+    def test_path(self) -> bool:
         """ Return True if path exists """
         value = self.get()
         if value:
@@ -225,11 +235,11 @@ class OptionDir(Option):
         else:
             return False
 
-    def set_root(self, root):
+    def set_root(self, root: str):
         """ Set new root, is assumed to be valid """
         self.__root = root
 
-    def set(self, value, create=False):
+    def set(self, value: str, create: bool = False) -> Optional[str]:
         """Set new dir value, validate and create if needed
         Return None when directory is accepted
         Return error-string when not accepted, value will not be changed
@@ -249,21 +259,33 @@ class OptionDir(Option):
                 super().set(value)
         return error
 
-    def set_create(self, value):
+    def set_create(self, value: bool):
         """ Set auto-creation value """
         self.__create = value
+
+    def __call__(self) -> str:
+        """ get() replacement """
+        return self.get()
 
 
 class OptionList(Option):
     """ List option class """
 
-    def __init__(self, section, keyword, default_val=None, validation=None, add=True, protect=False):
-        self.__validation = validation
+    def __init__(
+        self,
+        section: str,
+        keyword: str,
+        default_val: Union[str, List, None] = None,
+        validation: Optional[Callable] = None,
+        add: bool = True,
+        protect: bool = False,
+    ):
+        self.__validation: Optional[Callable] = validation
         if default_val is None:
             default_val = []
         super().__init__(section, keyword, default_val, add=add, protect=protect)
 
-    def set(self, value):
+    def set(self, value: Union[str, List]) -> Optional[str]:
         """ Set the list given a comma-separated string or a list """
         error = None
         if value is not None:
@@ -271,47 +293,52 @@ class OptionList(Option):
                 if '"' not in value and "," not in value:
                     value = value.split()
                 else:
-                    value = paramfinder.findall(value)
+                    value = RE_PARAMFINDER.findall(value)
             if self.__validation:
                 error, value = self.__validation(value)
             if not error:
                 super().set(value)
         return error
 
-    def get_string(self):
+    def get_string(self) -> str:
         """ Return the list as a comma-separated string """
-        lst = self.get()
-        if isinstance(lst, str):
-            return lst
-        else:
-            return ", ".join(lst)
+        return ", ".join(self.get())
 
-    def default_string(self):
+    def default_string(self) -> str:
         """ Return the default list as a comma-separated string """
-        lst = self.default()
-        if isinstance(lst, str):
-            return lst
-        else:
-            return ", ".join(lst)
+        return ", ".join(self.default())
+
+    def __call__(self) -> List[str]:
+        """ get() replacement """
+        return self.get()
 
 
 class OptionStr(Option):
-    """ String class """
+    """ String class."""
 
-    def __init__(self, section, keyword, default_val="", validation=None, add=True, strip=True, protect=False):
-        self.__validation = validation
-        self.__strip = strip
+    def __init__(
+        self,
+        section: str,
+        keyword: str,
+        default_val: str = "",
+        validation: Optional[Callable] = None,
+        add: bool = True,
+        strip: bool = True,
+        protect: bool = False,
+    ):
+        self.__validation: Optional[Callable] = validation
+        self.__strip: bool = strip
         super().__init__(section, keyword, default_val, add=add, protect=protect)
 
-    def get_float(self):
+    def get_float(self) -> float:
         """ Return value converted to a float, allowing KMGT notation """
         return sabnzbd.misc.from_units(self.get())
 
-    def get_int(self):
+    def get_int(self) -> int:
         """ Return value converted to an int, allowing KMGT notation """
         return int(self.get_float())
 
-    def set(self, value):
+    def set(self, value: Any) -> Optional[str]:
         """ Set stripped value """
         error = None
         if isinstance(value, str) and self.__strip:
@@ -323,57 +350,43 @@ class OptionStr(Option):
             super().set(value)
         return error
 
+    def __call__(self) -> str:
+        """ get() replacement """
+        return self.get()
+
 
 class OptionPassword(Option):
-    """ Password class """
+    """ Password class. """
 
-    def __init__(self, section, keyword, default_val="", add=True):
+    def __init__(self, section: str, keyword: str, default_val: str = "", add: bool = True):
         self.get_string = self.get_stars
         super().__init__(section, keyword, default_val, add=add)
 
-    def get(self):
+    def get(self) -> Optional[str]:
         """ Return decoded password """
         return decode_password(super().get(), self.ident())
 
-    def get_stars(self):
-        """ Return decoded password as asterisk string """
-        return "*" * len(self.get())
+    def get_stars(self) -> Optional[str]:
+        """ Return non-descript asterisk string """
+        if self.get():
+            return "*" * 10
+        return ""
 
-    def get_dict(self, safe=False):
+    def get_dict(self, safe: bool = False) -> Dict[str, str]:
         """ Return value a dictionary """
         if safe:
             return {self.ident()[1]: self.get_stars()}
         else:
             return {self.ident()[1]: self.get()}
 
-    def set(self, pw):
+    def set(self, pw: str):
         """ Set password, encode it """
         if (pw is not None and pw == "") or (pw and pw.strip("*")):
             super().set(encode_password(pw))
-        return None
 
-
-@synchronized(CONFIG_LOCK)
-def add_to_database(section, keyword, obj):
-    """ add object as section/keyword to INI database """
-    global database
-    if section not in database:
-        database[section] = {}
-    database[section][keyword] = obj
-
-
-@synchronized(CONFIG_LOCK)
-def delete_from_database(section, keyword):
-    """ Remove section/keyword from INI database """
-    global database, CFG, modified
-    del database[section][keyword]
-    if section == "servers" and "[" in keyword:
-        keyword = keyword.replace("[", "{").replace("]", "}")
-    try:
-        del CFG[section][keyword]
-    except KeyError:
-        pass
-    modified = True
+    def __call__(self) -> str:
+        """ get() replacement """
+        return self.get()
 
 
 class ConfigServer:
@@ -384,29 +397,38 @@ class ConfigServer:
         self.__name = name
         name = "servers," + self.__name
 
-        self.displayname = OptionStr(name, "displayname", "", add=False)
-        self.host = OptionStr(name, "host", "", add=False)
+        self.displayname = OptionStr(name, "displayname", add=False)
+        self.host = OptionStr(name, "host", add=False)
         self.port = OptionNumber(name, "port", 119, 0, 2 ** 16 - 1, add=False)
         self.timeout = OptionNumber(name, "timeout", 60, 20, 240, add=False)
-        self.username = OptionStr(name, "username", "", add=False)
-        self.password = OptionPassword(name, "password", "", add=False)
-        self.connections = OptionNumber(name, "connections", 1, 0, 100, add=False)
+        self.username = OptionStr(name, "username", add=False)
+        self.password = OptionPassword(name, "password", add=False)
+        self.connections = OptionNumber(name, "connections", 1, 0, 1000, add=False)
         self.ssl = OptionBool(name, "ssl", False, add=False)
         # 0=No, 1=Normal, 2=Strict (hostname verification)
         self.ssl_verify = OptionNumber(name, "ssl_verify", 2, add=False)
-        self.ssl_ciphers = OptionStr(name, "ssl_ciphers", "", add=False)
+        self.ssl_ciphers = OptionStr(name, "ssl_ciphers", add=False)
         self.enable = OptionBool(name, "enable", True, add=False)
         self.optional = OptionBool(name, "optional", False, add=False)
-        self.retention = OptionNumber(name, "retention", add=False)
+        self.retention = OptionNumber(name, "retention", 0, add=False)
+        self.expire_date = OptionStr(name, "expire_date", add=False)
+        self.quota = OptionStr(name, "quota", add=False)
+        self.usage_at_start = OptionNumber(name, "usage_at_start", add=False)
         self.send_group = OptionBool(name, "send_group", False, add=False)
         self.priority = OptionNumber(name, "priority", 0, 0, 99, add=False)
-        self.notes = OptionStr(name, "notes", "", add=False)
+        self.notes = OptionStr(name, "notes", add=False)
 
         self.set_dict(values)
         add_to_database("servers", self.__name, self)
 
-    def set_dict(self, values):
+    def set_dict(self, values: Dict[str, Any]):
         """ Set one or more fields, passed as dictionary """
+        # Replace usage_at_start value with most recent statistics if the user changes the quota value
+        # Only when we are updating it from the Config
+        if sabnzbd.WEBUI_READY and values.get("quota", "") != self.quota():
+            values["usage_at_start"] = sabnzbd.BPSMeter.grand_total.get(self.__name, 0)
+
+        # Store all values
         for kw in (
             "displayname",
             "host",
@@ -422,19 +444,21 @@ class ConfigServer:
             "enable",
             "optional",
             "retention",
+            "expire_date",
+            "quota",
+            "usage_at_start",
             "priority",
             "notes",
         ):
             try:
                 value = values[kw]
+                getattr(self, kw).set(value)
             except KeyError:
                 continue
-            exec("self.%s.set(value)" % kw)
-            if not self.displayname():
-                self.displayname.set(self.__name)
-        return True
+        if not self.displayname():
+            self.displayname.set(self.__name)
 
-    def get_dict(self, safe=False):
+    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
         """ Return a dictionary with all attributes """
         output_dict = {}
         output_dict["name"] = self.__name
@@ -454,6 +478,9 @@ class ConfigServer:
         output_dict["enable"] = self.enable()
         output_dict["optional"] = self.optional()
         output_dict["retention"] = self.retention()
+        output_dict["expire_date"] = self.expire_date()
+        output_dict["quota"] = self.quota()
+        output_dict["usage_at_start"] = self.usage_at_start()
         output_dict["send_group"] = self.send_group()
         output_dict["priority"] = self.priority()
         output_dict["notes"] = self.notes()
@@ -463,23 +490,23 @@ class ConfigServer:
         """ Remove from database """
         delete_from_database("servers", self.__name)
 
-    def rename(self, name):
+    def rename(self, name: str):
         """ Give server new display name """
         self.displayname.set(name)
 
-    def ident(self):
+    def ident(self) -> Tuple[str, str]:
         return "servers", self.__name
 
 
 class ConfigCat:
     """ Class defining a single category """
 
-    def __init__(self, name, values):
+    def __init__(self, name: str, values: Dict[str, Any]):
         self.__name = name
         name = "categories," + name
 
         self.order = OptionNumber(name, "order", 0, 0, 100, add=False)
-        self.pp = OptionStr(name, "pp", "", add=False)
+        self.pp = OptionStr(name, "pp", add=False)
         self.script = OptionStr(name, "script", "Default", add=False)
         self.dir = OptionDir(name, "dir", add=False, create=False)
         self.newzbin = OptionList(name, "newzbin", add=False, validation=validate_single_tag)
@@ -488,17 +515,16 @@ class ConfigCat:
         self.set_dict(values)
         add_to_database("categories", self.__name, self)
 
-    def set_dict(self, values):
+    def set_dict(self, values: Dict[str, Any]):
         """ Set one or more fields, passed as dictionary """
         for kw in ("order", "pp", "script", "dir", "newzbin", "priority"):
             try:
                 value = values[kw]
+                getattr(self, kw).set(value)
             except KeyError:
                 continue
-            exec("self.%s.set(value)" % kw)
-        return True
 
-    def get_dict(self, safe=False):
+    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
         """ Return a dictionary with all attributes """
         output_dict = {}
         output_dict["name"] = self.__name
@@ -522,7 +548,7 @@ class OptionFilters(Option):
         super().__init__(section, keyword, add=add)
         self.set([])
 
-    def move(self, current, new):
+    def move(self, current: int, new: int):
         """ Move filter from position 'current' to 'new' """
         lst = self.get()
         try:
@@ -532,7 +558,7 @@ class OptionFilters(Option):
             return
         self.set(lst)
 
-    def update(self, pos, value):
+    def update(self, pos: int, value: Tuple):
         """Update filter 'pos' definition, value is a list
         Append if 'pos' outside list
         """
@@ -543,7 +569,7 @@ class OptionFilters(Option):
             lst.append(value)
         self.set(lst)
 
-    def delete(self, pos):
+    def delete(self, pos: int):
         """ Remove filter 'pos' """
         lst = self.get()
         try:
@@ -552,34 +578,27 @@ class OptionFilters(Option):
             return
         self.set(lst)
 
-    def get_dict(self, safe=False):
+    def get_dict(self, safe: bool = False) -> Dict[str, str]:
         """ Return filter list as a dictionary with keys 'filter[0-9]+' """
         output_dict = {}
-        n = 0
-        for filter_name in self.get():
-            output_dict["filter" + str(n)] = filter_name
-            n = n + 1
+        for n, rss_filter in enumerate(self.get()):
+            output_dict[f"filter{n}"] = rss_filter
         return output_dict
 
-    def set_dict(self, values):
+    def set_dict(self, values: Dict[str, Any]):
         """ Create filter list from dictionary with keys 'filter[0-9]+' """
         filters = []
+        # We don't know how many filters there are, so just assume all values are filters
         for n in range(len(values)):
-            kw = "filter%d" % n
-            val = values.get(kw)
-            if val is not None:
-                val = values[kw]
-                if isinstance(val, list):
-                    filters.append(val)
-                else:
-                    filters.append(paramfinder.findall(val))
-                while len(filters[-1]) < 7:
-                    filters[-1].append("1")
-                if not filters[-1][6]:
-                    filters[-1][6] = "1"
+            kw = f"filter{n}"
+            if kw in values:
+                filters.append(values[kw])
         if filters:
             self.set(filters)
-        return True
+
+    def __call__(self) -> List[List[str]]:
+        """ get() replacement """
+        return self.get()
 
 
 class ConfigRSS:
@@ -591,7 +610,7 @@ class ConfigRSS:
 
         self.uri = OptionList(name, "uri", add=False)
         self.cat = OptionStr(name, "cat", add=False)
-        self.pp = OptionStr(name, "pp", "", add=False)
+        self.pp = OptionStr(name, "pp", add=False)
         self.script = OptionStr(name, "script", add=False)
         self.enable = OptionBool(name, "enable", add=False)
         self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, DEFAULT_PRIORITY, 2, add=False)
@@ -601,19 +620,17 @@ class ConfigRSS:
         self.set_dict(values)
         add_to_database("rss", self.__name, self)
 
-    def set_dict(self, values):
+    def set_dict(self, values: Dict[str, Any]):
         """ Set one or more fields, passed as dictionary """
         for kw in ("uri", "cat", "pp", "script", "priority", "enable"):
             try:
                 value = values[kw]
+                getattr(self, kw).set(value)
             except KeyError:
                 continue
-            exec("self.%s.set(value)" % kw)
-
         self.filters.set_dict(values)
-        return True
 
-    def get_dict(self, safe=False):
+    def get_dict(self, safe: bool = False) -> Dict[str, Any]:
         """ Return a dictionary with all attributes """
         output_dict = {}
         output_dict["name"] = self.__name
@@ -632,8 +649,38 @@ class ConfigRSS:
         """ Remove from database """
         delete_from_database("rss", self.__name)
 
-    def ident(self):
+    def rename(self, new_name: str):
+        """ Update the name and the saved entries """
+        delete_from_database("rss", self.__name)
+        sabnzbd.RSSReader.rename(self.__name, new_name)
+        self.__name = new_name
+        add_to_database("rss", self.__name, self)
+
+    def ident(self) -> Tuple[str, str]:
         return "rss", self.__name
+
+
+@synchronized(CONFIG_LOCK)
+def add_to_database(section, keyword, obj):
+    """ add object as section/keyword to INI database """
+    global database
+    if section not in database:
+        database[section] = {}
+    database[section][keyword] = obj
+
+
+@synchronized(CONFIG_LOCK)
+def delete_from_database(section, keyword):
+    """ Remove section/keyword from INI database """
+    global database, CFG, modified
+    del database[section][keyword]
+    if section == "servers" and "[" in keyword:
+        keyword = keyword.replace("[", "{").replace("]", "}")
+    try:
+        del CFG[section][keyword]
+    except KeyError:
+        pass
+    modified = True
 
 
 def get_dconfig(section, keyword, nested=False):
@@ -696,7 +743,7 @@ def set_config(kwargs):
     return True
 
 
-def delete(section, keyword):
+def delete(section: str, keyword: str):
     """ Delete specific config item """
     try:
         database[section][keyword].delete()
@@ -778,9 +825,16 @@ def _read_config(path, try_backup=False):
                 except KeyError:
                     pass
 
-    define_categories()
-    define_rss()
-    define_servers()
+    # Define the special settings
+    if "categories" in CFG:
+        for cat in CFG["categories"]:
+            ConfigCat(cat, CFG["categories"][cat])
+    if "rss" in CFG:
+        for rss_feed in CFG["rss"]:
+            ConfigRSS(rss_feed, CFG["rss"][rss_feed])
+    if "servers" in CFG:
+        for server in CFG["servers"]:
+            ConfigServer(server.replace("{", "[").replace("}", "]"), CFG["servers"][server])
 
     modified = False
     return True, ""
@@ -825,13 +879,7 @@ def save_config(force=False):
                     CFG[sec] = {}
                 value = database[section][option]()
                 # bool is a subclass of int, check first
-                if isinstance(value, bool):
-                    # convert bool to int when saving so we store 0 or 1
-                    CFG[sec][kw] = str(int(value))
-                elif isinstance(value, int):
-                    CFG[sec][kw] = str(value)
-                else:
-                    CFG[sec][kw] = value
+                CFG[sec][kw] = value
 
     res = False
     filename = CFG.filename
@@ -872,27 +920,7 @@ def save_config(force=False):
     return res
 
 
-def define_servers():
-    """Define servers listed in the Setup file
-    return a list of ConfigServer instances
-    """
-    global CFG
-    try:
-        for server in CFG["servers"]:
-            svr = CFG["servers"][server]
-            s = ConfigServer(server.replace("{", "[").replace("}", "]"), svr)
-
-            # Conversion of global SSL-Ciphers to server ones
-            if sabnzbd.cfg.ssl_ciphers():
-                s.ssl_ciphers.set(sabnzbd.cfg.ssl_ciphers())
-    except KeyError:
-        pass
-
-    # No longer needed
-    sabnzbd.cfg.ssl_ciphers.set("")
-
-
-def get_servers():
+def get_servers() -> Dict[str, ConfigServer]:
     global database
     try:
         return database["servers"]
@@ -900,22 +928,9 @@ def get_servers():
         return {}
 
 
-def define_categories():
-    """Define categories listed in the Setup file
-    return a list of ConfigCat instances
-    """
-    global CFG, categories
-    try:
-        for cat in CFG["categories"]:
-            ConfigCat(cat, CFG["categories"][cat])
-    except KeyError:
-        pass
-
-
-def get_categories(cat=0):
+def get_categories() -> Dict[str, ConfigCat]:
     """Return link to categories section.
     This section will always contain special category '*'
-    When 'cat' is given, a link to that category or to '*' is returned
     """
     global database
     if "categories" not in database:
@@ -933,15 +948,19 @@ def get_categories(cat=0):
 
         # Save config for future use
         save_config(True)
-    if not isinstance(cat, int):
-        try:
-            cats = cats[cat]
-        except KeyError:
-            cats = cats["*"]
     return cats
 
 
-def get_ordered_categories():
+def get_category(cat: str = "*") -> ConfigCat:
+    """Get one specific category or if not found the default one"""
+    cats = get_categories()
+    try:
+        return cats[cat]
+    except KeyError:
+        return cats["*"]
+
+
+def get_ordered_categories() -> List[Dict]:
     """Return list-copy of categories section that's ordered
     by user's ordering including Default-category
     """
@@ -960,22 +979,10 @@ def get_ordered_categories():
     return categories
 
 
-def define_rss():
-    """Define rss-feeds listed in the Setup file
-    return a list of ConfigRSS instances
-    """
-    global CFG
-    try:
-        for r in CFG["rss"]:
-            ConfigRSS(r, CFG["rss"][r])
-    except KeyError:
-        pass
-
-
-def get_rss():
+def get_rss() -> Dict[str, ConfigRSS]:
     global database
     try:
-        # We have to remove non-seperator commas by detecting if they are valid URL's
+        # We have to remove non-separator commas by detecting if they are valid URL's
         for feed_key in database["rss"]:
             feed = database["rss"][feed_key]
             # Only modify if we have to, to prevent repeated config-saving
@@ -1102,12 +1109,8 @@ def validate_no_unc(root, value, default):
 
 
 def validate_safedir(root, value, default):
-    """Allow only when queues are empty and no UNC
-    On Windows path should be small
-    """
-    if sabnzbd.WIN32 and value and len(real_path(root, value)) >= MAX_WIN_DFOLDER:
-        return T("Error: Path length should be below %s.") % MAX_WIN_DFOLDER, None
-    if sabnzbd.empty_queues():
+    """Allow only when queues are empty and no UNC"""
+    if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
         return validate_no_unc(root, value, default)
     else:
         return T("Error: Queue not empty, cannot change folder."), None

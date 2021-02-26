@@ -1,5 +1,5 @@
 #!/usr/bin/python3 -OO
-# Copyright 2007-2020 The SABnzbd-Team <team@sabnzbd.org>
+# Copyright 2007-2021 The SABnzbd-Team <team@sabnzbd.org>
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,12 +20,13 @@ tests.test_filesystem - Testing functions in filesystem.py
 """
 import stat
 import sys
+import os
 
 import pyfakefs.fake_filesystem_unittest as ffs
 
 import sabnzbd.cfg
 import sabnzbd.filesystem as filesystem
-from sabnzbd.constants import DEF_FOLDER_MAX
+from sabnzbd.constants import DEF_FOLDER_MAX, DEF_FILE_MAX
 from tests.testhelper import *
 
 # Set the global uid for fake filesystems to a non-root user;
@@ -188,6 +189,67 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername(" ") == "unknown"
         assert filesystem.sanitize_foldername("  ") == "unknown"
 
+    def test_filename_too_long(self):
+
+        # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
+        # but we stay on the safe side: max DEF_FILE_MAX bytes
+
+        # PART 1: Base cases: Nothing should happen:
+
+        # normal filename
+        name = "a" * 200 + ".ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name
+
+        # Unicode / UTF8 is OK ... as total filename length is not too long
+        name = "BASE" + "你" * 50 + "blabla.ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name
+
+        # filename with very long extension, but total filename is no problem, so no change
+        name = "hello.ext" + "e" * 200
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name  # no change
+
+        # PART 2: base truncating
+
+        name = "BASE" + "a" * 300 + ".mylongext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert len(sanitizedname) <= DEF_FILE_MAX
+        assert sanitizedname.startswith("BASEaaaaaaaaaaaaaaa")
+        assert sanitizedname.endswith(".mylongext")
+
+        # too long filename, so truncate keeping the start of name and ext should stay the same
+        name = "BASE" + "a" * 200 + ".EXT" + "e" * 200
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert len(sanitizedname) <= DEF_FILE_MAX
+        newname, newext = os.path.splitext(sanitizedname)
+        assert newname.startswith("BASEaaaaa")
+        assert newext.startswith(".EXTeeeee")
+
+        # PART 3: more exotic cases
+
+        # insert NON-ASCII chars, which should stay in place because overall length is no problem
+        name = "aaaa" + 10 * chr(188) + 10 * chr(222) + "bbbb.ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name
+
+        # insert NON-ASCII chars, which should get removed because overall length is too long
+        name = "aaaa" + 200 * chr(188) + 200 * chr(222) + "bbbb.ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == "aaaabbbb.ext"
+
+        # Unicode / UTF8 ... total filename length might be too long for certain filesystems
+        name = "BASE" + "你" * 200 + ".ext"
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname.startswith("BASE")
+        assert sanitizedname.endswith(".ext")
+
+        # Linux / POSIX: a hidden file (no extension), with size 200, so do not truncate at all
+        name = "." + "a" * 200
+        sanitizedname = filesystem.sanitize_filename(name)
+        assert sanitizedname == name  # no change
+
 
 class TestSameFile:
     def test_nothing_in_common_win_paths(self):
@@ -239,28 +301,6 @@ class TestSameFile:
         assert 0 == filesystem.same_file("/test", "/Test")
         assert 0 == filesystem.same_file("tesT", "Test")
         assert 0 == filesystem.same_file("/test/../Home", "/home")
-
-
-class TestIsObfuscatedFilename:
-    def test_obfuscated(self):
-        # Files are considered obfuscated if they lack an extension
-        assert filesystem.is_obfuscated_filename(".") is True
-        assert filesystem.is_obfuscated_filename("..") is True
-        assert filesystem.is_obfuscated_filename(".test") is True
-        assert filesystem.is_obfuscated_filename("test.") is True
-        assert filesystem.is_obfuscated_filename("test.ext.") is True
-        assert filesystem.is_obfuscated_filename("t.....") is True
-        assert filesystem.is_obfuscated_filename("a_" + ("test" * 666)) is True
-
-    def test_not_obfuscated(self):
-        assert filesystem.is_obfuscated_filename("test.ext") is False
-        assert filesystem.is_obfuscated_filename(".test.ext") is False
-        assert filesystem.is_obfuscated_filename("test..ext") is False
-        assert filesystem.is_obfuscated_filename("test.ext") is False
-        assert filesystem.is_obfuscated_filename("test .ext") is False
-        assert filesystem.is_obfuscated_filename("test. ext") is False
-        assert filesystem.is_obfuscated_filename("test . ext") is False
-        assert filesystem.is_obfuscated_filename("a." + ("test" * 666)) is False
 
 
 class TestClipLongPath:
@@ -449,19 +489,6 @@ class TestCheckMountWin(ffs.TestCase):
     def test_dir_outsider_win(self):
         # Outside the local filesystem
         assert filesystem.check_mount("//test/that/") is True
-
-
-class TestTrimWinPath:
-    @set_platform("win32")
-    def test_short_path(self):
-        assert filesystem.trim_win_path(r"C:\short\path") == r"C:\short\path"
-
-    @pytest.mark.xfail(sys.platform == "win32", reason="Bug in trim_win_path")
-    @set_platform("win32")
-    def test_long_path_short_segments(self):
-        test_path = "C:\\" + "A" * 20 + "\\" + "B" * 20 + "\\" + "C" * 20  # Strlen 65
-        # Current code causes the path to end up with strlen 70 rather than 69 on Windows
-        assert filesystem.trim_win_path(test_path + "\\" + ("D" * 20)) == test_path + "\\" + "D" * 3
 
 
 @pytest.mark.skipif(sys.platform.startswith("win"), reason="Non-Windows tests")

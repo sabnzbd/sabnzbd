@@ -306,8 +306,8 @@ jQuery(function($){
   $('#queue_sort_list .queue_sort').click(function(event) {
     var sort, dir;
     switch ($(this).attr('id')) {
-      case 'sortAgeAsc':    sort='avg_age'; dir='asc';  break;
-      case 'sortAgeDesc':   sort='avg_age'; dir='desc'; break;
+      case 'sortAgeAsc':    sort='avg_age'; dir='desc';  break;
+      case 'sortAgeDesc':   sort='avg_age'; dir='asc'; break;
       case 'sortNameAsc':   sort='name';    dir='asc';  break;
       case 'sortNameDesc':  sort='name';    dir='desc'; break;
       case 'sortSizeAsc':   sort='size';    dir='asc';  break;

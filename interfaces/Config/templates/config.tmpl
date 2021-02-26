@@ -1,5 +1,5 @@
 <!--#set global $pane="Config"#-->
-<!--#set global $help_uri="configuration/3.1/configure"#-->
+<!--#set global $help_uri="configuration/3.2/configure"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#from sabnzbd.encoding import CODEPAGE#-->
@@ -9,7 +9,7 @@
             <tbody>
                 <tr>
                     <th scope="row">$T('version'): </th>
-                    <td>$version [$build]</td>
+                    <td>$version [<a href="https://github.com/sabnzbd/sabnzbd/commit/$build" target="_blank">$build</a>]</td>
                 </tr>
                 <tr>
                     <th scope="row">$T('uptime'): </th>
@@ -124,7 +124,7 @@
 
 <div class="colmask">
     <div class="padding alt">
-        <h5 class="copyright">Copyright &copy; 2007-2020 The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</h5>
+        <h5 class="copyright">Copyright &copy; 2007-2021 The SABnzbd Team &lt;<a href="mailto:team@sabnzbd.org">team@sabnzbd.org</a>&gt;</h5>
         <p class="copyright"><small>$T('yourRights')</small></p>
     </div>
 
