@@ -19,3 +19,4 @@ jobs:
             --line-length=120
             --target-version=py36
             --check
+            --diff
