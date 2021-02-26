@@ -1,17 +1,10 @@
-Release Notes - SABnzbd 3.2.0 Release Candidate 2
+Release Notes - SABnzbd 3.2.0
 =========================================================
-
-## Changes and bugfixes since 3.2.0 RC 1
-- Added `Auto` option for Glitter that enables `Night` style 
-  based on system settings. Default for new installations.
-- Right-to-Left support (Hebrew) for Glitter and Config.
-- SSDP and Bonjour could be broadcasted on localhost settings.
-- Failed server connections would be retried too slowly.
 
 ## Changes since 3.1.1
 - Python 3.6 is the minimum required version. 
 - The Windows installer can only be used on 64bit Windows 8.1 and 
-  above. For 32bit systems or older Windows versions the 
+  above. For 32bit systems or older Windows versions, the 
   standalone 32bit legacy version can be used.
 - Post-processing can be aborted at any stage, including scripts.
 - Improvements in the downloader to reduce CPU-load.
@@ -19,19 +12,22 @@ Release Notes - SABnzbd 3.2.0 Release Candidate 2
 - Custom date ranges for server graphs can be selected.
 - Keep track of article fetching success-rate of each server.
 - Added option to add download quota warning for each server.
-- Added option to add expiration waring for each server.
+- Added option to add expiration warning for each server.
 - Added `Minimum Free Space for Completed Download Folder` option.
 - Added option to `Auto resume` for both `Minimum Free Space` settings.
+- Added `Auto` option for Glitter that enables `Night` style 
+  based on system settings. Default for new installations.
 - Multiple additional Queue and History columns can be added.
-- Added option to always use full screen width.
+- Added option to always use full-screen width.
 - Additional interface settings can be stored server-side.
+- Right-to-Left support (Hebrew) for Glitter and Config.
 - Using SSDP, SABnzbd instances are now listed in `Network` on Windows.
 - Improvements to parsing of job name and filenames listed in the NZB.
 - RSS titles can be edited.
 - Prospective par2 will add blocks from all sets in a job.
 - Sanitize all filenames to a maximum of 245 characters.
 - Show commit hash when running from `git` sources.
-- Notify through Notifications if new version is available.
+- Notify through Notifications if a new version is available.
 - Program shutdown time reduced to almost instant.
 - Added `10 GB` test download.
 - IPv6 is no longer preferred in HappyEyeballs address selection.
@@ -45,14 +41,14 @@ Release Notes - SABnzbd 3.2.0 Release Candidate 2
 - Repairing or Retrying jobs could result in a crash.  
 - API-call `reset_quota` returned nothing.
 - New categories were not always forced to lowercase.
-- Broken downloads could result in crash during RAR-renaming  
+- Broken downloads could result in a crash during RAR-renaming  
 - Improved obfuscation detection for `Deobfuscate final filenames`.
 - Keep original priority of duplicate jobs.
-- Increase Maximum number of connections per server to `1000`.
+- Increase the maximum number of connections per server to `1000`.
 - Update encryption check to handle partially assembled files.
-- Don't activate Windows notifications when running as service.
-- Command line option `--console` did not work.
-- Crash in API-call to delete history items for non-existing `nzo_id`.
+- Don't activate Windows notifications when running as a service.
+- Command-line option `--console` did not work.
+- Crash in API-call to delete history items for nonexistent `nzo_id`.
 - Prevent repetition of unwanted extension warnings.
 - Correct notification category for failed URL fetches.
 - Improvements to the `Add NZB` modal window.
