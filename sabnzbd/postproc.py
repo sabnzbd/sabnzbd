@@ -767,32 +767,38 @@ def parring(nzo: NzbObject, workdir: str):
                     continue
                 par_error = par_error or not res
 
-    elif not verified.get("", False):
-        # No par2-sets found, skipped if already tried before
-        logging.info("No par2 sets for %s", nzo.final_name)
-        nzo.set_unpack_info("Repair", T("[%s] No par2 sets") % nzo.final_name)
+    # Skip other checks and RAR-rename if there was a par2 problem
+    if not par_error:
+        # If there's no RAR's, they might be super-obfuscated
+        # This can happen even if par2 is present, it is always performed
+        # so that in the next section the try_rar_check can be used if no
+        # par2 check was performed in the previous part
+        _, _, rars, _, _ = build_filelists(workdir, check_rar=False)
+        if not rars:
+            # Returns number of renamed RAR's
+            rar_renamer(nzo, workdir)
 
-        # Try SFV-based verification and rename
-        sfv_check_result = None
-        if cfg.sfv_check() and not verified.get("", False):
-            sfv_check_result = try_sfv_check(nzo, workdir)
-            par_error = sfv_check_result is False
+        # Try non-par2 checks if no par2 was available (empty) and they were not tried before ("" set to True)
+        if not any(verified.values()):
+            # No par2-sets found, skipped if already tried before
+            logging.info("No par2 sets for %s", nzo.final_name)
+            nzo.set_unpack_info("Repair", T("[%s] No par2 sets") % nzo.final_name)
 
-        # If no luck with SFV, do RAR-check or RAR-rename
-        if sfv_check_result is None and cfg.enable_unrar():
-            # Check for RAR's with a sensible extension
-            _, _, rars, _, _ = build_filelists(workdir, check_rar=False)
-            # If there's no RAR's, they might be super-obfuscated
-            if not rars:
-                # Returns number of renamed RAR's
-                if rar_renamer(nzo, workdir):
-                    # Re-parse the files so we can do RAR-check
-                    _, _, rars, _, _ = build_filelists(workdir)
-            if rars:
-                par_error = not try_rar_check(nzo, rars)
+            # Try SFV-based verification and rename
+            sfv_check_result = None
+            if cfg.sfv_check() and not verified.get("", False):
+                sfv_check_result = try_sfv_check(nzo, workdir)
+                par_error = sfv_check_result is False
 
-        # Save that we already tried SFV/RAR-verification
-        verified[""] = not par_error
+            # If no luck with SFV, do RAR-check
+            if sfv_check_result is None and cfg.enable_unrar():
+                # Check for RAR's with a sensible extension
+                _, _, rars, _, _ = build_filelists(workdir, check_rar=False)
+                if rars:
+                    par_error = not try_rar_check(nzo, rars)
+
+            # Save that we already tried SFV/RAR-verification
+            verified[""] = not par_error
 
     if re_add:
         logging.info("Re-added %s to queue", nzo.final_name)
