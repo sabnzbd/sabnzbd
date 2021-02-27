@@ -829,16 +829,19 @@ def renamer(old: str, new: str, create_local_directories=False):
     path, name = os.path.split(new)
     new = os.path.join(path, sanitize_filename(name))
 
+    # Skip if nothing changes
+    if old == new:
+        return
+
+    # check for subdir creation
     oldpath, _ = os.path.split(old)
-    if same_file(oldpath, path) == 2 and create_local_directories:
+    if same_file(oldpath, path) == 2 and create_local_directories and not os.path.exists(path):
+        # Yes, subdir specified, and allowed, and does not yet exist
         try:
             os.makedirs(path)
         except:
             logging.error("Failed to create %s", path)
-
-    # Skip if nothing changes
-    if old == new:
-        return
+            raise OSError("Failed to rename")
 
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
