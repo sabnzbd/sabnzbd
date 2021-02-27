@@ -1031,7 +1031,6 @@ class TestRenamer:
             filesystem.renamer(filename, newfilename, create_local_directories=True)
         except:
             pass
-        # Renaming should happen, so:
         assert not os.path.isfile(filename)
         assert os.path.isfile(newfilename)
 
@@ -1042,7 +1041,6 @@ class TestRenamer:
             filesystem.renamer(filename, newfilename, create_local_directories=True)
         except:
             pass
-        # Renaming should happen, so:
         assert not os.path.isfile(filename)
         assert os.path.isfile(newfilename)
 
@@ -1053,26 +1051,10 @@ class TestRenamer:
             filesystem.renamer(filename, newfilename, create_local_directories=True)
         except:
             pass
-        # the renaming should not happen, so:
         assert os.path.isfile(filename)
         assert not os.path.isfile(newfilename)
 
-        # same-level, existing other dir ... not allowed if using create_local_directories=True
-        filename = os.path.join(dirname, "myfile.txt")
-        Path(filename).touch()  # create file
-        sameleveldirname = os.path.join(SAB_DATA_DIR, "othertestdir" + str(random.randint(10000, 99999)))
-        os.mkdir(sameleveldirname)
-        newfilename = os.path.join(sameleveldirname, "newfile.txt")
-        try:
-            filesystem.renamer(filename, newfilename, create_local_directories=True)
-        except:
-            pass
-        # the renaming should not happen, so:
-        assert os.path.isfile(filename)
-        assert not os.path.isfile(newfilename)
-        shutil.rmtree(sameleveldirname)
-
-        # Cleanup overall working directory
+        # Cleanup working directory
         shutil.rmtree(dirname)
 
 

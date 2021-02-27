@@ -850,7 +850,7 @@ def renamer(old: str, new: str, create_local_directories=False):
                 except:
                     logging.error("Failed to create %s", path)
                     raise OSError("Failed to rename")
-        # in case of "same_file(oldpath, path) == 1": same directory, which is OK
+        # in case of "same_file(oldpath, path) == 1": same directory, so nothing to do
 
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
