@@ -2082,10 +2082,6 @@ def quick_check_set(set, nzo):
                     # Note: file can and is allowed to have a subdir.
                     # This will only happen on POSIX (with par2), and as
                     # subdirs in par2 always contain "/" (not "\"), we're fine
-                    # Just for logging:
-                    relative_new_path = re.search(r"(.*)/", file)  # find directory before separator "/"
-                    if relative_new_path:
-                        logging.debug("Subdir found: %s", relative_new_path.group(1))
 
                     renamer(
                         os.path.join(nzo.download_path, nzf.filename),

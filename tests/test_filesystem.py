@@ -1046,7 +1046,7 @@ class TestRenamer:
 
         # ... escaping the directory plus subdir creation is not allowed
         Path(filename).touch()
-        newfilename = os.path.join(dirname, os.pardir, "newsubdir", "newfile.txt")
+        newfilename = os.path.join(dirname, ".." , "newsubdir", "newfile.txt")
         try:
             filesystem.renamer(filename, newfilename, create_local_directories=True)
         except:

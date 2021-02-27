@@ -844,12 +844,7 @@ def renamer(old: str, new: str, create_local_directories=False):
         # check if subdir
         elif same_file(oldpath, path) == 2:
             # sub-directory, so create if does not yet exist:
-            if not os.path.exists(path):
-                try:
-                    os.makedirs(path)
-                except:
-                    logging.error("Failed to create %s", path)
-                    raise OSError("Failed to rename")
+            create_all_dirs(path)
         # in case of "same_file(oldpath, path) == 1": same directory, so nothing to do
 
     logging.debug('Renaming "%s" to "%s"', old, new)
