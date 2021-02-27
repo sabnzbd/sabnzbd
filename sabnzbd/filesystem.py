@@ -836,11 +836,12 @@ def renamer(old: str, new: str, create_local_directories=False):
     # in case of create_local_directories=True, check for directory escape (forbidden), and create subdir if needed
     if create_local_directories:
         oldpath, _ = os.path.split(old)
-        # check that new path is same directory or sub-directory, but not outside directory
+        # check not outside directory
         if same_file(oldpath, path) == 0:
             # outside current directory, which we do not allow with create_local_directories=True
             logging.error("Refusing to go outside directory %s", path)
             raise OSError("Reusing to go outside directory")
+        # check if subdir
         elif same_file(oldpath, path) == 2:
             # sub-directory, so create if does not yet exist:
             if not os.path.exists(path):
