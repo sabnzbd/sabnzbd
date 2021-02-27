@@ -55,6 +55,10 @@ legend,
     opacity: 0.7;
 }
 
+.form-control[disabled] {
+    opacity: 0.65;
+}
+
 .progress {
     background-color: #DADADA;
 }
@@ -126,6 +130,10 @@ select.form-control,
 .main-content .btn-default,
 .modal-body .btn-default,
 .modal-footer .btn-default,
+.btn-default.disabled:hover,
+.btn-default.disabled:active,
+.btn-default.disabled:focus,
+.form-control[disabled],
 #modal-options .options-function-box .input-group-addon {
     background-color: #555555;
     color: #EBEBEB;
@@ -157,6 +165,8 @@ tbody>tr:last-child td,
 input,
 input.form-control,
 .input-group-addon,
+.search-box input:focus,
+.search-box input:valid,
 select.form-control,
 #modal-options .table-server-connections th,
 .main-content .btn-default,
