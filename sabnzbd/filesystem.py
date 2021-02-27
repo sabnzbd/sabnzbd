@@ -823,11 +823,18 @@ def get_filepath(path: str, nzo, filename: str):
 
 
 @synchronized(DIR_LOCK)
-def renamer(old: str, new: str):
+def renamer(old: str, new: str, create_local_directories=False):
     """ Rename file/folder with retries for Win32 """
     # Sanitize last part of new name
     path, name = os.path.split(new)
     new = os.path.join(path, sanitize_filename(name))
+
+    oldpath, _ = os.path.split(old)
+    if same_file(oldpath, path) == 2 and create_local_directories:
+        try:
+            os.makedirs(path)
+        except:
+            logging.error("Failed to create %s", path)
 
     # Skip if nothing changes
     if old == new:

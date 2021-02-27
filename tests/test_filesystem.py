@@ -21,6 +21,9 @@ tests.test_filesystem - Testing functions in filesystem.py
 import stat
 import sys
 import os
+import random
+import shutil
+from pathlib import Path
 
 import pyfakefs.fake_filesystem_unittest as ffs
 
@@ -983,6 +986,76 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
     def test_dir1755_umask4755_setting(self):
         # Sticky bit on directory, umask with setuid
         self._runner("1755", "4755")
+
+
+class TestRenamer:
+    # test filesystem.renamer() for different scenario's
+    def test_renamer(self):
+        # First of all, create a working directory (with a random name)
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        # base case: rename file within directory
+        filename = os.path.join(dirname, "myfile.txt")
+        Path(filename).touch()  # create file
+        newfilename = os.path.join(dirname, "newfile.txt")
+        filesystem.renamer(filename, newfilename)  # rename() does not return a value ...
+        assert not os.path.isfile(filename)
+        assert os.path.isfile(newfilename)
+
+        # standard behaviour: renaming (moving) into an exiting other directory *is* allowed
+        filename = os.path.join(dirname, "myfile.txt")
+        Path(filename).touch()  # create file
+        sameleveldirname = os.path.join(SAB_DATA_DIR, "othertestdir" + str(random.randint(10000, 99999)))
+        os.mkdir(sameleveldirname)
+        newfilename = os.path.join(sameleveldirname, "newfile.txt")
+        filesystem.renamer(filename, newfilename)
+        assert not os.path.isfile(filename)
+        assert os.path.isfile(newfilename)
+        shutil.rmtree(sameleveldirname)
+
+        # Default: renaming into a non-existing subdirectory not allowed
+        Path(filename).touch()  # create file
+        newfilename = os.path.join(dirname, "nonexistingsubdir", "newfile.txt")
+        try:
+            filesystem.renamer(filename, newfilename)  # rename() does not return a value ...
+        except:
+            pass
+        assert os.path.isfile(filename)
+        assert not os.path.isfile(newfilename)
+
+        # Creation of subdirectory is allowed if create_local_directories=True
+        Path(filename).touch()
+        newfilename = os.path.join(dirname, "newsubdir", "newfile.txt")
+        try:
+            filesystem.renamer(filename, newfilename, create_local_directories=True)
+        except:
+            pass
+        assert not os.path.isfile(filename)
+        assert os.path.isfile(newfilename)
+
+        # Creation of subdirectory plus deeper sudbdir is allowed if create_local_directories=True
+        Path(filename).touch()
+        newfilename = os.path.join(dirname, "newsubdir", "deepersubdir", "newfile.txt")
+        try:
+            filesystem.renamer(filename, newfilename, create_local_directories=True)
+        except:
+            pass
+        assert not os.path.isfile(filename)
+        assert os.path.isfile(newfilename)
+
+        # ... escaping the directory plus subdir creation is not allowed
+        Path(filename).touch()
+        newfilename = os.path.join(dirname, os.pardir, "newsubdir", "newfile.txt")
+        try:
+            filesystem.renamer(filename, newfilename, create_local_directories=True)
+        except:
+            pass
+        assert os.path.isfile(filename)
+        assert not os.path.isfile(newfilename)
+
+        # Cleanup working directory
+        shutil.rmtree(dirname)
 
 
 class TestUnwantedExtensions:
