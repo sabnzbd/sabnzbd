@@ -833,15 +833,25 @@ def renamer(old: str, new: str, create_local_directories=False):
     if old == new:
         return
 
+
     # check for subdir creation
     oldpath, _ = os.path.split(old)
-    if same_file(oldpath, path) == 2 and create_local_directories and not os.path.exists(path):
-        # Yes, subdir specified, and allowed, and does not yet exist
-        try:
-            os.makedirs(path)
-        except:
-            logging.error("Failed to create %s", path)
-            raise OSError("Failed to rename")
+
+    if create_local_directories:
+        # check that new path is same directory or sub-directory, but not outside directory
+        if same_file(oldpath, path) == 0:
+            # outside current directory, which we do not allow with create_local_directories=True
+            logging.error("Refusing to go outside directory %s", path)
+            raise OSError("Reusing to go outside directory")
+        elif same_file(oldpath, path) == 2:
+            # sub-directory, so create if does not yet exist:
+            if not os.path.exists(path):
+                try:
+                    os.makedirs(path)
+                except:
+                    logging.error("Failed to create %s", path)
+                    raise OSError("Failed to rename")
+
 
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
