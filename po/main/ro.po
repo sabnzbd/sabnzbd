@@ -616,6 +616,11 @@ msgstr "Facere nereuşită (%s)"
 msgid "Failed moving %s to %s"
 msgstr "Mutare %s în %s nereuşită"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Conectare refuzată cu gazda „%s” de la:"

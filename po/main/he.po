@@ -600,6 +600,11 @@ msgstr "נכשל בעשייה (%s)"
 msgid "Failed moving %s to %s"
 msgstr "נכשל בהעברת %s אל %s"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "חיבור מסורב עם שם המארח \"%s\" מאת:"

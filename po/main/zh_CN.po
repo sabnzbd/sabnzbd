@@ -594,6 +594,11 @@ msgstr "创建失败 (%s)"
 msgid "Failed moving %s to %s"
 msgstr "将 %s 移动到 %s 失败"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
