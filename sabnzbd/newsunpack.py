@@ -55,6 +55,7 @@ from sabnzbd.filesystem import (
     setname_from_path,
     get_ext,
     get_filename,
+    same_file,
 )
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.sorting import SeriesSorter
@@ -2077,7 +2078,14 @@ def quick_check_set(set, nzo):
             if nzf.md5sum == md5pack[file]:
                 try:
                     logging.debug("Quick-check will rename %s to %s", nzf.filename, file)
-                    renamer(os.path.join(nzo.download_path, nzf.filename), os.path.join(nzo.download_path, file))
+
+                    # Note: file can and is allowed to be in a subdirectory.
+                    # Subdirectories in par2 always contain "/", not "\"
+                    renamer(
+                        os.path.join(nzo.download_path, nzf.filename),
+                        os.path.join(nzo.download_path, file),
+                        create_local_directories=True,
+                    )
                     renames[file] = nzf.filename
                     nzf.filename = file
                     result &= True
