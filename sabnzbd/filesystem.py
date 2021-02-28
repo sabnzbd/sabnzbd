@@ -823,8 +823,9 @@ def get_filepath(path: str, nzo, filename: str):
 
 
 @synchronized(DIR_LOCK)
-def renamer(old: str, new: str, create_local_directories=False):
-    """ Rename file/folder with retries for Win32 """
+def renamer(old: str, new: str, create_local_directories: bool = False):
+    """Rename file/folder with retries for Win32
+    Optionally alows the creation of local directories if they don't exist yet"""
     # Sanitize last part of new name
     path, name = os.path.split(new)
     new = os.path.join(path, sanitize_filename(name))
@@ -833,19 +834,18 @@ def renamer(old: str, new: str, create_local_directories=False):
     if old == new:
         return
 
-    # in case of create_local_directories=True, check for directory escape (forbidden), and create subdir if needed
+    # In case we want nonexistent directories to be created, check for directory escape (forbidden)
     if create_local_directories:
         oldpath, _ = os.path.split(old)
-        # check not outside directory
+        # Check not outside directory
+        # In case of "same_file() == 1": same directory, so nothing to do
         if same_file(oldpath, path) == 0:
-            # outside current directory, which we do not allow with create_local_directories=True
-            logging.error("Refusing to go outside directory %s", path)
-            raise OSError("Reusing to go outside directory")
-        # check if subdir
+            # Outside current directory, this is most likely malicious
+            logging.error(T("Blocked attempt to create directory %s"), path)
+            raise OSError("Refusing to go outside directory")
         elif same_file(oldpath, path) == 2:
-            # sub-directory, so create if does not yet exist:
+            # Sub-directory, so create if does not yet exist:
             create_all_dirs(path)
-        # in case of "same_file(oldpath, path) == 1": same directory, so nothing to do
 
     logging.debug('Renaming "%s" to "%s"', old, new)
     if sabnzbd.WIN32:
