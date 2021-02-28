@@ -581,6 +581,7 @@ class Downloader(Thread):
                     # Make sure server address resolution is refreshed
                     server.info = None
                 self.force_disconnect = False
+                sabnzbd.BPSMeter.update(force=True)
 
                 # Exit-point
                 if self.shutdown:
