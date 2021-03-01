@@ -596,6 +596,11 @@ msgstr "Chyba vytváření (%s)"
 msgid "Failed moving %s to %s"
 msgstr "Chyba přesunu %s do %s"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Odmítnuté spojení s hostem \"%s\" z:"
@@ -3408,7 +3413,7 @@ msgid "Action when unwanted extension detected"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Action when an unwanted extension is detected in RAR files"
+msgid "Action when an unwanted extension is detected"
 msgstr ""
 
 #: sabnzbd/skintext.py
@@ -3416,8 +3421,17 @@ msgid "Unwanted extensions"
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid "Blacklist"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
-"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
 msgstr ""
 
 #: sabnzbd/skintext.py

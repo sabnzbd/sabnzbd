@@ -30,7 +30,15 @@ from typing import Tuple, Optional, List
 
 import sabnzbd
 from sabnzbd.misc import get_all_passwords, match_str
-from sabnzbd.filesystem import set_permissions, clip_path, has_win_device, diskspace, get_filename, get_ext
+from sabnzbd.filesystem import (
+    set_permissions,
+    clip_path,
+    has_win_device,
+    diskspace,
+    get_filename,
+    get_ext,
+    has_unwanted_extension,
+)
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
@@ -376,7 +384,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                 if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions():
                     for somefile in zf.namelist():
                         logging.debug("File contains: %s", somefile)
-                        if get_ext(somefile).replace(".", "").lower() in cfg.unwanted_extensions():
+                        if has_unwanted_extension(somefile):
                             logging.debug("Unwanted file %s", somefile)
                             unwanted = somefile
                 zf.close()

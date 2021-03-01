@@ -630,6 +630,11 @@ msgstr "Échec lors de la création de (%s)"
 msgid "Failed moving %s to %s"
 msgstr "Échec lors du déplacement de %s vers %s"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Connexion refusée avec le nom d'hôte \"%s\" à partir de :"
@@ -3594,19 +3599,28 @@ msgid "Action when unwanted extension detected"
 msgstr "Action si une extension indésirable est détecté"
 
 #: sabnzbd/skintext.py
-msgid "Action when an unwanted extension is detected in RAR files"
-msgstr "Action si une extension indésirable est détecté dans les fichiers RAR"
+msgid "Action when an unwanted extension is detected"
+msgstr "Action lorsqu'une extension indésirable est détectée"
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
 msgstr "Extensions indésirables"
 
 #: sabnzbd/skintext.py
+msgid "Blacklist"
+msgstr "Liste noire"
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr "Liste blanche"
+
+#: sabnzbd/skintext.py
 msgid ""
-"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
 msgstr ""
-"Afficher toutes les extensions indésirables. Par exemple :  <b>exe</b> or "
-"<b>exe, com</b>"
+"Sélectionnez un mode et listez toutes les extensions (non) souhaitées. Par "
+"exemple: <b>exe</b> ou <b>exe, com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"

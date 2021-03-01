@@ -594,6 +594,11 @@ msgstr "创建失败 (%s)"
 msgid "Failed moving %s to %s"
 msgstr "将 %s 移动到 %s 失败"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
@@ -3420,17 +3425,26 @@ msgid "Action when unwanted extension detected"
 msgstr "侦测到不需要的扩展名时的操作"
 
 #: sabnzbd/skintext.py
-msgid "Action when an unwanted extension is detected in RAR files"
-msgstr "RAR 文件中侦测到不需要的扩展名时的操作"
+msgid "Action when an unwanted extension is detected"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
 msgstr "不需要的扩展名"
 
 #: sabnzbd/skintext.py
+msgid "Blacklist"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
-"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
-msgstr "所有不需要扩展名的列表。例如: <b>exe</b> 或 <b>exe, com</b>"
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"

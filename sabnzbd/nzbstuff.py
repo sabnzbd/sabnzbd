@@ -78,6 +78,7 @@ from sabnzbd.filesystem import (
     make_script_path,
     globber,
     is_valid_script,
+    has_unwanted_extension,
 )
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
@@ -887,10 +888,7 @@ class NzbObject(TryList):
 
         # Check if there is any unwanted extension in plain sight in the NZB itself
         for nzf in self.files:
-            if (
-                cfg.action_on_unwanted_extensions() >= 1
-                and get_ext(nzf.filename).replace(".", "") in cfg.unwanted_extensions()
-            ):
+            if cfg.action_on_unwanted_extensions() and has_unwanted_extension(nzf.filename):
                 # ... we found an unwanted extension
                 logging.warning(T("Unwanted Extension in file %s (%s)"), nzf.filename, self.final_name)
                 # Pause, or Abort:
@@ -913,6 +911,7 @@ class NzbObject(TryList):
         for kw in self.meta:
             if not self.nzo_info.get(kw):
                 self.nzo_info[kw] = self.meta[kw][0]
+        logging.debug("NZB nzo-info = %s", self.nzo_info)
 
         # Show first meta-password (if any), when there's no explicit password
         if not self.password and self.meta.get("password"):

@@ -495,9 +495,13 @@ SKIN_TEXT = {
     "nodupes-tag": TT("Tag job"),  #: Four way switch for duplicates
     "abort": TT("Abort"),  #: Three way switch for encrypted posts
     "opt-action_on_unwanted_extensions": TT("Action when unwanted extension detected"),
-    "explain-action_on_unwanted_extensions": TT("Action when an unwanted extension is detected in RAR files"),
+    "explain-action_on_unwanted_extensions": TT("Action when an unwanted extension is detected"),
     "opt-unwanted_extensions": TT("Unwanted extensions"),
-    "explain-unwanted_extensions": TT("List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"),
+    "unwanted_extensions_blacklist": TT("Blacklist"),
+    "unwanted_extensions_whitelist": TT("Whitelist"),
+    "explain-unwanted_extensions": TT(
+        "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+    ),
     "opt-sfv_check": TT("Enable SFV-based checks"),
     "explain-sfv_check": TT("Do an extra verification based on SFV files."),
     "opt-script_can_fail": TT("User script can flag job as failed"),

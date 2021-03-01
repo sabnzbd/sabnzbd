@@ -603,6 +603,11 @@ msgstr "Kohteen (%s) luominen epäonnistui"
 msgid "Failed moving %s to %s"
 msgstr "Kohteen %s siirtäminen kohteeseen %s epäonnistui"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
@@ -3492,19 +3497,26 @@ msgid "Action when unwanted extension detected"
 msgstr "Toiminto kun havaitaan ei toivottu tiedostopääte"
 
 #: sabnzbd/skintext.py
-msgid "Action when an unwanted extension is detected in RAR files"
-msgstr "Toiminto kun ei toivottu tiedostopääte havaitaan RAR arkistossa"
+msgid "Action when an unwanted extension is detected"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
 msgstr "Ei toivotut tiedostopäätteet"
 
 #: sabnzbd/skintext.py
-msgid ""
-"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+msgid "Blacklist"
 msgstr ""
-"Lista ei toivotuista tiedostopäätteistä. Esimerkiksi: <b>exe</b> tai <b>exe,"
-" com</b>"
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"

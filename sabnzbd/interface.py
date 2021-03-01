@@ -1231,6 +1231,7 @@ SWITCH_LIST = (
     "new_nzb_on_failure",
     "unwanted_extensions",
     "action_on_unwanted_extensions",
+    "unwanted_extensions_mode",
     "sanitize_safe",
     "rating_enable",
     "rating_api_key",

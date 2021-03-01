@@ -59,7 +59,10 @@ elif os.name == "posix":
     # See if we have Linux memory functions
     try:
         LIBC = ctypes.CDLL("libc.so.6")
+        LIBC.malloc_trim(0)
     except:
+        # No malloc_trim(), probably because no libc
+        LIBC = None
         pass
 
     # Parse macOS version numbers

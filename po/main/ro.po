@@ -616,6 +616,11 @@ msgstr "Facere nereuşită (%s)"
 msgid "Failed moving %s to %s"
 msgstr "Mutare %s în %s nereuşită"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr ""
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Conectare refuzată cu gazda „%s” de la:"
@@ -3508,19 +3513,26 @@ msgid "Action when unwanted extension detected"
 msgstr "Acțiune când se detectează o extensie nedorită"
 
 #: sabnzbd/skintext.py
-msgid "Action when an unwanted extension is detected in RAR files"
-msgstr "Acțiune când se detectează  extensie nedorită într-un fișier RAR"
+msgid "Action when an unwanted extension is detected"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
 msgstr "Extensii nedorite"
 
 #: sabnzbd/skintext.py
-msgid ""
-"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+msgid "Blacklist"
 msgstr ""
-"Listă cu toate extensiile nedorite. De exemplu: <b>exe</b> or <b>exe, "
-"com</b>"
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"

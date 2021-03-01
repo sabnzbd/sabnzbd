@@ -31,6 +31,9 @@ SABnzbd-*/
 *.wp[ru]
 .idea
 
+# VScode
+.vscode/
+
 # Testing folders
 .cache
 .xprocess
