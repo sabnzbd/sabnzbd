@@ -546,8 +546,6 @@ class Downloader(Thread):
 
                     try:
                         article = server.article_queue.pop()
-                        article.tries += 1
-                        logging.debug("Retrying article %s from %s", article.article, article.nzf.filename)
                     except IndexError:
                         article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
@@ -555,6 +553,11 @@ class Downloader(Thread):
                         # Skip this server for 0.5 second
                         server.next_article_search = now + 0.5
                         break
+
+                    if not article.lowest_partnum and not server.article_queue:
+                        next_article = article.nzf.get_article(server, self.servers)
+                        if next_article:
+                            server.article_queue.append(next_article)
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
                         # Let's get rid of all the articles for this server at once
@@ -866,6 +869,8 @@ class Downloader(Thread):
                 nw.article.tries = 0
             else:
                 # Retry again with the same server
+                nw.article.tries += 1
+                logging.debug("Retrying article %s from %s", nw.article.article, nw.article.nzf.filename)
                 nw.article.fetcher.article_queue.append(nw.article)
 
         # Reset connection object
