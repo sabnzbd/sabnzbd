@@ -808,6 +808,7 @@ def get_all_passwords(nzo):
                 )
         except:
             logging.warning(T("Failed to read the password file %s"), pw_file)
+            logging.info("Traceback: ", exc_info=True)
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
