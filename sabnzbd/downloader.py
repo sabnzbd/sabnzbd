@@ -570,7 +570,7 @@ class Downloader(Thread):
                         break
 
                     if not article.lowest_partnum and not server.article_queue:
-                        server.article_queue = article.nzf.get_articles(server, self.servers, server.threads)
+                        server.article_queue = article.nzf.get_articles(server, self.servers, 4)
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
