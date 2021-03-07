@@ -414,7 +414,7 @@ class NzbFile(TryList):
         self.vol = vol
         self.blocks = int_conv(blocks)
 
-    def get_articles(self, server: Server, servers: List[Server], fetch_limit=1):
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int = 1) -> List[Article]:
         """ Get next article to be downloaded """
         fetched_articles = []
         for article in self.articles:

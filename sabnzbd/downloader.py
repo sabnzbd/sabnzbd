@@ -558,7 +558,7 @@ class Downloader(Thread):
                         # Let's get rid of all the articles for this server at once
                         if not article.lowest_partnum:
                             server.article_queue = server.article_queue + article.nzf.get_articles(
-                                server, self.servers, 100
+                                server, self.servers, 200
                             )
                         server.next_article_search = now + 0.001 * len(server.article_queue)
                         while article:
