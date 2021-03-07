@@ -545,7 +545,7 @@ class Downloader(Thread):
                         break
 
                     try:
-                        article = server.article_queue.pop()
+                        article = server.article_queue.pop(0)
                     except IndexError:
                         article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
@@ -554,18 +554,23 @@ class Downloader(Thread):
                         server.next_article_search = now + 0.5
                         break
 
-                    if not article.lowest_partnum and not server.article_queue:
-                        next_article = article.nzf.get_article(server, self.servers)
-                        if next_article:
-                            server.article_queue.append(next_article)
-
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
                         # Let's get rid of all the articles for this server at once
-                        logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
+                        if not article.lowest_partnum:
+                            server.article_queue = server.article_queue + article.nzf.get_articles(
+                                server, self.servers, 100
+                            )
+                        server.next_article_search = now + 0.001 * len(server.article_queue)
                         while article:
                             self.decode(article, None)
-                            article = article.nzf.nzo.get_article(server, self.servers)
+                            try:
+                                article = server.article_queue.pop(0)
+                            except IndexError:
+                                article = None
                         break
+
+                    if not article.lowest_partnum and not server.article_queue:
+                        server.article_queue = article.nzf.get_articles(server, self.servers, server.threads)
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
