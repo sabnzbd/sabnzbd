@@ -421,7 +421,7 @@ function HistoryModel(parent, data) {
     // Delete button
     self.deleteSlot = function(item, event) {
         // Confirm?
-        if(!self.parent.parent.confirmDeleteHistory() || confirm(glitterTranslate.removeDow1)) {
+        if(!self.parent.parent.confirmDeleteHistory() || confirm(glitterTranslate.deleteMsg + ":\n" + item.historyStatus.name() + "\n\n" + glitterTranslate.removeDow1)) {
             // Are we still processing and it can be stopped?
             if(item.processingDownload() == 2) {
                 callAPI({
