@@ -603,7 +603,7 @@ msgstr "נכשל בהעברת %s אל %s"
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
-msgstr ""
+msgstr "ניסיון נחסם ליצור תיקייה %s"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
