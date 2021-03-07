@@ -55,7 +55,6 @@ from sabnzbd.filesystem import (
     setname_from_path,
     get_ext,
     get_filename,
-    same_file,
 )
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.sorting import SeriesSorter
