@@ -633,7 +633,7 @@ msgstr "Échec lors du déplacement de %s vers %s"
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
-msgstr ""
+msgstr "Tentative bloquée de création du répertoire %s"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"

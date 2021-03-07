@@ -724,7 +724,7 @@ function QueueModel(parent, data) {
     // Remove 1 download from queue
     self.removeDownload = function(item, event) {
         // Confirm and remove
-        if(!self.parent.parent.confirmDeleteQueue() || confirm(glitterTranslate.removeDow1)) {
+        if(!self.parent.parent.confirmDeleteQueue() || confirm(glitterTranslate.deleteMsg + ":\n" + item.name() + "\n\n" + glitterTranslate.removeDow1)) {
             var itemToDelete = this;
 
             // Show notification
