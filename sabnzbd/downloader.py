@@ -581,7 +581,9 @@ class Downloader(Thread):
                     # Make sure server address resolution is refreshed
                     server.info = None
                 self.force_disconnect = False
-                sabnzbd.BPSMeter.update(force=True)
+
+                # Make sure we update the stats
+                sabnzbd.BPSMeter.update()
 
                 # Exit-point
                 if self.shutdown:
@@ -627,7 +629,7 @@ class Downloader(Thread):
                         DOWNLOADER_CV.wait()
 
             if not read:
-                sabnzbd.BPSMeter.update()
+                sabnzbd.BPSMeter.update(force_full_update=False)
                 continue
 
             for selected in read:
@@ -641,7 +643,7 @@ class Downloader(Thread):
                     bytes_received, done, skip = (0, False, False)
 
                 if skip:
-                    sabnzbd.BPSMeter.update()
+                    sabnzbd.BPSMeter.update(force_full_update=False)
                     continue
 
                 if bytes_received < 1:
@@ -660,8 +662,8 @@ class Downloader(Thread):
                         if bytes_received + sabnzbd.BPSMeter.bps > limit:
                             while sabnzbd.BPSMeter.bps > limit:
                                 time.sleep(0.01)
-                                sabnzbd.BPSMeter.update(force=True)
-                    sabnzbd.BPSMeter.update(server.id, bytes_received)
+                                sabnzbd.BPSMeter.update()
+                    sabnzbd.BPSMeter.update(server.id, bytes_received, force_full_update=False)
 
                 if not done and nw.status_code != 222:
                     if not nw.connected or nw.status_code == 480:

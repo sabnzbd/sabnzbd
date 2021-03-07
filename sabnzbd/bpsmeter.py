@@ -101,7 +101,7 @@ class BPSMeter:
         self.bps_list: List[int] = []
 
         self.server_bps: Dict[str, float] = {}
-        self.temp_amount: Dict[str, int] = {}
+        self.cached_amount: Dict[str, int] = {}
         self.day_total: Dict[str, int] = {}
         self.week_total: Dict[str, int] = {}
         self.month_total: Dict[str, int] = {}
@@ -206,19 +206,19 @@ class BPSMeter:
             self.update()
         return res
 
-    def update(self, server: Optional[str] = None, amount: int = 0, force: bool = False):
+    def update(self, server: Optional[str] = None, amount: int = 0, force_full_update: bool = True):
         """ Update counters for "server" with "amount" bytes """
         t = time.time()
 
         # Add amount to temporary storage
         if server:
-            if server not in self.temp_amount:
-                self.temp_amount[server] = 0
+            if server not in self.cached_amount:
+                self.cached_amount[server] = 0
                 self.server_bps[server] = 0.0
-            self.temp_amount[server] += amount
+            self.cached_amount[server] += amount
 
-        # Wait at least 0.021 seconds between each full update
-        if not force and t - self.last_update < 0.021:
+        # Wait at least 0.05 seconds between each full update
+        if not force_full_update and t - self.last_update < 0.25:
             return
 
         if t > self.end_of_day:
@@ -237,36 +237,36 @@ class BPSMeter:
 
         # Add amounts that have been stored temporarily to statistics
         total_amount = 0
-        for srv in self.temp_amount:
-            temp_amount = self.temp_amount[srv]
-            if temp_amount:
-                self.temp_amount[srv] = 0
-                total_amount += temp_amount
+        for srv in self.cached_amount:
+            cached_amount = self.cached_amount[srv]
+            if cached_amount:
+                self.cached_amount[srv] = 0
+                total_amount += cached_amount
                 if srv not in self.day_total:
                     self.day_total[srv] = 0
-                self.day_total[srv] += temp_amount
+                self.day_total[srv] += cached_amount
 
                 if srv not in self.week_total:
                     self.week_total[srv] = 0
-                self.week_total[srv] += temp_amount
+                self.week_total[srv] += cached_amount
 
                 if srv not in self.month_total:
                     self.month_total[srv] = 0
-                self.month_total[srv] += temp_amount
+                self.month_total[srv] += cached_amount
 
                 if srv not in self.grand_total:
                     self.grand_total[srv] = 0
-                self.grand_total[srv] += temp_amount
+                self.grand_total[srv] += cached_amount
 
                 if srv not in self.timeline_total:
                     self.timeline_total[srv] = {}
                 if self.day_label not in self.timeline_total[srv]:
                     self.timeline_total[srv][self.day_label] = 0
-                self.timeline_total[srv][self.day_label] += temp_amount
+                self.timeline_total[srv][self.day_label] += cached_amount
 
             try:
                 # Update server bps
-                self.server_bps[srv] = (self.server_bps[srv] * (self.last_update - self.start_time) + temp_amount) / (
+                self.server_bps[srv] = (self.server_bps[srv] * (self.last_update - self.start_time) + cached_amount) / (
                     t - self.start_time
                 )
             except:
