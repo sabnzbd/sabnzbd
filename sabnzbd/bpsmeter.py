@@ -218,7 +218,7 @@ class BPSMeter:
             self.cached_amount[server] += amount
 
         # Wait at least 0.05 seconds between each full update
-        if not force_full_update and t - self.last_update < 0.25:
+        if not force_full_update and t - self.last_update < 0.05:
             return
 
         if t > self.end_of_day:

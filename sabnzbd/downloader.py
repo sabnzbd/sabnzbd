@@ -657,13 +657,11 @@ class Downloader(Thread):
                         # In case nzf has disappeared because the file was deleted before the update could happen
                         pass
 
+                    sabnzbd.BPSMeter.update(server.id, bytes_received, force_full_update=self.bandwidth_limit)
                     if self.bandwidth_limit:
-                        limit = self.bandwidth_limit
-                        if bytes_received + sabnzbd.BPSMeter.bps > limit:
-                            while sabnzbd.BPSMeter.bps > limit:
-                                time.sleep(0.01)
-                                sabnzbd.BPSMeter.update()
-                    sabnzbd.BPSMeter.update(server.id, bytes_received, force_full_update=False)
+                        while sabnzbd.BPSMeter.bps > self.bandwidth_limit:
+                            time.sleep(0.01)
+                            sabnzbd.BPSMeter.update()
 
                 if not done and nw.status_code != 222:
                     if not nw.connected or nw.status_code == 480:
