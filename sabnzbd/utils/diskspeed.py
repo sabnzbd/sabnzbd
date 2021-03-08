@@ -22,7 +22,10 @@ def diskspeedmeasure(my_dirname: str) -> float:
 
     try:
         # Use low-level I/O
-        fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)
+        try:
+            fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY | os.O_BINARY, 0o777)
+        except AttributeError:
+            fp_testfile = os.open(filename, os.O_CREAT | os.O_WRONLY, 0o777)
 
         # Start looping
         total_time = 0.0
