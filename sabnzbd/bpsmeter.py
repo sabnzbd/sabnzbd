@@ -26,6 +26,7 @@ from typing import List, Dict, Optional
 
 import sabnzbd
 from sabnzbd.constants import BYTES_FILE_NAME, KIBI
+from sabnzbd.misc import to_units
 import sabnzbd.cfg as cfg
 
 DAY = float(24 * 60 * 60)
@@ -100,6 +101,8 @@ class BPSMeter:
         self.bps_list: List[int] = []
 
         self.server_bps: Dict[str, float] = {}
+        self.cached_amount: Dict[str, int] = {}
+        self.sum_cached_amount: int = 0
         self.day_total: Dict[str, int] = {}
         self.week_total: Dict[str, int] = {}
         self.month_total: Dict[str, int] = {}
@@ -204,9 +207,22 @@ class BPSMeter:
             self.update()
         return res
 
-    def update(self, server: Optional[str] = None, amount: int = 0):
+    def update(self, server: Optional[str] = None, amount: int = 0, force_full_update: bool = True):
         """ Update counters for "server" with "amount" bytes """
         t = time.time()
+
+        # Add amount to temporary storage
+        if server:
+            if server not in self.cached_amount:
+                self.cached_amount[server] = 0
+                self.server_bps[server] = 0.0
+            self.cached_amount[server] += amount
+            self.sum_cached_amount += amount
+
+        # Wait at least 0.05 seconds between each full update
+        if not force_full_update and t - self.last_update < 0.05:
+            return
+
         if t > self.end_of_day:
             # current day passed. get new end of day
             self.day_label = time.strftime("%Y-%m-%d")
@@ -221,60 +237,62 @@ class BPSMeter:
                 self.month_total = {}
                 self.end_of_month = next_month(t) - 1.0
 
-        if server:
-            if server not in self.day_total:
-                self.day_total[server] = 0
-            self.day_total[server] += amount
+        # Add amounts that have been stored temporarily to statistics
+        for srv in self.cached_amount:
+            cached_amount = self.cached_amount[srv]
+            if cached_amount:
+                self.cached_amount[srv] = 0
+                if srv not in self.day_total:
+                    self.day_total[srv] = 0
+                self.day_total[srv] += cached_amount
 
-            if server not in self.week_total:
-                self.week_total[server] = 0
-            self.week_total[server] += amount
+                if srv not in self.week_total:
+                    self.week_total[srv] = 0
+                self.week_total[srv] += cached_amount
 
-            if server not in self.month_total:
-                self.month_total[server] = 0
-            self.month_total[server] += amount
+                if srv not in self.month_total:
+                    self.month_total[srv] = 0
+                self.month_total[srv] += cached_amount
 
-            if server not in self.grand_total:
-                self.grand_total[server] = 0
-            self.grand_total[server] += amount
+                if srv not in self.grand_total:
+                    self.grand_total[srv] = 0
+                self.grand_total[srv] += cached_amount
 
-            if server not in self.timeline_total:
-                self.timeline_total[server] = {}
-            if self.day_label not in self.timeline_total[server]:
-                self.timeline_total[server][self.day_label] = 0
-            self.timeline_total[server][self.day_label] += amount
+                if srv not in self.timeline_total:
+                    self.timeline_total[srv] = {}
+                if self.day_label not in self.timeline_total[srv]:
+                    self.timeline_total[srv][self.day_label] = 0
+                self.timeline_total[srv][self.day_label] += cached_amount
 
-            # Quota check
-            if self.have_quota and self.quota_enabled:
-                self.left -= amount
-                if self.left <= 0.0:
-                    if not sabnzbd.Downloader.paused:
-                        sabnzbd.Downloader.pause()
-                        logging.warning(T("Quota spent, pausing downloading"))
+            try:
+                # Update server bps
+                self.server_bps[srv] = (self.server_bps[srv] * (self.last_update - self.start_time) + cached_amount) / (
+                    t - self.start_time
+                )
+            except:
+                self.server_bps[srv] = 0.0
+
+        # Quota check
+        if self.have_quota and self.quota_enabled:
+            self.left -= self.sum_cached_amount
+            if self.left <= 0.0:
+                if not sabnzbd.Downloader.paused:
+                    sabnzbd.Downloader.pause()
+                    logging.warning(T("Quota spent, pausing downloading"))
 
         # Speedometer
         try:
-            self.bps = (self.bps * (self.last_update - self.start_time) + amount) / (t - self.start_time)
+            self.bps = (self.bps * (self.last_update - self.start_time) + self.sum_cached_amount) / (
+                t - self.start_time
+            )
         except:
             self.bps = 0.0
             self.server_bps = {}
 
-        if server and server not in self.server_bps:
-            self.server_bps[server] = 0.0
-
-        for server_to_update in self.server_bps:
-            try:
-                # Only add data to the current server, update the rest to get correct average speed
-                self.server_bps[server_to_update] = (
-                    self.server_bps[server_to_update] * (self.last_update - self.start_time)
-                    + amount * (server_to_update == server)
-                ) / (t - self.start_time)
-            except:
-                self.server_bps[server_to_update] = 0.0
-
         self.last_update = t
 
         check_time = t - 5.0
+        self.sum_cached_amount = 0
 
         if self.start_time < check_time:
             self.start_time = check_time
@@ -283,7 +301,7 @@ class BPSMeter:
             self.reset()
 
         elif self.log_time < check_time:
-            logging.debug("bps: %s", self.bps)
+            logging.debug("Speed: %sB/s", to_units(self.bps))
             self.log_time = t
 
         if self.speed_log_time < (t - 1.0):
