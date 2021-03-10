@@ -1131,7 +1131,7 @@ def validate_strip_right_slash(value):
     return None, value
 
 
-def validate_single_tag(value):
+def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
     """Don't split single indexer tags like "TV > HD"
     into ['TV', '>', 'HD']
     """
