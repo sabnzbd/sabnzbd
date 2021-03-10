@@ -1137,7 +1137,7 @@ def validate_single_tag(value):
     """
     if len(value) == 3:
         if value[1] == ">":
-            return None, " ".join(value)
+            return None, [" ".join(value)]
     return None, value
 
 
