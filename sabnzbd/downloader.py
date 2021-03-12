@@ -609,6 +609,9 @@ class Downloader(Thread):
                     server.reset_article_queue()
                 self.force_disconnect = False
 
+                # Make sure we update the stats
+                sabnzbd.BPSMeter.update()
+
                 # Exit-point
                 if self.shutdown:
                     logging.info("Shutting down")
@@ -653,7 +656,7 @@ class Downloader(Thread):
                         DOWNLOADER_CV.wait()
 
             if not read:
-                sabnzbd.BPSMeter.update()
+                sabnzbd.BPSMeter.update(force_full_update=False)
                 continue
 
             for selected in read:
@@ -667,7 +670,7 @@ class Downloader(Thread):
                     bytes_received, done, skip = (0, False, False)
 
                 if skip:
-                    sabnzbd.BPSMeter.update()
+                    sabnzbd.BPSMeter.update(force_full_update=False)
                     continue
 
                 if bytes_received < 1:
@@ -681,13 +684,13 @@ class Downloader(Thread):
                         # In case nzf has disappeared because the file was deleted before the update could happen
                         pass
 
+                    sabnzbd.BPSMeter.update(server.id, bytes_received, force_full_update=False)
                     if self.bandwidth_limit:
-                        limit = self.bandwidth_limit
-                        if bytes_received + sabnzbd.BPSMeter.bps > limit:
-                            while sabnzbd.BPSMeter.bps > limit:
+                        if sabnzbd.BPSMeter.sum_cached_amount + sabnzbd.BPSMeter.bps > self.bandwidth_limit:
+                            sabnzbd.BPSMeter.update()
+                            while sabnzbd.BPSMeter.bps > self.bandwidth_limit:
                                 time.sleep(0.01)
                                 sabnzbd.BPSMeter.update()
-                    sabnzbd.BPSMeter.update(server.id, bytes_received)
 
                 if not done and nw.status_code != 222:
                     if not nw.connected or nw.status_code == 480:

@@ -86,3 +86,9 @@ class TestValidators:
         assert_blocked("echo 'how;now;brown;cow'")
         assert_blocked("-c'echo'")
         assert_blocked("--classdata=;/bin/echo")
+
+    def test_validate_single_tag(self):
+        assert config.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])
+        assert config.validate_single_tag(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
+        assert config.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
+        assert config.validate_single_tag(["alt.group"]) == (None, ["alt.group"])
