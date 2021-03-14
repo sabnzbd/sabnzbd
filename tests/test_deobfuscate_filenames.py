@@ -286,7 +286,6 @@ class TestDeobfuscateFinalResult:
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
 
-
     def test_deobfuscate_filelist_nasty_tests(self):
         # check no problems occur with nasty use cases
 
