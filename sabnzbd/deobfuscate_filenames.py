@@ -160,6 +160,23 @@ def deobfuscate_list(filelist, usefulname):
 
     # No par2 files? Then we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
     if run_renamer:
+
+        excluded_file_exts = EXCLUDED_FILE_EXTS
+        # If there is a collection (with bigger files), we don't want to rename it
+        bigfileslist = [f for f in filelist if os.path.getsize(f) > MIN_FILE_SIZE]
+        extlist = [os.path.splitext(f)[1] for f in bigfileslist]
+        # Count the extensions:
+        extcounterdict = dict((x, extlist.count(x)) for x in set(extlist))
+        for ext in extcounterdict:
+            if extcounterdict[ext] >= 3:
+                # probably a collection, so exclude this extension from renaming
+                logging.debug(
+                    "Found a collection of %s files with extension %s, so not renaming those files",
+                    extcounterdict[ext],
+                    ext,
+                )
+                excluded_file_exts = (*excluded_file_exts, ext)
+
         logging.debug("Trying to see if there are qualifying files to be deobfuscated")
         # sort filelist on size, so start with biggest file
         filelist = sorted(filelist, key=os.path.getsize, reverse=True)
@@ -173,7 +190,7 @@ def deobfuscate_list(filelist, usefulname):
             # Criteria: big, not-excluded extension, obfuscated (in that order)
             if (
                 file_size > MIN_FILE_SIZE
-                and get_ext(filename) not in EXCLUDED_FILE_EXTS
+                and get_ext(filename) not in excluded_file_exts
                 and is_probably_obfuscated(filename)  # this as last test to avoid unnecessary analysis
             ):
                 # Rename and make sure the new filename is unique
