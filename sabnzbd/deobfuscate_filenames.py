@@ -162,20 +162,25 @@ def deobfuscate_list(filelist, usefulname):
     if run_renamer:
 
         excluded_file_exts = EXCLUDED_FILE_EXTS
-        # If there is a collection (with bigger files), we don't want to rename it
-        bigfileslist = [f for f in filelist if os.path.getsize(f) > MIN_FILE_SIZE]
-        extlist = [os.path.splitext(f)[1] for f in bigfileslist]
-        # Count the extensions:
-        extcounterdict = dict((x, extlist.count(x)) for x in set(extlist))
-        for ext in extcounterdict:
-            if extcounterdict[ext] >= 3:
-                # probably a collection, so exclude this extension from renaming
+        # If there is a collection with bigger files with the same extension, we don't want to rename it
+        extcounter = {}
+        for file in filelist:
+            if os.path.getsize(file) < MIN_FILE_SIZE:
+                # too small to care
+                continue
+            _, ext = os.path.splitext(file)
+            if ext in extcounter:
+                extcounter[ext] += 1
+            else:
+                extcounter[ext] = 1
+            if extcounter[ext] >= 3 and ext not in excluded_file_exts:
+                # collection, and extension not yet in excluded_file_exts, so add it
+                excluded_file_exts = (*excluded_file_exts, ext)
                 logging.debug(
                     "Found a collection of %s files with extension %s, so not renaming those files",
-                    extcounterdict[ext],
+                    extcounter[ext],
                     ext,
                 )
-                excluded_file_exts = (*excluded_file_exts, ext)
 
         logging.debug("Trying to see if there are qualifying files to be deobfuscated")
         # sort filelist on size, so start with biggest file
