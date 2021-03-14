@@ -31,6 +31,10 @@ def create_big_file(filename):
         # must be above MIN_SIZE, so ... 15MB
         myfile.truncate(15 * 1024 * 1024)
 
+def create_small_file(filename):
+    with open(filename, "wb") as myfile:
+        myfile.truncate(1024)
+
 
 class TestDeobfuscateFinalResult:
     def test_is_probably_obfuscated(self):
@@ -176,6 +180,55 @@ class TestDeobfuscateFinalResult:
 
         # Check the renaming
         assert os.path.isfile(os.path.join(subsubdirname, jobname + ".bla"))  # ... it should be renamed to the jobname
+
+        # Done. Remove (non-empty) directory
+        shutil.rmtree(dirname)
+
+    def test_deobfuscate_big_file_small_accompanying_files(self):
+        # input: myiso.iso, with accompanying files (.srt files in this case)
+        # test that the small accompanying files (with same basename) are renamed accordingly to the big ISO
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        # Create a big enough file with a non-useful filename
+        isofile = os.path.join(dirname, "myiso.iso")
+        create_big_file(isofile)
+        assert os.path.isfile(isofile)
+
+        # and a srt file
+        srtfile = os.path.join(dirname, "myiso.srt")
+        create_small_file(srtfile)
+        assert os.path.isfile(srtfile)
+
+        # and a dut.srt file
+        dutsrtfile = os.path.join(dirname, "myiso.dut.srt")
+        create_small_file(dutsrtfile)
+        assert os.path.isfile(dutsrtfile)
+
+        # and a non-related file
+        txtfile = os.path.join(dirname, "something.txt")
+        create_small_file(txtfile)
+        assert os.path.isfile(txtfile)
+
+        # create the filelist, with just the above files
+        myfilelist = [isofile, srtfile, dutsrtfile, txtfile]
+
+        # and now unleash the magic on that filelist, with a more useful jobname:
+        jobname = "My Important Download 2020"
+        deobfuscate_list(myfilelist, jobname)
+
+        # Check original files:
+        assert not os.path.isfile(isofile)  # original iso not be there anymore
+        assert not os.path.isfile(srtfile)  # ... and accompanying file neither
+        assert not os.path.isfile(dutsrtfile)  # ... and this one neither
+        assert os.path.isfile(txtfile)  # should still be there: not accompanying, and too small to rename
+
+        # Check the renaming
+        assert os.path.isfile(os.path.join(dirname, jobname + ".iso"))  # ... should be renamed to the jobname
+        assert os.path.isfile(os.path.join(dirname, jobname + ".srt"))  # ... should be renamed to the jobname
+        assert os.path.isfile(os.path.join(dirname, jobname + ".dut.srt"))  # ... should be renamed to the jobname
 
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
