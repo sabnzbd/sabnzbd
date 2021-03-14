@@ -32,9 +32,8 @@ import hashlib
 import logging
 import os
 import re
-import glob
 
-from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
+from sabnzbd.filesystem import get_unique_filename, renamer, get_ext, globber_full
 from sabnzbd.par2file import is_parfile, parse_par2_file
 
 # Files to exclude and minimal file size for renaming
@@ -137,12 +136,9 @@ def deobfuscate_list(filelist, usefulname):
 
     # to be sure, only keep really exsiting files:
     filelist = [f for f in filelist if os.path.exists(f)]
-    # Sort the list, with the biggest file first
-    filelist = sorted(filelist, key=os.path.getsize, reverse=True)
 
     # Search for par2 files in the filelist
     par2_files = [f for f in filelist if f.endswith(".par2")]
-
     # Found any par2 files we can use?
     run_renamer = True
     if not par2_files:
@@ -160,7 +156,6 @@ def deobfuscate_list(filelist, usefulname):
 
     # No par2 files? Then we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
     if run_renamer:
-
         excluded_file_exts = EXCLUDED_FILE_EXTS
         # If there is a collection with bigger files with the same extension, we don't want to rename it
         extcounter = {}
@@ -177,24 +172,23 @@ def deobfuscate_list(filelist, usefulname):
                 # collection, and extension not yet in excluded_file_exts, so add it
                 excluded_file_exts = (*excluded_file_exts, ext)
                 logging.debug(
-                    "Found a collection of %s files with extension %s, so not renaming those files",
+                    "Found a collection of at least %s files with extension %s, so not renaming those files",
                     extcounter[ext],
                     ext,
                 )
 
         logging.debug("Trying to see if there are qualifying files to be deobfuscated")
-        # sort filelist on size, so start with biggest file
+        # We want to start with he biggest file ... probably the most important file
         filelist = sorted(filelist, key=os.path.getsize, reverse=True)
         for filename in filelist:
-            # check that file is still there (and not renamed by the secondary renaming)
+            # check that file is still there (and not renamed by the secondary renaming process below)
             if not os.path.isfile(filename):
                 continue
             logging.debug("Deobfuscate inspecting %s", filename)
-            file_size = os.path.getsize(filename)
             # Do we need to rename this file?
             # Criteria: big, not-excluded extension, obfuscated (in that order)
             if (
-                file_size > MIN_FILE_SIZE
+                os.path.getsize(filename) > MIN_FILE_SIZE
                 and get_ext(filename) not in excluded_file_exts
                 and is_probably_obfuscated(filename)  # this as last test to avoid unnecessary analysis
             ):
@@ -205,7 +199,8 @@ def deobfuscate_list(filelist, usefulname):
                 renamer(filename, new_name)
                 # find other files with the same basename (in the same directory), and rename them in the same way:
                 basedirfile, _ = os.path.splitext(filename)
-                for samebasenamefile in glob.glob(basedirfile + "*"):
+                dir, basefilename = os.path.split(basedirfile)
+                for samebasenamefile in globber_full(dir, basefilename + "*"):
                     path, file = os.path.split(samebasenamefile)
                     remainingextension = samebasenamefile.replace(basedirfile, "")  # might be ".dut.srt"
                     new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), remainingextension))
