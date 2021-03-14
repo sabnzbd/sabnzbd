@@ -420,7 +420,7 @@ class NzbFile(TryList):
             temp_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
             try:
                 # Make sure it's the new pickle format, if not try old finish_import
-                if temp_data[0][0].decoded == False:
+                if not temp_data[0][0].decoded:
                     for article in temp_data[1]:
                         article.nzf = self
                     self.articles = self.articles + temp_data[0]
@@ -534,6 +534,9 @@ class NzbFile(TryList):
         # Convert 2.x.x jobs
         if isinstance(self.decodetable, dict):
             self.decodetable = [self.decodetable[partnum] for partnum in sorted(self.decodetable)]
+
+        if self.pickle_lock_time is None:
+            self.pickle_lock_time = time.time() + 10
 
         # Set non-transferable values
         self.md5 = None
@@ -1655,7 +1658,7 @@ class NzbObject(TryList):
                         if not nzf.import_finished:
                             # Only load NZF when it's a primary server
                             # or when it has already been accessed
-                            if highest_server == None:
+                            if highest_server is None:
                                 highest_server = sabnzbd.Downloader.highest_server(server)
                             if nzf.pickle_lock_time or highest_server:
                                 nzf.unpickle_articles(server.displayname)
@@ -2119,6 +2122,9 @@ class NzbObject(TryList):
             for nzf in self.files + self.finished_files:
                 if sabnzbd.par2file.is_parfile(nzf.filename):
                     self.bytes_par2 += nzf.bytes
+
+        if self.unpickled_files is None:
+            self.unpickled_files = True
 
     def __repr__(self):
         return "<NzbObject: filename=%s, bytes=%s, nzo_id=%s>" % (self.filename, self.bytes, self.nzo_id)

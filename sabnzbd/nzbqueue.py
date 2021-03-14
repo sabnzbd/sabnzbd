@@ -721,11 +721,11 @@ class NzbQueue:
                 ):
                     nzo_count += 1
                     # Check for pickleable files, skipping the 2 first nzos
-                    if repickle_articles and nzo.unpickled_files and nzo_count > 2:
+                    if repickle_articles and nzo_count > 2 and nzo.unpickled_files:
                         nzo.unpickled_files = False
                         for nzf in nzo.files:
                             nzf.pickle_articles()
-                            if not nzf.import_finished:
+                            if nzf.import_finished and len(nzf.articles) > 2:
                                 nzo.unpickled_files = True
 
                     if not nzo.server_in_try_list(server):
