@@ -14,13 +14,13 @@
   For these the server blocking method is not very favourable.
   There is an INI-only option that will limit blocks to 1 minute.
       no_penalties = 1
-  See: https://sabnzbd.org/wiki/configuration/3.2/special
+  See: https://sabnzbd.org/wiki/configuration/3.3/special
 
 - Some third-party utilties try to probe SABnzbd API in such a way that you will
   often see warnings about unauthenticated access.
   If you are sure these probes are harmless, you can suppress the warnings by
   setting the option "api_warnings" to 0.
-  See: https://sabnzbd.org/wiki/configuration/3.2/special
+  See: https://sabnzbd.org/wiki/configuration/3.3/special
 
 - On macOS you may encounter downloaded files with foreign characters.
   The par2 repair may fail when the files were created on a Windows system.
