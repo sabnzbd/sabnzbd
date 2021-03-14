@@ -32,6 +32,11 @@ def create_big_file(filename):
         myfile.truncate(15 * 1024 * 1024)
 
 
+def create_small_file(filename):
+    with open(filename, "wb") as myfile:
+        myfile.truncate(1024)
+
+
 class TestDeobfuscateFinalResult:
     def test_is_probably_obfuscated(self):
         # Test the base function test_is_probably_obfuscated(), which gives a boolean as RC
@@ -174,6 +179,107 @@ class TestDeobfuscateFinalResult:
 
         # Check the renaming
         assert os.path.isfile(os.path.join(subsubdirname, jobname + ".bla"))  # ... it should be renamed to the jobname
+
+        # Done. Remove (non-empty) directory
+        shutil.rmtree(dirname)
+
+    def test_deobfuscate_big_file_small_accompanying_files(self):
+        # input: myiso.iso, with accompanying files (.srt files in this case)
+        # test that the small accompanying files (with same basename) are renamed accordingly to the big ISO
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        # Create a big enough file with a non-useful filename
+        isofile = os.path.join(dirname, "myiso.iso")
+        create_big_file(isofile)
+        assert os.path.isfile(isofile)
+
+        # and a srt file
+        srtfile = os.path.join(dirname, "myiso.srt")
+        create_small_file(srtfile)
+        assert os.path.isfile(srtfile)
+
+        # and a dut.srt file
+        dutsrtfile = os.path.join(dirname, "myiso.dut.srt")
+        create_small_file(dutsrtfile)
+        assert os.path.isfile(dutsrtfile)
+
+        # and a non-related file
+        txtfile = os.path.join(dirname, "something.txt")
+        create_small_file(txtfile)
+        assert os.path.isfile(txtfile)
+
+        # create the filelist, with just the above files
+        myfilelist = [isofile, srtfile, dutsrtfile, txtfile]
+
+        # and now unleash the magic on that filelist, with a more useful jobname:
+        jobname = "My Important Download 2020"
+        deobfuscate_list(myfilelist, jobname)
+
+        # Check original files:
+        assert not os.path.isfile(isofile)  # original iso not be there anymore
+        assert not os.path.isfile(srtfile)  # ... and accompanying file neither
+        assert not os.path.isfile(dutsrtfile)  # ... and this one neither
+        assert os.path.isfile(txtfile)  # should still be there: not accompanying, and too small to rename
+
+        # Check the renaming
+        assert os.path.isfile(os.path.join(dirname, jobname + ".iso"))  # ... should be renamed to the jobname
+        assert os.path.isfile(os.path.join(dirname, jobname + ".srt"))  # ... should be renamed to the jobname
+        assert os.path.isfile(os.path.join(dirname, jobname + ".dut.srt"))  # ... should be renamed to the jobname
+
+        # Done. Remove (non-empty) directory
+        shutil.rmtree(dirname)
+
+    def test_deobfuscate_collection_with_same_extension(self):
+        # input: a collection of bigger files with the same extension
+        # test that there is no renaming on the collection ... as that's useless on a collection
+
+        # Create directory (with a random directory name)
+        dirname = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(dirname)
+
+        # Create big enough files with a non-useful filenames, all with same extension
+        file1 = os.path.join(dirname, "file1.bla")
+        create_big_file(file1)
+        assert os.path.isfile(file1)
+
+        file2 = os.path.join(dirname, "file2.bla")
+        create_big_file(file2)
+        assert os.path.isfile(file2)
+
+        file3 = os.path.join(dirname, "file3.bla")
+        create_big_file(file3)
+        assert os.path.isfile(file3)
+
+        file4 = os.path.join(dirname, "file4.bla")
+        create_big_file(file4)
+        assert os.path.isfile(file4)
+
+        # other extension ... so this one should get renamed
+        otherfile = os.path.join(dirname, "other.bin")
+        create_big_file(otherfile)
+        assert os.path.isfile(otherfile)
+
+        # create the filelist, with the above files
+        myfilelist = [file1, file2, file3, file4, otherfile]
+
+        # and now unleash the magic on that filelist, with a more useful jobname:
+        jobname = "My Important Download 2020"
+        deobfuscate_list(myfilelist, jobname)
+
+        # Check original files:
+        # the collection with same extension should still be there:
+        assert os.path.isfile(file1)  # still there
+        assert os.path.isfile(file2)  # still there
+        assert os.path.isfile(file3)  # still there
+        assert os.path.isfile(file4)  # still there
+        # but the one separate file with obfuscated name should be renamed:
+        assert not os.path.isfile(otherfile)  # should be renamed
+
+        # Check the renaming
+        assert os.path.isfile(os.path.join(dirname, jobname + ".bin"))  # ... should be renamed to the jobname
 
         # Done. Remove (non-empty) directory
         shutil.rmtree(dirname)
