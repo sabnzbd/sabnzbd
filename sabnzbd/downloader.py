@@ -95,7 +95,7 @@ class Server:
 
         self.busy_threads: List[NewsWrapper] = []
         self.idle_threads: List[NewsWrapper] = []
-        self.next_article_search: float = 0
+        self.next_article_search: float = 0.0
         self.active: bool = True
         self.bad_cons: int = 0
         self.errormsg: str = ""
@@ -210,6 +210,9 @@ class Downloader(Thread):
         self.server_restarts: int = 0
 
         self.force_disconnect: bool = False
+
+        # Trigger check for articles to pickle
+        self.pickle_check: bool = False
 
         self.read_fds: Dict[int, NewsWrapper] = {}
 
@@ -539,16 +542,11 @@ class Downloader(Thread):
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                        # Only mark the articles in one file read for each loop to avoid stopping downloading
-                        # and have time to check for pickleable articles
-                        article.nzf.unpickle_articles(server.displayname + " (out of retention)")
-                        article_count = 0
+                        # Let's get rid of all the articles for this server at once
+                        logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
                         while article:
-                            article_count += 1
                             self.decode(article, None)
-                            article = article.nzf.get_article(server, self.servers)
-                        if len(self.servers) > 1:
-                            server.next_article_search = now + article_count * 0.001
+                            article = article.nzf.nzo.get_article(server, self.servers)
                         break
 
                     server.idle_threads.remove(nw)
@@ -595,6 +593,12 @@ class Downloader(Thread):
                     logging.info("Shutting down")
                     break
 
+            # Write inactive jobs backs to disk
+            # Performed in the Downloader-loop to avoid collisions
+            if self.pickle_check:
+                sabnzbd.NzbQueue.pickle_jobs()
+                self.pickle_check = False
+
             # Use select to find sockets ready for reading/writing
             readkeys = self.read_fds.keys()
             if readkeys:
@@ -630,6 +634,7 @@ class Downloader(Thread):
                         and not self.shutdown
                         and not self.force_disconnect
                         and not self.server_restarts
+                        and not self.pickle_check
                     ):
                         DOWNLOADER_CV.wait()
 

@@ -708,8 +708,6 @@ class NzbQueue:
         """
         # Pre-calculate propagation delay
         propagation_delay = float(cfg.propagation_delay() * 60)
-        nzo_count = 0
-        repickle_articles = cfg.repickle_articles()
         for nzo in self.__nzo_list:
             # Not when queue paused and not a forced item
             if nzo.status not in (Status.PAUSED, Status.GRABBING) or nzo.priority == FORCE_PRIORITY:
@@ -719,15 +717,6 @@ class NzbQueue:
                     or nzo.priority == FORCE_PRIORITY
                     or (nzo.avg_stamp + propagation_delay) < time.time()
                 ):
-                    nzo_count += 1
-                    # Check for pickleable files, skipping the 2 first nzos
-                    if repickle_articles and nzo_count > 2 and nzo.unpickled_files:
-                        nzo.unpickled_files = False
-                        for nzf in nzo.files:
-                            nzf.pickle_articles()
-                            if nzf.import_finished and len(nzf.articles) > 2:
-                                nzo.unpickled_files = True
-
                     if not nzo.server_in_try_list(server):
                         article = nzo.get_article(server, servers)
                         if article:
@@ -780,6 +769,20 @@ class NzbQueue:
             if post_done:
                 nzo.set_download_report()
                 self.end_job(nzo)
+
+    def pickle_jobs(self):
+        """Write article database back to disk for jobs that are inactive"""
+        logging.debug("Checking for inactive jobs to write article database back to disk")
+        for nzo in self.__nzo_list:
+            # Are there any articles to pickle?
+            if nzo.unpickled_files:
+                # Assume we pickle everything
+                nzo.unpickled_files = False
+                for nzf in nzo.files:
+                    # Returns False in case we did not pickle
+                    if not nzf.pickle_articles():
+                        # Some articles were
+                        nzo.unpickled_files = True
 
     def end_job(self, nzo: NzbObject):
         """ Send NZO to the post-processing queue """

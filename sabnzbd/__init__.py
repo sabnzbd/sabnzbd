@@ -1010,6 +1010,9 @@ def check_all_tasks():
         logging.info("Restarting because of crashed assembler")
         return False
 
+    # Check for articles to pickle
+    sabnzbd.Downloader.pickle_check = True
+
     # Kick the downloader, in case it missed the semaphore
     sabnzbd.Downloader.wakeup()
 

@@ -1409,7 +1409,6 @@ GENERAL_LIST = (
     "refresh_rate",
     "language",
     "cache_limit",
-    "repickle_articles",
     "local_ranges",
     "inet_exposure",
     "enable_https",
