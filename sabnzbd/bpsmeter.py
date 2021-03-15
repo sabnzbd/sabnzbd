@@ -198,13 +198,6 @@ class BPSMeter:
             res = self.reset_quota()
         except:
             self.defaults()
-        # Force update of counters and validate data
-        try:
-            for server in self.grand_total.keys():
-                self.update(server)
-        except TypeError:
-            self.defaults()
-            self.update()
         return res
 
     def update(self, server: Optional[str] = None, amount: int = 0, force_full_update: bool = True):
