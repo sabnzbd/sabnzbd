@@ -198,7 +198,7 @@ def deobfuscate_list(filelist, usefulname):
                 new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), get_ext(filename)))
                 logging.info("Deobfuscate renaming %s to %s", filename, new_name)
                 renamer(filename, new_name)
-                # find other files with the same basename (in the filelist), and rename them in the same way:
+                # in fileist, find other files with the same basename, and rename them in the same way:
                 basedirfile, _ = os.path.splitext(filename)  # something like "/home/this/myiso"
                 for otherfile in filelist:
                     if otherfile.startswith(basedirfile + ".") and os.path.isfile(otherfile):
