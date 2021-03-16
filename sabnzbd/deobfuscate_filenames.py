@@ -33,7 +33,7 @@ import logging
 import os
 import re
 
-from sabnzbd.filesystem import get_unique_filename, renamer, get_ext, globber_full
+from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
 from sabnzbd.par2file import is_parfile, parse_par2_file
 
 # Files to exclude and minimal file size for renaming
@@ -178,7 +178,7 @@ def deobfuscate_list(filelist, usefulname):
                 )
 
         logging.debug("Trying to see if there are qualifying files to be deobfuscated")
-        # We want to start with he biggest file ... probably the most important file
+        # We start with he biggest file ... probably the most important file
         filelist = sorted(filelist, key=os.path.getsize, reverse=True)
         for filename in filelist:
             # check that file is still there (and not renamed by the secondary renaming process below)
@@ -194,18 +194,19 @@ def deobfuscate_list(filelist, usefulname):
             ):
                 # Rename and make sure the new filename is unique
                 path, file = os.path.split(filename)
+                # construct new_name: <path><usefulname><extension>
                 new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), get_ext(filename)))
                 logging.info("Deobfuscate renaming %s to %s", filename, new_name)
                 renamer(filename, new_name)
-                # find other files with the same basename (in the same directory), and rename them in the same way:
-                basedirfile, _ = os.path.splitext(filename)
-                dir, basefilename = os.path.split(basedirfile)
-                for samebasenamefile in globber_full(dir, basefilename + "*"):
-                    path, file = os.path.split(samebasenamefile)
-                    remainingextension = samebasenamefile.replace(basedirfile, "")  # might be ".dut.srt"
-                    new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), remainingextension))
-                    logging.info("Deobfuscate renaming %s to %s", samebasenamefile, new_name)
-                    # Rename and make sure the new filename is unique
-                    renamer(samebasenamefile, new_name)
+                # find other files with the same basename in filelist, and rename them in the same way:
+                basedirfile, _ = os.path.splitext(filename)  # something like "/home/this/myiso"
+                for otherfile in filelist:
+                    if otherfile.startswith(basedirfile + ".") and os.path.isfile(otherfile):
+                        # yes, same basedirfile, only different extension
+                        remainingextension = otherfile.replace(basedirfile, "")  # might be long ext, like ".dut.srt"
+                        new_name = get_unique_filename("%s%s" % (os.path.join(path, usefulname), remainingextension))
+                        logging.info("Deobfuscate renaming %s to %s", otherfile, new_name)
+                        # Rename and make sure the new filename is unique
+                        renamer(otherfile, new_name)
     else:
         logging.info("No qualifying files found to deobfuscate")
