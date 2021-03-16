@@ -1241,6 +1241,16 @@ def main():
         if cpumodel:
             logging.debug("CPU model = %s", cpumodel)
 
+    # Check Cherrypy version
+    def versiontuple(v):
+        return tuple(map(int, (v.split("."))))
+
+    if versiontuple(cherrypy.__version__) < versiontuple("18.6") and enable_https and cherryhost != "127.0.0.1":
+        logging.warning(
+            T("Your cherrypy %s is too old! Expect problems if your SABnzbd GUI is reachable from Internet"),
+            cherrypy.__version__,
+        )
+
     logging.info("Using INI file %s", inifile)
 
     if autobrowser is not None:
