@@ -144,7 +144,7 @@
 
             <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
                 <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
-                    <h3>$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <h3 title="$server['displayname']">$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <!--#if int($server['enable']) != 0 #-->
                         <!--#if $last_prio != $server['priority'] and $cur_prio_color+1 < len($prio_colors) #-->
                             <!--#set $cur_prio_color = $cur_prio_color+1 #-->
