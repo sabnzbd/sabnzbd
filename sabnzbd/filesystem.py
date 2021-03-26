@@ -40,7 +40,7 @@ except ImportError:
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX
-from sabnzbd.encoding import correct_unknown_encoding
+from sabnzbd.encoding import correct_unknown_encoding, utob
 from sabnzbd.utils import rarfile
 
 # For Windows: determine executable extensions
@@ -947,6 +947,7 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 def disk_free_macos_clib_statfs64(directory):
     # MacOS only!
     # direct system call to c-lib's statfs(), not python's os.statvfs()
+    # because statvfs() on MacOS has a rollover at 4TB (possibly a 32bit rollover with 10bit block size)
     # Based on code of pudquick and blackntan
     # Input: directory.
     # Output: disksize and available space, in bytes
@@ -954,6 +955,8 @@ def disk_free_macos_clib_statfs64(directory):
     import ctypes
     import ctypes.util
 
+    # format & parameters: on MacOS, see "man statfs", lines starting at
+    # "struct statfs { /* when _DARWIN_FEATURE_64_BIT_INODE is defined */"
     class statfs64(ctypes.Structure):
         _fields_ = [
             ("f_bsize", ctypes.c_uint32),
@@ -974,12 +977,19 @@ def disk_free_macos_clib_statfs64(directory):
             ("f_reserved", ctypes.c_uint32 * 8),
         ]
 
-    kern = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
-    fs_info64 = statfs64()
-    root_volume = ctypes.create_string_buffer(str.encode(directory))
-    result64 = kern.statfs64(root_volume, ctypes.byref(fs_info64))
-    disk_size = fs_info64.f_blocks * fs_info64.f_bsize
-    avail_size = fs_info64.f_bavail * fs_info64.f_bsize
+    clib = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)  # the C library
+    fs_info64 = statfs64()  # set up the parameters to be filled out
+    result = clib.statfs64(
+        ctypes.create_string_buffer(utob(directory)), ctypes.byref(fs_info64)
+    )  # fs_info64 gets filled out via the byref()
+    if result == 0:
+        # Upon successful completion, a value of 0 is returned.
+        disk_size = fs_info64.f_blocks * fs_info64.f_bsize
+        avail_size = fs_info64.f_bavail * fs_info64.f_bsize
+    else:
+        # Otherwise, -1 is returned and the global variable errno is set to indicate the error.
+        logging.debug("result from statfs64 not 0, but %s", result)
+        disk_size = avail_size = 0
     return disk_size, avail_size
 
 
