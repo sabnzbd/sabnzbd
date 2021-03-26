@@ -999,7 +999,7 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
             return 0.0, 0.0
     elif sabnzbd.DARWIN:
         # MacOS diskfree ... via c-lib call statfs()
-        disk_size, available = disk_free_macos_clib_statfs64
+        disk_size, available = disk_free_macos_clib_statfs64(dir_to_check)
         return disk_size / GIGI, available / GIGI
     elif hasattr(os, "statvfs"):
         # posix diskfree
