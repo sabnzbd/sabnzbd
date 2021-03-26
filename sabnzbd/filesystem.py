@@ -944,6 +944,45 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
+def disk_free_macos_clib_statfs64(directory):
+    # MacOS only!
+    # direct system call to c-lib's statfs(), not python's os.statvfs()
+    # Based on code of pudquick and blackntan
+    # Input: directory.
+    # Output: disksize and available space, in bytes
+
+    import ctypes
+    import ctypes.util
+
+    class statfs64(ctypes.Structure):
+        _fields_ = [
+            ("f_bsize", ctypes.c_uint32),
+            ("f_iosize", ctypes.c_int32),
+            ("f_blocks", ctypes.c_uint64),
+            ("f_bfree", ctypes.c_uint64),
+            ("f_bavail", ctypes.c_uint64),
+            ("f_files", ctypes.c_uint64),
+            ("f_ffree", ctypes.c_uint64),
+            ("f_fsid", ctypes.c_uint64),
+            ("f_owner", ctypes.c_uint32),
+            ("f_type", ctypes.c_uint32),
+            ("f_flags", ctypes.c_uint32),
+            ("f_fssubtype", ctypes.c_uint32),
+            ("f_fstypename", ctypes.c_char * 16),
+            ("f_mntonname", ctypes.c_char * 1024),
+            ("f_mntfromname", ctypes.c_char * 1024),
+            ("f_reserved", ctypes.c_uint32 * 8),
+        ]
+
+    kern = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+    fs_info64 = statfs64()
+    root_volume = ctypes.create_string_buffer(str.encode(directory))
+    result64 = kern.statfs64(root_volume, ctypes.byref(fs_info64))
+    disk_size = fs_info64.f_blocks * fs_info64.f_bsize
+    avail_size = fs_info64.f_bavail * fs_info64.f_bsize
+    return disk_size, avail_size
+
+
 def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
     """ Return amount of free and used diskspace in GBytes """
     # Find first folder level that exists in the path
@@ -958,6 +997,10 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
             return disk_size / GIGI, available / GIGI
         except:
             return 0.0, 0.0
+    elif sabnzbd.DARWIN:
+        # MacOS diskfree ... via c-lib call statfs()
+        disk_size, available = disk_free_macos_clib_statfs64
+        return disk_size / GIGI, available / GIGI
     elif hasattr(os, "statvfs"):
         # posix diskfree
         try:
