@@ -949,6 +949,7 @@ def disk_free_macos_clib_statfs64(directory: str) -> Tuple[int, int]:
     # MacOS only!
     # direct system call to c-lib's statfs(), not python's os.statvfs()
     # because statvfs() on MacOS has a rollover at 4TB (possibly a 32bit rollover with 10bit block size)
+    # See https://bugs.python.org/issue43638
     # Based on code of pudquick and blackntan
     # Input: directory.
     # Output: disksize and available space, in bytes
