@@ -987,7 +987,7 @@ def disk_free_macos_clib_statfs64(directory):
         avail_size = fs_info64.f_bavail * fs_info64.f_bsize
     else:
         # Otherwise, -1 is returned and the global variable errno is set to indicate the error.
-        logging.debug("result from statfs64 not 0, but %s", result)
+        logging.debug("Call to MACOSLIBC.statfs64 not successful. Value of errno is %s", ctypes.get_errno())
         disk_size = avail_size = 0
     return disk_size, avail_size
 
