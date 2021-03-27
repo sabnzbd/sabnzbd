@@ -984,7 +984,7 @@ def disk_free_macos_clib_statfs64(directory: str) -> Tuple[int, int]:
         # result = 0: "Upon successful completion, a value of 0 is returned."
         return fs_info64.f_blocks * fs_info64.f_bsize, fs_info64.f_bavail * fs_info64.f_bsize
     else:
-        # restul = -1: Otherwise, -1 is returned and the global variable errno is set to indicate the error.
+        # restul = -1: "Otherwise, -1 is returned and the global variable errno is set to indicate the error."
         logging.debug("Call to MACOSLIBC.statfs64 not successful. Value of errno is %s", ctypes.get_errno())
         return 0, 0
 
