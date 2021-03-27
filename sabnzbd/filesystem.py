@@ -29,6 +29,7 @@ import time
 import fnmatch
 import stat
 import zipfile
+import ctypes
 from typing import Union, List, Tuple, Any, Dict, Optional
 
 try:
@@ -944,16 +945,13 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
-def disk_free_macos_clib_statfs64(directory):
+def disk_free_macos_clib_statfs64(directory: str) -> Tuple[int, int]:
     # MacOS only!
     # direct system call to c-lib's statfs(), not python's os.statvfs()
     # because statvfs() on MacOS has a rollover at 4TB (possibly a 32bit rollover with 10bit block size)
     # Based on code of pudquick and blackntan
     # Input: directory.
     # Output: disksize and available space, in bytes
-
-    import ctypes
-    import ctypes.util
 
     # format & parameters: on MacOS, see "man statfs", lines starting at
     # "struct statfs { /* when _DARWIN_FEATURE_64_BIT_INODE is defined */"
@@ -982,14 +980,12 @@ def disk_free_macos_clib_statfs64(directory):
         ctypes.create_string_buffer(utob(directory)), ctypes.byref(fs_info64)
     )  # fs_info64 gets filled out via the byref()
     if result == 0:
-        # Upon successful completion, a value of 0 is returned.
-        disk_size = fs_info64.f_blocks * fs_info64.f_bsize
-        avail_size = fs_info64.f_bavail * fs_info64.f_bsize
+        # result = 0: "Upon successful completion, a value of 0 is returned."
+        return fs_info64.f_blocks * fs_info64.f_bsize, fs_info64.f_bavail * fs_info64.f_bsize
     else:
-        # Otherwise, -1 is returned and the global variable errno is set to indicate the error.
+        # restul = -1: Otherwise, -1 is returned and the global variable errno is set to indicate the error.
         logging.debug("Call to MACOSLIBC.statfs64 not successful. Value of errno is %s", ctypes.get_errno())
-        disk_size = avail_size = 0
-    return disk_size, avail_size
+        return 0, 0
 
 
 def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
