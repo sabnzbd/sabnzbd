@@ -977,9 +977,8 @@ def disk_free_macos_clib_statfs64(directory):
             ("f_reserved", ctypes.c_uint32 * 8),
         ]
 
-    clib = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)  # the C library
     fs_info64 = statfs64()  # set up the parameters to be filled out
-    result = clib.statfs64(
+    result = sabnzbd.MACOSLIBC.statfs64(
         ctypes.create_string_buffer(utob(directory)), ctypes.byref(fs_info64)
     )  # fs_info64 gets filled out via the byref()
     if result == 0:
