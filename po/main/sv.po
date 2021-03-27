@@ -4835,6 +4835,10 @@ msgid "View Script Log"
 msgstr "Visa skriptlogg"
 
 #: sabnzbd/skintext.py
+msgid "Renaming the job will abort Direct Unpack."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
 "LocalStorage (cookies) are disabled in your browser, interface settings will"
 " be lost after you close the browser!"
