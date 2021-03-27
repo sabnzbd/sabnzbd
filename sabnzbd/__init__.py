@@ -21,6 +21,7 @@ import datetime
 import tempfile
 import pickle
 import ctypes
+import ctypes.util
 import gzip
 import time
 import socket
@@ -35,7 +36,7 @@ from typing import Any, AnyStr
 # Determine platform flags
 ##############################################################################
 WIN32 = DARWIN = FOUNDATION = WIN64 = DOCKER = False
-KERNEL32 = LIBC = None
+KERNEL32 = LIBC = MACOSLIBC = None
 
 if os.name == "nt":
     WIN32 = True
@@ -56,12 +57,12 @@ elif os.name == "posix":
     except:
         pass
 
-    # See if we have Linux memory functions
+    # See if we have the GNU glibc malloc_trim() memory release function
     try:
         LIBC = ctypes.CDLL("libc.so.6")
-        LIBC.malloc_trim(0)
+        LIBC.malloc_trim(0)  # try the malloc_trim() call, which is a GNU extension
     except:
-        # No malloc_trim(), probably because no libc
+        # No malloc_trim(), probably because no glibc
         LIBC = None
         pass
 
@@ -70,6 +71,7 @@ elif os.name == "posix":
         DARWIN = True
         # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
         DARWIN_VERSION = int(platform.mac_ver()[0].split(".")[1])
+        MACOSLIBC = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)  # the MacOS C library
         try:
             import Foundation
             import sabnzbd.utils.sleepless as sleepless
@@ -77,6 +79,7 @@ elif os.name == "posix":
             FOUNDATION = True
         except:
             pass
+
 
 # Imported to be referenced from other files directly
 from sabnzbd.version import __version__, __baseline__
