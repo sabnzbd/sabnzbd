@@ -924,9 +924,7 @@ SKIN_TEXT = {
     "Glitter-more": TT("More"),
     "Glitter-scriptLog": TT("View Script Log"),
     "Glitter-clearHistory": TT("Purge History"),
-    "Glitter-confirmClearWarnings": TT("Are you sure?"),
-    "Glitter-confirmClearDownloads": TT("Are you sure?"),
-    "Glitter-confirmClear1Download": TT("Are you sure?"),
+    "Glitter-confirmAbortDirectUnpack": TT("Renaming the job will abort Direct Unpack."),
     "Glitter-updateAvailable": TT("Update Available!"),
     "Glitter-noLocalStorage": TT(
         "LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!"
