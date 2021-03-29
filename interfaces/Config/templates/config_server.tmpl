@@ -385,7 +385,8 @@
 
             // If values were missing
             if(!isNaN(articleRatio)) {
-                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', totalArticlesTriedThisRange))
+                // Use filesize to convert to unit-display
+                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', filesize(totalArticlesTriedThisRange, {unix: true, round: 0, spacer: "", base: 1})))
             } else {
                 \$('#server-article-value-' + server_id).text('$T("notAvailable")')
             }
