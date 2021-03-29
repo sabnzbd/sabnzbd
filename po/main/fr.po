@@ -5004,7 +5004,7 @@ msgstr "Afficher le journal des scripts"
 
 #: sabnzbd/skintext.py
 msgid "Renaming the job will abort Direct Unpack."
-msgstr ""
+msgstr "Renommer la tâche annulera la Décompression Directe."
 
 #: sabnzbd/skintext.py
 msgid ""
