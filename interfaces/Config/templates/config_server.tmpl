@@ -273,6 +273,9 @@
                                 <b>$T('srv-article-availability'):</b><br/>
                                 $T('selectedDates'): <span id="server-article-value-${cur}"></span>
                             </p>
+                            <!--#if $server['expire_date']#-->
+                            <p><b>$T('srv-expire_date'):</b> $(server['expire_date'])</p>
+                            <!--#end if#-->
                             <!--#if $server['quota']#-->
                             <p><b>$T('quota-left'):</b> $(server['quota_left'])B</p>
                             <!--#end if#-->
