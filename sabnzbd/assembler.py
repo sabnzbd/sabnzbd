@@ -352,8 +352,9 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                                     # This one really didn't work
                                     pass
                                 except rarfile.RarCRCError as e:
-                                    # CRC errors can be thrown for wrong password and actual CRC errors
-                                    if "wrong password" not in str(e).lower():
+                                    # CRC errors can be thrown for wrong password or
+                                    # missing the next volume (with correct password)
+                                    if "cannot find volume" in str(e).lower():
                                         # We assume this one worked!
                                         password_hit = password
                                         break
