@@ -46,7 +46,7 @@ except ImportError:
 
 
 class CrcError(Exception):
-    def __init__(self, needcrc, gotcrc, data):
+    def __init__(self, needcrc: int, gotcrc: int, data: bytes):
         super().__init__()
         self.needcrc = needcrc
         self.gotcrc = gotcrc
@@ -154,12 +154,15 @@ class DecoderWorker(Thread):
                 sabnzbd.NzbQueue.reset_try_lists(article)
                 continue
 
-            except CrcError:
+            except CrcError as crc_error:
                 logging.info("CRC Error in %s" % art_id)
 
                 # Continue to the next one if we found new server
                 if search_new_server(article):
                     continue
+
+                # Store data, maybe par2 can still fix it
+                decoded_data = crc_error.data
 
             except (BadYenc, ValueError):
                 # Handles precheck and badly formed articles
