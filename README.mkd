@@ -1,8 +1,5 @@
-Release Notes - SABnzbd 3.2.1 Release Candidate 2
+Release Notes - SABnzbd 3.2.1
 =========================================================
-
-## Changes and bugfixes since 3.2.1 RC 1
-- Improvements to the encrypted RAR-detection.
 
 ## Changes and bugfixes since 3.2.0
 - Single `Indexer Categories` in Categories were broken.
@@ -11,11 +8,14 @@ Release Notes - SABnzbd 3.2.1 Release Candidate 2
 - Show the name of the item to be deleted from the Queue/History 
   in the confirmation dialog.
 - Handle directories in `.par2`-files during Quick-check.
+- Do not discard data for articles with CRC-errors.
 - Improvements to `Deobfuscate final filenames`:
   Rename accompanying (smaller) files with the same basename.
   Do not rename collections of the same extension.
 - Sanitize names possibly derived from `X-DNZB-EpisodeName`.
 - Widened the RSS feeds table.
+- Show server expiration date in server summary.
+- Improvements to the encrypted RAR-detection.
 - Add traceback-logging when failing to read the password file.
 - Windows: Use binary mode to make the write test more accurate.
 
