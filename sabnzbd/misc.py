@@ -781,11 +781,7 @@ def get_all_passwords(nzo):
         meta_passwords.append(pw)
 
     if meta_passwords:
-        if nzo.password == meta_passwords[0]:
-            # this nzo.password came from meta, so don't use it twice
-            passwords.extend(meta_passwords[1:])
-        else:
-            passwords.extend(meta_passwords)
+        passwords.extend(meta_passwords)
         logging.info("Read %s passwords from meta data in NZB: %s", len(meta_passwords), meta_passwords)
 
     pw_file = cfg.password_file.get_path()
@@ -808,6 +804,7 @@ def get_all_passwords(nzo):
                 )
         except:
             logging.warning(T("Failed to read the password file %s"), pw_file)
+            logging.info("Traceback: ", exc_info=True)
 
     if nzo.password:
         # If an explicit password was set, add a retry without password, just in case.
@@ -816,7 +813,7 @@ def get_all_passwords(nzo):
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, "")
-    return passwords
+    return set(passwords)
 
 
 def find_on_path(targets):

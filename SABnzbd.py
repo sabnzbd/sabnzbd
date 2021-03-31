@@ -19,7 +19,7 @@ import sys
 
 if sys.hexversion < 0x03060000:
     print("Sorry, requires Python 3.6 or above")
-    print("You can read more at: https://sabnzbd.org/python3")
+    print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
 
 import logging
@@ -48,7 +48,7 @@ try:
 except ImportError as e:
     print("Not all required Python modules are available, please check requirements.txt")
     print("Missing module:", e.name)
-    print("You can read more at: https://sabnzbd.org/python3")
+    print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     print("If you still experience problems, remove all .pyc files in this folder and subfolders")
     sys.exit(1)
 
@@ -68,7 +68,6 @@ from sabnzbd.misc import (
     get_serv_parms,
     get_from_url,
     upload_file_to_sabnzbd,
-    is_ipv4_addr,
     is_localhost,
     is_lan_addr,
 )
@@ -137,15 +136,28 @@ class GUIHandler(logging.Handler):
         except TypeError:
             parsed_msg = record.msg + str(record.args)
 
-        if record.levelno == logging.WARNING:
-            sabnzbd.notifier.send_notification(T("Warning"), parsed_msg, "warning")
-        else:
-            sabnzbd.notifier.send_notification(T("Error"), parsed_msg, "error")
+        warning = {
+            "type": record.levelname,
+            "text": parsed_msg,
+            "time": int(time.time()),
+            "origin": "%s%d" % (record.filename, record.lineno),
+        }
 
         # Append traceback, if available
-        warning = {"type": record.levelname, "text": parsed_msg, "time": int(time.time())}
         if record.exc_info:
             warning["text"] = "%s\n%s" % (warning["text"], traceback.format_exc())
+
+        # Do not notify the same notification within 1 minute from the same source
+        # This prevents endless looping if the notification service itself throws an error/warning
+        # We don't check based on message content, because if it includes a timestamp it's not unique
+        if not any(
+            stored_warning["origin"] == warning["origin"] and stored_warning["time"] + DEF_TIMEOUT > time.time()
+            for stored_warning in self.store
+        ):
+            if record.levelno == logging.WARNING:
+                sabnzbd.notifier.send_notification(T("Warning"), parsed_msg, "warning")
+            else:
+                sabnzbd.notifier.send_notification(T("Error"), parsed_msg, "error")
 
         # Loose the oldest record
         if len(self.store) >= self._size:

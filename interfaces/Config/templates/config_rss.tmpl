@@ -10,7 +10,7 @@
             <p>$T('explain-RSS')</p>
             <form action="add_rss_feed" method="post" autocomplete="off">
                 <input type="hidden" name="apikey" value="$apikey" />
-                <table class="catTable">
+                <table class="catTable addRssTable">
                     <tr>
                         <th>&nbsp;</th>
                         <th>$T('name')</th>
@@ -21,10 +21,10 @@
                         <td>
                             <input type="checkbox" name="enable" value="1" checked />
                         </td>
-                        <td>
-                            <input type="text" name="feed" class="smaller_input" value="$feed" />
+                        <td class="new-feed-title">
+                            <input type="text" name="feed" value="$feed" />
                         </td>
-                        <td>
+                        <td class="new-feed-url">
                             <input type="text" name="uri" placeholder="$T('addMultipleFeeds')" />
                         </td>
                         <td class="nowrap">

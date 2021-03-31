@@ -334,29 +334,30 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                                     zf.setpassword(password)
                                 except rarfile.Error:
                                     # On weird passwords the setpassword() will fail
-                                    # but the actual rartest() will work
+                                    # but the actual testrar() will work
                                     pass
                                 try:
                                     zf.testrar()
                                     password_hit = password
                                     break
+                                except rarfile.RarWrongPassword:
+                                    # This one really didn't work
+                                    pass
                                 except rarfile.RarCRCError as e:
                                     # CRC errors can be thrown for wrong password or
                                     # missing the next volume (with correct password)
                                     if "cannot find volume" in str(e).lower():
+                                        # We assume this one worked!
                                         password_hit = password
                                         break
                                     # This one didn't work
                                     pass
-                                except Exception as e:
-                                    # Did we start from the right volume? Skip the checks for now.
-                                    if match_str(
-                                        str(e).lower(),
-                                        ("need to start extraction from a previous volume", "non-fatal error"),
-                                    ):
-                                        return encrypted, unwanted
-                                    # This one failed
-                                    pass
+                                except:
+                                    # All the other errors we skip, they might be fixable in post-proc.
+                                    # For example starting from the wrong volume, or damaged files
+                                    # This will cause the check to be performed again for the next rar, might
+                                    # be disk-intensive! Could be removed later and just accept the password.
+                                    return encrypted, unwanted
 
                         # Did any work?
                         if password_hit:
