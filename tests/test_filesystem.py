@@ -166,8 +166,10 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("test..aftertest") == "test..aftertest"
         assert filesystem.sanitize_foldername("test.aftertest.") == "test.aftertest"
         assert filesystem.sanitize_foldername("test.aftertest..") == "test.aftertest"
+        assert filesystem.sanitize_foldername("test. aftertest. . . .") == "test. aftertest"
         assert filesystem.sanitize_foldername("/test/this.") == "+test+this"
         assert filesystem.sanitize_foldername("/test./this.") == "+test.+this"
+        assert filesystem.sanitize_foldername("/test. /this . ") == "+test. +this"
 
     def test_long_foldername(self):
         assert len(filesystem.sanitize_foldername("test" * 100)) == DEF_FOLDER_MAX
@@ -191,6 +193,7 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("\t\t\t") == "unknown"
         assert filesystem.sanitize_foldername(" ") == "unknown"
         assert filesystem.sanitize_foldername("  ") == "unknown"
+        assert filesystem.sanitize_foldername(" . .") == "unknown"
 
     def test_filename_too_long(self):
 

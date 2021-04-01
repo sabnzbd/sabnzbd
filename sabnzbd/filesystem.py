@@ -245,7 +245,6 @@ def sanitize_foldername(name: str) -> str:
         else:
             lst.append(ch)
     name = "".join(lst)
-    name = name.strip()
 
     if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
@@ -253,9 +252,14 @@ def sanitize_foldername(name: str) -> str:
     if len(name) >= sabnzbd.cfg.max_foldername_length():
         name = name[: sabnzbd.cfg.max_foldername_length()]
 
-    # And finally, make sure it doesn't end in a dot
+    # And finally, make sure it doesn't end in a dot or a space
+    # This is invalid on Windows and can cause trouble for some other tools
     if name != "." and name != "..":
-        name = name.rstrip(".")
+        # This would be perfect for := operator in Python 3.8+
+        while len(name.strip().rstrip(".")) < len(name):
+            name = name.strip().rstrip(".")
+
+    # Just to be sure we don't return nothing
     if not name:
         name = "unknown"
 
