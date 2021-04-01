@@ -59,7 +59,7 @@ from sabnzbd.misc import (
     opts_to_pp,
 )
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
-from sabnzbd.encoding import xml_name
+from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
@@ -1022,7 +1022,7 @@ def report(output, error=None, keyword="value", data=None):
                 info = data
             else:
                 info = {keyword: data}
-        response = json.dumps(info).encode("utf-8")
+        response = utob(json.dumps(info))
 
     elif output == "xml":
         if not keyword:

@@ -30,7 +30,7 @@ from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import platform_btou
+from sabnzbd.encoding import platform_btou, utob
 from sabnzbd.filesystem import make_script_path
 from sabnzbd.misc import build_and_run_command
 from sabnzbd.newsunpack import create_env
@@ -221,8 +221,8 @@ def send_prowl(title, msg, gtype, force=False, test=None):
         return T("Cannot send, missing required data")
 
     title = T(NOTIFICATION.get(gtype, "other"))
-    title = urllib.parse.quote(title.encode("utf8"))
-    msg = urllib.parse.quote(msg.encode("utf8"))
+    title = urllib.parse.quote(utob(title))
+    msg = urllib.parse.quote(utob(msg))
     prio = get_prio(gtype, "prowl")
 
     if force:
