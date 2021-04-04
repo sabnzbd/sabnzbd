@@ -28,9 +28,12 @@ def measure_speed_from_url(url: str) -> float:
     except:
         # No connection at all?
         pass
-    duration = time.time() - start
+
+    time_granularity_worst_case = 0.008  # Windows has worst case 16 milliseconds
+    duration = max(time.time() - start, time_granularity_worst_case)  # max() to avoid 0.0 divide error later on
     logging.debug("Downloaded bytes: %d", downloaded_bytes)
     logging.debug("Duration in seconds: %f", duration)
+
     return downloaded_bytes / 1024 ** 2 / duration
 
 
