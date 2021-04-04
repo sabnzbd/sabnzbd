@@ -10,7 +10,7 @@ import time
 import logging
 import urllib.request
 
-SizeUrlList = [
+SIZE_URL_LIST = [
     [5, "https://sabnzbd.org/tests/internetspeed/5MB.bin"],
     [10, "https://sabnzbd.org/tests/internetspeed/10MB.bin"],
     [20, "https://sabnzbd.org/tests/internetspeed/20MB.bin"],
@@ -46,7 +46,7 @@ def internetspeed() -> float:
     """ Report Internet speed in MB/s as a float """
     # Do basic test with a small download
     logging.debug("Basic measurement, with small download:")
-    urlbasic = SizeUrlList[0][1]  # get first URL, which is smallest download
+    urlbasic = SIZE_URL_LIST[0][1]  # get first URL, which is smallest download
     base_megabytes_per_second = measure_speed_from_url(urlbasic)
     logging.debug("Speed in MB/s: %.2f", base_megabytes_per_second)
     if base_megabytes_per_second == 0:
@@ -63,7 +63,7 @@ def internetspeed() -> float:
     # Determine the biggest URL that can be downloaded within timeframe
     maxtime = 4  # seconds
     url_to_do = None
-    for size, sizeurl in SizeUrlList:
+    for size, sizeurl in SIZE_URL_LIST:
         expectedtime = size / base_megabytes_per_second
         if expectedtime < maxtime:
             # ok, this one is feasible, so keep it in mind
