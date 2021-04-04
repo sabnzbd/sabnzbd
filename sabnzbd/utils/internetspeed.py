@@ -2,7 +2,7 @@
 
 """
 Module to measure and report Internet speed
-Method: get one or more files, and measure how long it takes
+Method: get one small and then a bigger reference file, and measure how long it takes, then calculate speed
 Reports in MB/s (so mega BYTES per seconds), not to be confused with Mbps
 """
 
@@ -17,43 +17,38 @@ SizeUrlList = [
 ]
 
 
-def measurespeed(url):
-    """ Download the specified url, and report back MB/s (as a float) """
+def measure_speed_from_url(url: str) -> float:
+    """ Download the specified url (pointing to a file), and report back MB/s (as a float) """
     logging.debug("URL is %s" % url)
     start = time.time()
-    downloadedbytes = 0  # default
+    downloaded_bytes = 0  # default
     try:
         req = urllib.request.Request(url, data=None, headers={"User-Agent": "Mozilla/5.0 (Macintosh)"})
-        downloadedbytes = len(urllib.request.urlopen(req, timeout=4).read())
+        downloaded_bytes = len(urllib.request.urlopen(req, timeout=4).read())
     except:
         # No connection at all?
         pass
-
     duration = time.time() - start
-
-    logging.debug("Downloaded bytes: %d" % downloadedbytes)
-    if downloadedbytes == 0:
-        return 0
-
+    logging.debug("Downloaded bytes: %d" % downloaded_bytes)
     logging.debug("Duration in seconds: %f" % duration)
-    MBps = (downloadedbytes / 1000111) / duration  # Bytes
-    return MBps
+    return downloaded_bytes / 1024**2 / duration
 
 
-def BytestoBits(MBps):
-    return 8.05 * MBps  # bits
+def bytes_to_bits(megabytes_per_second: float) -> float:
+    """ convert bytes (per second) to bits (per second), taking into a account network overhead"""
+    return 8.05 * megabytes_per_second  # bits
 
 
-def internetspeed():
+def internetspeed() -> float:
     """ Report Internet speed in MB/s as a float """
     # Do basic test with a small download
     logging.debug("Basic measurement, with small download:")
     urlbasic = SizeUrlList[0][1]  # get first URL, which is smallest download
-    baseMBps = measurespeed(urlbasic)
-    logging.debug("Speed in MB/s: %.2f" % baseMBps)
-    if baseMBps == 0:
+    base_megabytes_per_second = measure_speed_from_url(urlbasic)
+    logging.debug("Speed in MB/s: %.2f" % base_megabytes_per_second)
+    if base_megabytes_per_second == 0:
         # no Internet connection, or other problem
-        return baseMBps
+        return 0.0
 
     """
     Based on this first, small download, do a bigger download; the biggest download that still fits in 10 seconds
@@ -62,30 +57,28 @@ def internetspeed():
     If the 5MB download took 0.3 seconds, you can do a 30 times bigger download, so about 150 MB, will round to 100 MB
     """
 
-    # Calculate:
+    # Determine the biggest URL that can be downloaded within timeframe
     maxtime = 4  # seconds
-    URLtoDO = None
+    url_to_do = None
     for size, sizeurl in SizeUrlList:
-        expectedtime = size / baseMBps
+        expectedtime = size / base_megabytes_per_second
         if expectedtime < maxtime:
             # ok, this one is feasible, so keep it in mind
-            URLtoDO = sizeurl
+            url_to_do = sizeurl
 
-    maxMBps = baseMBps
+    max_megabytes_per_second = base_megabytes_per_second
     # Execute it twice, and get the best result
-    for i in range(2):
-        if URLtoDO:
-            logging.debug(URLtoDO)
-            MBps = measurespeed(URLtoDO)
-            logging.debug("Speed in MB/s: %.2f" % MBps)
-            maxMBps = max(maxMBps, MBps)
+    for _ in range(2):
+        if url_to_do:
+            logging.debug(url_to_do)
+            measured_megabytes_per_second = measure_speed_from_url(url_to_do)
+            logging.debug("Speed in MB/s: %.2f" % measured_megabytes_per_second)
+            max_megabytes_per_second = max(max_megabytes_per_second, measured_megabytes_per_second)
 
-    return maxMBps
+    return max_megabytes_per_second
 
 
-############################################
-
-############### MAIN #######################
+# MAIN
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
@@ -93,4 +86,4 @@ if __name__ == "__main__":
     print("Starting speed test:")
     maxMBps = internetspeed()
     print("Speed in MB/s: %.2f" % maxMBps)
-    print("Speed in Mbps: %.2f" % BytestoBits(maxMBps))
+    print("Speed in Mbps: %.2f" % bytes_to_bits(maxMBps))
