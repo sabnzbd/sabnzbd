@@ -19,7 +19,7 @@ SizeUrlList = [
 
 def measure_speed_from_url(url: str) -> float:
     """ Download the specified url (pointing to a file), and report back MB/s (as a float) """
-    logging.debug("URL is %s" % url)
+    logging.debug("URL is %s", url)
     start = time.time()
     downloaded_bytes = 0  # default
     try:
@@ -29,8 +29,8 @@ def measure_speed_from_url(url: str) -> float:
         # No connection at all?
         pass
     duration = time.time() - start
-    logging.debug("Downloaded bytes: %d" % downloaded_bytes)
-    logging.debug("Duration in seconds: %f" % duration)
+    logging.debug("Downloaded bytes: %d", downloaded_bytes)
+    logging.debug("Duration in seconds: %f", duration)
     return downloaded_bytes / 1024 ** 2 / duration
 
 
@@ -45,7 +45,7 @@ def internetspeed() -> float:
     logging.debug("Basic measurement, with small download:")
     urlbasic = SizeUrlList[0][1]  # get first URL, which is smallest download
     base_megabytes_per_second = measure_speed_from_url(urlbasic)
-    logging.debug("Speed in MB/s: %.2f" % base_megabytes_per_second)
+    logging.debug("Speed in MB/s: %.2f", base_megabytes_per_second)
     if base_megabytes_per_second == 0:
         # no Internet connection, or other problem
         return 0.0
@@ -72,7 +72,7 @@ def internetspeed() -> float:
         if url_to_do:
             logging.debug(url_to_do)
             measured_megabytes_per_second = measure_speed_from_url(url_to_do)
-            logging.debug("Speed in MB/s: %.2f" % measured_megabytes_per_second)
+            logging.debug("Speed in MB/s: %.2f", measured_megabytes_per_second)
             max_megabytes_per_second = max(max_megabytes_per_second, measured_megabytes_per_second)
 
     return max_megabytes_per_second
