@@ -4858,7 +4858,7 @@ msgstr "הצג יומן תסריטים"
 
 #: sabnzbd/skintext.py
 msgid "Renaming the job will abort Direct Unpack."
-msgstr ""
+msgstr "שינוי השם של העבודה יבטל פריקה ישירה."
 
 #: sabnzbd/skintext.py
 msgid ""
