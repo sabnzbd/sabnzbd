@@ -31,7 +31,7 @@ def measure_speed_from_url(url: str) -> float:
     duration = time.time() - start
     logging.debug("Downloaded bytes: %d" % downloaded_bytes)
     logging.debug("Duration in seconds: %f" % duration)
-    return downloaded_bytes / 1024**2 / duration
+    return downloaded_bytes / 1024 ** 2 / duration
 
 
 def bytes_to_bits(megabytes_per_second: float) -> float:
