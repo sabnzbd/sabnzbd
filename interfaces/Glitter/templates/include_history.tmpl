@@ -225,7 +225,7 @@
         <span data-bind="text: history.downloadedTotal"></span>B $T('Glitter-total')
     </div>
 </div>
-<div class="info-container history-info" data-bind="visible: !hasHistory() && !displayTabbed() && history.downloadedTotal" style="display: none">
+<div class="info-container history-info" data-bind="visible: !hasHistory() && !displayTabbed()" style="display: none">
     <span class="glyphicon glyphicon-save"></span>
     <span data-bind="text: history.downloadedToday"></span>B $T('Glitter-today')
     <span data-bind="text: history.downloadedMonth"></span>B $T('Glitter-thisMonth')
