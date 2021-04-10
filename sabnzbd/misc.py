@@ -802,6 +802,10 @@ def get_all_passwords(nzo):
                         "Your password file contains more than 30 passwords, testing all these passwords takes a lot of time. Try to only list useful passwords."
                     )
                 )
+        except UnicodeDecodeError:
+            logging.warning("Specified password file %s is not a plain text file", pw_file)
+        except FileNotFoundError:
+            logging.warning("Specified password file %s not found", pw_file)
         except:
             logging.warning(T("Failed to read the password file %s"), pw_file)
             logging.info("Traceback: ", exc_info=True)
