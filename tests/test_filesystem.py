@@ -363,10 +363,10 @@ class TestCheckMountLinux(ffs.TestCase):
         self.setUpPyfakefs()
         self.fs.path_separator = "/"
         self.fs.is_case_sensitive = True
-        for dir in self.test_dirs:
-            self.fs.create_dir(dir, perm_bits=755)
+        for test_dir in self.test_dirs:
+            self.fs.create_dir(test_dir, perm_bits=755)
             # Sanity check the fake filesystem
-            assert os.path.exists(dir) is True
+            assert os.path.exists(test_dir) is True
 
     @set_platform("linux")
     def test_bare_mountpoint_linux(self):
@@ -778,7 +778,7 @@ class TestCreateAllDirsWin(ffs.TestCase):
 
     @set_platform("win32")
     def test_create_all_dirs(self):
-        self.dir = self.fs.create_dir(r"C:\Downloads")
+        self.directory = self.fs.create_dir(r"C:\Downloads")
         # Also test for no crash when folder already exists
         for folder in (r"C:\Downloads", r"C:\Downloads\Show\Test", r"C:\Downloads\Show\Test2", r"C:\Downloads\Show"):
             assert filesystem.create_all_dirs(folder) == folder
@@ -924,9 +924,9 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
 
         # Check the results
         for root, dirs, files in os.walk(test_dir):
-            for dir in [os.path.join(root, d) for d in dirs]:
+            for directory in [os.path.join(root, d) for d in dirs]:
                 # Permissions on directories should now match perms_after
-                self.assert_dir_perms(dir, perms_after)
+                self.assert_dir_perms(directory, perms_after)
             for file in [os.path.join(root, f) for f in files]:
                 # Files also shouldn't have any executable or special bits set
                 assert (
