@@ -271,6 +271,7 @@
                     if(!\$('.host-warning').length) {
                         safeCheck.after('<span class="glyphicon glyphicon-alert host-warning"></span>')
                         \$('.host-warning').tooltip({'title': '$T('checkSafety')'})
+                        safeCheck.addClass('host-warning-highlight')
                     }
                     return
                 }

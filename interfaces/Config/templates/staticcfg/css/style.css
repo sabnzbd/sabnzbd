@@ -162,7 +162,6 @@ input[type="checkbox"]+.desc {
     float: none;
     overflow: hidden;
     min-width: 555px;
-    position: relative;
 }
 .Key tr:nth-child(odd),
 .tab-pane tr:nth-child(odd),
@@ -1104,6 +1103,10 @@ input[type="checkbox"] {
     font-size: 1.2em;
 }
 
+.host-warning-highlight {
+    border-color: #F0AD4E !important;
+}
+
 .fileBrowser .glyphicon {
     margin-right: 2px;
     top: 1px;
@@ -1192,6 +1195,10 @@ html[dir="rtl"] .col2 h3 a {
 
 html[dir="rtl"] .modal-header .close {
     float: left;
+}
+
+html[dir="rtl"] .field-pair {
+    position: relative;
 }
 
 html[dir="rtl"] .Sorting .presets.float-left,
