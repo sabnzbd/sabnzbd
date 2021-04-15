@@ -1011,7 +1011,7 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
                     raise IOError
                 elif script_file.read(2) != "#!":
                     # No shebang (#!) defined, add default python
-                    command.insert(0, "python")
+                    command.insert(0, sys.executable if sys.executable else "python")
 
         if sabnzbd.newsunpack.IONICE_COMMAND and cfg.ionice():
             ionice = cfg.ionice().split()
