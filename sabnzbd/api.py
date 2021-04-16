@@ -87,25 +87,6 @@ _MSG_BAD_SERVER_PARMS = "Incorrect server settings"
 
 def api_handler(kwargs):
     """ API Dispatcher """
-    if cfg.api_logging():
-        # Was it proxy forwarded?
-        xff = cherrypy.request.headers.get("X-Forwarded-For")
-        if xff:
-            logging.debug(
-                "API-call from %s (X-Forwarded-For: %s) [%s] %s",
-                cherrypy.request.remote.ip,
-                xff,
-                cherrypy.request.headers.get("User-Agent", "??"),
-                kwargs,
-            )
-        else:
-            logging.debug(
-                "API-call from %s [%s] %s",
-                cherrypy.request.remote.ip,
-                cherrypy.request.headers.get("User-Agent", "??"),
-                kwargs,
-            )
-
     # Clean-up the arguments
     for vr in ("mode", "output", "name"):
         if vr in kwargs and isinstance(kwargs[vr], list):

@@ -91,6 +91,30 @@ def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
 
     @functools.wraps(wrap_func)
     def internal_wrap(*args, **kwargs):
+        # Log all requests
+        if cfg.api_logging():
+            # Was it proxy forwarded?
+            xff = cherrypy.request.headers.get("X-Forwarded-For")
+            if xff:
+                logging.debug(
+                    "Request %s %s from %s (X-Forwarded-For: %s) [%s] %s",
+                    cherrypy.request.method,
+                    cherrypy.request.path_info,
+                    cherrypy.request.remote.ip,
+                    xff,
+                    cherrypy.request.headers.get("User-Agent", "??"),
+                    kwargs,
+                )
+            else:
+                logging.debug(
+                    "Request %s %s from %s [%s] %s",
+                    cherrypy.request.method,
+                    cherrypy.request.path_info,
+                    cherrypy.request.remote.ip,
+                    cherrypy.request.headers.get("User-Agent", "??"),
+                    kwargs,
+                )
+
         # Add X-Frame-Headers headers to page-requests
         if cfg.x_frame_options():
             cherrypy.response.headers["X-Frame-Options"] = "SameOrigin"
@@ -473,11 +497,6 @@ class MainPage:
     @secured_expose
     def description_xml(self, **kwargs):
         """ Provide the description.xml which was broadcast via SSDP """
-        logging.debug(
-            "description.xml was requested from %s by %s",
-            cherrypy.request.remote.ip,
-            cherrypy.request.headers.get("User-Agent", "??"),
-        )
         if is_lan_addr(cherrypy.request.remote.ip):
             cherrypy.response.headers["Content-Type"] = "application/xml"
             return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
