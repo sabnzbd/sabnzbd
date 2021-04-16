@@ -30,10 +30,12 @@ import hashlib
 import socket
 import ssl
 import functools
+import ipaddress
 from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
+from typing import Optional, Callable, Union
 
 import sabnzbd
 import sabnzbd.rss
@@ -81,39 +83,53 @@ from sabnzbd.api import (
 ##############################################################################
 # Security functions
 ##############################################################################
-def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
+
+
+def secured_expose(
+    wrap_func: Optional[Callable] = None,
+    check_configlock: bool = False,
+    check_for_login: bool = True,
+    check_api_key: bool = False,
+    access_type: int = 4,
+) -> Union[Callable, str]:
     """ Wrapper for both cherrypy.expose and login/access check """
     if not wrap_func:
-        return functools.partial(secured_expose, check_configlock=check_configlock, check_api_key=check_api_key)
+        return functools.partial(
+            secured_expose,
+            check_configlock=check_configlock,
+            check_for_login=check_for_login,
+            check_api_key=check_api_key,
+            access_type=access_type,
+        )
 
     # Expose to cherrypy
     wrap_func.exposed = True
 
     @functools.wraps(wrap_func)
     def internal_wrap(*args, **kwargs):
+        # Label for logging in this and other functions, handling X-Forwarded-For
+        # The cherrypy.request object allows adding custom attributes
+        if cherrypy.request.headers.get("X-Forwarded-For"):
+            cherrypy.request.remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
+                cherrypy.request.remote.ip,
+                cherrypy.request.headers.get("X-Forwarded-For"),
+                cherrypy.request.headers.get("User-Agent"),
+            )
+        else:
+            cherrypy.request.remote_label = "%s [%s]" % (
+                cherrypy.request.remote.ip,
+                cherrypy.request.headers.get("User-Agent"),
+            )
+
         # Log all requests
         if cfg.api_logging():
-            # Was it proxy forwarded?
-            xff = cherrypy.request.headers.get("X-Forwarded-For")
-            if xff:
-                logging.debug(
-                    "Request %s %s from %s (X-Forwarded-For: %s) [%s] %s",
-                    cherrypy.request.method,
-                    cherrypy.request.path_info,
-                    cherrypy.request.remote.ip,
-                    xff,
-                    cherrypy.request.headers.get("User-Agent", "??"),
-                    kwargs,
-                )
-            else:
-                logging.debug(
-                    "Request %s %s from %s [%s] %s",
-                    cherrypy.request.method,
-                    cherrypy.request.path_info,
-                    cherrypy.request.remote.ip,
-                    cherrypy.request.headers.get("User-Agent", "??"),
-                    kwargs,
-                )
+            logging.debug(
+                "Request %s %s from %s %s",
+                cherrypy.request.method,
+                cherrypy.request.path_info,
+                cherrypy.request.remote_label,
+                kwargs,
+            )
 
         # Add X-Frame-Headers headers to page-requests
         if cfg.x_frame_options():
@@ -124,13 +140,13 @@ def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
             cherrypy.response.status = 403
             return "Access denied - Configuration locked"
 
-        # Check if external access
-        if not check_access():
+        # Check if external access and if it's allowed
+        if not check_access(access_type=access_type, warn_user=True):
             cherrypy.response.status = 403
             return "Access denied"
 
         # Verify login status, only for non-key pages
-        if not check_login() and not check_api_key:
+        if check_for_login and not check_api_key and not check_login():
             raise Raiser("/login/")
 
         # Verify host used for the visit
@@ -142,6 +158,7 @@ def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
         if check_api_key:
             msg = check_apikey(kwargs)
             if msg:
+                cherrypy.response.status = 403
                 return msg
 
         # All good, cool!
@@ -150,7 +167,7 @@ def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
     return internal_wrap
 
 
-def check_access(access_type=4):
+def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     """Check if external address is allowed given access_type:
     1=nzb
     2=api
@@ -158,17 +175,35 @@ def check_access(access_type=4):
     4=webui
     5=webui with login for external
     """
-    referrer = cherrypy.request.remote.ip
+    # Easy, it's allowed
+    if access_type <= cfg.inet_exposure():
+        return True
 
     # CherryPy will report ::ffff:192.168.0.10 on dual-stack situation
-    # It will always contain that ::ffff: prefix
-    range_ok = not cfg.local_ranges() or bool(
-        [1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace("::ffff:", "").startswith(r))]
-    )
-    allowed = referrer in ("127.0.0.1", "::ffff:127.0.0.1", "::1") or range_ok or access_type <= cfg.inet_exposure()
-    if not allowed:
-        logging.debug("Refused connection from %s", referrer)
-    return allowed
+    # It will always contain that ::ffff: prefix, the ipaddress module can handle that
+    referrer = cherrypy.request.remote.ip
+
+    # Check for localhost
+    if referrer in ("127.0.0.1", "::ffff:127.0.0.1", "::1"):
+        return True
+
+    # No special ranged defined
+    is_allowed = False
+    if not cfg.local_ranges():
+        try:
+            is_allowed = ipaddress.ip_address(referrer).is_private
+        except ValueError:
+            # Something malformed, reject
+            pass
+    else:
+        is_allowed = bool(
+            [1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace("::ffff:", "").startswith(r))]
+        )
+
+    # Reject
+    if not is_allowed and warn_user:
+        log_warning_and_ip(T("Refused connection from:"))
+    return is_allowed
 
 
 def check_hostname():
@@ -294,23 +329,22 @@ def check_apikey(kwargs):
     mode = kwargs.get("mode", "")
     name = kwargs.get("name", "")
 
-    # Lookup required access level, returns 4 for config-things
+    # Lookup required access level for the specific api-call, returns 4 for config-things
     req_access = sabnzbd.api.api_level(mode, name)
-
-    if req_access == 1 and check_access(1):
-        # NZB-only actions
-        pass
-    elif not check_access(req_access):
+    if not check_access(req_access, warn_user=True):
         return "Access denied"
+
+    # Skip for auth and version calls
+    if mode in ("version", "auth"):
+        return None
 
     # First check API-key, if OK that's sufficient
     if not cfg.disable_key():
         key = kwargs.get("apikey")
         if not key:
-            if cfg.api_warnings():
-                log_warning_and_ip(
-                    T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
-                )
+            log_warning_and_ip(
+                T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
+            )
             return "API Key Required"
         elif req_access == 1 and key == cfg.nzb_key():
             return None
@@ -327,47 +361,37 @@ def check_apikey(kwargs):
         ):
             pass
         else:
-            if cfg.api_warnings():
-                log_warning_and_ip(
-                    T(
-                        "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
-                    )
+            log_warning_and_ip(
+                T(
+                    "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
                 )
+            )
             return "Missing authentication"
     return None
 
 
 def log_warning_and_ip(txt):
     """ Include the IP and the Proxy-IP for warnings """
-    # Was it proxy forwarded?
-    xff = cherrypy.request.headers.get("X-Forwarded-For")
-    if xff:
-        txt = "%s %s (X-Forwarded-For: %s)>%s" % (
-            txt,
-            cherrypy.request.remote.ip,
-            xff,
-            cherrypy.request.headers.get("User-Agent", "??"),
-        )
-    else:
-        txt = "%s %s>%s" % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get("User-Agent", "??"))
-    logging.warning(txt)
+    if cfg.api_warnings():
+        logging.warning("%s %s", txt, cherrypy.request.remote_label)
 
 
 ##############################################################################
 # Helper raiser functions
 ##############################################################################
-def Raiser(root="", **kwargs):
-    args = {}
-    for key in kwargs:
-        val = kwargs.get(key)
-        if val:
-            args[key] = val
+def Raiser(root: str = "", **kwargs):
     # Add extras
-    if args:
-        root = "%s?%s" % (root, urllib.parse.urlencode(args))
+    if kwargs:
+        root = "%s?%s" % (root, urllib.parse.urlencode(kwargs))
+
     # Optionally add the leading /sabnzbd/ (or what the user set)
     if not root.startswith(cfg.url_base()):
         root = cherrypy.request.script_name + root
+
+    # Log the redirect
+    if cfg.api_logging():
+        logging.debug("Request %s %s redirected to %s", cherrypy.request.method, cherrypy.request.path_info, root)
+
     # Send the redirect
     return cherrypy.HTTPRedirect(root)
 
@@ -453,9 +477,9 @@ class MainPage:
         sabnzbd.unpause_all()
         raise Raiser(self.__root)
 
-    @cherrypy.expose
+    @secured_expose(check_api_key=True, access_type=1)
     def api(self, **kwargs):
-        """ Redirect to API-handler """
+        """ Redirect to API-handler, we check the access_type in the API-handler """
         return api_handler(kwargs)
 
     @secured_expose
@@ -653,7 +677,7 @@ def get_access_info():
 
 ##############################################################################
 class LoginPage:
-    @cherrypy.expose
+    @secured_expose(check_for_login=False)
     def index(self, **kwargs):
         # Base output var
         info = build_header(sabnzbd.WEB_DIR_CONFIG)
@@ -668,27 +692,18 @@ class LoginPage:
         if check_login():
             raise Raiser(cherrypy.request.script_name + "/")
 
-        # Was it proxy forwarded?
-        xff = cherrypy.request.headers.get("X-Forwarded-For")
-
         # Check login info
         if kwargs.get("username") == cfg.username() and kwargs.get("password") == cfg.password():
             # Save login cookie
             set_login_cookie(remember_me=kwargs.get("remember_me", False))
-            # Log the succes
-            if xff:
-                logging.info("Successful login from %s (X-Forwarded-For: %s)", cherrypy.request.remote.ip, xff)
-            else:
-                logging.info("Successful login from %s", cherrypy.request.remote.ip)
+            # Log the success
+            logging.info("Successful login from %s", cherrypy.request.remote_label)
             # Redirect
             raise Raiser(cherrypy.request.script_name + "/")
         elif kwargs.get("username") or kwargs.get("password"):
             info["error"] = T("Authentication failed, check username/password.")
             # Warn about the potential security problem
-            fail_msg = T("Unsuccessful login attempt from %s") % cherrypy.request.remote.ip
-            if xff:
-                fail_msg = "%s (X-Forwarded-For: %s)" % (fail_msg, xff)
-            logging.warning(fail_msg)
+            logging.warning(T("Unsuccessful login attempt from %s"), cherrypy.request.remote_label)
 
         # Show login
         template = Template(
@@ -1378,7 +1393,12 @@ SPECIAL_VALUE_LIST = (
     "rating_host",
     "ssdp_broadcast_interval",
 )
-SPECIAL_LIST_LIST = ("rss_odd_titles", "quick_check_ext_ignore", "host_whitelist")
+SPECIAL_LIST_LIST = (
+    "rss_odd_titles",
+    "quick_check_ext_ignore",
+    "host_whitelist",
+    "local_ranges",
+)
 
 
 class ConfigSpecial:
@@ -1429,7 +1449,6 @@ GENERAL_LIST = (
     "refresh_rate",
     "language",
     "cache_limit",
-    "local_ranges",
     "inet_exposure",
     "enable_https",
     "https_port",
@@ -1507,7 +1526,6 @@ class ConfigGeneral:
         conf["bandwidth_max"] = cfg.bandwidth_max()
         conf["bandwidth_perc"] = cfg.bandwidth_perc()
         conf["nzb_key"] = cfg.nzb_key()
-        conf["local_ranges"] = cfg.local_ranges.get_string()
         conf["my_lcldata"] = cfg.admin_dir.get_clipped_path()
         conf["caller_url"] = cherrypy.request.base + cfg.url_base()
 

@@ -397,12 +397,8 @@ SKIN_TEXT = {
     "explain-nzbkey": TT("This key will allow 3rd party programs to add NZBs to SABnzbd."),
     "button-apikey": TT("Generate New Key"),
     "explain-qr-code": TT("API Key QR Code"),  #: Explanation for QR code of APIKEY
-    "opt-local_ranges": TT("List of local network ranges"),
-    "explain-local_ranges": TT('All local network addresses start with these prefixes (often "192.168.1.")'),
     "opt-inet_exposure": TT("External internet access"),
-    "explain-inet_exposure": TT(
-        "You can set access rights for systems outside your local network. Requires List of local network ranges to be defined."
-    ),
+    "explain-inet_exposure": TT("You can set access rights for systems outside your local network."),
     "inet-local": TT("No access"),  # Selection value for external access
     "inet-nzb": TT("Add NZB files "),  # Selection value for external access
     "inet-api": TT("API (no Config)"),  # Selection value for external access
