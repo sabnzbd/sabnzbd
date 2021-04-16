@@ -434,7 +434,11 @@ class TestBuildAndRunCommand:
         temp_file_fd, temp_file_path = tempfile.mkstemp(suffix=".py")
         os.close(temp_file_fd)
         misc.build_and_run_command([temp_file_path, "input 1"])
-        assert mock_subproc_popen.call_args[0][0] == ["python", temp_file_path, "input 1"]
+        assert mock_subproc_popen.call_args[0][0] == [
+            sys.executable if sys.executable else "python",
+            temp_file_path,
+            "input 1",
+        ]
         os.remove(temp_file_path)
 
         # Have to fake these for it to work
