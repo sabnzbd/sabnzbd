@@ -35,7 +35,7 @@ class TestApiInternals:
 
     @set_config({"disable_key": False})
     def test_mode_invalid(self):
-        expected_error = "error: API Key Required"
+        expected_error = "error: not implemented"
         assert api.api_handler({"mode": "invalid"}).strip() == expected_error
         with pytest.raises(IndexError):
             assert api.api_handler({"mode": []}).strip() == expected_error

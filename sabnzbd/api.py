@@ -29,7 +29,7 @@ import json
 import cherrypy
 import locale
 from threading import Thread
-from typing import List, Tuple
+from typing import Tuple
 
 import sabnzbd
 from sabnzbd.constants import (
@@ -95,11 +95,6 @@ def api_handler(kwargs):
     mode = kwargs.get("mode", "")
     output = kwargs.get("output", "")
     name = kwargs.get("name", "")
-
-    if mode not in ("version", "auth"):
-        msg = sabnzbd.interface.check_apikey(kwargs)
-        if msg:
-            return report(output, msg)
 
     response = _api_table.get(mode, (_api_undefined, 2))[0](name, output, kwargs)
     return response
