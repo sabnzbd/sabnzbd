@@ -59,15 +59,15 @@ class ApiTestFunctions:
         extra.update(extra_args)
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
-    def _setup_script_dir(self, dir, script=None):
+    def _setup_script_dir(self, dir_name, script=None):
         """
         Set the script_dir relative to SAB_CACHE_DIR, copy the example scripts
         there, and add an optional extra script with the given name. To unset
-        the script_dir set the value of dir to an empty string.
+        the script_dir set the value of dir_name to an empty string.
         """
         script_dir_extra = {"section": "misc", "keyword": "script_dir", "value": ""}
-        if dir:
-            script_dir = os.path.join(SAB_CACHE_DIR, dir)
+        if dir_name:
+            script_dir = os.path.join(SAB_CACHE_DIR, dir_name)
             script_dir_extra["value"] = script_dir
             try:
                 if not os.path.exists(script_dir):
@@ -545,10 +545,10 @@ class TestQueueApi(ApiTestFunctions):
         self._create_random_queue(minimum_size=1)
 
         # Setup the script_dir as ordered
-        dir = ""
+        script_dir = ""
         if set_scriptsdir:
-            dir = "scripts"
-        self._setup_script_dir(dir, script="my_script_for_sab.py")
+            script_dir = "scripts"
+        self._setup_script_dir(script_dir, script="my_script_for_sab.py")
 
         # Run the queue complete action api call
         prev_value = self._get_api_json("queue")["queue"]["finishaction"]
