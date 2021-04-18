@@ -77,8 +77,8 @@ def set_config(settings_dict):
             value = func(*args, **kwargs)
 
             # Reset values
-            for item, val in settings_dict.items():
-                getattr(cfg, item).default()
+            for item in settings_dict:
+                getattr(cfg, item).set(getattr(cfg, item).default())
             return value
 
         return wrapper_func
