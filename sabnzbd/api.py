@@ -970,14 +970,15 @@ _api_config_table = {
 }
 
 
-def api_level(cmd, name):
+def api_level(mode: str, name: str) -> int:
     """ Return access level required for this API call """
-    if cmd in _api_table:
-        return _api_table[cmd][1]
-    if name == "queue" and cmd in _api_queue_table:
-        return _api_queue_table[cmd][1]
-    if name == "config" and cmd in _api_config_table:
-        return _api_config_table[cmd][1]
+    if mode == "queue" and name in _api_queue_table:
+        return _api_queue_table[name][1]
+    if mode == "config" and name in _api_config_table:
+        return _api_config_table[name][1]
+    if mode in _api_table:
+        return _api_table[mode][1]
+    # It is invalid if it's none of these, but that's is handled somewhere else
     return 4
 
 
