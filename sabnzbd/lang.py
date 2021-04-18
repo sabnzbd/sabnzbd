@@ -38,7 +38,7 @@ import glob
 import os
 import locale
 
-__all__ = ["set_locale_info", "set_language", "list_languages"]
+__all__ = ["set_locale_info", "set_language", "list_languages", "is_rtl"]
 
 _DOMAIN = ""  # Holds translation domain
 _LOCALEDIR = ""  # Holds path to the translation base folder
