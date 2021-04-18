@@ -64,7 +64,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("test: ") == "unknown"
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_colon_handling_other(self):
         assert filesystem.sanitize_filename("test:aftertest") == "test:aftertest"
         assert filesystem.sanitize_filename(":") == ":"
@@ -80,7 +79,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("a$mft") == "a$mft"
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_win_devices_not_win(self):
         # Linux and Darwin are the same for this
         assert filesystem.sanitize_filename(None) is None
@@ -90,7 +88,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("a$mft") == "a$mft"
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_file_illegal_chars_linux(self):
         assert filesystem.sanitize_filename("test/aftertest") == "test+aftertest"
         assert filesystem.sanitize_filename("/test") == "+test"
@@ -102,7 +99,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("../test") == "..+test"
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_folder_illegal_chars_linux(self):
         assert filesystem.sanitize_foldername('test"aftertest') == "test'aftertest"
         assert filesystem.sanitize_foldername("test:") == "test-"
@@ -113,7 +109,6 @@ class TestFileFolderNameSanitizer:
         assert len(filesystem.CH_ILLEGAL_WIN) == len(filesystem.CH_LEGAL_WIN)
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_legal_chars_linux(self):
         # Illegal on Windows but not on Linux, unless sanitize_safe is active.
         # Don't bother with '/' which is illegal in filenames on all platforms.
@@ -825,7 +820,6 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
         with pytest.raises(OSError):
             self._permissions_runner("/test_base450", perms_base="0450")
 
-    @set_config({"umask": ""})
     def test_no_umask(self):
         self._permissions_runner("/test_base_perm700", perms_base="0700")
         self._permissions_runner("/test_base_perm750", perms_base="0750")
@@ -943,19 +937,16 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
         ffs.set_uid(global_uid)
 
     @set_platform("linux")
-    @set_config({"umask": ""})
     def test_dir0777_empty_umask_setting(self):
         # World writable directory
         self._runner("0777", "0700")
 
     @set_platform("linux")
-    @set_config({"umask": ""})
     def test_dir0450_empty_umask_setting(self):
         # Insufficient access
         self._runner("0450", "0700")
 
     @set_platform("linux")
-    @set_config({"umask": ""})
     def test_dir0000_empty_umask_setting(self):
         # Weird directory permissions
         self._runner("0000", "0700")
