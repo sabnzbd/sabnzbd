@@ -51,6 +51,7 @@ from sabnzbd.misc import (
     opts_to_pp,
     get_server_addrinfo,
     is_lan_addr,
+    is_loopback_addr,
 )
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
 from sabnzbd.encoding import xml_name, utob
@@ -83,6 +84,12 @@ from sabnzbd.api import (
 ##############################################################################
 # Security functions
 ##############################################################################
+_MSG_ACCESS_DENIED = "Access denied"
+_MSG_ACCESS_DENIED_CONFIG_LOCK = "Access denied - Configuration locked"
+_MSG_ACCESS_DENIED_HOSTNAME = "Access denied - Hostname verification failed: https://sabnzbd.org/hostname-check"
+_MSG_MISSING_AUTH = "Missing authentication"
+_MSG_APIKEY_REQUIRED = "API Key Required"
+_MSG_APIKEY_INCORRECT = "API Key Incorrect"
 
 
 def secured_expose(
@@ -138,12 +145,12 @@ def secured_expose(
         # Check if config is locked
         if check_configlock and cfg.configlock():
             cherrypy.response.status = 403
-            return "Access denied - Configuration locked"
+            return _MSG_ACCESS_DENIED_CONFIG_LOCK
 
         # Check if external access and if it's allowed
         if not check_access(access_type=access_type, warn_user=True):
             cherrypy.response.status = 403
-            return "Access denied"
+            return _MSG_ACCESS_DENIED
 
         # Verify login status, only for non-key pages
         if check_for_login and not check_api_key and not check_login():
@@ -152,7 +159,7 @@ def secured_expose(
         # Verify host used for the visit
         if not check_hostname():
             cherrypy.response.status = 403
-            return "Access denied - Hostname verification failed: https://sabnzbd.org/hostname-check"
+            return _MSG_ACCESS_DENIED_HOSTNAME
 
         # Some pages need correct API key
         if check_api_key:
@@ -181,23 +188,23 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
 
     # CherryPy will report ::ffff:192.168.0.10 on dual-stack situation
     # It will always contain that ::ffff: prefix, the ipaddress module can handle that
-    referrer = cherrypy.request.remote.ip
+    remote_ip = cherrypy.request.remote.ip
 
     # Check for localhost
-    if referrer in ("127.0.0.1", "::ffff:127.0.0.1", "::1"):
+    if is_loopback_addr(remote_ip):
         return True
 
     # No special ranged defined
     is_allowed = False
     if not cfg.local_ranges():
         try:
-            is_allowed = ipaddress.ip_address(referrer).is_private
+            is_allowed = ipaddress.ip_address(remote_ip).is_private
         except ValueError:
             # Something malformed, reject
             pass
     else:
-        is_allowed = bool(
-            [1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace("::ffff:", "").startswith(r))]
+        is_allowed = any(
+            remote_ip.startswith(r) or remote_ip.replace("::ffff:", "").startswith(r) for r in cfg.local_ranges()
         )
 
     # Reject
@@ -329,10 +336,10 @@ def check_apikey(kwargs):
     mode = kwargs.get("mode", "")
     name = kwargs.get("name", "")
 
-    # Lookup required access level for the specific api-call, returns 4 for config-things
+    # Lookup required access level for the specific api-call
     req_access = sabnzbd.api.api_level(mode, name)
     if not check_access(req_access, warn_user=True):
-        return "Access denied"
+        return _MSG_ACCESS_DENIED
 
     # Skip for auth and version calls
     if mode in ("version", "auth"):
@@ -345,14 +352,14 @@ def check_apikey(kwargs):
             log_warning_and_ip(
                 T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
             )
-            return "API Key Required"
+            return _MSG_APIKEY_REQUIRED
         elif req_access == 1 and key == cfg.nzb_key():
             return None
         elif key == cfg.api_key():
             return None
         else:
             log_warning_and_ip(T("API Key incorrect, Use the api key from Config->General in your 3rd party program:"))
-            return "API Key Incorrect"
+            return _MSG_APIKEY_INCORRECT
 
     # No active API-key, check web credentials instead
     if cfg.username() and cfg.password():
@@ -366,7 +373,7 @@ def check_apikey(kwargs):
                     "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
                 )
             )
-            return "Missing authentication"
+            return _MSG_MISSING_AUTH
     return None
 
 

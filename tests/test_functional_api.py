@@ -19,20 +19,16 @@
 tests.test_functional_api - Functional tests for the API
 """
 
-import json
-import os
 import shutil
 import stat
-import subprocess
 import sys
-import time
 
 from math import ceil
-from random import choice, randint, sample
+from random import sample
 from tavern.core import run
 from warnings import warn
 
-import sabnzbd.api as api
+import sabnzbd.interface as interface
 from sabnzbd.misc import from_units
 
 from tests.testhelper import *
@@ -314,10 +310,11 @@ class TestOtherApi(ApiTestFunctions):
         assert self._get_api_json("set_config_default", extra_args={"keyword": "language"})["status"] is True
 
     def test_api_get_clear_warnings(self):
-        apikey_error = "API Key Incorrect"
         # Trigger warnings by sending requests with a truncated apikey
         for _ in range(0, 2):
-            assert apikey_error in self._get_api_text("shutdown", extra_args={"apikey": SAB_APIKEY[:-1]})
+            assert interface._MSG_APIKEY_INCORRECT in self._get_api_text(
+                "shutdown", extra_args={"apikey": SAB_APIKEY[:-1]}
+            )
 
         # Take delivery of our freshly baked warnings
         json = self._get_api_json("warnings")
@@ -326,7 +323,7 @@ class TestOtherApi(ApiTestFunctions):
         for warning in json["warnings"]:
             for key in ("type", "text", "time"):
                 assert key in warning.keys()
-        assert apikey_error.lower() in json["warnings"][-1]["text"].lower()
+        assert interface._MSG_APIKEY_INCORRECT.lower() in json["warnings"][-1]["text"].lower()
 
         # Clear all warnings
         assert self._get_api_json("warnings", extra_args={"name": "clear"})["status"] is True
