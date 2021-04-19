@@ -1371,6 +1371,7 @@ SPECIAL_VALUE_LIST = (
     "max_foldername_length",
     "show_sysload",
     "url_base",
+    "num_decoders",
     "direct_unpack_threads",
     "ipv6_servers",
     "selftest_host",
