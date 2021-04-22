@@ -773,8 +773,8 @@ class NzbQueue:
         """ Send NZO to the post-processing queue """
         # Notify assembler to call postprocessor
         if not nzo.deleted:
-            logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
             nzo.deleted = True
+            logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
             if nzo.precheck:
                 nzo.save_to_disk()
                 # Check result
