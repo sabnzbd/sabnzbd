@@ -769,6 +769,7 @@ class NzbQueue:
                 nzo.set_download_report()
                 self.end_job(nzo)
 
+    @NzbQueueLocker
     def end_job(self, nzo: NzbObject):
         """ Send NZO to the post-processing queue """
         # Notify assembler to call postprocessor
