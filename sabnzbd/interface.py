@@ -203,9 +203,10 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
             # Something malformed, reject
             pass
     else:
-        is_allowed = any(
-            remote_ip.startswith(r) or remote_ip.replace("::ffff:", "").startswith(r) for r in cfg.local_ranges()
-        )
+        # Get rid off the special dual-stack notation
+        if remote_ip.startswith("::ffff:") and not remote_ip.find(".") < 0:
+            remote_ip = remote_ip.replace("::ffff:", "")
+        is_allowed = any(remote_ip.startswith(r) for r in cfg.local_ranges())
 
     # Reject
     if not is_allowed and warn_user:
