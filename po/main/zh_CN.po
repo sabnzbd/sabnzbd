@@ -600,6 +600,10 @@ msgid "Blocked attempt to create directory %s"
 msgstr ""
 
 #: sabnzbd/interface.py
+msgid "Refused connection from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
@@ -634,6 +638,7 @@ msgstr "缺身份认证信息，请在第三方程序中输入“配置”->“�
 msgid "Authentication failed, check username/password."
 msgstr "身份认证失败，请检查用户名/密码。"
 
+#. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "%s 中有失败的登陆请求"
@@ -3113,23 +3118,12 @@ msgid "API Key QR Code"
 msgstr "API Key QR 码"
 
 #: sabnzbd/skintext.py
-msgid "List of local network ranges"
-msgstr "本地网段列表"
-
-#: sabnzbd/skintext.py
-msgid ""
-"All local network addresses start with these prefixes (often \"192.168.1.\")"
-msgstr "本地网络地址以这些前缀开头 (通常为“192.168.1.”)"
-
-#: sabnzbd/skintext.py
 msgid "External internet access"
 msgstr "外部互联网访问"
 
 #: sabnzbd/skintext.py
-msgid ""
-"You can set access rights for systems outside your local network. Requires "
-"List of local network ranges to be defined."
-msgstr "您可以设定非本地网络的访问权限。要求定义本地网络列表。"
+msgid "You can set access rights for systems outside your local network."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "No access"

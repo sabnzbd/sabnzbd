@@ -606,6 +606,10 @@ msgid "Blocked attempt to create directory %s"
 msgstr "ניסיון נחסם ליצור תיקייה %s"
 
 #: sabnzbd/interface.py
+msgid "Refused connection from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "חיבור מסורב עם שם המארח \"%s\" מאת:"
 
@@ -644,6 +648,7 @@ msgstr ""
 msgid "Authentication failed, check username/password."
 msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
 
+#. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "ניסיון כניסה בלתי מוצלח מן %s"
@@ -3158,25 +3163,12 @@ msgid "API Key QR Code"
 msgstr "קוד QR של מפתח API"
 
 #: sabnzbd/skintext.py
-msgid "List of local network ranges"
-msgstr "רשימה של טווחי רשת מקומית"
-
-#: sabnzbd/skintext.py
-msgid ""
-"All local network addresses start with these prefixes (often \"192.168.1.\")"
-msgstr "כל כתובות הרשת המקומית מתחילות במקדמים אלו (לעיתים \"192.168.1\")."
-
-#: sabnzbd/skintext.py
 msgid "External internet access"
 msgstr "גישת אינטרנט חיצונית"
 
 #: sabnzbd/skintext.py
-msgid ""
-"You can set access rights for systems outside your local network. Requires "
-"List of local network ranges to be defined."
+msgid "You can set access rights for systems outside your local network."
 msgstr ""
-"אתה יכול לקבוע זכויות גישה עבור מערכות מחוץ לרשת המקומית שלך. דורש שרשימה של"
-" טווחי רשת מקומית תהיה מוגדרת."
 
 #: sabnzbd/skintext.py
 msgid "No access"

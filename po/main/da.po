@@ -613,6 +613,10 @@ msgid "Blocked attempt to create directory %s"
 msgstr ""
 
 #: sabnzbd/interface.py
+msgid "Refused connection from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr ""
 
@@ -653,6 +657,7 @@ msgstr ""
 msgid "Authentication failed, check username/password."
 msgstr "Godkendelse mislykkedes, kontrollere brugernavn/adgangskode."
 
+#. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Mislykkede login forsøg fra %s"
@@ -3159,27 +3164,12 @@ msgid "API Key QR Code"
 msgstr "API nøgle QR kode"
 
 #: sabnzbd/skintext.py
-msgid "List of local network ranges"
-msgstr "Liste over lokale netværk intervaller"
-
-#: sabnzbd/skintext.py
-msgid ""
-"All local network addresses start with these prefixes (often \"192.168.1.\")"
-msgstr ""
-"Alle lokale netværksadresser starter med disse præfikser (ofte "
-"\"192.168.1.\")"
-
-#: sabnzbd/skintext.py
 msgid "External internet access"
 msgstr "Eksterne internetadgang"
 
 #: sabnzbd/skintext.py
-msgid ""
-"You can set access rights for systems outside your local network. Requires "
-"List of local network ranges to be defined."
+msgid "You can set access rights for systems outside your local network."
 msgstr ""
-"Du kan angive adgangsrettigheder for systemer uden for dit lokale netværk. "
-"Kræver liste over lokale netværks intervaller, skal defineres."
 
 #: sabnzbd/skintext.py
 msgid "No access"

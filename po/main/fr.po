@@ -636,6 +636,10 @@ msgid "Blocked attempt to create directory %s"
 msgstr "Tentative bloquée de création du répertoire %s"
 
 #: sabnzbd/interface.py
+msgid "Refused connection from:"
+msgstr ""
+
+#: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Connexion refusée avec le nom d'hôte \"%s\" à partir de :"
 
@@ -676,6 +680,7 @@ msgstr ""
 msgid "Authentication failed, check username/password."
 msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
 
+#. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Echec de la tentative de connexion de %s"
@@ -3240,27 +3245,12 @@ msgid "API Key QR Code"
 msgstr "Clé API code QR"
 
 #: sabnzbd/skintext.py
-msgid "List of local network ranges"
-msgstr "Liste des plages de réseau local"
-
-#: sabnzbd/skintext.py
-msgid ""
-"All local network addresses start with these prefixes (often \"192.168.1.\")"
-msgstr ""
-"Toutes les adresses de réseau local commencent par ces préfixes (souvent "
-"\"192.168.1.\" )"
-
-#: sabnzbd/skintext.py
 msgid "External internet access"
 msgstr "Accès Internet externe"
 
 #: sabnzbd/skintext.py
-msgid ""
-"You can set access rights for systems outside your local network. Requires "
-"List of local network ranges to be defined."
+msgid "You can set access rights for systems outside your local network."
 msgstr ""
-"Vous pouvez définir les droits d'accès pour les systèmes en dehors de votre "
-"réseau local. Requiert la liste des plages de réseaux locaux à définir."
 
 #: sabnzbd/skintext.py
 msgid "No access"
