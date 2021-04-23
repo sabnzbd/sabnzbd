@@ -1,61 +1,27 @@
-Release Notes - SABnzbd 3.2.0 Release Candidate 1
+Release Notes - SABnzbd 3.3.0 Beta 1
 =========================================================
 
-## Changes since 3.1.1
-- Python 3.6 is the minimum required version. 
-- The Windows installer can only be used on 64bit Windows 8.1 and 
-  above. For 32bit systems or older Windows versions the 
-  standalone 32bit legacy version can be used.
-- Post-processing can be aborted at any stage, including scripts.
-- Improvements in the downloader to reduce CPU-load.
-- Increased garbage collection rate to reduce memory usage.
-- Custom date ranges for server graphs can be selected.
-- Keep track of article fetching success-rate of each server.
-- Added option to add download quota warning for each server.
-- Added option to add expiration waring for each server.
-- Added `Minimum Free Space for Completed Download Folder` option.
-- Added option to `Auto resume` for both `Minimum Free Space` settings.
-- Multiple additional Queue and History columns can be added.
-- Added option to always use full screen width.
-- Additional interface settings can be stored server-side.
-- Using SSDP, SABnzbd instances are now listed in `Network` on Windows.
-- Improvements to parsing of job name and filenames listed in the NZB.
-- RSS titles can be edited.
-- Prospective par2 will add blocks from all sets in a job.
-- Sanitize all filenames to a maximum of 245 characters.
-- Show commit hash when running from `git` sources.
-- Notify through Notifications if new version is available.
-- Program shutdown time reduced to almost instant.
-- Added `10 GB` test download.
-- IPv6 is no longer preferred in HappyEyeballs address selection.
-- API-calls `queue` and `history` can now be filtered by `nzo_id`.
-- Windows: `Temporary Download` job folders no longer have a maximum length.
-- Windows/macOS: Update UnRar to 6.0.0 and MultiPar to 1.3.1.3.
+## Changes since 3.2.1
+- The `External internet access` will automatically detect local network
+  and no longer requires the ranges to be defined. Custom ranges can still
+  be defined through `local_ranges` in Special settings.
+- The `Unwanted extensions` detection can be set to `Whitelist`-mode. 
+  This will block or pause all jobs with non-matching extensions.
+- Servers article statistics are shown in K, G, M-notation.
+- Resolution added as a pattern key (`%r`) for Sorting.
+- Revised handling of categories, scripts, and priorities when adding NZB's.
+- Download statistics are also shown when no History is shown.
+- Confirm rename if Direct Unpack is active for the job.
+- Obfuscated-RAR detection will always be performed.
+- All requests will be logged, not just API calls.
 
 ## Bugfixes since 3.1.1
-- Memory could leak after jobs were removed from the queue.
-- The active browser URL is used during the wizard.
-- Repairing or Retrying jobs could result in a crash.  
-- API-call `reset_quota` returned nothing.
-- New categories were not always forced to lowercase.
-- Broken downloads could result in crash during RAR-renaming  
-- Improved obfuscation detection for `Deobfuscate final filenames`.
-- Keep original priority of duplicate jobs.
-- Increase Maximum number of connections per server to `1000`.
-- Update encryption check to handle partially assembled files.
-- Don't activate Windows notifications when running as service.
-- Command line option `--console` did not work.
-- Crash in API-call to delete history items for non-existing `nzo_id`.
-- Prevent repetition of unwanted extension warnings.
-- Correct notification category for failed URL fetches.
-- Improvements to the `Add NZB` modal window.
-- Sort script drop-down list alphabetically.
-- Default Bandwidth percentage was not set to `100`.
-- Direct Unpack stability fixes.
-- macOS: Program shutdown could fail.
-- macOS: Tray text was misaligned on macOS 11 (Big Sur).
-- Windows: Improved handling of some MultiPar output.
-- Windows: Program restart failed.
+- Prevent failed post-processing if job name ends in multiple dots or spaces.
+- Jobs could be stuck in the queue or duplicate if they had missing articles.
+- Login page could be accessed even if `External internet access` was set
+  to `No access`. All other access would still be blocked.
+- Ignore duplicate files inside messy NZB's.
+- macOS: disk space would be incorrect for very large disks.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in this 
