@@ -1,5 +1,8 @@
-Release Notes - SABnzbd 3.3.0 Beta 1
+Release Notes - SABnzbd 3.3.0 Beta 2
 =========================================================
+
+## Changes since 3.3.0 Beta 1
+- Binaries would show an error when starting.
 
 ## Changes since 3.2.1
 - The `External internet access` will automatically detect local network
