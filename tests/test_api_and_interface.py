@@ -159,6 +159,19 @@ class TestSecuredExpose:
         set_remote_host_or_ip(hostname="not_evil")
         self.check_full_access()
 
+    def test_dual_stack(self):
+        set_remote_host_or_ip(remote_ip="::ffff:192.168.0.10")
+        self.check_full_access()
+
+    @set_config({"local_ranges": "132.10."})
+    def test_dual_stack_local_ranges(self):
+        # Without custom local_ranges this one would be allowed
+        set_remote_host_or_ip(remote_ip="::ffff:192.168.0.10")
+        self.check_inet_blocks(inet_exposure=0)
+        # But now we only allow the custom ones
+        set_remote_host_or_ip(remote_ip="::ffff:132.10.0.10")
+        self.check_full_access()
+
     def check_inet_allows(self, inet_exposure: int):
         """Each should allow all previous ones and the current one"""
         # Level 1: nzb
