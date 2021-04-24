@@ -247,8 +247,7 @@ class Article(TryList):
                     sabnzbd.NzbQueue.reset_try_lists(self, article_reset=False)
                     return True
 
-        logging.info(T("%s => missing from all servers, discarding") % self)
-        self.nzf.nzo.increase_bad_articles_counter("missing_articles")
+        logging.info("Article %s unavailable on all servers, discarding", self.article)
         return False
 
     def __getstate__(self):

@@ -438,6 +438,7 @@ class Downloader(Thread):
         if not raw_data:
             if not article.search_new_server():
                 sabnzbd.NzbQueue.register_article(article, success=False)
+                article.nzf.nzo.increase_bad_articles_counter("missing_articles")
             return
 
         # Send to decoder-queue
