@@ -1215,10 +1215,6 @@ msgstr "NZB adăugat în coadă"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Codificare Necunoscută"
 
-#: sabnzbd/nzbstuff.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => lipsă de pe toate serverele, ignorare"
-
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"

@@ -1183,10 +1183,6 @@ msgstr "NZB додат у ред"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Непознато енкодирање"
 
-#: sabnzbd/nzbstuff.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => фали на свим серверима, одбацивање"
-
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"

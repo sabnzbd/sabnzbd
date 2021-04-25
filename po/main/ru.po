@@ -1189,10 +1189,6 @@ msgstr "NZB-файл добавлен в очередь"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> неизвестная кодировка"
 
-#: sabnzbd/nzbstuff.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => отсутствует на всех серверах, отброшен"
-
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"

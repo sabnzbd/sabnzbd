@@ -1187,10 +1187,6 @@ msgstr "NZB tillagd i kön"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Okänd kodning"
 
-#: sabnzbd/nzbstuff.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => saknas från alla servrar, kastar"
-
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"

@@ -1189,10 +1189,6 @@ msgstr "NZB התווסף לתור"
 msgid "%s -> Unknown encoding"
 msgstr "קידוד בלתי ידוע -> %s"
 
-#: sabnzbd/nzbstuff.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => חסר מכל השרתים, משליך"
-
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"

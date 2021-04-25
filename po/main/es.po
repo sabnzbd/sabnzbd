@@ -1240,10 +1240,6 @@ msgstr "NZB añadido a la cola"
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Codificación desconocida"
 
-#: sabnzbd/nzbstuff.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => faltando de todos servidores, desechando"
-
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
