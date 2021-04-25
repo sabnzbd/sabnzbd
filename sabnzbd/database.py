@@ -26,7 +26,7 @@ import logging
 import sys
 import threading
 import sqlite3
-from typing import Union, Dict
+from typing import Union, Dict, Optional, List
 
 import sabnzbd
 import sabnzbd.cfg
@@ -292,7 +292,15 @@ class HistoryDB:
         )
         logging.info("Added job %s to history", nzo.final_name)
 
-    def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None, nzo_ids=None):
+    def fetch_history(
+        self,
+        start: Optional[int] = None,
+        limit: Optional[int] = None,
+        search: Optional[str] = None,
+        failed_only: int = 0,
+        categories: Optional[List[str]] = None,
+        nzo_ids: Optional[List[str]] = None,
+    ):
         """ Return records for specified jobs """
         command_args = [convert_search(search)]
 
@@ -304,7 +312,6 @@ class HistoryDB:
             post += ")"
             command_args.extend(categories)
         if nzo_ids:
-            nzo_ids = nzo_ids.split(",")
             post += " AND (NZO_ID = ?"
             post += " OR NZO_ID = ? " * (len(nzo_ids) - 1)
             post += ")"

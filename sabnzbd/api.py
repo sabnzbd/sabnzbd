@@ -29,7 +29,7 @@ import json
 import cherrypy
 import locale
 from threading import Thread
-from typing import Tuple
+from typing import Tuple, Optional, List
 
 import sabnzbd
 from sabnzbd.constants import (
@@ -469,6 +469,9 @@ def _api_history(name, output, kwargs):
 
     if categories and not isinstance(categories, list):
         categories = [categories]
+
+    if nzo_ids and not isinstance(nzo_ids, list):
+        nzo_ids = nzo_ids.split(",")
 
     if not limit:
         limit = cfg.history_limit()
@@ -1662,7 +1665,14 @@ def build_queue_header(search=None, nzo_ids=None, start=0, limit=0, output=None)
     return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
-def build_history(start=0, limit=0, search=None, failed_only=0, categories=None, nzo_ids=None):
+def build_history(
+    start: int = 0,
+    limit: int = 0,
+    search: Optional[str] = None,
+    failed_only: int = 0,
+    categories: Optional[List[str]] = None,
+    nzo_ids: Optional[List[str]] = None,
+):
     """Combine the jobs still in post-processing and the database history"""
     if not limit:
         limit = 1000000
@@ -1684,6 +1694,9 @@ def build_history(start=0, limit=0, search=None, failed_only=0, categories=None,
                 postproc_queue = [nzo for nzo in postproc_queue if re_search.search(nzo.final_name)]
             except:
                 logging.error(T("Failed to compile regex for search term: %s"), search_text)
+
+        if nzo_ids:
+            postproc_queue = [nzo for nzo in postproc_queue if nzo.nzo_id in nzo_ids]
 
     # Multi-page support for postproc items
     postproc_queue_size = len(postproc_queue)

@@ -672,7 +672,7 @@ class NzbObject(TryList):
         self.first_articles_count = 0
         self.saved_articles: List[Article] = []
 
-        self.nzo_id = None
+        self.nzo_id: Optional[str] = None
 
         self.futuretype = futuretype
         self.deleted = False
