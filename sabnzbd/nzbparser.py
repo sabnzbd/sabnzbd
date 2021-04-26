@@ -20,6 +20,7 @@ sabnzbd.nzbparser - Parse and import NZB files
 """
 import bz2
 import gzip
+import re
 import time
 import logging
 import hashlib
@@ -35,7 +36,7 @@ from sabnzbd.misc import name_to_cat
 
 def nzbfile_parser(raw_data, nzo):
     # Load data as file-object
-    raw_data = raw_data.replace("http://www.newzbin.com/DTD/2003/nzb", "", 1)
+    raw_data = re.sub(r"""\s(xmlns="[^"]+"|xmlns='[^']+')""", "", raw_data, count=1)
     nzb_tree = xml.etree.ElementTree.fromstring(raw_data)
 
     # Hash for dupe-checking
