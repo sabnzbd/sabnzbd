@@ -637,7 +637,7 @@ msgstr "Tentative bloquée de création du répertoire %s"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
-msgstr ""
+msgstr "Connexion refusée de:"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
@@ -3247,6 +3247,8 @@ msgstr "Accès Internet externe"
 #: sabnzbd/skintext.py
 msgid "You can set access rights for systems outside your local network."
 msgstr ""
+"Vous pouvez définir des droits d'accès pour les systèmes en dehors de votre "
+"réseau local."
 
 #: sabnzbd/skintext.py
 msgid "No access"

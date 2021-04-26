@@ -607,7 +607,7 @@ msgstr "ניסיון נחסם ליצור תיקייה %s"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
-msgstr ""
+msgstr "חיבור מסורב מאת:"
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
@@ -3164,7 +3164,7 @@ msgstr "גישת אינטרנט חיצונית"
 
 #: sabnzbd/skintext.py
 msgid "You can set access rights for systems outside your local network."
-msgstr ""
+msgstr "אתה יכול להגדיר זכויות גישה עבור מערכות מחוץ אל הרשת המקומית שלך."
 
 #: sabnzbd/skintext.py
 msgid "No access"
