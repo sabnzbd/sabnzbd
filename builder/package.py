@@ -71,14 +71,14 @@ def safe_remove(path):
 
 
 def delete_files_glob(name):
-    """ Delete one file or set of files from wild-card spec """
+    """Delete one file or set of files from wild-card spec"""
     for f in glob.glob(name):
         if os.path.exists(f):
             os.remove(f)
 
 
 def run_external_command(command):
-    """ Wrapper to ease the use of calling external programs """
+    """Wrapper to ease the use of calling external programs"""
     process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output, _ = process.communicate()
     ret = process.wait()
@@ -90,7 +90,7 @@ def run_external_command(command):
 
 
 def run_git_command(parms):
-    """ Run git command, raise error if it failed """
+    """Run git command, raise error if it failed"""
     return run_external_command(["git"] + parms)
 
 

@@ -45,5 +45,5 @@ class TestAPIReg:
         assert not ar.get_connection_info(True)
 
     def test_get_install_lng(self):
-        """ Not much to test yet.. """
+        """Not much to test yet.."""
         assert ar.get_install_lng() == "en"

@@ -172,7 +172,7 @@ class TestAddingNZBs:
         assert VAR.SCRIPT_DIR in json["config"]["misc"]["script_dir"]
 
     def _customize_pre_queue_script(self, priority, category):
-        """ Add a script that accepts the job and sets priority & category """
+        """Add a script that accepts the job and sets priority & category"""
         script_name = "SCRIPT%s.py" % SCRIPT_RANDOM
         try:
             script_path = os.path.join(VAR.SCRIPT_DIR, script_name)
@@ -255,7 +255,7 @@ class TestAddingNZBs:
         return self._create_random_nzb(metadata={"category": cat_meta})
 
     def _expected_results(self, STAGES, return_state=None):
-        """ Figure out what priority and state the job should end up with """
+        """Figure out what priority and state the job should end up with"""
         # Define a bunch of helpers
         def sanitize_stages(hit_stage, STAGES):
             # Fallback is always category-based, so nix any explicit priorities (stages 1, 3).
@@ -275,7 +275,7 @@ class TestAddingNZBs:
             return STAGES
 
         def handle_state_prio(hit_stage, STAGES, return_state):
-            """ Find the priority that should to be set after changing the job state """
+            """Find the priority that should to be set after changing the job state"""
             # Keep record of the priority that caused the initial hit (for verification of the job state later on)
             if not return_state:
                 return_state = STAGES[hit_stage]
@@ -318,7 +318,7 @@ class TestAddingNZBs:
                 return self._expected_results(STAGES, return_state)
 
         def handle_default_cat(hit_stage, STAGES, return_state):
-            """ Figure out the (category) default priority """
+            """Figure out the (category) default priority"""
             STAGES = sanitize_stages(hit_stage, STAGES)
 
             # Strip the current -100 hit before recursing
@@ -509,7 +509,7 @@ class TestAddingNZBs:
         ],
     )
     def test_adding_nzbs_malformed(self, keep_first, keep_last, strip_first, strip_last, should_work):
-        """ Test adding broken, empty, or otherwise malformed NZB file """
+        """Test adding broken, empty, or otherwise malformed NZB file"""
         if not VAR.NZB_FILE:
             VAR.NZB_FILE = self._create_random_nzb()
 
@@ -549,7 +549,7 @@ class TestAddingNZBs:
     @pytest.mark.parametrize("prio_def_cat", sample(VALID_DEFAULT_PRIORITIES, 1))
     @pytest.mark.parametrize("prio_add", PRIO_OPTS_ADD)
     def test_adding_nzbs_size_limit(self, prio_meta_cat, prio_def_cat, prio_add):
-        """ Verify state and priority of a job exceeding the size_limit """
+        """Verify state and priority of a job exceeding the size_limit"""
         # Set size limit
         json = get_api_result(
             mode="set_config", extra_arguments={"section": "misc", "keyword": "size_limit", "value": MIN_FILESIZE - 1}

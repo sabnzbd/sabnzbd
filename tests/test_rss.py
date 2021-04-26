@@ -29,7 +29,7 @@ import sabnzbd.config
 class TestRSS:
     @staticmethod
     def setup_rss(feed_name, feed_url):
-        """ Setup the basic settings to get things going"""
+        """Setup the basic settings to get things going"""
         # Setup the config settings
         sabnzbd.config.CFG = configobj.ConfigObj()
         sabnzbd.config.ConfigRSS(feed_name, {"uri": feed_url})

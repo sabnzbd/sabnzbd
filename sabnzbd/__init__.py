@@ -452,13 +452,13 @@ def halt():
 
 
 def notify_shutdown_loop():
-    """ Trigger the main loop to wake up"""
+    """Trigger the main loop to wake up"""
     with sabnzbd.SABSTOP_CONDITION:
         sabnzbd.SABSTOP_CONDITION.notify()
 
 
 def shutdown_program():
-    """ Stop program after halting and saving """
+    """Stop program after halting and saving"""
     if not sabnzbd.SABSTOP:
         logging.info("[%s] Performing SABnzbd shutdown", misc.caller_name())
         sabnzbd.halt()
@@ -468,7 +468,7 @@ def shutdown_program():
 
 
 def trigger_restart(timeout=None):
-    """ Trigger a restart by setting a flag an shutting down CP """
+    """Trigger a restart by setting a flag an shutting down CP"""
     # Sometimes we need to wait a bit to send good-bye to the browser
     if timeout:
         time.sleep(timeout)
@@ -482,22 +482,22 @@ def trigger_restart(timeout=None):
 # Misc Wrappers
 ##############################################################################
 def new_limit():
-    """ Callback for article cache changes """
+    """Callback for article cache changes"""
     sabnzbd.ArticleCache.new_limit(cfg.cache_limit.get_int())
 
 
 def guard_restart():
-    """ Callback for config options requiring a restart """
+    """Callback for config options requiring a restart"""
     sabnzbd.RESTART_REQ = True
 
 
 def guard_top_only():
-    """ Callback for change of top_only option """
+    """Callback for change of top_only option"""
     sabnzbd.NzbQueue.set_top_only(cfg.top_only())
 
 
 def guard_pause_on_pp():
-    """ Callback for change of pause-download-on-pp """
+    """Callback for change of pause-download-on-pp"""
     if cfg.pause_on_post_processing():
         pass  # Not safe to idle downloader, because we don't know
         # if post-processing is active now
@@ -506,17 +506,17 @@ def guard_pause_on_pp():
 
 
 def guard_quota_size():
-    """ Callback for change of quota_size """
+    """Callback for change of quota_size"""
     sabnzbd.BPSMeter.change_quota()
 
 
 def guard_quota_dp():
-    """ Callback for change of quota_day or quota_period """
+    """Callback for change of quota_day or quota_period"""
     sabnzbd.Scheduler.restart()
 
 
 def guard_language():
-    """ Callback for change of the interface language """
+    """Callback for change of the interface language"""
     sabnzbd.lang.set_language(cfg.language())
     sabnzbd.api.clear_trans_cache()
 
@@ -534,12 +534,12 @@ def set_https_verification(value):
 
 
 def guard_https_ver():
-    """ Callback for change of https verification """
+    """Callback for change of https verification"""
     set_https_verification(cfg.enable_https_verification())
 
 
 def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None, password=None):
-    """ Add NZB based on a URL, attributes optional """
+    """Add NZB based on a URL, attributes optional"""
     if "http" not in url:
         return
     if not pp or pp == "-1":
@@ -568,7 +568,7 @@ def add_url(url, pp=None, script=None, cat=None, priority=None, nzbname=None, pa
 
 
 def save_state():
-    """ Save all internal bookkeeping to disk """
+    """Save all internal bookkeeping to disk"""
     config.save_config()
     sabnzbd.ArticleCache.flush_articles()
     sabnzbd.NzbQueue.save()
@@ -580,14 +580,14 @@ def save_state():
 
 
 def pause_all():
-    """ Pause all activities than cause disk access """
+    """Pause all activities than cause disk access"""
     sabnzbd.PAUSED_ALL = True
     sabnzbd.Downloader.pause()
     logging.debug("PAUSED_ALL active")
 
 
 def unpause_all():
-    """ Resume all activities """
+    """Resume all activities"""
     sabnzbd.PAUSED_ALL = False
     sabnzbd.Downloader.resume()
     logging.debug("PAUSED_ALL inactive")
@@ -599,20 +599,20 @@ def unpause_all():
 
 
 def backup_exists(filename: str) -> bool:
-    """ Return True if backup exists and no_dupes is set """
+    """Return True if backup exists and no_dupes is set"""
     path = cfg.nzb_backup_dir.get_path()
     return path and os.path.exists(os.path.join(path, filename + ".gz"))
 
 
 def backup_nzb(filename: str, data: AnyStr):
-    """ Backup NZB file """
+    """Backup NZB file"""
     path = cfg.nzb_backup_dir.get_path()
     if path:
         save_compressed(path, filename, data)
 
 
 def save_compressed(folder: str, filename: str, data: AnyStr):
-    """ Save compressed NZB file in folder """
+    """Save compressed NZB file in folder"""
     if filename.endswith(".nzb"):
         filename += ".gz"
     else:
@@ -728,7 +728,7 @@ def add_nzbfile(
 
 
 def enable_server(server):
-    """ Enable server (scheduler only) """
+    """Enable server (scheduler only)"""
     try:
         config.get_config("servers", server).enable.set(1)
     except:
@@ -739,7 +739,7 @@ def enable_server(server):
 
 
 def disable_server(server):
-    """ Disable server (scheduler only) """
+    """Disable server (scheduler only)"""
     try:
         config.get_config("servers", server).enable.set(0)
     except:
@@ -750,7 +750,7 @@ def disable_server(server):
 
 
 def system_shutdown():
-    """ Shutdown system after halting download and saving bookkeeping """
+    """Shutdown system after halting download and saving bookkeeping"""
     logging.info("Performing system shutdown")
 
     Thread(target=halt).start()
@@ -766,7 +766,7 @@ def system_shutdown():
 
 
 def system_hibernate():
-    """ Hibernate system """
+    """Hibernate system"""
     logging.info("Performing system hybernation")
     if sabnzbd.WIN32:
         powersup.win_hibernate()
@@ -777,7 +777,7 @@ def system_hibernate():
 
 
 def system_standby():
-    """ Standby system """
+    """Standby system"""
     logging.info("Performing system standby")
     if sabnzbd.WIN32:
         powersup.win_standby()
@@ -788,7 +788,7 @@ def system_standby():
 
 
 def restart_program():
-    """ Restart program (used by scheduler) """
+    """Restart program (used by scheduler)"""
     logging.info("Scheduled restart request")
     # Just set the stop flag, because stopping CherryPy from
     # the scheduler is not reliable
@@ -831,7 +831,7 @@ def change_queue_complete_action(action, new=True):
 
 
 def run_script(script):
-    """ Run a user script (queue complete only) """
+    """Run a user script (queue complete only)"""
     script_path = filesystem.make_script_path(script)
     if script_path:
         try:
@@ -842,7 +842,7 @@ def run_script(script):
 
 
 def keep_awake():
-    """ If we still have work to do, keep Windows/macOS system awake """
+    """If we still have work to do, keep Windows/macOS system awake"""
     if KERNEL32 or FOUNDATION:
         if sabnzbd.cfg.keep_awake():
             ES_CONTINUOUS = 0x80000000
@@ -890,7 +890,7 @@ def get_new_id(prefix, folder, check_list=None):
 
 
 def save_data(data, _id, path, do_pickle=True, silent=False):
-    """ Save data to a diskfile """
+    """Save data to a diskfile"""
     if not silent:
         logging.debug("[%s] Saving data for %s in %s", misc.caller_name(), _id, path)
     path = os.path.join(path, _id)
@@ -917,7 +917,7 @@ def save_data(data, _id, path, do_pickle=True, silent=False):
 
 
 def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
-    """ Read data from disk file """
+    """Read data from disk file"""
     path = os.path.join(path, data_id)
 
     if not os.path.exists(path):
@@ -949,7 +949,7 @@ def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
 
 
 def remove_data(_id: str, path: str):
-    """ Remove admin file """
+    """Remove admin file"""
     path = os.path.join(path, _id)
     try:
         if os.path.exists(path):
@@ -959,19 +959,19 @@ def remove_data(_id: str, path: str):
 
 
 def save_admin(data: Any, data_id: str):
-    """ Save data in admin folder in specified format """
+    """Save data in admin folder in specified format"""
     logging.debug("[%s] Saving data for %s", misc.caller_name(), data_id)
     save_data(data, data_id, cfg.admin_dir.get_path())
 
 
 def load_admin(data_id: str, remove=False, silent=False) -> Any:
-    """ Read data in admin folder in specified format """
+    """Read data in admin folder in specified format"""
     logging.debug("[%s] Loading data for %s", misc.caller_name(), data_id)
     return load_data(data_id, cfg.admin_dir.get_path(), remove=remove, silent=silent)
 
 
 def request_repair():
-    """ Request a full repair on next restart """
+    """Request a full repair on next restart"""
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     try:
         with open(path, "w") as f:
@@ -981,7 +981,7 @@ def request_repair():
 
 
 def check_repair_request():
-    """ Return True if repair request found, remove afterwards """
+    """Return True if repair request found, remove afterwards"""
     path = os.path.join(cfg.admin_dir.get_path(), REPAIR_REQUEST)
     if os.path.exists(path):
         try:
@@ -1044,7 +1044,7 @@ def check_all_tasks():
 
 
 def pid_file(pid_path=None, pid_file=None, port=0):
-    """ Create or remove pid file """
+    """Create or remove pid file"""
     if not sabnzbd.WIN32:
         if pid_path and pid_path.startswith("/"):
             sabnzbd.DIR_PID = os.path.join(pid_path, "sabnzbd-%d.pid" % port)
@@ -1077,14 +1077,14 @@ def check_incomplete_vs_complete():
 
 
 def wait_for_download_folder():
-    """ Wait for download folder to become available """
+    """Wait for download folder to become available"""
     while not cfg.download_dir.test_path():
         logging.debug('Waiting for "incomplete" folder')
         time.sleep(2.0)
 
 
 def test_ipv6():
-    """ Check if external IPv6 addresses are reachable """
+    """Check if external IPv6 addresses are reachable"""
     if not cfg.selftest_host():
         # User disabled the test, assume active IPv6
         return True
@@ -1112,7 +1112,7 @@ def test_ipv6():
 
 
 def test_cert_checking():
-    """ Test quality of certificate validation """
+    """Test quality of certificate validation"""
     # User disabled the test, assume proper SSL certificates
     if not cfg.selftest_host():
         return True
@@ -1139,7 +1139,7 @@ def test_cert_checking():
 
 
 def history_updated():
-    """ To make sure we always have a fresh history """
+    """To make sure we always have a fresh history"""
     sabnzbd.LAST_HISTORY_UPDATE += 1
     # Never go over the limit
     if sabnzbd.LAST_HISTORY_UPDATE + 1 >= sys.maxsize:

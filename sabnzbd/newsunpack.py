@@ -88,7 +88,7 @@ RAR_VERSION = 0
 
 
 def find_programs(curdir):
-    """ Find external programs """
+    """Find external programs"""
 
     def check(path, program):
         p = os.path.abspath(os.path.join(path, program))
@@ -169,7 +169,7 @@ ENV_NZO_FIELDS = [
 
 
 def external_processing(extern_proc, nzo: NzbObject, complete_dir, nicename, status):
-    """ Run a user postproc script, return console output and exit value """
+    """Run a user postproc script, return console output and exit value"""
     failure_url = nzo.nzo_info.get("failure", "")
     # Items can be bool or null, causing POpen to fail
     command = [
@@ -229,7 +229,7 @@ def external_processing(extern_proc, nzo: NzbObject, complete_dir, nicename, sta
 def unpack_magic(
     nzo: NzbObject, workdir, workdir_complete, dele, one_folder, joinables, zips, rars, sevens, ts, depth=0
 ):
-    """ Do a recursive unpack from all archives in 'workdir' to 'workdir_complete' """
+    """Do a recursive unpack from all archives in 'workdir' to 'workdir_complete'"""
     if depth > 5:
         logging.warning(T("Unpack nesting too deep [%s]"), nzo.final_name)
         return False, []
@@ -333,7 +333,7 @@ def unpack_magic(
 # Filejoin Functions
 ##############################################################################
 def match_ts(file):
-    """ Return True if file is a joinable TS file """
+    """Return True if file is a joinable TS file"""
     match = TS_RE.search(file)
     if not match:
         return False, "", 0
@@ -348,7 +348,7 @@ def match_ts(file):
 
 
 def clean_up_joinables(names):
-    """ Remove joinable files and their .1 backups """
+    """Remove joinable files and their .1 backups"""
     for name in names:
         if os.path.exists(name):
             try:
@@ -364,7 +364,7 @@ def clean_up_joinables(names):
 
 
 def get_seq_number(name):
-    """ Return sequence number if name as an int """
+    """Return sequence number if name as an int"""
     head, tail = os.path.splitext(name)
     if tail == ".ts":
         match, set, num = match_ts(name)
@@ -907,7 +907,7 @@ def unzip(nzo: NzbObject, workdir, workdir_complete, delete, one_folder, zips):
 
 
 def ZIP_Extract(zipfile, extraction_path, one_folder):
-    """ Unzip single zip set 'zipfile' to 'extraction_path' """
+    """Unzip single zip set 'zipfile' to 'extraction_path'"""
     command = ["%s" % ZIP_COMMAND, "-o", "-Pnone", "%s" % clip_path(zipfile), "-d%s" % extraction_path]
 
     if one_folder or cfg.flat_unpack():
@@ -1080,7 +1080,7 @@ def seven_extract_core(sevenset, extensions, extraction_path, one_folder, delete
 # PAR2 Functions
 ##############################################################################
 def par2_repair(parfile_nzf: NzbFile, nzo: NzbObject, workdir, setname, single):
-    """ Try to repair a set, return readd or correctness """
+    """Try to repair a set, return readd or correctness"""
     # Check if file exists, otherwise see if another is done
     parfile_path = os.path.join(workdir, parfile_nzf.filename)
     if not os.path.exists(parfile_path) and nzo.extrapars[setname]:
@@ -1206,7 +1206,7 @@ _RE_LOADED_PAR2 = re.compile(r"Loaded (\d+) new packets")
 
 
 def PAR_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
-    """ Run par2 on par-set """
+    """Run par2 on par-set"""
     used_joinables = []
     used_for_repair = []
     # set the current nzo status to "Verifying...". Used in History
@@ -1518,7 +1518,7 @@ _RE_FILENAME = re.compile(r'"([^"]+)"')
 
 
 def MultiPar_Verify(parfile, nzo: NzbObject, setname, joinables, single=False):
-    """ Run par2 on par-set """
+    """Run par2 on par-set"""
     parfolder = os.path.split(parfile)[0]
     used_joinables = []
     used_for_repair = []
@@ -1980,7 +1980,7 @@ def rar_volumelist(rarfile_path, password, known_volumes):
 
 # Sort the various RAR filename formats properly :\
 def rar_sort(a, b):
-    """ Define sort method for rar file names """
+    """Define sort method for rar file names"""
     aext = a.split(".")[-1]
     bext = b.split(".")[-1]
 
@@ -2040,7 +2040,7 @@ def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=
 
 
 def quick_check_set(set, nzo):
-    """ Check all on-the-fly md5sums of a set """
+    """Check all on-the-fly md5sums of a set"""
     md5pack = nzo.md5packs.get(set)
     if md5pack is None:
         return False
@@ -2132,7 +2132,7 @@ def unrar_check(rar):
 
 
 def par2_mt_check(par2_path):
-    """ Detect if we have multicore par2 variants """
+    """Detect if we have multicore par2 variants"""
     try:
         par2_version = run_command([par2_path, "-h"])
         # Look for a threads option
@@ -2144,7 +2144,7 @@ def par2_mt_check(par2_path):
 
 
 def is_sfv_file(myfile):
-    """ Checks if given file is a SFV file, and returns result as boolean """
+    """Checks if given file is a SFV file, and returns result as boolean"""
     # based on https://stackoverflow.com/a/7392391/5235502
     textchars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
     is_ascii_string = lambda input_bytes: not bool(input_bytes.translate(None, textchars))
@@ -2188,7 +2188,7 @@ def is_sfv_file(myfile):
 
 
 def sfv_check(sfvs, nzo: NzbObject, workdir):
-    """ Verify files using SFV files """
+    """Verify files using SFV files"""
     # Update status
     nzo.status = Status.VERIFYING
     nzo.set_action_line(T("Trying SFV verification"), "...")
@@ -2271,7 +2271,7 @@ def sfv_check(sfvs, nzo: NzbObject, workdir):
 
 
 def parse_sfv(sfv_filename):
-    """ Parse SFV file and return dictonary of crc32's and filenames """
+    """Parse SFV file and return dictonary of crc32's and filenames"""
     results = {}
     with open(sfv_filename, mode="rb") as sfv_list:
         for sfv_item in sfv_list:
@@ -2287,7 +2287,7 @@ def parse_sfv(sfv_filename):
 
 
 def crc_calculate(path):
-    """ Calculate crc32 of the given file """
+    """Calculate crc32 of the given file"""
     crc = 0
     with open(path, "rb") as fp:
         while 1:
@@ -2299,7 +2299,7 @@ def crc_calculate(path):
 
 
 def analyse_show(name):
-    """ Do a quick SeasonSort check and return basic facts """
+    """Do a quick SeasonSort check and return basic facts"""
     job = SeriesSorter(None, name, None, None)
     job.match(force=True)
     if job.is_match():
@@ -2386,18 +2386,18 @@ def pre_queue(nzo: NzbObject, pp, cat):
 
 
 def is_sevenfile(path):
-    """ Return True if path has proper extension and 7Zip is installed """
+    """Return True if path has proper extension and 7Zip is installed"""
     return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == ".7z"
 
 
 class SevenZip:
-    """ Minimal emulation of ZipFile class for 7Zip """
+    """Minimal emulation of ZipFile class for 7Zip"""
 
     def __init__(self, path):
         self.path = path
 
     def namelist(self):
-        """ Return list of names in 7Zip """
+        """Return list of names in 7Zip"""
         names = []
         # Future extension: use '-sccUTF-8' to get names in UTF8 encoding
         command = [SEVEN_COMMAND, "l", "-p", "-y", "-slt", self.path]
@@ -2414,11 +2414,11 @@ class SevenZip:
         return names
 
     def read(self, name):
-        """ Read named file from 7Zip and return data """
+        """Read named file from 7Zip and return data"""
         command = [SEVEN_COMMAND, "e", "-p", "-y", "-so", self.path, name]
         # Ignore diagnostic output, otherwise it will be appended to content
         return run_command(command, stderr=subprocess.DEVNULL)
 
     def close(self):
-        """ Close file """
+        """Close file"""
         pass

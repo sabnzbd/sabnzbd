@@ -35,22 +35,22 @@ from tests.testhelper import *
 
 
 class ApiTestFunctions:
-    """ Collection of (wrapper) functions for API testcases """
+    """Collection of (wrapper) functions for API testcases"""
 
     def _get_api_json(self, mode, extra_args={}):
-        """ Wrapper for API calls with json output """
+        """Wrapper for API calls with json output"""
         extra = {"output": "json", "apikey": SAB_APIKEY}
         extra.update(extra_args)
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
     def _get_api_text(self, mode, extra_args={}):
-        """ Wrapper for API calls with text output """
+        """Wrapper for API calls with text output"""
         extra = {"output": "text", "apikey": SAB_APIKEY}
         extra.update(extra_args)
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
     def _get_api_xml(self, mode, extra_args={}):
-        """ Wrapper for API calls with xml output """
+        """Wrapper for API calls with xml output"""
         extra = {"output": "xml", "apikey": SAB_APIKEY}
         extra.update(extra_args)
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
@@ -84,14 +84,14 @@ class ApiTestFunctions:
         self._get_api_json("set_config", extra_args=script_dir_extra)
 
     def _record_slots(self, keys):
-        """ Return a list of dicts, storing queue info for the items in iterable 'keys' """
+        """Return a list of dicts, storing queue info for the items in iterable 'keys'"""
         record = []
         for slot in self._get_api_json("queue")["queue"]["slots"]:
             record.append({key: slot[key] for key in keys})
         return record
 
     def _run_tavern(self, test_name, extra_vars=None):
-        """ Run tavern tests in ${test_name}.yaml """
+        """Run tavern tests in ${test_name}.yaml"""
         vars = [
             ("SAB_HOST", SAB_HOST),
             ("SAB_PORT", SAB_PORT),
@@ -111,7 +111,7 @@ class ApiTestFunctions:
         assert result is result.OK
 
     def _get_api_history(self, extra={}):
-        """ Wrapper for history-related api calls """
+        """Wrapper for history-related api calls"""
         # Set a higher default limit; the default is 10 via cfg(history_limit)
         if "limit" not in extra.keys() and "name" not in extra.keys():
             # History calls that use 'name' don't need the limit parameter
@@ -172,21 +172,21 @@ class ApiTestFunctions:
                 warn("Failed to remove %s" % job_dir)
 
     def _purge_queue(self, del_files=0):
-        """ Clear the entire queue """
+        """Clear the entire queue"""
         self._get_api_json("queue", extra_args={"name": "purge", "del_files": del_files})
         assert len(self._get_api_json("queue")["queue"]["slots"]) == 0
 
 
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestOtherApi(ApiTestFunctions):
-    """ Test API function not directly involving either history or queue """
+    """Test API function not directly involving either history or queue"""
 
     def test_api_version_testhelper(self):
-        """ Check the version, testhelper style """
+        """Check the version, testhelper style"""
         assert "version" in get_api_result("version", SAB_HOST, SAB_PORT)
 
     def test_api_version_tavern(self):
-        """ Same same, tavern style """
+        """Same same, tavern style"""
         self._run_tavern("api_version")
 
     def test_api_version_json(self):
@@ -199,7 +199,7 @@ class TestOtherApi(ApiTestFunctions):
         assert self._get_api_xml("version")["version"] == sabnzbd.__version__
 
     def test_api_server_stats(self):
-        """ Verify server stats format """
+        """Verify server stats format"""
         self._run_tavern("api_server_stats")
 
     @pytest.mark.parametrize("extra_args", [{}, {"name": "change_complete_action", "value": ""}])
@@ -403,10 +403,10 @@ class TestOtherApi(ApiTestFunctions):
 
 @pytest.mark.usefixtures("run_sabnzbd")
 class TestQueueApi(ApiTestFunctions):
-    """ Test queue-related API responses """
+    """Test queue-related API responses"""
 
     def test_api_queue_empty_format(self):
-        """ Verify formatting, presence of fields for empty queue """
+        """Verify formatting, presence of fields for empty queue"""
         self._purge_queue()
         self._run_tavern("api_queue_empty")
 
@@ -566,7 +566,7 @@ class TestQueueApi(ApiTestFunctions):
         self._get_api_json("queue", extra_args={"name": "change_complete_action", "value": ""})
 
     def test_api_queue_single_format(self):
-        """ Verify formatting, presence of fields for single queue entry """
+        """Verify formatting, presence of fields for single queue entry"""
         self._create_random_queue(minimum_size=1)
         self._run_tavern("api_queue_format")
 
@@ -845,7 +845,7 @@ class TestQueueApi(ApiTestFunctions):
                 assert changed[row] == original[row]
 
     def test_api_queue_get_files_format(self):
-        """ Verify formatting, presence of fields for mode=get_files """
+        """Verify formatting, presence of fields for mode=get_files"""
         self._create_random_queue(minimum_size=1)
         nzo_id = self._get_api_json("queue")["queue"]["slots"][0]["nzo_id"]
         # Pass the nzo_id this way rather than fetching it in a tavern stage, as
@@ -896,10 +896,10 @@ class TestQueueApi(ApiTestFunctions):
 
 @pytest.mark.usefixtures("run_sabnzbd", "generate_fake_history", "update_history_specs")
 class TestHistoryApi(ApiTestFunctions):
-    """ Test history-related API responses """
+    """Test history-related API responses"""
 
     def test_api_history_format(self):
-        """ Verify formatting, presence of expected history fields """
+        """Verify formatting, presence of expected history fields"""
         # Checks all output styles: json, text and xml
         self._run_tavern("api_history_format")
 
@@ -974,7 +974,7 @@ class TestHistoryApi(ApiTestFunctions):
         assert len(json["history"]["slots"]) == 0
 
     def test_api_history_restrict_cat_and_search_and_limit(self):
-        """ Combine search, category and limits requirements into a single query """
+        """Combine search, category and limits requirements into a single query"""
         limit_sum = 0
         slot_sum = 0
         limits = [randint(1, ceil(self.history_size / 10)) for _ in range(0, len(self.history_distro_names))]
@@ -1111,6 +1111,6 @@ class TestHistoryApiPart2(ApiTestFunctions):
         assert json["history"]["noofslots"] == 0
 
     def test_api_history_empty_format(self):
-        """ Verify formatting, presence of fields for empty history """
+        """Verify formatting, presence of fields for empty history"""
         # Checks all output styles: json, text and xml
         self._run_tavern("api_history_empty")

@@ -24,7 +24,7 @@ from sabnzbd.utils.pystone import pystones
 
 class TestPystone:
     def test_pystone(self):
-        """ Tests for performance with various loop sizes """
+        """Tests for performance with various loop sizes"""
         loops = [10, 1000, 50000, 100000]
         for loop in loops:
             benchtime, stones = pystones(loop)

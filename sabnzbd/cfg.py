@@ -69,7 +69,7 @@ def validate_email(value):
 
 
 def validate_server(value):
-    """ Check if server non-empty"""
+    """Check if server non-empty"""
     global email_endjob, email_full, email_rss
     if value == "" and (email_endjob() or email_full() or email_rss()):
         return T("Server address required"), None
@@ -78,7 +78,7 @@ def validate_server(value):
 
 
 def validate_script(value):
-    """ Check if value is a valid script """
+    """Check if value is a valid script"""
     if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
         return None, value
     elif (value and value == "None") or not value:

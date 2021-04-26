@@ -123,7 +123,7 @@ def run_sabnzbd(clean_cache_dir):
 
 @pytest.fixture(scope="session")
 def run_sabnews_and_selenium(request):
-    """ Start SABNews and Selenium/Chromedriver, shared across the pytest session. """
+    """Start SABNews and Selenium/Chromedriver, shared across the pytest session."""
     # We only try Chrome for consistent results
     driver_options = ChromeOptions()
 
@@ -171,7 +171,7 @@ def run_sabnews_and_selenium(request):
 
 @pytest.fixture(scope="class")
 def generate_fake_history(request):
-    """ Add fake entries to the history db """
+    """Add fake entries to the history db"""
     history_size = randint(42, 81)
     try:
         history_db = os.path.join(SAB_CACHE_DIR, DEF_ADMIN_DIR, DB_HISTORY_NAME)
@@ -189,7 +189,7 @@ def generate_fake_history(request):
 
 @pytest.fixture(scope="function")
 def update_history_specs(request):
-    """ Update the history size at the start of every test """
+    """Update the history size at the start of every test"""
     if request.function.__name__.startswith("test_"):
         json = get_api_result(
             "history",

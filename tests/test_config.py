@@ -30,7 +30,7 @@ class TestValidators:
         """
 
         def assert_allowed(inp_value):
-            """ Helper function to check for block """
+            """Helper function to check for block"""
             msg, value = config.clean_nice_ionice_parameters(inp_value)
             assert msg is None
             assert value == inp_value
@@ -62,10 +62,10 @@ class TestValidators:
         assert_allowed("-t -n9 -c7")
 
     def test_clean_nice_ionice_parameters_blocked(self):
-        """ Should all be blocked """
+        """Should all be blocked"""
 
         def assert_blocked(inp_value):
-            """ Helper function to check for block """
+            """Helper function to check for block"""
             msg, value = config.clean_nice_ionice_parameters(inp_value)
             assert msg
             assert msg.startswith("Incorrect parameter")

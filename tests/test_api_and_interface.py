@@ -28,7 +28,7 @@ import sabnzbd.interface as interface
 
 
 class TestApiInternals:
-    """ Test internal functions of the API """
+    """Test internal functions of the API"""
 
     def test_empty(self):
         with pytest.raises(TypeError):
@@ -68,13 +68,13 @@ class TestApiInternals:
 
 
 def set_remote_host_or_ip(hostname: str = "localhost", remote_ip: str = "127.0.0.1"):
-    """ Change CherryPy's "Host" and "remote.ip"-values """
+    """Change CherryPy's "Host" and "remote.ip"-values"""
     cherrypy.request.headers["Host"] = hostname
     cherrypy.request.remote.ip = remote_ip
 
 
 class TestSecuredExpose:
-    """ Test the security handling """
+    """Test the security handling"""
 
     main_page = sabnzbd.interface.MainPage()
 

@@ -42,7 +42,7 @@ MIN_FILE_SIZE = 10 * 1024 * 1024
 
 
 def decode_par2(parfile):
-    """ Parse a par2 file and rename files listed in the par2 to their real name """
+    """Parse a par2 file and rename files listed in the par2 to their real name"""
     # Check if really a par2 file
     if not is_parfile(parfile):
         logging.info("Par2 file %s was not really a par2 file")
@@ -132,7 +132,7 @@ def is_probably_obfuscated(myinputfilename):
 
 
 def deobfuscate_list(filelist, usefulname):
-    """ Check all files in filelist, and if wanted, deobfuscate: rename to filename based on usefulname"""
+    """Check all files in filelist, and if wanted, deobfuscate: rename to filename based on usefulname"""
 
     # to be sure, only keep really exsiting files:
     filelist = [f for f in filelist if os.path.exists(f)]

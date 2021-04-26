@@ -18,7 +18,7 @@ SIZE_URL_LIST = [
 
 
 def measure_speed_from_url(url: str) -> float:
-    """ Download the specified url (pointing to a file), and report back MB/s (as a float) """
+    """Download the specified url (pointing to a file), and report back MB/s (as a float)"""
     logging.debug("URL is %s", url)
     start = time.time()
     downloaded_bytes = 0  # default
@@ -38,12 +38,12 @@ def measure_speed_from_url(url: str) -> float:
 
 
 def bytes_to_bits(megabytes_per_second: float) -> float:
-    """ convert bytes (per second) to bits (per second), taking into a account network overhead"""
+    """convert bytes (per second) to bits (per second), taking into a account network overhead"""
     return 8.05 * megabytes_per_second  # bits
 
 
 def internetspeed() -> float:
-    """ Report Internet speed in MB/s as a float """
+    """Report Internet speed in MB/s as a float"""
     # Do basic test with a small download
     logging.debug("Basic measurement, with small download:")
     urlbasic = SIZE_URL_LIST[0][1]  # get first URL, which is smallest download

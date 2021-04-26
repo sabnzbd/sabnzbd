@@ -32,7 +32,7 @@ import sabnzbd.cfg as cfg
 
 
 def compare_stat_tuple(tup1, tup2):
-    """ Test equality of two stat-tuples, content-related parts only """
+    """Test equality of two stat-tuples, content-related parts only"""
     if tup1.st_ino != tup2.st_ino:
         return False
     if tup1.st_size != tup2.st_size:
@@ -45,7 +45,7 @@ def compare_stat_tuple(tup1, tup2):
 
 
 def clean_file_list(inp_list, folder, files):
-    """ Remove elements of "inp_list" not found in "files" """
+    """Remove elements of "inp_list" not found in "files" """
     for path in sorted(inp_list):
         fld, name = os.path.split(path)
         if fld == folder:
@@ -89,31 +89,31 @@ class DirScanner(threading.Thread):
         cfg.dirscan_speed.callback(self.newspeed)
 
     def newdir(self):
-        """ We're notified of a dir change """
+        """We're notified of a dir change"""
         self.ignored = {}
         self.suspected = {}
         self.dirscan_dir = cfg.dirscan_dir.get_path()
         self.dirscan_speed = cfg.dirscan_speed()
 
     def newspeed(self):
-        """ We're notified of a scan speed change """
+        """We're notified of a scan speed change"""
         # If set to 0, use None so the wait() is forever
         self.dirscan_speed = cfg.dirscan_speed() or None
         with self.loop_condition:
             self.loop_condition.notify()
 
     def stop(self):
-        """ Stop the dir scanner """
+        """Stop the dir scanner"""
         self.shutdown = True
         with self.loop_condition:
             self.loop_condition.notify()
 
     def save(self):
-        """ Save dir scanner bookkeeping """
+        """Save dir scanner bookkeeping"""
         sabnzbd.save_admin((self.dirscan_dir, self.ignored, self.suspected), SCAN_FILE_NAME)
 
     def run(self):
-        """ Start the scanner """
+        """Start the scanner"""
         logging.info("Dirscanner starting up")
         self.shutdown = False
 
@@ -125,7 +125,7 @@ class DirScanner(threading.Thread):
                 self.scan()
 
     def scan(self):
-        """ Do one scan of the watched folder """
+        """Do one scan of the watched folder"""
 
         def run_dir(folder, catdir):
             try:

@@ -39,14 +39,14 @@ RE_HHMM = re.compile(r"(\d+):(\d+)\s*$")
 
 
 def tomorrow(t: float) -> float:
-    """ Return timestamp for tomorrow (midnight) """
+    """Return timestamp for tomorrow (midnight)"""
     now = time.localtime(t)
     ntime = (now[0], now[1], now[2], 0, 0, 0, now[6], now[7], now[8])
     return time.mktime(ntime) + DAY
 
 
 def this_week(t: float) -> float:
-    """ Return timestamp for start of this week (monday) """
+    """Return timestamp for start of this week (monday)"""
     while 1:
         tm = time.localtime(t)
         if tm.tm_wday == 0:
@@ -57,19 +57,19 @@ def this_week(t: float) -> float:
 
 
 def next_week(t: float) -> float:
-    """ Return timestamp for start of next week (monday) """
+    """Return timestamp for start of next week (monday)"""
     return this_week(t) + WEEK
 
 
 def this_month(t: float) -> float:
-    """ Return timestamp for start of next month """
+    """Return timestamp for start of next month"""
     now = time.localtime(t)
     ntime = (now[0], now[1], 1, 0, 0, 0, 0, 0, now[8])
     return time.mktime(ntime)
 
 
 def last_month_day(tm: time.struct_time) -> int:
-    """ Return last day of this month """
+    """Return last day of this month"""
     year, month = tm[:2]
     day = DAYS[month]
     # This simple formula for leap years is good enough
@@ -79,7 +79,7 @@ def last_month_day(tm: time.struct_time) -> int:
 
 
 def next_month(t: float) -> float:
-    """ Return timestamp for start of next month """
+    """Return timestamp for start of next month"""
     now = time.localtime(t)
     month = now.tm_mon + 1
     year = now.tm_year
@@ -128,7 +128,7 @@ class BPSMeter:
         self.quota_enabled: bool = True  # Scheduled quota enable/disable
 
     def save(self):
-        """ Save admin to disk """
+        """Save admin to disk"""
         sabnzbd.save_admin(
             (
                 self.last_update,
@@ -150,7 +150,7 @@ class BPSMeter:
         )
 
     def defaults(self):
-        """ Get the latest data from the database and assign to a fake server """
+        """Get the latest data from the database and assign to a fake server"""
         logging.debug("Setting default BPS meter values")
         with sabnzbd.database.HistoryDB() as history_db:
             grand, month, week = history_db.get_history_size()
@@ -167,7 +167,7 @@ class BPSMeter:
         self.quota = self.left = cfg.quota_size.get_float()
 
     def read(self):
-        """ Read admin from disk, return True when pause is needed """
+        """Read admin from disk, return True when pause is needed"""
         res = False
         quota = self.left = cfg.quota_size.get_float()  # Quota for this period
         self.have_quota = bool(cfg.quota_size())
@@ -201,7 +201,7 @@ class BPSMeter:
         return res
 
     def update(self, server: Optional[str] = None, amount: int = 0, force_full_update: bool = True):
-        """ Update counters for "server" with "amount" bytes """
+        """Update counters for "server" with "amount" bytes"""
         t = time.time()
 
         # Add amount to temporary storage
@@ -339,7 +339,7 @@ class BPSMeter:
             self.bps_list = self.bps_list[len(self.bps_list) - BPS_LIST_MAX :]
 
     def get_sums(self):
-        """ return tuple of grand, month, week, day totals """
+        """return tuple of grand, month, week, day totals"""
         return (
             sum([v for v in self.grand_total.values()]),
             sum([v for v in self.month_total.values()]),
@@ -348,7 +348,7 @@ class BPSMeter:
         )
 
     def amounts(self, server: str):
-        """ Return grand, month, week, day and article totals for specified server """
+        """Return grand, month, week, day and article totals for specified server"""
         return (
             self.grand_total.get(server, 0),
             self.month_total.get(server, 0),
@@ -360,7 +360,7 @@ class BPSMeter:
         )
 
     def clear_server(self, server: str):
-        """ Clean counters for specified server """
+        """Clean counters for specified server"""
         if server in self.day_total:
             del self.day_total[server]
         if server in self.week_total:
@@ -425,7 +425,7 @@ class BPSMeter:
             return True
 
     def next_reset(self, t: Optional[float] = None):
-        """ Determine next reset time """
+        """Determine next reset time"""
         t = t or time.time()
         tm = time.localtime(t)
         if self.q_period == "d":
@@ -456,7 +456,7 @@ class BPSMeter:
         logging.debug("Will reset quota at %s", tm)
 
     def change_quota(self, allow_resume: bool = True):
-        """ Update quota, potentially pausing downloader """
+        """Update quota, potentially pausing downloader"""
         if not self.have_quota and self.quota < 0.5:
             # Never set, use last period's size
             per = cfg.quota_period()
@@ -486,7 +486,7 @@ class BPSMeter:
             self.resume()
 
     def get_quota(self):
-        """ If quota active, return check-function, hour, minute """
+        """If quota active, return check-function, hour, minute"""
         if self.have_quota:
             self.q_period = cfg.quota_period()[0].lower()
             self.q_day = 1
@@ -515,24 +515,24 @@ class BPSMeter:
             return None, 0, 0
 
     def set_status(self, status: bool, action: bool = True):
-        """ Disable/enable quota management """
+        """Disable/enable quota management"""
         self.quota_enabled = status
         if action and not status:
             self.resume()
 
     @staticmethod
     def resume():
-        """ Resume downloading """
+        """Resume downloading"""
         if cfg.quota_resume() and sabnzbd.Downloader.paused:
             sabnzbd.Downloader.resume()
 
     def midnight(self):
-        """ Midnight action: dummy update for all servers """
+        """Midnight action: dummy update for all servers"""
         for server in self.day_total.keys():
             self.update(server)
 
 
 def quota_handler():
-    """ To be called from scheduler """
+    """To be called from scheduler"""
     logging.debug("Checking quota")
     sabnzbd.BPSMeter.reset_quota()

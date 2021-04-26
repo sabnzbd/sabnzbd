@@ -78,14 +78,14 @@ class NewsWrapper:
 
     @property
     def status_code(self) -> Optional[int]:
-        """ Shorthand to get the code """
+        """Shorthand to get the code"""
         try:
             return int(self.data[0][:3])
         except:
             return None
 
     def init_connect(self):
-        """ Setup the connection in NNTP object """
+        """Setup the connection in NNTP object"""
         # Server-info is normally requested by initialization of
         # servers in Downloader, but not when testing servers
         if self.blocking and not self.server.info:
@@ -96,7 +96,7 @@ class NewsWrapper:
         self.timeout = time.time() + self.server.timeout
 
     def finish_connect(self, code: int):
-        """ Perform login options """
+        """Perform login options"""
         if not (self.server.username or self.server.password or self.force_login):
             self.connected = True
             self.user_sent = True
@@ -151,7 +151,7 @@ class NewsWrapper:
         self.timeout = time.time() + self.server.timeout
 
     def body(self):
-        """ Request the body of the article """
+        """Request the body of the article"""
         self.timeout = time.time() + self.server.timeout
         if self.article.nzf.nzo.precheck:
             if self.server.have_stat:
@@ -166,14 +166,14 @@ class NewsWrapper:
         self.data = []
 
     def send_group(self, group: str):
-        """ Send the NNTP GROUP command """
+        """Send the NNTP GROUP command"""
         self.timeout = time.time() + self.server.timeout
         command = utob("GROUP %s\r\n" % group)
         self.nntp.sock.sendall(command)
         self.data = []
 
     def recv_chunk(self, block: bool = False) -> Tuple[int, bool, bool]:
-        """ Receive data, return #bytes, done, skip """
+        """Receive data, return #bytes, done, skip"""
         self.timeout = time.time() + self.server.timeout
         while 1:
             try:
@@ -213,17 +213,17 @@ class NewsWrapper:
         return chunk_len, False, False
 
     def soft_reset(self):
-        """ Reset for the next article """
+        """Reset for the next article"""
         self.timeout = None
         self.article = None
         self.clear_data()
 
     def clear_data(self):
-        """ Clear the stored raw data """
+        """Clear the stored raw data"""
         self.data = []
 
     def hard_reset(self, wait: bool = True, send_quit: bool = True):
-        """ Destroy and restart """
+        """Destroy and restart"""
         if self.nntp:
             try:
                 if send_quit:

@@ -86,14 +86,14 @@ class SABTrayThread(SysTrayIconThread):
         super().__init__(self.sabicons["default"], "SABnzbd", menu_options, None, 0, "SabTrayIcon")
 
     def set_texts(self):
-        """ Cache texts for performance, doUpdates is called often """
+        """Cache texts for performance, doUpdates is called often"""
         self.txt_idle = T("Idle")
         self.txt_paused = T("Paused")
         self.txt_remaining = T("Remaining")
 
     # called every few ms by SysTrayIconThread
     def doUpdates(self):
-        """ Update menu info, once every 10 calls """
+        """Update menu info, once every 10 calls"""
         self.counter += 1
         if self.counter > 10:
             self.sabpaused, bytes_left, bpsnow, time_left = api.fast_queue()
@@ -143,7 +143,7 @@ class SABTrayThread(SysTrayIconThread):
             self.pause()
 
     def pausefor(self, minutes):
-        """ Need function for each pause-timer """
+        """Need function for each pause-timer"""
         sabnzbd.Scheduler.plan_resume(minutes)
 
     def pausefor5min(self, icon):

@@ -267,7 +267,7 @@ SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 
 
 def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
-    """ Return True if this is likely to be a cloaked encrypted post """
+    """Return True if this is likely to be a cloaked encrypted post"""
     fname = os.path.splitext(get_filename(path.lower()))[0]
     for name in names:
         name = get_filename(name.lower())
@@ -296,7 +296,7 @@ def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
 
 
 def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[bool, Optional[str]]:
-    """ Combines check for unwanted and encrypted files to save on CPU and IO """
+    """Combines check for unwanted and encrypted files to save on CPU and IO"""
     encrypted = False
     unwanted = None
 

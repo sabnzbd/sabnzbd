@@ -102,13 +102,13 @@ LOG_FLAG = False
 
 
 def guard_loglevel():
-    """ Callback function for guarding loglevel """
+    """Callback function for guarding loglevel"""
     global LOG_FLAG
     LOG_FLAG = True
 
 
 def warning_helpful(*args, **kwargs):
-    """ Wrapper to ignore helpfull warnings if desired """
+    """Wrapper to ignore helpfull warnings if desired"""
     if sabnzbd.cfg.helpfull_warnings():
         return logging.warning(*args, **kwargs)
     return logging.info(*args, **kwargs)
@@ -123,13 +123,13 @@ class GUIHandler(logging.Handler):
     """
 
     def __init__(self, size):
-        """ Initializes the handler """
+        """Initializes the handler"""
         logging.Handler.__init__(self)
         self._size: int = size
         self.store: List[Dict[str, Any]] = []
 
     def emit(self, record: logging.LogRecord):
-        """ Emit a record by adding it to our private queue """
+        """Emit a record by adding it to our private queue"""
         # If % is part of the msg, this could fail
         try:
             parsed_msg = record.msg % record.args
@@ -171,7 +171,7 @@ class GUIHandler(logging.Handler):
         return len(self.store)
 
     def content(self):
-        """ Return an array with last records """
+        """Return an array with last records"""
         return self.store
 
 
@@ -236,7 +236,7 @@ GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
 
 def daemonize():
-    """ Daemonize the process, based on various StackOverflow answers """
+    """Daemonize the process, based on various StackOverflow answers"""
     try:
         pid = os.fork()
         if pid > 0:
@@ -278,7 +278,7 @@ def daemonize():
 
 
 def abort_and_show_error(browserhost, cherryport, err=""):
-    """ Abort program because of CherryPy troubles """
+    """Abort program because of CherryPy troubles"""
     logging.error(T("Failed to start web-interface") + " : " + str(err))
     if not sabnzbd.DAEMON:
         if "49" in err:
@@ -290,7 +290,7 @@ def abort_and_show_error(browserhost, cherryport, err=""):
 
 
 def identify_web_template(key, defweb, wdir):
-    """ Determine a correct web template set, return full template path """
+    """Determine a correct web template set, return full template path"""
     if wdir is None:
         try:
             wdir = fix_webname(key())
@@ -321,7 +321,7 @@ def identify_web_template(key, defweb, wdir):
 
 
 def check_template_scheme(color, web_dir):
-    """ Check existence of color-scheme """
+    """Check existence of color-scheme"""
     if color and os.path.exists(os.path.join(web_dir, "static", "stylesheets", "colorschemes", color + ".css")):
         return color
     elif color and os.path.exists(os.path.join(web_dir, "static", "stylesheets", "colorschemes", color)):
@@ -348,7 +348,7 @@ def fix_webname(name):
 
 
 def get_user_profile_paths(vista_plus):
-    """ Get the default data locations on Windows"""
+    """Get the default data locations on Windows"""
     if sabnzbd.DAEMON:
         # In daemon mode, do not try to access the user profile
         # just assume that everything defaults to the program dir
@@ -407,7 +407,7 @@ def get_user_profile_paths(vista_plus):
 
 
 def print_modules():
-    """ Log all detected optional or external modules """
+    """Log all detected optional or external modules"""
     if sabnzbd.decoder.SABYENC_ENABLED:
         # Yes, we have SABYenc, and it's the correct version, so it's enabled
         logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
@@ -484,7 +484,7 @@ def print_modules():
 
 
 def all_localhosts():
-    """ Return all unique values of localhost in order of preference """
+    """Return all unique values of localhost in order of preference"""
     ips = ["127.0.0.1"]
     try:
         # Check whether IPv6 is available and enabled
@@ -512,7 +512,7 @@ def all_localhosts():
 
 
 def check_resolve(host):
-    """ Return True if 'host' resolves """
+    """Return True if 'host' resolves"""
     try:
         socket.getaddrinfo(host, None)
     except socket.error:
@@ -655,7 +655,7 @@ def get_webhost(cherryhost, cherryport, https_port):
 
 
 def attach_server(host, port, cert=None, key=None, chain=None):
-    """ Define and attach server, optionally HTTPS """
+    """Define and attach server, optionally HTTPS"""
     if sabnzbd.cfg.ipv6_hosting() or "::1" not in host:
         http_server = cherrypy._cpserver.Server()
         http_server.bind_addr = (host, port)
@@ -668,7 +668,7 @@ def attach_server(host, port, cert=None, key=None, chain=None):
 
 
 def is_sabnzbd_running(url):
-    """ Return True when there's already a SABnzbd instance running. """
+    """Return True when there's already a SABnzbd instance running."""
     try:
         url = "%s&mode=version" % url
         # Do this without certificate verification, few installations will have that
@@ -681,7 +681,7 @@ def is_sabnzbd_running(url):
 
 
 def find_free_port(host, currentport):
-    """ Return a free port, 0 when nothing is free """
+    """Return a free port, 0 when nothing is free"""
     n = 0
     while n < 10 and currentport <= 49151:
         try:
@@ -835,7 +835,7 @@ def commandline_handler():
 
 
 def get_f_option(opts):
-    """ Return value of the -f option """
+    """Return value of the -f option"""
     for opt, arg in opts:
         if opt == "-f":
             return arg
@@ -1635,7 +1635,7 @@ if sabnzbd.WIN32:
     import servicemanager
 
     class SABnzbd(win32serviceutil.ServiceFramework):
-        """ Win32 Service Handler """
+        """Win32 Service Handler"""
 
         _svc_name_ = "SABnzbd"
         _svc_display_name_ = "SABnzbd Binary Newsreader"

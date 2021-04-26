@@ -224,7 +224,7 @@ class TestMisc:
         ],
     )
     def test_list_to_cmd(self, test_input, expected_output):
-        """ Test to convert list to a cmd.exe-compatible command string """
+        """Test to convert list to a cmd.exe-compatible command string"""
 
         res = misc.list2cmdline(test_input)
         # Make sure the output is cmd.exe-compatible

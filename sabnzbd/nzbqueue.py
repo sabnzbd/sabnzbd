@@ -59,7 +59,7 @@ import sabnzbd.notifier as notifier
 
 
 class NzbQueue:
-    """ Singleton NzbQueue """
+    """Singleton NzbQueue"""
 
     def __init__(self):
         self.__top_only: bool = cfg.top_only()
@@ -165,7 +165,7 @@ class NzbQueue:
         return result
 
     def repair_job(self, repair_folder, new_nzb=None, password=None):
-        """ Reconstruct admin for a single job folder, optionally with new NZB """
+        """Reconstruct admin for a single job folder, optionally with new NZB"""
         # Check if folder exists
         if not repair_folder or not os.path.exists(repair_folder):
             return None
@@ -207,7 +207,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def send_back(self, old_nzo: NzbObject):
-        """ Send back job to queue after successful pre-check """
+        """Send back job to queue after successful pre-check"""
         try:
             nzb_path = globber_full(old_nzo.admin_path, "*.gz")[0]
         except:
@@ -229,7 +229,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def save(self, save_nzo: Union[NzbObject, None, bool] = None):
-        """ Save queue, all nzo's or just the specified one """
+        """Save queue, all nzo's or just the specified one"""
         logging.info("Saving queue")
 
         nzo_ids = []
@@ -250,7 +250,7 @@ class NzbQueue:
         self.__top_only = value
 
     def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=DEFAULT_PRIORITY, nzbname=None):
-        """ Create and return a placeholder nzo object """
+        """Create and return a placeholder nzo object"""
         logging.debug("Creating placeholder NZO")
         future_nzo = NzbObject(
             filename=msg,
@@ -417,7 +417,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def remove_all(self, search: str = "") -> List[str]:
-        """ Remove NZO's that match the search-pattern """
+        """Remove NZO's that match the search-pattern"""
         nzo_ids = []
         search = safe_lower(search)
         for nzo_id, nzo in self.__nzo_table.items():
@@ -598,7 +598,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def __set_priority(self, nzo_id, priority):
-        """ Sets the priority on the nzo and places it in the queue at the appropriate position """
+        """Sets the priority on the nzo and places it in the queue at the appropriate position"""
         try:
             priority = int_conv(priority)
             nzo = self.__nzo_table[nzo_id]
@@ -686,7 +686,7 @@ class NzbQueue:
 
     @staticmethod
     def reset_try_lists(article: Article, article_reset=True):
-        """ Let article get new fetcher and reset trylists """
+        """Let article get new fetcher and reset trylists"""
         article.fetcher = None
         if article_reset:
             article.reset_try_list()
@@ -771,7 +771,7 @@ class NzbQueue:
 
     @NzbQueueLocker
     def end_job(self, nzo: NzbObject):
-        """ Send NZO to the post-processing queue """
+        """Send NZO to the post-processing queue"""
         # Notify assembler to call postprocessor
         if not nzo.deleted:
             logging.info("[%s] Ending job %s", caller_name(), nzo.final_name)
@@ -857,7 +857,7 @@ class NzbQueue:
         return empty
 
     def stop_idle_jobs(self):
-        """ Detect jobs that have zero files left and send them to post processing """
+        """Detect jobs that have zero files left and send them to post processing"""
         empty = []
         for nzo in self.__nzo_list:
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
@@ -906,7 +906,7 @@ class NzbQueue:
                 nzo.status = Status.QUEUED
 
     def get_urls(self):
-        """ Return list of future-types needing URL """
+        """Return list of future-types needing URL"""
         lst = []
         for nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]

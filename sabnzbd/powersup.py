@@ -37,7 +37,7 @@ except ImportError:
 
 
 def win_power_privileges():
-    """ To do any power-options, the process needs higher privileges """
+    """To do any power-options, the process needs higher privileges"""
     flags = ntsecuritycon.TOKEN_ADJUST_PRIVILEGES | ntsecuritycon.TOKEN_QUERY
     htoken = win32security.OpenProcessToken(win32api.GetCurrentProcess(), flags)
     id_ = win32security.LookupPrivilegeValue(None, ntsecuritycon.SE_SHUTDOWN_NAME)
@@ -46,7 +46,7 @@ def win_power_privileges():
 
 
 def win_hibernate():
-    """ Hibernate Windows system, returns after wakeup """
+    """Hibernate Windows system, returns after wakeup"""
     try:
         win_power_privileges()
         win32api.SetSystemPowerState(False, True)
@@ -56,7 +56,7 @@ def win_hibernate():
 
 
 def win_standby():
-    """ Standby Windows system, returns after wakeup """
+    """Standby Windows system, returns after wakeup"""
     try:
         win_power_privileges()
         win32api.SetSystemPowerState(True, True)
@@ -66,7 +66,7 @@ def win_standby():
 
 
 def win_shutdown():
-    """ Shutdown Windows system, never returns """
+    """Shutdown Windows system, never returns"""
     try:
         win_power_privileges()
         win32api.InitiateSystemShutdown("", "", 30, 1, 0)
@@ -80,7 +80,7 @@ def win_shutdown():
 
 
 def osx_shutdown():
-    """ Shutdown macOS system, never returns """
+    """Shutdown macOS system, never returns"""
     try:
         subprocess.call(["osascript", "-e", 'tell app "System Events" to shut down'])
     except:
@@ -90,7 +90,7 @@ def osx_shutdown():
 
 
 def osx_standby():
-    """ Make macOS system sleep, returns after wakeup """
+    """Make macOS system sleep, returns after wakeup"""
     try:
         subprocess.call(["osascript", "-e", 'tell app "System Events" to sleep'])
         time.sleep(10)
@@ -100,7 +100,7 @@ def osx_standby():
 
 
 def osx_hibernate():
-    """ Make macOS system sleep, returns after wakeup """
+    """Make macOS system sleep, returns after wakeup"""
     osx_standby()
 
 
@@ -131,7 +131,7 @@ _LOGIND_SUCCESSFUL_RESULT = "yes"
 
 
 def _get_sessionproxy():
-    """ Return (proxy-object, interface), (None, None) if not available """
+    """Return (proxy-object, interface), (None, None) if not available"""
     name = "org.freedesktop.PowerManagement"
     path = "/org/freedesktop/PowerManagement"
     interface = "org.freedesktop.PowerManagement"
@@ -143,7 +143,7 @@ def _get_sessionproxy():
 
 
 def _get_systemproxy(method):
-    """ Return (proxy-object, interface, pinterface), (None, None, None) if not available """
+    """Return (proxy-object, interface, pinterface), (None, None, None) if not available"""
     if method == "ConsoleKit":
         name = "org.freedesktop.ConsoleKit"
         path = "/org/freedesktop/ConsoleKit/Manager"
@@ -173,7 +173,7 @@ def _get_systemproxy(method):
 
 
 def linux_shutdown():
-    """ Make Linux system shutdown, never returns """
+    """Make Linux system shutdown, never returns"""
     if not HAVE_DBUS:
         os._exit(0)
 
@@ -201,7 +201,7 @@ def linux_shutdown():
 
 
 def linux_hibernate():
-    """ Make Linux system go into hibernate, returns after wakeup """
+    """Make Linux system go into hibernate, returns after wakeup"""
     if not HAVE_DBUS:
         return
 
@@ -230,7 +230,7 @@ def linux_hibernate():
 
 
 def linux_standby():
-    """ Make Linux system go into standby, returns after wakeup """
+    """Make Linux system go into standby, returns after wakeup"""
     if not HAVE_DBUS:
         return
 

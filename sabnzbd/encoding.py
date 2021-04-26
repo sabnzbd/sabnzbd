@@ -28,14 +28,14 @@ CODEPAGE = locale.getpreferredencoding()
 
 
 def utob(str_in: AnyStr) -> bytes:
-    """ Shorthand for converting UTF-8 string to bytes """
+    """Shorthand for converting UTF-8 string to bytes"""
     if isinstance(str_in, bytes):
         return str_in
     return str_in.encode("utf-8")
 
 
 def ubtou(str_in: AnyStr) -> str:
-    """ Shorthand for converting unicode bytes to UTF-8 string """
+    """Shorthand for converting unicode bytes to UTF-8 string"""
     if not isinstance(str_in, bytes):
         return str_in
     return str_in.decode("utf-8")
@@ -78,5 +78,5 @@ def correct_unknown_encoding(str_or_bytes_in: AnyStr) -> str:
 
 
 def xml_name(p):
-    """ Prepare name for use in HTML/XML contect """
+    """Prepare name for use in HTML/XML contect"""
     return escape(str(p))

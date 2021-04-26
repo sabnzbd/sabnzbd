@@ -45,14 +45,14 @@ _LOCALEDIR = ""  # Holds path to the translation base folder
 
 
 def set_locale_info(domain, localedir):
-    """ Setup the domain and localedir for translations """
+    """Setup the domain and localedir for translations"""
     global _DOMAIN, _LOCALEDIR
     _DOMAIN = domain
     _LOCALEDIR = localedir
 
 
 def set_language(language=None):
-    """ Activate language, empty language will set default texts. """
+    """Activate language, empty language will set default texts."""
     if not language:
         language = ""
 

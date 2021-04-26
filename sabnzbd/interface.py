@@ -99,7 +99,7 @@ def secured_expose(
     check_api_key: bool = False,
     access_type: int = 4,
 ) -> Union[Callable, str]:
-    """ Wrapper for both cherrypy.expose and login/access check """
+    """Wrapper for both cherrypy.expose and login/access check"""
     if not wrap_func:
         return functools.partial(
             secured_expose,
@@ -306,12 +306,12 @@ def check_login():
 
 
 def check_basic_auth(_, username, password):
-    """ CherryPy basic authentication validation """
+    """CherryPy basic authentication validation"""
     return username == cfg.username() and password == cfg.password()
 
 
 def set_auth(conf):
-    """ Set the authentication for CherryPy """
+    """Set the authentication for CherryPy"""
     if cfg.username() and cfg.password() and not cfg.html_login():
         conf.update(
             {
@@ -379,7 +379,7 @@ def check_apikey(kwargs):
 
 
 def log_warning_and_ip(txt):
-    """ Include the IP and the Proxy-IP for warnings """
+    """Include the IP and the Proxy-IP for warnings"""
     if cfg.api_warnings():
         logging.warning("%s %s", txt, cherrypy.request.remote_label)
 
@@ -487,12 +487,12 @@ class MainPage:
 
     @secured_expose(check_api_key=True, access_type=1)
     def api(self, **kwargs):
-        """ Redirect to API-handler, we check the access_type in the API-handler """
+        """Redirect to API-handler, we check the access_type in the API-handler"""
         return api_handler(kwargs)
 
     @secured_expose
     def scriptlog(self, **kwargs):
-        """ Needed for all skins, URL is fixed due to postproc """
+        """Needed for all skins, URL is fixed due to postproc"""
         # No session key check, due to fixed URLs
         name = kwargs.get("name")
         if name:
@@ -503,7 +503,7 @@ class MainPage:
 
     @secured_expose(check_api_key=True)
     def retry(self, **kwargs):
-        """ Duplicate of retry of History, needed for some skins """
+        """Duplicate of retry of History, needed for some skins"""
         job = kwargs.get("job", "")
         url = kwargs.get("url", "").strip()
         pp = kwargs.get("pp")
@@ -522,13 +522,13 @@ class MainPage:
 
     @secured_expose
     def robots_txt(self, **kwargs):
-        """ Keep web crawlers out """
+        """Keep web crawlers out"""
         cherrypy.response.headers["Content-Type"] = "text/plain"
         return "User-agent: *\nDisallow: /\n"
 
     @secured_expose
     def description_xml(self, **kwargs):
-        """ Provide the description.xml which was broadcast via SSDP """
+        """Provide the description.xml which was broadcast via SSDP"""
         if is_lan_addr(cherrypy.request.remote.ip):
             cherrypy.response.headers["Content-Type"] = "application/xml"
             return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
@@ -543,7 +543,7 @@ class Wizard:
 
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
-        """ Show the language selection page """
+        """Show the language selection page"""
         if sabnzbd.WIN32:
             from sabnzbd.utils.apireg import get_install_lng
 
@@ -559,7 +559,7 @@ class Wizard:
 
     @secured_expose(check_configlock=True)
     def one(self, **kwargs):
-        """ Accept language and show server page """
+        """Accept language and show server page"""
         if kwargs.get("lang"):
             cfg.language.set(kwargs.get("lang"))
 
@@ -605,7 +605,7 @@ class Wizard:
 
     @secured_expose(check_configlock=True)
     def two(self, **kwargs):
-        """ Accept server and show the final page for restart """
+        """Accept server and show the final page for restart"""
         # Save server details
         if kwargs:
             kwargs["enable"] = 1
@@ -627,13 +627,13 @@ class Wizard:
 
     @secured_expose
     def exit(self, **kwargs):
-        """ Stop SABnzbd """
+        """Stop SABnzbd"""
         sabnzbd.shutdown_program()
         return T("SABnzbd shutdown finished")
 
 
 def get_access_info():
-    """ Build up a list of url's that sabnzbd can be accessed from """
+    """Build up a list of url's that sabnzbd can be accessed from"""
     # Access_url is used to provide the user a link to SABnzbd depending on the host
     cherryhost = cfg.cherryhost()
     host = socket.gethostname().lower()
@@ -1680,7 +1680,7 @@ class ConfigServer:
 
 
 def unique_svr_name(server):
-    """ Return a unique variant on given server name """
+    """Return a unique variant on given server name"""
     num = 0
     svr = 1
     new_name = server
@@ -1695,7 +1695,7 @@ def unique_svr_name(server):
 
 
 def check_server(host, port, ajax):
-    """ Check if server address resolves properly """
+    """Check if server address resolves properly"""
     if host.lower() == "localhost" and sabnzbd.AMBI_LOCALHOST:
         return badParameterResponse(T("Warning: LOCALHOST is ambiguous, use numerical IP-address."), ajax)
 
@@ -1706,7 +1706,7 @@ def check_server(host, port, ajax):
 
 
 def handle_server(kwargs, root=None, new_svr=False):
-    """ Internal server handler """
+    """Internal server handler"""
     ajax = kwargs.get("ajax")
     host = kwargs.get("host", "").strip()
     if not host:
@@ -1857,7 +1857,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_rate(self, **kwargs):
-        """ Save changed RSS automatic readout rate """
+        """Save changed RSS automatic readout rate"""
         cfg.rss_rate.set(kwargs.get("rss_rate"))
         config.save_config()
         sabnzbd.Scheduler.restart()
@@ -1886,7 +1886,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_feed(self, **kwargs):
-        """ Update Feed level attributes """
+        """Update Feed level attributes"""
         feed_name = kwargs.get("feed")
         try:
             cf = config.get_rss()[feed_name]
@@ -1912,7 +1912,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggle_rss_feed(self, **kwargs):
-        """ Toggle automatic read-out flag of Feed """
+        """Toggle automatic read-out flag of Feed"""
         try:
             item = config.get_rss()[kwargs.get("feed")]
         except KeyError:
@@ -1927,7 +1927,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def add_rss_feed(self, **kwargs):
-        """ Add one new RSS feed definition """
+        """Add one new RSS feed definition"""
         feed = Strip(kwargs.get("feed")).strip("[]")
         uri = Strip(kwargs.get("uri"))
         if feed and uri:
@@ -1956,11 +1956,11 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def upd_rss_filter(self, **kwargs):
-        """ Wrapper, so we can call from api.py """
+        """Wrapper, so we can call from api.py"""
         self.internal_upd_rss_filter(**kwargs)
 
     def internal_upd_rss_filter(self, **kwargs):
-        """ Save updated filter definition """
+        """Save updated filter definition"""
         try:
             feed_cfg = config.get_rss()[kwargs.get("feed")]
         except KeyError:
@@ -1993,7 +1993,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def del_rss_feed(self, *args, **kwargs):
-        """ Remove complete RSS feed """
+        """Remove complete RSS feed"""
         kwargs["section"] = "rss"
         kwargs["keyword"] = kwargs.get("feed")
         del_from_section(kwargs)
@@ -2002,11 +2002,11 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def del_rss_filter(self, **kwargs):
-        """ Wrapper, so we can call from api.py """
+        """Wrapper, so we can call from api.py"""
         self.internal_del_rss_filter(**kwargs)
 
     def internal_del_rss_filter(self, **kwargs):
-        """ Remove one RSS filter """
+        """Remove one RSS filter"""
         try:
             feed_cfg = config.get_rss()[kwargs.get("feed")]
         except KeyError:
@@ -2020,7 +2020,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def download_rss_feed(self, *args, **kwargs):
-        """ Force download of all matching jobs in a feed """
+        """Force download of all matching jobs in a feed"""
         if "feed" in kwargs:
             feed = kwargs["feed"]
             self.__refresh_readout = feed
@@ -2032,14 +2032,14 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
-        """ Remove processed RSS jobs from UI """
+        """Remove processed RSS jobs from UI"""
         sabnzbd.RSSReader.clear_downloaded(kwargs["feed"])
         self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def test_rss_feed(self, *args, **kwargs):
-        """ Read the feed content again and show results """
+        """Read the feed content again and show results"""
         if "feed" in kwargs:
             feed = kwargs["feed"]
             self.__refresh_readout = feed
@@ -2052,7 +2052,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def eval_rss_feed(self, *args, **kwargs):
-        """ Re-apply the filters to the feed """
+        """Re-apply the filters to the feed"""
         if "feed" in kwargs:
             self.__refresh_download = False
             self.__refresh_force = False
@@ -2064,7 +2064,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def download(self, **kwargs):
-        """ Download NZB from provider (Download button) """
+        """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
         nzbname = kwargs.get("nzbname")
@@ -2083,13 +2083,13 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def rss_now(self, *args, **kwargs):
-        """ Run an automatic RSS run now """
+        """Run an automatic RSS run now"""
         sabnzbd.Scheduler.force_rss()
         raise Raiser(self.__root)
 
 
 def ConvertSpecials(p):
-    """ Convert None to 'None' and 'Default' to '' """
+    """Convert None to 'None' and 'Default' to ''"""
     if p is None:
         p = "None"
     elif p.lower() == T("Default").lower():
@@ -2098,12 +2098,12 @@ def ConvertSpecials(p):
 
 
 def IsNone(value):
-    """ Return True if either None, 'None' or '' """
+    """Return True if either None, 'None' or ''"""
     return value is None or value == "" or value.lower() == "none"
 
 
 def Strip(txt):
-    """ Return stripped string, can handle None """
+    """Return stripped string, can handle None"""
     try:
         return txt.strip()
     except:
@@ -2619,7 +2619,7 @@ def orphan_add_all():
 
 
 def badParameterResponse(msg, ajax=None):
-    """ Return a html page with error message and a 'back' button """
+    """Return a html page with error message and a 'back' button"""
     if ajax:
         return sabnzbd.api.report("json", error=msg)
     else:
@@ -2646,7 +2646,7 @@ def badParameterResponse(msg, ajax=None):
 
 
 def ShowString(name, msg):
-    """ Return a html page listing a file and a 'back' button """
+    """Return a html page listing a file and a 'back' button"""
     return """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>

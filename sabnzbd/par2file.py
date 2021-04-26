@@ -130,7 +130,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
 
 
 def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], Optional[bytes]]:
-    """ Look up and analyze a FileDesc package """
+    """Look up and analyze a FileDesc package"""
 
     nothing = None, None, None
 

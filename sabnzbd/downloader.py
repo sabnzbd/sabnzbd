@@ -163,7 +163,7 @@ class Server:
             Thread(target=self._request_info_internal).start()
 
     def _request_info_internal(self):
-        """ Async attempt to run getaddrinfo() for specified server """
+        """Async attempt to run getaddrinfo() for specified server"""
         logging.debug("Retrieving server address information for %s", self.host)
         self.info = get_server_addrinfo(self.host, self.port)
         if not self.info:
@@ -178,7 +178,7 @@ class Server:
 
 
 class Downloader(Thread):
-    """ Singleton Downloader Thread """
+    """Singleton Downloader Thread"""
 
     def __init__(self, paused=False):
         super().__init__()
@@ -284,17 +284,17 @@ class Downloader(Thread):
         self.server_nr = len(self.servers)
 
     def add_socket(self, fileno: int, nw: NewsWrapper):
-        """ Add a socket ready to be used to the list to be watched """
+        """Add a socket ready to be used to the list to be watched"""
         self.read_fds[fileno] = nw
 
     def remove_socket(self, nw: NewsWrapper):
-        """ Remove a socket to be watched """
+        """Remove a socket to be watched"""
         if nw.nntp:
             self.read_fds.pop(nw.nntp.fileno, None)
 
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
-        """ Set downloader to specified paused state """
+        """Set downloader to specified paused state"""
         self.paused = state
 
     @NzbQueueLocker
@@ -307,7 +307,7 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def pause(self):
-        """ Pause the downloader, optionally saving admin """
+        """Pause the downloader, optionally saving admin"""
         if not self.paused:
             self.paused = True
             logging.info("Pausing")
@@ -887,7 +887,7 @@ class Downloader(Thread):
 
     @synchronized(TIMER_LOCK)
     def plan_server(self, server: Server, interval: int):
-        """ Plan the restart of a server in 'interval' minutes """
+        """Plan the restart of a server in 'interval' minutes"""
         if cfg.no_penalties() and interval > _PENALTY_SHORT:
             # Overwrite in case of no_penalties
             interval = _PENALTY_SHORT
@@ -902,7 +902,7 @@ class Downloader(Thread):
 
     @synchronized(TIMER_LOCK)
     def trigger_server(self, server_id: str, timestamp: float):
-        """ Called by scheduler, start server if timer still valid """
+        """Called by scheduler, start server if timer still valid"""
         logging.debug("Trigger planned server resume for server-id %s", server_id)
         if server_id in self.timers:
             if timestamp in self.timers[server_id]:
@@ -931,7 +931,7 @@ class Downloader(Thread):
     @NzbQueueLocker
     @synchronized(TIMER_LOCK)
     def check_timers(self):
-        """ Make sure every server without a non-expired timer is active """
+        """Make sure every server without a non-expired timer is active"""
         # Clean expired timers
         now = time.time()
         kicked = []
@@ -957,18 +957,18 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def wakeup(self):
-        """ Just rattle the semaphore """
+        """Just rattle the semaphore"""
         pass
 
     @NzbQueueLocker
     def stop(self):
-        """ Shutdown, wrapped so the semaphore is notified """
+        """Shutdown, wrapped so the semaphore is notified"""
         self.shutdown = True
         sabnzbd.notifier.send_notification("SABnzbd", T("Shutting down"), "startup")
 
 
 def clues_login(text: str) -> bool:
-    """ Check for any "failed login" clues in the response code """
+    """Check for any "failed login" clues in the response code"""
     text = text.lower()
     for clue in ("username", "password", "invalid", "authen", "access denied"):
         if clue in text:
@@ -977,7 +977,7 @@ def clues_login(text: str) -> bool:
 
 
 def clues_too_many(text: str) -> bool:
-    """ Check for any "too many connections" clues in the response code """
+    """Check for any "too many connections" clues in the response code"""
     text = text.lower()
     for clue in ("exceed", "connections", "too many", "threads", "limit"):
         # Not 'download limit exceeded' error
@@ -987,7 +987,7 @@ def clues_too_many(text: str) -> bool:
 
 
 def clues_too_many_ip(text: str) -> bool:
-    """ Check for any "account sharing" clues in the response code """
+    """Check for any "account sharing" clues in the response code"""
     text = text.lower()
     for clue in ("simultaneous ip", "multiple ip"):
         if clue in text:
@@ -996,7 +996,7 @@ def clues_too_many_ip(text: str) -> bool:
 
 
 def clues_pay(text: str) -> bool:
-    """ Check for messages about payments """
+    """Check for messages about payments"""
     text = text.lower()
     for clue in ("credits", "paym", "expired", "exceeded"):
         if clue in text:

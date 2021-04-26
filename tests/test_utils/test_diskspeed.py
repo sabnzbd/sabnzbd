@@ -28,10 +28,10 @@ from tests.testhelper import SAB_CACHE_DIR
 
 @pytest.mark.usefixtures("clean_cache_dir")
 class TestDiskSpeed:
-    """ test sabnzbd.utils.diskspeed """
+    """test sabnzbd.utils.diskspeed"""
 
     def test_disk_speed(self):
-        """ Test the normal use case: writable directory"""
+        """Test the normal use case: writable directory"""
         speed = diskspeedmeasure(SAB_CACHE_DIR)
         assert speed > 0.0
         assert isinstance(speed, float)
@@ -40,7 +40,7 @@ class TestDiskSpeed:
         assert not os.path.exists(os.path.join(SAB_CACHE_DIR, "outputTESTING.txt"))
 
     def test_non_existing_dir(self):
-        """ testing a non-existing dir should result in 0"""
+        """testing a non-existing dir should result in 0"""
         speed = diskspeedmeasure("such_a_dir_does_not_exist")
         assert speed == 0
 
@@ -54,7 +54,7 @@ class TestDiskSpeed:
             assert speed == 0
 
     def test_file_not_dir_specified(self):
-        """ testing a file should result in 0"""
+        """testing a file should result in 0"""
         with tempfile.NamedTemporaryFile() as temp_file:
             speed = diskspeedmeasure(temp_file.name)
         assert speed == 0

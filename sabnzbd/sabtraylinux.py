@@ -116,7 +116,7 @@ class StatusIcon(Thread):
         return 1
 
     def right_click_event(self, icon, button, time):
-        """ menu """
+        """menu"""
         menu = Gtk.Menu()
 
         maddnzb = Gtk.MenuItem(label=T("Add NZB"))
@@ -151,7 +151,7 @@ class StatusIcon(Thread):
         menu.popup(None, None, None, self.statusicon, button, time)
 
     def addnzb(self, icon):
-        """ menu handlers """
+        """menu handlers"""
         dialog = Gtk.FileChooserDialog(title="SABnzbd - " + T("Add NZB"), action=Gtk.FileChooserAction.OPEN)
         dialog.add_buttons(Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OPEN, Gtk.ResponseType.OK)
         dialog.set_select_multiple(True)

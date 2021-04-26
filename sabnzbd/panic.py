@@ -148,7 +148,7 @@ def MSG_SQLITE():
 
 
 def panic_message(panic_code, a=None, b=None):
-    """ Create the panic message from templates """
+    """Create the panic message from templates"""
     if sabnzbd.WIN32:
         os_str = T("Press Startkey+R and type the line (example):")
         prog_path = '"%s"' % sabnzbd.MY_FULLNAME
@@ -222,7 +222,7 @@ def panic(reason, remedy=""):
 
 
 def launch_a_browser(url, force=False):
-    """ Launch a browser pointing to the URL """
+    """Launch a browser pointing to the URL"""
     if not force and not cfg.autobrowser() or sabnzbd.DAEMON:
         return
 
@@ -259,7 +259,7 @@ def show_error_dialog(msg):
 
 
 def error_page_401(status, message, traceback, version):
-    """ Custom handler for 401 error """
+    """Custom handler for 401 error"""
     title = T("Access denied")
     body = T("Error %s: You need to provide a valid username and password.") % status
     return r"""
@@ -279,7 +279,7 @@ def error_page_401(status, message, traceback, version):
 
 
 def error_page_404(status, message, traceback, version):
-    """ Custom handler for 404 error, redirect to main page """
+    """Custom handler for 404 error, redirect to main page"""
     return (
         r"""
 <html>

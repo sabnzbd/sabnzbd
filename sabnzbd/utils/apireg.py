@@ -23,7 +23,7 @@ import winreg
 
 
 def reg_info(user):
-    """ Return the reg key for API """
+    """Return the reg key for API"""
     if user:
         # Normally use the USER part of the registry
         section = winreg.HKEY_CURRENT_USER
@@ -64,7 +64,7 @@ def get_connection_info(user=True):
 
 
 def set_connection_info(url, user=True):
-    """ Set API info in register """
+    """Set API info in register"""
     section, keypath = reg_info(user)
     try:
         hive = winreg.ConnectRegistry(None, section)
@@ -85,7 +85,7 @@ def set_connection_info(url, user=True):
 
 
 def del_connection_info(user=True):
-    """ Remove API info from register """
+    """Remove API info from register"""
     section, keypath = reg_info(user)
     try:
         hive = winreg.ConnectRegistry(None, section)
@@ -100,7 +100,7 @@ def del_connection_info(user=True):
 
 
 def get_install_lng():
-    """ Return language-code used by the installer """
+    """Return language-code used by the installer"""
     lng = 0
     try:
         hive = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
