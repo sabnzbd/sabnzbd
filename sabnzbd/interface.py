@@ -2085,7 +2085,7 @@ class ConfigRss:
     def rss_now(self, *args, **kwargs):
         """ Run an automatic RSS run now """
         sabnzbd.Scheduler.force_rss()
-        raise rssRaiser(self.__root, kwargs)
+        raise Raiser(self.__root)
 
 
 def ConvertSpecials(p):
