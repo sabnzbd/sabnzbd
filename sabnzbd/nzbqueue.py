@@ -685,11 +685,11 @@ class NzbQueue:
             return -1
 
     @staticmethod
-    def reset_try_lists(article: Article, article_reset=True):
+    def reset_try_lists(article: Article, remove_fetcher_from_trylist: bool = True):
         """Let article get new fetcher and reset trylists"""
+        if remove_fetcher_from_trylist:
+            article.remove_from_try_list(article.fetcher)
         article.fetcher = None
-        if article_reset:
-            article.reset_try_list()
         article.nzf.reset_try_list()
         article.nzf.nzo.reset_try_list()
 

@@ -125,6 +125,12 @@ class TryList:
             if server not in self.try_list:
                 self.try_list.append(server)
 
+    def remove_from_try_list(self, server: Server):
+        """Remove server from list of tried servers"""
+        with TRYLIST_LOCK:
+            if server in self.try_list:
+                self.try_list.remove(server)
+
     def reset_try_list(self):
         """Clean the list"""
         with TRYLIST_LOCK:
@@ -243,8 +249,8 @@ class Article(TryList):
             if server.active and not self.server_in_try_list(server):
                 if server.priority >= self.fetcher.priority:
                     self.tries = 0
-                    # Allow all servers for this nzo and nzf again (but not for this article)
-                    sabnzbd.NzbQueue.reset_try_lists(self, article_reset=False)
+                    # Allow all servers for this nzo and nzf again (but not this fetcher for this article)
+                    sabnzbd.NzbQueue.reset_try_lists(self, remove_fetcher_from_trylist=False)
                     return True
 
         logging.info("Article %s unavailable on all servers, discarding", self.article)
@@ -1414,7 +1420,7 @@ class NzbObject(TryList):
             self.unwanted_ext = 2
 
     @synchronized(NZO_LOCK)
-    def add_parfile(self, parfile):
+    def add_parfile(self, parfile: NzbFile):
         """Add parfile to the files to be downloaded
         Resets trylist just to be sure
         Adjust download-size accordingly
@@ -1425,7 +1431,7 @@ class NzbObject(TryList):
             self.bytes_tried -= parfile.bytes_left
 
     @synchronized(NZO_LOCK)
-    def remove_parset(self, setname):
+    def remove_parset(self, setname: str):
         if setname in self.extrapars:
             self.extrapars.pop(setname)
         if setname in self.partable:
@@ -1563,7 +1569,7 @@ class NzbObject(TryList):
             self.set_unpack_info("Source", self.url, unique=True)
 
     @synchronized(NZO_LOCK)
-    def increase_bad_articles_counter(self, article_type):
+    def increase_bad_articles_counter(self, article_type: str):
         """Record information about bad articles"""
         if article_type not in self.nzo_info:
             self.nzo_info[article_type] = 0
