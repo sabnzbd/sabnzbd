@@ -993,7 +993,7 @@ class TestRenamer:
         filename = os.path.join(dirname, "myfile.txt")
         Path(filename).touch()  # create file
         newfilename = os.path.join(dirname, "newfile.txt")
-        filesystem.renamer(filename, newfilename)  # rename() does not return a value ...
+        assert newfilename == filesystem.renamer(filename, newfilename)
         assert not os.path.isfile(filename)
         assert os.path.isfile(newfilename)
 
@@ -1003,7 +1003,7 @@ class TestRenamer:
         sameleveldirname = os.path.join(SAB_DATA_DIR, "othertestdir" + str(random.randint(10000, 99999)))
         os.mkdir(sameleveldirname)
         newfilename = os.path.join(sameleveldirname, "newfile.txt")
-        filesystem.renamer(filename, newfilename)
+        assert newfilename == filesystem.renamer(filename, newfilename)
         assert not os.path.isfile(filename)
         assert os.path.isfile(newfilename)
         shutil.rmtree(sameleveldirname)
@@ -1012,7 +1012,8 @@ class TestRenamer:
         Path(filename).touch()  # create file
         newfilename = os.path.join(dirname, "nonexistingsubdir", "newfile.txt")
         try:
-            filesystem.renamer(filename, newfilename)  # rename() does not return a value ...
+            # Should fail
+            filesystem.renamer(filename, newfilename)
         except:
             pass
         assert os.path.isfile(filename)

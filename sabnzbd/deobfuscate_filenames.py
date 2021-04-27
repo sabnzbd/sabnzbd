@@ -142,17 +142,17 @@ def deobfuscate_list(filelist, usefulname):
     # Found any par2 files we can use?
     run_renamer = True
     if not par2_files:
-        logging.debug("No par2 files found to process, running renamer.")
+        logging.debug("No par2 files found to process, running renamer")
     else:
         # Run par2 from SABnzbd on them
         for par2_file in par2_files:
             # Analyse data and analyse result
             logging.debug("Deobfuscate par2: handling %s", par2_file)
             if decode_par2(par2_file):
-                logging.debug("Deobfuscate par2 repair/verify finished.")
+                logging.debug("Deobfuscate par2 repair/verify finished")
                 run_renamer = False
             else:
-                logging.debug("Deobfuscate par2 repair/verify did not find anything to rename.")
+                logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
 
     # No par2 files? Then we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
     if run_renamer:

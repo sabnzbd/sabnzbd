@@ -55,7 +55,7 @@ from sabnzbd.filesystem import (
     cleanup_empty_directories,
     fix_unix_encoding,
     sanitize_and_trim_path,
-    sanitize_files_in_folder,
+    sanitize_files,
     remove_file,
     listdir_full,
     setname_from_path,
@@ -398,8 +398,7 @@ def process_job(nzo: NzbObject):
             sabnzbd.Downloader.disconnect()
 
         # Sanitize the resulting files
-        if sabnzbd.WIN32:
-            sanitize_files_in_folder(workdir)
+        sanitize_files(folder=workdir)
 
         # Check if user allows unsafe post-processing
         if flag_repair and cfg.safe_postproc():
@@ -435,9 +434,8 @@ def process_job(nzo: NzbObject):
                 )
                 logging.info("Unpacked files %s", newfiles)
 
-                if sabnzbd.WIN32:
-                    # Sanitize the resulting files
-                    newfiles = sanitize_files_in_folder(tmp_workdir_complete)
+                # Sanitize the resulting files
+                newfiles = sanitize_files(filelist=newfiles)
                 logging.info("Finished unpack_magic on %s", filename)
 
             if cfg.safe_postproc():

@@ -292,21 +292,18 @@ def sanitize_and_trim_path(path: str) -> str:
     return os.path.abspath(os.path.normpath(new_path))
 
 
-def sanitize_files_in_folder(folder):
-    """Sanitize each file in the folder, return list of new names"""
-    lst = []
-    for root, _, files in os.walk(folder):
-        for file_ in files:
-            path = os.path.join(root, file_)
-            new_path = os.path.join(root, sanitize_filename(file_))
-            if path != new_path:
-                try:
-                    os.rename(path, new_path)
-                    path = new_path
-                except:
-                    logging.debug("Cannot rename %s to %s", path, new_path)
-            lst.append(path)
-    return lst
+def sanitize_files(folder: Optional[str] = None, filelist: Optional[List[str]] = None) -> List[str]:
+    """Sanitize each file in the folder or list of filepaths, return list of new names"""
+    logging.info("Checking if any resulting filenames need to be sanitized")
+    if not filelist:
+        filelist = listdir_full(folder)
+
+    # Loop over all the files
+    output_filelist = []
+    for old_path in filelist:
+        # Will skip files if there's nothing to sanitize
+        output_filelist.append(renamer(old_path, old_path))
+    return output_filelist
 
 
 def real_path(loc: str, path: str) -> str:
@@ -828,16 +825,17 @@ def get_filepath(path: str, nzo, filename: str):
 
 
 @synchronized(DIR_LOCK)
-def renamer(old: str, new: str, create_local_directories: bool = False):
+def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
-    Optionally alows the creation of local directories if they don't exist yet"""
+    Optionally alows the creation of local directories if they don't exist yet
+    Returns new filename (which could be changed due to sanitize_filenam) on success"""
     # Sanitize last part of new name
     path, name = os.path.split(new)
     new = os.path.join(path, sanitize_filename(name))
 
     # Skip if nothing changes
     if old == new:
-        return
+        return new
 
     # In case we want nonexistent directories to be created, check for directory escape (forbidden)
     if create_local_directories:
@@ -864,7 +862,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False):
                     # Now we try the back-up method
                     logging.debug("Could not rename, trying move for %s to %s", old, new)
                     shutil.move(old, new)
-                return
+                return new
             except OSError as err:
                 logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
                 if err.winerror == 17:
@@ -883,6 +881,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False):
         raise OSError("Failed to rename")
     else:
         shutil.move(old, new)
+        return new
 
 
 def remove_file(path: str):
