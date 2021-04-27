@@ -108,11 +108,10 @@ class TryList:
     """TryList keeps track of which servers have been tried for a specific article"""
 
     # Pre-define attributes to save memory
-    __slots__ = ("try_list", "fetcher_priority")
+    __slots__ = ("try_list",)
 
     def __init__(self):
         self.try_list: List[Server] = []
-        self.fetcher_priority: int = 0
 
     def server_in_try_list(self, server: Server):
         """Return whether specified server has been tried"""
@@ -161,15 +160,22 @@ class Article(TryList):
 
     def __init__(self, article, article_bytes, nzf):
         super().__init__()
-        self.fetcher: Optional[Server] = None
         self.article: str = article
-        self.art_id = None
-        self.bytes = article_bytes
-        self.lowest_partnum = False
-        self.tries = 0  # Try count
-        self.decoded = False
-        self.on_disk = False
+        self.art_id: Optional[str] = None
+        self.bytes: int = article_bytes
+        self.lowest_partnum: bool = False
+        self.fetcher: Optional[Server] = None
+        self.fetcher_priority: int = 0
+        self.tries: int = 0  # Try count
+        self.decoded: bool = False
+        self.on_disk: bool = False
         self.nzf: NzbFile = nzf
+
+    def reset_try_list(self):
+        """In addition to resetting the try list, also reset fetcher so all servers are tried again"""
+        self.fetcher = None
+        self.fetcher_priority = 0
+        super().reset_try_list()
 
     def get_article(self, server: Server, servers: List[Server]):
         """Return article when appropriate for specified server"""
@@ -273,8 +279,8 @@ class Article(TryList):
                 # Handle new attributes
                 setattr(self, item, None)
         super().__setstate__(dict_.get("try_list", []))
-        self.fetcher_priority = 0
         self.fetcher = None
+        self.fetcher_priority = 0
         self.tries = 0
 
     def __eq__(self, other):
