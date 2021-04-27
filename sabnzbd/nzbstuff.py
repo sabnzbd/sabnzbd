@@ -1432,7 +1432,7 @@ class NzbObject(TryList):
         Adjust download-size accordingly
         """
         if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
-            parfile.reset_all_try_lists()
+            parfile.reset_try_list()
             self.files.append(parfile)
             self.bytes_tried -= parfile.bytes_left
 
