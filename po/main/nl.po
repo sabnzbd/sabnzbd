@@ -622,11 +622,11 @@ msgstr "Verplaatsen van %s naar %s mislukt"
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
-msgstr ""
+msgstr "Poging om map %s aan te maken geblokkeerd"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
-msgstr ""
+msgstr "Verbinding geweigerd van: "
 
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
@@ -3217,6 +3217,7 @@ msgstr "Externe toegang"
 #: sabnzbd/skintext.py
 msgid "You can set access rights for systems outside your local network."
 msgstr ""
+"Je kunt toegangsrechten instellen voor systemen buiten je lokale netwerk. "
 
 #: sabnzbd/skintext.py
 msgid "No access"
@@ -3543,7 +3544,7 @@ msgstr "Actie bij ontdekken van ongewenste extensie"
 
 #: sabnzbd/skintext.py
 msgid "Action when an unwanted extension is detected"
-msgstr ""
+msgstr "Actie bij ontdekken van een ongewenste extensie"
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
@@ -3551,17 +3552,19 @@ msgstr "Ongewenste extensies"
 
 #: sabnzbd/skintext.py
 msgid "Blacklist"
-msgstr ""
+msgstr "Blacklist"
 
 #: sabnzbd/skintext.py
 msgid "Whitelist"
-msgstr ""
+msgstr "Whitelist"
 
 #: sabnzbd/skintext.py
 msgid ""
 "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
 " <b>exe, com</b>"
 msgstr ""
+"Kies een stand en voer een lijst van alle (on)gewenste extensies in. "
+"Voorbeeld: <b>exe</b> or <b>exe, com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
@@ -4135,12 +4138,12 @@ msgstr "Forceer download"
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
-msgstr ""
+msgstr "Wijzigen"
 
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py
 msgid "Next scan at"
-msgstr ""
+msgstr "Wordt uitgevoerd om"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4936,7 +4939,7 @@ msgstr "Toon Script resultaat"
 
 #: sabnzbd/skintext.py
 msgid "Renaming the job will abort Direct Unpack."
-msgstr ""
+msgstr "Als je de naam wijzigt zal het Direct Uitpakken gestopt worden."
 
 #: sabnzbd/skintext.py
 msgid ""
