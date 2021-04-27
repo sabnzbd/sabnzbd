@@ -252,6 +252,39 @@ class TestFileFolderNameSanitizer:
         assert sanitizedname == name  # no change
 
 
+class TestSanitizeFiles(ffs.TestCase):
+    def setUp(self):
+        self.setUpPyfakefs()
+        self.fs.path_separator = "\\"
+        self.fs.is_windows_fs = True
+
+    @set_platform("win32")
+    @set_config({"sanitize_safe": True})
+    def test_sanitize_files(self):
+        # The very specific tests of sanitize_filename() are above
+        # Here we just want to see that sanitize_files() works as expected
+        input_list = [r"c:\test\con.man", r"c:\test\foo:bar"]
+        output_list = [r"c:\test\_con.man", r"c:\test\foo-bar"]
+
+        # Test both the "folder" and "filelist" based calls
+        for kwargs in ({"folder": r"c:\test"}, {"filelist": input_list}):
+            # Create source files
+            for file in input_list:
+                self.fs.create_file(file)
+
+            assert output_list == filesystem.sanitize_files(**kwargs)
+
+            # Make sure the old ones are gone
+            for file in input_list:
+                assert not os.path.exists(file)
+
+            # Make sure the new ones are there
+            for file in output_list:
+                assert os.path.exists(file)
+                os.remove(file)
+                assert not os.path.exists(file)
+
+
 class TestSameFile:
     def test_nothing_in_common_win_paths(self):
         assert 0 == filesystem.same_file("C:\\", "D:\\")
