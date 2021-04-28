@@ -201,7 +201,6 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     else:
         is_allowed = any(ip_in_subnet(remote_ip, r) for r in cfg.local_ranges())
 
-    # Reject
     if not is_allowed and warn_user:
         log_warning_and_ip(T("Refused connection from:"))
     return is_allowed

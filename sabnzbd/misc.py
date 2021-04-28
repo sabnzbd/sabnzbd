@@ -844,7 +844,7 @@ def strip_ipv4_mapped_notation(ip: str) -> str:
     try:
         # Keep the original if ipv4_mapped is None
         ip = ipaddress.ip_address(ip).ipv4_mapped or ip
-    except:
+    except (AttributeError, ValueError):
         pass
     return str(ip)
 
