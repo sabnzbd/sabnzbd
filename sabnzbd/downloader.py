@@ -38,6 +38,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo
 from sabnzbd.utils.happyeyeballs import happyeyeballs
+from sabnzbd.constants import Status
 
 
 # Timeout penalty in minutes for each cause
@@ -105,6 +106,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
+        self.article_queue = []
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
@@ -152,6 +154,7 @@ class Server:
             sabnzbd.Downloader.remove_socket(nw)
             nw.hard_reset(send_quit=True)
         self.idle_threads = []
+        self.reset_article_queue()
 
     def request_info(self):
         """Launch async request to resolve server address.
@@ -161,6 +164,12 @@ class Server:
         if not self.request:
             self.request = True
             Thread(target=self._request_info_internal).start()
+
+    def reset_article_queue(self):
+        for article in self.article_queue:
+            article.fetcher = None
+            article.tries = 0
+        self.article_queue = []
 
     def _request_info_internal(self):
         """Async attempt to run getaddrinfo() for specified server"""
@@ -408,6 +417,7 @@ class Downloader(Thread):
             # Not fully the same as the code below for optional servers
             server.bad_cons = 0
             server.active = False
+            server.reset_article_queue()
             self.plan_server(server, _PENALTY_TIMEOUT)
 
         # Optional and active server had too many problems.
@@ -415,13 +425,20 @@ class Downloader(Thread):
         if server.optional and server.active and (server.bad_cons / server.threads) > 3:
             server.bad_cons = 0
             server.active = False
+            server.reset_article_queue()
             logging.warning(T("Server %s will be ignored for %s minutes"), server.host, _PENALTY_TIMEOUT)
             self.plan_server(server, _PENALTY_TIMEOUT)
 
             # Remove all connections to server
             for nw in server.idle_threads + server.busy_threads:
                 self.__reset_nw(
-                    nw, "forcing disconnect", warn=False, wait=False, count_article_try=False, send_quit=False
+                    nw,
+                    "forcing disconnect",
+                    warn=False,
+                    wait=False,
+                    count_article_try=False,
+                    send_quit=False,
+                    retry=False,
                 )
 
             # Make sure server address resolution is refreshed
@@ -510,7 +527,6 @@ class Downloader(Thread):
 
                 if (
                     not server.idle_threads
-                    or server.restart
                     or self.is_paused()
                     or self.shutdown
                     or self.paused_for_postproc
@@ -532,7 +548,12 @@ class Downloader(Thread):
                             server.request_info()
                         break
 
-                    article = sabnzbd.NzbQueue.get_article(server, self.servers)
+                    try:
+                        if server.article_queue[0].nzf.nzo.status == Status.PAUSED:
+                            server.reset_article_queue()
+                        article = server.article_queue.pop(0)
+                    except IndexError:
+                        article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
                     if not article:
                         # Skip this server for 0.5 second
@@ -540,12 +561,21 @@ class Downloader(Thread):
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                        # Let's get rid of all the articles for this server at once
-                        logging.info("Job %s too old for %s, moving on", article.nzf.nzo.final_name, server.host)
+                        # Fetching 200 will usually be sufficient to load all the articles in the file
+                        if not article.lowest_partnum:
+                            server.article_queue.extend(article.nzf.get_articles(server, self.servers, 200))
                         while article:
                             self.decode(article, None)
-                            article = article.nzf.nzo.get_article(server, self.servers)
+                            try:
+                                article = server.article_queue.pop(0)
+                            except IndexError:
+                                article = None
                         break
+
+                    # Fetching 4 articles from get_articles seems like a good compromise.
+                    # Too few will be inefficient and too many can take too long and slow down the transfer.
+                    if not article.lowest_partnum and not server.article_queue:
+                        server.article_queue = article.nzf.get_articles(server, self.servers, 4)
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
@@ -565,6 +595,7 @@ class Downloader(Thread):
                                 server.host,
                                 sys.exc_info()[1],
                             )
+                            server.reset_article_queue()
                             self.__reset_nw(nw, "failed to initialize", warn=True)
 
             if self.force_disconnect or self.shutdown:
@@ -581,6 +612,7 @@ class Downloader(Thread):
                             )
                     # Make sure server address resolution is refreshed
                     server.info = None
+                    server.reset_article_queue()
                 self.force_disconnect = False
 
                 # Make sure we update the stats
@@ -748,7 +780,7 @@ class Downloader(Thread):
                                     if penalty and (block or server.optional):
                                         self.plan_server(server, penalty)
                                 # Note that this will count towards the tries (max_art_tries) on this server!
-                                self.__reset_nw(nw, send_quit=True)
+                                self.__reset_nw(nw, send_quit=True, retry=False)
                             continue
                         except:
                             logging.error(
@@ -758,7 +790,7 @@ class Downloader(Thread):
                                 nntp_to_msg(nw.data),
                             )
                             # No reset-warning needed, above logging is sufficient
-                            self.__reset_nw(nw)
+                            self.__reset_nw(nw, retry=False)
 
                         if nw.connected:
                             logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
@@ -820,6 +852,7 @@ class Downloader(Thread):
         wait: bool = True,
         count_article_try: bool = True,
         send_quit: bool = False,
+        retry: bool = True,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
@@ -839,16 +872,19 @@ class Downloader(Thread):
 
         if nw.article:
             # Only some errors should count towards the total tries for each server
-            if (
+            if not retry or (
                 count_article_try
                 and nw.article.tries > cfg.max_art_tries()
                 and (nw.article.fetcher.optional or not cfg.max_art_opt())
             ):
                 # Too many tries on this server, consider article missing
                 self.decode(nw.article, None)
+                nw.article.tries = 0
             else:
-                # Allow all servers to iterate over this nzo/nzf again
-                sabnzbd.NzbQueue.reset_try_lists(nw.article)
+                # Retry again with the same server
+                nw.article.tries += 1
+                logging.debug("Retrying article %s from %s", nw.article.article, nw.article.nzf.filename)
+                nw.article.fetcher.article_queue.append(nw.article)
 
         # Reset connection object
         nw.hard_reset(wait, send_quit=send_quit)

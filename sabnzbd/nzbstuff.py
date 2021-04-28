@@ -427,13 +427,17 @@ class NzbFile(TryList):
         self.vol = vol
         self.blocks = int_conv(blocks)
 
-    def get_article(self, server: Server, servers: List[Server]) -> Optional[Article]:
-        """Get next article to be downloaded"""
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int = 1) -> List[Article]:
+        """Get next articles to be downloaded"""
+        fetched_articles = []
         for article in self.articles:
             article = article.get_article(server, servers)
             if article:
-                return article
+                fetched_articles.append(article)
+                if len(fetched_articles) >= fetch_limit:
+                    return fetched_articles
         self.add_to_try_list(server)
+        return fetched_articles
 
     def reset_all_try_lists(self):
         """Clear all lists of visited servers"""
@@ -1614,8 +1618,9 @@ class NzbObject(TryList):
                             else:
                                 break
 
-                        article = nzf.get_article(server, servers)
-                        if article:
+                        articles = nzf.get_articles(server, servers)
+                        if articles:
+                            article = articles[0]
                             break
 
         # Remove all files for which admin could not be read
