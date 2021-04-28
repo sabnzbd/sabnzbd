@@ -52,6 +52,8 @@ from sabnzbd.misc import (
     get_server_addrinfo,
     is_lan_addr,
     is_loopback_addr,
+    ip_in_subnet,
+    strip_ipv4_mapped_notation,
 )
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
 from sabnzbd.encoding import xml_name, utob
@@ -186,27 +188,18 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     if access_type <= cfg.inet_exposure():
         return True
 
-    # CherryPy will report ::ffff:192.168.0.10 on dual-stack situation
-    # It will always contain that ::ffff: prefix, the ipaddress module can handle that
     remote_ip = cherrypy.request.remote.ip
 
     # Check for localhost
     if is_loopback_addr(remote_ip):
         return True
 
-    # No special ranged defined
     is_allowed = False
     if not cfg.local_ranges():
-        try:
-            is_allowed = ipaddress.ip_address(remote_ip).is_private
-        except ValueError:
-            # Something malformed, reject
-            pass
+        # No local ranges defined, allow all private addresses by default
+        is_allowed = is_lan_addr(remote_ip)
     else:
-        # Get rid off the special dual-stack notation
-        if remote_ip.startswith("::ffff:") and not remote_ip.find(".") < 0:
-            remote_ip = remote_ip.replace("::ffff:", "")
-        is_allowed = any(remote_ip.startswith(r) for r in cfg.local_ranges())
+        is_allowed = any(ip_in_subnet(remote_ip, r) for r in cfg.local_ranges())
 
     # Reject
     if not is_allowed and warn_user:

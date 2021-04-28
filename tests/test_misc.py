@@ -248,6 +248,7 @@ class TestMisc:
             ("", False),
             ("3.2.0", False),
             (-42, False),
+            ("::ffff:192.168.1.100", False),
         ],
     )
     def test_is_ipv4_addr(self, value, result):
@@ -276,6 +277,7 @@ class TestMisc:
             ("[1.2.3.4]", False),
             ("2001:1", False),
             ("2001::[2001::1]", False),
+            ("::ffff:192.168.1.100", True),
         ],
     )
     def test_is_ipv6_addr(self, value, result):
@@ -305,6 +307,9 @@ class TestMisc:
             ("[127.6.6.6]", False),
             ("2001:1", False),
             ("2001::[2001::1]", False),
+            ("::ffff:192.168.1.100", False),
+            ("::ffff:1.1.1.1", False),
+            ("::ffff:127.0.0.1", True),
         ],
     )
     def test_is_loopback_addr(self, value, result):
@@ -337,6 +342,9 @@ class TestMisc:
             ("[127.6.6.6]", False),
             ("2001:1", False),
             ("2001::[2001::1]", False),
+            ("::ffff:192.168.1.100", False),
+            ("::ffff:1.1.1.1", False),
+            ("::ffff:127.0.0.1", True),
         ],
     )
     def test_is_localhost(self, value, result):
@@ -373,10 +381,93 @@ class TestMisc:
             ("[1.2.3.4]", False),
             ("2001:1", False),
             ("2001::[2001::1]", False),
+            ("::ffff:192.168.1.100", True),
+            ("::ffff:1.1.1.1", False),
+            ("::ffff:127.0.0.1", False),
         ],
     )
     def test_is_lan_addr(self, value, result):
         assert misc.is_lan_addr(value) is result
+
+    @pytest.mark.parametrize(
+        "ip, subnet, result",
+        [
+            ("2001:c0f:fee::1", "2001:c0f:fee", True),  # Old-style range setting
+            ("2001:c0f:fee::1", "2001:c0f:FEE:", True),
+            ("2001:c0f:fee::1", "2001:c0FF:ffee", False),
+            ("2001:c0f:fee::1", "2001:c0ff:ffee:", False),
+            ("2001:C0F:FEE::1", "2001:c0f:fee::/48", True),
+            ("2001:c0f:fee::1", "2001:c0f:fee::/112", True),
+            ("2001:c0f:fee::1", "::/0", True),  # Subnet equals the entire IPv6 address space
+            ("2001:c0f:fee::1", "2001:c0:ffee::/48", False),
+            ("2001:c0f:fee::1", "2001:c0ff:ee::/112", False),
+            ("2001:c0f:fEE::1", "2001:c0f:fee:eeee::/48", False),  # Invalid subnet
+            ("2001:c0f:Fee::1", "2001:c0f:fee:/64", False),
+            ("2001:c0f:fee::1", "2001:c0f:fee:eeee:3:2:1:0/112", False),
+            ("2001:c0f:fee::1", "2001:c0f:fee::1", True),  # Single-IP subnet
+            ("2001:c0f:fee::1", "2001:c0f:fee::1/128", True),
+            ("2001:c0f:fee::1", "2001:c0f:fee::2", False),
+            ("2001:c0f:fee::1", "2001:c0f:fee::2/128", False),
+            ("::1", "::/127", True),
+            ("::1", "2021::/64", False),  # Localhost not in subnet
+            ("192.168.43.21", "192.168.43", True),  # Old-style subnet setting
+            ("192.168.43.21", "192.168.43.", True),
+            ("192.168.43.21", "192.168.4", False),
+            ("192.168.43.21", "192.168.4.", False),
+            ("10.11.12.13", "10", True),  # Bad old-style setting (allowed 100.0.0.0/6, 104.0.0.0/6 and 108.0.0.0/7)
+            ("10.11.12.13", "10.", True),  # Correct version of the same (10.0.0.0/8 only)
+            ("108.1.2.3", "10", False),  # This used to be allowed with the bad setting!
+            ("108.1.2.3", "10.", False),
+            ("192.168.43.21", "192.168.0.0/16", True),
+            ("192.168.43.21", "192.168.0.0/255.255.255.0", True),
+            ("::ffff:192.168.43.21", "192.168.43.0/24", True),  # IPv4-mapped IPv6 ("dual-stack") notation
+            ("::FFff:192.168.43.21", "192.168.43.0/24", True),
+            ("::ffff:192.168.12.34", "192.168.43.0/24", False),
+            ("::ffFF:192.168.12.34", "192.168.43.0/24", False),
+            ("192.168.43.21", "192.168.43.0/26", True),
+            ("200.100.50.25", "0.0.0.0/0", True),  # Subnet equals the entire IPv4 address space
+            ("192.168.43.21", "10.0.0.0/8", False),
+            ("192.168.43.21", "192.168.1.0/22", False),
+            ("192.168.43.21", "192.168.43.21/24", False),  # Invalid subnet
+            ("192.168.43.21", "192.168.43/24", False),
+            ("192.168.43.21", "192.168.43.0/16", False),
+            ("192.168.43.21", "192.168.43.0/255.252.0.0", False),
+            ("192.168.43.21", "192.168.43.21", True),  # Single-IP subnet
+            ("192.168.43.21", "192.168.43.21/32", True),
+            ("192.168.43.21", "192.168.43.21/255.255.255.255", True),
+            ("192.168.43.21", "192.168.43.12", False),
+            ("192.168.43.21", "192.168.43.0/32", False),
+            ("192.168.43.21", "43.21.168.192/255.255.255.255", False),
+            ("127.0.0.1", "127.0.0.0/31", True),
+            ("127.0.1.1", "127.0.0.0/24", False),  # Localhost not in subnet
+            ("111.222.33.44", "111:222:33::/96", False),  # IPv4/IPv6 mixup
+            ("111:222:33::44", "111.222.0.0/24", False),
+            ("aaaa::1:2:3:4", "f:g:h:i:43:21::/112", False),  # Invalid subnet
+            ("4.3.2.1", "654.3.2.1.0/24", False),
+            (None, "1.2.3.4/32", False),  # Missing input
+            ("1:a:2:b::", None, False),
+            (None, None, False),
+        ],
+    )
+    def test_ip_in_subnet(self, ip, subnet, result):
+        misc.ip_in_subnet(ip, subnet) is result
+
+    @pytest.mark.parametrize(
+        "ip, result",
+        [
+            ("::ffff:127.0.0.1", "127.0.0.1"),
+            ("::FFFF:127.0.0.1", "127.0.0.1"),
+            ("::ffff:192.168.1.255", "192.168.1.255"),
+            ("::ffff:8.8.8.8", "8.8.8.8"),
+            ("2007::2021", "2007::2021"),
+            ("::ffff:2007:2021", "::ffff:2007:2021"),
+            ("2007::ffff:2021", "2007::ffff:2021"),
+            ("12.34.56.78", "12.34.56.78"),
+            ("foobar", "foobar"),
+        ],
+    )
+    def test_strip_ipv4_mapped_notation(self, ip, result):
+        misc.strip_ipv4_mapped_notation(ip) == result
 
 
 class TestBuildAndRunCommand:
