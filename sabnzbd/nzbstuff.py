@@ -359,13 +359,12 @@ class NzbFile(TryList):
         self.nzo: NzbObject = nzo
         self.nzf_id: str = sabnzbd.get_new_id("nzf", nzo.admin_path)
         self.deleted = False
-        self.valid = False
         self.import_finished = False
 
         self.md5 = None
         self.md5sum: Optional[bytes] = None
         self.md5of16k: Optional[bytes] = None
-        self.valid = bool(raw_article_db)
+        self.valid: bool = bool(raw_article_db)
 
         if self.valid and self.nzf_id:
             # Save first article separate so we can do
@@ -1613,7 +1612,7 @@ class NzbObject(TryList):
                                     nzf.nzo.status = Status.PAUSED
                                     continue
                             else:
-                                continue
+                                break
 
                         article = nzf.get_article(server, servers)
                         if article:
