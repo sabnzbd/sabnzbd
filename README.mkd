@@ -1,7 +1,16 @@
-Release Notes - SABnzbd 3.3.0 Beta 2
+Release Notes - SABnzbd 3.3.0 Beta 3
 =========================================================
 
-## Changes since 3.3.0 Beta 1
+## Changes and bugfixes since 3.3.0 Beta 2
+- Failing articles could result in jobs being stuck at 99%.
+- Some NZB files would incorrectly be marked as empty.
+- CRC/yEnc errors would be counted twice as bad articles.
+- API-call `history` would not filter active post-processing `nzo_ids`.
+- RSS `Read All Feeds` button would result in a crash.
+- Support prefix and netmask for `local_ranges`.
+- Windows: `Deobfuscate final filenames` could fail to deobfuscate.
+
+## Changes and bugfixes since 3.3.0 Beta 1
 - Binaries would show an error when starting.
 
 ## Changes since 3.2.1
