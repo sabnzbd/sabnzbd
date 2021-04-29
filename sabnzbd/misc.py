@@ -834,6 +834,51 @@ def find_on_path(targets):
     return None
 
 
+def strip_ipv4_mapped_notation(ip: str) -> str:
+    """Convert an IP address in IPv4-mapped IPv6 notation (e.g. ::ffff:192.168.0.10) to its regular
+    IPv4 form. Any value of ip that doesn't use the relevant notation is returned unchanged.
+
+    CherryPy may report remote IP addresses in this notation. While the ipaddress module should be
+    able to handle that, the latter has issues with the is_private/is_loopback properties for these
+    addresses. See https://bugs.python.org/issue33433"""
+    try:
+        # Keep the original if ipv4_mapped is None
+        ip = ipaddress.ip_address(ip).ipv4_mapped or ip
+    except (AttributeError, ValueError):
+        pass
+    return str(ip)
+
+
+def ip_in_subnet(ip: str, subnet: str) -> bool:
+    """Determine whether ip is part of subnet. For the latter, the standard form with a prefix or
+    netmask (e.g. "192.168.1.0/24" or "10.42.0.0/255.255.0.0") is expected. Input in SABnzbd's old
+    cfg.local_ranges() settings style (e.g. "192.168.1."), intended for use with str.startswith(),
+    is also accepted and internally converted to address/prefix form."""
+    if not ip or not subnet:
+        return False
+
+    try:
+        if subnet.find("/") < 0 and subnet.find("::") < 0:
+            # The subnet doesn't include a prefix or netmask, or represent a single (compressed)
+            # IPv6 address; try converting from the older local_ranges settings style.
+
+            # Take the IP version of the subnet into account
+            IP_LEN, IP_BITS, IP_SEP = (8, 16, ":") if subnet.find(":") >= 0 else (4, 8, ".")
+
+            subnet = subnet.rstrip(IP_SEP).split(IP_SEP)
+            prefix = IP_BITS * len(subnet)
+            # Append as many zeros as needed
+            subnet.extend(["0"] * (IP_LEN - len(subnet)))
+            # Store in address/prefix form
+            subnet = "%s/%s" % (IP_SEP.join(subnet), prefix)
+
+        ip = strip_ipv4_mapped_notation(ip)
+        return ipaddress.ip_address(ip) in ipaddress.ip_network(subnet, strict=True)
+    except Exception:
+        # Probably an invalid range
+        return False
+
+
 def is_ipv4_addr(ip: str) -> bool:
     """Determine if the ip is an IPv4 address"""
     try:
@@ -855,6 +900,7 @@ def is_loopback_addr(ip: str) -> bool:
     try:
         if ip.find(".") < 0:
             ip = ip.strip("[]")
+        ip = strip_ipv4_mapped_notation(ip)
         return ipaddress.ip_address(ip).is_loopback
     except (ValueError, AttributeError):
         return False
@@ -868,8 +914,11 @@ def is_localhost(value: str) -> bool:
 def is_lan_addr(ip: str) -> bool:
     """Determine if the ip is a local area network address"""
     try:
+        ip = strip_ipv4_mapped_notation(ip)
         return (
-            ip not in ("0.0.0.0", "255.255.255.255", "::")
+            # The ipaddress module considers these private, see https://bugs.python.org/issue38655
+            not ip in ("0.0.0.0", "255.255.255.255")
+            and not ip_in_subnet(ip, "::/128")  # Also catch (partially) exploded forms of "::"
             and ipaddress.ip_address(ip).is_private
             and not is_loopback_addr(ip)
         )
