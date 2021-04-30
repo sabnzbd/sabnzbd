@@ -93,6 +93,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
     """
     table = {}
     duplicates16k = []
+    seenfiles = []
 
     try:
         with open(fname, "rb") as f:
@@ -100,6 +101,9 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
             while header:
                 name, filehash, hash16k = parse_par2_file_packet(f, header)
                 if name:
+                    if name in seenfiles:
+                        break
+                    seenfiles.append(name)
                     table[name] = filehash
                     if hash16k not in md5of16k:
                         md5of16k[hash16k] = name
