@@ -191,7 +191,10 @@ class NewsWrapper:
                     return 0, False, True
 
         if not self.data:
-            self.status_code = int(chunk[:3])
+            try:
+                self.status_code = int(chunk[:3])
+            except:
+                self.status_code = None
 
         # Append so we can do 1 join(), much faster than multiple!
         self.data.append(chunk)
