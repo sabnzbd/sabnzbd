@@ -182,35 +182,36 @@ def print_help():
     print("Options marked [*] are stored in the config file")
     print()
     print("Options:")
-    print("  -f  --config-file <ini>  Location of config file")
-    print("  -s  --server <srv:port>  Listen on server:port [*]")
-    print("  -t  --templates <templ>  Template directory [*]")
+    print("  -f  --config-file <ini>     Location of config file")
+    print("  -s  --server <srv:port>     Listen on server:port [*]")
+    print("  -t  --templates <templ>     Template directory [*]")
     print()
-    print("  -l  --logging <-1..2>     Set logging level (-1=off, 0= least, 2= most) [*]")
-    print("  -w  --weblogging         Enable cherrypy access logging")
+    print("  -l  --logging <-1..2>       Set logging level (-1=off, 0=least,2= most) [*]")
+    print("  -w  --weblogging            Enable cherrypy access logging")
     print()
-    print("  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]")
+    print("  -b  --browser <0..1>        Auto browser launch (0= off, 1= on) [*]")
     if sabnzbd.WIN32:
-        print("  -d  --daemon             Use when run as a service")
+        print("  -d  --daemon                Use when run as a service")
     else:
-        print("  -d  --daemon             Fork daemon process")
-        print("      --pid <path>         Create a PID file in the given folder (full path)")
-        print("      --pidfile <path>     Create a PID file with the given name (full path)")
+        print("  -d  --daemon                Fork daemon process")
+        print("      --pid <path>            Create a PID file in the given folder (full path)")
+        print("      --pidfile <path>        Create a PID file with the given name (full path)")
     print()
-    print("  -h  --help               Print this message")
-    print("  -v  --version            Print version information")
-    print("  -c  --clean              Remove queue, cache and logs")
-    print("  -p  --pause              Start in paused mode")
-    print("      --repair             Add orphaned jobs from the incomplete folder to the queue")
-    print("      --repair-all         Try to reconstruct the queue from the incomplete folder")
-    print("                           with full data reconstruction")
-    print("      --https <port>       Port to use for HTTPS server")
-    print("      --ipv6_hosting <0|1> Listen on IPv6 address [::1] [*]")
-    print("      --no-login           Start with username and password reset")
-    print("      --log-all            Log all article handling (for developers)")
-    print("      --disable-file-log   Logging is only written to console")
-    print("      --console            Force logging to console")
-    print("      --new                Run a new instance of SABnzbd")
+    print("  -h  --help                  Print this message")
+    print("  -v  --version               Print version information")
+    print("  -c  --clean                 Remove queue, cache and logs")
+    print("  -p  --pause                 Start in paused mode")
+    print("      --repair                Add orphaned jobs from the incomplete folder to the queue")
+    print("      --repair-all            Try to reconstruct the queue from the incomplete folder")
+    print("                              with full data reconstruction")
+    print("      --https <port>          Port to use for HTTPS server")
+    print("      --ipv6_hosting <0|1>    Listen on IPv6 address [::1] [*]")
+    print("      --inet_exposure <0..5>  Set external internet access [*]")
+    print("      --no-login              Start with username and password reset")
+    print("      --log-all               Log all article handling (for developers)")
+    print("      --disable-file-log      Logging is only written to console")
+    print("      --console               Force logging to console")
+    print("      --new                   Run a new instance of SABnzbd")
     print()
     print("NZB (or related) file:")
     print("  NZB or compressed NZB file, with extension .nzb, .zip, .rar, .7z, .gz, or .bz2")
@@ -778,10 +779,9 @@ def commandline_handler():
                 "server=",
                 "templates",
                 "ipv6_hosting=",
-                "template2",
+                "inet_exposure=",
                 "browser=",
                 "config-file=",
-                "force",
                 "disable-file-log",
                 "version",
                 "https=",
@@ -872,6 +872,7 @@ def main():
     pid_file = None
     new_instance = False
     ipv6_hosting = None
+    inet_exposure = None
 
     _service, sab_opts, _serv_opts, upload_nzbs = commandline_handler()
 
@@ -951,6 +952,8 @@ def main():
             new_instance = True
         elif opt == "--ipv6_hosting":
             ipv6_hosting = arg
+        elif opt == "--inet_exposure":
+            inet_exposure = arg
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -1361,6 +1364,10 @@ def main():
     if no_login:
         sabnzbd.cfg.username.set("")
         sabnzbd.cfg.password.set("")
+
+    # Overwrite inet_exposure from command-line for VPS-setups
+    if inet_exposure:
+        sabnzbd.cfg.inet_exposure.set(inet_exposure)
 
     mime_gzip = (
         "text/*",
