@@ -474,7 +474,7 @@ class TestAddingNZBs:
 
         nzb_basedir, nzb_basename = os.path.split(VAR.NZB_FILE)
         nzb_size = os.stat(VAR.NZB_FILE).st_size
-        part_size = round(randint(20, 80) / 100 * nzb_size)
+        part_size = round(randint(40, 70) / 100 * nzb_size)
         first_part = os.path.join(nzb_basedir, "part1_of_" + nzb_basename)
         second_part = os.path.join(nzb_basedir, "part2_of_" + nzb_basename)
 
