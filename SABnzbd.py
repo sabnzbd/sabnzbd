@@ -1184,6 +1184,8 @@ def main():
             logging.info("Platform = %s <unknown>", suffix)
     else:
         logging.info("Platform = %s", os.name)
+    cpu_architecture = platform.uname().machine # as platform.uname().processor is not always filled out
+    logging.info("CPU architecture = %s", cpu_architecture)
     logging.info("Python-version = %s", sys.version)
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
     if sabnzbd.DOCKER:
