@@ -55,6 +55,7 @@ class NewsWrapper:
         "user_ok",
         "pass_ok",
         "force_login",
+        "status_code",
     )
 
     def __init__(self, server, thrdnum, block=False):
@@ -75,14 +76,7 @@ class NewsWrapper:
         self.pass_ok: bool = False
         self.force_login: bool = False
         self.group: Optional[str] = None
-
-    @property
-    def status_code(self) -> Optional[int]:
-        """Shorthand to get the code"""
-        try:
-            return int(self.data[0][:3])
-        except:
-            return None
+        self.status_code: Optional[int] = None
 
     def init_connect(self):
         """Setup the connection in NNTP object"""
@@ -108,6 +102,7 @@ class NewsWrapper:
             # Change to a sensible text
             code = 481
             self.data[0] = "%d %s" % (code, T("Authentication failed, check username/password."))
+            self.status_code = code
             self.user_ok = True
             self.pass_sent = True
 
@@ -124,7 +119,7 @@ class NewsWrapper:
         elif not self.user_sent:
             command = utob("authinfo user %s\r\n" % self.server.username)
             self.nntp.sock.sendall(command)
-            self.data = []
+            self.clear_data()
             self.user_sent = True
         elif not self.user_ok:
             if code == 381:
@@ -139,7 +134,7 @@ class NewsWrapper:
         if self.user_ok and not self.pass_sent:
             command = utob("authinfo pass %s\r\n" % self.server.password)
             self.nntp.sock.sendall(command)
-            self.data = []
+            self.clear_data()
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
             if code != 281:
@@ -163,14 +158,14 @@ class NewsWrapper:
         else:
             command = utob("ARTICLE <%s>\r\n" % self.article.article)
         self.nntp.sock.sendall(command)
-        self.data = []
+        self.clear_data()
 
     def send_group(self, group: str):
         """Send the NNTP GROUP command"""
         self.timeout = time.time() + self.server.timeout
         command = utob("GROUP %s\r\n" % group)
         self.nntp.sock.sendall(command)
-        self.data = []
+        self.clear_data()
 
     def recv_chunk(self, block: bool = False) -> Tuple[int, bool, bool]:
         """Receive data, return #bytes, done, skip"""
@@ -194,6 +189,12 @@ class NewsWrapper:
                     continue
                 else:
                     return 0, False, True
+
+        if not self.data:
+            try:
+                self.status_code = int(chunk[:3])
+            except:
+                self.status_code = None
 
         # Append so we can do 1 join(), much faster than multiple!
         self.data.append(chunk)
@@ -221,6 +222,7 @@ class NewsWrapper:
     def clear_data(self):
         """Clear the stored raw data"""
         self.data = []
+        self.status_code = None
 
     def hard_reset(self, wait: bool = True, send_quit: bool = True):
         """Destroy and restart"""

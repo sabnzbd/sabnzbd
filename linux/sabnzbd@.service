@@ -18,7 +18,7 @@ After=network-online.target
 
 [Service]
 Environment="PYTHONIOENCODING=utf-8"
-ExecStart=/opt/sabnzbd/SABnzbd.py --logging 1 --browser 0
+ExecStart=/opt/sabnzbd/SABnzbd.py --disable-file-log --logging 1 --browser 0
 User=%I
 Type=simple
 Restart=on-failure
