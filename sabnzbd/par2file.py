@@ -134,6 +134,14 @@ def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], O
 
     nothing = None, None, None
 
+    # All packages start with a header before the body
+    # 8	  : PAR2\x00PKT
+    # 8	  : Length of the entire packet. Must be multiple of 4. (NB: Includes length of header.)
+    # 16  : MD5 Hash of packet. Calculation starts at first byte of Recovery Set ID and ends at last byte of body.
+    # 16  : Recovery Set ID.
+    # 16  : Type of packet.
+    # ?*4 : Body of Packet. Must be a multiple of 4 bytes.
+
     if header != PAR_PKT_ID:
         return nothing
 
@@ -146,11 +154,15 @@ def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], O
     md5sum = f.read(16)
 
     # Read and check the data
+    # Subtract 32 because we already read these bytes of the header
     data = f.read(pack_len - 32)
     md5 = hashlib.md5()
     md5.update(data)
     if md5sum != md5.digest():
         return nothing
+
+    # Skip 16 bytes ahead, to start at the type of packet
+    data = data[16:]
 
     # The FileDesc packet looks like:
     # 16 : "PAR 2.0\0FileDesc"
@@ -161,16 +173,15 @@ def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], O
     # xx : Name (multiple of 4, padded with \0 if needed) **
 
     # See if it's the right packet and get name + hash
-    for offset in range(0, pack_len, 8):
-        if data[offset : offset + 16] == PAR_FILE_ID:
-            filehash = data[offset + 32 : offset + 48]
-            hash16k = data[offset + 48 : offset + 64]
-            filename = correct_unknown_encoding(data[offset + 72 :].strip(b"\0"))
-            return filename, filehash, hash16k
-        elif data[offset : offset + 15] == PAR_CREATOR_ID:
-            # From here until the end is the creator-text
-            # Useful in case of bugs in the par2-creating software
-            par2creator = data[offset + 16 :].strip(b"\0")  # Remove any trailing \0
-            logging.debug("Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator))
+    if data[:16] == PAR_FILE_ID:
+        filehash = data[32:48]
+        hash16k = data[48:64]
+        filename = correct_unknown_encoding(data[72:].strip(b"\0"))
+        return filename, filehash, hash16k
+    elif data[:15] == PAR_CREATOR_ID:
+        # From here until the end is the creator-text
+        # Useful in case of bugs in the par2-creating software
+        par2creator = data[16:].strip(b"\0")  # Remove any trailing \0
+        logging.debug("Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator))
 
     return nothing
