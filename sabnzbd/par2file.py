@@ -30,8 +30,19 @@ from sabnzbd.encoding import correct_unknown_encoding
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 PAR_PKT_ID = b"PAR2\x00PKT"
 PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
-PAR_CREATOR_ID = b"PAR 2.0\x00Creator"
+PAR_CREATOR_ID = b"PAR 2.0\x00Creator\x00"
 PAR_RECOVERY_ID = b"RecvSlic"
+PAR_SKIPABLE_IDS = (
+    b"PAR 2.0\x00RecvSlic",
+    b"PAR 2.0\x00IFSC\x00\x00\x00\x00",
+    b"PAR 2.0\x00Main\x00\x00\x00\x00",
+    b"PAR 2.0\x00UniFileN",
+    b"PAR 2.0\x00CommASCI",
+    b"PAR 2.0\x00CommUni\x00",
+    b"PAR 2.0\x00RFSC\x00\x00\x00\x00",
+    b"PAR 2.0\x00PkdMain\x00",
+    b"PAR 2.0\x00PkdRecvS",
+)
 
 
 def is_parfile(filename: str) -> bool:
@@ -93,7 +104,6 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
     """
     table = {}
     duplicates16k = []
-    seenfiles = []
 
     try:
         with open(fname, "rb") as f:
@@ -101,9 +111,8 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
             while header:
                 name, filehash, hash16k = parse_par2_file_packet(f, header)
                 if name:
-                    if name in seenfiles:
+                    if name in table:
                         break
-                    seenfiles.append(name)
                     table[name] = filehash
                     if hash16k not in md5of16k:
                         md5of16k[hash16k] = name
@@ -166,15 +175,19 @@ def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], O
 
     # See if it's the right packet and get name + hash
     for offset in range(0, pack_len, 8):
-        if data[offset : offset + 16] == PAR_FILE_ID:
+        slice = data[offset : offset + 16]
+        if slice in PAR_SKIPABLE_IDS:
+            return nothing
+        if slice == PAR_FILE_ID:
             filehash = data[offset + 32 : offset + 48]
             hash16k = data[offset + 48 : offset + 64]
             filename = correct_unknown_encoding(data[offset + 72 :].strip(b"\0"))
             return filename, filehash, hash16k
-        elif data[offset : offset + 15] == PAR_CREATOR_ID:
+        if slice == PAR_CREATOR_ID:
             # From here until the end is the creator-text
             # Useful in case of bugs in the par2-creating software
             par2creator = data[offset + 16 :].strip(b"\0")  # Remove any trailing \0
             logging.debug("Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator))
+            return nothing
 
     return nothing
