@@ -100,6 +100,8 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
             while header:
                 name, filehash, hash16k = parse_par2_file_packet(f, header)
                 if name:
+                    if name in table:
+                        break
                     table[name] = filehash
                     if hash16k not in md5of16k:
                         md5of16k[hash16k] = name
