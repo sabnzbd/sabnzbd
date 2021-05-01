@@ -30,7 +30,7 @@ from sabnzbd.encoding import correct_unknown_encoding
 PROBABLY_PAR2_RE = re.compile(r"(.*)\.vol(\d*)[+\-](\d*)\.par2", re.I)
 PAR_PKT_ID = b"PAR2\x00PKT"
 PAR_FILE_ID = b"PAR 2.0\x00FileDesc"
-PAR_CREATOR_ID = b"PAR 2.0\x00Creator"
+PAR_CREATOR_ID = b"PAR 2.0\x00Creator\x00"
 PAR_RECOVERY_ID = b"RecvSlic"
 
 
@@ -161,9 +161,6 @@ def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], O
     if md5sum != md5.digest():
         return nothing
 
-    # Skip 16 bytes ahead, to start at the type of packet
-    data = data[16:]
-
     # The FileDesc packet looks like:
     # 16 : "PAR 2.0\0FileDesc"
     # 16 : FileId
@@ -173,15 +170,18 @@ def parse_par2_file_packet(f, header) -> Tuple[Optional[str], Optional[bytes], O
     # xx : Name (multiple of 4, padded with \0 if needed) **
 
     # See if it's the right packet and get name + hash
-    if data[:16] == PAR_FILE_ID:
-        filehash = data[32:48]
-        hash16k = data[48:64]
-        filename = correct_unknown_encoding(data[72:].strip(b"\0"))
+    offset = 16
+    par2id = data[offset : offset + 16]
+
+    if par2id == PAR_FILE_ID:
+        filehash = data[offset + 32 : offset + 48]
+        hash16k = data[offset + 48 : offset + 64]
+        filename = correct_unknown_encoding(data[offset + 72 :].strip(b"\0"))
         return filename, filehash, hash16k
-    elif data[:15] == PAR_CREATOR_ID:
+    elif par2id == PAR_CREATOR_ID:
         # From here until the end is the creator-text
         # Useful in case of bugs in the par2-creating software
-        par2creator = data[16:].strip(b"\0")  # Remove any trailing \0
+        par2creator = data[offset + 16 :].strip(b"\0")  # Remove any trailing \0
         logging.debug("Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator))
 
     return nothing
