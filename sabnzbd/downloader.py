@@ -94,6 +94,8 @@ class Server:
         self.password: Optional[str] = password
 
         self.busy_threads: List[NewsWrapper] = []
+        self.check_busy_threads: bool = True
+        self.next_busy_check: int = 0
         self.idle_threads: List[NewsWrapper] = []
         self.next_article_search: float = 0
         self.active: bool = True
@@ -484,15 +486,18 @@ class Downloader(Thread):
                 if not server.busy_threads and server.next_article_search > now:
                     continue
 
-                for nw in server.busy_threads[:]:
-                    if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
-                        if nw.nntp and nw.nntp.error_msg:
-                            # Already showed error
-                            self.__reset_nw(nw)
-                        else:
-                            self.__reset_nw(nw, "timed out", warn=True)
-                        server.bad_cons += 1
-                        self.maybe_block_server(server)
+                if server.check_busy_threads or server.next_busy_check < now:
+                    server.check_busy_threads = False
+                    server.next_busy_check = now + 0.1
+                    for nw in server.busy_threads[:]:
+                        if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
+                            if nw.nntp and nw.nntp.error_msg:
+                                # Already showed error
+                                self.__reset_nw(nw)
+                            else:
+                                self.__reset_nw(nw, "timed out", warn=True)
+                            server.bad_cons += 1
+                            self.maybe_block_server(server)
 
                 if server.restart:
                     if not server.busy_threads:
@@ -510,7 +515,6 @@ class Downloader(Thread):
 
                 if (
                     not server.idle_threads
-                    or server.restart
                     or self.is_paused()
                     or self.shutdown
                     or self.paused_for_postproc
