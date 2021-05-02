@@ -79,6 +79,7 @@ import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+from sabnzbd.utils.getperformance import getpystone, getcpu
 import sabnzbd.utils.ssdp as ssdp
 
 try:
@@ -1172,24 +1173,13 @@ def main():
             ).strip()
         except:
             pass
-    logging.info("Commit: %s", sabnzbd.__baseline__)
+    logging.info("Commit = %s", sabnzbd.__baseline__)
     logging.info("Full executable path = %s", sabnzbd.MY_FULLNAME)
-    if sabnzbd.WIN32:
-        suffix = ""
-        if win64:
-            suffix = "(win64)"
-        try:
-            logging.info("Platform = %s %s", platform.platform(), suffix)
-        except:
-            logging.info("Platform = %s <unknown>", suffix)
-    else:
-        logging.info("Platform = %s", os.name)
+    logging.info("Platform = %s - %s", os.name, platform.platform())
+    logging.info("CPU architecture = %s", platform.uname().machine)  # as .processor is not always filled out
     logging.info("Python-version = %s", sys.version)
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
-    if sabnzbd.DOCKER:
-        logging.info("Running inside a docker container")
-    else:
-        logging.info("Not inside a docker container")
+    logging.info("Dockerized = %s", sabnzbd.DOCKER)
 
     # Find encoding; relevant for external processing activities
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
@@ -1213,8 +1203,8 @@ def main():
 
         try:
             os.environ["SSL_CERT_FILE"] = certifi.where()
-            logging.info("Certifi version: %s", certifi.__version__)
-            logging.info("Loaded additional certificates from: %s", os.environ["SSL_CERT_FILE"])
+            logging.info("Certifi version = %s", certifi.__version__)
+            logging.info("Loaded additional certificates from %s", os.environ["SSL_CERT_FILE"])
         except:
             # Sometimes the certificate file is blocked
             logging.warning(T("Could not load additional certificates from certifi package"))
@@ -1223,38 +1213,16 @@ def main():
     # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
         # List the number of certificates available (can take up to 1.5 seconds)
-        ctx = ssl.create_default_context()
-        logging.debug("Available certificates: %s", repr(ctx.cert_store_stats()))
+        logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
 
-        mylocalipv4 = localipv4()
-        if mylocalipv4:
-            logging.debug("My local IPv4 address = %s", mylocalipv4)
-        else:
-            logging.debug("Could not determine my local IPv4 address")
-
-        mypublicipv4 = publicipv4()
-        if mypublicipv4:
-            logging.debug("My public IPv4 address = %s", mypublicipv4)
-        else:
-            logging.debug("Could not determine my public IPv4 address")
-
-        myipv6 = ipv6()
-        if myipv6:
-            logging.debug("My IPv6 address = %s", myipv6)
-        else:
-            logging.debug("Could not determine my IPv6 address")
+        # List networking
+        logging.debug("Local IPv4 address = %s", localipv4())
+        logging.debug("Public IPv4 address = %s", publicipv4())
+        logging.debug("IPv6 address = %s", ipv6())
 
         # Measure and log system performance measured by pystone and - if possible - CPU model
-        from sabnzbd.utils.getperformance import getpystone, getcpu
-
-        pystoneperf = getpystone()
-        if pystoneperf:
-            logging.debug("CPU Pystone available performance = %s", pystoneperf)
-        else:
-            logging.debug("CPU Pystone available performance could not be calculated")
-        cpumodel = getcpu()  # Linux only
-        if cpumodel:
-            logging.debug("CPU model = %s", cpumodel)
+        logging.debug("CPU Pystone available performance = %s", getpystone())
+        logging.debug("CPU model = %s", getcpu())
 
     logging.info("Using INI file %s", inifile)
 

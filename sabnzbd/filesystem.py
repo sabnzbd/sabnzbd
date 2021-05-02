@@ -295,8 +295,10 @@ def sanitize_and_trim_path(path: str) -> str:
 def sanitize_files(folder: Optional[str] = None, filelist: Optional[List[str]] = None) -> List[str]:
     """Sanitize each file in the folder or list of filepaths, return list of new names"""
     logging.info("Checking if any resulting filenames need to be sanitized")
-    if not filelist:
+    if folder:
         filelist = listdir_full(folder)
+    else:
+        filelist = filelist or []
 
     # Loop over all the files
     output_filelist = []

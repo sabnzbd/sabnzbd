@@ -258,6 +258,11 @@ class TestSanitizeFiles(ffs.TestCase):
         self.fs.path_separator = "\\"
         self.fs.is_windows_fs = True
 
+    def test_sanitize_files_input(self):
+        assert [] == filesystem.sanitize_files(folder=None)
+        assert [] == filesystem.sanitize_files(filelist=None)
+        assert [] == filesystem.sanitize_files(folder=None, filelist=None)
+
     @set_platform("win32")
     @set_config({"sanitize_safe": True})
     def test_sanitize_files(self):
