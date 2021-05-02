@@ -64,9 +64,6 @@ if sabnzbd.WIN32:
     except ImportError:
         pass
 
-if sabnzbd.DARWIN:
-    from PyObjCTools import AppHelper
-
 
 def time_format(fmt):
     """Return time-format string adjusted for 12/24 hour clock setting"""
@@ -261,37 +258,6 @@ def cat_convert(cat):
                 return ucat["name"]
 
     return None
-
-
-def windows_variant():
-    """Determine Windows variant
-    Return vista_plus, x64
-    """
-    from win32api import GetVersionEx
-    from win32con import VER_PLATFORM_WIN32_NT
-    import winreg
-
-    vista_plus = x64 = False
-    maj, _minor, _buildno, plat, _csd = GetVersionEx()
-
-    if plat == VER_PLATFORM_WIN32_NT:
-        vista_plus = maj > 5
-        if vista_plus:
-            # Must be done the hard way, because the Python runtime lies to us.
-            # This does *not* work:
-            #     return os.environ['PROCESSOR_ARCHITECTURE'] == 'AMD64'
-            # because the Python runtime returns 'X86' even on an x64 system!
-            key = winreg.OpenKey(
-                winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
-            )
-            for n in range(winreg.QueryInfoKey(key)[1]):
-                name, value, _val_type = winreg.EnumValue(key, n)
-                if name == "PROCESSOR_ARCHITECTURE":
-                    x64 = value.upper() == "AMD64"
-                    break
-            winreg.CloseKey(key)
-
-    return vista_plus, x64
 
 
 _SERVICE_KEY = "SYSTEM\\CurrentControlSet\\services\\"
