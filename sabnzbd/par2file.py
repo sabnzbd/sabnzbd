@@ -103,24 +103,25 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
         with open(fname, "rb") as f:
             header = f.read(8)
             while header:
-                name, filehash, hash16k, nr_files = parse_par2_packet(f, header)
-                if name:
-                    table[name] = filehash
-                    if hash16k not in md5of16k:
-                        md5of16k[hash16k] = name
-                    elif md5of16k[hash16k] != name:
-                        # Not unique and not already linked to this file
-                        # Remove to avoid false-renames
-                        duplicates16k.append(hash16k)
+                if header == PAR_PKT_ID:
+                    name, filehash, hash16k, nr_files = parse_par2_packet(f)
+                    if name:
+                        table[name] = filehash
+                        if hash16k not in md5of16k:
+                            md5of16k[hash16k] = name
+                        elif md5of16k[hash16k] != name:
+                            # Not unique and not already linked to this file
+                            # Remove to avoid false-renames
+                            duplicates16k.append(hash16k)
 
-                # Store the number of files for later
-                if nr_files:
-                    total_nr_files = nr_files
+                    # Store the number of files for later
+                    if nr_files:
+                        total_nr_files = nr_files
 
-                # On large files, we stop after seeing all the listings
-                # On smaller files, we scan them fully to get the par2-creator
-                if total_size > SCAN_LIMIT and len(table) == total_nr_files:
-                    break
+                    # On large files, we stop after seeing all the listings
+                    # On smaller files, we scan them fully to get the par2-creator
+                    if total_size > SCAN_LIMIT and len(table) == total_nr_files:
+                        break
 
                 header = f.read(8)
 
@@ -143,9 +144,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
     return table
 
 
-def parse_par2_packet(
-    f: BinaryIO, header: bytes
-) -> Tuple[Optional[str], Optional[bytes], Optional[bytes], Optional[int]]:
+def parse_par2_packet(f: BinaryIO) -> Tuple[Optional[str], Optional[bytes], Optional[bytes], Optional[int]]:
     """Look up and analyze a PAR2 packet"""
 
     filename, filehash, hash16k, nr_files = nothing = None, None, None, None
@@ -157,9 +156,6 @@ def parse_par2_packet(
     # 16  : Recovery Set ID.
     # 16  : Type of packet.
     # ?*4 : Body of Packet. Must be a multiple of 4 bytes.
-
-    if header != PAR_PKT_ID:
-        return nothing
 
     # Length must be multiple of 4 and at least 20
     pack_len = struct.unpack("<Q", f.read(8))[0]
