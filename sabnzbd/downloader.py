@@ -549,33 +549,34 @@ class Downloader(Thread):
                         break
 
                     try:
-                        if server.article_queue[0].nzf.nzo.status == Status.PAUSED:
-                            server.reset_article_queue()
                         article = server.article_queue.pop(0)
                     except IndexError:
                         article = sabnzbd.NzbQueue.get_article(server, self.servers)
+
+                        if article:
+                            # Mark expired articles as tried on this server
+                            if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
+                                # Fetching 200 will usually be sufficient to load all the articles in the file
+                                if not article.lowest_partnum:
+                                    server.article_queue = article.nzf.get_articles(server, self.servers, 200)
+                                while article:
+                                    self.decode(article, None)
+                                    try:
+                                        article = server.article_queue.pop(0)
+                                    except IndexError:
+                                        article = None
+                                break
+
+                            elif not article.lowest_partnum:
+                                # Preload some articles for the next idle threads
+                                server.article_queue = article.nzf.get_articles(
+                                    server, self.servers, int(server.threads / 5)
+                                )
 
                     if not article:
                         # Skip this server for 0.5 second
                         server.next_article_search = now + 0.5
                         break
-
-                    if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                        # Fetching 200 will usually be sufficient to load all the articles in the file
-                        if not article.lowest_partnum:
-                            server.article_queue.extend(article.nzf.get_articles(server, self.servers, 200))
-                        while article:
-                            self.decode(article, None)
-                            try:
-                                article = server.article_queue.pop(0)
-                            except IndexError:
-                                article = None
-                        break
-
-                    # Fetching 4 articles from get_articles seems like a good compromise.
-                    # Too few will be inefficient and too many can take too long and slow down the transfer.
-                    if not article.lowest_partnum and not server.article_queue:
-                        server.article_queue = article.nzf.get_articles(server, self.servers, 4)
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
