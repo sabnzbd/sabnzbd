@@ -174,8 +174,7 @@ def parse_par2_packet(f: BinaryIO) -> Tuple[Optional[str], Optional[bytes], Opti
         return nothing
 
     # See if it's any of the packages we care about
-    offset = 16
-    par2_packet_type = data[offset : offset + 16]
+    par2_packet_type = data[16:32]
 
     if par2_packet_type == PAR_FILE_ID:
         # The FileDesc packet looks like:
@@ -185,19 +184,19 @@ def parse_par2_packet(f: BinaryIO) -> Tuple[Optional[str], Optional[bytes], Opti
         # 16 : Hash for first 16K
         #  8 : File length
         # xx : Name (multiple of 4, padded with \0 if needed)
-        filehash = data[offset + 32 : offset + 48]
-        hash16k = data[offset + 48 : offset + 64]
-        filename = correct_unknown_encoding(data[offset + 72 :].strip(b"\0"))
+        filehash = data[48:64]
+        hash16k = data[64:80]
+        filename = correct_unknown_encoding(data[88:].strip(b"\0"))
     elif par2_packet_type == PAR_CREATOR_ID:
         # From here until the end is the creator-text
         # Useful in case of bugs in the par2-creating software
-        par2creator = data[offset + 16 :].strip(b"\0")  # Remove any trailing \0
+        par2creator = data[32:].strip(b"\0")  # Remove any trailing \0
         logging.debug("Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator))
     elif par2_packet_type == PAR_MAIN_ID:
         # The Main packet looks like:
         # 16 : "PAR 2.0\0Main"
         # 8  : Slice size
         # 4  : Number of files in the recovery set
-        nr_files = struct.unpack("<I", data[offset + 24 : offset + 28])[0]
+        nr_files = struct.unpack("<I", data[40:44])[0]
 
     return filename, filehash, hash16k, nr_files
