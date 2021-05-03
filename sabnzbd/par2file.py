@@ -103,24 +103,25 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
         with open(fname, "rb") as f:
             header = f.read(8)
             while header:
-                name, filehash, hash16k, nr_files = parse_par2_packet(f, header)
-                if name:
-                    table[name] = filehash
-                    if hash16k not in md5of16k:
-                        md5of16k[hash16k] = name
-                    elif md5of16k[hash16k] != name:
-                        # Not unique and not already linked to this file
-                        # Remove to avoid false-renames
-                        duplicates16k.append(hash16k)
+                if header == PAR_PKT_ID:
+                    name, filehash, hash16k, nr_files = parse_par2_packet(f)
+                    if name:
+                        table[name] = filehash
+                        if hash16k not in md5of16k:
+                            md5of16k[hash16k] = name
+                        elif md5of16k[hash16k] != name:
+                            # Not unique and not already linked to this file
+                            # Remove to avoid false-renames
+                            duplicates16k.append(hash16k)
 
-                # Store the number of files for later
-                if nr_files:
-                    total_nr_files = nr_files
+                    # Store the number of files for later
+                    if nr_files:
+                        total_nr_files = nr_files
 
-                # On large files, we stop after seeing all the listings
-                # On smaller files, we scan them fully to get the par2-creator
-                if total_size > SCAN_LIMIT and len(table) == total_nr_files:
-                    break
+                    # On large files, we stop after seeing all the listings
+                    # On smaller files, we scan them fully to get the par2-creator
+                    if total_size > SCAN_LIMIT and len(table) == total_nr_files:
+                        break
 
                 header = f.read(8)
 
@@ -143,9 +144,7 @@ def parse_par2_file(fname: str, md5of16k: Dict[bytes, str]) -> Dict[str, bytes]:
     return table
 
 
-def parse_par2_packet(
-    f: BinaryIO, header: bytes
-) -> Tuple[Optional[str], Optional[bytes], Optional[bytes], Optional[int]]:
+def parse_par2_packet(f: BinaryIO) -> Tuple[Optional[str], Optional[bytes], Optional[bytes], Optional[int]]:
     """Look up and analyze a PAR2 packet"""
 
     filename, filehash, hash16k, nr_files = nothing = None, None, None, None
@@ -157,9 +156,6 @@ def parse_par2_packet(
     # 16  : Recovery Set ID.
     # 16  : Type of packet.
     # ?*4 : Body of Packet. Must be a multiple of 4 bytes.
-
-    if header != PAR_PKT_ID:
-        return nothing
 
     # Length must be multiple of 4 and at least 20
     pack_len = struct.unpack("<Q", f.read(8))[0]
@@ -178,8 +174,7 @@ def parse_par2_packet(
         return nothing
 
     # See if it's any of the packages we care about
-    offset = 16
-    par2_packet_type = data[offset : offset + 16]
+    par2_packet_type = data[16:32]
 
     if par2_packet_type == PAR_FILE_ID:
         # The FileDesc packet looks like:
@@ -189,19 +184,19 @@ def parse_par2_packet(
         # 16 : Hash for first 16K
         #  8 : File length
         # xx : Name (multiple of 4, padded with \0 if needed)
-        filehash = data[offset + 32 : offset + 48]
-        hash16k = data[offset + 48 : offset + 64]
-        filename = correct_unknown_encoding(data[offset + 72 :].strip(b"\0"))
+        filehash = data[48:64]
+        hash16k = data[64:80]
+        filename = correct_unknown_encoding(data[88:].strip(b"\0"))
     elif par2_packet_type == PAR_CREATOR_ID:
         # From here until the end is the creator-text
         # Useful in case of bugs in the par2-creating software
-        par2creator = data[offset + 16 :].strip(b"\0")  # Remove any trailing \0
+        par2creator = data[32:].strip(b"\0")  # Remove any trailing \0
         logging.debug("Par2-creator of %s is: %s", os.path.basename(f.name), correct_unknown_encoding(par2creator))
     elif par2_packet_type == PAR_MAIN_ID:
         # The Main packet looks like:
         # 16 : "PAR 2.0\0Main"
         # 8  : Slice size
         # 4  : Number of files in the recovery set
-        nr_files = struct.unpack("<I", data[offset + 24 : offset + 28])[0]
+        nr_files = struct.unpack("<I", data[40:44])[0]
 
     return filename, filehash, hash16k, nr_files

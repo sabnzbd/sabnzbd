@@ -384,6 +384,7 @@ class NNTP:
             msg = "Failed to connect: %s" % (str(error))
             msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.nw.server.port)
             self.error_msg = msg
+            self.nw.server.next_busy_threads_check = 0
             logging.info(msg)
             self.nw.server.warning = msg
 

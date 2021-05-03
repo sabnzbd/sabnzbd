@@ -62,7 +62,6 @@ from sabnzbd.misc import (
     exit_sab,
     split_host,
     create_https_certificates,
-    windows_variant,
     ip_extract,
     set_serv_parms,
     get_serv_parms,
@@ -90,9 +89,13 @@ try:
     import win32service
     import win32ts
     import pywintypes
+    import servicemanager
+    from win32com.shell import shell, shellcon
+
+    from sabnzbd.utils.apireg import get_connection_info, set_connection_info, del_connection_info
+    import sabnzbd.sabtray
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
-    from sabnzbd.utils.apireg import get_connection_info, set_connection_info, del_connection_info
 except ImportError:
     if sabnzbd.WIN32:
         print("Sorry, requires Python module PyWin32.")
@@ -349,7 +352,7 @@ def fix_webname(name):
         return name
 
 
-def get_user_profile_paths(vista_plus):
+def get_user_profile_paths():
     """Get the default data locations on Windows"""
     if sabnzbd.DAEMON:
         # In daemon mode, do not try to access the user profile
@@ -365,22 +368,15 @@ def get_user_profile_paths(vista_plus):
         return
     elif sabnzbd.WIN32:
         try:
-            from win32com.shell import shell, shellcon
-
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
             sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
             sabnzbd.DIR_HOME = os.environ["USERPROFILE"]
         except:
             try:
-                if vista_plus:
-                    root = os.environ["AppData"]
-                    user = os.environ["USERPROFILE"]
-                    sabnzbd.DIR_LCLDATA = "%s\\%s" % (root.replace("\\Roaming", "\\Local"), DEF_WORKDIR)
-                    sabnzbd.DIR_HOME = user
-                else:
-                    root = os.environ["USERPROFILE"]
-                    sabnzbd.DIR_LCLDATA = "%s\\%s" % (root, DEF_WORKDIR)
-                    sabnzbd.DIR_HOME = root
+                root = os.environ["AppData"]
+                user = os.environ["USERPROFILE"]
+                sabnzbd.DIR_LCLDATA = "%s\\%s" % (root.replace("\\Roaming", "\\Local"), DEF_WORKDIR)
+                sabnzbd.DIR_HOME = user
             except:
                 pass
 
@@ -602,7 +598,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = localhost
 
     else:
-        # If on Vista and/or APIPA, use numerical IP, to help FireFoxers
+        # If on APIPA, use numerical IP, to help FireFoxers
         if ipv6 and ipv4:
             cherryhost = hostip
         browserhost = cherryhost
@@ -864,8 +860,6 @@ def main():
     console_logging = False
     no_file_log = False
     web_dir = None
-    vista_plus = False
-    win64 = False
     repair = 0
     no_login = False
     sabnzbd.RESTART_ARGS = [sys.argv[0]]
@@ -981,17 +975,18 @@ def main():
     logger.setLevel(logging.WARNING)
     logger.addHandler(gui_log)
 
-    # Detect Windows variant
+    # Detect CPU architecture and Windows variant
+    # Use .machine as .processor is not always filled
+    cpu_architecture = platform.uname().machine
     if sabnzbd.WIN32:
-        vista_plus, win64 = windows_variant()
-        sabnzbd.WIN64 = win64
+        sabnzbd.WIN64 = cpu_architecture == "AMD64"
 
     if inifile:
         # INI file given, simplest case
         inifile = evaluate_inipath(inifile)
     else:
         # No ini file given, need profile data
-        get_user_profile_paths(vista_plus)
+        get_user_profile_paths()
         # Find out where INI file is
         inifile = os.path.abspath(os.path.join(sabnzbd.DIR_LCLDATA, DEF_INI_FILE))
 
@@ -1176,7 +1171,7 @@ def main():
     logging.info("Commit = %s", sabnzbd.__baseline__)
     logging.info("Full executable path = %s", sabnzbd.MY_FULLNAME)
     logging.info("Platform = %s - %s", os.name, platform.platform())
-    logging.info("CPU architecture = %s", platform.uname().machine)  # as .processor is not always filled out
+    logging.info("CPU architecture = %s", cpu_architecture)
     logging.info("Python-version = %s", sys.version)
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
     logging.info("Dockerized = %s", sabnzbd.DOCKER)
@@ -1243,8 +1238,6 @@ def main():
     # Handle the several tray icons
     if sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
         if sabnzbd.WIN32:
-            import sabnzbd.sabtray
-
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
         elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):
             try:
@@ -1607,7 +1600,6 @@ def main():
 
 
 if sabnzbd.WIN32:
-    import servicemanager
 
     class SABnzbd(win32serviceutil.ServiceFramework):
         """Win32 Service Handler"""
@@ -1674,7 +1666,7 @@ def handle_windows_service():
     Returns True when any service commands were detected or
     when we have started as a service.
     """
-    # Detect if running as Windows Service (only Vista and above!)
+    # Detect if running as Windows Service
     # Adapted from https://stackoverflow.com/a/55248281/5235502
     # Only works when run from the exe-files
     if hasattr(sys, "frozen") and win32ts.ProcessIdToSessionId(win32api.GetCurrentProcessId()) == 0:
