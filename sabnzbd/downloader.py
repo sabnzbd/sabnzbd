@@ -57,6 +57,40 @@ TIMER_LOCK = RLock()
 
 
 class Server:
+    # Pre-define attributes to save memory and improve get/set performance
+    __slots__ = (
+        "id",
+        "newid",
+        "restart",
+        "displayname",
+        "host",
+        "port",
+        "timeout",
+        "threads",
+        "priority",
+        "ssl",
+        "ssl_verify",
+        "ssl_ciphers",
+        "optional",
+        "retention",
+        "send_group",
+        "username",
+        "password",
+        "busy_threads",
+        "next_busy_threads_check",
+        "idle_threads",
+        "next_article_search",
+        "active",
+        "bad_cons",
+        "errormsg",
+        "warning",
+        "info",
+        "ssl_info",
+        "request",
+        "have_body",
+        "have_stat",
+    )
+
     def __init__(
         self,
         server_id,
