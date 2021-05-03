@@ -217,6 +217,26 @@ class Server:
 class Downloader(Thread):
     """Singleton Downloader Thread"""
 
+    # Improves get/set performance, even though it's inherited from Thread
+    # Due to the huge number of get-calls in run(), it can actually make a difference
+    __slots__ = (
+        "paused",
+        "bandwidth_limit",
+        "bandwidth_perc",
+        "can_be_slowed",
+        "can_be_slowed_timer",
+        "sleep_time",
+        "paused_for_postproc",
+        "shutdown",
+        "server_restarts",
+        "force_disconnect",
+        "read_fds",
+        "servers",
+        "server_dict",
+        "server_nr",
+        "timers",
+    )
+
     def __init__(self, paused=False):
         super().__init__()
 
