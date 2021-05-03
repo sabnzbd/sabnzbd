@@ -50,6 +50,8 @@ _PENALTY_PERM = 10  # Permanent error, like bad username/password
 _PENALTY_SHORT = 1  # Minimal penalty when no_penalties is set
 _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 
+# Wait this many seconds between checking idle servers for new articles or busy threads for timeout
+_SERVER_CHECK_DELAY = 0.5
 
 TIMER_LOCK = RLock()
 
@@ -94,6 +96,7 @@ class Server:
         self.password: Optional[str] = password
 
         self.busy_threads: List[NewsWrapper] = []
+        self.next_busy_threads_check: float = 0
         self.idle_threads: List[NewsWrapper] = []
         self.next_article_search: float = 0
         self.active: bool = True
@@ -484,15 +487,17 @@ class Downloader(Thread):
                 if not server.busy_threads and server.next_article_search > now:
                     continue
 
-                for nw in server.busy_threads[:]:
-                    if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
-                        if nw.nntp and nw.nntp.error_msg:
-                            # Already showed error
-                            self.__reset_nw(nw)
-                        else:
-                            self.__reset_nw(nw, "timed out", warn=True)
-                        server.bad_cons += 1
-                        self.maybe_block_server(server)
+                if server.next_busy_threads_check < now:
+                    server.next_busy_threads_check = now + _SERVER_CHECK_DELAY
+                    for nw in server.busy_threads[:]:
+                        if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
+                            if nw.nntp and nw.nntp.error_msg:
+                                # Already showed error
+                                self.__reset_nw(nw)
+                            else:
+                                self.__reset_nw(nw, "timed out", warn=True)
+                            server.bad_cons += 1
+                            self.maybe_block_server(server)
 
                 if server.restart:
                     if not server.busy_threads:
@@ -510,7 +515,6 @@ class Downloader(Thread):
 
                 if (
                     not server.idle_threads
-                    or server.restart
                     or self.is_paused()
                     or self.shutdown
                     or self.paused_for_postproc
@@ -535,8 +539,8 @@ class Downloader(Thread):
                     article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
                     if not article:
-                        # Skip this server for 0.5 second
-                        server.next_article_search = now + 0.5
+                        # Skip this server for a short time
+                        server.next_article_search = now + _SERVER_CHECK_DELAY
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
