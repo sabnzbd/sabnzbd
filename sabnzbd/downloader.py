@@ -90,6 +90,7 @@ class Server:
         "request",
         "have_body",
         "have_stat",
+        "article_queue",
     )
 
     def __init__(
