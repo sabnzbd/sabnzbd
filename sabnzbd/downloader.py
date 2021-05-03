@@ -94,8 +94,7 @@ class Server:
         self.password: Optional[str] = password
 
         self.busy_threads: List[NewsWrapper] = []
-        self.check_busy_threads: bool = True
-        self.next_busy_check: int = 0
+        self.next_busy_threads_check: float = 0
         self.idle_threads: List[NewsWrapper] = []
         self.next_article_search: float = 0
         self.active: bool = True
@@ -486,9 +485,8 @@ class Downloader(Thread):
                 if not server.busy_threads and server.next_article_search > now:
                     continue
 
-                if server.check_busy_threads or server.next_busy_check < now:
-                    server.check_busy_threads = False
-                    server.next_busy_check = now + 0.1
+                if server.next_busy_threads_check < now:
+                    server.next_busy_threads_check = now + 0.1
                     for nw in server.busy_threads[:]:
                         if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                             if nw.nntp and nw.nntp.error_msg:
