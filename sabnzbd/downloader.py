@@ -50,6 +50,8 @@ _PENALTY_PERM = 10  # Permanent error, like bad username/password
 _PENALTY_SHORT = 1  # Minimal penalty when no_penalties is set
 _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 
+# Wait this many seconds between checking idle servers for new articles or busy threads for timeout
+_SERVER_CHECK_DELAY = 0.5
 
 TIMER_LOCK = RLock()
 
@@ -486,7 +488,7 @@ class Downloader(Thread):
                     continue
 
                 if server.next_busy_threads_check < now:
-                    server.next_busy_threads_check = now + 0.1
+                    server.next_busy_threads_check = now + _SERVER_CHECK_DELAY
                     for nw in server.busy_threads[:]:
                         if (nw.nntp and nw.nntp.error_msg) or (nw.timeout and now > nw.timeout):
                             if nw.nntp and nw.nntp.error_msg:
@@ -537,8 +539,8 @@ class Downloader(Thread):
                     article = sabnzbd.NzbQueue.get_article(server, self.servers)
 
                     if not article:
-                        # Skip this server for 0.5 second
-                        server.next_article_search = now + 0.5
+                        # Skip this server for a short time
+                        server.next_article_search = now + _SERVER_CHECK_DELAY
                         break
 
                     if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
