@@ -142,6 +142,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
+        sabnzbd.BPSMeter.init_server_stats(server_id)
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
@@ -216,26 +217,6 @@ class Server:
 
 class Downloader(Thread):
     """Singleton Downloader Thread"""
-
-    # Improves get/set performance, even though it's inherited from Thread
-    # Due to the huge number of get-calls in run(), it can actually make a difference
-    __slots__ = (
-        "paused",
-        "bandwidth_limit",
-        "bandwidth_perc",
-        "can_be_slowed",
-        "can_be_slowed_timer",
-        "sleep_time",
-        "paused_for_postproc",
-        "shutdown",
-        "server_restarts",
-        "force_disconnect",
-        "read_fds",
-        "servers",
-        "server_dict",
-        "server_nr",
-        "timers",
-    )
 
     def __init__(self, paused=False):
         super().__init__()
@@ -525,6 +506,7 @@ class Downloader(Thread):
 
         # Kick BPS-Meter to check quota
         sabnzbd.BPSMeter.update()
+        next_bpsmeter_update = 0
 
         # Check server expiration dates
         check_server_expiration()
@@ -687,8 +669,11 @@ class Downloader(Thread):
                     ):
                         DOWNLOADER_CV.wait()
 
+            if now > next_bpsmeter_update:
+                sabnzbd.BPSMeter.update()
+                next_bpsmeter_update = now + 0.05
+
             if not read:
-                sabnzbd.BPSMeter.update(force_full_update=False)
                 continue
 
             for selected in read:
@@ -702,7 +687,6 @@ class Downloader(Thread):
                     bytes_received, done, skip = (0, False, False)
 
                 if skip:
-                    sabnzbd.BPSMeter.update(force_full_update=False)
                     continue
 
                 if bytes_received < 1:
@@ -716,7 +700,9 @@ class Downloader(Thread):
                         # In case nzf has disappeared because the file was deleted before the update could happen
                         pass
 
-                    sabnzbd.BPSMeter.update(server.id, bytes_received, force_full_update=False)
+                    sabnzbd.BPSMeter.cached_amount[server.id] += bytes_received
+                    sabnzbd.BPSMeter.sum_cached_amount += bytes_received
+
                     if self.bandwidth_limit:
                         if sabnzbd.BPSMeter.sum_cached_amount + sabnzbd.BPSMeter.bps > self.bandwidth_limit:
                             sabnzbd.BPSMeter.update()
@@ -726,7 +712,6 @@ class Downloader(Thread):
 
                 if not done and nw.status_code != 222:
                     if not nw.connected or nw.status_code == 480:
-                        done = False
                         try:
                             nw.finish_connect(nw.status_code)
                             if sabnzbd.LOG_ALL:
@@ -827,7 +812,6 @@ class Downloader(Thread):
                         logging.debug("Article <%s> is present", article.article)
 
                     elif nw.status_code == 211:
-                        done = False
                         logging.debug("group command ok -> %s", nntp_to_msg(nw.data))
                         nw.group = nw.article.nzf.nzo.group
                         nw.clear_data()

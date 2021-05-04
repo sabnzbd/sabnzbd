@@ -91,6 +91,38 @@ def next_month(t: float) -> float:
 
 
 class BPSMeter:
+    __slots__ = (
+        "start_time",
+        "log_time",
+        "speed_log_time",
+        "last_update",
+        "bps",
+        "bps_list",
+        "server_bps",
+        "cached_amount",
+        "sum_cached_amount",
+        "day_total",
+        "week_total",
+        "month_total",
+        "grand_total",
+        "timeline_total",
+        "article_stats_tried",
+        "article_stats_failed",
+        "day_label",
+        "end_of_day",
+        "end_of_week",
+        "end_of_month",
+        "q_day",
+        "q_period",
+        "quota",
+        "left",
+        "have_quota",
+        "q_time",
+        "q_hour",
+        "q_minute",
+        "quota_enabled",
+    )
+
     def __init__(self):
         t = time.time()
         self.start_time = t
@@ -166,6 +198,27 @@ class BPSMeter:
             self.week_total["x"] = week
         self.quota = self.left = cfg.quota_size.get_float()
 
+    def init_server_stats(self, server: str = None):
+        """Initialize counters for "server" """
+        if server not in self.cached_amount:
+            self.cached_amount[server] = 0
+            self.server_bps[server] = 0.0
+
+        if server not in self.day_total:
+            self.day_total[server] = 0
+
+        if server not in self.week_total:
+            self.week_total[server] = 0
+
+        if server not in self.month_total:
+            self.month_total[server] = 0
+
+        if server not in self.grand_total:
+            self.grand_total[server] = 0
+
+        if server not in self.timeline_total or self.day_label not in self.timeline_total[server]:
+            self.timeline_total[server][self.day_label] = 0
+
     def read(self):
         """Read admin from disk, return True when pause is needed"""
         res = False
@@ -202,7 +255,6 @@ class BPSMeter:
 
     def update(self, server: Optional[str] = None, amount: int = 0, force_full_update: bool = True):
         """Update counters for "server" with "amount" bytes"""
-        t = time.time()
 
         # Add amount to temporary storage
         if server:
@@ -213,21 +265,28 @@ class BPSMeter:
             self.sum_cached_amount += amount
 
         # Wait at least 0.05 seconds between each full update
-        if not force_full_update and t - self.last_update < 0.05:
+        if not force_full_update:
             return
+
+        t = time.time()
 
         if t > self.end_of_day:
             # current day passed. get new end of day
             self.day_label = time.strftime("%Y-%m-%d")
-            self.day_total = {}
+            for srv in self.timeline_total:
+                self.timeline_total[srv][self.day_label] = 0
+                self.day_total[srv] = 0
+
             self.end_of_day = tomorrow(t) - 1.0
 
             if t > self.end_of_week:
-                self.week_total = {}
+                for srv in self.week_total:
+                    self.week_total[srv] = 0
                 self.end_of_week = next_week(t) - 1.0
 
             if t > self.end_of_month:
-                self.month_total = {}
+                for srv in self.month_total:
+                    self.month_total[srv] = 0
                 self.end_of_month = next_month(t) - 1.0
 
         # Add amounts that have been stored temporarily to statistics
@@ -235,26 +294,10 @@ class BPSMeter:
             cached_amount = self.cached_amount[srv]
             if cached_amount:
                 self.cached_amount[srv] = 0
-                if srv not in self.day_total:
-                    self.day_total[srv] = 0
                 self.day_total[srv] += cached_amount
-
-                if srv not in self.week_total:
-                    self.week_total[srv] = 0
                 self.week_total[srv] += cached_amount
-
-                if srv not in self.month_total:
-                    self.month_total[srv] = 0
                 self.month_total[srv] += cached_amount
-
-                if srv not in self.grand_total:
-                    self.grand_total[srv] = 0
                 self.grand_total[srv] += cached_amount
-
-                if srv not in self.timeline_total:
-                    self.timeline_total[srv] = {}
-                if self.day_label not in self.timeline_total[srv]:
-                    self.timeline_total[srv][self.day_label] = 0
                 self.timeline_total[srv][self.day_label] += cached_amount
 
             try:
@@ -280,7 +323,8 @@ class BPSMeter:
             )
         except:
             self.bps = 0.0
-            self.server_bps = {}
+            for srv in self.server_bps:
+                self.server_bps[srv] = 0.0
 
         self.last_update = t
 
@@ -326,7 +370,8 @@ class BPSMeter:
         self.log_time = t
         self.last_update = t
         self.bps = 0.0
-        self.server_bps = {}
+        for server in self.server_bps:
+            self.server_bps[server] = 0.0
 
     def add_empty_time(self):
         # Extra zeros, but never more than the maximum!
@@ -361,20 +406,13 @@ class BPSMeter:
 
     def clear_server(self, server: str):
         """Clean counters for specified server"""
-        if server in self.day_total:
-            del self.day_total[server]
-        if server in self.week_total:
-            del self.week_total[server]
-        if server in self.month_total:
-            del self.month_total[server]
-        if server in self.grand_total:
-            del self.grand_total[server]
-        if server in self.timeline_total:
-            del self.timeline_total[server]
-        if server in self.article_stats_tried:
-            del self.article_stats_tried[server]
-        if server in self.article_stats_failed:
-            del self.article_stats_failed[server]
+        self.day_total[server] = 0
+        self.week_total[server] = 0
+        self.month_total[server] = 0
+        self.grand_total[server] = 0
+        self.timeline_total[server] = 0
+        self.article_stats_tried[server] = 0
+        self.article_stats_failed[server] = 0
         self.save()
 
     def get_bps_list(self):
