@@ -588,30 +588,22 @@ class Downloader(Thread):
                             server.request_info()
                         break
 
-                    try:
+                    # Get article from pre-fetched ones or fetch new ones
+                    article = None
+                    if server.article_queue:
                         article = server.article_queue.pop(0)
-                    except IndexError:
-                        article = sabnzbd.NzbQueue.get_article(server, self.servers)
-
-                        if article:
+                    else:
+                        # Pre-fetch new articles
+                        server.article_queue = sabnzbd.NzbQueue.get_articles(server, self.servers, fetch_limit=5)
+                        if server.article_queue:
+                            article = server.article_queue.pop(0)
                             # Mark expired articles as tried on this server
                             if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
-                                # Fetching 200 will usually be sufficient to load all the articles in the file
-                                if not article.lowest_partnum:
-                                    server.article_queue = article.nzf.get_articles(server, self.servers, 200)
-                                while article:
-                                    self.decode(article, None)
-                                    try:
-                                        article = server.article_queue.pop(0)
-                                    except IndexError:
-                                        article = None
+                                self.decode(article, None)
+                                for expired_article in server.article_queue:
+                                    self.decode(expired_article, None)
+                                # Move to the next idle thread
                                 break
-
-                            elif not article.lowest_partnum:
-                                # Preload some articles for the next idle threads
-                                server.article_queue = article.nzf.get_articles(
-                                    server, self.servers, int(server.threads / 5)
-                                )
 
                     if not article:
                         # Skip this server for a short time
