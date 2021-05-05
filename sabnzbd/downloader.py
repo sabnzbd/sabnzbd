@@ -38,7 +38,6 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo
 from sabnzbd.utils.happyeyeballs import happyeyeballs
-from sabnzbd.constants import Status
 
 
 # Timeout penalty in minutes for each cause
@@ -144,7 +143,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
-        self.article_queue = []
+        self.article_queue: List[sabnzbd.nzbstuff.Article] = []
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
@@ -594,7 +593,9 @@ class Downloader(Thread):
                         article = server.article_queue.pop(0)
                     else:
                         # Pre-fetch new articles
-                        server.article_queue = sabnzbd.NzbQueue.get_articles(server, self.servers, fetch_limit=5)
+                        server.article_queue = sabnzbd.NzbQueue.get_articles(
+                            server, self.servers, max(1, server.threads // 5)
+                        )
                         if server.article_queue:
                             article = server.article_queue.pop(0)
                             # Mark expired articles as tried on this server
