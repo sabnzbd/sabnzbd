@@ -24,6 +24,9 @@ jobs:
           tx pull --all --force --parallel
         env:
           TX_TOKEN: ${{ secrets.TX_TOKEN }}
+      - name: Compile translations to validate them
+        run: |
+          python3 tools/make_mo.py
       - name: Push translatable and translated texts back to repo
         uses: stefanzweifel/git-auto-commit-action@v4.5.1
         with:
