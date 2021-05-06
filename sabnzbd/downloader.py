@@ -721,8 +721,7 @@ class Downloader(Thread):
                         # In case nzf has disappeared because the file was deleted before the update could happen
                         pass
 
-                    BPSMeter.cached_amount[server.id] += bytes_received
-                    BPSMeter.sum_cached_amount += bytes_received
+                    BPSMeter.update(server.id, bytes_received, force_full_update=False)
 
                     if self.bandwidth_limit:
                         if BPSMeter.sum_cached_amount + BPSMeter.bps > self.bandwidth_limit:
@@ -731,7 +730,7 @@ class Downloader(Thread):
                                 time.sleep(0.01)
                                 BPSMeter.update()
 
-                if not done and nw.status_code != 222:
+                if nw.status_code != 222 and not done:
                     if not nw.connected or nw.status_code == 480:
                         try:
                             nw.finish_connect(nw.status_code)

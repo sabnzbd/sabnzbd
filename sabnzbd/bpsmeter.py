@@ -100,7 +100,6 @@ class BPSMeter:
         "bps_list",
         "server_bps",
         "cached_amount",
-        "sum_cached_amount",
         "day_total",
         "week_total",
         "month_total",
@@ -134,7 +133,6 @@ class BPSMeter:
 
         self.server_bps: Dict[str, float] = {}
         self.cached_amount: Dict[str, int] = {}
-        self.sum_cached_amount: int = 0
         self.day_total: Dict[str, int] = {}
         self.week_total: Dict[str, int] = {}
         self.month_total: Dict[str, int] = {}
@@ -246,7 +244,6 @@ class BPSMeter:
                 self.cached_amount[server] = 0
                 self.server_bps[server] = 0.0
             self.cached_amount[server] += amount
-            self.sum_cached_amount += amount
 
         # Wait at least 0.05 seconds between each full update
         if not force_full_update:
@@ -270,9 +267,11 @@ class BPSMeter:
                 self.end_of_month = next_month(t) - 1.0
 
         # Add amounts that have been stored temporarily to statistics
+        sum_amount = 0
         for srv in self.cached_amount:
             cached_amount = self.cached_amount[srv]
             if cached_amount:
+                sum_amount += cached_amount
                 self.cached_amount[srv] = 0
                 if srv not in self.day_total:
                     self.day_total[srv] = 0
@@ -306,7 +305,7 @@ class BPSMeter:
 
         # Quota check
         if self.have_quota and self.quota_enabled:
-            self.left -= self.sum_cached_amount
+            self.left -= sum_amount
             if self.left <= 0.0:
                 if not sabnzbd.Downloader.paused:
                     sabnzbd.Downloader.pause()
@@ -314,9 +313,7 @@ class BPSMeter:
 
         # Speedometer
         try:
-            self.bps = (self.bps * (self.last_update - self.start_time) + self.sum_cached_amount) / (
-                t - self.start_time
-            )
+            self.bps = (self.bps * (self.last_update - self.start_time) + sum_amount) / (t - self.start_time)
         except:
             self.bps = 0.0
             self.server_bps = {}
@@ -324,7 +321,6 @@ class BPSMeter:
         self.last_update = t
 
         check_time = t - 5.0
-        self.sum_cached_amount = 0
 
         if self.start_time < check_time:
             self.start_time = check_time
