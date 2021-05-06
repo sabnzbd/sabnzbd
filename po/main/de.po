@@ -3,17 +3,17 @@
 #   team@sabnzbd.org
 # 
 # Translators:
-# Safihre <safihre@sabnzbd.org>, 2020
 # C E <githubce@eiselt.ch>, 2020
 # Nikolai Bohl <n.kay01@gmail.com>, 2020
 # reloxx13 <reloxx@interia.pl>, 2021
 # Ben Hecht <benjamin.hecht@me.com>, 2021
+# Safihre <safihre@sabnzbd.org>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Ben Hecht <benjamin.hecht@me.com>, 2021\n"
+"Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -335,7 +335,7 @@ msgstr "Server-Adresse wird benötigt"
 
 #: sabnzbd/cfg.py
 msgid "%s is not a valid script"
-msgstr "ist kein gültiges Script"
+msgstr "%s ist kein gültiges Script"
 
 #. Warning message
 #: sabnzbd/config.py
@@ -632,7 +632,7 @@ msgstr "Verschieben von %s nach %s fehlgeschlagen"
 #. Error message
 #: sabnzbd/filesystem.py
 msgid "Blocked attempt to create directory %s"
-msgstr "Versuch das Verzeichnis %d zu erstellen wurde blockiert"
+msgstr "Versuch das Verzeichnis %s zu erstellen wurde blockiert"
 
 #: sabnzbd/interface.py
 msgid "Refused connection from:"
