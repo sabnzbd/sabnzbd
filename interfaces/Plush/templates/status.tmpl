@@ -91,40 +91,7 @@
 
 
   <div id="tabs-connections">
-  <a href="refresh_conn?apikey=$apikey" class="juiButton">$T('Plush-button-refresh')</a>
   <a href="disconnect?apikey=$apikey" class="juiButton">$T('link-forceDisc')</a>
-  <hr>
-  <!--#if $servers#-->
-    <!--#set $count=0#-->
-    <!--#for $server in $servers#-->
-      <!--#set $count=$count+1#-->
-      <p>$T('swtag-server'): <strong>$server[0]</strong></p>
-      <p>$T('Priority') = $server[7]&nbsp;&nbsp;<!--#if int($server[8]) != 0#-->$T('optional').capitalize()<!--#else#-->$T('enabled').capitalize()<!--#end if#--></p>
-      <p># $T('connections'): $server[2]</p>
-      <!--#if not $server[5]#-->
-        <a href="./unblock_server?server=$server[0]&apikey=$apikey" class="juiButton">$T('server-blocked')</a>
-        &nbsp;&nbsp;$server[6]
-      <!--#end if#-->
-      <!--#if $server[3]#-->
-        <table class="rssTable">
-          <tr>
-            <th>$T('article-id')</th>
-            <th>$T('filename')</th>
-            <th>$T('file-set')</th>
-          </tr>
-        <!--#set $odd = False#-->
-        <!--#for $thrd in $server[3]#-->
-        <!--#set $odd = not $odd#-->
-          <tr class="<!--#if $odd then "odd" else "even"#-->">
-            <td>$thrd[1]</td><td>$thrd[2]</td><td>$thrd[3]</td></tr>
-        <!--#end for#-->
-        </table>
-      <!--#end if#-->
-      <br/><hr/><br/>
-    <!--#end for#-->
-  <!--#else#-->
-    <p>$T('none')</p>
-  <!--#end if#-->
   </div>
 
   <div id="tabs-dashboard">

@@ -1168,6 +1168,7 @@ def build_status(skip_dashboard=False, output=None):
     info["loglevel"] = str(cfg.log_level())
     info["folders"] = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     info["configfn"] = config.get_filename()
+    info["warnings"] = sabnzbd.GUIHANDLER.content()
 
     # Dashboard: Speed of System
     info["cpumodel"] = getcpu()
@@ -1199,36 +1200,20 @@ def build_status(skip_dashboard=False, output=None):
     info["servers"] = []
     servers = sorted(sabnzbd.Downloader.servers[:], key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
     for server in servers:
+        connected = sum(nw.connected for nw in server.idle_threads[:])
         serverconnections = []
-        connected = 0
-
-        for nw in server.idle_threads[:]:
-            if nw.connected:
-                connected += 1
-
         for nw in server.busy_threads[:]:
-            article = nw.article
-            art_name = ""
-            nzf_name = ""
-            nzo_name = ""
-
-            if article:
-                nzf = article.nzf
-                nzo = nzf.nzo
-
-                art_name = article.article
-                nzf_name = nzf.filename
-                nzo_name = nzo.final_name
-
-            # For the templates or for JSON
-            if output:
-                thread_info = {"thrdnum": nw.thrdnum, "art_name": art_name, "nzf_name": nzf_name, "nzo_name": nzo_name}
-                serverconnections.append(thread_info)
-            else:
-                serverconnections.append((nw.thrdnum, art_name, nzf_name, nzo_name))
-
             if nw.connected:
                 connected += 1
+            if nw.article:
+                serverconnections.append(
+                    {
+                        "thrdnum": nw.thrdnum,
+                        "art_name": nw.article.article,
+                        "nzf_name": nw.article.nzf.filename,
+                        "nzo_name": nw.article.nzf.nzo.final_name,
+                    }
+                )
 
         if server.warning and not (connected or server.errormsg):
             connected = server.warning
@@ -1236,38 +1221,20 @@ def build_status(skip_dashboard=False, output=None):
         if server.request and not server.info:
             connected = T("&nbsp;Resolving address").replace("&nbsp;", "")
 
-        # For the templates or for JSON
-        if output:
-            server_info = {
-                "servername": server.displayname,
-                "serveractiveconn": connected,
-                "servertotalconn": server.threads,
-                "serverconnections": serverconnections,
-                "serverssl": server.ssl,
-                "serversslinfo": server.ssl_info,
-                "serveractive": server.active,
-                "servererror": server.errormsg,
-                "serverpriority": server.priority,
-                "serveroptional": server.optional,
-                "serverbps": to_units(sabnzbd.BPSMeter.server_bps.get(server.id, 0)),
-            }
-            info["servers"].append(server_info)
-        else:
-            info["servers"].append(
-                (
-                    server.displayname,
-                    "",
-                    connected,
-                    serverconnections,
-                    server.ssl,
-                    server.active,
-                    server.errormsg,
-                    server.priority,
-                    server.optional,
-                )
-            )
-
-    info["warnings"] = sabnzbd.GUIHANDLER.content()
+        server_info = {
+            "servername": server.displayname,
+            "serveractiveconn": connected,
+            "servertotalconn": server.threads,
+            "serverconnections": serverconnections,
+            "serverssl": server.ssl,
+            "serversslinfo": server.ssl_info,
+            "serveractive": server.active,
+            "servererror": server.errormsg,
+            "serverpriority": server.priority,
+            "serveroptional": server.optional,
+            "serverbps": to_units(sabnzbd.BPSMeter.server_bps.get(server.id, 0)),
+        }
+        info["servers"].append(server_info)
 
     return info
 
