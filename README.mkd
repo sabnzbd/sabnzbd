@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 3.3.0 Beta 3
+Release Notes - SABnzbd 3.3.0 Beta 4
 =========================================================
+
+## Changes and bugfixes since 3.3.0 Beta 3
+- Allow setting `inet_exposure` from the command line.
+- Optimize performance of par2 file parsing.
+- CPU usage optimizations in the download process.
+- Post-processing would crash if there were no files to unpack.
+- Setting `RSS rate` would result in a crash.
 
 ## Changes and bugfixes since 3.3.0 Beta 2
 - Failing articles could result in jobs being stuck at 99%.
