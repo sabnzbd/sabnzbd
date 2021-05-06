@@ -4,12 +4,13 @@
 # 
 # Translators:
 # Safihre <safihre@sabnzbd.org>, 2020
+# Ben Hecht <benjamin.hecht@me.com>, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-3.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:56+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
+"Last-Translator: Ben Hecht <benjamin.hecht@me.com>, 2021\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -51,6 +52,8 @@ msgid ""
 "The installer only supports Windows 8.1 and above, use the standalone legacy"
 " version to run on older Windows version."
 msgstr ""
+"Der Installer unterstützt nur Windows 8.1 und höher. Benutze die Standalone "
+"Version für ältere Windows Versionen."
 
 #: builder/win/NSIS_Installer.nsi
 msgid "This will uninstall SABnzbd from your system"
