@@ -588,7 +588,6 @@ class Downloader(Thread):
                         break
 
                     # Get article from pre-fetched ones or fetch new ones
-                    article = None
                     if server.article_queue:
                         article = server.article_queue.pop(0)
                     else:
@@ -603,8 +602,12 @@ class Downloader(Thread):
                                 self.decode(article, None)
                                 for expired_article in server.article_queue:
                                     self.decode(expired_article, None)
+                                expired_article = None
+                                server.article_queue = []
                                 # Move to the next idle thread
                                 break
+                        else:
+                            article = None
 
                     if not article:
                         # Skip this server for a short time
