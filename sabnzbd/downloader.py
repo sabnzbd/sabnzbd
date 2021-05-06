@@ -607,12 +607,9 @@ class Downloader(Thread):
                                 # Move to the next idle thread
                                 break
                         else:
-                            article = None
-
-                    if not article:
-                        # Skip this server for a short time
-                        server.next_article_search = now + _SERVER_CHECK_DELAY
-                        break
+                            # Skip this server for a short time
+                            server.next_article_search = now + _SERVER_CHECK_DELAY
+                            break
 
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
