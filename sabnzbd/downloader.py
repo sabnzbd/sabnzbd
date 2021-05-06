@@ -593,18 +593,17 @@ class Downloader(Thread):
                     else:
                         # Pre-fetch new articles
                         server.article_queue = sabnzbd.NzbQueue.get_articles(
-                            server, self.servers, max(1, server.threads // 5)
+                            server, self.servers, max(1, server.threads // 4)
                         )
                         if server.article_queue:
                             article = server.article_queue.pop(0)
                             # Mark expired articles as tried on this server
                             if server.retention and article.nzf.nzo.avg_stamp < now - server.retention:
                                 self.decode(article, None)
-                                for expired_article in server.article_queue:
-                                    self.decode(expired_article, None)
-                                expired_article = None
-                                server.article_queue = []
-                                # Move to the next idle thread
+                                while server.article_queue:
+                                    self.decode(server.article_queue.pop(), None)
+                                # Move to the next server, allowing the next server to already start
+                                # fetching the articles that were too old for this server
                                 break
                         else:
                             # Skip this server for a short time
