@@ -303,7 +303,6 @@ class Article(TryList):
 ##############################################################################
 NzbFileSaver = (
     "date",
-    "subject",
     "filename",
     "filename_checked",
     "filepath",
@@ -337,7 +336,6 @@ class NzbFile(TryList):
         super().__init__()
 
         self.date: datetime.datetime = date
-        self.subject: str = subject
         self.type: Optional[str] = None
         self.filename: str = sanitize_filename(name_extractor(subject))
         self.filename_checked = False
@@ -1012,10 +1010,9 @@ class NzbObject(TryList):
 
         lparset = parset.lower()
         for xnzf in self.files[:]:
-            name = xnzf.filename or xnzf.subject
             # Move only when not current NZF and filename was extractable from subject
-            if name:
-                setname, vol, block = sabnzbd.par2file.analyse_par2(name)
+            if xnzf.filename:
+                setname, vol, block = sabnzbd.par2file.analyse_par2(xnzf.filename)
                 # Don't postpone header-only-files, to extract all possible md5of16k
                 if setname and block and matcher(lparset, setname.lower()):
                     xnzf.set_par2(parset, vol, block)
@@ -1225,43 +1222,42 @@ class NzbObject(TryList):
         fix_unix_encoding(wdir)
 
         # Get a list of already present files, ignore folders
-        files = globber(wdir, "*.*")
+        existing_files = globber(wdir, "*.*")
 
         # Substitute renamed files
         renames = sabnzbd.load_data(RENAMES_FILE, self.admin_path, remove=True)
         if renames:
             for name in renames:
-                if name in files or renames[name] in files:
-                    if name in files:
-                        files.remove(name)
-                    files.append(renames[name])
+                if name in existing_files or renames[name] in existing_files:
+                    if name in existing_files:
+                        existing_files.remove(name)
+                    existing_files.append(renames[name])
             self.renames = renames
 
         # Looking for the longest name first, minimizes the chance on a mismatch
-        files.sort(key=len)
+        existing_files.sort(key=len)
 
         # The NZFs should be tried shortest first, to improve the chance on a proper match
         nzfs = self.files[:]
-        nzfs.sort(key=lambda x: len(x.subject))
+        nzfs.sort(key=lambda x: len(x.filename))
 
         # Flag files from NZB that already exist as finished
-        for filename in files[:]:
+        for existing_filename in existing_files[:]:
             for nzf in nzfs:
-                subject = sanitize_filename(name_extractor(nzf.subject))
-                if (nzf.filename == filename) or (subject == filename) or (filename in subject):
-                    logging.info("Existing file %s matched to file %s of %s", filename, nzf.filename, self.final_name)
-                    nzf.filename = filename
+                if existing_filename in nzf.filename:
+                    logging.info("Matched file %s to %s of %s", existing_filename, nzf.filename, self.final_name)
+                    nzf.filename = existing_filename
                     nzf.bytes_left = 0
                     self.remove_nzf(nzf)
                     nzfs.remove(nzf)
-                    files.remove(filename)
+                    existing_files.remove(existing_filename)
 
                     # Set bytes correctly
                     self.bytes_tried += nzf.bytes
                     self.bytes_downloaded += nzf.bytes
 
                     # Process par2 files
-                    filepath = os.path.join(wdir, filename)
+                    filepath = os.path.join(wdir, existing_filename)
                     if sabnzbd.par2file.is_parfile(filepath):
                         self.handle_par2(nzf, filepath)
                         self.bytes_par2 += nzf.bytes
@@ -1269,16 +1265,16 @@ class NzbObject(TryList):
 
         # Create an NZF for each remaining existing file
         try:
-            for filename in files:
+            for existing_filename in existing_files:
                 # Create NZO's using basic information
-                filepath = os.path.join(wdir, filename)
-                logging.info("Existing file %s added to %s", filename, self.final_name)
+                filepath = os.path.join(wdir, existing_filename)
+                logging.info("Existing file %s added to %s", existing_filename, self.final_name)
                 tup = os.stat(filepath)
                 tm = datetime.datetime.fromtimestamp(tup.st_mtime)
-                nzf = NzbFile(tm, filename, [], tup.st_size, self)
+                nzf = NzbFile(tm, existing_filename, [], tup.st_size, self)
                 self.files.append(nzf)
                 self.files_table[nzf.nzf_id] = nzf
-                nzf.filename = filename
+                nzf.filename = existing_filename
                 self.remove_nzf(nzf)
 
                 # Set bytes correctly
@@ -1596,7 +1592,7 @@ class NzbObject(TryList):
         if not article:
             for nzf in self.files:
                 if nzf.deleted:
-                    logging.debug("Skipping existing file %s", nzf.filename or nzf.subject)
+                    logging.debug("Skipping existing file %s", nzf.filename)
                 else:
                     # Don't try to get an article if server is in try_list of nzf
                     if not nzf.server_in_try_list(server):

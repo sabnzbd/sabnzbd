@@ -1217,11 +1217,7 @@ def build_status(skip_dashboard=False, output=None):
                 nzo = nzf.nzo
 
                 art_name = article.article
-                # filename field is not always present
-                try:
-                    nzf_name = nzf.filename
-                except:  # attribute error
-                    nzf_name = nzf.subject
+                nzf_name = nzf.filename
                 nzo_name = nzo.final_name
 
             # For the templates or for JSON
@@ -1409,7 +1405,7 @@ def build_file_list(nzo_id: str):
         for nzf in finished_files:
             jobs.append(
                 {
-                    "filename": nzf.filename if nzf.filename else nzf.subject,
+                    "filename": nzf.filename,
                     "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
                     "mb": "%.2f" % (nzf.bytes / MEBI),
                     "bytes": "%.2f" % nzf.bytes,
@@ -1422,7 +1418,7 @@ def build_file_list(nzo_id: str):
         for nzf in active_files:
             jobs.append(
                 {
-                    "filename": nzf.filename if nzf.filename else nzf.subject,
+                    "filename": nzf.filename,
                     "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
                     "mb": "%.2f" % (nzf.bytes / MEBI),
                     "bytes": "%.2f" % nzf.bytes,
@@ -1435,7 +1431,7 @@ def build_file_list(nzo_id: str):
         for nzf in queued_files:
             jobs.append(
                 {
-                    "filename": nzf.filename if nzf.filename else nzf.subject,
+                    "filename": nzf.filename,
                     "set": nzf.setname,
                     "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
                     "mb": "%.2f" % (nzf.bytes / MEBI),

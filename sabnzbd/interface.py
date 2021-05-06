@@ -818,7 +818,7 @@ class NzoPage:
                     checked = True
                 active.append(
                     {
-                        "filename": nzf.filename if nzf.filename else nzf.subject,
+                        "filename": nzf.filename,
                         "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
                         "mb": "%.2f" % (nzf.bytes / MEBI),
                         "size": to_units(nzf.bytes, "B"),
