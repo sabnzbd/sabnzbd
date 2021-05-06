@@ -1853,7 +1853,7 @@ class ConfigRss:
         cfg.rss_rate.set(kwargs.get("rss_rate"))
         config.save_config()
         sabnzbd.Scheduler.restart()
-        raise rssRaiser(self.__root, kwargs)
+        raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def upd_rss_feed(self, **kwargs):
