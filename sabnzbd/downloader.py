@@ -454,7 +454,6 @@ class Downloader(Thread):
             # Not fully the same as the code below for optional servers
             server.bad_cons = 0
             server.active = False
-            server.reset_article_queue()
             self.plan_server(server, _PENALTY_TIMEOUT)
 
         # Optional and active server had too many problems.
@@ -462,7 +461,6 @@ class Downloader(Thread):
         if server.optional and server.active and (server.bad_cons / server.threads) > 3:
             server.bad_cons = 0
             server.active = False
-            server.reset_article_queue()
             logging.warning(T("Server %s will be ignored for %s minutes"), server.host, _PENALTY_TIMEOUT)
             self.plan_server(server, _PENALTY_TIMEOUT)
 
@@ -562,6 +560,7 @@ class Downloader(Thread):
                         break
                     else:
                         # Restart pending, don't add new articles
+                        server.reset_article_queue()
                         continue
 
                 if (
@@ -956,6 +955,7 @@ class Downloader(Thread):
     @synchronized(TIMER_LOCK)
     def plan_server(self, server: Server, interval: int):
         """Plan the restart of a server in 'interval' minutes"""
+        server.reset_article_queue()
         if cfg.no_penalties() and interval > _PENALTY_SHORT:
             # Overwrite in case of no_penalties
             interval = _PENALTY_SHORT
