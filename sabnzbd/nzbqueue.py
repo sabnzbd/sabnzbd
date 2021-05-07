@@ -690,6 +690,7 @@ class NzbQueue:
         if remove_fetcher_from_trylist:
             article.remove_from_try_list(article.fetcher)
         article.fetcher = None
+        article.tries = 0
         article.nzf.reset_try_list()
         article.nzf.nzo.reset_try_list()
 
@@ -702,7 +703,7 @@ class NzbQueue:
                 return True
         return False
 
-    def get_article(self, server: Server, servers: List[Server]) -> Optional[Article]:
+    def get_articles(self, server: Server, servers: List[Server], fetch_limit: int) -> List[Article]:
         """Get next article for jobs in the queue
         Not locked for performance, since it only reads the queue
         """
@@ -718,12 +719,13 @@ class NzbQueue:
                     or (nzo.avg_stamp + propagation_delay) < time.time()
                 ):
                     if not nzo.server_in_try_list(server):
-                        article = nzo.get_article(server, servers)
-                        if article:
-                            return article
+                        articles = nzo.get_articles(server, servers, fetch_limit)
+                        if articles:
+                            return articles
                     # Stop after first job that wasn't paused/propagating/etc
                     if self.__top_only:
-                        return
+                        return []
+        return []
 
     def register_article(self, article: Article, success: bool = True):
         """Register the articles we tried
