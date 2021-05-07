@@ -232,7 +232,6 @@ class Downloader(Thread):
         "force_disconnect",
         "read_fds",
         "servers",
-        "server_dict",
         "server_nr",
         "timers",
     )
@@ -271,7 +270,6 @@ class Downloader(Thread):
         self.read_fds: Dict[int, NewsWrapper] = {}
 
         self.servers: List[Server] = []
-        self.server_dict: Dict[str, Server] = {}  # For faster lookups, but is not updated later!
         self.server_nr: int = 0
         self.timers: Dict[str, List[float]] = {}
 
@@ -335,7 +333,6 @@ class Downloader(Thread):
                 retention,
             )
             self.servers.append(server)
-            self.server_dict[newserver] = server
 
         # Update server-count
         self.server_nr = len(self.servers)
