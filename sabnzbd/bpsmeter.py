@@ -413,6 +413,7 @@ class BPSMeter:
             del self.article_stats_tried[server]
         if server in self.article_stats_failed:
             del self.article_stats_failed[server]
+        self.init_server_stats(server)
         self.save()
 
     def get_bps_list(self):
