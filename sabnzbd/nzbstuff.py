@@ -1524,8 +1524,7 @@ class NzbObject(TryList):
             servers = config.get_servers()
             server_names = sorted(
                 servers,
-                key=lambda svr: "%d%02d%s"
-                % (int(not servers[svr].enable()), servers[svr].priority(), servers[svr].displayname().lower()),
+                key=lambda svr: "%02d%s" % (servers[svr].priority(), servers[svr].displayname().lower()),
             )
             msgs = [
                 "%s=%sB" % (servers[server_name].displayname(), to_units(self.servercount[server_name]))
