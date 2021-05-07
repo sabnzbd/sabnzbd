@@ -213,7 +213,7 @@ class Scheduler:
             )
 
         logging.info("Setting schedule for midnight BPS reset")
-        self.scheduler.add_daytime_task(sabnzbd.BPSMeter.midnight, "midnight_bps", DAILY_RANGE, None, (0, 0))
+        self.scheduler.add_daytime_task(sabnzbd.BPSMeter.update, "midnight_bps", DAILY_RANGE, None, (0, 0))
 
         logging.info("Setting schedule for server expiration check")
         self.scheduler.add_daytime_task(

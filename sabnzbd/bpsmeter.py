@@ -564,11 +564,6 @@ class BPSMeter:
         if cfg.quota_resume() and sabnzbd.Downloader.paused:
             sabnzbd.Downloader.resume()
 
-    def midnight(self):
-        """Midnight action: dummy update for all servers"""
-        for server in self.day_total.keys():
-            self.update(server)
-
 
 def quota_handler():
     """To be called from scheduler"""
