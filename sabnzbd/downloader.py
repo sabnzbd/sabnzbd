@@ -142,6 +142,7 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
+        sabnzbd.BPSMeter.init_server_stats(server_id)
 
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
@@ -523,7 +524,9 @@ class Downloader(Thread):
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
 
         # Kick BPS-Meter to check quota
-        sabnzbd.BPSMeter.update()
+        BPSMeter = sabnzbd.BPSMeter
+        BPSMeter.update()
+        next_bpsmeter_update = 0
 
         # Check server expiration dates
         check_server_expiration()
@@ -641,7 +644,7 @@ class Downloader(Thread):
                 self.force_disconnect = False
 
                 # Make sure we update the stats
-                sabnzbd.BPSMeter.update()
+                BPSMeter.update()
 
                 # Exit-point
                 if self.shutdown:
@@ -660,20 +663,20 @@ class Downloader(Thread):
                 # Need to initialize the check during first 20 seconds
                 if self.can_be_slowed is None or self.can_be_slowed_timer:
                     # Wait for stable speed to start testing
-                    if not self.can_be_slowed_timer and sabnzbd.BPSMeter.get_stable_speed(timespan=10):
+                    if not self.can_be_slowed_timer and BPSMeter.get_stable_speed(timespan=10):
                         self.can_be_slowed_timer = time.time()
 
                     # Check 10 seconds after enabling slowdown
                     if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
                         # Now let's check if it was stable in the last 10 seconds
-                        self.can_be_slowed = sabnzbd.BPSMeter.get_stable_speed(timespan=10)
+                        self.can_be_slowed = BPSMeter.get_stable_speed(timespan=10)
                         self.can_be_slowed_timer = 0
                         logging.debug("Downloader-slowdown: %r", self.can_be_slowed)
 
             else:
                 read = []
 
-                sabnzbd.BPSMeter.reset()
+                BPSMeter.reset()
 
                 time.sleep(1.0)
 
@@ -686,8 +689,11 @@ class Downloader(Thread):
                     ):
                         DOWNLOADER_CV.wait()
 
+            if now > next_bpsmeter_update:
+                BPSMeter.update()
+                next_bpsmeter_update = now + 0.05
+
             if not read:
-                sabnzbd.BPSMeter.update(force_full_update=False)
                 continue
 
             for selected in read:
@@ -701,7 +707,6 @@ class Downloader(Thread):
                     bytes_received, done, skip = (0, False, False)
 
                 if skip:
-                    sabnzbd.BPSMeter.update(force_full_update=False)
                     continue
 
                 if bytes_received < 1:
@@ -710,22 +715,22 @@ class Downloader(Thread):
 
                 else:
                     try:
-                        article.nzf.nzo.update_download_stats(sabnzbd.BPSMeter.bps, server.id, bytes_received)
+                        article.nzf.nzo.update_download_stats(BPSMeter.bps, server.id, bytes_received)
                     except AttributeError:
                         # In case nzf has disappeared because the file was deleted before the update could happen
                         pass
 
-                    sabnzbd.BPSMeter.update(server.id, bytes_received, force_full_update=False)
-                    if self.bandwidth_limit:
-                        if sabnzbd.BPSMeter.sum_cached_amount + sabnzbd.BPSMeter.bps > self.bandwidth_limit:
-                            sabnzbd.BPSMeter.update()
-                            while sabnzbd.BPSMeter.bps > self.bandwidth_limit:
-                                time.sleep(0.01)
-                                sabnzbd.BPSMeter.update()
+                    BPSMeter.update(server.id, bytes_received, force_full_update=False)
 
-                if not done and nw.status_code != 222:
+                    if self.bandwidth_limit:
+                        if BPSMeter.sum_cached_amount + BPSMeter.bps > self.bandwidth_limit:
+                            BPSMeter.update()
+                            while BPSMeter.bps > self.bandwidth_limit:
+                                time.sleep(0.01)
+                                BPSMeter.update()
+
+                if nw.status_code != 222 and not done:
                     if not nw.connected or nw.status_code == 480:
-                        done = False
                         try:
                             nw.finish_connect(nw.status_code)
                             if sabnzbd.LOG_ALL:
@@ -826,7 +831,6 @@ class Downloader(Thread):
                         logging.debug("Article <%s> is present", article.article)
 
                     elif nw.status_code == 211:
-                        done = False
                         logging.debug("group command ok -> %s", nntp_to_msg(nw.data))
                         nw.group = nw.article.nzf.nzo.group
                         nw.clear_data()
