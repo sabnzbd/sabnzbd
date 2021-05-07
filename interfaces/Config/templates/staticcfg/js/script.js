@@ -264,13 +264,13 @@ function do_restart() {
     $.ajax({ url: '../../config/restart?apikey=' + sabSession,
         complete: function() {
             // Keep counter of failures
-            var failureCounter = 0;
+            var loopCounter = 0;
 
             // Now we try until we can connect
-            var refreshInterval = setInterval(function() {
-                // We skip the first one
-                if(failureCounter == 0) {
-                    failureCounter = failureCounter+1;
+            setInterval(function() {
+                loopCounter = loopCounter+1;
+                // We skip the first one so we give it time to shutdown
+                if(loopCounter < 2) {
                     return
                 }
                 $.ajax({ url: urlTotal,
@@ -279,17 +279,16 @@ function do_restart() {
                         location.href = urlTotal;
                     },
                     error: function(status, text) {
-                        failureCounter = failureCounter+1;
-                        // Too many failuers and we give up
-                        if(failureCounter >= 6) {
+                        // Too many failures and we give up
+                        if(loopCounter >= 10) {
                             // If the port has changed 'Access-Control-Allow-Origin' header will not allow
-                            // us to check if the server is back up. So after 7 failures we redirect
+                            // us to check if the server is back up. So after 10 failures (20 sec) we redirect
                             // anyway in the hopes it works anyway..
                             location.href = urlTotal;
                         }
                     }
                 })
-            }, 4000)
+            }, 2000)
 
             // Exception if we go from HTTPS to HTTP
             // (this is not allowed by browsers and all of the above will be ignored)
