@@ -628,7 +628,6 @@ class Downloader(Thread):
                                 server.host,
                                 sys.exc_info()[1],
                             )
-                            server.reset_article_queue()
                             self.__reset_nw(nw, "failed to initialize", warn=True)
 
             if self.force_disconnect or self.shutdown:
