@@ -52,6 +52,8 @@ _PENALTY_VERYSHORT = 0.1  # Error 400 without cause clues
 
 # Wait this many seconds between checking idle servers for new articles or busy threads for timeout
 _SERVER_CHECK_DELAY = 0.5
+# Wait this many seconds between updates of the BPSMeter
+_BPSMETER_UPDATE_DELAY = 0.05
 
 TIMER_LOCK = RLock()
 
@@ -694,7 +696,7 @@ class Downloader(Thread):
 
             if now > next_bpsmeter_update:
                 BPSMeter.update()
-                next_bpsmeter_update = now + 0.05
+                next_bpsmeter_update = now + _BPSMETER_UPDATE_DELAY
 
             if not read:
                 continue

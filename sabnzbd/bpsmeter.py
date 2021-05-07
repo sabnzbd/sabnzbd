@@ -273,15 +273,8 @@ class BPSMeter:
         if t > self.end_of_day:
             # Current day passed, get new end of day
             self.day_label = time.strftime("%Y-%m-%d")
-            self.day_total = {}
             self.end_of_day = tomorrow(t) - 1.0
-
-            # Need to update all counters
-            for server in self.timeline_total:
-                self.timeline_total[server][self.day_label] = 0
-            for server in self.article_stats_tried:
-                self.article_stats_tried[server][self.day_label] = 0
-                self.article_stats_failed[server][self.day_label] = 0
+            self.day_total = {}
 
             # Check end of week and end of month
             if t > self.end_of_week:
@@ -290,6 +283,10 @@ class BPSMeter:
             if t > self.end_of_month:
                 self.month_total = {}
                 self.end_of_month = next_month(t) - 1.0
+
+            # Need to reset all counters
+            for server in sabnzbd.Downloader.servers[:]:
+                self.init_server_stats(server.id)
 
         # Add amounts that have been stored temporarily to statistics
         for srv in self.cached_amount:
