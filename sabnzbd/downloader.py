@@ -315,27 +315,29 @@ class Downloader(Thread):
                     break
 
         if create and enabled and host and port and threads:
-            server = Server(
-                newserver,
-                displayname,
-                host,
-                port,
-                timeout,
-                threads,
-                priority,
-                ssl,
-                ssl_verify,
-                ssl_ciphers,
-                send_group,
-                username,
-                password,
-                optional,
-                retention,
+            self.servers.append(
+                Server(
+                    newserver,
+                    displayname,
+                    host,
+                    port,
+                    timeout,
+                    threads,
+                    priority,
+                    ssl,
+                    ssl_verify,
+                    ssl_ciphers,
+                    send_group,
+                    username,
+                    password,
+                    optional,
+                    retention,
+                )
             )
-            self.servers.append(server)
 
-        # Update server-count
-        self.server_nr = len(self.servers)
+            # Update server-count and sort the servers
+            self.server_nr = len(self.servers)
+            self.servers.sort(key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
 
     def add_socket(self, fileno: int, nw: NewsWrapper):
         """Add a socket ready to be used to the list to be watched"""

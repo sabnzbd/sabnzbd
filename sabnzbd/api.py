@@ -1198,8 +1198,8 @@ def build_status(skip_dashboard=False, output=None):
             info["dnslookup"] = None
 
     info["servers"] = []
-    servers = sorted(sabnzbd.Downloader.servers[:], key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
-    for server in servers:
+    # Servers-list could be modified during iteration, so we need a copy
+    for server in sabnzbd.Downloader.servers[:]:
         connected = sum(nw.connected for nw in server.idle_threads[:])
         serverconnections = []
         for nw in server.busy_threads[:]:

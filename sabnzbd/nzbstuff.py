@@ -251,7 +251,8 @@ class Article(TryList):
         # Since we need a new server, this one can be listed as failed
         sabnzbd.BPSMeter.register_server_article_failed(self.fetcher.id)
         self.add_to_try_list(self.fetcher)
-        for server in sabnzbd.Downloader.servers:
+        # Servers-list could be modified during iteration, so we need a copy
+        for server in sabnzbd.Downloader.servers[:]:
             if server.active and not self.server_in_try_list(server):
                 if server.priority >= self.fetcher.priority:
                     self.tries = 0
