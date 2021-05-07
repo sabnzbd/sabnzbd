@@ -301,9 +301,12 @@ class BPSMeter:
                 self.timeline_total[srv][self.day_label] += self.cached_amount[srv]
 
             # Update server bps
-            self.server_bps[srv] = (
-                self.server_bps[srv] * (self.last_update - self.start_time) + self.cached_amount[srv]
-            ) / (t - self.start_time)
+            try:
+                self.server_bps[srv] = (
+                    self.server_bps[srv] * (self.last_update - self.start_time) + self.cached_amount[srv]
+                ) / (t - self.start_time)
+            except ZeroDivisionError:
+                self.server_bps[srv] = 0.0
 
             # Reset for next time
             self.cached_amount[srv] = 0
@@ -317,7 +320,12 @@ class BPSMeter:
                     logging.warning(T("Quota spent, pausing downloading"))
 
         # Speedometer
-        self.bps = (self.bps * (self.last_update - self.start_time) + self.sum_cached_amount) / (t - self.start_time)
+        try:
+            self.bps = (self.bps * (self.last_update - self.start_time) + self.sum_cached_amount) / (
+                t - self.start_time
+            )
+        except ZeroDivisionError:
+            self.bps = 0.0
 
         self.sum_cached_amount = 0
         self.last_update = t
