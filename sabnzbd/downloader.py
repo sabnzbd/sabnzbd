@@ -142,10 +142,13 @@ class Server:
         self.request: bool = False  # True if a getaddrinfo() request is pending
         self.have_body: bool = True  # Assume server has "BODY", until proven otherwise
         self.have_stat: bool = True  # Assume server has "STAT", until proven otherwise
-        sabnzbd.BPSMeter.init_server_stats(server_id)
 
+        # Initialize threads
         for i in range(threads):
             self.idle_threads.append(NewsWrapper(self, i + 1))
+
+        # Tell the BPSMeter about this server
+        sabnzbd.BPSMeter.init_server_stats(self.id)
 
     @property
     def hostip(self) -> str:
@@ -720,10 +723,10 @@ class Downloader(Thread):
                         # In case nzf has disappeared because the file was deleted before the update could happen
                         pass
 
-                    BPSMeter.update(server.id, bytes_received, force_full_update=False)
+                    BPSMeter.update(server.id, bytes_received)
 
                     if self.bandwidth_limit:
-                        if BPSMeter.sum_cached_amount + BPSMeter.bps > self.bandwidth_limit:
+                        if BPSMeter.bps + BPSMeter.sum_cached_amount > self.bandwidth_limit:
                             BPSMeter.update()
                             while BPSMeter.bps > self.bandwidth_limit:
                                 time.sleep(0.01)
