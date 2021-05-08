@@ -230,7 +230,6 @@ class Downloader(Thread):
         "bandwidth_limit",
         "bandwidth_perc",
         "can_be_slowed",
-        "can_be_slowed_timer",
         "sleep_time",
         "paused_for_postproc",
         "shutdown",
@@ -258,8 +257,7 @@ class Downloader(Thread):
         self.speed_set()
 
         # Used to see if we can add a slowdown to the Downloader-loop
-        self.can_be_slowed: Optional[bool] = None
-        self.can_be_slowed_timer: int = 0
+        self.can_be_slowed: Optional[float] = None
         self.sleep_time: float = 0.0
         self.sleep_time_set()
         cfg.downloader_sleep_time.callback(self.sleep_time_set)
@@ -533,6 +531,10 @@ class Downloader(Thread):
         BPSMeter.update()
         next_bpsmeter_update = 0
 
+        # Timers for checking can_be_slowed
+        can_be_slowed_timer: float = 0.0
+        next_stable_speed_check: float = 0.0
+
         # Check server expiration dates
         check_server_expiration()
 
@@ -662,21 +664,29 @@ class Downloader(Thread):
                 read, _, _ = select.select(readkeys, (), (), 1.0)
 
                 # Add a sleep if there are too few results compared to the number of active connections
-                if self.can_be_slowed and len(read) < 1 + len(readkeys) / 10:
-                    time.sleep(self.sleep_time)
+                if self.sleep_time:
+                    if self.can_be_slowed and len(read) < 1 + len(readkeys) / 10:
+                        time.sleep(self.sleep_time)
 
-                # Need to initialize the check during first 20 seconds
-                if self.can_be_slowed is None or self.can_be_slowed_timer:
-                    # Wait for stable speed to start testing
-                    if not self.can_be_slowed_timer and BPSMeter.get_stable_speed(timespan=10):
-                        self.can_be_slowed_timer = time.time()
+                    # Initialize by waiting for stable speed and then enable sleep
+                    if self.can_be_slowed is None or can_be_slowed_timer:
+                        # Wait for stable speed to start testing
 
-                    # Check 10 seconds after enabling slowdown
-                    if self.can_be_slowed_timer and time.time() > self.can_be_slowed_timer + 10:
-                        # Now let's check if it was stable in the last 10 seconds
-                        self.can_be_slowed = BPSMeter.get_stable_speed(timespan=10)
-                        self.can_be_slowed_timer = 0
-                        logging.debug("Downloader-slowdown: %r", self.can_be_slowed)
+                        if not can_be_slowed_timer and now > next_stable_speed_check:
+                            if BPSMeter.get_stable_speed(timespan=10):
+                                can_be_slowed_timer = now + 8
+                                self.can_be_slowed = 1
+                            else:
+                                next_stable_speed_check = now + _BPSMETER_UPDATE_DELAY
+
+                        # Check 10 seconds after enabling slowdown
+                        if can_be_slowed_timer and now > can_be_slowed_timer:
+                            # Now let's check if it was stable in the last 10 seconds
+                            self.can_be_slowed = BPSMeter.get_stable_speed(timespan=10)
+                            can_be_slowed_timer = 0
+                            if not self.can_be_slowed:
+                                self.sleep_time = 0
+                            logging.debug("Downloader-slowdown: %r", self.can_be_slowed)
 
             else:
                 read = []
