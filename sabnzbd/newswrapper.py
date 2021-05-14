@@ -21,6 +21,7 @@ sabnzbd.newswrapper
 
 import errno
 import socket
+from python_socks.sync import Proxy
 from threading import Thread
 from nntplib import NNTPPermanentError
 import time
@@ -269,6 +270,7 @@ class NNTP:
             raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
         af, socktype, proto, canonname, sa = self.nw.server.info[0]
+        proxy_enabled = sabnzbd.cfg.proxy_enabled()
 
         # there will be a connect to host (or self.host, so let's force set 'af' to the correct value
         if is_ipv4_addr(self.host):
@@ -276,10 +278,23 @@ class NNTP:
         if is_ipv6_addr(self.host):
             af = socket.AF_INET6
 
+        if proxy_enabled:
+            proxy_url = "socks5://"
+            proxy_username = sabnzbd.cfg.proxy_username()
+            if proxy_username:
+                proxy_url += "%s:%s@" % (proxy_username, sabnzbd.cfg.proxy_password())
+            proxy_url += "%s:%s" % (sabnzbd.cfg.proxy_host(), sabnzbd.cfg.proxy_port())
+            logging.debug("Using SOCKS5 proxy %s", proxy_url)
+            proxy = Proxy.from_url(proxy_url)
+            proxy_sock = proxy.connect(dest_host=self.host, dest_port=self.nw.server.port)
+
         # Secured or unsecured?
         if not self.nw.server.ssl:
             # Basic connection
-            self.sock = socket.socket(af, socktype, proto)
+            if proxy_enabled:
+                self.sock = proxy_sock
+            else:
+                self.sock = socket.socket(af, socktype, proto)
         else:
             # Use context or just wrapper
             if sabnzbd.CERTIFICATE_VALIDATION:
@@ -302,20 +317,31 @@ class NNTP:
                     # At their own risk, socket will error out in case it was invalid
                     ctx.set_ciphers(self.nw.server.ssl_ciphers)
 
-                self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=self.nw.server.host)
+                if proxy_enabled:
+                    self.sock = ctx.wrap_socket(proxy_sock, server_hostname=self.nw.server.host)
+                else:
+                    self.sock = ctx.wrap_socket(socket.socket(af, socktype, proto), server_hostname=self.nw.server.host)
             else:
-                # Use a regular wrapper, no certificate validation
-                self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto))
+                if proxy_enabled:
+                    self.sock = ssl.wrap_socket(proxy_sock)
+                else:
+                    # Use a regular wrapper, no certificate validation
+                    self.sock = ssl.wrap_socket(socket.socket(af, socktype, proto))
 
         # Store fileno of the socket
         self.fileno: int = self.sock.fileno()
 
-        # Open the connection in a separate thread due to avoid blocking
-        # For server-testing we do want blocking
-        if not self.nw.blocking:
-            Thread(target=self.connect).start()
+        if proxy_enabled:
+            self.sock.setblocking(self.nw.blocking)
+            if not self.nw.blocking:
+                sabnzbd.Downloader.add_socket(self.sock.fileno(), self.nw)
         else:
-            self.connect()
+            # Open the connection in a separate thread due to avoid blocking
+            # For server-testing we do want blocking
+            if not self.nw.blocking:
+                Thread(target=self.connect).start()
+            else:
+                self.connect()
 
     def connect(self):
         """Start of connection, can be performed a-sync"""

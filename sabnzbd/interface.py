@@ -1458,6 +1458,11 @@ GENERAL_LIST = (
     "enable_https_verification",
     "auto_browser",
     "check_new_rel",
+    "proxy_enabled",
+    "proxy_host",
+    "proxy_port",
+    "proxy_username",
+    "proxy_password",
 )
 
 

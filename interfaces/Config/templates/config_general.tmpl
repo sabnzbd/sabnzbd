@@ -216,6 +216,43 @@
             </fieldset>
         </div><!-- /col1 -->
     </div><!-- /section -->
+    <div class="section">
+        <div class="col2">
+            <h3>$T('proxy') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+        </div><!-- /col2 -->
+        <div class="col1">
+            <fieldset>
+                <div class="field-pair">
+                    <label class="config" for="proxy_enabled">$T('opt-proxy_enabled')</label>
+                    <input type="checkbox" name="proxy_enabled" id="proxy_enabled" value="1" <!--#if int($proxy_enabled) > 0 then 'checked="checked"' else ""#-->/>
+                    <span class="desc">$T('explain-proxy_enabled')</span>
+                </div>
+                <div class="field-pair advanced-settings">
+                    <label class="config" for="proxy_host">$T('opt-proxy_host')</label>
+                    <input type="text" name="proxy_host" id="proxy_host" value="$proxy_host" />
+                    <span class="desc">$T('explain-proxy_host')</span>
+                </div>
+                <div class="field-pair">
+                    <label class="config" for="proxy_port">$T('opt-proxy_port')</label>
+                    <input type="number" name="proxy_port" id="proxy_port" value="$proxy_port" size="8" />
+                    <span class="desc">$T('explain-proxy_port')</span>
+                </div>
+                <div class="field-pair advanced-settings">
+                    <label class="config" for="proxy_username">$T('opt-proxy_username')</label>
+                    <input type="text" name="proxy_username" id="proxy_username" value="$proxy_username" />
+                    <span class="desc">$T('explain-proxy_username')</span>
+                </div>
+                <div class="field-pair" advanced-settings">
+                    <label class="config" for="proxy_password">$T('opt-proxy_password')</label>
+                    <input type="text" name="proxy_password" id="proxy_password" value="$proxy_password" />
+                    <span class="desc">$T('explain-proxy_password')</span>
+                </div>
+                <div class="field-pair">
+                    <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
+                </div>
+            </fieldset>
+        </div><!-- /col1 -->
+    </div><!-- /section -->
 
     </form>
 </div><!-- /colmask -->

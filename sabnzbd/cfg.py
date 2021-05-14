@@ -135,6 +135,11 @@ enable_https = OptionBool("misc", "enable_https", False)
 inet_exposure = OptionNumber("misc", "inet_exposure", 0, protect=True)
 api_key = OptionStr("misc", "api_key", create_api_key())
 nzb_key = OptionStr("misc", "nzb_key", create_api_key())
+proxy_enabled = OptionBool("misc", "proxy_enabled", False)
+proxy_host = OptionStr("misc", "proxy_host")
+proxy_port = OptionStr("misc", "proxy_port")
+proxy_username = OptionStr("misc", "proxy_username")
+proxy_password = OptionPassword("misc", "proxy_password")
 
 
 ##############################################################################
