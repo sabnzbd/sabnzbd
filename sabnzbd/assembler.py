@@ -36,7 +36,6 @@ from sabnzbd.filesystem import (
     has_win_device,
     diskspace,
     get_filename,
-    get_ext,
     has_unwanted_extension,
 )
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
@@ -354,7 +353,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                                 except rarfile.RarCRCError as e:
                                     # CRC errors can be thrown for wrong password or
                                     # missing the next volume (with correct password)
-                                    if "cannot find volume" in str(e).lower():
+                                    if match_str(str(e), ("cannot find volume", "unexpected end of archive")):
                                         # We assume this one worked!
                                         password_hit = password
                                         break
