@@ -10,6 +10,7 @@ chardet
 notify2
 puremagic
 guessit>=3.1.0
+python-socks
 
 # Windows system integration
 pywin32>=227; sys_platform == 'win32'
