@@ -1169,12 +1169,18 @@ def main():
         except:
             pass
     logging.info("Commit = %s", sabnzbd.__baseline__)
+
     logging.info("Full executable path = %s", sabnzbd.MY_FULLNAME)
-    logging.info("Platform = %s - %s", os.name, platform.platform())
-    logging.info("CPU architecture = %s", cpu_architecture)
-    logging.info("Python-version = %s", sys.version)
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
+    logging.info("Python-version = %s", sys.version)
     logging.info("Dockerized = %s", sabnzbd.DOCKER)
+    logging.info("CPU architecture = %s", cpu_architecture)
+
+    try:
+        logging.info("Platform = %s - %s", os.name, platform.platform())
+    except:
+        # Can fail on special platforms (like Snapcraft or embedded)
+        pass
 
     # Find encoding; relevant for external processing activities
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
