@@ -1124,7 +1124,11 @@ class TestUnwantedExtensions:
     @set_config({"unwanted_extensions_mode": 1, "unwanted_extensions": test_extensions})
     def test_has_unwanted_extension_whitelist_mode(self):
         for filename, result in self.test_params:
-            assert filesystem.has_unwanted_extension(filename) is not result
+            if filesystem.get_ext(filename):
+                assert filesystem.has_unwanted_extension(filename) is not result
+            else:
+                # missing extension is never considered unwanted
+                assert filesystem.has_unwanted_extension(filename) is False
 
     @set_config({"unwanted_extensions_mode": 0, "unwanted_extensions": ""})
     def test_has_unwanted_extension_empty_blacklist(self):
@@ -1134,4 +1138,8 @@ class TestUnwantedExtensions:
     @set_config({"unwanted_extensions_mode": 1, "unwanted_extensions": ""})
     def test_has_unwanted_extension_empty_whitelist(self):
         for filename, result in self.test_params:
-            assert filesystem.has_unwanted_extension(filename) is True
+            if filesystem.get_ext(filename):
+                assert filesystem.has_unwanted_extension(filename) is True
+            else:
+                # missing extension is never considered unwanted
+                assert filesystem.has_unwanted_extension(filename) is False

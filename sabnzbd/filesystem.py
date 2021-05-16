@@ -73,7 +73,10 @@ def has_unwanted_extension(filename: str) -> bool:
             and extension not in sabnzbd.cfg.unwanted_extensions()
         )
     else:
-        return bool(sabnzbd.cfg.unwanted_extensions_mode())
+        # Don't consider missing extensions unwanted to prevent indiscriminate blocking of
+        # obfuscated jobs in whitelist mode. If there is an extension but nothing listed as
+        # (un)wanted, the result only depends on the configured mode.
+        return bool(extension and sabnzbd.cfg.unwanted_extensions_mode())
 
 
 def get_filename(path: str) -> str:
