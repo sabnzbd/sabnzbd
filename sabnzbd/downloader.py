@@ -928,9 +928,7 @@ class Downloader(Thread):
                 nw.article.tries += 1
 
             # Do we discard, or try again for this server
-            if not retry_article or (
-                nw.article.tries > cfg.max_art_tries() and (nw.article.fetcher.optional or not cfg.max_art_opt())
-            ):
+            if not retry_article or nw.article.tries > cfg.max_art_tries():
                 # Too many tries on this server, consider article missing
                 self.decode(nw.article, None)
                 nw.article.tries = 0
