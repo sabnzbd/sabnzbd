@@ -251,7 +251,6 @@ class Downloader(Thread):
         "force_disconnect",
         "read_fds",
         "servers",
-        "server_nr",
         "timers",
     )
 
@@ -289,7 +288,6 @@ class Downloader(Thread):
         self.read_fds: Dict[int, NewsWrapper] = {}
 
         self.servers: List[Server] = []
-        self.server_nr: int = 0
         self.timers: Dict[str, List[float]] = {}
 
         for server in config.get_servers():
@@ -355,9 +353,8 @@ class Downloader(Thread):
                 )
             )
 
-        # Update server-count and sort the servers
-        self.server_nr = len(self.servers)
-        self.servers.sort(key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
+            # Sort the servers for performance
+            self.servers.sort(key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
 
     def add_socket(self, fileno: int, nw: NewsWrapper):
         """Add a socket ready to be used to the list to be watched"""

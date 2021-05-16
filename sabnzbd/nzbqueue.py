@@ -860,7 +860,10 @@ class NzbQueue:
 
     def stop_idle_jobs(self):
         """Detect jobs that have zero files left and send them to post processing"""
+        # Only check servers that are active
+        nr_servers = len([server for server in sabnzbd.Downloader.servers[:] if server.active])
         empty = []
+
         for nzo in self.__nzo_list:
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 logging.info("Found idle job %s", nzo.final_name)
@@ -868,10 +871,10 @@ class NzbQueue:
 
             # Stall prevention by checking if all servers are in the trylist
             # This is a CPU-cheaper alternative to prevent stalling
-            if len(nzo.try_list) == sabnzbd.Downloader.server_nr:
+            if len(nzo.try_list) >= nr_servers:
                 # Maybe the NZF's need a reset too?
                 for nzf in nzo.files:
-                    if len(nzf.try_list) == sabnzbd.Downloader.server_nr:
+                    if len(nzf.try_list) >= nr_servers:
                         # We do not want to reset all article trylists, they are good
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()
