@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 3.3.0 Release Candidate 1
+Release Notes - SABnzbd 3.3.0 Release Candidate 2
 =========================================================
+
+## Changes and bugfixes since 3.3.0 Release Candidate 1
+- Failure to start on some platforms.
+- Stability improvement to encrypted RAR-detection.
+- Allow missing extensions in `Unwanted extensions` detection.
+- Removed Special setting `max_art_opt`.
+- Prevent jobs getting stuck at 99% due to unreliable servers.
 
 ## Changes since 3.2.1
 - The `External internet access` will automatically detect local network
