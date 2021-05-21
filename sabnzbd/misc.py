@@ -779,7 +779,12 @@ def get_all_passwords(nzo):
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, "")
-    return set(passwords)
+
+    unique_passwords = []
+    for password in passwords:
+        if password not in unique_passwords:
+            unique_passwords.append(password)
+    return unique_passwords
 
 
 def find_on_path(targets):
