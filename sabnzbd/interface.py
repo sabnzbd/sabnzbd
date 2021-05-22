@@ -465,18 +465,6 @@ class MainPage:
         sabnzbd.shutdown_program()
         return T("SABnzbd shutdown finished")
 
-    @secured_expose(check_api_key=True)
-    def pause(self, **kwargs):
-        sabnzbd.Scheduler.plan_resume(0)
-        sabnzbd.Downloader.pause()
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def resume(self, **kwargs):
-        sabnzbd.Scheduler.plan_resume(0)
-        sabnzbd.unpause_all()
-        raise Raiser(self.__root)
-
     @secured_expose(check_api_key=True, access_type=1)
     def api(self, **kwargs):
         """Redirect to API-handler, we check the access_type in the API-handler"""
@@ -492,25 +480,6 @@ class MainPage:
             return ShowString(history_db.get_name(name), history_db.get_script_log(name))
         else:
             raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def retry(self, **kwargs):
-        """Duplicate of retry of History, needed for some skins"""
-        job = kwargs.get("job", "")
-        url = kwargs.get("url", "").strip()
-        pp = kwargs.get("pp")
-        cat = kwargs.get("cat")
-        script = kwargs.get("script")
-        if url:
-            sabnzbd.add_url(url, pp, script, cat, nzbname=kwargs.get("nzbname"))
-        del_hist_job(job, del_files=True)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def retry_pp(self, **kwargs):
-        # Duplicate of History/retry_pp to please the SMPL skin :(
-        retry_job(kwargs.get("job"), kwargs.get("nzbfile"), kwargs.get("password"))
-        raise Raiser(self.__root)
 
     @secured_expose
     def robots_txt(self, **kwargs):
@@ -909,120 +878,12 @@ class QueuePage:
         start = int_conv(kwargs.get("start"))
         limit = int_conv(kwargs.get("limit"))
         search = kwargs.get("search")
-        info, _pnfo_list, _bytespersec = build_queue(start=start, limit=limit, trans=True, search=search)
+        info, _, _ = build_queue(start=start, limit=limit, trans=True, search=search)
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR, "queue.tmpl"), searchList=[info], compilerSettings=CHEETAH_DIRECTIVES
         )
         return template.respond()
-
-    @secured_expose(check_api_key=True)
-    def delete(self, **kwargs):
-        uid = kwargs.get("uid")
-        del_files = int_conv(kwargs.get("del_files"))
-        if uid:
-            sabnzbd.NzbQueue.remove(uid, delete_all_data=del_files)
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def purge(self, **kwargs):
-        sabnzbd.NzbQueue.remove_all(kwargs.get("search"))
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def change_queue_complete_action(self, **kwargs):
-        """Action or script to be performed once the queue has been completed
-        Scripts are prefixed with 'script_'
-        """
-        action = kwargs.get("action")
-        sabnzbd.change_queue_complete_action(action)
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def switch(self, **kwargs):
-        uid1 = kwargs.get("uid1")
-        uid2 = kwargs.get("uid2")
-        if uid1 and uid2:
-            sabnzbd.NzbQueue.switch(uid1, uid2)
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def change_opts(self, **kwargs):
-        nzo_id = kwargs.get("nzo_id")
-        pp = kwargs.get("pp", "")
-        if nzo_id and pp and pp.isdigit():
-            sabnzbd.NzbQueue.change_opts(nzo_id, int(pp))
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def change_script(self, **kwargs):
-        nzo_id = kwargs.get("nzo_id")
-        script = kwargs.get("script", "")
-        if nzo_id and script:
-            if script == "None":
-                script = None
-            sabnzbd.NzbQueue.change_script(nzo_id, script)
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def change_cat(self, **kwargs):
-        nzo_id = kwargs.get("nzo_id")
-        cat = kwargs.get("cat", "")
-        if nzo_id and cat:
-            if cat == "None":
-                cat = None
-            sabnzbd.NzbQueue.change_cat(nzo_id, cat)
-
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def shutdown(self, **kwargs):
-        sabnzbd.shutdown_program()
-        return T("SABnzbd shutdown finished")
-
-    @secured_expose(check_api_key=True)
-    def pause(self, **kwargs):
-        sabnzbd.Scheduler.plan_resume(0)
-        sabnzbd.Downloader.pause()
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def resume(self, **kwargs):
-        sabnzbd.Scheduler.plan_resume(0)
-        sabnzbd.unpause_all()
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def pause_nzo(self, **kwargs):
-        uid = kwargs.get("uid", "")
-        sabnzbd.NzbQueue.pause_multiple_nzo(uid.split(","))
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def resume_nzo(self, **kwargs):
-        uid = kwargs.get("uid", "")
-        sabnzbd.NzbQueue.resume_multiple_nzo(uid.split(","))
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def set_priority(self, **kwargs):
-        sabnzbd.NzbQueue.set_priority(kwargs.get("nzo_id"), kwargs.get("priority"))
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def sort_by_avg_age(self, **kwargs):
-        sabnzbd.NzbQueue.sort_queue("avg_age", kwargs.get("dir"))
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def sort_by_name(self, **kwargs):
-        sabnzbd.NzbQueue.sort_queue("name", kwargs.get("dir"))
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def sort_by_size(self, **kwargs):
-        sabnzbd.NzbQueue.sort_queue("size", kwargs.get("dir"))
-        raise queueRaiser(self.__root, kwargs)
 
 
 ##############################################################################
@@ -1038,7 +899,6 @@ class HistoryPage:
         failed_only = int_conv(kwargs.get("failed_only"))
 
         history = build_header()
-        history["failed_only"] = failed_only
         history["rating_enable"] = bool(cfg.rating_enable())
 
         postfix = T("B")  # : Abbreviation for bytes, as in GB
@@ -1050,23 +910,10 @@ class HistoryPage:
             to_units(day, postfix=postfix),
         )
 
-        history["lines"], history["fetched"], history["noofslots"] = build_history(
+        history["lines"], history["noofslots"] = build_history(
             start=start, limit=limit, search=search, failed_only=failed_only
         )
-
-        if search:
-            history["search"] = escape(search)
-        else:
-            history["search"] = ""
-
-        history["start"] = int_conv(start)
-        history["limit"] = int_conv(limit)
-        history["finish"] = history["start"] + history["limit"]
-        if history["finish"] > history["noofslots"]:
-            history["finish"] = history["noofslots"]
-        if not history["finish"]:
-            history["finish"] = history["fetched"]
-        history["time_format"] = time_format
+        history["limit"] = limit
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR, "history.tmpl"),
@@ -1074,22 +921,6 @@ class HistoryPage:
             compilerSettings=CHEETAH_DIRECTIVES,
         )
         return template.respond()
-
-    @secured_expose(check_api_key=True)
-    def purge(self, **kwargs):
-        history_db = sabnzbd.get_db_connection()
-        history_db.remove_history()
-        raise queueRaiser(self.__root, kwargs)
-
-    @secured_expose(check_api_key=True)
-    def delete(self, **kwargs):
-        job = kwargs.get("job")
-        del_files = int_conv(kwargs.get("del_files"))
-        if job:
-            jobs = job.split(",")
-            for job in jobs:
-                del_hist_job(job, del_files=del_files)
-        raise queueRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True)
     def retry_pp(self, **kwargs):
@@ -1126,13 +957,6 @@ class ConfigPage:
 
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
         conf["ssl_version"] = ssl.OPENSSL_VERSION
-
-        new = {}
-        for svr in config.get_servers():
-            new[svr] = {}
-        conf["servers"] = new
-
-        conf["folders"] = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config.tmpl"),
@@ -1514,10 +1338,7 @@ class ConfigGeneral:
         conf["password"] = cfg.password.get_stars()
 
         conf["language"] = cfg.language()
-        lang_list = list_languages()
-        if len(lang_list) < 2:
-            lang_list = []
-        conf["lang_list"] = lang_list
+        conf["lang_list"] = list_languages()
 
         for kw in GENERAL_LIST:
             conf[kw] = config.get_config("misc", kw)()
@@ -1525,7 +1346,6 @@ class ConfigGeneral:
         conf["bandwidth_max"] = cfg.bandwidth_max()
         conf["bandwidth_perc"] = cfg.bandwidth_perc()
         conf["nzb_key"] = cfg.nzb_key()
-        conf["my_lcldata"] = cfg.admin_dir.get_clipped_path()
         conf["caller_url"] = cherrypy.request.base + cfg.url_base()
 
         template = Template(
@@ -2408,19 +2228,6 @@ class ConfigSorting:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def saveSorting(self, **kwargs):
-        try:
-            kwargs["movie_categories"] = kwargs["movie_cat"]
-        except:
-            pass
-        try:
-            kwargs["date_categories"] = kwargs["date_cat"]
-        except:
-            pass
-        try:
-            kwargs["tv_categories"] = kwargs["tv_cat"]
-        except:
-            pass
-
         for kw in SORT_LIST:
             item = config.get_config("misc", kw)
             value = kwargs.get(kw)
@@ -2457,18 +2264,8 @@ class Status:
         return template.respond()
 
     @secured_expose(check_api_key=True)
-    def reset_quota(self, **kwargs):
-        sabnzbd.BPSMeter.reset_quota(force=True)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
     def disconnect(self, **kwargs):
         sabnzbd.Downloader.disconnect()
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def refresh_conn(self, **kwargs):
-        # No real action, just reload the page
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)

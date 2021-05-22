@@ -506,7 +506,7 @@ def _api_history(name, output, kwargs):
             to_units(week),
             to_units(day),
         )
-        history["slots"], fetched_items, history["noofslots"] = build_history(
+        history["slots"], history["noofslots"] = build_history(
             start=start, limit=limit, search=search, failed_only=failed_only, categories=categories, nzo_ids=nzo_ids
         )
         history["last_history_update"] = sabnzbd.LAST_HISTORY_UPDATE
@@ -1690,12 +1690,12 @@ def build_history(
 
     # Fetch history items
     if not database_history_limit:
-        items, fetched_items, total_items = history_db.fetch_history(
+        items, total_items = history_db.fetch_history(
             database_history_start, 1, search, failed_only, categories, nzo_ids
         )
         items = []
     else:
-        items, fetched_items, total_items = history_db.fetch_history(
+        items, total_items = history_db.fetch_history(
             database_history_start, database_history_limit, search, failed_only, categories, nzo_ids
         )
 
@@ -1736,12 +1736,11 @@ def build_history(
                 item["rating_user_vote"] = rating.user_vote
 
     total_items += postproc_queue_size
-    fetched_items = len(items)
 
     if close_db:
         history_db.close()
 
-    return items, fetched_items, total_items
+    return items, total_items
 
 
 def get_active_history(queue, items):

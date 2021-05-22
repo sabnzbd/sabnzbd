@@ -123,7 +123,7 @@ function HistoryListModel(parent) {
 
         // Add
         $.ajax({
-            url: "./retry_pp",
+            url: "./history/retry_pp",
             type: "POST",
             cache: false,
             processData: false,
