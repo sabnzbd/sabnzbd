@@ -75,7 +75,6 @@ DEF_INTERFACES = "interfaces"
 DEF_EMAIL_TMPL = "email"
 DEF_STDCONFIG = "Config"
 DEF_STDINTF = "Glitter"
-DEF_SKIN_COLORS = {"Glitter": "Auto", "plush": "gold"}
 DEF_MAIN_TMPL = os.path.normpath("templates/main.tmpl")
 DEF_INI_FILE = "sabnzbd.ini"
 DEF_HOST = "127.0.0.1"

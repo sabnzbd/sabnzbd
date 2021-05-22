@@ -401,6 +401,7 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def disconnect(self):
+        logging.info("Forcing disconnect")
         self.force_disconnect = True
 
     def limit_speed(self, value: Union[str, int]):

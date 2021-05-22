@@ -46,7 +46,6 @@ from sabnzbd.constants import (
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
     DEF_FOLDER_MAX,
-    DEF_FILE_MAX,
 )
 
 ##############################################################################

@@ -5,14 +5,12 @@
 <div class="tabs">
   <ul>
     <li><a href="#tabs-warnings">$T('lastWarnings')</a></li>
-    <li><a href="#tabs-connections">$T('connections').capitalize()</a></li>
     <li><a href="#tabs-repair">$T('Plush-tab-repair')</a></li>
     <li><a href="#tabs-dashboard">$T('dashboard-title')</a></li>
   </ul>
 
   <div id="tabs-warnings">
     <p>
-      <a href="clearwarnings?apikey=$apikey" class="juiButton">$T('clearWarnings').capitalize()</a>
       <a href="showlog?apikey=$apikey" class="juiButton">$T('link-showLog')</a>
       <strong>$T('logging'):</strong> <select class="xsmall" id="logging_level">
         <option value="0" <!--#if $loglevel == "0" then "selected" else ""#-->>$T('log-errWarn')</option>
@@ -46,18 +44,7 @@
   </div>
 
   <div id="tabs-repair">
-    <table>
-      <tr><td>
-        <form action="saveGeneral" method="post">
-          <input type="submit" class="juiButton" onclick="this.form.action='../config/repair?apikey=$apikey'; this.form.submit(); return false;" value="$T('button-repair')"/>
-        </form>
-        </td><td style="padding-left:20px;"><p>$T('explain-Repair')</p></td></tr>
-      <tr><td>
-        <form action="saveGeneral" method="post">
-          <input type="submit" class="juiButton" onclick="this.form.action='../config/restart?apikey=$apikey'; this.form.submit(); return false;" value="$T('button-restart')"/>
-        </form>
-        </td><td style="padding-left:20px;"><p>$T('explain-Restart')</p></td></tr>
-    </table>
+      <p>Go to Config - General to restart.</p>
 
   <!--#if $folders#-->
     <br/><hr/><br/>
@@ -87,12 +74,6 @@
     </table>
   <!--#end if#-->
 </div>
-
-
-
-  <div id="tabs-connections">
-  <a href="disconnect?apikey=$apikey" class="juiButton">$T('link-forceDisc')</a>
-  </div>
 
   <div id="tabs-dashboard">
     <table class="rssTable">

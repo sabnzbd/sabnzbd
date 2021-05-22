@@ -30,8 +30,6 @@ import hashlib
 import socket
 import ssl
 import functools
-import ipaddress
-from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
@@ -53,9 +51,17 @@ from sabnzbd.misc import (
     is_lan_addr,
     is_loopback_addr,
     ip_in_subnet,
-    strip_ipv4_mapped_notation,
 )
-from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
+from sabnzbd.filesystem import (
+    real_path,
+    long_path,
+    globber,
+    globber_full,
+    remove_all,
+    clip_path,
+    same_file,
+    setname_from_path,
+)
 from sabnzbd.encoding import xml_name, utob
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -66,7 +72,7 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
 import sabnzbd.utils.ssdp
-from sabnzbd.constants import MEBI, DEF_SKIN_COLORS, DEF_STDCONFIG, DEF_MAIN_TMPL, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
+from sabnzbd.constants import MEBI, DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
@@ -78,7 +84,6 @@ from sabnzbd.api import (
     retry_job,
     build_header,
     build_history,
-    del_hist_job,
     Ttemplate,
     build_queue_header,
 )
@@ -396,10 +401,6 @@ def Raiser(root: str = "", **kwargs):
     return cherrypy.HTTPRedirect(root)
 
 
-def queueRaiser(root, kwargs):
-    return Raiser(root, start=kwargs.get("start"), limit=kwargs.get("limit"), search=kwargs.get("search"))
-
-
 def rssRaiser(root, kwargs):
     return Raiser(root, feed=kwargs.get("feed"))
 
@@ -585,12 +586,6 @@ class Wizard:
             file=os.path.join(sabnzbd.WIZARD_DIR, "two.html"), searchList=[info], compilerSettings=CHEETAH_DIRECTIVES
         )
         return template.respond()
-
-    @secured_expose
-    def exit(self, **kwargs):
-        """Stop SABnzbd"""
-        sabnzbd.shutdown_program()
-        return T("SABnzbd shutdown finished")
 
 
 def get_access_info():
@@ -925,7 +920,7 @@ class HistoryPage:
     @secured_expose(check_api_key=True)
     def retry_pp(self, **kwargs):
         retry_job(kwargs.get("job"), kwargs.get("nzbfile"), kwargs.get("password"))
-        raise queueRaiser(self.__root, kwargs)
+        raise Raiser(self.__root)
 
 
 ##############################################################################
@@ -964,25 +959,6 @@ class ConfigPage:
             compilerSettings=CHEETAH_DIRECTIVES,
         )
         return template.respond()
-
-    @secured_expose(check_api_key=True)
-    def restart(self, **kwargs):
-        logging.info("Restart requested by interface")
-        # Do the shutdown async to still send goodbye to browser
-        Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
-        return T(
-            '&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />'
-        )
-
-    @secured_expose(check_api_key=True)
-    def repair(self, **kwargs):
-        logging.info("Queue repair requested by interface")
-        sabnzbd.request_repair()
-        # Do the shutdown async to still send goodbye to browser
-        Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
-        return T(
-            '&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then click the button below.<br /><br /><strong><a href="..">Refresh</a></strong><br />'
-        )
 
 
 ##############################################################################
@@ -1290,51 +1266,24 @@ class ConfigGeneral:
 
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
-        def ListColors(web_dir):
-            lst = []
-            web_dir = os.path.join(sabnzbd.DIR_INTERFACES, web_dir)
-            dd = os.path.abspath(web_dir + "/templates/static/stylesheets/colorschemes")
-            if (not dd) or (not os.access(dd, os.R_OK)):
-                return lst
-            for color in globber(dd):
-                col = color.replace(".css", "")
-                lst.append(col)
-            return lst
-
-        def add_color(skin_dir, color):
-            if skin_dir:
-                if not color:
-                    try:
-                        color = DEF_SKIN_COLORS[skin_dir.lower()]
-                    except KeyError:
-                        return skin_dir
-                return "%s - %s" % (skin_dir, color)
-            else:
-                return ""
 
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
 
         conf["configfn"] = config.get_filename()
         conf["certificate_validation"] = sabnzbd.CERTIFICATE_VALIDATION
 
-        wlist = []
-        interfaces = globber_full(sabnzbd.DIR_INTERFACES)
-        for k in interfaces:
-            if k.endswith(DEF_STDCONFIG):
-                interfaces.remove(k)
-                continue
+        web_list = []
+        for interface_dir in globber_full(sabnzbd.DIR_INTERFACES):
+            # Ignore the config
+            if not interface_dir.endswith(DEF_STDCONFIG):
+                # Check the available templates
+                for colorscheme in globber(
+                    os.path.join(interface_dir, "templates", "static", "stylesheets", "colorschemes")
+                ):
+                    web_list.append("%s - %s" % (setname_from_path(interface_dir), setname_from_path(colorscheme)))
 
-        for web in interfaces:
-            rweb = os.path.basename(web)
-            if os.access(os.path.join(web, DEF_MAIN_TMPL), os.R_OK):
-                cols = ListColors(rweb)
-                if cols:
-                    for col in cols:
-                        wlist.append(add_color(rweb, col))
-                else:
-                    wlist.append(rweb)
-        conf["web_list"] = wlist
-        conf["web_dir"] = add_color(cfg.web_dir(), cfg.web_color())
+        conf["web_list"] = web_list
+        conf["web_dir"] = "%s - %s" % (cfg.web_dir(), cfg.web_color())
         conf["password"] = cfg.password.get_stars()
 
         conf["language"] = cfg.language()
@@ -1392,14 +1341,7 @@ class ConfigGeneral:
 
 
 def change_web_dir(web_dir):
-    try:
-        web_dir, web_color = web_dir.split(" - ")
-    except:
-        try:
-            web_color = DEF_SKIN_COLORS[web_dir.lower()]
-        except:
-            web_color = ""
-
+    web_dir, web_color = web_dir.split(" - ")
     web_dir_path = real_path(sabnzbd.DIR_INTERFACES, web_dir)
 
     if not os.path.exists(web_dir_path):
@@ -2264,11 +2206,6 @@ class Status:
         return template.respond()
 
     @secured_expose(check_api_key=True)
-    def disconnect(self, **kwargs):
-        sabnzbd.Downloader.disconnect()
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
     def showlog(self, **kwargs):
         try:
             sabnzbd.LOGHANDLER.flush()
@@ -2307,11 +2244,6 @@ class Status:
         cherrypy.response.headers["Content-Type"] = "application/x-download;charset=utf-8"
         cherrypy.response.headers["Content-Disposition"] = 'attachment;filename="sabnzbd.log"'
         return log_data
-
-    @secured_expose(check_api_key=True)
-    def clearwarnings(self, **kwargs):
-        sabnzbd.GUIHANDLER.clear()
-        raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
     def change_loglevel(self, **kwargs):
@@ -2524,7 +2456,8 @@ def GetRssLog(feed):
 
 
 ##############################################################################
-LIST_EMAIL = (
+NOTIFY_OPTIONS = {}
+NOTIFY_OPTIONS["misc"] = (
     "email_endjob",
     "email_cats",
     "email_full",
@@ -2535,7 +2468,7 @@ LIST_EMAIL = (
     "email_pwd",
     "email_rss",
 )
-LIST_NCENTER = (
+NOTIFY_OPTIONS["ncenter"] = (
     "ncenter_enable",
     "ncenter_cats",
     "ncenter_prio_startup",
@@ -2552,7 +2485,7 @@ LIST_NCENTER = (
     "ncenter_prio_other",
     "ncenter_prio_new_login",
 )
-LIST_ACENTER = (
+NOTIFY_OPTIONS["acenter"] = (
     "acenter_enable",
     "acenter_cats",
     "acenter_prio_startup",
@@ -2568,7 +2501,7 @@ LIST_ACENTER = (
     "acenter_prio_other",
     "acenter_prio_new_login",
 )
-LIST_NTFOSD = (
+NOTIFY_OPTIONS["ntfosd"] = (
     "ntfosd_enable",
     "ntfosd_cats",
     "ntfosd_prio_startup",
@@ -2584,7 +2517,7 @@ LIST_NTFOSD = (
     "ntfosd_prio_other",
     "ntfosd_prio_new_login",
 )
-LIST_PROWL = (
+NOTIFY_OPTIONS["prowl"] = (
     "prowl_enable",
     "prowl_cats",
     "prowl_apikey",
@@ -2601,7 +2534,7 @@ LIST_PROWL = (
     "prowl_prio_other",
     "prowl_prio_new_login",
 )
-LIST_PUSHOVER = (
+NOTIFY_OPTIONS["pushover"] = (
     "pushover_enable",
     "pushover_cats",
     "pushover_token",
@@ -2622,7 +2555,7 @@ LIST_PUSHOVER = (
     "pushover_emergency_retry",
     "pushover_emergency_expire",
 )
-LIST_PUSHBULLET = (
+NOTIFY_OPTIONS["pushbullet"] = (
     "pushbullet_enable",
     "pushbullet_cats",
     "pushbullet_apikey",
@@ -2640,7 +2573,7 @@ LIST_PUSHBULLET = (
     "pushbullet_prio_other",
     "pushbullet_prio_new_login",
 )
-LIST_NSCRIPT = (
+NOTIFY_OPTIONS["nscript"] = (
     "nscript_enable",
     "nscript_cats",
     "nscript_script",
@@ -2663,35 +2596,20 @@ LIST_NSCRIPT = (
 class ConfigNotify:
     def __init__(self, root):
         self.__root = root
-        self.__lastmail = None
 
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
         conf = build_header(sabnzbd.WEB_DIR_CONFIG)
-
+        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION
         conf["categories"] = list_cats(False)
-        conf["lastmail"] = self.__lastmail
         conf["have_ntfosd"] = sabnzbd.notifier.have_ntfosd()
         conf["have_ncenter"] = sabnzbd.DARWIN and sabnzbd.FOUNDATION
         conf["scripts"] = list_scripts(default=False, none=True)
 
-        for kw in LIST_EMAIL:
-            conf[kw] = config.get_config("misc", kw).get_string()
-        for kw in LIST_PROWL:
-            conf[kw] = config.get_config("prowl", kw)()
-        for kw in LIST_PUSHOVER:
-            conf[kw] = config.get_config("pushover", kw)()
-        for kw in LIST_PUSHBULLET:
-            conf[kw] = config.get_config("pushbullet", kw)()
-        for kw in LIST_NCENTER:
-            conf[kw] = config.get_config("ncenter", kw)()
-        for kw in LIST_ACENTER:
-            conf[kw] = config.get_config("acenter", kw)()
-        for kw in LIST_NTFOSD:
-            conf[kw] = config.get_config("ntfosd", kw)()
-        for kw in LIST_NSCRIPT:
-            conf[kw] = config.get_config("nscript", kw)()
-        conf["notify_types"] = sabnzbd.notifier.NOTIFICATION
+        for section in NOTIFY_OPTIONS:
+            for option in NOTIFY_OPTIONS[section]:
+                # Use get_string to make sure lists are displayed correctly
+                conf[option] = config.get_config(section, option).get_string()
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_notify.tmpl"),
@@ -2701,45 +2619,12 @@ class ConfigNotify:
         return template.respond()
 
     @secured_expose(check_api_key=True, check_configlock=True)
-    def saveEmail(self, **kwargs):
-        ajax = kwargs.get("ajax")
-
-        for kw in LIST_EMAIL:
-            msg = config.get_config("misc", kw).set(kwargs.get(kw))
-            if msg:
-                return badParameterResponse(T("Incorrect value for %s: %s") % (kw, msg), ajax)
-        for kw in LIST_NCENTER:
-            msg = config.get_config("ncenter", kw).set(kwargs.get(kw))
-            if msg:
-                return badParameterResponse(T("Incorrect value for %s: %s") % (kw, msg), ajax)
-        for kw in LIST_ACENTER:
-            msg = config.get_config("acenter", kw).set(kwargs.get(kw))
-            if msg:
-                return badParameterResponse(T("Incorrect value for %s: %s") % (kw, msg), ajax)
-        for kw in LIST_NTFOSD:
-            msg = config.get_config("ntfosd", kw).set(kwargs.get(kw))
-            if msg:
-                return badParameterResponse(T("Incorrect value for %s: %s") % (kw, msg), ajax)
-        for kw in LIST_PROWL:
-            msg = config.get_config("prowl", kw).set(kwargs.get(kw))
-            if msg:
-                return badParameterResponse(T("Incorrect value for %s: %s") % (kw, msg), ajax)
-        for kw in LIST_PUSHOVER:
-            msg = config.get_config("pushover", kw).set(kwargs.get(kw))
-            if msg:
-                return badParameterResponse(T("Incorrect value for %s: %s") % (kw, msg), ajax)
-        for kw in LIST_PUSHBULLET:
-            msg = config.get_config("pushbullet", kw).set(kwargs.get(kw, 0))
-            if msg:
-                return badParameterResponse(T("Incorrect value for %s: %s") % (kw, msg), ajax)
-        for kw in LIST_NSCRIPT:
-            msg = config.get_config("nscript", kw).set(kwargs.get(kw, 0))
-            if msg:
-                return badParameterResponse(T("Incorrect value for %s: %s") % (kw, msg), ajax)
-
+    def saveNotify(self, **kwargs):
+        for section in NOTIFY_OPTIONS:
+            for option in NOTIFY_OPTIONS[section]:
+                config.get_config(section, option).set(kwargs.get(option))
         config.save_config()
-        self.__lastmail = None
-        if ajax:
+        if kwargs.get("ajax"):
             return sabnzbd.api.report("json")
         else:
             raise Raiser(self.__root)

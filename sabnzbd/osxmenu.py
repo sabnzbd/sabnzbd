@@ -37,7 +37,6 @@ from sabnzbd.filesystem import diskspace
 from sabnzbd.misc import to_units
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
 from sabnzbd.panic import launch_a_browser
-import sabnzbd.notifier as notifier
 
 from sabnzbd.api import fast_queue
 import sabnzbd.config as config

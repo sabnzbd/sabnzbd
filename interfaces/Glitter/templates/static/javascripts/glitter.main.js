@@ -550,10 +550,12 @@ function ViewModel() {
         });
     })
 
-    // Clear warnings through this special URL..
+    // Clear warnings
     self.clearWarnings = function() {
-        // Activate
-        callSpecialAPI("./status/clearwarnings/").done(self.refresh)
+        callAPI({
+            mode: "status",
+            name: "clear"
+        }).done(self.refresh)
     }
 
     // Clear messages
@@ -1029,7 +1031,7 @@ function ViewModel() {
     self.restartSAB = function() {
         if(!confirm(glitterTranslate.restart)) return;
         // Call restart function
-        callSpecialAPI("./config/restart/")
+        callAPI({ mode: "restart" })
 
         // Set counter, we need at least 15 seconds
         self.isRestarting(Math.max(1, Math.floor(15 / self.refreshRate())));
@@ -1056,16 +1058,17 @@ function ViewModel() {
         $("#modal-options").modal("hide");
         showNotification('.main-notification-box-queue-repair')
         // Call the API
-        callSpecialAPI("./config/repair/").then(function() {
-            hideNotification(true)
+        callAPI({ mode: "restart_repair" }).then(function() {
+            $("#modal-options").modal("hide");
         })
+
     }
     // Force disconnect
     self.forceDisconnect = function() {
         // Show notification
         showNotification('.main-notification-box-disconnect', 3000)
         // Call API
-        callSpecialAPI("./status/disconnect/").then(function() {
+        callAPI({ mode: "disconnect" }).then(function() {
             $("#modal-options").modal("hide");
         })
     }

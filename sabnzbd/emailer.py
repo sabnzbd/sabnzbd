@@ -27,7 +27,6 @@ import glob
 
 from Cheetah.Template import Template
 from email.message import EmailMessage
-from email import policy
 
 from sabnzbd.constants import *
 import sabnzbd
