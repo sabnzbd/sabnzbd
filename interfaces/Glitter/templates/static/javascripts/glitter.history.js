@@ -116,14 +116,15 @@ function HistoryListModel(parent) {
     self.retryJob = function(form) {
         // Adding a extra retry file happens through this special function
         var data = new FormData();
+        data.append("mode", "retry");
         data.append("nzbfile", $(form.nzbFile)[0].files[0]);
-        data.append("job", $('#modal-retry-job input[name="retry_job_id"]').val());
+        data.append("value", $('#modal-retry-job input[name="retry_job_id"]').val());
         data.append("password", $('#retry_job_password').val());
         data.append("apikey", apiKey);
 
         // Add
         $.ajax({
-            url: "./history/retry_pp",
+            url: "./api",
             type: "POST",
             cache: false,
             processData: false,

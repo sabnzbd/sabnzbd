@@ -81,7 +81,6 @@ from sabnzbd.api import (
     api_handler,
     build_queue,
     build_status,
-    retry_job,
     build_header,
     build_history,
     Ttemplate,
@@ -917,11 +916,6 @@ class HistoryPage:
         )
         return template.respond()
 
-    @secured_expose(check_api_key=True)
-    def retry_pp(self, **kwargs):
-        retry_job(kwargs.get("job"), kwargs.get("nzbfile"), kwargs.get("password"))
-        raise Raiser(self.__root)
-
 
 ##############################################################################
 class ConfigPage:
@@ -1404,7 +1398,8 @@ class ConfigServer:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def testServer(self, **kwargs):
-        return handle_server_test(kwargs, self.__root)
+        _, msg = test_nntp_server_dict(kwargs)
+        return msg
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def delServer(self, **kwargs):
@@ -1512,11 +1507,6 @@ def handle_server(kwargs, root=None, new_svr=False):
             return sabnzbd.api.report("json")
         else:
             raise Raiser(root)
-
-
-def handle_server_test(kwargs, root):
-    _result, msg = test_nntp_server_dict(kwargs)
-    return msg
 
 
 ##############################################################################
@@ -1719,8 +1709,8 @@ class ConfigRss:
         except KeyError:
             raise rssRaiser(self.__root, kwargs)
 
-        pp = kwargs.get("pp")
-        if IsNone(pp):
+        pp = kwargs.get("pp", "")
+        if pp.lower() == "none":
             pp = ""
         script = ConvertSpecials(kwargs.get("script"))
         cat = ConvertSpecials(kwargs.get("cat"))
@@ -1848,11 +1838,6 @@ def ConvertSpecials(p):
     elif p.lower() == T("Default").lower():
         p = ""
     return p
-
-
-def IsNone(value):
-    """Return True if either None, 'None' or ''"""
-    return value is None or value == "" or value.lower() == "none"
 
 
 def Strip(txt):

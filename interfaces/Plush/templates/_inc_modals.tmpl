@@ -145,17 +145,6 @@ $T('Plush-containerWidth'):
     <br/><br/><input type="submit" name="completed" value="$T('purgeCompl')" class="juiButton" />
   </div>
 
-  <div id="retry_modal">
-    <form action="history/retry_pp" method="post" enctype="multipart/form-data">
-      <input type="hidden" id="retry_modal_job" name="job" />
-      <input type="hidden" name="apikey" value="$apikey" />
-      <br/><p><strong id="retry_modal_title">title</strong></p>
-      <br/><p>$T('opt-extra-NZB'):<br/><input type="file" name="nzbfile" /></p>
-      <br/><p>$T('srv-password'):<br/><input type="text" name="password" /></p>
-      <br/><p><input type="submit" value="$T('button-retry')" class="juiButton" /></p>
-    </form>
-  </div>
-
   <div id="delete_nzb_modal" class="center">
     <input type="hidden" id="delete_nzb_modal_job" />
     <input type="hidden" id="delete_nzb_modal_mode" />
