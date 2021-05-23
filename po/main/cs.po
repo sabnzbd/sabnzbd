@@ -658,13 +658,6 @@ msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-
-#: sabnzbd/interface.py
-msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -735,10 +728,6 @@ msgstr "CHYBA:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Zpět"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "Nesprávná hodnota pro %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"

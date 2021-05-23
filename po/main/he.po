@@ -660,15 +660,6 @@ msgstr "ב"
 
 #: sabnzbd/interface.py
 msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />כיבוי SABnzbd הסתיים.<br />המתן בערך 5 שניות ואז לחץ על הכפתור "
-"למטה.<br /><br /><strong><a href=\"..\">רענן</a></strong><br />"
-
-#: sabnzbd/interface.py
-msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -740,10 +731,6 @@ msgstr "שגיאה:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "הקודם"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "ערך שגוי עבור %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"

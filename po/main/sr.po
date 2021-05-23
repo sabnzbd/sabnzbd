@@ -657,16 +657,6 @@ msgstr "Б"
 
 #: sabnzbd/interface.py
 msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />Гашење SABnzbd-а је завршено.<br />Сачекајте око 5 секунди па "
-"кликните на линк испод.<br /><br /><strong><a "
-"href=\"..\">Освежи</a></strong><br />"
-
-#: sabnzbd/interface.py
-msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -736,10 +726,6 @@ msgstr "ГРЕШКА:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Назад"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "Погрешна вредност за %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"

@@ -681,16 +681,6 @@ msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />SABnzbd is nu afgesloten.<br />Wacht ongeveer 5 seconden en klik "
-"dan op onderstaande knop.<br /><br /><strong><a "
-"href=\"..\">Verversen</a></strong><br />"
-
-#: sabnzbd/interface.py
-msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -764,10 +754,6 @@ msgstr "FOUT:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Terug"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "Foute waarde voor %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"

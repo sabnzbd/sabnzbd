@@ -678,16 +678,6 @@ msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />Închidere SABnzbd terminată.<br />Aşteptaţi timp de aproximativ 5"
-" secunde şi apoi faceţi clic pe butonul de mai jos.<br /><br /><strong><a "
-"href=\"..\">Reîmprospătează</a></strong><br />"
-
-#: sabnzbd/interface.py
-msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
 "Temporary Download Folder"
 msgstr ""
@@ -761,10 +751,6 @@ msgstr "EROARE:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Înapoi"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "Valoare incorectă pentru %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"
