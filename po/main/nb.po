@@ -1743,7 +1743,7 @@ msgstr "Pause 6 timer"
 msgid "Shutdown"
 msgstr "Avslutt"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "Gjenstår"
 
@@ -4698,7 +4698,6 @@ msgstr ""
 msgid "WARNING:"
 msgstr "ADVARSEL:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Hent"
@@ -4908,143 +4907,6 @@ msgid "Removing jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "Forrige"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "Neste"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "Vil du virkelig slette historikken?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "Du må aktivere Javaskript for at Plush skal fungere!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "Alternativer"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "Pause i hvor mange minutter?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "Toppmeny"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "Ved avslutning"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "Sortere"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "Sorter på Alder <small>(Eldst%rarr;Yngst)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "Sorter på Alder <small>(Yngst%rarr;Eldst)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "Sorter på Navn <small>(A%rarr;Å)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "Sorter på Navn <small>(Å%rarr;A)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "Sorter på Størrelse <small>(Minst&rarr;Størst)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "Sorter på Størrelse <small>(Størst&rarr;Minst)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "Vil du virkelig slette køen?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "Prøv alle mislykkede jobber i historikken på nytt?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "Slett og rydd"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "Maks. hastighet"
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "Intervall"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "Bruk på Valgte"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Alt"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "Oppdateringsfrekvens"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "Kontainer bredde"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr "Dette vil hindre oppfrisking av innhold når muspekeren er over køen"
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "Blokker oppfrisking når musen svever over"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "Last Opp"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "Last Opp: .nzb .rar .zip .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "Jobb"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "Ikke nok diskplass for å fullføre nedlastingen."
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "Ledig (midlertidig)"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "INAKTIV"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "Nedlastinger"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd Hurtigstart Guide"
 
@@ -5056,6 +4918,11 @@ msgstr "SABnzbd Versjon"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "Forrige"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "Neste"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"

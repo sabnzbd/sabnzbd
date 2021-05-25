@@ -1719,7 +1719,7 @@ msgstr "Pozastavit na 6 hodin"
 msgid "Shutdown"
 msgstr ""
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "Zbývá"
 
@@ -4614,7 +4614,6 @@ msgstr ""
 msgid "WARNING:"
 msgstr ""
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr ""
@@ -4824,143 +4823,6 @@ msgid "Removing jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr ""
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "Opakovat všechny nedokončené úkoly z historie?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr ""
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Vše"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr ""
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr ""
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr ""
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr ""
 
@@ -4971,6 +4833,11 @@ msgstr "SABnzbd verze"
 #. Button to go to previous Wizard page
 #: sabnzbd/skintext.py
 msgid "Previous"
+msgstr ""
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
 msgstr ""
 
 #: sabnzbd/skintext.py

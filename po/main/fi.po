@@ -1746,7 +1746,7 @@ msgstr "Keskeytä 6:ksi tunniksi"
 msgid "Shutdown"
 msgstr "Sammuta"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "Jäljellä"
 
@@ -4726,7 +4726,6 @@ msgstr ""
 msgid "WARNING:"
 msgstr "VAROITUS:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Nouda"
@@ -4939,143 +4938,6 @@ msgid "Removing jobs"
 msgstr "Poistetaan lataukset"
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "Edellinen"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "Seuraava"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "Puhdistetaanko historia?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "Ota JavaScript käyttöön, jotta Plush toimii oikein!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "Asetukset"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "Keskeytetään kuinka moneksi minuutiksi?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "Päävalikko"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "Valmistuessa"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "Lajittele"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "Järjestä iän mukaan<small>(Vanhin&rarr;Uusin)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "Järjestä iän mukaan<small>(Uusin&rarr;Vanhin)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "Järjestä nimen mukaan <small>(A&rarr;Z)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "Järjestä nimen mukaan <small>(Z&rarr;A)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "Järjestä koon mukaan <small>(Pienin&rarr;Suurin)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "Järjestä koon mukaan <small>(Suurin&rarr;Pienin)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "Puhdistetaanko jono?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "Yritetäänkö uudelleen kaikki epäonnistuneet lataukset Historiassa?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "Puhdista"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "Enimmäisnopeus"
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "Väli"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "Käytä valittuihin"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Kaikki"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "Päivitysväli"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "Säiliön leveys"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr "Tämä estää sisällön päivittämisen kun hiiren kursori on jonon päällä."
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "Estä päivitykset kun hiiri on päällä"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "Lähetä"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "Lähetä: .nzb .rar .zip .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "Edistyminen"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "Ei tarpeeksi levytilaa latauksien valmistumiseen!"
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "Vapaana (Temp)"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "EI TÖITÄ"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "Lataukset"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd pika-aloitus velho"
 
@@ -5087,6 +4949,11 @@ msgstr "SABnzbd versio"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "Edellinen"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "Seuraava"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"

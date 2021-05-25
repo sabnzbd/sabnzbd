@@ -1730,7 +1730,7 @@ msgstr "暂停 6 小时"
 msgid "Shutdown"
 msgstr "关闭"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "剩余"
 
@@ -4630,7 +4630,6 @@ msgstr "SABnzbd 重启后本画面将自动消失!"
 msgid "WARNING:"
 msgstr "警告:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "装取"
@@ -4840,143 +4839,6 @@ msgid "Removing jobs"
 msgstr "正在移除任务"
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "前"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "后"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "清空历史?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "您必须启用 JavaScript 才能使用 Plush 模板!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "选项"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "暂停多少分钟?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "顶部菜单切换"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "完成时"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "排序"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "按发布时间排列 <small>(最早&rarr;最新)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "按发布时间排列 <small>(最新&rarr;最早)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "按名称排列 <small>(A&rarr;Z)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "按名称排列 <small>(Z&rarr;A)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "按尺寸排列 <small>(最小&rarr;最大)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "按尺寸排列 <small>(最大&rarr;最小)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "清除队列?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "重试“历史记录”中所有已失败任务?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "清理"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "最高速度"
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "范围"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "应用到所选项"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "全部"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "刷新频率"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "容器宽度"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr "这将在您的鼠标指针处于队列上方时阻止内容刷新。"
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "指向时停止刷新"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "上传"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "上传: .nzb .rar .zip .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "进度"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "磁盘空间不足以完成下载!"
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "剩余 (临时)"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "*空闲*"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "下载列表"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd 快速上手向导"
 
@@ -4988,6 +4850,11 @@ msgstr "SABnzbd 版本"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "上一步"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "后"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"

@@ -1813,7 +1813,7 @@ msgstr "Pausar 6 horas"
 msgid "Shutdown"
 msgstr "Apagar"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "Restante"
 
@@ -4841,7 +4841,6 @@ msgstr ""
 msgid "WARNING:"
 msgstr "AVISO:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Obtener"
@@ -5056,145 +5055,6 @@ msgid "Removing jobs"
 msgstr "Eliminar tareas"
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "Anterior"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "Siguiente"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "¿Vaciar el historial?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "Debes activar JavaScript para que pueda funcionar Plush!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "Opciones"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "¿Por cuántos minutos realizar la pausa?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "Menú superior"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "Al terminar"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "Ordenar"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "Ordenar por Fecha <small>(Más viejo&rarr;Más nuevo)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "Ordenar por Fecha <small>(Más nuevo&rarr;Más viejo)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "Ordenar por nombre <small>(A&rarr;Z)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "Ordenar por nombre <small>(Z&rarr;A)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "Ordenar por Tamaño <small>(Más pequeño&rarr;Más grande)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "Ordenar por Tamaño <small>(Más grande&rarr;Más pequeño)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "¿Limpiar la Cola?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "¿Re-intentar todos los trabajos con errores del Historial?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "Purgar"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "Velocidad máx."
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "Intervalo"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "Aplicar a seleccionados"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Todo"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "Frecuencia de actualización"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "Ancho del contenedor"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr ""
-"Esto evitará que se actualizen los contenidos cuando el cursor del ratón "
-"esté sobre la cola."
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "Bloquear actualizaciones al pasar por encima"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "Subir"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "Subir: .nzb .rar .zip .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "Progreso"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "¡No hay espacio suficiente para completar las descargas!"
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "Libre (Temp)"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "INACTIVO"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "Descargas"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "Asistente de Configuración de SABnzbd"
 
@@ -5206,6 +5066,11 @@ msgstr "Versión de SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "Anterior"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "Siguiente"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"
