@@ -49,7 +49,6 @@ extra_folders = [
     "licenses/",
     "locale/",
     "email/",
-    "interfaces/Plush/",
     "interfaces/Glitter/",
     "interfaces/wizard/",
     "interfaces/Config/",

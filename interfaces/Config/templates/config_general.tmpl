@@ -283,7 +283,7 @@
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
 
     \$('#generate_new_apikey').click(function () {
-      if (confirm("$T('Plush-confirm')")) {
+      if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
           url: "../../api",
@@ -296,7 +296,7 @@
       }
     });
     \$('#generate_new_nzbkey').click(function () {
-      if (confirm("$T('Plush-confirm')")) {
+      if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
           url: "../../api",

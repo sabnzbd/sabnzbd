@@ -342,7 +342,7 @@ def fix_webname(name):
         xname = ""
     if xname in ("Default",):
         return "Glitter"
-    elif xname in ("Glitter", "Plush"):
+    elif xname in ("Glitter",):
         return xname
     elif xname in ("Wizard",):
         return name.lower()
