@@ -163,7 +163,7 @@ def deobfuscate_list(filelist, usefulname):
             if os.path.getsize(file) < MIN_FILE_SIZE:
                 # too small to care
                 continue
-            _, ext = os.path.splitext(file)
+            ext = get_ext(file)
             if ext in extcounter:
                 extcounter[ext] += 1
             else:
@@ -208,5 +208,7 @@ def deobfuscate_list(filelist, usefulname):
                         logging.info("Deobfuscate renaming %s to %s", otherfile, new_name)
                         # Rename and make sure the new filename is unique
                         renamer(otherfile, new_name)
+            else:
+                logging.debug("%s excluded from deobfuscation based on size, extension or non-obfuscation", filename)
     else:
         logging.info("No qualifying files found to deobfuscate")
