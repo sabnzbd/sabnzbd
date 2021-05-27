@@ -512,7 +512,7 @@ function ViewModel() {
     // Clear warnings
     self.clearWarnings = function() {
         callAPI({
-            mode: "status",
+            mode: "warnings",
             name: "clear"
         }).done(self.refresh)
     }
