@@ -59,6 +59,29 @@ def get_ext(filename: str) -> str:
         return ""
 
 
+def ext_is_listed(ext: str, ext_list: list) -> bool:
+    """Check if the extension is listed. In case of a regexp the entire extension must be matched;
+    partial matches aren't accepted (e.g. 'r[0-9]{2}' will be treated the same as '^r[0-9]{2}$' and
+    thus return false for extentions such as 'r007' despite the substring match on 'r00').
+
+    Since the extension list is stored as a comma-separated list in the config, regular expressions
+    cannot use a comma or they'll be split and interpreted as multiple listed extensions.
+    """
+    for item in ext_list:
+        if item.startswith("re:"):
+            try:
+                # Case-insensitive match, extensions from both cfg and get_ext are always lowercase
+                if len(re.compile(item[3:], re.I).match(ext).group()) == len(ext):
+                    return True
+            except Exception:
+                pass
+        else:
+            if ext in ext_list:
+                return True
+    # No match found
+    return False
+
+
 def has_unwanted_extension(filename: str) -> bool:
     """Determine if a filename has an unwanted extension, given the configured mode"""
     extension = get_ext(filename).replace(".", "")
@@ -66,11 +89,11 @@ def has_unwanted_extension(filename: str) -> bool:
         return (
             # Blacklisted
             sabnzbd.cfg.unwanted_extensions_mode() == 0
-            and extension in sabnzbd.cfg.unwanted_extensions()
+            and ext_is_listed(extension, sabnzbd.cfg.unwanted_extensions())
         ) or (
             # Not whitelisted
             sabnzbd.cfg.unwanted_extensions_mode() == 1
-            and extension not in sabnzbd.cfg.unwanted_extensions()
+            and not ext_is_listed(extension, sabnzbd.cfg.unwanted_extensions())
         )
     else:
         # Don't consider missing extensions unwanted to prevent indiscriminate blocking of
