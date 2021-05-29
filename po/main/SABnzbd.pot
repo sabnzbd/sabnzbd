@@ -170,6 +170,10 @@ msgstr ""
 msgid "&nbsp;Resolving address"
 msgstr ""
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr ""
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -178,10 +182,6 @@ msgstr ""
 #. Default value, used in dropdown menus
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
-msgstr ""
-
-#: sabnzbd/api.py
-msgid "unknown"
 msgstr ""
 
 #. Error message
@@ -608,11 +608,6 @@ msgstr ""
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
-msgstr ""
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
 msgstr ""
 
 #: sabnzbd/interface.py
@@ -1904,6 +1899,11 @@ msgstr ""
 #. Gigabytes
 #: sabnzbd/skintext.py
 msgid "GB"
+msgstr ""
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
 msgstr ""
 
 #. One hour

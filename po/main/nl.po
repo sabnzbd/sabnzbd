@@ -188,6 +188,10 @@ msgstr "Test melding"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Adres opzoeken"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "onbekend"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -197,10 +201,6 @@ msgstr "Geen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standaard"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "onbekend"
 
 #. Error message
 #: sabnzbd/api.py
@@ -673,11 +673,6 @@ msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Mislukte login progin bij %s"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -2039,6 +2034,11 @@ msgstr "MB"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "GB"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py

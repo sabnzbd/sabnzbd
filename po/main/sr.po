@@ -181,6 +181,10 @@ msgstr "Probno obaveštenje"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Решавање адресе"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "непознато"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -190,10 +194,6 @@ msgstr "Ниједно"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Подразумевано"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "непознато"
 
 #. Error message
 #: sabnzbd/api.py
@@ -649,11 +649,6 @@ msgstr "Аутентификација погрешна, проверити им
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr ""
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "Б"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -1996,6 +1991,11 @@ msgstr "МБ"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "ГБ"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "Б"
 
 #. One hour
 #: sabnzbd/skintext.py

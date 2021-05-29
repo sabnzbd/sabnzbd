@@ -179,6 +179,10 @@ msgstr "测试通知"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;正在解析地址"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "未知"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -188,10 +192,6 @@ msgstr "无"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "默认"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "未知"
 
 #. Error message
 #: sabnzbd/api.py
@@ -642,11 +642,6 @@ msgstr "身份认证失败，请检查用户名/密码。"
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "%s 中有失败的登陆请求"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -1987,6 +1982,11 @@ msgstr "MB"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "GB"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py

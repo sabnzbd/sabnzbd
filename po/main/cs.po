@@ -183,6 +183,10 @@ msgstr "Otestovat notifikace"
 msgid "&nbsp;Resolving address"
 msgstr "Překládám adresu"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "neznámé"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -192,10 +196,6 @@ msgstr "Žádný"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Výchozí"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "neznámé"
 
 #. Error message
 #: sabnzbd/api.py
@@ -650,11 +650,6 @@ msgstr "Přihlášené selhalo, zkontrolujte jméno a heslo."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Nezdařený pokus o přihlášení od %s"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -1976,6 +1971,11 @@ msgstr "MB"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "GB"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py

@@ -182,6 +182,10 @@ msgstr "בחן התראה"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;פותר כתובת"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "בלתי ידוע"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -191,10 +195,6 @@ msgstr "אין"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "ברירת מחדל"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "בלתי ידוע"
 
 #. Error message
 #: sabnzbd/api.py
@@ -652,11 +652,6 @@ msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "ניסיון כניסה בלתי מוצלח מן %s"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "ב"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -2007,6 +2002,11 @@ msgstr "מ״ב"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "ג״ב"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "ב"
 
 #. One hour
 #: sabnzbd/skintext.py

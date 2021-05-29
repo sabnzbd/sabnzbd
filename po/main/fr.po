@@ -195,6 +195,10 @@ msgstr "Test de Notification"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Résolution de l'adresse"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "inconnu"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -204,10 +208,6 @@ msgstr "Aucun"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Par défaut"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "inconnu"
 
 #. Error message
 #: sabnzbd/api.py
@@ -684,11 +684,6 @@ msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Echec de la tentative de connexion de %s"
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -2065,6 +2060,11 @@ msgstr "Mo"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "Go"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py

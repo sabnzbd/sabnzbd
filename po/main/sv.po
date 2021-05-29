@@ -181,6 +181,10 @@ msgstr "Testa notifikation"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Lösa adress"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "okänd"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -190,10 +194,6 @@ msgstr "Ingen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standard"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "okänd"
 
 #. Error message
 #: sabnzbd/api.py
@@ -651,11 +651,6 @@ msgstr "Autentisering misslyckades, kontrollera användarnamn och lösenord."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr ""
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -2002,6 +1997,11 @@ msgstr "MB"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "GB"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py

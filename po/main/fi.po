@@ -187,6 +187,10 @@ msgstr "Testaa ilmoitusta"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Selvitetään osoitetta"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "tuntematon"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -196,10 +200,6 @@ msgstr "Ei mitään"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Oletus"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "tuntematon"
 
 #. Error message
 #: sabnzbd/api.py
@@ -657,11 +657,6 @@ msgstr "Varmennus epäonnistui, tarkista käyttäjänimi/salasana."
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr ""
-
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -2003,6 +1998,11 @@ msgstr "Mt"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "Gt"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py
