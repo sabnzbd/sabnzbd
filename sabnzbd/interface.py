@@ -46,7 +46,6 @@ from sabnzbd.misc import (
     get_base_url,
     is_ipv4_addr,
     is_ipv6_addr,
-    opts_to_pp,
     get_server_addrinfo,
     is_lan_addr,
     is_loopback_addr,
@@ -72,19 +71,16 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
 import sabnzbd.utils.ssdp
-from sabnzbd.constants import MEBI, DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
+from sabnzbd.constants import DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
     list_cats,
     del_from_section,
     api_handler,
-    build_queue,
     build_status,
     build_header,
-    build_history,
     Ttemplate,
-    build_queue_header,
 )
 
 ##############################################################################
@@ -413,11 +409,8 @@ class MainPage:
 
         # Add all sub-pages
         self.login = LoginPage()
-        self.queue = QueuePage("/queue/")
-        self.history = HistoryPage("/history/")
         self.status = Status("/status/")
         self.config = ConfigPage("/config/")
-        self.nzb = NzoPage("/nzb/")
         self.wizard = Wizard("/wizard/")
 
     @secured_expose
@@ -672,246 +665,6 @@ class LoginPage:
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "login", "main.tmpl"),
             searchList=[info],
-            compilerSettings=CHEETAH_DIRECTIVES,
-        )
-        return template.respond()
-
-
-##############################################################################
-class NzoPage:
-    def __init__(self, root):
-        self.__root = root
-        self.__cached_selection = {}  # None
-
-    @secured_expose
-    def default(self, *args, **kwargs):
-        # Allowed URL's
-        # /nzb/SABnzbd_nzo_xxxxx/
-        # /nzb/SABnzbd_nzo_xxxxx/details
-        # /nzb/SABnzbd_nzo_xxxxx/files
-        # /nzb/SABnzbd_nzo_xxxxx/bulk_operation
-        # /nzb/SABnzbd_nzo_xxxxx/save
-        nzo_id = None
-        for a in args:
-            if a.startswith("SABnzbd_nzo"):
-                nzo_id = a
-                break
-
-        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
-        if nzo_id and nzo:
-            info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header()
-
-            # /SABnzbd_nzo_xxxxx/bulk_operation
-            if "bulk_operation" in args:
-                return self.bulk_operation(nzo_id, kwargs)
-
-            # /SABnzbd_nzo_xxxxx/details
-            elif "details" in args:
-                info = self.nzo_details(info, pnfo_list, nzo_id)
-
-            # /SABnzbd_nzo_xxxxx/files
-            elif "files" in args:
-                info = self.nzo_files(info, nzo_id)
-
-            # /SABnzbd_nzo_xxxxx/save
-            elif "save" in args:
-                self.save_details(nzo_id, args, kwargs)
-                return  # never reached
-
-            # /SABnzbd_nzo_xxxxx/
-            else:
-                info = self.nzo_details(info, pnfo_list, nzo_id)
-                info = self.nzo_files(info, nzo_id)
-
-            template = Template(
-                file=os.path.join(sabnzbd.WEB_DIR, "nzo.tmpl"), searchList=[info], compilerSettings=CHEETAH_DIRECTIVES
-            )
-            return template.respond()
-        else:
-            # Job no longer exists, go to main page
-            raise Raiser(urllib.parse.urljoin(self.__root, "../queue/"))
-
-    def nzo_details(self, info, pnfo_list, nzo_id):
-        slot = {}
-        n = 0
-        for pnfo in pnfo_list:
-            if pnfo.nzo_id == nzo_id:
-                nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
-                repair = pnfo.repair
-                unpack = pnfo.unpack
-                delete = pnfo.delete
-                unpackopts = opts_to_pp(repair, unpack, delete)
-                script = pnfo.script
-                if script is None:
-                    script = "None"
-                cat = pnfo.category
-                if not cat:
-                    cat = "None"
-
-                slot["nzo_id"] = str(nzo_id)
-                slot["cat"] = cat
-                slot["filename"] = nzo.final_name
-                slot["filename_clean"] = nzo.final_name
-                slot["password"] = nzo.password or ""
-                slot["script"] = script
-                slot["priority"] = str(pnfo.priority)
-                slot["unpackopts"] = str(unpackopts)
-                info["index"] = n
-                break
-            n += 1
-
-        info["slot"] = slot
-        info["scripts"] = list_scripts()
-        info["categories"] = list_cats()
-        info["noofslots"] = len(pnfo_list)
-
-        return info
-
-    def nzo_files(self, info, nzo_id):
-        active = []
-        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
-        if nzo:
-            pnfo = nzo.gather_info(full=True)
-            info["nzo_id"] = pnfo.nzo_id
-            info["filename"] = pnfo.filename
-
-            for nzf in pnfo.active_files:
-                checked = False
-                if nzf.nzf_id in self.__cached_selection and self.__cached_selection[nzf.nzf_id] == "on":
-                    checked = True
-                active.append(
-                    {
-                        "filename": nzf.filename,
-                        "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
-                        "mb": "%.2f" % (nzf.bytes / MEBI),
-                        "size": to_units(nzf.bytes, "B"),
-                        "sizeleft": to_units(nzf.bytes_left, "B"),
-                        "nzf_id": nzf.nzf_id,
-                        "age": calc_age(nzf.date),
-                        "checked": checked,
-                    }
-                )
-
-        info["active_files"] = active
-        return info
-
-    def save_details(self, nzo_id, args, kwargs):
-        index = kwargs.get("index", None)
-        name = kwargs.get("name", None)
-        password = kwargs.get("password", None)
-        if password == "":
-            password = None
-        pp = kwargs.get("pp", None)
-        script = kwargs.get("script", None)
-        cat = kwargs.get("cat", None)
-        priority = kwargs.get("priority", None)
-        nzo = sabnzbd.NzbQueue.get_nzo(nzo_id)
-
-        if index is not None:
-            sabnzbd.NzbQueue.switch(nzo_id, index)
-        if name is not None:
-            sabnzbd.NzbQueue.change_name(nzo_id, name, password)
-
-        if cat is not None and nzo.cat is not cat and not (nzo.cat == "*" and cat == "Default"):
-            sabnzbd.NzbQueue.change_cat(nzo_id, cat, priority)
-            # Category changed, so make sure "Default" attributes aren't set again
-            if script == "Default":
-                script = None
-            if priority == "Default":
-                priority = None
-            if pp == "Default":
-                pp = None
-
-        if script is not None and nzo.script != script:
-            sabnzbd.NzbQueue.change_script(nzo_id, script)
-        if pp is not None and nzo.pp != pp:
-            sabnzbd.NzbQueue.change_opts(nzo_id, pp)
-        if priority is not None and nzo.priority != int(priority):
-            sabnzbd.NzbQueue.set_priority(nzo_id, priority)
-
-        raise Raiser(urllib.parse.urljoin(self.__root, "../queue/"))
-
-    def bulk_operation(self, nzo_id, kwargs):
-        self.__cached_selection = kwargs
-        if kwargs["action_key"] == "Delete":
-            for key in kwargs:
-                if kwargs[key] == "on":
-                    sabnzbd.NzbQueue.remove_nzf(nzo_id, key, force_delete=True)
-
-        elif kwargs["action_key"] in ("Top", "Up", "Down", "Bottom"):
-            nzf_ids = []
-            for key in kwargs:
-                if kwargs[key] == "on":
-                    nzf_ids.append(key)
-            size = int_conv(kwargs.get("action_size", 1))
-            if kwargs["action_key"] == "Top":
-                sabnzbd.NzbQueue.move_top_bulk(nzo_id, nzf_ids)
-            elif kwargs["action_key"] == "Up":
-                sabnzbd.NzbQueue.move_up_bulk(nzo_id, nzf_ids, size)
-            elif kwargs["action_key"] == "Down":
-                sabnzbd.NzbQueue.move_down_bulk(nzo_id, nzf_ids, size)
-            elif kwargs["action_key"] == "Bottom":
-                sabnzbd.NzbQueue.move_bottom_bulk(nzo_id, nzf_ids)
-
-        if sabnzbd.NzbQueue.get_nzo(nzo_id):
-            url = urllib.parse.urljoin(self.__root, nzo_id)
-        else:
-            url = urllib.parse.urljoin(self.__root, "../queue")
-        if url and not url.endswith("/"):
-            url += "/"
-        raise Raiser(url)
-
-
-##############################################################################
-class QueuePage:
-    def __init__(self, root):
-        self.__root = root
-
-    @secured_expose
-    def index(self, **kwargs):
-        start = int_conv(kwargs.get("start"))
-        limit = int_conv(kwargs.get("limit"))
-        search = kwargs.get("search")
-        info, _, _ = build_queue(start=start, limit=limit, trans=True, search=search)
-
-        template = Template(
-            file=os.path.join(sabnzbd.WEB_DIR, "queue.tmpl"), searchList=[info], compilerSettings=CHEETAH_DIRECTIVES
-        )
-        return template.respond()
-
-
-##############################################################################
-class HistoryPage:
-    def __init__(self, root):
-        self.__root = root
-
-    @secured_expose
-    def index(self, **kwargs):
-        start = int_conv(kwargs.get("start"))
-        limit = int_conv(kwargs.get("limit"))
-        search = kwargs.get("search")
-        failed_only = int_conv(kwargs.get("failed_only"))
-
-        history = build_header()
-        history["rating_enable"] = bool(cfg.rating_enable())
-
-        postfix = T("B")  # : Abbreviation for bytes, as in GB
-        grand, month, week, day = sabnzbd.BPSMeter.get_sums()
-        history["total_size"], history["month_size"], history["week_size"], history["day_size"] = (
-            to_units(grand, postfix=postfix),
-            to_units(month, postfix=postfix),
-            to_units(week, postfix=postfix),
-            to_units(day, postfix=postfix),
-        )
-
-        history["lines"], history["noofslots"] = build_history(
-            start=start, limit=limit, search=search, failed_only=failed_only
-        )
-        history["limit"] = limit
-
-        template = Template(
-            file=os.path.join(sabnzbd.WEB_DIR, "history.tmpl"),
-            searchList=[history],
             compilerSettings=CHEETAH_DIRECTIVES,
         )
         return template.respond()
@@ -2251,7 +2004,10 @@ class Status:
 
     @secured_expose(check_api_key=True)
     def delete_all(self, **kwargs):
-        orphan_delete_all()
+        paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
+        for path in paths:
+            kwargs = {"name": path}
+            orphan_delete(kwargs)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
@@ -2261,7 +2017,10 @@ class Status:
 
     @secured_expose(check_api_key=True)
     def add_all(self, **kwargs):
-        orphan_add_all()
+        paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
+        for path in paths:
+            kwargs = {"name": path}
+            orphan_add(kwargs)
         raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True)
@@ -2301,26 +2060,12 @@ def orphan_delete(kwargs):
         remove_all(path, recursive=True)
 
 
-def orphan_delete_all():
-    paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
-    for path in paths:
-        kwargs = {"name": path}
-        orphan_delete(kwargs)
-
-
 def orphan_add(kwargs):
     path = kwargs.get("name")
     if path:
         path = os.path.join(long_path(cfg.download_dir.get_path()), path)
         logging.info("Re-adding orphaned job %s", path)
         sabnzbd.NzbQueue.repair_job(path, None, None)
-
-
-def orphan_add_all():
-    paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
-    for path in paths:
-        kwargs = {"name": path}
-        orphan_add(kwargs)
 
 
 def badParameterResponse(msg, ajax=None):

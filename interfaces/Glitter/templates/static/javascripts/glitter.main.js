@@ -323,47 +323,6 @@ function ViewModel() {
         // Clear previous timeout to prevent double-calls
         clearTimeout(self.interval);
 
-        /**
-            Limited refresh
-        **/
-        // Only update the title when page not visible
-        if(!pageIsVisible) {
-            // Request new title
-            callSpecialAPI('./queue/', { limit: 1, start: 0 }).done(function(data) {
-                // Split title & speed
-                var dataSplit = data.split('|||');
-
-                // Maybe the result is actually the login page?
-                if(dataSplit[0].substring(0, 11) === '<html lang=') {
-                    // Redirect
-                    document.location = document.location
-                    return
-                }
-
-                // Set title
-                self.title(dataSplit[0]);
-
-                // Update sparkline data
-                if(self.speedHistory.length >= 50) {
-                    // Remove first one
-                    self.speedHistory.shift();
-                }
-                // Add
-                self.speedHistory.push(dataSplit[1]);
-
-                // Does it contain 'Paused'? Update icon!
-                self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
-
-                // Force the next full update to be full
-                self.history.lastUpdate = 0
-            }).always(self.setNextUpdate)
-            // Do not continue!
-            return;
-        }
-
-        /**
-            Full refresh
-        **/
         // Do requests for full information
         // Catch the fail to display message
         var queueApi = callAPI({

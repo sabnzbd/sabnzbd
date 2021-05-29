@@ -27,9 +27,8 @@ import datetime
 import time
 import json
 import cherrypy
-import locale
 from threading import Thread
-from typing import Tuple, Optional, List
+from typing import Tuple, Optional, List, Dict
 
 import sabnzbd
 from sabnzbd.constants import (
@@ -171,10 +170,11 @@ def _api_queue_delete(output, value, kwargs):
 
 
 def _api_queue_delete_nzf(output, value, kwargs):
-    """API: accepts value(=nzo_id), value2(=nzf_id)"""
-    value2 = kwargs.get("value2")
-    if value and value2:
-        removed = sabnzbd.NzbQueue.remove_nzf(value, value2, force_delete=True)
+    """API: accepts value(=nzo_id), value2(=nzf_ids)"""
+    nzf_ids = kwargs.get("value2")
+    if value and nzf_ids:
+        nzf_ids = nzf_ids.split(",")
+        removed = sabnzbd.NzbQueue.remove_nzfs(value, nzf_ids, force_delete=True)
         return report(output, keyword="", data={"status": bool(removed), "nzf_ids": removed})
     else:
         return report(output, _MSG_NO_VALUE2)
@@ -259,8 +259,7 @@ def _api_queue_default(output, value, kwargs):
     search = kwargs.get("search")
     nzo_ids = kwargs.get("nzo_ids")
 
-    info, pnfo_list, bytespersec = build_queue(start=start, limit=limit, output=output, search=search, nzo_ids=nzo_ids)
-    return report(output, keyword="queue", data=info)
+    return report(output, keyword="queue", data=build_queue(start=start, limit=limit, search=search, nzo_ids=nzo_ids))
 
 
 def _api_queue_rating(output, value, kwargs):
@@ -492,7 +491,13 @@ def _api_history(name, output, kwargs):
         elif value:
             jobs = value.split(",")
             for job in jobs:
-                del_hist_job(job, del_files)
+                path = sabnzbd.PostProcessor.get_path(job)
+                if path:
+                    sabnzbd.PostProcessor.delete(job, del_files=del_files)
+                else:
+                    history_db = sabnzbd.get_db_connection()
+                    remove_all(history_db.get_path(job), recursive=True)
+                    history_db.remove_history(job)
             sabnzbd.history_updated()
             return report(output)
         else:
@@ -523,6 +528,33 @@ def _api_get_files(name, output, kwargs):
         return report(output, keyword="files", data=build_file_list(value))
     else:
         return report(output, _MSG_NO_VALUE)
+
+
+def _api_move_nzf_bulk(name, output, kwargs):
+    """API: accepts name(=top/up/down/bottom), value=(=nzo_id), nzf_ids, size (optional)"""
+    nzo_id = kwargs.get("value")
+    nzf_ids = kwargs.get("nzf_ids")
+    size = int_conv(kwargs.get("size"))
+
+    if nzo_id and nzf_ids and name:
+        name = name.lower()
+        nzf_ids = nzf_ids.split(",")
+        nzf_moved = False
+        if name == "up" and size:
+            sabnzbd.NzbQueue.move_nzf_up_bulk(nzo_id, nzf_ids, size)
+            nzf_moved = True
+        elif name == "top":
+            sabnzbd.NzbQueue.move_nzf_top_bulk(nzo_id, nzf_ids)
+            nzf_moved = True
+        elif name == "down" and size:
+            sabnzbd.NzbQueue.move_nzf_down_bulk(nzo_id, nzf_ids, size)
+            nzf_moved = True
+        elif name == "bottom":
+            sabnzbd.NzbQueue.move_nzf_bottom_bulk(nzo_id, nzf_ids)
+            nzf_moved = True
+        if nzf_moved:
+            return report(output, keyword="", data={"status": True, "nzf_ids": nzf_ids})
+    return report(output, _MSG_NO_VALUE)
 
 
 def _api_addurl(name, output, kwargs):
@@ -683,7 +715,12 @@ def _api_rss_now(name, output, kwargs):
 
 def _api_retry_all(name, output, kwargs):
     """API: Retry all failed items in History"""
-    return report(output, keyword="status", data=retry_all_jobs())
+    items = sabnzbd.api.build_history()[0]
+    nzo_ids = []
+    for item in items:
+        if item["retry"]:
+            nzo_ids.append(retry_job(item["nzo_id"]))
+    return report(output, keyword="status", data=nzo_ids)
 
 
 def _api_reset_quota(name, output, kwargs):
@@ -912,6 +949,7 @@ _api_table = {
     "fullstatus": (_api_fullstatus, 2),
     "history": (_api_history, 2),
     "get_files": (_api_get_files, 2),
+    "move_nzf_bulk": (_api_move_nzf_bulk, 2),
     "addurl": (_api_addurl, 1),
     "addid": (_api_addurl, 1),
     "pause": (_api_pause, 2),
@@ -1239,30 +1277,50 @@ def build_status(skip_dashboard=False, output=None):
     return info
 
 
-def build_queue(start=0, limit=0, trans=False, output=None, search=None, nzo_ids=None):
-    # build up header full of basic information
-    info, pnfo_list, bytespersec, q_size, bytes_left_previous_page = build_queue_header(
-        search=search, start=start, limit=limit, output=output, nzo_ids=nzo_ids
-    )
+def build_queue(start=0, limit=0, trans=False, search=None, nzo_ids=None):
+
+    info = build_header(for_template=False)
+    qnfo = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
+
+    info["kbpersec"] = "%.2f" % (sabnzbd.BPSMeter.bps / KIBI)
+    info["speed"] = to_units(sabnzbd.BPSMeter.bps)
+    info["mbleft"] = "%.2f" % (qnfo.bytes_left / MEBI)
+    info["mb"] = "%.2f" % (qnfo.bytes / MEBI)
+    info["sizeleft"] = to_units(qnfo.bytes_left, "B")
+    info["size"] = to_units(qnfo.bytes, "B")
+    info["noofslots_total"] = qnfo.q_fullsize
+
+    if sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc:
+        status = Status.PAUSED
+    elif sabnzbd.BPSMeter.bps > 0:
+        status = Status.DOWNLOADING
+    else:
+        status = Status.IDLE
+    info["status"] = status
+    info["timeleft"] = calc_timeleft(qnfo.bytes_left, sabnzbd.BPSMeter.bps)
 
     datestart = datetime.datetime.now()
-    limit = int_conv(limit)
-    start = int_conv(start)
+    try:
+        datefinish = datestart + datetime.timedelta(seconds=qnfo.bytes_left / sabnzbd.BPSMeter.bps)
+        # new eta format: 16:00 Fri 07 Feb
+        info["eta"] = datefinish.strftime(time_format("%H:%M %a %d %b"))
+    except:
+        info["eta"] = T("unknown")
 
     info["refresh_rate"] = str(cfg.refresh_rate()) if cfg.refresh_rate() > 0 else ""
     info["interface_settings"] = cfg.interface_settings()
     info["scripts"] = list_scripts()
-    info["categories"] = list_cats(output is None)
+    info["categories"] = list_cats()
     info["rating_enable"] = bool(cfg.rating_enable())
-    info["noofslots"] = q_size
+    info["noofslots"] = qnfo.q_fullsize
     info["start"] = start
     info["limit"] = limit
     info["finish"] = info["start"] + info["limit"]
 
     n = start
-    running_bytes = bytes_left_previous_page
+    running_bytes = qnfo.bytes_left_previous_page
     slotinfo = []
-    for pnfo in pnfo_list:
+    for pnfo in qnfo.list:
         nzo_id = pnfo.nzo_id
         bytesleft = pnfo.bytes_left
         bytes_total = pnfo.bytes
@@ -1290,9 +1348,6 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None, nzo_ids
         slot["percentage"] = "%s" % (int(((mb - mbleft) / mb) * 100)) if mb != mbleft else "0"
         slot["mbmissing"] = "%.2f" % (pnfo.bytes_missing / MEBI)
         slot["direct_unpack"] = pnfo.direct_unpack
-        if not output:
-            slot["mb_fmt"] = locale.format_string("%d", int(mb), True)
-            slot["mbdone_fmt"] = locale.format_string("%d", int(mb - mbleft), True)
 
         if not sabnzbd.Downloader.paused and status not in (Status.PAUSED, Status.FETCHING, Status.GRABBING):
             if is_propagating:
@@ -1317,13 +1372,13 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None, nzo_ids
             slot["eta"] = "unknown"
         else:
             running_bytes += bytesleft
-            slot["timeleft"] = calc_timeleft(running_bytes, bytespersec)
+            slot["timeleft"] = calc_timeleft(running_bytes, sabnzbd.BPSMeter.bps)
             try:
-                datestart = datestart + datetime.timedelta(seconds=bytesleft / bytespersec)
+                datestart = datestart + datetime.timedelta(seconds=bytesleft / sabnzbd.BPSMeter.bps)
                 # new eta format: 16:00 Fri 07 Feb
                 slot["eta"] = datestart.strftime(time_format("%H:%M %a %d %b"))
             except:
-                datestart = datetime.datetime.now()
+                datestart = datestart
                 slot["eta"] = "unknown"
 
         # Do not show age when it's not known
@@ -1346,7 +1401,7 @@ def build_queue(start=0, limit=0, trans=False, output=None, search=None, nzo_ids
     else:
         info["slots"] = []
 
-    return info, pnfo_list, bytespersec
+    return info
 
 
 def fast_queue() -> Tuple[bool, int, float, str]:
@@ -1365,11 +1420,7 @@ def build_file_list(nzo_id: str):
     if nzo:
         pnfo = nzo.gather_info(full=True)
 
-        finished_files = pnfo.finished_files
-        active_files = pnfo.active_files
-        queued_files = pnfo.queued_files
-
-        for nzf in finished_files:
+        for nzf in pnfo.finished_files:
             jobs.append(
                 {
                     "filename": nzf.filename,
@@ -1382,7 +1433,7 @@ def build_file_list(nzo_id: str):
                 }
             )
 
-        for nzf in active_files:
+        for nzf in pnfo.active_files:
             jobs.append(
                 {
                     "filename": nzf.filename,
@@ -1395,7 +1446,7 @@ def build_file_list(nzo_id: str):
                 }
             )
 
-        for nzf in queued_files:
+        for nzf in pnfo.queued_files:
             jobs.append(
                 {
                     "filename": nzf.filename,
@@ -1446,34 +1497,11 @@ def retry_job(job, new_nzb=None, password=None):
     return None
 
 
-def retry_all_jobs():
-    """Re enter all failed jobs in the download queue"""
-    # Fetch all retryable folders from History
-    items = sabnzbd.api.build_history()[0]
-    nzo_ids = []
-    for item in items:
-        if item["retry"]:
-            nzo_ids.append(retry_job(item["nzo_id"]))
-    return nzo_ids
-
-
 def del_job_files(job_paths):
     """Remove files of each path in the list"""
     for path in job_paths:
         if path and clip_path(path).lower().startswith(cfg.download_dir.get_clipped_path().lower()):
             remove_all(path, recursive=True)
-
-
-def del_hist_job(job, del_files):
-    """Remove history element"""
-    if job:
-        path = sabnzbd.PostProcessor.get_path(job)
-        if path:
-            sabnzbd.PostProcessor.delete(job, del_files=del_files)
-        else:
-            history_db = sabnzbd.get_db_connection()
-            remove_all(history_db.get_path(job), recursive=True)
-            history_db.remove_history(job)
 
 
 def Tspec(txt):
@@ -1512,13 +1540,8 @@ def clear_trans_cache():
     sabnzbd.WEBUI_READY = True
 
 
-def build_header(webdir="", output=None, trans_functions=True):
+def build_header(webdir: str = "", for_template: bool = True, trans_functions: bool = True) -> Dict:
     """Build the basic header"""
-    try:
-        uptime = calc_age(sabnzbd.START)
-    except:
-        uptime = "-"
-
     speed_limit = sabnzbd.Downloader.get_limit()
     if speed_limit <= 0:
         speed_limit = 100
@@ -1531,13 +1554,13 @@ def build_header(webdir="", output=None, trans_functions=True):
     header = {}
 
     # We don't output everything for API
-    if not output:
+    if for_template:
         # These are functions, and cause problems for JSON
         if trans_functions:
             header["T"] = Ttemplate
             header["Tspec"] = Tspec
 
-        header["uptime"] = uptime
+        header["uptime"] = calc_age(sabnzbd.START)
         header["color_scheme"] = sabnzbd.WEB_COLOR or ""
         header["helpuri"] = "https://sabnzbd.org/wiki/"
 
@@ -1587,44 +1610,6 @@ def build_header(webdir="", output=None, trans_functions=True):
     header["cache_max"] = str(anfo.cache_limit)
 
     return header
-
-
-def build_queue_header(search=None, nzo_ids=None, start=0, limit=0, output=None):
-    """Build full queue header"""
-
-    header = build_header(output=output)
-
-    bytespersec = sabnzbd.BPSMeter.bps
-    qnfo = sabnzbd.NzbQueue.queue_info(search=search, nzo_ids=nzo_ids, start=start, limit=limit)
-
-    bytesleft = qnfo.bytes_left
-    bytes_total = qnfo.bytes
-
-    header["kbpersec"] = "%.2f" % (bytespersec / KIBI)
-    header["speed"] = to_units(bytespersec)
-    header["mbleft"] = "%.2f" % (bytesleft / MEBI)
-    header["mb"] = "%.2f" % (bytes_total / MEBI)
-    header["sizeleft"] = to_units(bytesleft, "B")
-    header["size"] = to_units(bytes_total, "B")
-    header["noofslots_total"] = qnfo.q_fullsize
-
-    if sabnzbd.Downloader.paused or sabnzbd.Downloader.paused_for_postproc:
-        status = Status.PAUSED
-    elif bytespersec > 0:
-        status = Status.DOWNLOADING
-    else:
-        status = "Idle"
-    header["status"] = status
-    header["timeleft"] = calc_timeleft(bytesleft, bytespersec)
-
-    try:
-        datestart = datetime.datetime.now() + datetime.timedelta(seconds=bytesleft / bytespersec)
-        # new eta format: 16:00 Fri 07 Feb
-        header["eta"] = datestart.strftime(time_format("%H:%M %a %d %b"))
-    except:
-        header["eta"] = T("unknown")
-
-    return header, qnfo.list, bytespersec, qnfo.q_fullsize, qnfo.bytes_left_previous_page
 
 
 def build_history(

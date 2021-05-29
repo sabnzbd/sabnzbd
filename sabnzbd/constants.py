@@ -144,6 +144,7 @@ resolution_match = r"(^|[\W_])((240|360|480|540|576|720|900|1080|1440|2160|4320)
 
 
 class Status:
+    IDLE = "Idle"  # Q: Nothing in the queue
     COMPLETED = "Completed"  # PP: Job is finished
     CHECKING = "Checking"  # Q:  Pre-check is running
     DOWNLOADING = "Downloading"  # Q:  Normal downloading
