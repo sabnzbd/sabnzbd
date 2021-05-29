@@ -902,6 +902,9 @@ class TestQueueApi(ApiTestFunctions):
             assert len(changed_nzf_ids) == len(original_nzf_ids) - len(nzf_ids_to_remove)
 
     def test_api_move_nzf_bulk(self):
+        # Clear queue so we don't use any of the files from the
+        # delete_nzf test, since we expect at least 4 files
+        self._purge_queue()
         self._create_random_queue(minimum_size=1)
 
         # Select a job and file to delete
