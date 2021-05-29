@@ -75,9 +75,8 @@ def ext_is_listed(ext: str, ext_list: list) -> bool:
                     return True
             except Exception:
                 pass
-        else:
-            if ext in ext_list:
-                return True
+        elif item == ext:
+            return True
     # No match found
     return False
 
