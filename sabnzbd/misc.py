@@ -73,7 +73,7 @@ def time_format(fmt):
         return fmt
 
 
-def calc_age(date: datetime.datetime, trans=False) -> str:
+def calc_age(date: datetime.datetime, trans: bool = False) -> str:
     """Calculate the age difference between now and date.
     Value is returned as either days, hours, or minutes.
     When 'trans' is True, time symbols will be translated.

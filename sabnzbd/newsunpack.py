@@ -65,7 +65,6 @@ from sabnzbd.constants import Status
 RAR_RE = re.compile(r"\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
 RAR_RE_V3 = re.compile(r"\.(?P<ext>part\d*)$", re.I)
 
-LOADING_RE = re.compile(r'^Loading "(.+)"')
 TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
 EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
 EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")

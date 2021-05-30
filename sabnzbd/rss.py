@@ -482,7 +482,7 @@ class RSSReader:
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
                         # Wait 15 seconds, else sites may get irritated
-                        for unused in range(15):
+                        for _ in range(15):
                             if self.shutdown:
                                 return
                             else:

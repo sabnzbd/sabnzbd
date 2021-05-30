@@ -812,8 +812,6 @@ class NzbQueue:
         """
         if search:
             search = search.lower()
-        if nzo_ids:
-            nzo_ids = nzo_ids.split(",")
         bytes_left = 0
         bytes_total = 0
         bytes_left_previous_page = 0

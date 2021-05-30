@@ -78,7 +78,6 @@ from sabnzbd.api import (
     list_cats,
     del_from_section,
     api_handler,
-    build_status,
     build_header,
     Ttemplate,
 )
@@ -766,7 +765,7 @@ class ConfigFolders:
             )
         config.save_config()
         if kwargs.get("ajax"):
-            return sabnzbd.api.report("json")
+            return sabnzbd.api.report()
         else:
             raise Raiser(self.__root)
 
@@ -880,7 +879,7 @@ class ConfigSwitches:
 
         config.save_config()
         if kwargs.get("ajax"):
-            return sabnzbd.api.report("json")
+            return sabnzbd.api.report()
         else:
             raise Raiser(self.__root)
 
@@ -1082,7 +1081,7 @@ class ConfigGeneral:
         # Update CherryPy authentication
         set_auth(cherrypy.config)
         if kwargs.get("ajax"):
-            return sabnzbd.api.report("json", data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
+            return sabnzbd.api.report(data={"success": True, "restart_req": sabnzbd.RESTART_REQ})
         else:
             raise Raiser(self.__root)
 
@@ -1257,7 +1256,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     sabnzbd.Downloader.update_server(old_server, server)
     if root:
         if ajax:
-            return sabnzbd.api.report("json")
+            return sabnzbd.api.report()
         else:
             raise Raiser(root)
 
@@ -1937,10 +1936,7 @@ class Status:
 
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
-        header = build_status(skip_dashboard=kwargs.get("skip_dashboard"))
-        template = Template(
-            file=os.path.join(sabnzbd.WEB_DIR, "status.tmpl"), searchList=[header], compilerSettings=CHEETAH_DIRECTIVES
-        )
+        template = Template(file=os.path.join(sabnzbd.WEB_DIR, "status.tmpl"), compilerSettings=CHEETAH_DIRECTIVES)
         return template.respond()
 
     @secured_expose(check_api_key=True)
@@ -2071,7 +2067,7 @@ def orphan_add(kwargs):
 def badParameterResponse(msg, ajax=None):
     """Return a html page with error message and a 'back' button"""
     if ajax:
-        return sabnzbd.api.report("json", error=msg)
+        return sabnzbd.api.report(error=msg)
     else:
         return """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
@@ -2355,6 +2351,6 @@ class ConfigNotify:
                 config.get_config(section, option).set(kwargs.get(option))
         config.save_config()
         if kwargs.get("ajax"):
-            return sabnzbd.api.report("json")
+            return sabnzbd.api.report()
         else:
             raise Raiser(self.__root)
