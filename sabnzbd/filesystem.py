@@ -59,7 +59,7 @@ def get_ext(filename: str) -> str:
         return ""
 
 
-def ext_is_listed(ext: str, ext_list: list) -> bool:
+def is_listed_ext(ext: str, ext_list: list) -> bool:
     """Check if the extension is listed. In case of a regexp the entire extension must be matched;
     partial matches aren't accepted (e.g. 'r[0-9]{2}' will be treated the same as '^r[0-9]{2}$' and
     thus return false for extentions such as 'r007' despite the substring match on 'r00').
@@ -85,11 +85,11 @@ def has_unwanted_extension(filename: str) -> bool:
         return (
             # Blacklisted
             sabnzbd.cfg.unwanted_extensions_mode() == 0
-            and ext_is_listed(extension, sabnzbd.cfg.unwanted_extensions())
+            and is_listed_ext(extension, sabnzbd.cfg.unwanted_extensions())
         ) or (
             # Not whitelisted
             sabnzbd.cfg.unwanted_extensions_mode() == 1
-            and not ext_is_listed(extension, sabnzbd.cfg.unwanted_extensions())
+            and not is_listed_ext(extension, sabnzbd.cfg.unwanted_extensions())
         )
     else:
         # Don't consider missing extensions unwanted to prevent indiscriminate blocking of
