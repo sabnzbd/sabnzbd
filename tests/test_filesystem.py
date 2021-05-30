@@ -1094,7 +1094,7 @@ class TestRenamer:
 class TestUnwantedExtensions:
     # Only test lowercase extensions without a leading dot: the unwanted_extensions
     # setting is sanitized accordingly in interface.saveSwitches() before saving.
-    test_extensions = "iso, cmd, bat, sh, re:r[0-9]{2}"
+    test_extensions = "iso, cmd, bat, sh, re:r[0-9]{2}, sab*"
     # Test parameters as (filename, result) tuples, with result given for blacklist mode
     test_params = [
         ("ubuntu.iso", True),
@@ -1117,6 +1117,9 @@ class TestUnwantedExtensions:
         ("regexp.r2d", False),
         ("regexp.r00", True),
         ("regexp.R42", True),
+        ("test.sabnzbd", True),
+        ("pass.sab", True),
+        ("fail.sb", False),
         ("No_Extension", False),
         ("r42", False),
         (480, False),
