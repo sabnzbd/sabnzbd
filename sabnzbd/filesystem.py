@@ -65,7 +65,7 @@ def is_listed_ext(ext: str, ext_list: list) -> bool:
     thus return false for extentions such as 'r007' despite the substring match on 'r00').
     """
     for item in ext_list:
-        RE_EXT = sabnzbd.rss.convert_filter(item)
+        RE_EXT = sabnzbd.misc.convert_filter(item)
         if RE_EXT:
             try:
                 if len(RE_EXT.match(ext).group()) == len(ext):
