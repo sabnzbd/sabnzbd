@@ -140,7 +140,7 @@ RE_LANG = re.compile(r'"Language-Description:\s([^"]+)\\n')
 
 
 def run(cmd):
-    """ Run system command, returns exit-code and stdout """
+    """Run system command, returns exit-code and stdout"""
     try:
         txt = subprocess.check_output(cmd, universal_newlines=True)
         ret = 0
@@ -152,7 +152,7 @@ def run(cmd):
 
 
 def process_po_folder(domain, folder, extra=""):
-    """ Process each PO file in folder """
+    """Process each PO file in folder"""
     result = True
     for fname in glob.glob(os.path.join(folder, "*.po")):
         basename = os.path.split(fname)[1]
@@ -180,7 +180,7 @@ def process_po_folder(domain, folder, extra=""):
 
 
 def remove_mo_files():
-    """ Remove MO files in locale """
+    """Remove MO files in locale"""
     for root, dirs, files in os.walk(MO_DIR, topdown=False):
         for f in files:
             if not f.startswith(DOMAIN):
@@ -188,7 +188,7 @@ def remove_mo_files():
 
 
 def translate_tmpl(prefix, lng):
-    """ Translate template 'prefix' into language 'lng' """
+    """Translate template 'prefix' into language 'lng'"""
     # Open the original file
     with open(EMAIL_DIR + "/%s-en.tmpl" % prefix, "r", encoding="utf-8") as src:
         data = src.read()
@@ -204,7 +204,7 @@ def translate_tmpl(prefix, lng):
 
 
 def make_templates():
-    """ Create email templates """
+    """Create email templates"""
     if not os.path.exists("email"):
         os.makedirs("email")
     for path in glob.glob(os.path.join(MO_DIR, "*")):
@@ -224,7 +224,7 @@ def make_templates():
 
 
 def patch_nsis():
-    """ Patch translation into the NSIS script """
+    """Patch translation into the NSIS script"""
     RE_NSIS = re.compile(r'^(\s*LangString\s+)(\w+)(\s+\$\{LANG_)(\w+)\}\s+(".*)', re.I)
     languages = [os.path.split(path)[1] for path in glob.glob(os.path.join(MO_DIR, "*"))]
 

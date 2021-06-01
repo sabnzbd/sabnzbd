@@ -652,6 +652,9 @@ function QueueModel(parent, data) {
         // Anything change or empty?
         if(!newName || self.name() == newName) return;
 
+        // Rename would abort Direct Unpack, so ask if user is sure
+        if(self.direct_unpack() && !confirm(glitterTranslate.renameAbort)) return;
+
         // Send rename
         callAPI({
                 mode: 'queue',

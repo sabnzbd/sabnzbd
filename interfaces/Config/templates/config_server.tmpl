@@ -1,5 +1,5 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configuration/3.2/servers"#-->
+<!--#set global $help_uri="configuration/3.3/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#import json#-->
@@ -144,7 +144,7 @@
 
             <div class="section <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
                 <div class="col2 <!--#if int($server['enable']) == 0 then 'server-disabled' else ""#-->">
-                    <h3>$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
+                    <h3 title="$server['displayname']">$server['displayname'] <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                     <!--#if int($server['enable']) != 0 #-->
                         <!--#if $last_prio != $server['priority'] and $cur_prio_color+1 < len($prio_colors) #-->
                             <!--#set $cur_prio_color = $cur_prio_color+1 #-->
@@ -388,7 +388,8 @@
 
             // If values were missing
             if(!isNaN(articleRatio)) {
-                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', totalArticlesTriedThisRange))
+                // Use filesize to convert to unit-display
+                \$('#server-article-value-' + server_id).text('$T("srv-articles-tried")'.replace('%f', articleRatio).replace('%d', filesize(totalArticlesTriedThisRange, {unix: true, round: 0, spacer: "", base: 1})))
             } else {
                 \$('#server-article-value-' + server_id).text('$T("notAvailable")')
             }

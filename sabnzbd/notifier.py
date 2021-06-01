@@ -30,7 +30,7 @@ from threading import Thread
 
 import sabnzbd
 import sabnzbd.cfg
-from sabnzbd.encoding import platform_btou
+from sabnzbd.encoding import platform_btou, utob
 from sabnzbd.filesystem import make_script_path
 from sabnzbd.misc import build_and_run_command
 from sabnzbd.newsunpack import create_env
@@ -79,12 +79,12 @@ def get_icon():
 
 
 def have_ntfosd():
-    """ Return if any PyNotify (notify2) support is present """
+    """Return if any PyNotify (notify2) support is present"""
     return bool(_HAVE_NTFOSD)
 
 
 def check_classes(gtype, section):
-    """ Check if `gtype` is enabled in `section` """
+    """Check if `gtype` is enabled in `section`"""
     try:
         return sabnzbd.config.get_config(section, "%s_prio_%s" % (section, gtype))() > 0
     except TypeError:
@@ -93,7 +93,7 @@ def check_classes(gtype, section):
 
 
 def get_prio(gtype, section):
-    """ Check prio of `gtype` in `section` """
+    """Check prio of `gtype` in `section`"""
     try:
         return sabnzbd.config.get_config(section, "%s_prio_%s" % (section, gtype))()
     except TypeError:
@@ -118,7 +118,7 @@ def check_cat(section, job_cat, keyword=None):
 
 
 def send_notification(title, msg, gtype, job_cat=None):
-    """ Send Notification message """
+    """Send Notification message"""
     logging.info("Sending notification: %s - %s (type=%s, job_cat=%s)", title, msg, gtype, job_cat)
     # Notification Center
     if sabnzbd.DARWIN and sabnzbd.cfg.ncenter_enable():
@@ -163,7 +163,7 @@ _NTFOSD = False
 
 
 def send_notify_osd(title, message):
-    """ Send a message to NotifyOSD """
+    """Send a message to NotifyOSD"""
     global _NTFOSD
     if not _HAVE_NTFOSD:
         return T("Not available")  # : Function is not available on this OS
@@ -193,7 +193,7 @@ def send_notify_osd(title, message):
 
 
 def send_notification_center(title, msg, gtype):
-    """ Send message to macOS Notification Center """
+    """Send message to macOS Notification Center"""
     try:
         NSUserNotification = objc.lookUpClass("NSUserNotification")
         NSUserNotificationCenter = objc.lookUpClass("NSUserNotificationCenter")
@@ -211,7 +211,7 @@ def send_notification_center(title, msg, gtype):
 
 
 def send_prowl(title, msg, gtype, force=False, test=None):
-    """ Send message to Prowl """
+    """Send message to Prowl"""
 
     if test:
         apikey = test.get("prowl_apikey")
@@ -221,8 +221,8 @@ def send_prowl(title, msg, gtype, force=False, test=None):
         return T("Cannot send, missing required data")
 
     title = T(NOTIFICATION.get(gtype, "other"))
-    title = urllib.parse.quote(title.encode("utf8"))
-    msg = urllib.parse.quote(msg.encode("utf8"))
+    title = urllib.parse.quote(utob(title))
+    msg = urllib.parse.quote(utob(msg))
     prio = get_prio(gtype, "prowl")
 
     if force:
@@ -244,7 +244,7 @@ def send_prowl(title, msg, gtype, force=False, test=None):
 
 
 def send_pushover(title, msg, gtype, force=False, test=None):
-    """ Send message to pushover """
+    """Send message to pushover"""
 
     if test:
         apikey = test.get("pushover_token")
@@ -311,7 +311,7 @@ def do_send_pushover(body):
 
 
 def send_pushbullet(title, msg, gtype, force=False, test=None):
-    """ Send message to Pushbullet """
+    """Send message to Pushbullet"""
 
     if test:
         apikey = test.get("pushbullet_apikey")
@@ -346,7 +346,7 @@ def send_pushbullet(title, msg, gtype, force=False, test=None):
 
 
 def send_nscript(title, msg, gtype, force=False, test=None):
-    """ Run user's notification script """
+    """Run user's notification script"""
     if test:
         script = test.get("nscript_script")
         nscript_parameters = test.get("nscript_parameters")

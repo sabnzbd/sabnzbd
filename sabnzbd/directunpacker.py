@@ -106,7 +106,7 @@ class DirectUnpacker(threading.Thread):
         return True
 
     def set_volumes_for_nzo(self):
-        """ Loop over all files to detect the names """
+        """Loop over all files to detect the names"""
         none_counter = 0
         found_counter = 0
         for nzf in self.nzo.files + self.nzo.finished_files:
@@ -126,7 +126,7 @@ class DirectUnpacker(threading.Thread):
 
     @synchronized(START_STOP_LOCK)
     def add(self, nzf: NzbFile):
-        """ Add jobs and start instance of DirectUnpack """
+        """Add jobs and start instance of DirectUnpack"""
         if not cfg.direct_unpack_tested():
             test_disk_performance()
 
@@ -350,7 +350,7 @@ class DirectUnpacker(threading.Thread):
 
     @synchronized(START_STOP_LOCK)
     def create_unrar_instance(self):
-        """ Start the unrar instance using the user's options """
+        """Start the unrar instance using the user's options"""
         # Generate extraction path and save for post-proc
         if not self.unpack_dir_info:
             try:
@@ -432,7 +432,7 @@ class DirectUnpacker(threading.Thread):
 
     @synchronized(START_STOP_LOCK)
     def abort(self):
-        """ Abort running instance and delete generated files """
+        """Abort running instance and delete generated files"""
         if not self.killed and self.cur_setname:
             logging.info("Aborting DirectUnpack for %s", self.cur_setname)
             self.killed = True
@@ -494,7 +494,7 @@ class DirectUnpacker(threading.Thread):
             self.reset_active()
 
     def get_formatted_stats(self):
-        """ Get percentage or number of rar's done """
+        """Get percentage or number of rar's done"""
         if self.cur_setname and self.cur_setname in self.total_volumes:
             # This won't work on obfuscated posts
             if self.total_volumes[self.cur_setname] >= self.cur_volume and self.cur_volume:
@@ -520,7 +520,7 @@ def analyze_rar_filename(filename):
 
 
 def abort_all():
-    """ Abort all running DirectUnpackers """
+    """Abort all running DirectUnpackers"""
     logging.info("Aborting all DirectUnpackers")
     for direct_unpacker in ACTIVE_UNPACKERS:
         direct_unpacker.abort()

@@ -29,6 +29,7 @@ import time
 import fnmatch
 import stat
 import zipfile
+import ctypes
 from typing import Union, List, Tuple, Any, Dict, Optional
 
 try:
@@ -40,7 +41,7 @@ except ImportError:
 import sabnzbd
 from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX
-from sabnzbd.encoding import correct_unknown_encoding
+from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
 
 # For Windows: determine executable extensions
@@ -51,15 +52,35 @@ else:
 
 
 def get_ext(filename: str) -> str:
-    """ Return lowercased file extension """
+    """Return lowercased file extension"""
     try:
         return os.path.splitext(filename)[1].lower()
     except:
         return ""
 
 
+def has_unwanted_extension(filename: str) -> bool:
+    """Determine if a filename has an unwanted extension, given the configured mode"""
+    extension = get_ext(filename).replace(".", "")
+    if extension and sabnzbd.cfg.unwanted_extensions():
+        return (
+            # Blacklisted
+            sabnzbd.cfg.unwanted_extensions_mode() == 0
+            and extension in sabnzbd.cfg.unwanted_extensions()
+        ) or (
+            # Not whitelisted
+            sabnzbd.cfg.unwanted_extensions_mode() == 1
+            and extension not in sabnzbd.cfg.unwanted_extensions()
+        )
+    else:
+        # Don't consider missing extensions unwanted to prevent indiscriminate blocking of
+        # obfuscated jobs in whitelist mode. If there is an extension but nothing listed as
+        # (un)wanted, the result only depends on the configured mode.
+        return bool(extension and sabnzbd.cfg.unwanted_extensions_mode())
+
+
 def get_filename(path: str) -> str:
-    """ Return path without the file extension """
+    """Return path without the file extension"""
     try:
         return os.path.split(path)[1]
     except:
@@ -67,12 +88,12 @@ def get_filename(path: str) -> str:
 
 
 def setname_from_path(path: str) -> str:
-    """ Get the setname from a path """
+    """Get the setname from a path"""
     return os.path.splitext(os.path.basename(path))[0]
 
 
 def is_writable(path: str) -> bool:
-    """ Return True is file is writable (also when non-existent) """
+    """Return True is file is writable (also when non-existent)"""
     if os.path.isfile(path):
         return bool(os.stat(path).st_mode & stat.S_IWUSR)
     else:
@@ -180,11 +201,11 @@ def sanitize_filename(name: str) -> str:
     # preserving the extension (max ext length 20)
     # Note: some filesystem can handle up to 255 UTF chars (which is more than 255 bytes) in the filename,
     # but we stay on the safe side: max DEF_FILE_MAX bytes
-    if len(name.encode("utf8")) + len(ext.encode("utf8")) > DEF_FILE_MAX:
+    if len(utob(name)) + len(utob(ext)) > DEF_FILE_MAX:
         logging.debug("Filename %s is too long, so truncating", name + ext)
         # Too long filenames are often caused by incorrect non-ascii chars,
         # so brute-force remove those non-ascii chars
-        name = str(name.encode("ascii", "ignore"), "utf-8")
+        name = ubtou(name.encode("ascii", "ignore"))
         # Now it's plain ASCII, so no need for len(str.encode()) anymore; plain len() is enough
         if len(name) + len(ext) > DEF_FILE_MAX:
             # still too long, limit the extension
@@ -227,7 +248,6 @@ def sanitize_foldername(name: str) -> str:
         else:
             lst.append(ch)
     name = "".join(lst)
-    name = name.strip()
 
     if sabnzbd.WIN32 or sabnzbd.cfg.sanitize_safe():
         name = replace_win_devices(name)
@@ -235,9 +255,14 @@ def sanitize_foldername(name: str) -> str:
     if len(name) >= sabnzbd.cfg.max_foldername_length():
         name = name[: sabnzbd.cfg.max_foldername_length()]
 
-    # And finally, make sure it doesn't end in a dot
+    # And finally, make sure it doesn't end in a dot or a space
+    # This is invalid on Windows and can cause trouble for some other tools
     if name != "." and name != "..":
-        name = name.rstrip(".")
+        # This would be perfect for := operator in Python 3.8+
+        while len(name.strip().rstrip(".")) < len(name):
+            name = name.strip().rstrip(".")
+
+    # Just to be sure we don't return nothing
     if not name:
         name = "unknown"
 
@@ -245,7 +270,7 @@ def sanitize_foldername(name: str) -> str:
 
 
 def sanitize_and_trim_path(path: str) -> str:
-    """ Remove illegal characters and trim element size """
+    """Remove illegal characters and trim element size"""
     path = path.strip()
     new_path = ""
     if sabnzbd.WIN32:
@@ -270,21 +295,20 @@ def sanitize_and_trim_path(path: str) -> str:
     return os.path.abspath(os.path.normpath(new_path))
 
 
-def sanitize_files_in_folder(folder):
-    """Sanitize each file in the folder, return list of new names"""
-    lst = []
-    for root, _, files in os.walk(folder):
-        for file_ in files:
-            path = os.path.join(root, file_)
-            new_path = os.path.join(root, sanitize_filename(file_))
-            if path != new_path:
-                try:
-                    os.rename(path, new_path)
-                    path = new_path
-                except:
-                    logging.debug("Cannot rename %s to %s", path, new_path)
-            lst.append(path)
-    return lst
+def sanitize_files(folder: Optional[str] = None, filelist: Optional[List[str]] = None) -> List[str]:
+    """Sanitize each file in the folder or list of filepaths, return list of new names"""
+    logging.info("Checking if any resulting filenames need to be sanitized")
+    if folder:
+        filelist = listdir_full(folder)
+    else:
+        filelist = filelist or []
+
+    # Loop over all the files
+    output_filelist = []
+    for old_path in filelist:
+        # Will skip files if there's nothing to sanitize
+        output_filelist.append(renamer(old_path, old_path))
+    return output_filelist
 
 
 def real_path(loc: str, path: str) -> str:
@@ -448,7 +472,7 @@ def safe_fnmatch(f: str, pattern: str) -> bool:
 
 
 def globber(path: str, pattern: str = "*") -> List[str]:
-    """ Return matching base file/folder names in folder `path` """
+    """Return matching base file/folder names in folder `path`"""
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
         return [f for f in os.listdir(path) if safe_fnmatch(f, pattern)]
@@ -456,7 +480,7 @@ def globber(path: str, pattern: str = "*") -> List[str]:
 
 
 def globber_full(path: str, pattern: str = "*") -> List[str]:
-    """ Return matching full file/folder names in folder `path` """
+    """Return matching full file/folder names in folder `path`"""
     # Cannot use glob.glob() because it doesn't support Windows long name notation
     if os.path.exists(path):
         return [os.path.join(path, f) for f in os.listdir(path) if safe_fnmatch(f, pattern)]
@@ -480,12 +504,12 @@ def fix_unix_encoding(folder: str):
 
 
 def is_valid_script(basename: str) -> bool:
-    """ Determine if 'basename' is a valid script """
+    """Determine if 'basename' is a valid script"""
     return basename in list_scripts(default=False, none=False)
 
 
 def list_scripts(default: bool = False, none: bool = True) -> List[str]:
-    """ Return a list of script names, optionally with 'Default' added """
+    """Return a list of script names, optionally with 'Default' added"""
     lst = []
     path = sabnzbd.cfg.script_dir.get_path()
     if path and os.access(path, os.R_OK):
@@ -511,7 +535,7 @@ def list_scripts(default: bool = False, none: bool = True) -> List[str]:
 
 
 def make_script_path(script: str) -> Optional[str]:
-    """ Return full script path, if any valid script exists, else None """
+    """Return full script path, if any valid script exists, else None"""
     script_path = None
     script_dir = sabnzbd.cfg.script_dir.get_path()
     if script_dir and script:
@@ -536,7 +560,7 @@ def get_admin_path(name: str, future: bool):
 
 
 def set_chmod(path: str, permissions: int, report: bool):
-    """ Set 'permissions' on 'path', report any errors when 'report' is True """
+    """Set 'permissions' on 'path', report any errors when 'report' is True"""
     try:
         logging.debug("Applying permissions %s (octal) to %s", oct(permissions), path)
         os.chmod(path, permissions)
@@ -548,7 +572,7 @@ def set_chmod(path: str, permissions: int, report: bool):
 
 
 def set_permissions(path: str, recursive: bool = True):
-    """ Give folder tree and its files their proper permissions """
+    """Give folder tree and its files their proper permissions"""
     if not sabnzbd.WIN32:
         umask = sabnzbd.cfg.umask()
         try:
@@ -593,14 +617,14 @@ def userxbit(filename: str) -> bool:
 
 
 def clip_path(path: str) -> str:
-    r""" Remove \\?\ or \\?\UNC\ prefix from Windows path """
+    r"""Remove \\?\ or \\?\UNC\ prefix from Windows path"""
     if sabnzbd.WIN32 and path and "?" in path:
         path = path.replace("\\\\?\\UNC\\", "\\\\", 1).replace("\\\\?\\", "", 1)
     return path
 
 
 def long_path(path: str) -> str:
-    """ For Windows, convert to long style path; others, return same path """
+    """For Windows, convert to long style path; others, return same path"""
     if sabnzbd.WIN32 and path and not path.startswith("\\\\?\\"):
         if path.startswith("\\\\"):
             # Special form for UNC paths
@@ -657,7 +681,7 @@ def create_all_dirs(path: str, apply_umask: bool = False) -> Union[str, bool]:
 
 @synchronized(DIR_LOCK)
 def get_unique_path(dirpath: str, n: int = 0, create_dir: bool = True) -> str:
-    """ Determine a unique folder or filename """
+    """Determine a unique folder or filename"""
 
     if not check_mount(dirpath):
         return dirpath
@@ -692,7 +716,7 @@ def get_unique_filename(path: str) -> str:
 
 @synchronized(DIR_LOCK)
 def listdir_full(input_dir: str, recursive: bool = True) -> List[str]:
-    """ List all files in dirs and sub-dirs """
+    """List all files in dirs and sub-dirs"""
     filelist = []
     for root, dirs, files in os.walk(input_dir):
         for file in files:
@@ -746,7 +770,7 @@ def move_to_path(path: str, new_path: str) -> Tuple[bool, Optional[str]]:
 
 @synchronized(DIR_LOCK)
 def cleanup_empty_directories(path: str):
-    """ Remove all empty folders inside (and including) 'path' """
+    """Remove all empty folders inside (and including) 'path'"""
     path = os.path.normpath(path)
     while 1:
         repeat = False
@@ -770,7 +794,7 @@ def cleanup_empty_directories(path: str):
 
 @synchronized(DIR_LOCK)
 def get_filepath(path: str, nzo, filename: str):
-    """ Create unique filepath """
+    """Create unique filepath"""
     # This procedure is only used by the Assembler thread
     # It does no umask setting
     # It uses the dir_lock for the (rare) case that the
@@ -806,16 +830,17 @@ def get_filepath(path: str, nzo, filename: str):
 
 
 @synchronized(DIR_LOCK)
-def renamer(old: str, new: str, create_local_directories: bool = False):
+def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
-    Optionally alows the creation of local directories if they don't exist yet"""
+    Optionally alows the creation of local directories if they don't exist yet
+    Returns new filename (which could be changed due to sanitize_filenam) on success"""
     # Sanitize last part of new name
     path, name = os.path.split(new)
     new = os.path.join(path, sanitize_filename(name))
 
     # Skip if nothing changes
     if old == new:
-        return
+        return new
 
     # In case we want nonexistent directories to be created, check for directory escape (forbidden)
     if create_local_directories:
@@ -842,7 +867,7 @@ def renamer(old: str, new: str, create_local_directories: bool = False):
                     # Now we try the back-up method
                     logging.debug("Could not rename, trying move for %s to %s", old, new)
                     shutil.move(old, new)
-                return
+                return new
             except OSError as err:
                 logging.debug('Error renaming "%s" to "%s" <%s>', old, new, err)
                 if err.winerror == 17:
@@ -861,17 +886,18 @@ def renamer(old: str, new: str, create_local_directories: bool = False):
         raise OSError("Failed to rename")
     else:
         shutil.move(old, new)
+        return new
 
 
 def remove_file(path: str):
-    """ Wrapper function so any file removal is logged """
+    """Wrapper function so any file removal is logged"""
     logging.debug("[%s] Deleting file %s", sabnzbd.misc.caller_name(), path)
     os.remove(path)
 
 
 @synchronized(DIR_LOCK)
 def remove_dir(path: str):
-    """ Remove directory with retries for Win32 """
+    """Remove directory with retries for Win32"""
     logging.debug("[%s] Removing dir %s", sabnzbd.misc.caller_name(), path)
     if sabnzbd.WIN32:
         retries = 15
@@ -894,7 +920,7 @@ def remove_dir(path: str):
 
 @synchronized(DIR_LOCK)
 def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursive: bool = False):
-    """ Remove folder and all its content (optionally recursive) """
+    """Remove folder and all its content (optionally recursive)"""
     if path and os.path.exists(path):
         # Fast-remove the whole tree if recursive
         if pattern == "*" and not keep_folder and recursive:
@@ -927,8 +953,52 @@ def remove_all(path: str, pattern: str = "*", keep_folder: bool = False, recursi
 ##############################################################################
 # Diskfree
 ##############################################################################
+def disk_free_macos_clib_statfs64(directory: str) -> Tuple[int, int]:
+    # MacOS only!
+    # direct system call to c-lib's statfs(), not python's os.statvfs()
+    # because statvfs() on MacOS has a rollover at 4TB (possibly a 32bit rollover with 10bit block size)
+    # See https://bugs.python.org/issue43638
+    # Based on code of pudquick and blackntan
+    # Input: directory.
+    # Output: disksize and available space, in bytes
+
+    # format & parameters: on MacOS, see "man statfs", lines starting at
+    # "struct statfs { /* when _DARWIN_FEATURE_64_BIT_INODE is defined */"
+    class statfs64(ctypes.Structure):
+        _fields_ = [
+            ("f_bsize", ctypes.c_uint32),
+            ("f_iosize", ctypes.c_int32),
+            ("f_blocks", ctypes.c_uint64),
+            ("f_bfree", ctypes.c_uint64),
+            ("f_bavail", ctypes.c_uint64),
+            ("f_files", ctypes.c_uint64),
+            ("f_ffree", ctypes.c_uint64),
+            ("f_fsid", ctypes.c_uint64),
+            ("f_owner", ctypes.c_uint32),
+            ("f_type", ctypes.c_uint32),
+            ("f_flags", ctypes.c_uint32),
+            ("f_fssubtype", ctypes.c_uint32),
+            ("f_fstypename", ctypes.c_char * 16),
+            ("f_mntonname", ctypes.c_char * 1024),
+            ("f_mntfromname", ctypes.c_char * 1024),
+            ("f_reserved", ctypes.c_uint32 * 8),
+        ]
+
+    fs_info64 = statfs64()  # set up the parameters to be filled out
+    result = sabnzbd.MACOSLIBC.statfs64(
+        ctypes.create_string_buffer(utob(directory)), ctypes.byref(fs_info64)
+    )  # fs_info64 gets filled out via the byref()
+    if result == 0:
+        # result = 0: "Upon successful completion, a value of 0 is returned."
+        return fs_info64.f_blocks * fs_info64.f_bsize, fs_info64.f_bavail * fs_info64.f_bsize
+    else:
+        # result = -1: "Otherwise, -1 is returned and the global variable errno is set to indicate the error."
+        logging.debug("Call to MACOSLIBC.statfs64 not successful. Value of errno is %s", ctypes.get_errno())
+        return 0, 0
+
+
 def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
-    """ Return amount of free and used diskspace in GBytes """
+    """Return amount of free and used diskspace in GBytes"""
     # Find first folder level that exists in the path
     x = "x"
     while x and not os.path.exists(dir_to_check):
@@ -941,6 +1011,10 @@ def diskspace_base(dir_to_check: str) -> Tuple[float, float]:
             return disk_size / GIGI, available / GIGI
         except:
             return 0.0, 0.0
+    elif sabnzbd.DARWIN:
+        # MacOS diskfree ... via c-lib call statfs()
+        disk_size, available = disk_free_macos_clib_statfs64(dir_to_check)
+        return disk_size / GIGI, available / GIGI
     elif hasattr(os, "statvfs"):
         # posix diskfree
         try:
@@ -968,7 +1042,7 @@ __LAST_DISK_CALL = 0
 
 
 def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
-    """ Wrapper to cache results """
+    """Wrapper to cache results"""
     global __DIRS_CHECKED, __DISKS_SAME, __LAST_DISK_RESULT, __LAST_DISK_CALL
 
     # Reset everything when folders changed

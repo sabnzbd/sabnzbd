@@ -71,14 +71,14 @@ def safe_remove(path):
 
 
 def delete_files_glob(name):
-    """ Delete one file or set of files from wild-card spec """
+    """Delete one file or set of files from wild-card spec"""
     for f in glob.glob(name):
         if os.path.exists(f):
             os.remove(f)
 
 
 def run_external_command(command):
-    """ Wrapper to ease the use of calling external programs """
+    """Wrapper to ease the use of calling external programs"""
     process = subprocess.Popen(command, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output, _ = process.communicate()
     ret = process.wait()
@@ -90,7 +90,7 @@ def run_external_command(command):
 
 
 def run_git_command(parms):
-    """ Run git command, raise error if it failed """
+    """Run git command, raise error if it failed"""
     return run_external_command(["git"] + parms)
 
 
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     patch_version_file(RELEASE_VERSION)
 
     # To draft a release or not to draft a release?
-    RELEASE_THIS = "draft release" in run_git_command(["log", "-1", "--pretty=format:%b"])
+    RELEASE_THIS = "refs/tags/" in os.environ.get("GITHUB_REF", "")
 
     # Rename release notes file
     safe_remove("README.txt")
@@ -339,7 +339,7 @@ if __name__ == "__main__":
                 print("Approved! Stapling the result to the app")
                 run_external_command(["xcrun", "stapler", "staple", "dist/SABnzbd.app"])
             elif notarization_user and notarization_pass:
-                print("Notarization skipped, add 'draft release' to the commit message trigger notarization!")
+                print("Notarization skipped, tag commit to trigger notarization!")
             else:
                 print("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
         else:
@@ -542,7 +542,7 @@ if __name__ == "__main__":
                     head=RELEASE_VERSION,
                 )
         else:
-            print("To push release to GitHub, add 'draft release' to the commit message.")
+            print("To push release to GitHub, first tag the commit.")
             print("Or missing the AUTOMATION_GITHUB_TOKEN, cannot push to GitHub without it.")
 
     # Reset!

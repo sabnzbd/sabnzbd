@@ -289,7 +289,7 @@ class SABnzbdDelegate(NSObject):
             # Fetch history items
             if not self.history_db:
                 self.history_db = sabnzbd.database.HistoryDB()
-            items, fetched_items, _total_items = self.history_db.fetch_history(0, 10, None)
+            items, fetched_items, _total_items = self.history_db.fetch_history(limit=10)
 
             self.menu_history = NSMenu.alloc().init()
             self.failedAttributes = {

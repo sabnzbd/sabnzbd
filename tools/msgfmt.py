@@ -53,7 +53,7 @@ def usage(code, msg=""):
 
 
 def add(id, str, fuzzy):
-    """ Add a non-fuzzy translation to the dictionary. """
+    """Add a non-fuzzy translation to the dictionary."""
     global MESSAGES, nonewlines, RE_HTML
     if not fuzzy and str:
         if id.count(b"%s") == str.count(b"%s"):

@@ -64,7 +64,7 @@ RE_CONTEXT = re.compile(r"#:\s*(.*)$")
 
 
 def get_a_line(line_src, number):
-    """ Retrieve line 'number' from file 'src' with caching """
+    """Retrieve line 'number' from file 'src' with caching"""
     global FILE_CACHE
     if line_src not in FILE_CACHE:
         FILE_CACHE[line_src] = []
@@ -79,7 +79,7 @@ def get_a_line(line_src, number):
 
 
 def get_context(ctx_line):
-    """ Read context info from source file and append to line. """
+    """Read context info from source file and append to line."""
     if not ctx_line.startswith("#:"):
         return ctx_line
 
@@ -125,7 +125,7 @@ def get_context(ctx_line):
 
 
 def add_tmpl_to_pot(prefix, dst_file):
-    """ Append english template to open POT file 'dst' """
+    """Append english template to open POT file 'dst'"""
     with open(EMAIL_DIR + "/%s-en.tmpl" % prefix, "r") as tmpl_src:
         dst_file.write("#: email/%s.tmpl:1\n" % prefix)
         dst_file.write('msgid ""\n')

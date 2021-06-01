@@ -11,7 +11,7 @@ debug = False
 
 
 def getcmdoutput(cmd):
-    """ execectue cmd, and give back output lines as array """
+    """execectue cmd, and give back output lines as array"""
     with os.popen(cmd) as p:
         outputlines = p.readlines()
     return outputlines

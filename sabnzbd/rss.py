@@ -43,7 +43,7 @@ import feedparser
 
 
 def notdefault(item):
-    """ Return True if not 'Default|''|*' """
+    """Return True if not 'Default|''|*'"""
     return bool(item) and str(item).lower() not in ("default", "*", "", str(DEFAULT_PRIORITY))
 
 
@@ -132,7 +132,7 @@ class RSSReader:
 
     @synchronized(RSS_LOCK)
     def run_feed(self, feed=None, download=False, ignoreFirst=False, force=False, readout=True):
-        """ Run the query for one URI and apply filters """
+        """Run the query for one URI and apply filters"""
         self.shutdown = False
 
         if not feed:
@@ -469,7 +469,7 @@ class RSSReader:
         return msg
 
     def run(self):
-        """ Run all the URI's and filters """
+        """Run all the URI's and filters"""
         if not sabnzbd.PAUSED_ALL:
             active = False
             if self.next_run < time.time():
@@ -630,7 +630,7 @@ def _HandleLink(
     priority=DEFAULT_PRIORITY,
     rule=0,
 ):
-    """ Process one link """
+    """Process one link"""
     if script == "":
         script = None
     if pp == "":
@@ -746,7 +746,7 @@ def _get_link(entry):
 
 
 def special_rss_site(url):
-    """ Return True if url describes an RSS site with odd titles """
+    """Return True if url describes an RSS site with odd titles"""
     return cfg.rss_filenames() or match_str(url, cfg.rss_odd_titles())
 
 

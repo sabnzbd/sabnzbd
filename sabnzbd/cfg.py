@@ -69,7 +69,7 @@ def validate_email(value):
 
 
 def validate_server(value):
-    """ Check if server non-empty"""
+    """Check if server non-empty"""
     global email_endjob, email_full, email_rss
     if value == "" and (email_endjob() or email_full() or email_rss()):
         return T("Server address required"), None
@@ -78,7 +78,7 @@ def validate_server(value):
 
 
 def validate_script(value):
-    """ Check if value is a valid script """
+    """Check if value is a valid script"""
     if not sabnzbd.__INITIALIZED__ or (value and sabnzbd.filesystem.is_valid_script(value)):
         return None, value
     elif (value and value == "None") or not value:
@@ -133,7 +133,6 @@ https_chain = OptionDir("misc", "https_chain", create=False)
 enable_https = OptionBool("misc", "enable_https", False)
 # 0=local-only, 1=nzb, 2=api, 3=full_api, 4=webui, 5=webui with login for external
 inet_exposure = OptionNumber("misc", "inet_exposure", 0, protect=True)
-local_ranges = OptionList("misc", "local_ranges", protect=True)
 api_key = OptionStr("misc", "api_key", create_api_key())
 nzb_key = OptionStr("misc", "nzb_key", create_api_key())
 
@@ -196,6 +195,7 @@ sanitize_safe = OptionBool("misc", "sanitize_safe", False)
 cleanup_list = OptionList("misc", "cleanup_list")
 unwanted_extensions = OptionList("misc", "unwanted_extensions")
 action_on_unwanted_extensions = OptionNumber("misc", "action_on_unwanted_extensions", 0)
+unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
 history_retention = OptionStr("misc", "history_retention", "0")
 enable_meta = OptionBool("misc", "enable_meta", True)
@@ -283,7 +283,6 @@ keep_awake = OptionBool("misc", "keep_awake", True)
 win_menu = OptionBool("misc", "win_menu", True)
 allow_incomplete_nzb = OptionBool("misc", "allow_incomplete_nzb", False)
 enable_broadcast = OptionBool("misc", "enable_broadcast", True)
-max_art_opt = OptionBool("misc", "max_art_opt", False)
 ipv6_hosting = OptionBool("misc", "ipv6_hosting", False)
 fixed_ports = OptionBool("misc", "fixed_ports", False)
 api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
@@ -307,6 +306,7 @@ marker_file = OptionStr("misc", "nomedia_marker")
 ipv6_servers = OptionNumber("misc", "ipv6_servers", 1, 0, 2)
 url_base = OptionStr("misc", "url_base", "/sabnzbd", validation=validate_strip_right_slash)
 host_whitelist = OptionList("misc", "host_whitelist", validation=all_lowercase)
+local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)

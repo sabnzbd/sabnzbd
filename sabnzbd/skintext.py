@@ -397,12 +397,8 @@ SKIN_TEXT = {
     "explain-nzbkey": TT("This key will allow 3rd party programs to add NZBs to SABnzbd."),
     "button-apikey": TT("Generate New Key"),
     "explain-qr-code": TT("API Key QR Code"),  #: Explanation for QR code of APIKEY
-    "opt-local_ranges": TT("List of local network ranges"),
-    "explain-local_ranges": TT('All local network addresses start with these prefixes (often "192.168.1.")'),
     "opt-inet_exposure": TT("External internet access"),
-    "explain-inet_exposure": TT(
-        "You can set access rights for systems outside your local network. Requires List of local network ranges to be defined."
-    ),
+    "explain-inet_exposure": TT("You can set access rights for systems outside your local network."),
     "inet-local": TT("No access"),  # Selection value for external access
     "inet-nzb": TT("Add NZB files "),  # Selection value for external access
     "inet-api": TT("API (no Config)"),  # Selection value for external access
@@ -495,9 +491,13 @@ SKIN_TEXT = {
     "nodupes-tag": TT("Tag job"),  #: Four way switch for duplicates
     "abort": TT("Abort"),  #: Three way switch for encrypted posts
     "opt-action_on_unwanted_extensions": TT("Action when unwanted extension detected"),
-    "explain-action_on_unwanted_extensions": TT("Action when an unwanted extension is detected in RAR files"),
+    "explain-action_on_unwanted_extensions": TT("Action when an unwanted extension is detected"),
     "opt-unwanted_extensions": TT("Unwanted extensions"),
-    "explain-unwanted_extensions": TT("List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"),
+    "unwanted_extensions_blacklist": TT("Blacklist"),
+    "unwanted_extensions_whitelist": TT("Whitelist"),
+    "explain-unwanted_extensions": TT(
+        "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+    ),
     "opt-sfv_check": TT("Enable SFV-based checks"),
     "explain-sfv_check": TT("Do an extra verification based on SFV files."),
     "opt-script_can_fail": TT("User script can flag job as failed"),
@@ -920,9 +920,7 @@ SKIN_TEXT = {
     "Glitter-more": TT("More"),
     "Glitter-scriptLog": TT("View Script Log"),
     "Glitter-clearHistory": TT("Purge History"),
-    "Glitter-confirmClearWarnings": TT("Are you sure?"),
-    "Glitter-confirmClearDownloads": TT("Are you sure?"),
-    "Glitter-confirmClear1Download": TT("Are you sure?"),
+    "Glitter-confirmAbortDirectUnpack": TT("Renaming the job will abort Direct Unpack."),
     "Glitter-updateAvailable": TT("Update Available!"),
     "Glitter-noLocalStorage": TT(
         "LocalStorage (cookies) are disabled in your browser, interface settings will be lost after you close the browser!"

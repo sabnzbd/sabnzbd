@@ -31,14 +31,14 @@ from sabnzbd.encoding import ubtou
 
 
 def timeout(max_timeout):
-    """ Timeout decorator, parameter in seconds. """
+    """Timeout decorator, parameter in seconds."""
 
     def timeout_decorator(item):
-        """ Wrap the original function. """
+        """Wrap the original function."""
 
         @functools.wraps(item)
         def func_wrapper(*args, **kwargs):
-            """ Closure for function. """
+            """Closure for function."""
             with multiprocessing.pool.ThreadPool(processes=1) as pool:
                 async_result = pool.apply_async(item, args, kwargs)
                 # raises a TimeoutError if execution exceeds max_timeout

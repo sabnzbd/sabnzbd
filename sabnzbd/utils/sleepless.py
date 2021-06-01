@@ -58,7 +58,7 @@ def keep_awake(reason):
 
 
 def allow_sleep():
-    """ Allow OS to go to sleep """
+    """Allow OS to go to sleep"""
     global assertion_id
     if assertion_id:
         IOPMAssertionRelease(assertion_id)

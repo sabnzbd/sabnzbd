@@ -26,7 +26,7 @@ import logging
 import sys
 import threading
 import sqlite3
-from typing import Union, Dict
+from typing import Union, Dict, Optional, List
 
 import sabnzbd
 import sabnzbd.cfg
@@ -41,7 +41,7 @@ DB_LOCK = threading.RLock()
 
 
 def convert_search(search):
-    """ Convert classic wildcard to SQL wildcard """
+    """Convert classic wildcard to SQL wildcard"""
     if not search:
         # Default value
         search = ""
@@ -75,14 +75,14 @@ class HistoryDB:
 
     @synchronized(DB_LOCK)
     def __init__(self):
-        """ Determine databse path and create connection """
+        """Determine databse path and create connection"""
         self.con = self.c = None
         if not HistoryDB.db_path:
             HistoryDB.db_path = os.path.join(sabnzbd.cfg.admin_dir.get_path(), DB_HISTORY_NAME)
         self.connect()
 
     def connect(self):
-        """ Create a connection to the database """
+        """Create a connection to the database"""
         create_table = not os.path.exists(HistoryDB.db_path)
         self.con = sqlite3.connect(HistoryDB.db_path)
         self.con.row_factory = sqlite3.Row
@@ -117,7 +117,7 @@ class HistoryDB:
             )
 
     def execute(self, command, args=(), save=False):
-        """ Wrapper for executing SQL commands """
+        """Wrapper for executing SQL commands"""
         for tries in range(5, 0, -1):
             try:
                 if args and isinstance(args, tuple):
@@ -161,7 +161,7 @@ class HistoryDB:
             return False
 
     def create_history_db(self):
-        """ Create a new (empty) database file """
+        """Create a new (empty) database file"""
         self.execute(
             """
         CREATE TABLE "history" (
@@ -198,7 +198,7 @@ class HistoryDB:
         self.execute("PRAGMA user_version = 2;")
 
     def close(self):
-        """ Close database connection """
+        """Close database connection"""
         try:
             self.c.close()
             self.con.close()
@@ -207,7 +207,7 @@ class HistoryDB:
             logging.info("Traceback: ", exc_info=True)
 
     def remove_completed(self, search=None):
-        """ Remove all completed jobs from the database, optional with `search` pattern """
+        """Remove all completed jobs from the database, optional with `search` pattern"""
         search = convert_search(search)
         logging.info("Removing all completed jobs from history")
         return self.execute(
@@ -215,7 +215,7 @@ class HistoryDB:
         )
 
     def get_failed_paths(self, search=None):
-        """ Return list of all storage paths of failed jobs (may contain non-existing or empty paths) """
+        """Return list of all storage paths of failed jobs (may contain non-existing or empty paths)"""
         search = convert_search(search)
         fetch_ok = self.execute(
             """SELECT path FROM history WHERE name LIKE ? AND status = ?""", (search, Status.FAILED)
@@ -226,7 +226,7 @@ class HistoryDB:
             return []
 
     def remove_failed(self, search=None):
-        """ Remove all failed jobs from the database, optional with `search` pattern """
+        """Remove all failed jobs from the database, optional with `search` pattern"""
         search = convert_search(search)
         logging.info("Removing all failed jobs from history")
         return self.execute(
@@ -234,7 +234,7 @@ class HistoryDB:
         )
 
     def remove_history(self, jobs=None):
-        """ Remove all jobs in the list `jobs`, empty list will remove all completed jobs """
+        """Remove all jobs in the list `jobs`, empty list will remove all completed jobs"""
         if jobs is None:
             self.remove_completed()
         else:
@@ -246,7 +246,7 @@ class HistoryDB:
                 logging.info("[%s] Removing job %s from history", caller_name(), job)
 
     def auto_history_purge(self):
-        """ Remove history items based on the configured history-retention """
+        """Remove history items based on the configured history-retention"""
         if sabnzbd.cfg.history_retention() == "0":
             return
 
@@ -279,7 +279,7 @@ class HistoryDB:
                 )
 
     def add_history_db(self, nzo, storage="", postproc_time=0, script_output="", script_line=""):
-        """ Add a new job entry to the database """
+        """Add a new job entry to the database"""
         t = build_history_info(nzo, storage, postproc_time, script_output, script_line, series_info=True)
 
         self.execute(
@@ -292,8 +292,16 @@ class HistoryDB:
         )
         logging.info("Added job %s to history", nzo.final_name)
 
-    def fetch_history(self, start=None, limit=None, search=None, failed_only=0, categories=None, nzo_ids=None):
-        """ Return records for specified jobs """
+    def fetch_history(
+        self,
+        start: Optional[int] = None,
+        limit: Optional[int] = None,
+        search: Optional[str] = None,
+        failed_only: int = 0,
+        categories: Optional[List[str]] = None,
+        nzo_ids: Optional[List[str]] = None,
+    ):
+        """Return records for specified jobs"""
         command_args = [convert_search(search)]
 
         post = ""
@@ -304,7 +312,6 @@ class HistoryDB:
             post += ")"
             command_args.extend(categories)
         if nzo_ids:
-            nzo_ids = nzo_ids.split(",")
             post += " AND (NZO_ID = ?"
             post += " OR NZO_ID = ? " * (len(nzo_ids) - 1)
             post += ")"
@@ -339,7 +346,7 @@ class HistoryDB:
         return items, fetched_items, total_items
 
     def have_episode(self, series, season, episode):
-        """ Check whether History contains this series episode """
+        """Check whether History contains this series episode"""
         total = 0
         series = series.lower().replace(".", " ").replace("_", " ").replace("  ", " ")
         if series and season and episode:
@@ -351,7 +358,7 @@ class HistoryDB:
         return total > 0
 
     def have_name_or_md5sum(self, name, md5sum):
-        """ Check whether this name or md5sum is already in History """
+        """Check whether this name or md5sum is already in History"""
         total = 0
         if self.execute(
             """SELECT COUNT(*) FROM History WHERE ( LOWER(name) = LOWER(?) OR md5sum = ? ) AND STATUS != ?""",
@@ -386,7 +393,7 @@ class HistoryDB:
         return total, month, week
 
     def get_script_log(self, nzo_id):
-        """ Return decompressed log file """
+        """Return decompressed log file"""
         data = ""
         t = (nzo_id,)
         if self.execute("""SELECT script_log FROM history WHERE nzo_id = ?""", t):
@@ -397,7 +404,7 @@ class HistoryDB:
         return data
 
     def get_name(self, nzo_id):
-        """ Return name of the job `nzo_id` """
+        """Return name of the job `nzo_id`"""
         t = (nzo_id,)
         name = ""
         if self.execute("""SELECT name FROM history WHERE nzo_id = ?""", t):
@@ -409,7 +416,7 @@ class HistoryDB:
         return name
 
     def get_path(self, nzo_id: str):
-        """ Return the `incomplete` path of the job `nzo_id` if it is still there """
+        """Return the `incomplete` path of the job `nzo_id` if it is still there"""
         t = (nzo_id,)
         path = ""
         if self.execute("""SELECT path FROM history WHERE nzo_id = ?""", t):
@@ -423,7 +430,7 @@ class HistoryDB:
         return None
 
     def get_other(self, nzo_id):
-        """ Return additional data for job `nzo_id` """
+        """Return additional data for job `nzo_id`"""
         t = (nzo_id,)
         if self.execute("""SELECT * FROM history WHERE nzo_id = ?""", t):
             try:
@@ -435,11 +442,11 @@ class HistoryDB:
         return "", "", "", "", ""
 
     def __enter__(self):
-        """ For context manager support """
+        """For context manager support"""
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """ For context manager support, ignore any exception """
+        """For context manager support, ignore any exception"""
         self.close()
 
 
@@ -447,7 +454,7 @@ _PP_LOOKUP = {0: "", 1: "R", 2: "U", 3: "D"}
 
 
 def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output="", script_line="", series_info=False):
-    """ Collects all the information needed for the database """
+    """Collects all the information needed for the database"""
     completed = int(time.time())
     pp = _PP_LOOKUP.get(opts_to_pp(*nzo.repair_opts), "X")
 

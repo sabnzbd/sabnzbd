@@ -30,7 +30,14 @@ from typing import Tuple, Optional, List
 
 import sabnzbd
 from sabnzbd.misc import get_all_passwords, match_str
-from sabnzbd.filesystem import set_permissions, clip_path, has_win_device, diskspace, get_filename, get_ext
+from sabnzbd.filesystem import (
+    set_permissions,
+    clip_path,
+    has_win_device,
+    diskspace,
+    get_filename,
+    has_unwanted_extension,
+)
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
@@ -259,7 +266,7 @@ SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 
 
 def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
-    """ Return True if this is likely to be a cloaked encrypted post """
+    """Return True if this is likely to be a cloaked encrypted post"""
     fname = os.path.splitext(get_filename(path.lower()))[0]
     for name in names:
         name = get_filename(name.lower())
@@ -288,7 +295,7 @@ def is_cloaked(nzo: NzbObject, path: str, names: List[str]) -> bool:
 
 
 def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[bool, Optional[str]]:
-    """ Combines check for unwanted and encrypted files to save on CPU and IO """
+    """Combines check for unwanted and encrypted files to save on CPU and IO"""
     encrypted = False
     unwanted = None
 
@@ -346,7 +353,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                                 except rarfile.RarCRCError as e:
                                     # CRC errors can be thrown for wrong password or
                                     # missing the next volume (with correct password)
-                                    if "cannot find volume" in str(e).lower():
+                                    if match_str(str(e), ("cannot find volume", "unexpected end of archive")):
                                         # We assume this one worked!
                                         password_hit = password
                                         break
@@ -377,7 +384,7 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
                 if cfg.unwanted_extensions() and cfg.action_on_unwanted_extensions():
                     for somefile in zf.namelist():
                         logging.debug("File contains: %s", somefile)
-                        if get_ext(somefile).replace(".", "").lower() in cfg.unwanted_extensions():
+                        if has_unwanted_extension(somefile):
                             logging.debug("Unwanted file %s", somefile)
                             unwanted = somefile
                 zf.close()

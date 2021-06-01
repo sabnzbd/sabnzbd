@@ -30,10 +30,12 @@ import hashlib
 import socket
 import ssl
 import functools
+import ipaddress
 from threading import Thread
 from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
+from typing import Optional, Callable, Union
 
 import sabnzbd
 import sabnzbd.rss
@@ -49,6 +51,9 @@ from sabnzbd.misc import (
     opts_to_pp,
     get_server_addrinfo,
     is_lan_addr,
+    is_loopback_addr,
+    ip_in_subnet,
+    strip_ipv4_mapped_notation,
 )
 from sabnzbd.filesystem import real_path, long_path, globber, globber_full, remove_all, clip_path, same_file
 from sabnzbd.encoding import xml_name, utob
@@ -81,16 +86,60 @@ from sabnzbd.api import (
 ##############################################################################
 # Security functions
 ##############################################################################
-def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
-    """ Wrapper for both cherrypy.expose and login/access check """
+_MSG_ACCESS_DENIED = "Access denied"
+_MSG_ACCESS_DENIED_CONFIG_LOCK = "Access denied - Configuration locked"
+_MSG_ACCESS_DENIED_HOSTNAME = "Access denied - Hostname verification failed: https://sabnzbd.org/hostname-check"
+_MSG_MISSING_AUTH = "Missing authentication"
+_MSG_APIKEY_REQUIRED = "API Key Required"
+_MSG_APIKEY_INCORRECT = "API Key Incorrect"
+
+
+def secured_expose(
+    wrap_func: Optional[Callable] = None,
+    check_configlock: bool = False,
+    check_for_login: bool = True,
+    check_api_key: bool = False,
+    access_type: int = 4,
+) -> Union[Callable, str]:
+    """Wrapper for both cherrypy.expose and login/access check"""
     if not wrap_func:
-        return functools.partial(secured_expose, check_configlock=check_configlock, check_api_key=check_api_key)
+        return functools.partial(
+            secured_expose,
+            check_configlock=check_configlock,
+            check_for_login=check_for_login,
+            check_api_key=check_api_key,
+            access_type=access_type,
+        )
 
     # Expose to cherrypy
     wrap_func.exposed = True
 
     @functools.wraps(wrap_func)
     def internal_wrap(*args, **kwargs):
+        # Label for logging in this and other functions, handling X-Forwarded-For
+        # The cherrypy.request object allows adding custom attributes
+        if cherrypy.request.headers.get("X-Forwarded-For"):
+            cherrypy.request.remote_label = "%s (X-Forwarded-For: %s) [%s]" % (
+                cherrypy.request.remote.ip,
+                cherrypy.request.headers.get("X-Forwarded-For"),
+                cherrypy.request.headers.get("User-Agent"),
+            )
+        else:
+            cherrypy.request.remote_label = "%s [%s]" % (
+                cherrypy.request.remote.ip,
+                cherrypy.request.headers.get("User-Agent"),
+            )
+
+        # Log all requests
+        if cfg.api_logging():
+            logging.debug(
+                "Request %s %s from %s %s",
+                cherrypy.request.method,
+                cherrypy.request.path_info,
+                cherrypy.request.remote_label,
+                kwargs,
+            )
+
         # Add X-Frame-Headers headers to page-requests
         if cfg.x_frame_options():
             cherrypy.response.headers["X-Frame-Options"] = "SameOrigin"
@@ -98,26 +147,27 @@ def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
         # Check if config is locked
         if check_configlock and cfg.configlock():
             cherrypy.response.status = 403
-            return "Access denied - Configuration locked"
+            return _MSG_ACCESS_DENIED_CONFIG_LOCK
 
-        # Check if external access
-        if not check_access():
+        # Check if external access and if it's allowed
+        if not check_access(access_type=access_type, warn_user=True):
             cherrypy.response.status = 403
-            return "Access denied"
+            return _MSG_ACCESS_DENIED
 
         # Verify login status, only for non-key pages
-        if not check_login() and not check_api_key:
+        if check_for_login and not check_api_key and not check_login():
             raise Raiser("/login/")
 
         # Verify host used for the visit
         if not check_hostname():
             cherrypy.response.status = 403
-            return "Access denied - Hostname verification failed: https://sabnzbd.org/hostname-check"
+            return _MSG_ACCESS_DENIED_HOSTNAME
 
         # Some pages need correct API key
         if check_api_key:
             msg = check_apikey(kwargs)
             if msg:
+                cherrypy.response.status = 403
                 return msg
 
         # All good, cool!
@@ -126,7 +176,7 @@ def secured_expose(wrap_func=None, check_configlock=False, check_api_key=False):
     return internal_wrap
 
 
-def check_access(access_type=4):
+def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     """Check if external address is allowed given access_type:
     1=nzb
     2=api
@@ -134,17 +184,26 @@ def check_access(access_type=4):
     4=webui
     5=webui with login for external
     """
-    referrer = cherrypy.request.remote.ip
+    # Easy, it's allowed
+    if access_type <= cfg.inet_exposure():
+        return True
 
-    # CherryPy will report ::ffff:192.168.0.10 on dual-stack situation
-    # It will always contain that ::ffff: prefix
-    range_ok = not cfg.local_ranges() or bool(
-        [1 for r in cfg.local_ranges() if (referrer.startswith(r) or referrer.replace("::ffff:", "").startswith(r))]
-    )
-    allowed = referrer in ("127.0.0.1", "::ffff:127.0.0.1", "::1") or range_ok or access_type <= cfg.inet_exposure()
-    if not allowed:
-        logging.debug("Refused connection from %s", referrer)
-    return allowed
+    remote_ip = cherrypy.request.remote.ip
+
+    # Check for localhost
+    if is_loopback_addr(remote_ip):
+        return True
+
+    is_allowed = False
+    if not cfg.local_ranges():
+        # No local ranges defined, allow all private addresses by default
+        is_allowed = is_lan_addr(remote_ip)
+    else:
+        is_allowed = any(ip_in_subnet(remote_ip, r) for r in cfg.local_ranges())
+
+    if not is_allowed and warn_user:
+        log_warning_and_ip(T("Refused connection from:"))
+    return is_allowed
 
 
 def check_hostname():
@@ -239,12 +298,12 @@ def check_login():
 
 
 def check_basic_auth(_, username, password):
-    """ CherryPy basic authentication validation """
+    """CherryPy basic authentication validation"""
     return username == cfg.username() and password == cfg.password()
 
 
 def set_auth(conf):
-    """ Set the authentication for CherryPy """
+    """Set the authentication for CherryPy"""
     if cfg.username() and cfg.password() and not cfg.html_login():
         conf.update(
             {
@@ -270,31 +329,30 @@ def check_apikey(kwargs):
     mode = kwargs.get("mode", "")
     name = kwargs.get("name", "")
 
-    # Lookup required access level, returns 4 for config-things
+    # Lookup required access level for the specific api-call
     req_access = sabnzbd.api.api_level(mode, name)
+    if not check_access(req_access, warn_user=True):
+        return _MSG_ACCESS_DENIED
 
-    if req_access == 1 and check_access(1):
-        # NZB-only actions
-        pass
-    elif not check_access(req_access):
-        return "Access denied"
+    # Skip for auth and version calls
+    if mode in ("version", "auth"):
+        return None
 
     # First check API-key, if OK that's sufficient
     if not cfg.disable_key():
         key = kwargs.get("apikey")
         if not key:
-            if cfg.api_warnings():
-                log_warning_and_ip(
-                    T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
-                )
-            return "API Key Required"
+            log_warning_and_ip(
+                T("API Key missing, please enter the api key from Config->General into your 3rd party program:")
+            )
+            return _MSG_APIKEY_REQUIRED
         elif req_access == 1 and key == cfg.nzb_key():
             return None
         elif key == cfg.api_key():
             return None
         else:
             log_warning_and_ip(T("API Key incorrect, Use the api key from Config->General in your 3rd party program:"))
-            return "API Key Incorrect"
+            return _MSG_APIKEY_INCORRECT
 
     # No active API-key, check web credentials instead
     if cfg.username() and cfg.password():
@@ -303,47 +361,37 @@ def check_apikey(kwargs):
         ):
             pass
         else:
-            if cfg.api_warnings():
-                log_warning_and_ip(
-                    T(
-                        "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
-                    )
+            log_warning_and_ip(
+                T(
+                    "Authentication missing, please enter username/password from Config->General into your 3rd party program:"
                 )
-            return "Missing authentication"
+            )
+            return _MSG_MISSING_AUTH
     return None
 
 
 def log_warning_and_ip(txt):
-    """ Include the IP and the Proxy-IP for warnings """
-    # Was it proxy forwarded?
-    xff = cherrypy.request.headers.get("X-Forwarded-For")
-    if xff:
-        txt = "%s %s (X-Forwarded-For: %s)>%s" % (
-            txt,
-            cherrypy.request.remote.ip,
-            xff,
-            cherrypy.request.headers.get("User-Agent", "??"),
-        )
-    else:
-        txt = "%s %s>%s" % (txt, cherrypy.request.remote.ip, cherrypy.request.headers.get("User-Agent", "??"))
-    logging.warning(txt)
+    """Include the IP and the Proxy-IP for warnings"""
+    if cfg.api_warnings():
+        logging.warning("%s %s", txt, cherrypy.request.remote_label)
 
 
 ##############################################################################
 # Helper raiser functions
 ##############################################################################
-def Raiser(root="", **kwargs):
-    args = {}
-    for key in kwargs:
-        val = kwargs.get(key)
-        if val:
-            args[key] = val
+def Raiser(root: str = "", **kwargs):
     # Add extras
-    if args:
-        root = "%s?%s" % (root, urllib.parse.urlencode(args))
+    if kwargs:
+        root = "%s?%s" % (root, urllib.parse.urlencode(kwargs))
+
     # Optionally add the leading /sabnzbd/ (or what the user set)
     if not root.startswith(cfg.url_base()):
         root = cherrypy.request.script_name + root
+
+    # Log the redirect
+    if cfg.api_logging():
+        logging.debug("Request %s %s redirected to %s", cherrypy.request.method, cherrypy.request.path_info, root)
+
     # Send the redirect
     return cherrypy.HTTPRedirect(root)
 
@@ -429,14 +477,14 @@ class MainPage:
         sabnzbd.unpause_all()
         raise Raiser(self.__root)
 
-    @cherrypy.expose
+    @secured_expose(check_api_key=True, access_type=1)
     def api(self, **kwargs):
-        """ Redirect to API-handler """
+        """Redirect to API-handler, we check the access_type in the API-handler"""
         return api_handler(kwargs)
 
     @secured_expose
     def scriptlog(self, **kwargs):
-        """ Needed for all skins, URL is fixed due to postproc """
+        """Needed for all skins, URL is fixed due to postproc"""
         # No session key check, due to fixed URLs
         name = kwargs.get("name")
         if name:
@@ -447,7 +495,7 @@ class MainPage:
 
     @secured_expose(check_api_key=True)
     def retry(self, **kwargs):
-        """ Duplicate of retry of History, needed for some skins """
+        """Duplicate of retry of History, needed for some skins"""
         job = kwargs.get("job", "")
         url = kwargs.get("url", "").strip()
         pp = kwargs.get("pp")
@@ -466,18 +514,13 @@ class MainPage:
 
     @secured_expose
     def robots_txt(self, **kwargs):
-        """ Keep web crawlers out """
+        """Keep web crawlers out"""
         cherrypy.response.headers["Content-Type"] = "text/plain"
         return "User-agent: *\nDisallow: /\n"
 
     @secured_expose
     def description_xml(self, **kwargs):
-        """ Provide the description.xml which was broadcast via SSDP """
-        logging.debug(
-            "description.xml was requested from %s by %s",
-            cherrypy.request.remote.ip,
-            cherrypy.request.headers.get("User-Agent", "??"),
-        )
+        """Provide the description.xml which was broadcast via SSDP"""
         if is_lan_addr(cherrypy.request.remote.ip):
             cherrypy.response.headers["Content-Type"] = "application/xml"
             return utob(sabnzbd.utils.ssdp.server_ssdp_xml())
@@ -492,7 +535,7 @@ class Wizard:
 
     @secured_expose(check_configlock=True)
     def index(self, **kwargs):
-        """ Show the language selection page """
+        """Show the language selection page"""
         if sabnzbd.WIN32:
             from sabnzbd.utils.apireg import get_install_lng
 
@@ -508,7 +551,7 @@ class Wizard:
 
     @secured_expose(check_configlock=True)
     def one(self, **kwargs):
-        """ Accept language and show server page """
+        """Accept language and show server page"""
         if kwargs.get("lang"):
             cfg.language.set(kwargs.get("lang"))
 
@@ -554,7 +597,7 @@ class Wizard:
 
     @secured_expose(check_configlock=True)
     def two(self, **kwargs):
-        """ Accept server and show the final page for restart """
+        """Accept server and show the final page for restart"""
         # Save server details
         if kwargs:
             kwargs["enable"] = 1
@@ -576,13 +619,13 @@ class Wizard:
 
     @secured_expose
     def exit(self, **kwargs):
-        """ Stop SABnzbd """
+        """Stop SABnzbd"""
         sabnzbd.shutdown_program()
         return T("SABnzbd shutdown finished")
 
 
 def get_access_info():
-    """ Build up a list of url's that sabnzbd can be accessed from """
+    """Build up a list of url's that sabnzbd can be accessed from"""
     # Access_url is used to provide the user a link to SABnzbd depending on the host
     cherryhost = cfg.cherryhost()
     host = socket.gethostname().lower()
@@ -634,7 +677,7 @@ def get_access_info():
 
 ##############################################################################
 class LoginPage:
-    @cherrypy.expose
+    @secured_expose(check_for_login=False)
     def index(self, **kwargs):
         # Base output var
         info = build_header(sabnzbd.WEB_DIR_CONFIG)
@@ -649,27 +692,18 @@ class LoginPage:
         if check_login():
             raise Raiser(cherrypy.request.script_name + "/")
 
-        # Was it proxy forwarded?
-        xff = cherrypy.request.headers.get("X-Forwarded-For")
-
         # Check login info
         if kwargs.get("username") == cfg.username() and kwargs.get("password") == cfg.password():
             # Save login cookie
             set_login_cookie(remember_me=kwargs.get("remember_me", False))
-            # Log the succes
-            if xff:
-                logging.info("Successful login from %s (X-Forwarded-For: %s)", cherrypy.request.remote.ip, xff)
-            else:
-                logging.info("Successful login from %s", cherrypy.request.remote.ip)
+            # Log the success
+            logging.info("Successful login from %s", cherrypy.request.remote_label)
             # Redirect
             raise Raiser(cherrypy.request.script_name + "/")
         elif kwargs.get("username") or kwargs.get("password"):
             info["error"] = T("Authentication failed, check username/password.")
             # Warn about the potential security problem
-            fail_msg = T("Unsuccessful login attempt from %s") % cherrypy.request.remote.ip
-            if xff:
-                fail_msg = "%s (X-Forwarded-For: %s)" % (fail_msg, xff)
-            logging.warning(fail_msg)
+            logging.warning(T("Unsuccessful login attempt from %s"), cherrypy.request.remote_label)
 
         # Show login
         template = Template(
@@ -784,7 +818,7 @@ class NzoPage:
                     checked = True
                 active.append(
                     {
-                        "filename": nzf.filename if nzf.filename else nzf.subject,
+                        "filename": nzf.filename,
                         "mbleft": "%.2f" % (nzf.bytes_left / MEBI),
                         "mb": "%.2f" % (nzf.bytes / MEBI),
                         "size": to_units(nzf.bytes, "B"),
@@ -1231,6 +1265,7 @@ SWITCH_LIST = (
     "new_nzb_on_failure",
     "unwanted_extensions",
     "action_on_unwanted_extensions",
+    "unwanted_extensions_mode",
     "sanitize_safe",
     "rating_enable",
     "rating_api_key",
@@ -1330,7 +1365,6 @@ SPECIAL_BOOL_LIST = (
     "empty_postproc",
     "html_login",
     "wait_for_dfolder",
-    "max_art_opt",
     "enable_broadcast",
     "warn_dupl_jobs",
     "replace_illegal",
@@ -1351,13 +1385,19 @@ SPECIAL_VALUE_LIST = (
     "max_foldername_length",
     "show_sysload",
     "url_base",
+    "num_decoders",
     "direct_unpack_threads",
     "ipv6_servers",
     "selftest_host",
     "rating_host",
     "ssdp_broadcast_interval",
 )
-SPECIAL_LIST_LIST = ("rss_odd_titles", "quick_check_ext_ignore", "host_whitelist")
+SPECIAL_LIST_LIST = (
+    "rss_odd_titles",
+    "quick_check_ext_ignore",
+    "host_whitelist",
+    "local_ranges",
+)
 
 
 class ConfigSpecial:
@@ -1408,7 +1448,6 @@ GENERAL_LIST = (
     "refresh_rate",
     "language",
     "cache_limit",
-    "local_ranges",
     "inet_exposure",
     "enable_https",
     "https_port",
@@ -1486,7 +1525,6 @@ class ConfigGeneral:
         conf["bandwidth_max"] = cfg.bandwidth_max()
         conf["bandwidth_perc"] = cfg.bandwidth_perc()
         conf["nzb_key"] = cfg.nzb_key()
-        conf["local_ranges"] = cfg.local_ranges.get_string()
         conf["my_lcldata"] = cfg.admin_dir.get_clipped_path()
         conf["caller_url"] = cherrypy.request.base + cfg.url_base()
 
@@ -1633,7 +1671,7 @@ class ConfigServer:
 
 
 def unique_svr_name(server):
-    """ Return a unique variant on given server name """
+    """Return a unique variant on given server name"""
     num = 0
     svr = 1
     new_name = server
@@ -1648,7 +1686,7 @@ def unique_svr_name(server):
 
 
 def check_server(host, port, ajax):
-    """ Check if server address resolves properly """
+    """Check if server address resolves properly"""
     if host.lower() == "localhost" and sabnzbd.AMBI_LOCALHOST:
         return badParameterResponse(T("Warning: LOCALHOST is ambiguous, use numerical IP-address."), ajax)
 
@@ -1659,7 +1697,7 @@ def check_server(host, port, ajax):
 
 
 def handle_server(kwargs, root=None, new_svr=False):
-    """ Internal server handler """
+    """Internal server handler"""
     ajax = kwargs.get("ajax")
     host = kwargs.get("host", "").strip()
     if not host:
@@ -1810,11 +1848,11 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_rate(self, **kwargs):
-        """ Save changed RSS automatic readout rate """
+        """Save changed RSS automatic readout rate"""
         cfg.rss_rate.set(kwargs.get("rss_rate"))
         config.save_config()
         sabnzbd.Scheduler.restart()
-        raise rssRaiser(self.__root, kwargs)
+        raise Raiser(self.__root)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def upd_rss_feed(self, **kwargs):
@@ -1839,7 +1877,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def save_rss_feed(self, **kwargs):
-        """ Update Feed level attributes """
+        """Update Feed level attributes"""
         feed_name = kwargs.get("feed")
         try:
             cf = config.get_rss()[feed_name]
@@ -1865,7 +1903,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def toggle_rss_feed(self, **kwargs):
-        """ Toggle automatic read-out flag of Feed """
+        """Toggle automatic read-out flag of Feed"""
         try:
             item = config.get_rss()[kwargs.get("feed")]
         except KeyError:
@@ -1880,7 +1918,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def add_rss_feed(self, **kwargs):
-        """ Add one new RSS feed definition """
+        """Add one new RSS feed definition"""
         feed = Strip(kwargs.get("feed")).strip("[]")
         uri = Strip(kwargs.get("uri"))
         if feed and uri:
@@ -1909,11 +1947,11 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def upd_rss_filter(self, **kwargs):
-        """ Wrapper, so we can call from api.py """
+        """Wrapper, so we can call from api.py"""
         self.internal_upd_rss_filter(**kwargs)
 
     def internal_upd_rss_filter(self, **kwargs):
-        """ Save updated filter definition """
+        """Save updated filter definition"""
         try:
             feed_cfg = config.get_rss()[kwargs.get("feed")]
         except KeyError:
@@ -1946,7 +1984,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def del_rss_feed(self, *args, **kwargs):
-        """ Remove complete RSS feed """
+        """Remove complete RSS feed"""
         kwargs["section"] = "rss"
         kwargs["keyword"] = kwargs.get("feed")
         del_from_section(kwargs)
@@ -1955,11 +1993,11 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def del_rss_filter(self, **kwargs):
-        """ Wrapper, so we can call from api.py """
+        """Wrapper, so we can call from api.py"""
         self.internal_del_rss_filter(**kwargs)
 
     def internal_del_rss_filter(self, **kwargs):
-        """ Remove one RSS filter """
+        """Remove one RSS filter"""
         try:
             feed_cfg = config.get_rss()[kwargs.get("feed")]
         except KeyError:
@@ -1973,7 +2011,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def download_rss_feed(self, *args, **kwargs):
-        """ Force download of all matching jobs in a feed """
+        """Force download of all matching jobs in a feed"""
         if "feed" in kwargs:
             feed = kwargs["feed"]
             self.__refresh_readout = feed
@@ -1985,14 +2023,14 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def clean_rss_jobs(self, *args, **kwargs):
-        """ Remove processed RSS jobs from UI """
+        """Remove processed RSS jobs from UI"""
         sabnzbd.RSSReader.clear_downloaded(kwargs["feed"])
         self.__evaluate = True
         raise rssRaiser(self.__root, kwargs)
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def test_rss_feed(self, *args, **kwargs):
-        """ Read the feed content again and show results """
+        """Read the feed content again and show results"""
         if "feed" in kwargs:
             feed = kwargs["feed"]
             self.__refresh_readout = feed
@@ -2005,7 +2043,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def eval_rss_feed(self, *args, **kwargs):
-        """ Re-apply the filters to the feed """
+        """Re-apply the filters to the feed"""
         if "feed" in kwargs:
             self.__refresh_download = False
             self.__refresh_force = False
@@ -2017,7 +2055,7 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def download(self, **kwargs):
-        """ Download NZB from provider (Download button) """
+        """Download NZB from provider (Download button)"""
         feed = kwargs.get("feed")
         url = kwargs.get("url")
         nzbname = kwargs.get("nzbname")
@@ -2036,13 +2074,13 @@ class ConfigRss:
 
     @secured_expose(check_api_key=True, check_configlock=True)
     def rss_now(self, *args, **kwargs):
-        """ Run an automatic RSS run now """
+        """Run an automatic RSS run now"""
         sabnzbd.Scheduler.force_rss()
-        raise rssRaiser(self.__root, kwargs)
+        raise Raiser(self.__root)
 
 
 def ConvertSpecials(p):
-    """ Convert None to 'None' and 'Default' to '' """
+    """Convert None to 'None' and 'Default' to ''"""
     if p is None:
         p = "None"
     elif p.lower() == T("Default").lower():
@@ -2051,12 +2089,12 @@ def ConvertSpecials(p):
 
 
 def IsNone(value):
-    """ Return True if either None, 'None' or '' """
+    """Return True if either None, 'None' or ''"""
     return value is None or value == "" or value.lower() == "none"
 
 
 def Strip(txt):
-    """ Return stripped string, can handle None """
+    """Return stripped string, can handle None"""
     try:
         return txt.strip()
     except:
@@ -2572,7 +2610,7 @@ def orphan_add_all():
 
 
 def badParameterResponse(msg, ajax=None):
-    """ Return a html page with error message and a 'back' button """
+    """Return a html page with error message and a 'back' button"""
     if ajax:
         return sabnzbd.api.report("json", error=msg)
     else:
@@ -2599,7 +2637,7 @@ def badParameterResponse(msg, ajax=None):
 
 
 def ShowString(name, msg):
-    """ Return a html page listing a file and a 'back' button """
+    """Return a html page listing a file and a 'back' button"""
     return """
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
 <html>

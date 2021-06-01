@@ -30,7 +30,7 @@ class TestValidators:
         """
 
         def assert_allowed(inp_value):
-            """ Helper function to check for block """
+            """Helper function to check for block"""
             msg, value = config.clean_nice_ionice_parameters(inp_value)
             assert msg is None
             assert value == inp_value
@@ -62,10 +62,10 @@ class TestValidators:
         assert_allowed("-t -n9 -c7")
 
     def test_clean_nice_ionice_parameters_blocked(self):
-        """ Should all be blocked """
+        """Should all be blocked"""
 
         def assert_blocked(inp_value):
-            """ Helper function to check for block """
+            """Helper function to check for block"""
             msg, value = config.clean_nice_ionice_parameters(inp_value)
             assert msg
             assert msg.startswith("Incorrect parameter")
@@ -86,3 +86,9 @@ class TestValidators:
         assert_blocked("echo 'how;now;brown;cow'")
         assert_blocked("-c'echo'")
         assert_blocked("--classdata=;/bin/echo")
+
+    def test_validate_single_tag(self):
+        assert config.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])
+        assert config.validate_single_tag(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
+        assert config.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
+        assert config.validate_single_tag(["alt.group"]) == (None, ["alt.group"])

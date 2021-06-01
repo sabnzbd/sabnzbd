@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configuration/3.2/switches"#-->
+<!--#set global $help_uri="configuration/3.3/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -120,6 +120,10 @@
                     </div>
                     <div class="field-pair">
                         <label class="config" for="unwanted_extensions">$T('opt-unwanted_extensions')</label>
+                        <select name="unwanted_extensions_mode" id="unwanted_extensions_mode">
+                            <option value="0" <!--#if int($unwanted_extensions_mode) == 0 then 'selected="selected"' else ""#--> >$T('unwanted_extensions_blacklist')</option>
+                            <option value="1" <!--#if int($unwanted_extensions_mode) == 1 then 'selected="selected"' else ""#--> >$T('unwanted_extensions_whitelist')</option>
+                        </select>
                         <input type="text" name="unwanted_extensions" id="unwanted_extensions" value="$unwanted_extensions"/>
                         <span class="desc">$T('explain-unwanted_extensions')</span>
                     </div>

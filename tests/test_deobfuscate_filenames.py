@@ -56,10 +56,11 @@ class TestDeobfuscateFinalResult:
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q.bin")
         assert is_probably_obfuscated("e0nFmxBNTprpbQiVQ44WeEwSrBkLlJ7IgaSj3uzFu455FVYG3q")  # no ext
         assert is_probably_obfuscated("greatdistro.iso")
+        assert is_probably_obfuscated("my.download.2020")
         assert is_probably_obfuscated("abc.xyz.a4c567edbcbf27.BLA")  # by definition
         assert is_probably_obfuscated("abc.xyz.iso")  # lazy brother
+        assert is_probably_obfuscated("0675e29e9abfd2.f7d069dab0b853283cc1b069a25f82.6547")
 
-        #
         # non-obfuscated names:
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/My Favorite Distro S03E04.iso")
         assert not is_probably_obfuscated("/my/blabla/directory/stuff/Great Distro (2020).iso")
@@ -72,6 +73,7 @@ class TestDeobfuscateFinalResult:
         assert not is_probably_obfuscated("This That S01E11")
         assert not is_probably_obfuscated("This_That_S01E11")
         assert not is_probably_obfuscated("this_that_S01E11")
+        assert not is_probably_obfuscated("My.Download.2020")
         assert not is_probably_obfuscated("this_that_there_here.avi")
         assert not is_probably_obfuscated("Lorem Ipsum.avi")
         assert not is_probably_obfuscated("Lorem Ipsum")  # no ext

@@ -19,55 +19,51 @@
 tests.test_functional_api - Functional tests for the API
 """
 
-import json
-import os
 import shutil
 import stat
-import subprocess
 import sys
-import time
 
 from math import ceil
-from random import choice, randint, sample
+from random import sample
 from tavern.core import run
 from warnings import warn
 
-import sabnzbd.api as api
+import sabnzbd.interface as interface
 from sabnzbd.misc import from_units
 
 from tests.testhelper import *
 
 
 class ApiTestFunctions:
-    """ Collection of (wrapper) functions for API testcases """
+    """Collection of (wrapper) functions for API testcases"""
 
     def _get_api_json(self, mode, extra_args={}):
-        """ Wrapper for API calls with json output """
+        """Wrapper for API calls with json output"""
         extra = {"output": "json", "apikey": SAB_APIKEY}
         extra.update(extra_args)
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
     def _get_api_text(self, mode, extra_args={}):
-        """ Wrapper for API calls with text output """
+        """Wrapper for API calls with text output"""
         extra = {"output": "text", "apikey": SAB_APIKEY}
         extra.update(extra_args)
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
     def _get_api_xml(self, mode, extra_args={}):
-        """ Wrapper for API calls with xml output """
+        """Wrapper for API calls with xml output"""
         extra = {"output": "xml", "apikey": SAB_APIKEY}
         extra.update(extra_args)
         return get_api_result(mode=mode, host=SAB_HOST, port=SAB_PORT, extra_arguments=extra)
 
-    def _setup_script_dir(self, dir, script=None):
+    def _setup_script_dir(self, dir_name, script=None):
         """
         Set the script_dir relative to SAB_CACHE_DIR, copy the example scripts
         there, and add an optional extra script with the given name. To unset
-        the script_dir set the value of dir to an empty string.
+        the script_dir set the value of dir_name to an empty string.
         """
         script_dir_extra = {"section": "misc", "keyword": "script_dir", "value": ""}
-        if dir:
-            script_dir = os.path.join(SAB_CACHE_DIR, dir)
+        if dir_name:
+            script_dir = os.path.join(SAB_CACHE_DIR, dir_name)
             script_dir_extra["value"] = script_dir
             try:
                 if not os.path.exists(script_dir):
@@ -88,14 +84,14 @@ class ApiTestFunctions:
         self._get_api_json("set_config", extra_args=script_dir_extra)
 
     def _record_slots(self, keys):
-        """ Return a list of dicts, storing queue info for the items in iterable 'keys' """
+        """Return a list of dicts, storing queue info for the items in iterable 'keys'"""
         record = []
         for slot in self._get_api_json("queue")["queue"]["slots"]:
             record.append({key: slot[key] for key in keys})
         return record
 
     def _run_tavern(self, test_name, extra_vars=None):
-        """ Run tavern tests in ${test_name}.yaml """
+        """Run tavern tests in ${test_name}.yaml"""
         vars = [
             ("SAB_HOST", SAB_HOST),
             ("SAB_PORT", SAB_PORT),
@@ -115,7 +111,7 @@ class ApiTestFunctions:
         assert result is result.OK
 
     def _get_api_history(self, extra={}):
-        """ Wrapper for history-related api calls """
+        """Wrapper for history-related api calls"""
         # Set a higher default limit; the default is 10 via cfg(history_limit)
         if "limit" not in extra.keys() and "name" not in extra.keys():
             # History calls that use 'name' don't need the limit parameter
@@ -176,21 +172,21 @@ class ApiTestFunctions:
                 warn("Failed to remove %s" % job_dir)
 
     def _purge_queue(self, del_files=0):
-        """ Clear the entire queue """
+        """Clear the entire queue"""
         self._get_api_json("queue", extra_args={"name": "purge", "del_files": del_files})
         assert len(self._get_api_json("queue")["queue"]["slots"]) == 0
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
+@pytest.mark.usefixtures("run_sabnzbd")
 class TestOtherApi(ApiTestFunctions):
-    """ Test API function not directly involving either history or queue """
+    """Test API function not directly involving either history or queue"""
 
     def test_api_version_testhelper(self):
-        """ Check the version, testhelper style """
+        """Check the version, testhelper style"""
         assert "version" in get_api_result("version", SAB_HOST, SAB_PORT)
 
     def test_api_version_tavern(self):
-        """ Same same, tavern style """
+        """Same same, tavern style"""
         self._run_tavern("api_version")
 
     def test_api_version_json(self):
@@ -203,7 +199,7 @@ class TestOtherApi(ApiTestFunctions):
         assert self._get_api_xml("version")["version"] == sabnzbd.__version__
 
     def test_api_server_stats(self):
-        """ Verify server stats format """
+        """Verify server stats format"""
         self._run_tavern("api_server_stats")
 
     @pytest.mark.parametrize("extra_args", [{}, {"name": "change_complete_action", "value": ""}])
@@ -314,10 +310,11 @@ class TestOtherApi(ApiTestFunctions):
         assert self._get_api_json("set_config_default", extra_args={"keyword": "language"})["status"] is True
 
     def test_api_get_clear_warnings(self):
-        apikey_error = "API Key Incorrect"
         # Trigger warnings by sending requests with a truncated apikey
         for _ in range(0, 2):
-            assert apikey_error in self._get_api_text("shutdown", extra_args={"apikey": SAB_APIKEY[:-1]})
+            assert interface._MSG_APIKEY_INCORRECT in self._get_api_text(
+                "shutdown", extra_args={"apikey": SAB_APIKEY[:-1]}
+            )
 
         # Take delivery of our freshly baked warnings
         json = self._get_api_json("warnings")
@@ -326,7 +323,7 @@ class TestOtherApi(ApiTestFunctions):
         for warning in json["warnings"]:
             for key in ("type", "text", "time"):
                 assert key in warning.keys()
-        assert apikey_error.lower() in json["warnings"][-1]["text"].lower()
+        assert interface._MSG_APIKEY_INCORRECT.lower() in json["warnings"][-1]["text"].lower()
 
         # Clear all warnings
         assert self._get_api_json("warnings", extra_args={"name": "clear"})["status"] is True
@@ -404,12 +401,12 @@ class TestOtherApi(ApiTestFunctions):
             )
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
+@pytest.mark.usefixtures("run_sabnzbd")
 class TestQueueApi(ApiTestFunctions):
-    """ Test queue-related API responses """
+    """Test queue-related API responses"""
 
     def test_api_queue_empty_format(self):
-        """ Verify formatting, presence of fields for empty queue """
+        """Verify formatting, presence of fields for empty queue"""
         self._purge_queue()
         self._run_tavern("api_queue_empty")
 
@@ -545,10 +542,10 @@ class TestQueueApi(ApiTestFunctions):
         self._create_random_queue(minimum_size=1)
 
         # Setup the script_dir as ordered
-        dir = ""
+        script_dir = ""
         if set_scriptsdir:
-            dir = "scripts"
-        self._setup_script_dir(dir, script="my_script_for_sab.py")
+            script_dir = "scripts"
+        self._setup_script_dir(script_dir, script="my_script_for_sab.py")
 
         # Run the queue complete action api call
         prev_value = self._get_api_json("queue")["queue"]["finishaction"]
@@ -569,7 +566,7 @@ class TestQueueApi(ApiTestFunctions):
         self._get_api_json("queue", extra_args={"name": "change_complete_action", "value": ""})
 
     def test_api_queue_single_format(self):
-        """ Verify formatting, presence of fields for single queue entry """
+        """Verify formatting, presence of fields for single queue entry"""
         self._create_random_queue(minimum_size=1)
         self._run_tavern("api_queue_format")
 
@@ -848,7 +845,7 @@ class TestQueueApi(ApiTestFunctions):
                 assert changed[row] == original[row]
 
     def test_api_queue_get_files_format(self):
-        """ Verify formatting, presence of fields for mode=get_files """
+        """Verify formatting, presence of fields for mode=get_files"""
         self._create_random_queue(minimum_size=1)
         nzo_id = self._get_api_json("queue")["queue"]["slots"][0]["nzo_id"]
         # Pass the nzo_id this way rather than fetching it in a tavern stage, as
@@ -897,12 +894,12 @@ class TestQueueApi(ApiTestFunctions):
         assert json["nzf_ids"] == []
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium", "generate_fake_history", "update_history_specs")
+@pytest.mark.usefixtures("run_sabnzbd", "generate_fake_history", "update_history_specs")
 class TestHistoryApi(ApiTestFunctions):
-    """ Test history-related API responses """
+    """Test history-related API responses"""
 
     def test_api_history_format(self):
-        """ Verify formatting, presence of expected history fields """
+        """Verify formatting, presence of expected history fields"""
         # Checks all output styles: json, text and xml
         self._run_tavern("api_history_format")
 
@@ -977,7 +974,7 @@ class TestHistoryApi(ApiTestFunctions):
         assert len(json["history"]["slots"]) == 0
 
     def test_api_history_restrict_cat_and_search_and_limit(self):
-        """ Combine search, category and limits requirements into a single query """
+        """Combine search, category and limits requirements into a single query"""
         limit_sum = 0
         slot_sum = 0
         limits = [randint(1, ceil(self.history_size / 10)) for _ in range(0, len(self.history_distro_names))]
@@ -1087,7 +1084,7 @@ class TestHistoryApi(ApiTestFunctions):
             assert slot["status"] != Status.COMPLETED
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium", "generate_fake_history", "update_history_specs")
+@pytest.mark.usefixtures("run_sabnzbd", "generate_fake_history", "update_history_specs")
 class TestHistoryApiPart2(ApiTestFunctions):
     """Test history-related API responses, part 2. A separate testcase is
     needed because the previous one ran out of history entries to delete."""
@@ -1114,6 +1111,6 @@ class TestHistoryApiPart2(ApiTestFunctions):
         assert json["history"]["noofslots"] == 0
 
     def test_api_history_empty_format(self):
-        """ Verify formatting, presence of fields for empty history """
+        """Verify formatting, presence of fields for empty history"""
         # Checks all output styles: json, text and xml
         self._run_tavern("api_history_empty")

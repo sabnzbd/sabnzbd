@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.2.0-develop\n"
+"Project-Id-Version: SABnzbd-3.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
 "Language-Team: Dutch (https://www.transifex.com/sabnzbd/teams/111101/nl/)\n"
@@ -619,6 +619,15 @@ msgstr "Aanmaken (%s) mislukt"
 msgid "Failed moving %s to %s"
 msgstr "Verplaatsen van %s naar %s mislukt"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr "Poging om map %s aan te maken geblokkeerd"
+
+#: sabnzbd/interface.py
+msgid "Refused connection from:"
+msgstr "Verbinding geweigerd van: "
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Verbinding met hostnaam \"%s\" geweigerd van:"
@@ -660,6 +669,7 @@ msgstr ""
 msgid "Authentication failed, check username/password."
 msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 
+#. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Mislukte login progin bij %s"
@@ -1208,10 +1218,6 @@ msgstr "Download aan wachtrij toegevoegd"
 #: sabnzbd/nzbqueue.py
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Onbekende codering"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => ontbreekt op alle servers, overslaan"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -3205,27 +3211,13 @@ msgid "API Key QR Code"
 msgstr "QR-code van de API-sleutel"
 
 #: sabnzbd/skintext.py
-msgid "List of local network ranges"
-msgstr "Lijst van lokale netwerk bereiken"
-
-#: sabnzbd/skintext.py
-msgid ""
-"All local network addresses start with these prefixes (often \"192.168.1.\")"
-msgstr ""
-"Alle lokale netwerk adressen die beginnen met deze reeks (vaak "
-"\"192.168.1.\")"
-
-#: sabnzbd/skintext.py
 msgid "External internet access"
 msgstr "Externe toegang"
 
 #: sabnzbd/skintext.py
-msgid ""
-"You can set access rights for systems outside your local network. Requires "
-"List of local network ranges to be defined."
+msgid "You can set access rights for systems outside your local network."
 msgstr ""
 "Je kunt toegangsrechten instellen voor systemen buiten je lokale netwerk. "
-"Hiervoor geef je een lijst van netwerk-bereiken in."
 
 #: sabnzbd/skintext.py
 msgid "No access"
@@ -3551,20 +3543,28 @@ msgid "Action when unwanted extension detected"
 msgstr "Actie bij ontdekken van ongewenste extensie"
 
 #: sabnzbd/skintext.py
-msgid "Action when an unwanted extension is detected in RAR files"
-msgstr ""
-"Actie wanneer een ongewenste extensie wordt gevonden in een RAR-bestand"
+msgid "Action when an unwanted extension is detected"
+msgstr "Actie bij ontdekken van een ongewenste extensie"
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
 msgstr "Ongewenste extensies"
 
 #: sabnzbd/skintext.py
+msgid "Blacklist"
+msgstr "Blacklist"
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr "Whitelist"
+
+#: sabnzbd/skintext.py
 msgid ""
-"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
 msgstr ""
-"Lijst van alle ongewenste extensies. Voorbeeld: <b>exe</b> or <b>exe, "
-"com</b>"
+"Kies een stand en voer een lijst van alle (on)gewenste extensies in. "
+"Voorbeeld: <b>exe</b> or <b>exe, com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
@@ -4138,12 +4138,12 @@ msgstr "Forceer download"
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
-msgstr ""
+msgstr "Wijzigen"
 
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py
 msgid "Next scan at"
-msgstr ""
+msgstr "Wordt uitgevoerd om"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4936,6 +4936,10 @@ msgstr "Toon/verberg voltooide bestanden"
 #: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr "Toon Script resultaat"
+
+#: sabnzbd/skintext.py
+msgid "Renaming the job will abort Direct Unpack."
+msgstr "Als je de naam wijzigt zal het Direct Uitpakken gestopt worden."
 
 #: sabnzbd/skintext.py
 msgid ""

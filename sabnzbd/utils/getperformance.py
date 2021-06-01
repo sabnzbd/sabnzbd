@@ -38,8 +38,12 @@ def getcpu():
         # OK, found. Remove unwanted spaces:
         cputype = " ".join(cputype.split())
     else:
-        # Not found, so let's fall back to platform()
-        cputype = platform.platform()
+        try:
+            # Not found, so let's fall back to platform()
+            cputype = platform.platform()
+        except:
+            # Can fail on special platforms (like Snapcraft or embedded)
+            pass
 
     return cputype
 

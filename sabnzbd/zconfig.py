@@ -55,7 +55,7 @@ def _zeroconf_callback(sdRef, flags, errorCode, name, regtype, domain):
 
 
 def set_bonjour(host=None, port=None):
-    """ Publish host/port combo through Bonjour """
+    """Publish host/port combo through Bonjour"""
     global _HOST_PORT, _BONJOUR_OBJECT
 
     if not _HAVE_BONJOUR or not cfg.enable_broadcast():
@@ -109,7 +109,7 @@ def _bonjour_server(refObject):
 
 
 def remove_server():
-    """ Remove Bonjour registration """
+    """Remove Bonjour registration"""
     global _BONJOUR_OBJECT
     if _BONJOUR_OBJECT:
         _BONJOUR_OBJECT.close()

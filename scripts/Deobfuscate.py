@@ -84,7 +84,7 @@ STRUCT_FILE_DESC_PACKET = struct.Struct(
 
 # Supporting functions
 def print_splitter():
-    """ Simple helper function """
+    """Simple helper function"""
     print("\n------------------------\n")
 
 

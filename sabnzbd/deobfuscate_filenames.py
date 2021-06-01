@@ -42,7 +42,7 @@ MIN_FILE_SIZE = 10 * 1024 * 1024
 
 
 def decode_par2(parfile):
-    """ Parse a par2 file and rename files listed in the par2 to their real name """
+    """Parse a par2 file and rename files listed in the par2 to their real name"""
     # Check if really a par2 file
     if not is_parfile(parfile):
         logging.info("Par2 file %s was not really a par2 file")
@@ -89,6 +89,11 @@ def is_probably_obfuscated(myinputfilename):
         # exactly 32 hex digits, so:
         return True
 
+    # 0675e29e9abfd2.f7d069dab0b853283cc1b069a25f82.6547
+    if re.findall(r"^[a-f0-9\.]{40,}$", filebasename):
+        logging.debug("Obfuscated: starting with 40+ lower case hex digits and/or dots")
+        return True
+
     # /some/thing/abc.xyz.a4c567edbcbf27.BLA is certainly obfuscated
     if re.findall(r"^abc\.xyz", filebasename):
         logging.debug("Obfuscated: starts with 'abc.xyz'")
@@ -127,7 +132,7 @@ def is_probably_obfuscated(myinputfilename):
 
 
 def deobfuscate_list(filelist, usefulname):
-    """ Check all files in filelist, and if wanted, deobfuscate: rename to filename based on usefulname"""
+    """Check all files in filelist, and if wanted, deobfuscate: rename to filename based on usefulname"""
 
     # to be sure, only keep really exsiting files:
     filelist = [f for f in filelist if os.path.exists(f)]
@@ -137,17 +142,17 @@ def deobfuscate_list(filelist, usefulname):
     # Found any par2 files we can use?
     run_renamer = True
     if not par2_files:
-        logging.debug("No par2 files found to process, running renamer.")
+        logging.debug("No par2 files found to process, running renamer")
     else:
         # Run par2 from SABnzbd on them
         for par2_file in par2_files:
             # Analyse data and analyse result
             logging.debug("Deobfuscate par2: handling %s", par2_file)
             if decode_par2(par2_file):
-                logging.debug("Deobfuscate par2 repair/verify finished.")
+                logging.debug("Deobfuscate par2 repair/verify finished")
                 run_renamer = False
             else:
-                logging.debug("Deobfuscate par2 repair/verify did not find anything to rename.")
+                logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
 
     # No par2 files? Then we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
     if run_renamer:
@@ -158,7 +163,7 @@ def deobfuscate_list(filelist, usefulname):
             if os.path.getsize(file) < MIN_FILE_SIZE:
                 # too small to care
                 continue
-            _, ext = os.path.splitext(file)
+            ext = get_ext(file)
             if ext in extcounter:
                 extcounter[ext] += 1
             else:
@@ -203,5 +208,7 @@ def deobfuscate_list(filelist, usefulname):
                         logging.info("Deobfuscate renaming %s to %s", otherfile, new_name)
                         # Rename and make sure the new filename is unique
                         renamer(otherfile, new_name)
+            else:
+                logging.debug("%s excluded from deobfuscation based on size, extension or non-obfuscation", filename)
     else:
         logging.info("No qualifying files found to deobfuscate")

@@ -47,16 +47,16 @@ class Scheduler:
         self.load_schedules()
 
     def start(self):
-        """ Start the scheduler """
+        """Start the scheduler"""
         self.scheduler.start()
 
     def stop(self):
-        """ Stop the scheduler, destroy instance """
+        """Stop the scheduler, destroy instance"""
         logging.debug("Stopping scheduler")
         self.scheduler.stop()
 
     def restart(self, plan_restart=True):
-        """ Stop and start scheduler """
+        """Stop and start scheduler"""
         if plan_restart:
             self.restart_scheduler = True
         elif self.restart_scheduler:
@@ -73,7 +73,7 @@ class Scheduler:
         self.scheduler.running = False
 
     def is_alive(self):
-        """ Thread-like check if we are doing fine """
+        """Thread-like check if we are doing fine"""
         if self.scheduler.thread:
             return self.scheduler.thread.is_alive()
         return False
@@ -213,7 +213,7 @@ class Scheduler:
             )
 
         logging.info("Setting schedule for midnight BPS reset")
-        self.scheduler.add_daytime_task(sabnzbd.BPSMeter.midnight, "midnight_bps", DAILY_RANGE, None, (0, 0))
+        self.scheduler.add_daytime_task(sabnzbd.BPSMeter.update, "midnight_bps", DAILY_RANGE, None, (0, 0))
 
         logging.info("Setting schedule for server expiration check")
         self.scheduler.add_daytime_task(
@@ -336,11 +336,11 @@ class Scheduler:
         config.save_config()
 
     def scheduler_restart_guard(self):
-        """ Set flag for scheduler restart """
+        """Set flag for scheduler restart"""
         self.restart_scheduler = True
 
     def scheduled_resume(self):
-        """ Scheduled resume, only when no oneshot resume is active """
+        """Scheduled resume, only when no oneshot resume is active"""
         if self.pause_end is None:
             sabnzbd.unpause_all()
 
@@ -356,7 +356,7 @@ class Scheduler:
             logging.debug("Ignoring cancelled resume")
 
     def plan_resume(self, interval):
-        """ Set a scheduled resume after the interval """
+        """Set a scheduled resume after the interval"""
         if interval > 0:
             self.pause_end = time.time() + (interval * 60)
             logging.debug("Schedule resume at %s", self.pause_end)
@@ -367,7 +367,7 @@ class Scheduler:
             sabnzbd.unpause_all()
 
     def __check_diskspace(self, full_dir: str, required_space: float):
-        """ Resume if there is sufficient available space """
+        """Resume if there is sufficient available space"""
         if not cfg.fulldisk_autoresume():
             self.cancel_resume_task()
             return
@@ -384,7 +384,7 @@ class Scheduler:
             self.cancel_resume_task()
 
     def plan_diskspace_resume(self, full_dir: str, required_space: float):
-        """ Create regular check for free disk space """
+        """Create regular check for free disk space"""
         self.cancel_resume_task()
         logging.info("Will resume when %s has more than %d GB free space", full_dir, required_space)
         self.resume_task = self.scheduler.add_interval_task(
@@ -392,14 +392,14 @@ class Scheduler:
         )
 
     def cancel_resume_task(self):
-        """ Cancel the current auto resume task """
+        """Cancel the current auto resume task"""
         if self.resume_task:
             logging.debug("Cancelling existing resume_task '%s'", self.resume_task.name)
             self.scheduler.cancel(self.resume_task)
             self.resume_task = None
 
     def pause_int(self) -> str:
-        """ Return minutes:seconds until pause ends """
+        """Return minutes:seconds until pause ends"""
         if self.pause_end is None:
             return "0"
         else:
@@ -414,18 +414,18 @@ class Scheduler:
             return "%s%d:%02d" % (sign, mins, sec)
 
     def pause_check(self):
-        """ Unpause when time left is negative, compensate for missed schedule """
+        """Unpause when time left is negative, compensate for missed schedule"""
         if self.pause_end is not None and (self.pause_end - time.time()) < 0:
             self.pause_end = None
             logging.debug("Force resume, negative timer")
             sabnzbd.unpause_all()
 
     def plan_server(self, action, parms, interval):
-        """ Plan to re-activate server after 'interval' minutes """
+        """Plan to re-activate server after 'interval' minutes"""
         self.scheduler.add_single_task(action, "", interval * 60, args=parms)
 
     def force_rss(self):
-        """ Add a one-time RSS scan, one second from now """
+        """Add a one-time RSS scan, one second from now"""
         self.scheduler.add_single_task(sabnzbd.RSSReader.run, "RSS", 1)
 
 

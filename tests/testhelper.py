@@ -65,7 +65,7 @@ SAB_NEWSSERVER_PORT = 8888
 
 
 def set_config(settings_dict):
-    """ Change config-values on the fly, per test"""
+    """Change config-values on the fly, per test"""
 
     def set_config_decorator(func):
         def wrapper_func(*args, **kwargs):
@@ -77,8 +77,8 @@ def set_config(settings_dict):
             value = func(*args, **kwargs)
 
             # Reset values
-            for item, val in settings_dict.items():
-                getattr(cfg, item).default()
+            for item in settings_dict:
+                getattr(cfg, item).set(getattr(cfg, item).default())
             return value
 
         return wrapper_func
@@ -87,7 +87,7 @@ def set_config(settings_dict):
 
 
 def set_platform(platform):
-    """ Change config-values on the fly, per test"""
+    """Change config-values on the fly, per test"""
 
     def set_platform_decorator(func):
         def wrapper_func(*args, **kwargs):
@@ -121,13 +121,13 @@ def set_platform(platform):
 
 
 def get_url_result(url="", host=SAB_HOST, port=SAB_PORT):
-    """ Do basic request to web page """
+    """Do basic request to web page"""
     arguments = {"apikey": SAB_APIKEY}
     return requests.get("http://%s:%s/%s/" % (host, port, url), params=arguments).text
 
 
 def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
-    """ Build JSON request to SABnzbd """
+    """Build JSON request to SABnzbd"""
     arguments = {"apikey": SAB_APIKEY, "output": "json", "mode": mode}
     arguments.update(extra_arguments)
     r = requests.get("http://%s:%s/api" % (host, port), params=arguments)
@@ -138,14 +138,14 @@ def get_api_result(mode, host=SAB_HOST, port=SAB_PORT, extra_arguments={}):
     return r.json()
 
 
-def create_nzb(nzb_dir):
-    """ Create NZB from directory using SABNews """
+def create_nzb(nzb_dir, metadata=None):
+    """Create NZB from directory using SABNews"""
     nzb_dir_full = os.path.join(SAB_DATA_DIR, nzb_dir)
-    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full)
+    return tests.sabnews.create_nzb(nzb_dir=nzb_dir_full, metadata=metadata)
 
 
 def create_and_read_nzb(nzbdir):
-    """ Create NZB, return data and delete file """
+    """Create NZB, return data and delete file"""
     # Create NZB-file to import
     nzb_path = create_nzb(nzbdir)
     with open(nzb_path, "r") as nzb_data_fp:
@@ -179,7 +179,7 @@ class FakeHistoryDB(db.HistoryDB):
         super().__init__()
 
     def add_fake_history_jobs(self, number_of_entries=1):
-        """ Generate a history db with any number of fake entries """
+        """Generate a history db with any number of fake entries"""
 
         for _ in range(0, number_of_entries):
             nzo = mock.Mock()
@@ -220,7 +220,7 @@ class FakeHistoryDB(db.HistoryDB):
                 )
 
 
-@pytest.mark.usefixtures("run_sabnzbd_sabnews_and_selenium")
+@pytest.mark.usefixtures("run_sabnzbd", "run_sabnews_and_selenium")
 class SABnzbdBaseTest:
     def no_page_crash(self):
         # Do a base test if CherryPy did not report test
@@ -246,7 +246,7 @@ class SABnzbdBaseTest:
 
     @staticmethod
     def selenium_wrapper(func, *args):
-        """ Wrapper with retries for more stable Selenium """
+        """Wrapper with retries for more stable Selenium"""
         for i in range(3):
             try:
                 return func(*args)

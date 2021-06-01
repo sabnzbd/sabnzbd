@@ -55,7 +55,7 @@ class ArticleCache:
         return ANFO(len(self.__article_table), abs(self.__cache_size), self.__cache_limit_org)
 
     def new_limit(self, limit: int):
-        """ Called when cache limit changes """
+        """Called when cache limit changes"""
         self.__cache_limit_org = limit
         if limit < 0:
             self.__cache_limit = self.__cache_upper_limit
@@ -70,20 +70,20 @@ class ArticleCache:
 
     @synchronized(ARTICLE_COUNTER_LOCK)
     def reserve_space(self, data_size: int):
-        """ Reserve space in the cache """
+        """Reserve space in the cache"""
         self.__cache_size += data_size
 
     @synchronized(ARTICLE_COUNTER_LOCK)
     def free_reserved_space(self, data_size: int):
-        """ Remove previously reserved space """
+        """Remove previously reserved space"""
         self.__cache_size -= data_size
 
     def space_left(self) -> bool:
-        """ Is there space left in the set limit? """
+        """Is there space left in the set limit?"""
         return self.__cache_size < self.__cache_limit
 
     def save_article(self, article: Article, data: bytes):
-        """ Save article in cache, either memory or disk """
+        """Save article in cache, either memory or disk"""
         nzo = article.nzf.nzo
         if nzo.is_gone():
             # Do not discard this article because the
@@ -115,7 +115,7 @@ class ArticleCache:
             self.__flush_article_to_disk(article, data)
 
     def load_article(self, article: Article):
-        """ Load the data of the article """
+        """Load the data of the article"""
         data = None
         nzo = article.nzf.nzo
 
@@ -145,7 +145,7 @@ class ArticleCache:
                 logging.debug("Failed to flush item from cache, probably already deleted or written to disk")
 
     def purge_articles(self, articles: List[Article]):
-        """ Remove all saved articles, from memory and disk """
+        """Remove all saved articles, from memory and disk"""
         logging.debug("Purging %s articles from the cache/disk", len(articles))
         for article in articles:
             if article in self.__article_table:

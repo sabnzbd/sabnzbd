@@ -64,7 +64,7 @@ def test_nntp_server_dict(kwargs):
 
 
 def test_nntp_server(host, port, server=None, username=None, password=None, ssl=None, ssl_verify=1, ssl_ciphers=None):
-    """ Will connect (blocking) to the nttp server and report back any errors """
+    """Will connect (blocking) to the nttp server and report back any errors"""
     timeout = 4.0
     if "*" in password and not password.strip("*"):
         # If the password is masked, try retrieving it from the config

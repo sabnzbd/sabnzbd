@@ -30,7 +30,7 @@ from tests.testhelper import *
 
 class TestShowLogging(SABnzbdBaseTest):
     def test_showlog(self):
-        """ Test the output of the filtered-log button """
+        """Test the output of the filtered-log button"""
         # Basic URL-fetching, easier than Selenium file download
         log_result = get_url_result("status/showlog")
 
@@ -92,7 +92,7 @@ class TestQueueRepair(SABnzbdBaseTest):
 
 class TestSamplePostProc:
     def test_sample_post_proc(self):
-        """ Make sure we don't break things """
+        """Make sure we don't break things"""
         # Set parameters
         script_params = [
             "somedir222",
@@ -127,7 +127,7 @@ class TestSamplePostProc:
 
 class TestExtractPot:
     def test_extract_pot(self):
-        """ Simple test if translation extraction still works """
+        """Simple test if translation extraction still works"""
         script_call = [sys.executable, "tools/extract_pot.py"]
 
         # Run script and check output

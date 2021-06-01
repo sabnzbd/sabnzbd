@@ -1,85 +1,46 @@
-Release Notes - SABnzbd 3.2.1
+Release Notes - SABnzbd 3.3.0 
 =========================================================
 
-## Changes and bugfixes since 3.2.0
-- Single `Indexer Categories` in Categories were broken.
-- Program would fail to start if Quota was previously exceeded.
-- Setting `Automatically sort queue` by `Age` was inverted.
-- Show the name of the item to be deleted from the Queue/History 
-  in the confirmation dialog.
-- Handle directories in `.par2`-files during Quick-check.
-- Do not discard data for articles with CRC-errors.
-- Improvements to `Deobfuscate final filenames`:
-  Rename accompanying (smaller) files with the same basename.
-  Do not rename collections of the same extension.
-- Sanitize names possibly derived from `X-DNZB-EpisodeName`.
-- Widened the RSS feeds table.
-- Show server expiration date in server summary.
-- Improvements to the encrypted RAR-detection.
-- Add traceback-logging when failing to read the password file.
-- Windows: Use binary mode to make the write test more accurate.
+## Changes since 3.2.1
+- The `External internet access` will automatically detect local network
+  and no longer requires local network ranges to be defined. Custom ranges 
+  can still be defined through `local_ranges` in Special settings.
+- Allow setting `inet_exposure` from the command line.
+- Support prefix and netmask for Special setting `local_ranges`.
+- The `Unwanted extensions` detection can be set to `Whitelist`-mode. 
+  This will block or pause all jobs with non-matching extensions.
+- Servers article statistics are shown in K, G, M-notation.
+- Resolution added as a pattern key (`%r`) for Sorting.
+- Optimized performance of par2 file parsing.
+- CPU usage optimizations in the download process.
+- Revised handling of categories, scripts, and priorities when adding NZB's.
+- Download statistics are also shown when no History is shown.
+- Confirm rename if Direct Unpack is active for the job.
+- Obfuscated-RAR detection will always be performed.
+- All requests will be logged, not just API calls.
+- Stability improvement to encrypted RAR-detection.
+- Allow missing extensions in `Unwanted extensions` detection.
+- Removed Special setting `max_art_opt`.
+- Add notification that Plush will be removed in 3.4.0.
+- Windows/macOS: Update UnRar to 6.0.1.
+- Windows: Update Multipar to 1.3.1.7 (adds faster verification).
 
-## Changes since 3.1.1
-- Python 3.6 is the minimum required version. 
-- The Windows installer can only be used on 64bit Windows 8.1 and 
-  above. For 32bit systems or older Windows versions, the 
-  standalone 32bit legacy version can be used.
-- Post-processing can be aborted at any stage, including scripts.
-- Improvements in the downloader to reduce CPU-load.
-- Increased garbage collection rate to reduce memory usage.
-- Custom date ranges for server graphs can be selected.
-- Keep track of article fetching success-rate of each server.
-- Added option to add download quota warning for each server.
-- Added option to add expiration warning for each server.
-- Added `Minimum Free Space for Completed Download Folder` option.
-- Added option to `Auto resume` for both `Minimum Free Space` settings.
-- Added `Auto` option for Glitter that enables `Night` style 
-  based on system settings. Default for new installations.
-- Multiple additional Queue and History columns can be added.
-- Added option to always use full-screen width.
-- Additional interface settings can be stored server-side.
-- Right-to-Left support (Hebrew) for Glitter and Config.
-- Using SSDP, SABnzbd instances are now listed in `Network` on Windows.
-- Improvements to parsing of job name and filenames listed in the NZB.
-- RSS titles can be edited.
-- Prospective par2 will add blocks from all sets in a job.
-- Sanitize all filenames to a maximum of 245 characters.
-- Show commit hash when running from `git` sources.
-- Notify through Notifications if a new version is available.
-- Program shutdown time reduced to almost instant.
-- Added `10 GB` test download.
-- IPv6 is no longer preferred in HappyEyeballs address selection.
-- API-calls `queue` and `history` can now be filtered by `nzo_id`.
-- Windows: `Temporary Download` job folders no longer have a maximum length.
-- Windows/macOS: Update UnRar to 6.0.0 and MultiPar to 1.3.1.3.
-
-## Bugfixes since 3.1.1
-- Memory could leak after jobs were removed from the queue.
-- The active browser URL is used during the wizard.
-- Repairing or Retrying jobs could result in a crash.  
-- API-call `reset_quota` returned nothing.
-- New categories were not always forced to lowercase.
-- Broken downloads could result in a crash during RAR-renaming  
-- Improved obfuscation detection for `Deobfuscate final filenames`.
-- Keep original priority of duplicate jobs.
-- Increase the maximum number of connections per server to `1000`.
-- Update encryption check to handle partially assembled files.
-- Don't activate Windows notifications when running as a service.
-- Command-line option `--console` did not work.
-- Crash in API-call to delete history items for nonexistent `nzo_id`.
-- Prevent repetition of unwanted extension warnings.
-- Correct notification category for failed URL fetches.
-- Improvements to the `Add NZB` modal window.
-- Sort script drop-down list alphabetically.
-- Default Bandwidth percentage was not set to `100`.
-- Direct Unpack stability fixes.
-- macOS: Program shutdown could fail.
-- macOS: Tray text was misaligned on macOS 11 (Big Sur).
-- Windows: Improved handling of some MultiPar output.
-- Windows: Program restart failed.
+## Bugfixes since 3.2.1
+- Prevent failed post-processing if job name ends in multiple dots or spaces.
+- Failing articles could result in jobs being stuck at 99%.
+- Jobs could be stuck in the queue or duplicate if they had missing articles.
+- Prevent jobs getting stuck at 99% due to unreliable servers.
+- CRC/yEnc errors would be counted twice as bad articles.
+- Some NZB files would incorrectly be marked as empty.
+- API-call `history` would not filter active post-processing by `nzo_ids`.
+- Login page could be accessed even if `External internet access` was set
+  to `No access`. Any other calls would still be blocked.
+- Ignore duplicate files inside messy NZB's.
+- Windows: `Deobfuscate final filenames` could fail to deobfuscate.
+- macOS: Disk space would be incorrect for very large disks.
 
 ## Upgrade notices
-- The download statistics file `totals10.sab` is updated in this 
+- The download statistics file `totals10.sab` is updated in 3.2.x 
   version. If you downgrade to 3.1.x or lower, detailed download 
   statistics will be lost.
 

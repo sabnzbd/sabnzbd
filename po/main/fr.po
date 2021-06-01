@@ -8,7 +8,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.2.0-develop\n"
+"Project-Id-Version: SABnzbd-3.3.0-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Fred L <88com88@gmail.com>, 2021\n"
 "Language-Team: French (https://www.transifex.com/sabnzbd/teams/111101/fr/)\n"
@@ -630,6 +630,15 @@ msgstr "Échec lors de la création de (%s)"
 msgid "Failed moving %s to %s"
 msgstr "Échec lors du déplacement de %s vers %s"
 
+#. Error message
+#: sabnzbd/filesystem.py
+msgid "Blocked attempt to create directory %s"
+msgstr "Tentative bloquée de création du répertoire %s"
+
+#: sabnzbd/interface.py
+msgid "Refused connection from:"
+msgstr "Connexion refusée de:"
+
 #: sabnzbd/interface.py
 msgid "Refused connection with hostname \"%s\" from:"
 msgstr "Connexion refusée avec le nom d'hôte \"%s\" à partir de :"
@@ -671,6 +680,7 @@ msgstr ""
 msgid "Authentication failed, check username/password."
 msgstr "Echec d'authentification, vérifiez les identifiant/mot de passe."
 
+#. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
 msgstr "Echec de la tentative de connexion de %s"
@@ -1226,10 +1236,6 @@ msgstr "NZB ajouté à la file d'attente"
 #: sabnzbd/nzbqueue.py
 msgid "%s -> Unknown encoding"
 msgstr "%s -> Encodage inconnu"
-
-#: sabnzbd/nzbstuff.py
-msgid "%s => missing from all servers, discarding"
-msgstr "%s => absent de tous les serveurs, rejeté"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -3235,27 +3241,14 @@ msgid "API Key QR Code"
 msgstr "Clé API code QR"
 
 #: sabnzbd/skintext.py
-msgid "List of local network ranges"
-msgstr "Liste des plages de réseau local"
-
-#: sabnzbd/skintext.py
-msgid ""
-"All local network addresses start with these prefixes (often \"192.168.1.\")"
-msgstr ""
-"Toutes les adresses de réseau local commencent par ces préfixes (souvent "
-"\"192.168.1.\" )"
-
-#: sabnzbd/skintext.py
 msgid "External internet access"
 msgstr "Accès Internet externe"
 
 #: sabnzbd/skintext.py
-msgid ""
-"You can set access rights for systems outside your local network. Requires "
-"List of local network ranges to be defined."
+msgid "You can set access rights for systems outside your local network."
 msgstr ""
-"Vous pouvez définir les droits d'accès pour les systèmes en dehors de votre "
-"réseau local. Requiert la liste des plages de réseaux locaux à définir."
+"Vous pouvez définir des droits d'accès pour les systèmes en dehors de votre "
+"réseau local."
 
 #: sabnzbd/skintext.py
 msgid "No access"
@@ -3594,19 +3587,28 @@ msgid "Action when unwanted extension detected"
 msgstr "Action si une extension indésirable est détecté"
 
 #: sabnzbd/skintext.py
-msgid "Action when an unwanted extension is detected in RAR files"
-msgstr "Action si une extension indésirable est détecté dans les fichiers RAR"
+msgid "Action when an unwanted extension is detected"
+msgstr "Action lorsqu'une extension indésirable est détectée"
 
 #: sabnzbd/skintext.py
 msgid "Unwanted extensions"
 msgstr "Extensions indésirables"
 
 #: sabnzbd/skintext.py
+msgid "Blacklist"
+msgstr "Liste noire"
+
+#: sabnzbd/skintext.py
+msgid "Whitelist"
+msgstr "Liste blanche"
+
+#: sabnzbd/skintext.py
 msgid ""
-"List all unwanted extensions. For example: <b>exe</b> or <b>exe, com</b>"
+"Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
+" <b>exe, com</b>"
 msgstr ""
-"Afficher toutes les extensions indésirables. Par exemple :  <b>exe</b> or "
-"<b>exe, com</b>"
+"Sélectionnez un mode et listez toutes les extensions (non) souhaitées. Par "
+"exemple: <b>exe</b> ou <b>exe, com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
@@ -4185,12 +4187,12 @@ msgstr "Forcer le téléchargement"
 #. Config->RSS edit button
 #: sabnzbd/skintext.py
 msgid "Edit"
-msgstr ""
+msgstr "Modifier"
 
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py
 msgid "Next scan at"
-msgstr ""
+msgstr "Prochain scan à"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4987,6 +4989,10 @@ msgstr "Afficher/masquer les fichiers terminés"
 #: sabnzbd/skintext.py
 msgid "View Script Log"
 msgstr "Afficher le journal des scripts"
+
+#: sabnzbd/skintext.py
+msgid "Renaming the job will abort Direct Unpack."
+msgstr "Renommer la tâche annulera la Décompression Directe."
 
 #: sabnzbd/skintext.py
 msgid ""

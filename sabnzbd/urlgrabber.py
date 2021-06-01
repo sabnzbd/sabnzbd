@@ -68,7 +68,7 @@ class URLGrabber(Thread):
         self.shutdown = False
 
     def add(self, url: str, future_nzo: NzbObject, when: Optional[int] = None):
-        """ Add an URL to the URLGrabber queue, 'when' is seconds from now """
+        """Add an URL to the URLGrabber queue, 'when' is seconds from now"""
         if future_nzo and when:
             # Always increase counter
             future_nzo.url_tries += 1

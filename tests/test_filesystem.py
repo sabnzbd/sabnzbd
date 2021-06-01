@@ -64,7 +64,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("test: ") == "unknown"
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_colon_handling_other(self):
         assert filesystem.sanitize_filename("test:aftertest") == "test:aftertest"
         assert filesystem.sanitize_filename(":") == ":"
@@ -80,7 +79,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("a$mft") == "a$mft"
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_win_devices_not_win(self):
         # Linux and Darwin are the same for this
         assert filesystem.sanitize_filename(None) is None
@@ -90,7 +88,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("a$mft") == "a$mft"
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_file_illegal_chars_linux(self):
         assert filesystem.sanitize_filename("test/aftertest") == "test+aftertest"
         assert filesystem.sanitize_filename("/test") == "+test"
@@ -102,7 +99,6 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_filename("../test") == "..+test"
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_folder_illegal_chars_linux(self):
         assert filesystem.sanitize_foldername('test"aftertest') == "test'aftertest"
         assert filesystem.sanitize_foldername("test:") == "test-"
@@ -113,7 +109,6 @@ class TestFileFolderNameSanitizer:
         assert len(filesystem.CH_ILLEGAL_WIN) == len(filesystem.CH_LEGAL_WIN)
 
     @set_platform("linux")
-    @set_config({"sanitize_safe": False})
     def test_legal_chars_linux(self):
         # Illegal on Windows but not on Linux, unless sanitize_safe is active.
         # Don't bother with '/' which is illegal in filenames on all platforms.
@@ -166,8 +161,10 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("test..aftertest") == "test..aftertest"
         assert filesystem.sanitize_foldername("test.aftertest.") == "test.aftertest"
         assert filesystem.sanitize_foldername("test.aftertest..") == "test.aftertest"
+        assert filesystem.sanitize_foldername("test. aftertest. . . .") == "test. aftertest"
         assert filesystem.sanitize_foldername("/test/this.") == "+test+this"
         assert filesystem.sanitize_foldername("/test./this.") == "+test.+this"
+        assert filesystem.sanitize_foldername("/test. /this . ") == "+test. +this"
 
     def test_long_foldername(self):
         assert len(filesystem.sanitize_foldername("test" * 100)) == DEF_FOLDER_MAX
@@ -191,6 +188,7 @@ class TestFileFolderNameSanitizer:
         assert filesystem.sanitize_foldername("\t\t\t") == "unknown"
         assert filesystem.sanitize_foldername(" ") == "unknown"
         assert filesystem.sanitize_foldername("  ") == "unknown"
+        assert filesystem.sanitize_foldername(" . .") == "unknown"
 
     def test_filename_too_long(self):
 
@@ -252,6 +250,44 @@ class TestFileFolderNameSanitizer:
         name = "." + "a" * 200
         sanitizedname = filesystem.sanitize_filename(name)
         assert sanitizedname == name  # no change
+
+
+class TestSanitizeFiles(ffs.TestCase):
+    def setUp(self):
+        self.setUpPyfakefs()
+        self.fs.path_separator = "\\"
+        self.fs.is_windows_fs = True
+
+    def test_sanitize_files_input(self):
+        assert [] == filesystem.sanitize_files(folder=None)
+        assert [] == filesystem.sanitize_files(filelist=None)
+        assert [] == filesystem.sanitize_files(folder=None, filelist=None)
+
+    @set_platform("win32")
+    @set_config({"sanitize_safe": True})
+    def test_sanitize_files(self):
+        # The very specific tests of sanitize_filename() are above
+        # Here we just want to see that sanitize_files() works as expected
+        input_list = [r"c:\test\con.man", r"c:\test\foo:bar"]
+        output_list = [r"c:\test\_con.man", r"c:\test\foo-bar"]
+
+        # Test both the "folder" and "filelist" based calls
+        for kwargs in ({"folder": r"c:\test"}, {"filelist": input_list}):
+            # Create source files
+            for file in input_list:
+                self.fs.create_file(file)
+
+            assert output_list == filesystem.sanitize_files(**kwargs)
+
+            # Make sure the old ones are gone
+            for file in input_list:
+                assert not os.path.exists(file)
+
+            # Make sure the new ones are there
+            for file in output_list:
+                assert os.path.exists(file)
+                os.remove(file)
+                assert not os.path.exists(file)
 
 
 class TestSameFile:
@@ -360,10 +396,10 @@ class TestCheckMountLinux(ffs.TestCase):
         self.setUpPyfakefs()
         self.fs.path_separator = "/"
         self.fs.is_case_sensitive = True
-        for dir in self.test_dirs:
-            self.fs.create_dir(dir, perm_bits=755)
+        for test_dir in self.test_dirs:
+            self.fs.create_dir(test_dir, perm_bits=755)
             # Sanity check the fake filesystem
-            assert os.path.exists(dir) is True
+            assert os.path.exists(test_dir) is True
 
     @set_platform("linux")
     def test_bare_mountpoint_linux(self):
@@ -775,7 +811,7 @@ class TestCreateAllDirsWin(ffs.TestCase):
 
     @set_platform("win32")
     def test_create_all_dirs(self):
-        self.dir = self.fs.create_dir(r"C:\Downloads")
+        self.directory = self.fs.create_dir(r"C:\Downloads")
         # Also test for no crash when folder already exists
         for folder in (r"C:\Downloads", r"C:\Downloads\Show\Test", r"C:\Downloads\Show\Test2", r"C:\Downloads\Show"):
             assert filesystem.create_all_dirs(folder) == folder
@@ -822,7 +858,6 @@ class TestCreateAllDirs(ffs.TestCase, PermissionCheckerHelper):
         with pytest.raises(OSError):
             self._permissions_runner("/test_base450", perms_base="0450")
 
-    @set_config({"umask": ""})
     def test_no_umask(self):
         self._permissions_runner("/test_base_perm700", perms_base="0700")
         self._permissions_runner("/test_base_perm750", perms_base="0750")
@@ -921,9 +956,9 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
 
         # Check the results
         for root, dirs, files in os.walk(test_dir):
-            for dir in [os.path.join(root, d) for d in dirs]:
+            for directory in [os.path.join(root, d) for d in dirs]:
                 # Permissions on directories should now match perms_after
-                self.assert_dir_perms(dir, perms_after)
+                self.assert_dir_perms(directory, perms_after)
             for file in [os.path.join(root, f) for f in files]:
                 # Files also shouldn't have any executable or special bits set
                 assert (
@@ -940,19 +975,16 @@ class TestSetPermissions(ffs.TestCase, PermissionCheckerHelper):
         ffs.set_uid(global_uid)
 
     @set_platform("linux")
-    @set_config({"umask": ""})
     def test_dir0777_empty_umask_setting(self):
         # World writable directory
         self._runner("0777", "0700")
 
     @set_platform("linux")
-    @set_config({"umask": ""})
     def test_dir0450_empty_umask_setting(self):
         # Insufficient access
         self._runner("0450", "0700")
 
     @set_platform("linux")
-    @set_config({"umask": ""})
     def test_dir0000_empty_umask_setting(self):
         # Weird directory permissions
         self._runner("0000", "0700")
@@ -999,7 +1031,7 @@ class TestRenamer:
         filename = os.path.join(dirname, "myfile.txt")
         Path(filename).touch()  # create file
         newfilename = os.path.join(dirname, "newfile.txt")
-        filesystem.renamer(filename, newfilename)  # rename() does not return a value ...
+        assert newfilename == filesystem.renamer(filename, newfilename)
         assert not os.path.isfile(filename)
         assert os.path.isfile(newfilename)
 
@@ -1009,7 +1041,7 @@ class TestRenamer:
         sameleveldirname = os.path.join(SAB_DATA_DIR, "othertestdir" + str(random.randint(10000, 99999)))
         os.mkdir(sameleveldirname)
         newfilename = os.path.join(sameleveldirname, "newfile.txt")
-        filesystem.renamer(filename, newfilename)
+        assert newfilename == filesystem.renamer(filename, newfilename)
         assert not os.path.isfile(filename)
         assert os.path.isfile(newfilename)
         shutil.rmtree(sameleveldirname)
@@ -1018,7 +1050,8 @@ class TestRenamer:
         Path(filename).touch()  # create file
         newfilename = os.path.join(dirname, "nonexistingsubdir", "newfile.txt")
         try:
-            filesystem.renamer(filename, newfilename)  # rename() does not return a value ...
+            # Should fail
+            filesystem.renamer(filename, newfilename)
         except:
             pass
         assert os.path.isfile(filename)
@@ -1056,3 +1089,57 @@ class TestRenamer:
 
         # Cleanup working directory
         shutil.rmtree(dirname)
+
+
+class TestUnwantedExtensions:
+    # Only test lowercase extensions without a leading dot: the unwanted_extensions
+    # setting is sanitized accordingly in interface.saveSwitches() before saving.
+    test_extensions = "iso, cmd, bat, sh"
+    # Test parameters as (filename, result) tuples, with result given for blacklist mode
+    test_params = [
+        ("ubuntu.iso", True),
+        ("par2.cmd", True),
+        ("freedos.BAT", True),
+        ("Debian.installer.SH", True),
+        ("FREEBSD.ISO", True),
+        ("par2.CmD", True),
+        ("freedos.baT", True),
+        ("Debian.Installer.sh", True),
+        ("ubuntu.torrent", False),
+        ("par2.cmd.notcmd", False),
+        ("freedos.tab", False),
+        (".SH.hs", False),
+        ("No_Extension", False),
+        (480, False),
+        (None, False),
+        ("", False),
+        ([], False),
+    ]
+
+    @set_config({"unwanted_extensions_mode": 0, "unwanted_extensions": test_extensions})
+    def test_has_unwanted_extension_blacklist_mode(self):
+        for filename, result in self.test_params:
+            assert filesystem.has_unwanted_extension(filename) is result
+
+    @set_config({"unwanted_extensions_mode": 1, "unwanted_extensions": test_extensions})
+    def test_has_unwanted_extension_whitelist_mode(self):
+        for filename, result in self.test_params:
+            if filesystem.get_ext(filename):
+                assert filesystem.has_unwanted_extension(filename) is not result
+            else:
+                # missing extension is never considered unwanted
+                assert filesystem.has_unwanted_extension(filename) is False
+
+    @set_config({"unwanted_extensions_mode": 0, "unwanted_extensions": ""})
+    def test_has_unwanted_extension_empty_blacklist(self):
+        for filename, result in self.test_params:
+            assert filesystem.has_unwanted_extension(filename) is False
+
+    @set_config({"unwanted_extensions_mode": 1, "unwanted_extensions": ""})
+    def test_has_unwanted_extension_empty_whitelist(self):
+        for filename, result in self.test_params:
+            if filesystem.get_ext(filename):
+                assert filesystem.has_unwanted_extension(filename) is True
+            else:
+                # missing extension is never considered unwanted
+                assert filesystem.has_unwanted_extension(filename) is False

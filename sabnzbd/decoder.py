@@ -59,7 +59,7 @@ class BadYenc(Exception):
 
 
 class Decoder:
-    """ Implement thread-like coordinator for the decoders """
+    """Implement thread-like coordinator for the decoders"""
 
     def __init__(self):
         logging.debug("Initializing decoders")
@@ -106,7 +106,7 @@ class Decoder:
 
 
 class DecoderWorker(Thread):
-    """ The actuall workhorse that handles decoding! """
+    """The actuall workhorse that handles decoding!"""
 
     def __init__(self, decoder_queue):
         super().__init__()
@@ -246,7 +246,7 @@ def decode(article: Article, raw_data: List[bytes]) -> bytes:
 
 
 def search_new_server(article: Article) -> bool:
-    """ Shorthand for searching new server or else increasing bad_articles """
+    """Shorthand for searching new server or else increasing bad_articles"""
     # Continue to the next one if we found new server
     if not article.search_new_server():
         # Increase bad articles if no new server was found

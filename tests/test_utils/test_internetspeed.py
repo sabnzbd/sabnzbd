@@ -18,22 +18,24 @@
 """
 tests.test_utils.test_internetspeed - Testing SABnzbd internetspeed
 """
+import pytest
 
-from sabnzbd.utils.internetspeed import internetspeed, measurespeed, SizeUrlList
+from sabnzbd.utils.internetspeed import internetspeed, measure_speed_from_url, SIZE_URL_LIST
 
 
+@pytest.mark.usefixtures("clean_cache_dir")
 class TestInternetSpeed:
     """This class contains tests to measure internet speed
     with an active and inactive connection
     """
 
     def test_measurespeed_invalid_url(self):
-        speed = measurespeed("www.fake-url-9999999.xyz")
+        speed = measure_speed_from_url("www.fake-url-9999999.test")
 
         assert not speed
 
     def test_measurespeed_valid_url(self):
-        speed = measurespeed(SizeUrlList[0][1])
+        speed = measure_speed_from_url(SIZE_URL_LIST[0][1])
 
         assert isinstance(speed, float)
         assert speed > 0

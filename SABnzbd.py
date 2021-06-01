@@ -62,7 +62,6 @@ from sabnzbd.misc import (
     exit_sab,
     split_host,
     create_https_certificates,
-    windows_variant,
     ip_extract,
     set_serv_parms,
     get_serv_parms,
@@ -79,6 +78,7 @@ import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
+from sabnzbd.utils.getperformance import getpystone, getcpu
 import sabnzbd.utils.ssdp as ssdp
 
 try:
@@ -89,9 +89,13 @@ try:
     import win32service
     import win32ts
     import pywintypes
+    import servicemanager
+    from win32com.shell import shell, shellcon
+
+    from sabnzbd.utils.apireg import get_connection_info, set_connection_info, del_connection_info
+    import sabnzbd.sabtray
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
-    from sabnzbd.utils.apireg import get_connection_info, set_connection_info, del_connection_info
 except ImportError:
     if sabnzbd.WIN32:
         print("Sorry, requires Python module PyWin32.")
@@ -102,13 +106,13 @@ LOG_FLAG = False
 
 
 def guard_loglevel():
-    """ Callback function for guarding loglevel """
+    """Callback function for guarding loglevel"""
     global LOG_FLAG
     LOG_FLAG = True
 
 
 def warning_helpful(*args, **kwargs):
-    """ Wrapper to ignore helpfull warnings if desired """
+    """Wrapper to ignore helpfull warnings if desired"""
     if sabnzbd.cfg.helpfull_warnings():
         return logging.warning(*args, **kwargs)
     return logging.info(*args, **kwargs)
@@ -123,13 +127,13 @@ class GUIHandler(logging.Handler):
     """
 
     def __init__(self, size):
-        """ Initializes the handler """
+        """Initializes the handler"""
         logging.Handler.__init__(self)
         self._size: int = size
         self.store: List[Dict[str, Any]] = []
 
     def emit(self, record: logging.LogRecord):
-        """ Emit a record by adding it to our private queue """
+        """Emit a record by adding it to our private queue"""
         # If % is part of the msg, this could fail
         try:
             parsed_msg = record.msg % record.args
@@ -171,7 +175,7 @@ class GUIHandler(logging.Handler):
         return len(self.store)
 
     def content(self):
-        """ Return an array with last records """
+        """Return an array with last records"""
         return self.store
 
 
@@ -182,35 +186,36 @@ def print_help():
     print("Options marked [*] are stored in the config file")
     print()
     print("Options:")
-    print("  -f  --config-file <ini>  Location of config file")
-    print("  -s  --server <srv:port>  Listen on server:port [*]")
-    print("  -t  --templates <templ>  Template directory [*]")
+    print("  -f  --config-file <ini>     Location of config file")
+    print("  -s  --server <srv:port>     Listen on server:port [*]")
+    print("  -t  --templates <templ>     Template directory [*]")
     print()
-    print("  -l  --logging <-1..2>     Set logging level (-1=off, 0= least, 2= most) [*]")
-    print("  -w  --weblogging         Enable cherrypy access logging")
+    print("  -l  --logging <-1..2>       Set logging level (-1=off, 0=least,2= most) [*]")
+    print("  -w  --weblogging            Enable cherrypy access logging")
     print()
-    print("  -b  --browser <0..1>     Auto browser launch (0= off, 1= on) [*]")
+    print("  -b  --browser <0..1>        Auto browser launch (0= off, 1= on) [*]")
     if sabnzbd.WIN32:
-        print("  -d  --daemon             Use when run as a service")
+        print("  -d  --daemon                Use when run as a service")
     else:
-        print("  -d  --daemon             Fork daemon process")
-        print("      --pid <path>         Create a PID file in the given folder (full path)")
-        print("      --pidfile <path>     Create a PID file with the given name (full path)")
+        print("  -d  --daemon                Fork daemon process")
+        print("      --pid <path>            Create a PID file in the given folder (full path)")
+        print("      --pidfile <path>        Create a PID file with the given name (full path)")
     print()
-    print("  -h  --help               Print this message")
-    print("  -v  --version            Print version information")
-    print("  -c  --clean              Remove queue, cache and logs")
-    print("  -p  --pause              Start in paused mode")
-    print("      --repair             Add orphaned jobs from the incomplete folder to the queue")
-    print("      --repair-all         Try to reconstruct the queue from the incomplete folder")
-    print("                           with full data reconstruction")
-    print("      --https <port>       Port to use for HTTPS server")
-    print("      --ipv6_hosting <0|1> Listen on IPv6 address [::1] [*]")
-    print("      --no-login           Start with username and password reset")
-    print("      --log-all            Log all article handling (for developers)")
-    print("      --disable-file-log   Logging is only written to console")
-    print("      --console            Force logging to console")
-    print("      --new                Run a new instance of SABnzbd")
+    print("  -h  --help                  Print this message")
+    print("  -v  --version               Print version information")
+    print("  -c  --clean                 Remove queue, cache and logs")
+    print("  -p  --pause                 Start in paused mode")
+    print("      --repair                Add orphaned jobs from the incomplete folder to the queue")
+    print("      --repair-all            Try to reconstruct the queue from the incomplete folder")
+    print("                              with full data reconstruction")
+    print("      --https <port>          Port to use for HTTPS server")
+    print("      --ipv6_hosting <0|1>    Listen on IPv6 address [::1] [*]")
+    print("      --inet_exposure <0..5>  Set external internet access [*]")
+    print("      --no-login              Start with username and password reset")
+    print("      --log-all               Log all article handling (for developers)")
+    print("      --disable-file-log      Logging is only written to console")
+    print("      --console               Force logging to console")
+    print("      --new                   Run a new instance of SABnzbd")
     print()
     print("NZB (or related) file:")
     print("  NZB or compressed NZB file, with extension .nzb, .zip, .rar, .7z, .gz, or .bz2")
@@ -236,7 +241,7 @@ GNU GENERAL PUBLIC LICENSE Version 2 or (at your option) any later version.
 
 
 def daemonize():
-    """ Daemonize the process, based on various StackOverflow answers """
+    """Daemonize the process, based on various StackOverflow answers"""
     try:
         pid = os.fork()
         if pid > 0:
@@ -278,7 +283,7 @@ def daemonize():
 
 
 def abort_and_show_error(browserhost, cherryport, err=""):
-    """ Abort program because of CherryPy troubles """
+    """Abort program because of CherryPy troubles"""
     logging.error(T("Failed to start web-interface") + " : " + str(err))
     if not sabnzbd.DAEMON:
         if "49" in err:
@@ -290,7 +295,7 @@ def abort_and_show_error(browserhost, cherryport, err=""):
 
 
 def identify_web_template(key, defweb, wdir):
-    """ Determine a correct web template set, return full template path """
+    """Determine a correct web template set, return full template path"""
     if wdir is None:
         try:
             wdir = fix_webname(key())
@@ -321,7 +326,7 @@ def identify_web_template(key, defweb, wdir):
 
 
 def check_template_scheme(color, web_dir):
-    """ Check existence of color-scheme """
+    """Check existence of color-scheme"""
     if color and os.path.exists(os.path.join(web_dir, "static", "stylesheets", "colorschemes", color + ".css")):
         return color
     elif color and os.path.exists(os.path.join(web_dir, "static", "stylesheets", "colorschemes", color)):
@@ -347,8 +352,8 @@ def fix_webname(name):
         return name
 
 
-def get_user_profile_paths(vista_plus):
-    """ Get the default data locations on Windows"""
+def get_user_profile_paths():
+    """Get the default data locations on Windows"""
     if sabnzbd.DAEMON:
         # In daemon mode, do not try to access the user profile
         # just assume that everything defaults to the program dir
@@ -363,22 +368,15 @@ def get_user_profile_paths(vista_plus):
         return
     elif sabnzbd.WIN32:
         try:
-            from win32com.shell import shell, shellcon
-
             path = shell.SHGetFolderPath(0, shellcon.CSIDL_LOCAL_APPDATA, None, 0)
             sabnzbd.DIR_LCLDATA = os.path.join(path, DEF_WORKDIR)
             sabnzbd.DIR_HOME = os.environ["USERPROFILE"]
         except:
             try:
-                if vista_plus:
-                    root = os.environ["AppData"]
-                    user = os.environ["USERPROFILE"]
-                    sabnzbd.DIR_LCLDATA = "%s\\%s" % (root.replace("\\Roaming", "\\Local"), DEF_WORKDIR)
-                    sabnzbd.DIR_HOME = user
-                else:
-                    root = os.environ["USERPROFILE"]
-                    sabnzbd.DIR_LCLDATA = "%s\\%s" % (root, DEF_WORKDIR)
-                    sabnzbd.DIR_HOME = root
+                root = os.environ["AppData"]
+                user = os.environ["USERPROFILE"]
+                sabnzbd.DIR_LCLDATA = "%s\\%s" % (root.replace("\\Roaming", "\\Local"), DEF_WORKDIR)
+                sabnzbd.DIR_HOME = user
             except:
                 pass
 
@@ -407,7 +405,7 @@ def get_user_profile_paths(vista_plus):
 
 
 def print_modules():
-    """ Log all detected optional or external modules """
+    """Log all detected optional or external modules"""
     if sabnzbd.decoder.SABYENC_ENABLED:
         # Yes, we have SABYenc, and it's the correct version, so it's enabled
         logging.info("SABYenc module (v%s)... found!", sabnzbd.decoder.SABYENC_VERSION)
@@ -484,7 +482,7 @@ def print_modules():
 
 
 def all_localhosts():
-    """ Return all unique values of localhost in order of preference """
+    """Return all unique values of localhost in order of preference"""
     ips = ["127.0.0.1"]
     try:
         # Check whether IPv6 is available and enabled
@@ -512,7 +510,7 @@ def all_localhosts():
 
 
 def check_resolve(host):
-    """ Return True if 'host' resolves """
+    """Return True if 'host' resolves"""
     try:
         socket.getaddrinfo(host, None)
     except socket.error:
@@ -600,7 +598,7 @@ def get_webhost(cherryhost, cherryport, https_port):
         browserhost = localhost
 
     else:
-        # If on Vista and/or APIPA, use numerical IP, to help FireFoxers
+        # If on APIPA, use numerical IP, to help FireFoxers
         if ipv6 and ipv4:
             cherryhost = hostip
         browserhost = cherryhost
@@ -655,7 +653,7 @@ def get_webhost(cherryhost, cherryport, https_port):
 
 
 def attach_server(host, port, cert=None, key=None, chain=None):
-    """ Define and attach server, optionally HTTPS """
+    """Define and attach server, optionally HTTPS"""
     if sabnzbd.cfg.ipv6_hosting() or "::1" not in host:
         http_server = cherrypy._cpserver.Server()
         http_server.bind_addr = (host, port)
@@ -668,7 +666,7 @@ def attach_server(host, port, cert=None, key=None, chain=None):
 
 
 def is_sabnzbd_running(url):
-    """ Return True when there's already a SABnzbd instance running. """
+    """Return True when there's already a SABnzbd instance running."""
     try:
         url = "%s&mode=version" % url
         # Do this without certificate verification, few installations will have that
@@ -681,7 +679,7 @@ def is_sabnzbd_running(url):
 
 
 def find_free_port(host, currentport):
-    """ Return a free port, 0 when nothing is free """
+    """Return a free port, 0 when nothing is free"""
     n = 0
     while n < 10 and currentport <= 49151:
         try:
@@ -778,10 +776,9 @@ def commandline_handler():
                 "server=",
                 "templates",
                 "ipv6_hosting=",
-                "template2",
+                "inet_exposure=",
                 "browser=",
                 "config-file=",
-                "force",
                 "disable-file-log",
                 "version",
                 "https=",
@@ -835,7 +832,7 @@ def commandline_handler():
 
 
 def get_f_option(opts):
-    """ Return value of the -f option """
+    """Return value of the -f option"""
     for opt, arg in opts:
         if opt == "-f":
             return arg
@@ -863,8 +860,6 @@ def main():
     console_logging = False
     no_file_log = False
     web_dir = None
-    vista_plus = False
-    win64 = False
     repair = 0
     no_login = False
     sabnzbd.RESTART_ARGS = [sys.argv[0]]
@@ -872,6 +867,7 @@ def main():
     pid_file = None
     new_instance = False
     ipv6_hosting = None
+    inet_exposure = None
 
     _service, sab_opts, _serv_opts, upload_nzbs = commandline_handler()
 
@@ -951,6 +947,8 @@ def main():
             new_instance = True
         elif opt == "--ipv6_hosting":
             ipv6_hosting = arg
+        elif opt == "--inet_exposure":
+            inet_exposure = arg
 
     sabnzbd.MY_FULLNAME = os.path.normpath(os.path.abspath(sabnzbd.MY_FULLNAME))
     sabnzbd.MY_NAME = os.path.basename(sabnzbd.MY_FULLNAME)
@@ -977,17 +975,18 @@ def main():
     logger.setLevel(logging.WARNING)
     logger.addHandler(gui_log)
 
-    # Detect Windows variant
+    # Detect CPU architecture and Windows variant
+    # Use .machine as .processor is not always filled
+    cpu_architecture = platform.uname().machine
     if sabnzbd.WIN32:
-        vista_plus, win64 = windows_variant()
-        sabnzbd.WIN64 = win64
+        sabnzbd.WIN64 = cpu_architecture == "AMD64"
 
     if inifile:
         # INI file given, simplest case
         inifile = evaluate_inipath(inifile)
     else:
         # No ini file given, need profile data
-        get_user_profile_paths(vista_plus)
+        get_user_profile_paths()
         # Find out where INI file is
         inifile = os.path.abspath(os.path.join(sabnzbd.DIR_LCLDATA, DEF_INI_FILE))
 
@@ -1169,24 +1168,19 @@ def main():
             ).strip()
         except:
             pass
-    logging.info("Commit: %s", sabnzbd.__baseline__)
+    logging.info("Commit = %s", sabnzbd.__baseline__)
+
     logging.info("Full executable path = %s", sabnzbd.MY_FULLNAME)
-    if sabnzbd.WIN32:
-        suffix = ""
-        if win64:
-            suffix = "(win64)"
-        try:
-            logging.info("Platform = %s %s", platform.platform(), suffix)
-        except:
-            logging.info("Platform = %s <unknown>", suffix)
-    else:
-        logging.info("Platform = %s", os.name)
-    logging.info("Python-version = %s", sys.version)
     logging.info("Arguments = %s", sabnzbd.CMDLINE)
-    if sabnzbd.DOCKER:
-        logging.info("Running inside a docker container")
-    else:
-        logging.info("Not inside a docker container")
+    logging.info("Python-version = %s", sys.version)
+    logging.info("Dockerized = %s", sabnzbd.DOCKER)
+    logging.info("CPU architecture = %s", cpu_architecture)
+
+    try:
+        logging.info("Platform = %s - %s", os.name, platform.platform())
+    except:
+        # Can fail on special platforms (like Snapcraft or embedded)
+        pass
 
     # Find encoding; relevant for external processing activities
     logging.info("Preferred encoding = %s", sabnzbd.encoding.CODEPAGE)
@@ -1210,8 +1204,8 @@ def main():
 
         try:
             os.environ["SSL_CERT_FILE"] = certifi.where()
-            logging.info("Certifi version: %s", certifi.__version__)
-            logging.info("Loaded additional certificates from: %s", os.environ["SSL_CERT_FILE"])
+            logging.info("Certifi version = %s", certifi.__version__)
+            logging.info("Loaded additional certificates from %s", os.environ["SSL_CERT_FILE"])
         except:
             # Sometimes the certificate file is blocked
             logging.warning(T("Could not load additional certificates from certifi package"))
@@ -1220,38 +1214,16 @@ def main():
     # Extra startup info
     if sabnzbd.cfg.log_level() > 1:
         # List the number of certificates available (can take up to 1.5 seconds)
-        ctx = ssl.create_default_context()
-        logging.debug("Available certificates: %s", repr(ctx.cert_store_stats()))
+        logging.debug("Available certificates = %s", repr(ssl.create_default_context().cert_store_stats()))
 
-        mylocalipv4 = localipv4()
-        if mylocalipv4:
-            logging.debug("My local IPv4 address = %s", mylocalipv4)
-        else:
-            logging.debug("Could not determine my local IPv4 address")
-
-        mypublicipv4 = publicipv4()
-        if mypublicipv4:
-            logging.debug("My public IPv4 address = %s", mypublicipv4)
-        else:
-            logging.debug("Could not determine my public IPv4 address")
-
-        myipv6 = ipv6()
-        if myipv6:
-            logging.debug("My IPv6 address = %s", myipv6)
-        else:
-            logging.debug("Could not determine my IPv6 address")
+        # List networking
+        logging.debug("Local IPv4 address = %s", localipv4())
+        logging.debug("Public IPv4 address = %s", publicipv4())
+        logging.debug("IPv6 address = %s", ipv6())
 
         # Measure and log system performance measured by pystone and - if possible - CPU model
-        from sabnzbd.utils.getperformance import getpystone, getcpu
-
-        pystoneperf = getpystone()
-        if pystoneperf:
-            logging.debug("CPU Pystone available performance = %s", pystoneperf)
-        else:
-            logging.debug("CPU Pystone available performance could not be calculated")
-        cpumodel = getcpu()  # Linux only
-        if cpumodel:
-            logging.debug("CPU model = %s", cpumodel)
+        logging.debug("CPU Pystone available performance = %s", getpystone())
+        logging.debug("CPU model = %s", getcpu())
 
     logging.info("Using INI file %s", inifile)
 
@@ -1272,8 +1244,6 @@ def main():
     # Handle the several tray icons
     if sabnzbd.cfg.win_menu() and not sabnzbd.DAEMON and not sabnzbd.WIN_SERVICE:
         if sabnzbd.WIN32:
-            import sabnzbd.sabtray
-
             sabnzbd.WINTRAY = sabnzbd.sabtray.SABTrayThread()
         elif sabnzbd.LINUX_POWER and os.environ.get("DISPLAY"):
             try:
@@ -1361,6 +1331,10 @@ def main():
     if no_login:
         sabnzbd.cfg.username.set("")
         sabnzbd.cfg.password.set("")
+
+    # Overwrite inet_exposure from command-line for VPS-setups
+    if inet_exposure:
+        sabnzbd.cfg.inet_exposure.set(inet_exposure)
 
     mime_gzip = (
         "text/*",
@@ -1632,10 +1606,9 @@ def main():
 
 
 if sabnzbd.WIN32:
-    import servicemanager
 
     class SABnzbd(win32serviceutil.ServiceFramework):
-        """ Win32 Service Handler """
+        """Win32 Service Handler"""
 
         _svc_name_ = "SABnzbd"
         _svc_display_name_ = "SABnzbd Binary Newsreader"
@@ -1699,7 +1672,7 @@ def handle_windows_service():
     Returns True when any service commands were detected or
     when we have started as a service.
     """
-    # Detect if running as Windows Service (only Vista and above!)
+    # Detect if running as Windows Service
     # Adapted from https://stackoverflow.com/a/55248281/5235502
     # Only works when run from the exe-files
     if hasattr(sys, "frozen") and win32ts.ProcessIdToSessionId(win32api.GetCurrentProcessId()) == 0:

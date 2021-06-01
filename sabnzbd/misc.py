@@ -64,12 +64,9 @@ if sabnzbd.WIN32:
     except ImportError:
         pass
 
-if sabnzbd.DARWIN:
-    from PyObjCTools import AppHelper
-
 
 def time_format(fmt):
-    """ Return time-format string adjusted for 12/24 hour clock setting """
+    """Return time-format string adjusted for 12/24 hour clock setting"""
     if cfg.ampm() and HAVE_AMPM:
         return fmt.replace("%H:%M:%S", "%I:%M:%S %p").replace("%H:%M", "%I:%M %p")
     else:
@@ -111,7 +108,7 @@ def calc_age(date: datetime.datetime, trans=False) -> str:
 
 
 def safe_lower(txt: Any) -> str:
-    """ Return lowercased string. Return '' for None """
+    """Return lowercased string. Return '' for None"""
     if txt:
         return txt.lower()
     else:
@@ -131,7 +128,7 @@ def cmp(x, y):
 
 
 def name_to_cat(fname, cat=None):
-    """ Retrieve category from file name, but only if "cat" is None. """
+    """Retrieve category from file name, but only if "cat" is None."""
     if cat is None and fname.startswith("{{"):
         n = fname.find("}}")
         if n > 2:
@@ -176,7 +173,7 @@ def cat_to_opts(cat, pp=None, script=None, priority=None) -> Tuple[str, int, str
 
 
 def pp_to_opts(pp: int) -> Tuple[bool, bool, bool]:
-    """ Convert numeric processing options to (repair, unpack, delete) """
+    """Convert numeric processing options to (repair, unpack, delete)"""
     # Convert the pp to an int
     pp = sabnzbd.interface.int_conv(pp)
     if pp == 0:
@@ -189,7 +186,7 @@ def pp_to_opts(pp: int) -> Tuple[bool, bool, bool]:
 
 
 def opts_to_pp(repair: bool, unpack: bool, delete: bool) -> int:
-    """ Convert (repair, unpack, delete) to numeric process options """
+    """Convert (repair, unpack, delete) to numeric process options"""
     pp = 0
     if repair:
         pp = 1
@@ -219,7 +216,7 @@ _wildcard_to_regex = {
 
 
 def wildcard_to_re(text):
-    """ Convert plain wildcard string (with '*' and '?') to regex. """
+    """Convert plain wildcard string (with '*' and '?') to regex."""
     return "".join([_wildcard_to_regex.get(ch, ch) for ch in text])
 
 
@@ -263,43 +260,12 @@ def cat_convert(cat):
     return None
 
 
-def windows_variant():
-    """Determine Windows variant
-    Return vista_plus, x64
-    """
-    from win32api import GetVersionEx
-    from win32con import VER_PLATFORM_WIN32_NT
-    import winreg
-
-    vista_plus = x64 = False
-    maj, _minor, _buildno, plat, _csd = GetVersionEx()
-
-    if plat == VER_PLATFORM_WIN32_NT:
-        vista_plus = maj > 5
-        if vista_plus:
-            # Must be done the hard way, because the Python runtime lies to us.
-            # This does *not* work:
-            #     return os.environ['PROCESSOR_ARCHITECTURE'] == 'AMD64'
-            # because the Python runtime returns 'X86' even on an x64 system!
-            key = winreg.OpenKey(
-                winreg.HKEY_LOCAL_MACHINE, r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
-            )
-            for n in range(winreg.QueryInfoKey(key)[1]):
-                name, value, _val_type = winreg.EnumValue(key, n)
-                if name == "PROCESSOR_ARCHITECTURE":
-                    x64 = value.upper() == "AMD64"
-                    break
-            winreg.CloseKey(key)
-
-    return vista_plus, x64
-
-
 _SERVICE_KEY = "SYSTEM\\CurrentControlSet\\services\\"
 _SERVICE_PARM = "CommandLine"
 
 
 def get_serv_parms(service):
-    """ Get the service command line parameters from Registry """
+    """Get the service command line parameters from Registry"""
     import winreg
 
     service_parms = []
@@ -320,7 +286,7 @@ def get_serv_parms(service):
 
 
 def set_serv_parms(service, args):
-    """ Set the service command line parameters in Registry """
+    """Set the service command line parameters in Registry"""
     import winreg
 
     serv = []
@@ -339,7 +305,7 @@ def set_serv_parms(service, args):
 
 
 def get_from_url(url: str) -> Optional[str]:
-    """ Retrieve URL and return content """
+    """Retrieve URL and return content"""
     try:
         req = urllib.request.Request(url)
         req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
@@ -350,7 +316,7 @@ def get_from_url(url: str) -> Optional[str]:
 
 
 def convert_version(text):
-    """ Convert version string to numerical value and a testversion indicator """
+    """Convert version string to numerical value and a testversion indicator"""
     version = 0
     test = True
     m = RE_VERSION.search(ubtou(text))
@@ -456,7 +422,7 @@ def check_latest_version():
 
 
 def upload_file_to_sabnzbd(url, fp):
-    """ Function for uploading nzbs to a running SABnzbd instance """
+    """Function for uploading nzbs to a running SABnzbd instance"""
     try:
         fp = urllib.parse.quote_plus(fp)
         url = "%s&mode=addlocalfile&name=%s" % (url, fp)
@@ -477,7 +443,7 @@ def upload_file_to_sabnzbd(url, fp):
 
 
 def from_units(val: str) -> float:
-    """ Convert K/M/G/T/P notation to float """
+    """Convert K/M/G/T/P notation to float"""
     val = str(val).strip().upper()
     if val == "-1":
         return float(val)
@@ -555,7 +521,7 @@ def caller_name(skip=2):
 
 
 def exit_sab(value: int):
-    """ Leave the program after flushing stderr/stdout """
+    """Leave the program after flushing stderr/stdout"""
     sys.stderr.flush()
     sys.stdout.flush()
     # Cannot use sys.exit as it will not work inside the macOS-runner-thread
@@ -563,7 +529,7 @@ def exit_sab(value: int):
 
 
 def split_host(srv):
-    """ Split host:port notation, allowing for IPV6 """
+    """Split host:port notation, allowing for IPV6"""
     if not srv:
         return None, None
 
@@ -623,7 +589,7 @@ def get_cache_limit():
 
 
 def get_windows_memory():
-    """ Use ctypes to extract available memory """
+    """Use ctypes to extract available memory"""
 
     class MEMORYSTATUSEX(ctypes.Structure):
         _fields_ = [
@@ -649,13 +615,13 @@ def get_windows_memory():
 
 
 def get_darwin_memory():
-    """ Use system-call to extract total memory on macOS """
+    """Use system-call to extract total memory on macOS"""
     system_output = run_command(["sysctl", "hw.memsize"])
     return float(system_output.split()[1])
 
 
 def on_cleanup_list(filename, skip_nzb=False):
-    """ Return True if a filename matches the clean-up list """
+    """Return True if a filename matches the clean-up list"""
     lst = cfg.cleanup_list()
     if lst:
         name, ext = os.path.splitext(filename)
@@ -692,7 +658,7 @@ _HAVE_STATM = _PAGE_SIZE and memory_usage()
 
 
 def loadavg():
-    """ Return 1, 5 and 15 minute load average of host or "" if not supported """
+    """Return 1, 5 and 15 minute load average of host or "" if not supported"""
     p = ""
     if not sabnzbd.WIN32 and not sabnzbd.DARWIN:
         opt = cfg.show_sysload()
@@ -707,7 +673,7 @@ def loadavg():
 
 
 def format_time_string(seconds):
-    """ Return a formatted and translated time string """
+    """Return a formatted and translated time string"""
 
     def unit(single, n):
         # Seconds and minutes are special due to historical reasons
@@ -743,7 +709,7 @@ def format_time_string(seconds):
 
 
 def int_conv(value: Any) -> int:
-    """ Safe conversion to int (can handle None) """
+    """Safe conversion to int (can handle None)"""
     try:
         value = int(value)
     except:
@@ -752,7 +718,7 @@ def int_conv(value: Any) -> int:
 
 
 def create_https_certificates(ssl_cert, ssl_key):
-    """ Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key' """
+    """Create self-signed HTTPS certificates and store in paths 'ssl_cert' and 'ssl_key'"""
     try:
         from sabnzbd.utils.certgen import generate_key, generate_local_cert
 
@@ -768,7 +734,7 @@ def create_https_certificates(ssl_cert, ssl_key):
 
 
 def get_all_passwords(nzo):
-    """ Get all passwords, from the NZB, meta and password file """
+    """Get all passwords, from the NZB, meta and password file"""
     if nzo.password:
         logging.info("Found a password that was set by the user: %s", nzo.password)
         passwords = [nzo.password.strip()]
@@ -817,7 +783,7 @@ def get_all_passwords(nzo):
 
 
 def find_on_path(targets):
-    """ Search the PATH for a program and return full path """
+    """Search the PATH for a program and return full path"""
     if sabnzbd.WIN32:
         paths = os.getenv("PATH").split(";")
     else:
@@ -834,8 +800,53 @@ def find_on_path(targets):
     return None
 
 
+def strip_ipv4_mapped_notation(ip: str) -> str:
+    """Convert an IP address in IPv4-mapped IPv6 notation (e.g. ::ffff:192.168.0.10) to its regular
+    IPv4 form. Any value of ip that doesn't use the relevant notation is returned unchanged.
+
+    CherryPy may report remote IP addresses in this notation. While the ipaddress module should be
+    able to handle that, the latter has issues with the is_private/is_loopback properties for these
+    addresses. See https://bugs.python.org/issue33433"""
+    try:
+        # Keep the original if ipv4_mapped is None
+        ip = ipaddress.ip_address(ip).ipv4_mapped or ip
+    except (AttributeError, ValueError):
+        pass
+    return str(ip)
+
+
+def ip_in_subnet(ip: str, subnet: str) -> bool:
+    """Determine whether ip is part of subnet. For the latter, the standard form with a prefix or
+    netmask (e.g. "192.168.1.0/24" or "10.42.0.0/255.255.0.0") is expected. Input in SABnzbd's old
+    cfg.local_ranges() settings style (e.g. "192.168.1."), intended for use with str.startswith(),
+    is also accepted and internally converted to address/prefix form."""
+    if not ip or not subnet:
+        return False
+
+    try:
+        if subnet.find("/") < 0 and subnet.find("::") < 0:
+            # The subnet doesn't include a prefix or netmask, or represent a single (compressed)
+            # IPv6 address; try converting from the older local_ranges settings style.
+
+            # Take the IP version of the subnet into account
+            IP_LEN, IP_BITS, IP_SEP = (8, 16, ":") if subnet.find(":") >= 0 else (4, 8, ".")
+
+            subnet = subnet.rstrip(IP_SEP).split(IP_SEP)
+            prefix = IP_BITS * len(subnet)
+            # Append as many zeros as needed
+            subnet.extend(["0"] * (IP_LEN - len(subnet)))
+            # Store in address/prefix form
+            subnet = "%s/%s" % (IP_SEP.join(subnet), prefix)
+
+        ip = strip_ipv4_mapped_notation(ip)
+        return ipaddress.ip_address(ip) in ipaddress.ip_network(subnet, strict=True)
+    except Exception:
+        # Probably an invalid range
+        return False
+
+
 def is_ipv4_addr(ip: str) -> bool:
-    """ Determine if the ip is an IPv4 address """
+    """Determine if the ip is an IPv4 address"""
     try:
         return ipaddress.ip_address(ip).version == 4
     except ValueError:
@@ -843,7 +854,7 @@ def is_ipv4_addr(ip: str) -> bool:
 
 
 def is_ipv6_addr(ip: str) -> bool:
-    """ Determine if the ip is an IPv6 address; square brackets ([2001::1]) are OK """
+    """Determine if the ip is an IPv6 address; square brackets ([2001::1]) are OK"""
     try:
         return ipaddress.ip_address(ip.strip("[]")).version == 6
     except (ValueError, AttributeError):
@@ -851,25 +862,29 @@ def is_ipv6_addr(ip: str) -> bool:
 
 
 def is_loopback_addr(ip: str) -> bool:
-    """ Determine if the ip is an IPv4 or IPv6 local loopback address """
+    """Determine if the ip is an IPv4 or IPv6 local loopback address"""
     try:
         if ip.find(".") < 0:
             ip = ip.strip("[]")
+        ip = strip_ipv4_mapped_notation(ip)
         return ipaddress.ip_address(ip).is_loopback
     except (ValueError, AttributeError):
         return False
 
 
 def is_localhost(value: str) -> bool:
-    """ Determine if the input is some variety of 'localhost' """
+    """Determine if the input is some variety of 'localhost'"""
     return (value == "localhost") or is_loopback_addr(value)
 
 
 def is_lan_addr(ip: str) -> bool:
-    """ Determine if the ip is a local area network address """
+    """Determine if the ip is a local area network address"""
     try:
+        ip = strip_ipv4_mapped_notation(ip)
         return (
-            ip not in ("0.0.0.0", "255.255.255.255", "::")
+            # The ipaddress module considers these private, see https://bugs.python.org/issue38655
+            not ip in ("0.0.0.0", "255.255.255.255")
+            and not ip_in_subnet(ip, "::/128")  # Also catch (partially) exploded forms of "::"
             and ipaddress.ip_address(ip).is_private
             and not is_loopback_addr(ip)
         )
@@ -878,7 +893,7 @@ def is_lan_addr(ip: str) -> bool:
 
 
 def ip_extract() -> List[str]:
-    """ Return list of IP addresses of this system """
+    """Return list of IP addresses of this system"""
     ips = []
     program = find_on_path("ip")
     if program:
@@ -908,7 +923,7 @@ def ip_extract() -> List[str]:
 
 
 def get_server_addrinfo(host: str, port: int) -> socket.getaddrinfo:
-    """ Return processed getaddrinfo() """
+    """Return processed getaddrinfo()"""
     try:
         int(port)
     except:
@@ -959,15 +974,16 @@ def get_base_url(url: str) -> str:
 
 
 def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
-    """ Return first matching element of list 'matches' in 'text', otherwise None """
+    """Return first matching element of list 'matches' in 'text', otherwise None"""
+    text = text.lower()
     for match in matches:
-        if match in text:
+        if match.lower() in text:
             return match
     return None
 
 
 def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
-    """ Format raw NNTP bytes data for display """
+    """Format raw NNTP bytes data for display"""
     if isinstance(text, list):
         text = text[0]
 
@@ -981,7 +997,7 @@ def nntp_to_msg(text: Union[List[AnyStr], str]) -> str:
 
 
 def list2cmdline(lst: List[str]) -> str:
-    """ convert list to a cmd.exe-compatible command string """
+    """convert list to a cmd.exe-compatible command string"""
     nlst = []
     for arg in lst:
         if not arg:
@@ -1011,7 +1027,7 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
                     raise IOError
                 elif script_file.read(2) != "#!":
                     # No shebang (#!) defined, add default python
-                    command.insert(0, "python")
+                    command.insert(0, sys.executable if sys.executable else "python")
 
         if sabnzbd.newsunpack.IONICE_COMMAND and cfg.ionice():
             ionice = cfg.ionice().split()
@@ -1053,7 +1069,7 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
 
 
 def run_command(cmd: List[str], **kwargs):
-    """ Run simple external command and return output as a string. """
+    """Run simple external command and return output as a string."""
     with build_and_run_command(cmd, **kwargs) as p:
         txt = platform_btou(p.stdout.read())
         p.wait()

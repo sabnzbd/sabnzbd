@@ -44,14 +44,14 @@ def errormsg(msg):
 
 
 def get_email_date():
-    """ Return un-localized date string for the Date: field """
+    """Return un-localized date string for the Date: field"""
     # Get locale independent date/time string: "Sun May 22 20:15:12 2011"
     day, month, dayno, hms, year = time.asctime(time.gmtime()).split()
     return "%s, %s %s %s %s +0000" % (day, dayno, month, year, hms)
 
 
 def send_email(message, email_to, test=None):
-    """ Send message if message non-empty and email-parms are set """
+    """Send message if message non-empty and email-parms are set"""
     # we should not use CFG if we are testing. we should use values
     # from UI instead.
     # email_to is replaced at send_with_template, since it can be an array
@@ -153,7 +153,7 @@ def send_email(message, email_to, test=None):
 
 
 def send_with_template(prefix, parm, test=None):
-    """ Send an email using template """
+    """Send an email using template"""
     parm["from"] = cfg.email_from()
     parm["date"] = get_email_date()
 
@@ -203,7 +203,7 @@ def send_with_template(prefix, parm, test=None):
 def endjob(
     filename, cat, status, path, bytes_downloaded, fail_msg, stages, script, script_output, script_ret, test=None
 ):
-    """ Send end-of-job email """
+    """Send end-of-job email"""
     # Is it allowed?
     if not check_cat("misc", cat, keyword="email") and not test:
         return None
@@ -241,19 +241,19 @@ def endjob(
 
 
 def rss_mail(feed, jobs):
-    """ Send notification email containing list of files """
+    """Send notification email containing list of files"""
     parm = {"amount": len(jobs), "feed": feed, "jobs": jobs}
     return send_with_template("rss", parm)
 
 
 def badfetch_mail(msg, url):
-    """ Send notification email about failed NZB fetch """
+    """Send notification email about failed NZB fetch"""
     parm = {"url": url, "msg": msg}
     return send_with_template("badfetch", parm)
 
 
 def diskfull_mail():
-    """ Send email about disk full, no templates """
+    """Send email about disk full, no templates"""
     if cfg.email_full():
         return send_email(
             T(
@@ -277,7 +277,7 @@ Please make room and resume SABnzbd manually.
 
 
 def _prepare_message(txt):
-    """ Parse the headers in the template to real headers """
+    """Parse the headers in the template to real headers"""
     msg = EmailMessage()
     payload = []
     body = False

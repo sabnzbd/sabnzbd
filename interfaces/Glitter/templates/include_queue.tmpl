@@ -109,7 +109,7 @@
                     <form data-bind="submit: editingNameSubmit">
                         <input type="text" data-bind="value: nameForEdit, visible: editingName(), hasfocus: editingName" />
                     </form>
-                    <div class="name-icons direct-unpack hover-button" data-bind="visible: direct_unpack">
+                    <div class="name-icons direct-unpack hover-button" data-bind="visible: direct_unpack() && !editingName()">
                         <span class="glyphicon glyphicon-compressed"></span> <span data-bind="text: direct_unpack"></span>
                     </div>
                     <div class="name-options" data-bind="visible: !editingName(), css: { disabled: isGrabbing() }">

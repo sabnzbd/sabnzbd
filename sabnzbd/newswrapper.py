@@ -55,6 +55,7 @@ class NewsWrapper:
         "user_ok",
         "pass_ok",
         "force_login",
+        "status_code",
     )
 
     def __init__(self, server, thrdnum, block=False):
@@ -75,17 +76,10 @@ class NewsWrapper:
         self.pass_ok: bool = False
         self.force_login: bool = False
         self.group: Optional[str] = None
-
-    @property
-    def status_code(self) -> Optional[int]:
-        """ Shorthand to get the code """
-        try:
-            return int(self.data[0][:3])
-        except:
-            return None
+        self.status_code: Optional[int] = None
 
     def init_connect(self):
-        """ Setup the connection in NNTP object """
+        """Setup the connection in NNTP object"""
         # Server-info is normally requested by initialization of
         # servers in Downloader, but not when testing servers
         if self.blocking and not self.server.info:
@@ -96,7 +90,7 @@ class NewsWrapper:
         self.timeout = time.time() + self.server.timeout
 
     def finish_connect(self, code: int):
-        """ Perform login options """
+        """Perform login options"""
         if not (self.server.username or self.server.password or self.force_login):
             self.connected = True
             self.user_sent = True
@@ -108,6 +102,7 @@ class NewsWrapper:
             # Change to a sensible text
             code = 481
             self.data[0] = "%d %s" % (code, T("Authentication failed, check username/password."))
+            self.status_code = code
             self.user_ok = True
             self.pass_sent = True
 
@@ -124,7 +119,7 @@ class NewsWrapper:
         elif not self.user_sent:
             command = utob("authinfo user %s\r\n" % self.server.username)
             self.nntp.sock.sendall(command)
-            self.data = []
+            self.clear_data()
             self.user_sent = True
         elif not self.user_ok:
             if code == 381:
@@ -139,7 +134,7 @@ class NewsWrapper:
         if self.user_ok and not self.pass_sent:
             command = utob("authinfo pass %s\r\n" % self.server.password)
             self.nntp.sock.sendall(command)
-            self.data = []
+            self.clear_data()
             self.pass_sent = True
         elif self.user_ok and not self.pass_ok:
             if code != 281:
@@ -151,7 +146,7 @@ class NewsWrapper:
         self.timeout = time.time() + self.server.timeout
 
     def body(self):
-        """ Request the body of the article """
+        """Request the body of the article"""
         self.timeout = time.time() + self.server.timeout
         if self.article.nzf.nzo.precheck:
             if self.server.have_stat:
@@ -163,17 +158,17 @@ class NewsWrapper:
         else:
             command = utob("ARTICLE <%s>\r\n" % self.article.article)
         self.nntp.sock.sendall(command)
-        self.data = []
+        self.clear_data()
 
     def send_group(self, group: str):
-        """ Send the NNTP GROUP command """
+        """Send the NNTP GROUP command"""
         self.timeout = time.time() + self.server.timeout
         command = utob("GROUP %s\r\n" % group)
         self.nntp.sock.sendall(command)
-        self.data = []
+        self.clear_data()
 
     def recv_chunk(self, block: bool = False) -> Tuple[int, bool, bool]:
-        """ Receive data, return #bytes, done, skip """
+        """Receive data, return #bytes, done, skip"""
         self.timeout = time.time() + self.server.timeout
         while 1:
             try:
@@ -195,6 +190,12 @@ class NewsWrapper:
                 else:
                     return 0, False, True
 
+        if not self.data:
+            try:
+                self.status_code = int(chunk[:3])
+            except:
+                self.status_code = None
+
         # Append so we can do 1 join(), much faster than multiple!
         self.data.append(chunk)
 
@@ -213,17 +214,18 @@ class NewsWrapper:
         return chunk_len, False, False
 
     def soft_reset(self):
-        """ Reset for the next article """
+        """Reset for the next article"""
         self.timeout = None
         self.article = None
         self.clear_data()
 
     def clear_data(self):
-        """ Clear the stored raw data """
+        """Clear the stored raw data"""
         self.data = []
+        self.status_code = None
 
     def hard_reset(self, wait: bool = True, send_quit: bool = True):
-        """ Destroy and restart """
+        """Destroy and restart"""
         if self.nntp:
             try:
                 if send_quit:
@@ -382,6 +384,7 @@ class NNTP:
             msg = "Failed to connect: %s" % (str(error))
             msg = "%s %s@%s:%s" % (msg, self.nw.thrdnum, self.host, self.nw.server.port)
             self.error_msg = msg
+            self.nw.server.next_busy_threads_check = 0
             logging.info(msg)
             self.nw.server.warning = msg
 
