@@ -220,6 +220,23 @@ def wildcard_to_re(text):
     return "".join([_wildcard_to_regex.get(ch, ch) for ch in text])
 
 
+def convert_filter(text):
+    """Return compiled regex.
+    If string starts with re: it's a real regex
+    else quote all regex specials, replace '*' by '.*'
+    """
+    text = text.strip().lower()
+    if text.startswith("re:"):
+        txt = text[3:].strip()
+    else:
+        txt = wildcard_to_re(text)
+    try:
+        return re.compile(txt, re.I)
+    except:
+        logging.debug("Could not compile regex: %s", text)
+        return None
+
+
 def cat_convert(cat):
     """Convert indexer's category/group-name to user categories.
     If no match found, but indexer-cat equals user-cat, then return user-cat
