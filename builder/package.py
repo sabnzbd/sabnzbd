@@ -147,7 +147,7 @@ if __name__ == "__main__":
     patch_version_file(RELEASE_VERSION)
 
     # To draft a release or not to draft a release?
-    RELEASE_THIS = "draft release" in run_git_command(["log", "-1", "--pretty=format:%b"])
+    RELEASE_THIS = "refs/tags/" in os.environ.get("GITHUB_REF", "")
 
     # Rename release notes file
     safe_remove("README.txt")
@@ -338,7 +338,7 @@ if __name__ == "__main__":
                 print("Approved! Stapling the result to the app")
                 run_external_command(["xcrun", "stapler", "staple", "dist/SABnzbd.app"])
             elif notarization_user and notarization_pass:
-                print("Notarization skipped, add 'draft release' to the commit message trigger notarization!")
+                print("Notarization skipped, tag commit to trigger notarization!")
             else:
                 print("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
         else:
@@ -541,7 +541,7 @@ if __name__ == "__main__":
                     head=RELEASE_VERSION,
                 )
         else:
-            print("To push release to GitHub, add 'draft release' to the commit message.")
+            print("To push release to GitHub, first tag the commit.")
             print("Or missing the AUTOMATION_GITHUB_TOKEN, cannot push to GitHub without it.")
 
     # Reset!
