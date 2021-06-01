@@ -1,12 +1,5 @@
-Release Notes - SABnzbd 3.3.0 Release Candidate 2
+Release Notes - SABnzbd 3.3.0 
 =========================================================
-
-## Changes and bugfixes since 3.3.0 Release Candidate 1
-- Failure to start on some platforms.
-- Stability improvement to encrypted RAR-detection.
-- Allow missing extensions in `Unwanted extensions` detection.
-- Removed Special setting `max_art_opt`.
-- Prevent jobs getting stuck at 99% due to unreliable servers.
 
 ## Changes since 3.2.1
 - The `External internet access` will automatically detect local network
@@ -25,6 +18,10 @@ Release Notes - SABnzbd 3.3.0 Release Candidate 2
 - Confirm rename if Direct Unpack is active for the job.
 - Obfuscated-RAR detection will always be performed.
 - All requests will be logged, not just API calls.
+- Stability improvement to encrypted RAR-detection.
+- Allow missing extensions in `Unwanted extensions` detection.
+- Removed Special setting `max_art_opt`.
+- Add notification that Plush will be removed in 3.4.0.
 - Windows/macOS: Update UnRar to 6.0.1.
 - Windows: Update Multipar to 1.3.1.7 (adds faster verification).
 
@@ -32,6 +29,7 @@ Release Notes - SABnzbd 3.3.0 Release Candidate 2
 - Prevent failed post-processing if job name ends in multiple dots or spaces.
 - Failing articles could result in jobs being stuck at 99%.
 - Jobs could be stuck in the queue or duplicate if they had missing articles.
+- Prevent jobs getting stuck at 99% due to unreliable servers.
 - CRC/yEnc errors would be counted twice as bad articles.
 - Some NZB files would incorrectly be marked as empty.
 - API-call `history` would not filter active post-processing by `nzo_ids`.
