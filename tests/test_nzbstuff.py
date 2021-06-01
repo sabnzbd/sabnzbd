@@ -122,16 +122,25 @@ class TestNZBStuffHelpers:
                 "REQ Author Child's The Book-Thanks much - Child, Lee - Author - The Book.epub",
             ),
             ('63258-0[001/101] - "63258-2.0" yEnc (1/250) (1/250)', "63258-2.0"),
+            # If specified between ", the extension is allowed to be too long
+            ('63258-0[001/101] - "63258-2.0toolong" yEnc (1/250) (1/250)', "63258-2.0toolong"),
             (
                 "Singer - A Album (2005) - [04/25] - 02 Sweetest Somebody (I Know).flac",
-                "- 02 Sweetest Somebody (I Know).flac",
+                "Singer - A Album (2005) - [04/25] - 02 Sweetest Somebody (I Know).flac",
             ),
             ("<>random!>", "<>random!>"),
             ("nZb]-[Supertje-_S03E11-12_", "nZb]-[Supertje-_S03E11-12_"),
             ("Bla [Now it's done.exe]", "Now it's done.exe"),
+            # If specified between [], the extension should be a valid one
+            ("Bla [Now it's done.123nonsense]", "Bla [Now it's done.123nonsense]"),
             (
                 '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
                 '[PRiVATE]-[WtFnZb]-[Video_(2001)_AC5.1_-RELEASE_[TAoE].mkv]-[1/23] - "" yEnc 1234567890 (1/23456)',
+            ),
+            (
+                "[PRiVATE]-[WtFnZb]-[219]-[1/blue.bloods.s01e01.1080p.web.h264-nixon.mkv] - "
+                " yEnc (1/[PRiVATE] \\c2b510b594\\::686ea969999193.155368eba4965e56a8cd263382e012.f2712fdc::/97bd201cf931/) 1 (1/0)",
+                "blue.bloods.s01e01.1080p.web.h264-nixon.mkv",
             ),
         ],
     )
