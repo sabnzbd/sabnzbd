@@ -59,7 +59,7 @@ jobs:
         path: "*-win32-bin.zip"
         name: Windows Windows standalone binary (32bit and legacy)
     - name: Prepare official release
-      if: env.AUTOMATION_GITHUB_TOKEN && !startsWith(github.ref, 'refs/tags/')
+      if: env.AUTOMATION_GITHUB_TOKEN && startsWith(github.ref, 'refs/tags/')
       run: python builder/package.py release
 
   build_macos:
@@ -110,5 +110,5 @@ jobs:
         path: "*-osx.dmg"
         name: macOS binary (not notarized)
     - name: Prepare official release
-      if: env.AUTOMATION_GITHUB_TOKEN && !startsWith(github.ref, 'refs/tags/')
+      if: env.AUTOMATION_GITHUB_TOKEN && startsWith(github.ref, 'refs/tags/')
       run: python3 builder/package.py release
