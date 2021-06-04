@@ -22,6 +22,7 @@ if sys.hexversion < 0x03060000:
     print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
 
+import os
 import logging
 import logging.handlers
 import importlib.util
@@ -55,7 +56,23 @@ except ImportError as e:
 import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
-from sabnzbd.constants import *
+from sabnzbd.constants import (
+    DEF_TIMEOUT,
+    DEF_LOG_ERRFILE,
+    DEF_MAIN_TMPL,
+    DEF_STDINTF,
+    DEF_WORKDIR,
+    DEF_INTERFACES,
+    DEF_LANGUAGE,
+    VALID_NZB_FILES,
+    VALID_ARCHIVES,
+    DEF_INI_FILE,
+    MAX_WARNINGS,
+    RSS_FILE_NAME,
+    DEF_LOG_FILE,
+    DEF_STDCONFIG,
+    DEF_LOG_CHERRY,
+)
 import sabnzbd.newsunpack
 from sabnzbd.misc import (
     check_latest_version,

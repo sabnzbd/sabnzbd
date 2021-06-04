@@ -24,12 +24,14 @@ import logging
 import re
 import time
 import glob
+import os
 
 from Cheetah.Template import Template
 from email.message import EmailMessage
 
-from sabnzbd.constants import *
+
 import sabnzbd
+from sabnzbd.constants import DEF_EMAIL_TMPL, CHEETAH_DIRECTIVES
 from sabnzbd.misc import to_units, split_host, time_format
 from sabnzbd.notifier import check_cat
 import sabnzbd.cfg as cfg
