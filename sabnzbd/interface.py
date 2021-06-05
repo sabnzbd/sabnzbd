@@ -86,7 +86,7 @@ from sabnzbd.api import (
 ##############################################################################
 # Security functions
 ##############################################################################
-_MSG_ACCESS_DENIED = "Access denied"
+_MSG_ACCESS_DENIED = "External internet access denied - https://sabnzbd.org/access-denied"
 _MSG_ACCESS_DENIED_CONFIG_LOCK = "Access denied - Configuration locked"
 _MSG_ACCESS_DENIED_HOSTNAME = "Access denied - Hostname verification failed: https://sabnzbd.org/hostname-check"
 _MSG_MISSING_AUTH = "Missing authentication"
