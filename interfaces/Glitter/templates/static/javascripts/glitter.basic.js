@@ -264,18 +264,13 @@ function showNotification(notiName, notiTimeout, fileCounter) {
     // Remove after timeout
     if(notiTimeout) {
         setTimeout(function() {
-            hideNotification(true);
+            hideNotification();
         }, notiTimeout)
     }
 }
 
 // Hide notification
-function hideNotification(fadeItOut) {
-    // Hide the box with or without effect
-    if(fadeItOut) {
-        $('.main-notification-box').fadeOut()
-    } else {
-        $('.main-notification-box').hide()
-    }
-
+function hideNotification() {
+    // Hide the box with effect
+    $('.main-notification-box').fadeOut()
 }

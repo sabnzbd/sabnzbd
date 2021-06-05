@@ -719,7 +719,7 @@ function ViewModel() {
                 // Refresh
                 self.refresh();
                 // Hide notification
-                hideNotification(true)
+                hideNotification()
                 // Reset the form
                 $('#modal-add-nzb form').trigger('reset');
                 $('#nzbname').val('')
@@ -928,7 +928,7 @@ function ViewModel() {
             // Refresh
             self.loadStatusInfo(true, true)
             // Hide notification
-            hideNotification(true)
+            hideNotification()
         })
     }
 
@@ -940,7 +940,7 @@ function ViewModel() {
             // Delete them all
             callSpecialAPI("./status/delete_all/").then(function() {
                 // Remove notifcation and update screen
-                hideNotification(true)
+                hideNotification()
                 self.loadStatusInfo(true, true)
             })
         }
@@ -954,7 +954,7 @@ function ViewModel() {
             // Delete them all
             callSpecialAPI("./status/add_all/").then(function() {
                 // Remove notifcation and update screen
-                hideNotification(true)
+                hideNotification()
                 self.loadStatusInfo(true, true)
             })
         }
@@ -1015,12 +1015,9 @@ function ViewModel() {
         if(!confirm(glitterTranslate.repair)) return;
         // Hide the modal and show the notifucation
         $("#modal-options").modal("hide");
-        showNotification('.main-notification-box-queue-repair')
+        showNotification('.main-notification-box-queue-repair', 5000)
         // Call the API
-        callAPI({ mode: "restart_repair" }).then(function() {
-            $("#modal-options").modal("hide");
-        })
-
+        callAPI({ mode: "restart_repair" })
     }
     // Force disconnect
     self.forceDisconnect = function() {
