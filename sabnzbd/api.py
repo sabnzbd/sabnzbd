@@ -87,7 +87,7 @@ _MSG_BAD_SERVER_PARMS = "Incorrect server settings"
 def api_handler(kwargs: Dict[str, Any]):
     """API Dispatcher"""
     # Clean-up the arguments
-    for vr in ("mode", "name"):
+    for vr in ("mode", "name", "value", "value2", "value3", "start", "limit", "search"):
         if vr in kwargs and isinstance(kwargs[vr], list):
             kwargs[vr] = kwargs[vr][0]
 
@@ -173,7 +173,7 @@ def _api_queue_delete_nzf(value, kwargs):
     nzf_ids = kwargs.get("value2")
     if value and nzf_ids:
         nzf_ids = nzf_ids.split(",")
-        removed = sabnzbd.NzbQueue.remove_nzfs(value, nzf_ids, force_delete=True)
+        removed = sabnzbd.NzbQueue.remove_nzfs(value, nzf_ids)
         return report(keyword="", data={"status": bool(removed), "nzf_ids": removed})
     else:
         return report(_MSG_NO_VALUE2)
@@ -241,7 +241,7 @@ def _api_queue_priority(value, kwargs):
 
 def _api_queue_sort(value, kwargs):
     """API: accepts sort, dir"""
-    sort = kwargs.get("sort")
+    sort = kwargs.get("sort", "")
     direction = kwargs.get("dir", "")
     if sort:
         sabnzbd.NzbQueue.sort_queue(sort, direction)
