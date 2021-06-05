@@ -75,7 +75,6 @@ DEF_INTERFACES = "interfaces"
 DEF_EMAIL_TMPL = "email"
 DEF_STDCONFIG = "Config"
 DEF_STDINTF = "Glitter"
-DEF_SKIN_COLORS = {"Glitter": "Auto", "plush": "gold"}
 DEF_MAIN_TMPL = os.path.normpath("templates/main.tmpl")
 DEF_INI_FILE = "sabnzbd.ini"
 DEF_HOST = "127.0.0.1"
@@ -145,6 +144,7 @@ resolution_match = r"(^|[\W_])((240|360|480|540|576|720|900|1080|1440|2160|4320)
 
 
 class Status:
+    IDLE = "Idle"  # Q: Nothing in the queue
     COMPLETED = "Completed"  # PP: Job is finished
     CHECKING = "Checking"  # Q:  Pre-check is running
     DOWNLOADING = "Downloading"  # Q:  Normal downloading

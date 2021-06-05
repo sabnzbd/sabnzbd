@@ -20,7 +20,6 @@ import logging
 import datetime
 import tempfile
 import pickle
-import ctypes
 import ctypes.util
 import gzip
 import time
@@ -824,7 +823,6 @@ def change_queue_complete_action(action, new=True):
         cfg.queue_complete.set(action or "")
         config.save_config()
 
-    # keep the name of the action for matching the current select in queue.tmpl
     sabnzbd.QUEUECOMPLETE = action
     sabnzbd.QUEUECOMPLETEACTION = _action
     sabnzbd.QUEUECOMPLETEARG = _argument

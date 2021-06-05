@@ -1094,7 +1094,7 @@ class TestRenamer:
 class TestUnwantedExtensions:
     # Only test lowercase extensions without a leading dot: the unwanted_extensions
     # setting is sanitized accordingly in interface.saveSwitches() before saving.
-    test_extensions = "iso, cmd, bat, sh"
+    test_extensions = "iso, cmd, bat, sh, re:r[0-9]{2}, sab*"
     # Test parameters as (filename, result) tuples, with result given for blacklist mode
     test_params = [
         ("ubuntu.iso", True),
@@ -1109,7 +1109,19 @@ class TestUnwantedExtensions:
         ("par2.cmd.notcmd", False),
         ("freedos.tab", False),
         (".SH.hs", False),
+        ("regexp.r0611", False),
+        ("regexp.007", False),
+        ("regexp.A01", False),
+        ("regexp.r9", False),
+        ("regexp.r2d2", False),
+        ("regexp.r2d", False),
+        ("regexp.r00", True),
+        ("regexp.R42", True),
+        ("test.sabnzbd", True),
+        ("pass.sab", True),
+        ("fail.sb", False),
         ("No_Extension", False),
+        ("r42", False),
         (480, False),
         (None, False),
         ("", False),
@@ -1124,7 +1136,11 @@ class TestUnwantedExtensions:
     @set_config({"unwanted_extensions_mode": 1, "unwanted_extensions": test_extensions})
     def test_has_unwanted_extension_whitelist_mode(self):
         for filename, result in self.test_params:
-            assert filesystem.has_unwanted_extension(filename) is not result
+            if filesystem.get_ext(filename):
+                assert filesystem.has_unwanted_extension(filename) is not result
+            else:
+                # missing extension is never considered unwanted
+                assert filesystem.has_unwanted_extension(filename) is False
 
     @set_config({"unwanted_extensions_mode": 0, "unwanted_extensions": ""})
     def test_has_unwanted_extension_empty_blacklist(self):
@@ -1134,4 +1150,8 @@ class TestUnwantedExtensions:
     @set_config({"unwanted_extensions_mode": 1, "unwanted_extensions": ""})
     def test_has_unwanted_extension_empty_whitelist(self):
         for filename, result in self.test_params:
-            assert filesystem.has_unwanted_extension(filename) is True
+            if filesystem.get_ext(filename):
+                assert filesystem.has_unwanted_extension(filename) is True
+            else:
+                # missing extension is never considered unwanted
+                assert filesystem.has_unwanted_extension(filename) is False

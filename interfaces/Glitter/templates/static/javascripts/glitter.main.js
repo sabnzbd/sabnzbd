@@ -323,47 +323,6 @@ function ViewModel() {
         // Clear previous timeout to prevent double-calls
         clearTimeout(self.interval);
 
-        /**
-            Limited refresh
-        **/
-        // Only update the title when page not visible
-        if(!pageIsVisible) {
-            // Request new title
-            callSpecialAPI('./queue/', { limit: 1, start: 0 }).done(function(data) {
-                // Split title & speed
-                var dataSplit = data.split('|||');
-
-                // Maybe the result is actually the login page?
-                if(dataSplit[0].substring(0, 11) === '<html lang=') {
-                    // Redirect
-                    document.location = document.location
-                    return
-                }
-
-                // Set title
-                self.title(dataSplit[0]);
-
-                // Update sparkline data
-                if(self.speedHistory.length >= 50) {
-                    // Remove first one
-                    self.speedHistory.shift();
-                }
-                // Add
-                self.speedHistory.push(dataSplit[1]);
-
-                // Does it contain 'Paused'? Update icon!
-                self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
-
-                // Force the next full update to be full
-                self.history.lastUpdate = 0
-            }).always(self.setNextUpdate)
-            // Do not continue!
-            return;
-        }
-
-        /**
-            Full refresh
-        **/
         // Do requests for full information
         // Catch the fail to display message
         var queueApi = callAPI({
@@ -550,10 +509,12 @@ function ViewModel() {
         });
     })
 
-    // Clear warnings through this special URL..
+    // Clear warnings
     self.clearWarnings = function() {
-        // Activate
-        callSpecialAPI("./status/clearwarnings/").done(self.refresh)
+        callAPI({
+            mode: "warnings",
+            name: "clear"
+        }).done(self.refresh)
     }
 
     // Clear messages
@@ -1029,7 +990,7 @@ function ViewModel() {
     self.restartSAB = function() {
         if(!confirm(glitterTranslate.restart)) return;
         // Call restart function
-        callSpecialAPI("./config/restart/")
+        callAPI({ mode: "restart" })
 
         // Set counter, we need at least 15 seconds
         self.isRestarting(Math.max(1, Math.floor(15 / self.refreshRate())));
@@ -1056,16 +1017,17 @@ function ViewModel() {
         $("#modal-options").modal("hide");
         showNotification('.main-notification-box-queue-repair')
         // Call the API
-        callSpecialAPI("./config/repair/").then(function() {
-            hideNotification(true)
+        callAPI({ mode: "restart_repair" }).then(function() {
+            $("#modal-options").modal("hide");
         })
+
     }
     // Force disconnect
     self.forceDisconnect = function() {
         // Show notification
         showNotification('.main-notification-box-disconnect', 3000)
         // Call API
-        callSpecialAPI("./status/disconnect/").then(function() {
+        callAPI({ mode: "disconnect" }).then(function() {
             $("#modal-options").modal("hide");
         })
     }

@@ -179,6 +179,10 @@ msgstr "Powiadomienie testowe"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Rozwiązywanie adresu"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "nieznany"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -188,10 +192,6 @@ msgstr "Brak"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Domyślne"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "nieznany"
 
 #. Error message
 #: sabnzbd/api.py
@@ -653,21 +653,6 @@ msgstr "Błąd połączenia, sprawdź nazwę użytkownika i hasło."
 msgid "Unsuccessful login attempt from %s"
 msgstr ""
 
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
-
-#: sabnzbd/interface.py
-msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />SABnzbd został wyłączony.<br />Zaczekaj około 5 sekund, a "
-"następnie kliknij na przycisk poniżej.<br /><br /><strong><a "
-"href=\"..\">Odśwież</a></strong><br />"
-
 #: sabnzbd/interface.py
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
@@ -739,10 +724,6 @@ msgstr "BŁĄD:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Powrót"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "Nieprawidłowa wartość %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -1762,7 +1743,7 @@ msgstr "Wstrzymaj na 6 godzin"
 msgid "Shutdown"
 msgstr "Zakończ"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "Pozostało"
 
@@ -2019,6 +2000,11 @@ msgstr "MB"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "GB"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py
@@ -4720,7 +4706,6 @@ msgstr ""
 msgid "WARNING:"
 msgstr "UWAGA:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Pobierz"
@@ -4930,143 +4915,6 @@ msgid "Removing jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "Wstecz"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "Dalej"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "Wyczyścić historię?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "Plush wymaga włączenia obsługi JavaScript!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "Opcje"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "Na ile minut wstrzymać?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "Górne menu"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "Po zakończeniu"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "Sortuj"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "Sortuj według wieku <small>(Najstarsze&rarr;Najnowsze)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "Sortuj według wieku <small>(Najnowsze&rarr;Najstarsze)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "Sortuj według nazwy <small>(A&rarr;Z)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "Sortuj według nazwy <small>(Z&rarr;A)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "Sortuj według rozmiaru <small>(Najmniejsze&rarr;Największe)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "Sortuj według rozmiaru <small>(Największe&rarr;Najmniejsze)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "Wyczyścić kolejkę?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "Ponowić wszystkie nieudane zadania z historii?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "Wyczyść"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "Limit prędkości"
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "Zakres"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "Zastosuj do zaznaczonych"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Wszystko"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "Częstotliwość odświeżania"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "Szerokość kontenera"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr "Blokuje odświeżanie zawartości po najechaniu kursorem na kolejkę"
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "Zablokuj odświeżanie podczas wskazywania"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "Wczytaj"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "Wczytaj: .nzb, .rar, .zip, .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "Postęp"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "Niewystarczająca ilość miejsca na dysku do ukończenia pobierania!"
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "Wolne (tymczasowo)"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "BEZCZYNNY"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "Pobieranie"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "Szybki kreator konfiguracji SABnzbd"
 
@@ -5078,6 +4926,11 @@ msgstr "Wersja SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "Wstecz"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "Dalej"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"

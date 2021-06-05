@@ -31,7 +31,7 @@ from sabnzbd.constants import RSS_FILE_NAME, DEFAULT_PRIORITY, DUP_PRIORITY
 from sabnzbd.decorators import synchronized
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-from sabnzbd.misc import cat_convert, wildcard_to_re, cat_to_opts, match_str, from_units, int_conv, get_base_url
+from sabnzbd.misc import cat_convert, convert_filter, cat_to_opts, match_str, from_units, int_conv, get_base_url
 import sabnzbd.emailer as emailer
 
 import feedparser
@@ -45,23 +45,6 @@ import feedparser
 def notdefault(item):
     """Return True if not 'Default|''|*'"""
     return bool(item) and str(item).lower() not in ("default", "*", "", str(DEFAULT_PRIORITY))
-
-
-def convert_filter(text):
-    """Return compiled regex.
-    If string starts with re: it's a real regex
-    else quote all regex specials, replace '*' by '.*'
-    """
-    text = text.strip().lower()
-    if text.startswith("re:"):
-        txt = text[3:].strip()
-    else:
-        txt = wildcard_to_re(text)
-    try:
-        return re.compile(txt, re.I)
-    except:
-        logging.debug("Could not compile regex: %s", text)
-        return None
 
 
 def remove_obsolete(jobs, new_jobs):
@@ -482,7 +465,7 @@ class RSSReader:
                         active = True
                         self.run_feed(feed, download=True, ignoreFirst=True)
                         # Wait 15 seconds, else sites may get irritated
-                        for unused in range(15):
+                        for _ in range(15):
                             if self.shutdown:
                                 return
                             else:

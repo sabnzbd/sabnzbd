@@ -4,6 +4,9 @@ function Fileslisting(parent) {
     self.parent = parent;
     self.fileItems = ko.observableArray([]);
 
+    // Prevent flash of unstyled content when deleting items
+    self.fileItems.extend({ rateLimit: 50 })
+
     // Need to reserve these names to be overwritten
     self.filelist_name = ko.observable();
     self.filelist_password = ko.observable();
@@ -30,42 +33,17 @@ function Fileslisting(parent) {
         $('#modal-item-files').modal('show');
 
         // Stop updating on closing of the modal
-        $('#modal-item-files').on('hidden.bs.modal', function() {
+        $('#modal-item-files').on('hidden.bs.modal', function () {
             self.removeUpdate();
         })
     }
-
-    // Move to top and bottom buttons
-    self.moveButton = function (item,event) {
-        var targetRow, sourceRow, tbody;
-        sourceRow = $(event.currentTarget).parents("tr").filter(":first");
-        tbody = sourceRow.parents("tbody").filter(":first");
-        ko.utils.domData.set(sourceRow[0], "ko_sourceIndex", ko.utils.arrayIndexOf(sourceRow.parent().children(), sourceRow[0]));
-        sourceRow = sourceRow.detach();
-        if ($(event.currentTarget).is(".buttonMoveToTop")) {
-            // we are moving to the top
-            targetRow = tbody.children(".files-done").filter(":last");
-        } else {
-            //we are moving to the bottom
-            targetRow = tbody.children(".files-sortable").filter(":last");
-        }
-        if(targetRow.length < 1 ){
-        // we found an edge case and need to do something special
-            targetRow = tbody.children(".files-sortable").filter(":first");
-            sourceRow.insertBefore(targetRow[0]);
-        } else {
-            sourceRow.insertAfter($(targetRow[0]));
-        }
-        tbody.sortable('option', 'update').call(tbody[0],null, { item: sourceRow });
-    };
 
     // Trigger update
     self.triggerUpdate = function() {
         // Call API
         callAPI({
             mode: 'get_files',
-            value: self.currentItem.id,
-            limit: 5
+            value: self.currentItem.id
         }).then(function(response) {
             // When there's no files left we close the modal and the update will be stopped
             // For example when the job has finished downloading
@@ -124,36 +102,57 @@ function Fileslisting(parent) {
     self.move = function(event) {
         // How much did we move?
         var nrMoves = event.sourceIndex - event.targetIndex;
-        var direction = (nrMoves > 0 ? 'Up' : 'Down')
+        var direction = (nrMoves > 0 ? 'up' : 'down')
 
-        // We have to create the data-structure before, to be able to use the name as a key
-        var dataToSend = {};
-        dataToSend[event.item.nzf_id()] = 'on';
-        dataToSend['apikey'] = apiKey;
-        dataToSend['action_key'] = direction;
-        dataToSend['action_size'] = Math.abs(nrMoves);
+        callAPI({
+            mode: 'move_nzf_bulk',
+            name: direction,
+            value: self.currentItem.id,
+            nzf_ids: event.item.nzf_id(),
+            size: Math.abs(nrMoves)
+        }).then(function() {
+            // Refresh all the files
+            self.loadFiles(self.currentItem)
+        })
+    };
 
-        // Activate with this weird URL "API"
-        callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation/", dataToSend)
+    // Move to top and bottom buttons
+    self.moveButton = function (item, event) {
+        // Up or down?
+        var direction = "bottom"
+        if ($(event.currentTarget).is(".buttonMoveToTop")) {
+            // we are moving to the top
+            direction = "top"
+        }
+
+        callAPI({
+            mode: 'move_nzf_bulk',
+            name: direction,
+            value: self.currentItem.id,
+            nzf_ids: item.nzf_id()
+        }).then(function() {
+            // Refresh all the files
+            self.loadFiles(self.currentItem)
+        })
     };
 
     // Remove selected files
     self.removeSelectedFiles = function() {
-        // We have to create the data-structure before, to be able to use the name as a key
-        var dataToSend = {};
-        dataToSend['apikey'] = apiKey;
-        dataToSend['action_key'] = 'Delete';
-
         // Get all selected ones
+        var nzfIds = []
         $('.item-files-table input:checked:not(:disabled)').each(function() {
             // Add this item
-            dataToSend[$(this).prop('name')] = 'on';
+            nzfIds.push($(this).prop('name'))
         })
 
-        // Activate with this weird URL "API"
-        callSpecialAPI("./nzb/" + self.currentItem.id + "/bulk_operation/", dataToSend).then(function() {
-            // Set state of the check-all
-            setCheckAllState('#modal-item-files .multioperations-selector input[type="checkbox"]', '#modal-item-files .files-sortable input')
+        callAPI({
+            mode: 'queue',
+            name: 'delete_nzf',
+            value: self.currentItem.id,
+            value2: nzfIds.join()
+        }).then(function() {
+            // Refresh all the files
+            self.loadFiles(self.currentItem)
         })
     }
 

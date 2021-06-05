@@ -46,7 +46,6 @@ from sabnzbd.constants import (
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
     DEF_FOLDER_MAX,
-    DEF_FILE_MAX,
 )
 
 ##############################################################################
@@ -283,7 +282,6 @@ keep_awake = OptionBool("misc", "keep_awake", True)
 win_menu = OptionBool("misc", "win_menu", True)
 allow_incomplete_nzb = OptionBool("misc", "allow_incomplete_nzb", False)
 enable_broadcast = OptionBool("misc", "enable_broadcast", True)
-max_art_opt = OptionBool("misc", "max_art_opt", False)
 ipv6_hosting = OptionBool("misc", "ipv6_hosting", False)
 fixed_ports = OptionBool("misc", "fixed_ports", False)
 api_warnings = OptionBool("misc", "api_warnings", True, protect=True)

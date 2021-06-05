@@ -73,7 +73,7 @@ def time_format(fmt):
         return fmt
 
 
-def calc_age(date: datetime.datetime, trans=False) -> str:
+def calc_age(date: datetime.datetime, trans: bool = False) -> str:
     """Calculate the age difference between now and date.
     Value is returned as either days, hours, or minutes.
     When 'trans' is True, time symbols will be translated.
@@ -218,6 +218,23 @@ _wildcard_to_regex = {
 def wildcard_to_re(text):
     """Convert plain wildcard string (with '*' and '?') to regex."""
     return "".join([_wildcard_to_regex.get(ch, ch) for ch in text])
+
+
+def convert_filter(text):
+    """Return compiled regex.
+    If string starts with re: it's a real regex
+    else quote all regex specials, replace '*' by '.*'
+    """
+    text = text.strip().lower()
+    if text.startswith("re:"):
+        txt = text[3:].strip()
+    else:
+        txt = wildcard_to_re(text)
+    try:
+        return re.compile(txt, re.I)
+    except:
+        logging.debug("Could not compile regex: %s", text)
+        return None
 
 
 def cat_convert(cat):
@@ -779,7 +796,12 @@ def get_all_passwords(nzo):
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, "")
-    return set(passwords)
+
+    unique_passwords = []
+    for password in passwords:
+        if password not in unique_passwords:
+            unique_passwords.append(password)
+    return unique_passwords
 
 
 def find_on_path(targets):
@@ -975,8 +997,9 @@ def get_base_url(url: str) -> str:
 
 def match_str(text: AnyStr, matches: Tuple[AnyStr, ...]) -> Optional[AnyStr]:
     """Return first matching element of list 'matches' in 'text', otherwise None"""
+    text = text.lower()
     for match in matches:
-        if match in text:
+        if match.lower() in text:
             return match
     return None
 

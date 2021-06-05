@@ -182,6 +182,10 @@ msgstr "בחן התראה"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;פותר כתובת"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "בלתי ידוע"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -191,10 +195,6 @@ msgstr "אין"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "ברירת מחדל"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "בלתי ידוע"
 
 #. Error message
 #: sabnzbd/api.py
@@ -653,20 +653,6 @@ msgstr "אימות נכשל, בדוק שם משתמש/סיסמה."
 msgid "Unsuccessful login attempt from %s"
 msgstr "ניסיון כניסה בלתי מוצלח מן %s"
 
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "ב"
-
-#: sabnzbd/interface.py
-msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />כיבוי SABnzbd הסתיים.<br />המתן בערך 5 שניות ואז לחץ על הכפתור "
-"למטה.<br /><br /><strong><a href=\"..\">רענן</a></strong><br />"
-
 #: sabnzbd/interface.py
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
@@ -740,10 +726,6 @@ msgstr "שגיאה:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "הקודם"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "ערך שגוי עבור %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -1763,7 +1745,7 @@ msgstr "השהה למשך 6 שעות"
 msgid "Shutdown"
 msgstr "כבה"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "נותר"
 
@@ -2020,6 +2002,11 @@ msgstr "מ״ב"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "ג״ב"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "ב"
 
 #. One hour
 #: sabnzbd/skintext.py
@@ -4731,7 +4718,6 @@ msgstr "במקרה של הפעלה מחדש של SABnzbd המסך ייעלם ב�
 msgid "WARNING:"
 msgstr "אזהרה:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "משוך"
@@ -4945,143 +4931,6 @@ msgid "Removing jobs"
 msgstr "מסיר עבודות"
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "הקודם"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "הבא"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "לנקות את ההיסטוריה?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "אתה חייב לאפשר JavaScript כדי ש־Plush יתפקד!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "אפשרויות"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "לכמה דקות להשהות?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "תפריט עליון"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "בסיום"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "מיין"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "מיין לפי גיל <small>(הישן ביותר&larr;החדש ביותר)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "מיין לפי גיל <small>(החדש ביותר&larr;הישן ביותר)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "מיין לפי שם <small>(א&larr;ת)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "מיין לפי שם <small>(ת&larr;א)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "מיין לפי גודל <small>(הקטן ביותר&larr;הגדול ביותר)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "מיין לפי גודל <small>(הגדול ביותר&larr;הקטן ביותר)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "לטהר את התור?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "לנסות שוב את כל העבודות הכושלות בהיסטוריה?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "טהר"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "מהירות מרבית"
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "טווח"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "החל על נבחרים"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "הכל"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "קצב רענון"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "רוחב מכל"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr "זה ימנע רענון תוכן כשסמן העכבר שלך מרחף מעל התור."
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "חסום רענונים בריחוף"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "העלה"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "העלה: .nzb .rar .zip .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "התקדמות"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "אין מספיק שטח פנוי כדי להשלים הורדות!"
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "פנוי (זמני)"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "מנוחה"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "הורדות"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "אשף התחלה זריזה של SABnzbd"
 
@@ -5093,6 +4942,11 @@ msgstr "גרסת SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "הקודם"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "הבא"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"

@@ -337,13 +337,11 @@ class HistoryDB:
         else:
             items = []
 
-        fetched_items = len(items)
-
         # Unpack the single line stage log
         # Stage Name is separated by ::: stage lines by ; and stages by \r\n
         items = [unpack_history_info(item) for item in items]
 
-        return items, fetched_items, total_items
+        return items, total_items
 
     def have_episode(self, series, season, episode):
         """Check whether History contains this series episode"""

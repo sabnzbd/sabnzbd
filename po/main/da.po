@@ -186,6 +186,10 @@ msgstr "Afprøv notifikation"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp; Server løsning"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "ukendt"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -195,10 +199,6 @@ msgstr "Ingen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standard"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "ukendt"
 
 #. Error message
 #: sabnzbd/api.py
@@ -662,21 +662,6 @@ msgstr "Godkendelse mislykkedes, kontrollere brugernavn/adgangskode."
 msgid "Unsuccessful login attempt from %s"
 msgstr "Mislykkede login forsøg fra %s"
 
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
-
-#: sabnzbd/interface.py
-msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />SABnzbd genstart færdig.<br />Vent i ca 5 sekunder og klik "
-"derefter på knappen nedenunder..<br /><br /><strong><a "
-"href=\"..\">Opdater</a></strong><br />"
-
 #: sabnzbd/interface.py
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
@@ -748,10 +733,6 @@ msgstr "FEJL:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Tilbage"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "Fejl værdi før %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -1769,7 +1750,7 @@ msgstr "Pause 6 timer"
 msgid "Shutdown"
 msgstr "Luk ned"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "Tilbageværende"
 
@@ -2026,6 +2007,11 @@ msgstr "MB"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "GB"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py
@@ -4738,7 +4724,6 @@ msgstr "I tilfælde af SABnzbd genstart vil denne skærm forsvinde automatisk!"
 msgid "WARNING:"
 msgstr "ADVARSEL:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Hent"
@@ -4950,145 +4935,6 @@ msgid "Removing jobs"
 msgstr "Fjernelse af jobs"
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "Foregående"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "Næste"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "Vil du virkelig tømme historiken?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "Du skal aktivere JavaScript for at få Plush til virke!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "Muligheder"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "Pause i hvor mange minutter?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "Topmenu"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "Ved afslutning"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "Sortere"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "Sortere efter Alder <small>(Ældst&rarr;Nyeste)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "Sortere efter Alder <small>(Nyeste&rarr;Ældst)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "Sortere efter Navn <small>(A&rarr;Z)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "Sortere efter Navn <small>(Z&rarr;A)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "Sortere efter Størrelse <small>(Mindst&rarr;Størst)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "Sortere efter Størrelse <small>(Størst&rarr;Mindst)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "Tøm køen?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "Prøv igen alle mislykkede job i historien?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "Ryd"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "Max hastighed"
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "Interval"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "Anvend på markerede"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Alt"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "Opdateringsinterval"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "Beholder Bredde"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr ""
-"Dette vil forhindre indhold i at blive opdateret når musens markør kører hen"
-" over køen."
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "Bloker genopfriskninger ved at hænge over"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "Upload"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "Upload: .nzb .rar .zip .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "Fremgang"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "Ikke nok diskplads til at fuldføre downloads!"
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "Ledig tempdiskplads"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "VENTER"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "Hentede filer"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd Hurtigstart’s Guide"
 
@@ -5100,6 +4946,11 @@ msgstr "SABnzbd version"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "Forrige"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "Næste"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"

@@ -155,6 +155,11 @@ def create_and_read_nzb(nzbdir):
     return nzb_data
 
 
+def random_name(lenghth: int = 16) -> str:
+    """Shorthand to create a simple random string"""
+    return "".join(choice(ascii_lowercase + digits) for _ in range(lenghth))
+
+
 class FakeHistoryDB(db.HistoryDB):
     """
     HistoryDB class with added control of the db_path via an argument and the
@@ -186,7 +191,7 @@ class FakeHistoryDB(db.HistoryDB):
 
             # Mock all input build_history_info() needs
             distro_choice = choice(self.distro_names)
-            distro_random = "".join(choice(ascii_lowercase + digits) for i in range(8))
+            distro_random = random_name()
             nzo.password = choice(["secret", ""])
             nzo.final_name = "%s.%s.Linux.ISO-Usenet" % (distro_choice, distro_random)
             nzo.filename = "%s.%s.Linux-Usenet%s.nzb" % (

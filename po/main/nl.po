@@ -188,6 +188,10 @@ msgstr "Test melding"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Adres opzoeken"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "onbekend"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -197,10 +201,6 @@ msgstr "Geen"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Standaard"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "onbekend"
 
 #. Error message
 #: sabnzbd/api.py
@@ -674,21 +674,6 @@ msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 msgid "Unsuccessful login attempt from %s"
 msgstr "Mislukte login progin bij %s"
 
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
-
-#: sabnzbd/interface.py
-msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />SABnzbd is nu afgesloten.<br />Wacht ongeveer 5 seconden en klik "
-"dan op onderstaande knop.<br /><br /><strong><a "
-"href=\"..\">Verversen</a></strong><br />"
-
 #: sabnzbd/interface.py
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
@@ -764,10 +749,6 @@ msgstr "FOUT:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Terug"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "Foute waarde voor %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -1796,7 +1777,7 @@ msgstr "Pauzeer 6 uur"
 msgid "Shutdown"
 msgstr "Afsluiten"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "Nog te doen"
 
@@ -2053,6 +2034,11 @@ msgstr "MB"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "GB"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py
@@ -4824,7 +4810,6 @@ msgstr "Wanneer SABnzbd opnieuw is gestart, gaat dit venster vanzelf weg!"
 msgid "WARNING:"
 msgstr "WAARSCHUWING:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Ophalen"
@@ -5038,144 +5023,6 @@ msgid "Removing jobs"
 msgstr "Items aan het verwijderen"
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "Vorige"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "Volgende"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "Wis de volledige geschiedenis?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "JavaScript is nodig voor de werking van Plush!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "Opties"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "Hoeveel minuten pauzeren?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "Top menu aan/uit"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "Bij lege wachtrij"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "Sorteren"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "Sorteer op Leeftijd <small>(Oud&rarr;Nieuw)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "Sorteer op Leeftijd <small>(Nieuw&rarr;Oud)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "Sorteer op Naam <small>(A&rarr;Z)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "Sorteer op Naam <small>(Z&rarr;A)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "Sorteer op Omvang <small>(Klein&rarr;Groot)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "Sorteer op Omvang <small>(Groot&rarr;Klein)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "Verwijderen uit de wachtrij?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "Alle mislukte downloads in Geschiedenis opnieuw proberen?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "Opschonen"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "Max Snelheid"
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "Bereik"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "Op selectie toepassen"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Alles"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "Verversingstempo"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "Breedte van kader"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr ""
-"Dit voorkomt pagina verversing wanneer de muis aanwijzer in de wachtrij is."
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "Geen verversing bij popups"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "Ophalen"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "Upload: .nzb, .rar, .zip, .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "Voortgang"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "Onvoldoende schijfruimte over!"
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "Vrij (tijdelijke map)"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "RUST"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "Downloads"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "SABnzbd Snelstart Hulp"
 
@@ -5187,6 +5034,11 @@ msgstr "SABnzbd versie"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "Vorige"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "Volgende"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"

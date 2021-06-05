@@ -425,29 +425,30 @@ class NzbQueue:
                 nzo_ids.append(nzo_id)
         return self.remove_multiple(nzo_ids)
 
-    def remove_nzf(self, nzo_id: str, nzf_id: str, force_delete=False) -> List[str]:
+    def remove_nzfs(self, nzo_id: str, nzf_ids: List[str], force_delete: bool = False) -> List[str]:
         removed = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
-            nzf = nzo.get_nzf_by_id(nzf_id)
 
-            if nzf:
-                removed.append(nzf_id)
-                nzo.abort_direct_unpacker()
-                post_done = nzo.remove_nzf(nzf)
-                if post_done:
-                    if nzo.finished_files:
-                        self.end_job(nzo)
-                    else:
-                        self.remove(nzo_id)
-                elif force_delete:
-                    # Force-remove all trace and update counters
-                    nzo.bytes -= nzf.bytes
-                    nzo.bytes_tried -= nzf.bytes - nzf.bytes_left
-                    if nzf.is_par2 or sabnzbd.par2file.is_parfile(nzf.filename):
-                        nzo.bytes_par2 -= nzf.bytes
-                    del nzo.files_table[nzf_id]
-                    nzo.finished_files.remove(nzf)
+            for nzf_id in nzf_ids:
+                nzf = nzo.get_nzf_by_id(nzf_id)
+                if nzf:
+                    removed.append(nzf_id)
+                    nzo.abort_direct_unpacker()
+                    post_done = nzo.remove_nzf(nzf)
+                    if post_done:
+                        if nzo.finished_files:
+                            self.end_job(nzo)
+                        else:
+                            self.remove(nzo_id)
+                    elif force_delete:
+                        # Force-remove all trace and update counters
+                        nzo.bytes -= nzf.bytes
+                        nzo.bytes_tried -= nzf.bytes - nzf.bytes_left
+                        if nzf.is_par2 or sabnzbd.par2file.is_parfile(nzf.filename):
+                            nzo.bytes_par2 -= nzf.bytes
+                        del nzo.files_table[nzf_id]
+                        nzo.finished_files.remove(nzf)
             logging.info("Removed NZFs %s from job %s", removed, nzo.final_name)
         return removed
 
@@ -540,24 +541,24 @@ class NzbQueue:
         return -1, nzo1.priority
 
     @NzbQueueLocker
-    def move_up_bulk(self, nzo_id, nzf_ids, size):
+    def move_nzf_up_bulk(self, nzo_id: str, nzf_ids: List[str], size: int):
         if nzo_id in self.__nzo_table:
-            for unused in range(size):
+            for _ in range(size):
                 self.__nzo_table[nzo_id].move_up_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def move_top_bulk(self, nzo_id, nzf_ids):
+    def move_nzf_top_bulk(self, nzo_id: str, nzf_ids: List[str]):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_top_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def move_down_bulk(self, nzo_id, nzf_ids, size):
+    def move_nzf_down_bulk(self, nzo_id: str, nzf_ids: List[str], size: int):
         if nzo_id in self.__nzo_table:
-            for unused in range(size):
+            for _ in range(size):
                 self.__nzo_table[nzo_id].move_down_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def move_bottom_bulk(self, nzo_id, nzf_ids):
+    def move_nzf_bottom_bulk(self, nzo_id: str, nzf_ids: List[str]):
         if nzo_id in self.__nzo_table:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
@@ -811,8 +812,6 @@ class NzbQueue:
         """
         if search:
             search = search.lower()
-        if nzo_ids:
-            nzo_ids = nzo_ids.split(",")
         bytes_left = 0
         bytes_total = 0
         bytes_left_previous_page = 0
@@ -860,7 +859,10 @@ class NzbQueue:
 
     def stop_idle_jobs(self):
         """Detect jobs that have zero files left and send them to post processing"""
+        # Only check servers that are active
+        nr_servers = len([server for server in sabnzbd.Downloader.servers[:] if server.active])
         empty = []
+
         for nzo in self.__nzo_list:
             if not nzo.futuretype and not nzo.files and nzo.status not in (Status.PAUSED, Status.GRABBING):
                 logging.info("Found idle job %s", nzo.final_name)
@@ -868,10 +870,10 @@ class NzbQueue:
 
             # Stall prevention by checking if all servers are in the trylist
             # This is a CPU-cheaper alternative to prevent stalling
-            if len(nzo.try_list) == sabnzbd.Downloader.server_nr:
+            if len(nzo.try_list) >= nr_servers:
                 # Maybe the NZF's need a reset too?
                 for nzf in nzo.files:
-                    if len(nzf.try_list) == sabnzbd.Downloader.server_nr:
+                    if len(nzf.try_list) >= nr_servers:
                         # We do not want to reset all article trylists, they are good
                         logging.info("Resetting bad trylist for file %s in job %s", nzf.filename, nzo.final_name)
                         nzf.reset_try_list()

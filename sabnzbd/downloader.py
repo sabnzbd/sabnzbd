@@ -191,13 +191,17 @@ class Server:
                     logging.debug("%s: No successful IP connection was possible", self.host)
         return ip
 
+    def deactivate(self):
+        """Deactive server and reset queued articles"""
+        self.active = False
+        self.reset_article_queue()
+
     def stop(self):
         """Remove all connections from server"""
         for nw in self.idle_threads:
             sabnzbd.Downloader.remove_socket(nw)
             nw.hard_reset(send_quit=True)
         self.idle_threads = []
-        self.reset_article_queue()
 
     def request_info(self):
         """Launch async request to resolve server address.
@@ -209,9 +213,9 @@ class Server:
             Thread(target=self._request_info_internal).start()
 
     def reset_article_queue(self):
+        logging.debug("Resetting article queue for %s", self)
         for article in self.article_queue:
-            article.fetcher = None
-            article.tries = 0
+            sabnzbd.NzbQueue.reset_try_lists(article, remove_fetcher_from_trylist=False)
         self.article_queue = []
 
     def _request_info_internal(self):
@@ -246,7 +250,6 @@ class Downloader(Thread):
         "force_disconnect",
         "read_fds",
         "servers",
-        "server_nr",
         "timers",
     )
 
@@ -283,7 +286,6 @@ class Downloader(Thread):
         self.read_fds: Dict[int, NewsWrapper] = {}
 
         self.servers: List[Server] = []
-        self.server_nr: int = 0
         self.timers: Dict[str, List[float]] = {}
 
         for server in config.get_servers():
@@ -324,6 +326,7 @@ class Downloader(Thread):
                     create = False
                     server.newid = newserver
                     server.restart = True
+                    server.reset_article_queue()
                     self.server_restarts += 1
                     break
 
@@ -348,8 +351,7 @@ class Downloader(Thread):
                 )
             )
 
-            # Update server-count and sort the servers
-            self.server_nr = len(self.servers)
+            # Sort the servers for performance
             self.servers.sort(key=lambda svr: "%02d%s" % (svr.priority, svr.displayname.lower()))
 
     def add_socket(self, fileno: int, nw: NewsWrapper):
@@ -397,6 +399,7 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def disconnect(self):
+        logging.info("Forcing disconnect")
         self.force_disconnect = True
 
     def limit_speed(self, value: Union[str, int]):
@@ -476,28 +479,21 @@ class Downloader(Thread):
 
             # Not fully the same as the code below for optional servers
             server.bad_cons = 0
-            server.active = False
+            server.deactivate()
             self.plan_server(server, _PENALTY_TIMEOUT)
 
         # Optional and active server had too many problems.
         # Disable it now and send a re-enable plan to the scheduler
         if server.optional and server.active and (server.bad_cons / server.threads) > 3:
+            # Deactivate server
             server.bad_cons = 0
-            server.active = False
+            server.deactivate()
             logging.warning(T("Server %s will be ignored for %s minutes"), server.host, _PENALTY_TIMEOUT)
             self.plan_server(server, _PENALTY_TIMEOUT)
 
             # Remove all connections to server
             for nw in server.idle_threads + server.busy_threads:
-                self.__reset_nw(
-                    nw,
-                    "forcing disconnect",
-                    warn=False,
-                    wait=False,
-                    count_article_try=False,
-                    send_quit=False,
-                    retry=False,
-                )
+                self.__reset_nw(nw, "forcing disconnect", warn=False, wait=False, retry_article=False, send_quit=False)
 
             # Make sure server address resolution is refreshed
             server.info = None
@@ -589,7 +585,6 @@ class Downloader(Thread):
                         break
                     else:
                         # Restart pending, don't add new articles
-                        server.reset_article_queue()
                         continue
 
                 if (
@@ -664,11 +659,7 @@ class Downloader(Thread):
                         # Send goodbye if we have open socket
                         if nw.nntp:
                             self.__reset_nw(
-                                nw,
-                                "forcing disconnect",
-                                wait=False,
-                                count_article_try=False,
-                                send_quit=True,
+                                nw, "forcing disconnect", wait=False, count_article_try=False, send_quit=True
                             )
                     # Make sure server address resolution is refreshed
                     server.info = None
@@ -795,7 +786,7 @@ class Downloader(Thread):
                                         server.errormsg = errormsg
                                         logging.warning(T("Too many connections to server %s"), server.host)
                                     # Don't count this for the tries (max_art_tries) on this server
-                                    self.__reset_nw(nw, count_article_try=False, send_quit=True)
+                                    self.__reset_nw(nw, send_quit=True)
                                     self.plan_server(server, _PENALTY_TOOMANY)
                                     server.threads -= 1
                             elif ecode in (502, 481, 482) and clues_too_many_ip(msg):
@@ -846,11 +837,11 @@ class Downloader(Thread):
                                 block = True
                             if block or (penalty and server.optional):
                                 if server.active:
-                                    server.active = False
+                                    server.deactivate()
                                     if penalty and (block or server.optional):
                                         self.plan_server(server, penalty)
-                                # Note that this will count towards the tries (max_art_tries) on this server!
-                                self.__reset_nw(nw, send_quit=True, retry=False)
+                                # Note that the article is discard for this server
+                                self.__reset_nw(nw, retry_article=False, send_quit=True)
                             continue
                         except:
                             logging.error(
@@ -860,7 +851,7 @@ class Downloader(Thread):
                                 nntp_to_msg(nw.data),
                             )
                             # No reset-warning needed, above logging is sufficient
-                            self.__reset_nw(nw, retry=False)
+                            self.__reset_nw(nw, retry_article=False)
 
                         if nw.connected:
                             logging.info("Connecting %s@%s finished", nw.thrdnum, nw.server.host)
@@ -920,8 +911,8 @@ class Downloader(Thread):
         warn: bool = False,
         wait: bool = True,
         count_article_try: bool = True,
+        retry_article: bool = True,
         send_quit: bool = False,
-        retry: bool = True,
     ):
         # Some warnings are errors, and not added as server.warning
         if warn and reset_msg:
@@ -941,18 +932,22 @@ class Downloader(Thread):
 
         if nw.article:
             # Only some errors should count towards the total tries for each server
-            if not retry or (
-                count_article_try
-                and nw.article.tries > cfg.max_art_tries()
-                and (nw.article.fetcher.optional or not cfg.max_art_opt())
-            ):
+            if count_article_try:
+                nw.article.tries += 1
+
+            # Do we discard, or try again for this server
+            if not retry_article or nw.article.tries > cfg.max_art_tries():
                 # Too many tries on this server, consider article missing
                 self.decode(nw.article, None)
                 nw.article.tries = 0
             else:
                 # Retry again with the same server
-                nw.article.tries += 1
-                logging.debug("Retrying article %s from %s", nw.article.article, nw.article.nzf.filename)
+                logging.debug(
+                    "Re-adding article %s from %s to server %s",
+                    nw.article.article,
+                    nw.article.nzf.filename,
+                    nw.article.fetcher,
+                )
                 nw.article.fetcher.article_queue.append(nw.article)
 
         # Reset connection object
@@ -993,7 +988,6 @@ class Downloader(Thread):
     @synchronized(TIMER_LOCK)
     def plan_server(self, server: Server, interval: int):
         """Plan the restart of a server in 'interval' minutes"""
-        server.reset_article_queue()
         if cfg.no_penalties() and interval > _PENALTY_SHORT:
             # Overwrite in case of no_penalties
             interval = _PENALTY_SHORT
