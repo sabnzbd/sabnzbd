@@ -26,7 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional, Union
 
 # SABnzbd modules
 import sabnzbd
@@ -585,30 +585,30 @@ NZO_LOCK = threading.RLock()
 class NzbObject(TryList):
     def __init__(
         self,
-        filename,
-        pp=None,
-        script=None,
-        nzb=None,
-        futuretype=False,
-        cat=None,
-        url=None,
-        priority=DEFAULT_PRIORITY,
-        nzbname=None,
-        status=Status.QUEUED,
-        nzo_info=None,
-        reuse=None,
-        dup_check=True,
+        filename: str,
+        pp: Optional[int] = None,
+        script: Optional[str] = None,
+        nzb_data: Optional[str] = None,
+        futuretype: bool = False,
+        cat: Optional[str] = None,
+        url: Optional[str] = None,
+        priority: Optional[Union[Status, str]] = DEFAULT_PRIORITY,
+        nzbname: Optional[str] = None,
+        status: Status = Status.QUEUED,
+        nzo_info: Optional[Dict[str, Any]] = None,
+        reuse: Optional[str] = None,
+        dup_check: bool = True,
     ):
         super().__init__()
 
         self.filename = filename  # Original filename
-        if nzbname and nzb:
+        if nzbname and nzb_data:
             self.work_name = nzbname  # Use nzbname if set and only for non-future slot
         else:
             self.work_name = filename
 
         # For future-slots we keep the name given by URLGrabber
-        if nzb is None:
+        if nzb_data is None:
             self.final_name = self.work_name = filename
         else:
             # Remove trailing .nzb and .par(2)
@@ -724,7 +724,7 @@ class NzbObject(TryList):
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum: Optional[bytes] = None
 
-        if nzb is None and not reuse:
+        if nzb_data is None and not reuse:
             # This is a slot for a future NZB, ready now
             # It can also be a retry of a failed job with no extra NZB-file
             return
@@ -738,7 +738,7 @@ class NzbObject(TryList):
             self.final_name = self.final_name.replace(".", " ")
 
         # Check against identical checksum or series/season/episode
-        if (not reuse) and nzb and dup_check and self.priority != REPAIR_PRIORITY:
+        if (not reuse) and nzb_data and dup_check and self.priority != REPAIR_PRIORITY:
             duplicate, series = self.has_duplicates()
         else:
             duplicate = series = 0
@@ -764,9 +764,9 @@ class NzbObject(TryList):
             remove_all(admin_dir, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
-        if nzb and "<nzb" in nzb:
+        if nzb_data and "<nzb" in nzb_data:
             try:
-                sabnzbd.nzbparser.nzbfile_parser(nzb, self)
+                sabnzbd.nzbparser.nzbfile_parser(nzb_data, self)
             except Exception as err:
                 self.incomplete = True
                 logging.warning(T("Invalid NZB file %s, skipping (reason=%s, line=%s)"), filename, err, "1")
@@ -779,8 +779,8 @@ class NzbObject(TryList):
                     self.purge_data()
                     raise ValueError
 
-            sabnzbd.backup_nzb(filename, nzb)
-            sabnzbd.save_compressed(admin_dir, filename, nzb)
+            sabnzbd.backup_nzb(filename, nzb_data)
+            sabnzbd.save_compressed(admin_dir, filename, nzb_data)
 
         if not self.files and not reuse:
             self.purge_data()
@@ -1310,7 +1310,7 @@ class NzbObject(TryList):
         if not self.unpack:
             self.abort_direct_unpacker()
 
-    def set_priority(self, value: Any):
+    def set_priority(self, value: Optional[Union[Status, str]]):
         """Check if this is a valid priority"""
         # When unknown (0 is a known one), set to DEFAULT
         if value == "" or value is None:
@@ -1336,7 +1336,7 @@ class NzbObject(TryList):
         # Invalid value, set to normal priority
         self.priority = NORMAL_PRIORITY
 
-    def set_stateless_priority(self, category: str) -> int:
+    def set_stateless_priority(self, category: str):
         """Find a priority that doesn't set a job state, starting from the given category,
         for jobs to fall back to after their priority was set to PAUSED or DUP. The fallback
         priority cannot be another state-setting priority or FORCE; the latter could override
