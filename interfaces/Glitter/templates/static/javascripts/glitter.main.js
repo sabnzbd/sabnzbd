@@ -975,6 +975,11 @@ function ViewModel() {
         $('body').toggleClass('container-tabbed')
     })
 
+    // Change hash for page-reload
+    $('.history-queue-swicher .nav-tabs a').on('shown.bs.tab', function (e) {
+        window.location.hash = e.target.hash;
+    })
+
     /**
          SABnzb options
     **/
@@ -1046,6 +1051,11 @@ function ViewModel() {
     // Tabbed layout?
     if(localStorageGetItem('displayTabbed') === 'true') {
         $('body').addClass('container-tabbed')
+
+        var tab_from_hash = location.hash.replace(/^#/, '');
+        if (tab_from_hash) {
+            $('.history-queue-swicher .nav-tabs a[href="#' + tab_from_hash + '"]').tab('show');
+        }
     }
 
     // Get the speed-limit, refresh rate and server names
