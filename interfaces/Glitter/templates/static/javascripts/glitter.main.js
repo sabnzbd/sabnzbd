@@ -719,7 +719,7 @@ function ViewModel() {
                 // Refresh
                 self.refresh();
                 // Hide notification
-                hideNotification(true)
+                hideNotification()
                 // Reset the form
                 $('#modal-add-nzb form').trigger('reset');
                 $('#nzbname').val('')
@@ -928,7 +928,7 @@ function ViewModel() {
             // Refresh
             self.loadStatusInfo(true, true)
             // Hide notification
-            hideNotification(true)
+            hideNotification()
         })
     }
 
@@ -940,7 +940,7 @@ function ViewModel() {
             // Delete them all
             callSpecialAPI("./status/delete_all/").then(function() {
                 // Remove notifcation and update screen
-                hideNotification(true)
+                hideNotification()
                 self.loadStatusInfo(true, true)
             })
         }
@@ -954,7 +954,7 @@ function ViewModel() {
             // Delete them all
             callSpecialAPI("./status/add_all/").then(function() {
                 // Remove notifcation and update screen
-                hideNotification(true)
+                hideNotification()
                 self.loadStatusInfo(true, true)
             })
         }
@@ -973,6 +973,11 @@ function ViewModel() {
     // Toggle Glitter's tabbed modus
     self.displayTabbed.subscribe(function() {
         $('body').toggleClass('container-tabbed')
+    })
+
+    // Change hash for page-reload
+    $('.history-queue-swicher .nav-tabs a').on('shown.bs.tab', function (e) {
+        window.location.hash = e.target.hash;
     })
 
     /**
@@ -1015,12 +1020,9 @@ function ViewModel() {
         if(!confirm(glitterTranslate.repair)) return;
         // Hide the modal and show the notifucation
         $("#modal-options").modal("hide");
-        showNotification('.main-notification-box-queue-repair')
+        showNotification('.main-notification-box-queue-repair', 5000)
         // Call the API
-        callAPI({ mode: "restart_repair" }).then(function() {
-            $("#modal-options").modal("hide");
-        })
-
+        callAPI({ mode: "restart_repair" })
     }
     // Force disconnect
     self.forceDisconnect = function() {
@@ -1049,6 +1051,11 @@ function ViewModel() {
     // Tabbed layout?
     if(localStorageGetItem('displayTabbed') === 'true') {
         $('body').addClass('container-tabbed')
+
+        var tab_from_hash = location.hash.replace(/^#/, '');
+        if (tab_from_hash) {
+            $('.history-queue-swicher .nav-tabs a[href="#' + tab_from_hash + '"]').tab('show');
+        }
     }
 
     // Get the speed-limit, refresh rate and server names

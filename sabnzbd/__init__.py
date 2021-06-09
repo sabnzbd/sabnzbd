@@ -25,11 +25,12 @@ import gzip
 import time
 import socket
 import cherrypy
+import cherrypy._cpreqbody
 import platform
 import sys
 import ssl
 from threading import Lock, Thread, Condition
-from typing import Any, AnyStr
+from typing import Any, AnyStr, Optional, Union
 
 ##############################################################################
 # Determine platform flags
@@ -123,6 +124,7 @@ from sabnzbd.constants import (
     QUEUE_FILE_NAME,
     QUEUE_VERSION,
     QUEUE_FILE_TMPL,
+    Status,
 )
 import sabnzbd.utils.ssdp
 
@@ -635,19 +637,19 @@ def save_compressed(folder: str, filename: str, data: AnyStr):
 
 
 def add_nzbfile(
-    nzbfile,
-    pp=None,
-    script=None,
-    cat=None,
-    catdir=None,
-    priority=DEFAULT_PRIORITY,
-    nzbname=None,
+    nzbfile: Union[str, cherrypy._cpreqbody.Part],
+    pp: Optional[Union[int, str]] = None,
+    script: Optional[str] = None,
+    cat: Optional[str] = None,
+    catdir: Optional[str] = None,
+    priority: Optional[Union[Status, str]] = DEFAULT_PRIORITY,
+    nzbname: Optional[str] = None,
     nzo_info=None,
-    url=None,
-    keep=None,
-    reuse=None,
-    password=None,
-    nzo_id=None,
+    url: Optional[str] = None,
+    keep: Optional[bool] = None,
+    reuse: Optional[str] = None,
+    password: Optional[str] = None,
+    nzo_id: Optional[str] = None,
 ):
     """Add file, either a single NZB-file or an archive.
     All other parameters are passed to the NZO-creation.

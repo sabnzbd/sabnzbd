@@ -24,6 +24,7 @@ import logging
 import time
 import datetime
 import functools
+import cherrypy._cpreqbody
 from typing import List, Dict, Union, Tuple, Optional
 
 import sabnzbd
@@ -66,7 +67,7 @@ class NzbQueue:
         self.__nzo_list: List[NzbObject] = []
         self.__nzo_table: Dict[str, NzbObject] = {}
 
-    def read_queue(self, repair):
+    def read_queue(self, repair: int):
         """Read queue from disk, supporting repair modes
         0 = no repairs
         1 = use existing queue, add missing "incomplete" folders
@@ -127,7 +128,7 @@ class NzbQueue:
                             pass
 
     @NzbQueueLocker
-    def scan_jobs(self, all_jobs=False, action=True):
+    def scan_jobs(self, all_jobs: bool = False, action: bool = True) -> List[str]:
         """Scan "incomplete" for missing folders,
         'all' is True: Include active folders
         'action' is True, do the recovery action
@@ -164,7 +165,9 @@ class NzbQueue:
                     logging.info("Skipping repair for job %s", folder)
         return result
 
-    def repair_job(self, repair_folder, new_nzb=None, password=None):
+    def repair_job(
+        self, repair_folder: str, new_nzb: Optional[cherrypy._cpreqbody.Part] = None, password: Optional[str] = None
+    ) -> Optional[str]:
         """Reconstruct admin for a single job folder, optionally with new NZB"""
         # Check if folder exists
         if not repair_folder or not os.path.exists(repair_folder):
@@ -249,7 +252,9 @@ class NzbQueue:
     def set_top_only(self, value):
         self.__top_only = value
 
-    def generate_future(self, msg, pp=None, script=None, cat=None, url=None, priority=DEFAULT_PRIORITY, nzbname=None):
+    def generate_future(
+        self, msg, pp=None, script=None, cat=None, url=None, priority=DEFAULT_PRIORITY, nzbname=None
+    ) -> NzbObject:
         """Create and return a placeholder nzo object"""
         logging.debug("Creating placeholder NZO")
         future_nzo = NzbObject(
@@ -284,7 +289,7 @@ class NzbQueue:
                     result += 1
         return result
 
-    def change_cat(self, nzo_ids: str, cat: str, explicit_priority=None):
+    def change_cat(self, nzo_ids: str, cat: str) -> int:
         result = 0
         for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
             if nzo_id in self.__nzo_table:
@@ -292,14 +297,13 @@ class NzbQueue:
                 nzo.cat, pp, nzo.script, prio = cat_to_opts(cat)
                 logging.info("Set cat=%s for job %s", cat, nzo.final_name)
                 nzo.set_pp(pp)
-                if explicit_priority is None:
-                    self.set_priority(nzo_id, prio)
+                self.set_priority(nzo_id, prio)
                 # Abort any ongoing unpacking if the category changed
                 nzo.abort_direct_unpacker()
                 result += 1
         return result
 
-    def change_name(self, nzo_id: str, name: str, password: str = None):
+    def change_name(self, nzo_id: str, name: str, password: str = None) -> bool:
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
             logging.info("Renaming %s to %s", nzo.final_name, name)
@@ -322,7 +326,7 @@ class NzbQueue:
             return None
 
     @NzbQueueLocker
-    def add(self, nzo: NzbObject, save=True, quiet=False) -> str:
+    def add(self, nzo: NzbObject, save: bool = True, quiet: bool = False) -> str:
         if not nzo.nzo_id:
             nzo.nzo_id = sabnzbd.get_new_id("nzo", nzo.admin_path, self.__nzo_table)
 
@@ -380,7 +384,7 @@ class NzbQueue:
         return nzo.nzo_id
 
     @NzbQueueLocker
-    def remove(self, nzo_id: str, cleanup=True, delete_all_data=True):
+    def remove(self, nzo_id: str, cleanup: bool = True, delete_all_data: bool = True) -> Optional[str]:
         """Remove NZO from queue.
         It can be added to history directly.
         Or, we do some clean-up, sometimes leaving some data.
@@ -416,7 +420,7 @@ class NzbQueue:
         return removed
 
     @NzbQueueLocker
-    def remove_all(self, search: str = "") -> List[str]:
+    def remove_all(self, search: Optional[str] = None) -> List[str]:
         """Remove NZO's that match the search-pattern"""
         nzo_ids = []
         search = safe_lower(search)
@@ -425,7 +429,7 @@ class NzbQueue:
                 nzo_ids.append(nzo_id)
         return self.remove_multiple(nzo_ids)
 
-    def remove_nzfs(self, nzo_id: str, nzf_ids: List[str], force_delete: bool = False) -> List[str]:
+    def remove_nzfs(self, nzo_id: str, nzf_ids: List[str]) -> List[str]:
         removed = []
         if nzo_id in self.__nzo_table:
             nzo = self.__nzo_table[nzo_id]
@@ -441,7 +445,7 @@ class NzbQueue:
                             self.end_job(nzo)
                         else:
                             self.remove(nzo_id)
-                    elif force_delete:
+                    else:
                         # Force-remove all trace and update counters
                         nzo.bytes -= nzf.bytes
                         nzo.bytes_tried -= nzf.bytes - nzf.bytes_left
@@ -563,30 +567,27 @@ class NzbQueue:
             self.__nzo_table[nzo_id].move_bottom_bulk(nzf_ids)
 
     @NzbQueueLocker
-    def sort_by_avg_age(self, reverse=False):
+    def sort_by_avg_age(self, reverse: bool = False):
         logging.info("Sorting by average date... (reversed: %s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_date_cmp, reverse)
 
     @NzbQueueLocker
-    def sort_by_name(self, reverse=False):
+    def sort_by_name(self, reverse: bool = False):
         logging.info("Sorting by name... (reversed: %s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_name_cmp, reverse)
 
     @NzbQueueLocker
-    def sort_by_size(self, reverse=False):
+    def sort_by_size(self, reverse: bool = False):
         logging.info("Sorting by size... (reversed: %s)", reverse)
         self.__nzo_list = sort_queue_function(self.__nzo_list, _nzo_size_cmp, reverse)
 
-    def sort_queue(self, field, reverse=None):
+    def sort_queue(self, field: str, direction: Optional[str] = None):
         """Sort queue by field: "name", "size" or "avg_age"
-        Direction is specified as "desc"/True or "asc"/False
+        Direction is specified as "desc" or "asc"
         """
-        if isinstance(reverse, str):
-            if reverse.lower() == "desc":
-                reverse = True
-            else:
-                reverse = False
-        if reverse is None:
+        if safe_lower(direction) == "desc":
+            reverse = True
+        else:
             reverse = False
         if field.lower() == "name":
             self.sort_by_name(reverse)
@@ -598,7 +599,7 @@ class NzbQueue:
             logging.debug("Sort: %s not recognized", field)
 
     @NzbQueueLocker
-    def __set_priority(self, nzo_id, priority):
+    def __set_priority(self, nzo_id: str, priority: Union[int, str]) -> Optional[int]:
         """Sets the priority on the nzo and places it in the queue at the appropriate position"""
         try:
             priority = int_conv(priority)
@@ -676,7 +677,7 @@ class NzbQueue:
             return -1
 
     @NzbQueueLocker
-    def set_priority(self, nzo_ids, priority):
+    def set_priority(self, nzo_ids: str, priority: int) -> int:
         try:
             n = -1
             for nzo_id in [item.strip() for item in nzo_ids.split(",")]:
@@ -695,7 +696,7 @@ class NzbQueue:
         article.nzf.reset_try_list()
         article.nzf.nzo.reset_try_list()
 
-    def has_forced_items(self):
+    def has_forced_items(self) -> bool:
         """Check if the queue contains any Forced
         Priority items to download while paused
         """
@@ -792,7 +793,7 @@ class NzbQueue:
                     pass
             sabnzbd.Assembler.process(nzo)
 
-    def actives(self, grabs=True) -> int:
+    def actives(self, grabs: bool = True) -> int:
         """Return amount of non-paused jobs, optionally with 'grabbing' items
         Not locked for performance, only reads the queue
         """
@@ -805,7 +806,9 @@ class NzbQueue:
                 n += 1
         return n
 
-    def queue_info(self, search=None, nzo_ids=None, start=0, limit=0):
+    def queue_info(
+        self, search: Optional[str] = None, nzo_ids: Optional[List[str]] = None, start: int = 0, limit: int = 0
+    ) -> QNFO:
         """Return list of queued jobs,
         optionally filtered by 'search' and 'nzo_ids', and limited by start and limit.
         Not locked for performance, only reads the queue
@@ -839,7 +842,7 @@ class NzbQueue:
             n = len(self.__nzo_list)
         return QNFO(bytes_total, bytes_left, bytes_left_previous_page, pnfo_list, q_size, n)
 
-    def remaining(self):
+    def remaining(self) -> int:
         """Return bytes left in the queue by non-paused items
         Not locked for performance, only reads the queue
         """
@@ -849,7 +852,7 @@ class NzbQueue:
                 bytes_left += nzo.remaining
         return bytes_left
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
         empty = True
         for nzo in self.__nzo_list:
             if not nzo.futuretype and nzo.status != Status.PAUSED:
@@ -909,7 +912,7 @@ class NzbQueue:
                 # Don't use nzo.resume() to avoid resetting job warning flags
                 nzo.status = Status.QUEUED
 
-    def get_urls(self):
+    def get_urls(self) -> List[Tuple[str, NzbObject]]:
         """Return list of future-types needing URL"""
         lst = []
         for nzo_id in self.__nzo_table:

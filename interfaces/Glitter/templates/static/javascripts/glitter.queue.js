@@ -444,7 +444,7 @@ function QueueListModel(parent) {
                     // Empty it
                     self.multiEditItems.removeAll();
                     // Hide notification
-                    hideNotification(true)
+                    hideNotification()
                 }
             })
         }
@@ -745,7 +745,7 @@ function QueueModel(parent, data) {
                 parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
                 self.parent.parent.refresh();
                 // Hide notifcation
-                hideNotification(true)
+                hideNotification()
             });
         }
     };

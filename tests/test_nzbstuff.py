@@ -27,7 +27,7 @@ class TestNZO:
         nzb_data = create_and_read_nzb("basic_rar5")
 
         # Very basic test of NZO creation with data
-        nzo = nzbstuff.NzbObject("test_basic_data", nzb=nzb_data)
+        nzo = nzbstuff.NzbObject("test_basic_data", nzb_data=nzb_data)
         assert nzo.final_name == "test_basic_data"
         assert nzo.files
         assert nzo.files[0].filename == "testfile.rar"

@@ -224,6 +224,12 @@ class BPSMeter:
             if len(data) > 12:
                 self.article_stats_tried, self.article_stats_failed = data[12:14]
 
+            # Clean the data, it could have invalid values in older versions
+            for server in self.timeline_total:
+                for data_data in self.timeline_total[server]:
+                    if not isinstance(self.timeline_total[server][data_data], int):
+                        self.timeline_total[server][data_data] = 0
+
             # Trigger quota actions
             if abs(quota - self.quota) > 0.5:
                 self.change_quota()
