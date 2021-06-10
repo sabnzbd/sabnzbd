@@ -1168,11 +1168,6 @@ msgid "NZB added to queue"
 msgstr "NZB přidáno do fronty"
 
 #. Warning message
-#: sabnzbd/nzbqueue.py
-msgid "%s -> Unknown encoding"
-msgstr "%s -> Neznámé kódování"
-
-#. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Nesprávný NZB soubor %s, přeskakuji (důvod=%s, řádek=%s)"

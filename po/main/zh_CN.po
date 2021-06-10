@@ -1151,11 +1151,6 @@ msgid "NZB added to queue"
 msgstr "NZB 已添加到队列"
 
 #. Warning message
-#: sabnzbd/nzbqueue.py
-msgid "%s -> Unknown encoding"
-msgstr "%s -> 未知编码"
-
-#. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "无效 NZB 文件 %s，正在跳过 (原因=%s, 行=%s)"

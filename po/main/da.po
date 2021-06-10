@@ -1174,11 +1174,6 @@ msgid "NZB added to queue"
 msgstr "NZB tilføjet i køen"
 
 #. Warning message
-#: sabnzbd/nzbqueue.py
-msgid "%s -> Unknown encoding"
-msgstr "%s -> Ukendt kodning"
-
-#. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Ødelagt NZB fil %s, springer over (årsag=%s, linje=%s)"

@@ -1167,11 +1167,6 @@ msgid "NZB added to queue"
 msgstr "NZB התווסף לתור"
 
 #. Warning message
-#: sabnzbd/nzbqueue.py
-msgid "%s -> Unknown encoding"
-msgstr "קידוד בלתי ידוע -> %s"
-
-#. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "קובץ NZB בלתי תקף %s, מדלג (סיבה=%s, שורה=%s)"

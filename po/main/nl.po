@@ -1196,11 +1196,6 @@ msgid "NZB added to queue"
 msgstr "Download aan wachtrij toegevoegd"
 
 #. Warning message
-#: sabnzbd/nzbqueue.py
-msgid "%s -> Unknown encoding"
-msgstr "%s -> Onbekende codering"
-
-#. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Foutief NZB-bestand %s, overslaan (reden=%s, regel=%s)"

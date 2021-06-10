@@ -1212,11 +1212,6 @@ msgid "NZB added to queue"
 msgstr "NZB zur Warteschlange hinzugefügt"
 
 #. Warning message
-#: sabnzbd/nzbqueue.py
-msgid "%s -> Unknown encoding"
-msgstr "%s -> Unbekannte Kodierung"
-
-#. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
 msgstr "Ungültige NZB-Datei %s wird übersprungen: %s auf Zeile %s"
