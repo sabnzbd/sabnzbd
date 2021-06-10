@@ -55,7 +55,6 @@ from sabnzbd.constants import (
 
 import sabnzbd.cfg as cfg
 from sabnzbd.downloader import Server
-from sabnzbd.assembler import file_has_articles
 import sabnzbd.notifier as notifier
 
 
@@ -755,9 +754,6 @@ class NzbQueue:
                     elif nzf.filename.lower().endswith(".par2"):
                         # Broken par2 file, try to get another one
                         nzo.promote_par2(nzf)
-                    else:
-                        if file_has_articles(nzf):
-                            logging.warning(T("%s -> Unknown encoding"), nzf.filename)
 
             # Save bookkeeping in case of crash
             if file_done and (nzo.next_save is None or time.time() > nzo.next_save):

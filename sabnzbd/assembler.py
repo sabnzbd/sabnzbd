@@ -248,19 +248,6 @@ class Assembler(Thread):
             nzf.md5sum = nzf.md5.digest()
 
 
-def file_has_articles(nzf: NzbFile):
-    """Do a quick check to see if any articles are present for this file.
-    Destructive: only to be used to differentiate between unknown encoding and no articles.
-    """
-    has = False
-    for article in nzf.decodetable:
-        sleep(0.01)
-        data = sabnzbd.ArticleCache.load_article(article)
-        if data:
-            has = True
-    return has
-
-
 RE_SUBS = re.compile(r"\W+sub|subs|subpack|subtitle|subtitles(?![a-z])", re.I)
 SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 

@@ -1215,12 +1215,7 @@ class NzbObject(TryList):
 
     @synchronized(NZO_LOCK)
     def remove_saved_article(self, article: Article):
-        try:
-            self.saved_articles.remove(article)
-        except ValueError:
-            # It's not there if the job is fully missing
-            # and this function is called from file_has_articles
-            pass
+        self.saved_articles.remove(article)
 
     def check_existing_files(self, wdir: str):
         """Check if downloaded files already exits, for these set NZF to complete"""
