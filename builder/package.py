@@ -460,6 +460,23 @@ if __name__ == "__main__":
                     print("Uploading %s to release %s" % (file_to_check, gh_release.title))
                     gh_release.upload_asset(file_to_check)
 
+            # Check if we now have all files
+            gh_new_assets = gh_release.get_assets()
+            if gh_new_assets.totalCount:
+                all_assets = [gh_asset.name for gh_asset in gh_new_assets]
+
+                # Check if we have all files, using set-comparison
+                if set(files_to_check) == set(all_assets):
+                    print("All assets present, releasing %s" % RELEASE_VERSION)
+                    # Publish release
+                    gh_release.update_release(
+                        tag_name=RELEASE_VERSION,
+                        name=RELEASE_TITLE,
+                        message=readme_data,
+                        draft=False,
+                        prerelease=prerelease,
+                    )
+
             # Update the website
             gh_repo_web = gh_obj.get_repo("sabnzbd/sabnzbd.github.io")
             # Check if the branch already exists, only create one if it doesn't
