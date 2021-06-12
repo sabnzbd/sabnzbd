@@ -13,3 +13,25 @@ def all_possible_extensions(file_path: str) -> list:
     for i in puremagic.magic_file(file_path):
         extension_list.append(i.extension)
     return extension_list
+
+def extension_matches(file_path: str) -> int:
+    import os
+    # TBD use SAB's own extension finder
+    filename, file_extension = os.path.splitext(file_path)
+    file_extension = file_extension.lower()
+    return file_extension in all_possible_extensions(file_path)
+
+
+if __name__ == "__main__":
+    import sys
+    try:
+        file_path = sys.argv[1]
+
+    except:
+        print("Specify file to check as parameter")
+        sys.exit(0)
+    matching_ext = extension_matches(file_path)
+    if matching_ext:
+        print(True, file_path)
+    else:
+        print(False, all_possible_extensions(file_path), file_path)
