@@ -149,7 +149,7 @@ def _stream_details(stream):
 
 
 def ext_from_filename(filename):
-    """ Scan a filename for it's extension.
+    """Scan a filename for it's extension.
 
     :param filename: string of the filename
     :return: the extension off the end (empty string if it can't find one)
@@ -170,7 +170,7 @@ def ext_from_filename(filename):
 
 
 def from_file(filename, mime=False):
-    """ Opens file, attempts to identify content based
+    """Opens file, attempts to identify content based
     off magic number and will return the file extension.
     If mime is True it will return the mime type instead.
 
@@ -184,7 +184,7 @@ def from_file(filename, mime=False):
 
 
 def from_string(string, mime=False, filename=None):
-    """ Reads in string, attempts to identify content based
+    """Reads in string, attempts to identify content based
     off magic number and will return the file extension.
     If mime is True it will return the mime type instead.
     If filename is provided it will be used in the computation.
@@ -200,7 +200,7 @@ def from_string(string, mime=False, filename=None):
 
 
 def from_stream(stream, mime=False, filename=None):
-    """ Reads in stream, attempts to identify content based
+    """Reads in stream, attempts to identify content based
     off magic number and will return the file extension.
     If mime is True it will return the mime type instead.
     If filename is provided it will be used in the computation.
@@ -216,7 +216,7 @@ def from_stream(stream, mime=False, filename=None):
 
 
 def magic_file(filename):
-    """ Returns tuple of (num_of_matches, array_of_matches)
+    """Returns tuple of (num_of_matches, array_of_matches)
     arranged highest confidence match first.
 
     :param filename: path to file
@@ -234,7 +234,7 @@ def magic_file(filename):
 
 
 def magic_string(string, filename=None):
-    """ Returns tuple of (num_of_matches, array_of_matches)
+    """Returns tuple of (num_of_matches, array_of_matches)
     arranged highest confidence match first
     If filename is provided it will be used in the computation.
 
@@ -252,7 +252,7 @@ def magic_string(string, filename=None):
 
 
 def magic_stream(stream, filename=None):
-    """ Returns tuple of (num_of_matches, array_of_matches)
+    """Returns tuple of (num_of_matches, array_of_matches)
     arranged highest confidence match first
     If filename is provided it will be used in the computation.
 
