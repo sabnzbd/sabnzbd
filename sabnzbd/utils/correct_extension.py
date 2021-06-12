@@ -27,7 +27,8 @@ def extension_matches(file_path: str) -> int:
 if __name__ == "__main__":
     import sys
 
-    for i in range(1,len(sys.argv)):
+    # parse all parameters on CLI as files to be ext-checked
+    for i in range(1, len(sys.argv)):
         file_path = sys.argv[i]
         matching_ext = extension_matches(file_path)
         if matching_ext:
