@@ -4,7 +4,7 @@
 """
 
 
-import sabnzbd.utils.puremagic as puremagic
+import puremagic
 
 
 def all_possible_extensions(file_path: str) -> list:

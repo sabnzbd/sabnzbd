@@ -26,7 +26,7 @@ import sabnzbd.utils.correct_extension as correct_extension
 
 class TestPuremagic:
     def test_puremagic_magic_file(self):
-        import sabnzbd.utils.puremagic as puremagic  # direct access
+        import puremagic  # direct access only in this test function
 
         filename = "tests/data/par2file/basic_16k.par2"
         assert os.path.isfile(filename)
@@ -42,7 +42,7 @@ class TestCorrect_Extension:
         extension_list = correct_extension.all_possible_extensions(filename)
         assert ".par2" in extension_list
 
-        filename = "tests/data/test_extension/cruise-ship-horn-sound.mp3"
+        filename = "tests/data/test_extension/hello_world_mpthree.blabla"
         assert os.path.isfile(filename)
         extension_list = correct_extension.all_possible_extensions(filename)
         assert ".mpga" in extension_list  # puremagic says it's mpga, not mp3 ...

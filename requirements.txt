@@ -1,3 +1,5 @@
+# usage: python3 -m pip install -r requirements.txt -U
+
 sabyenc3>=4.0.0
 cheetah3>=3.0.0
 cryptography
@@ -8,6 +10,7 @@ cherrypy
 portend
 chardet
 notify2
+puremagic
 
 # Windows system integration
 pywin32>=227; sys_platform == 'win32'
