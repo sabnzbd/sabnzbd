@@ -26,12 +26,21 @@ def extension_matches(file_path: str) -> int:
 
 if __name__ == "__main__":
     import sys
+    privacy = False
 
     # parse all parameters on CLI as files to be ext-checked
     for i in range(1, len(sys.argv)):
+        if sys.argv[i] == "-p":
+            # privacy, please ... so only print last 10 chars of a file
+            privacy = True
+            continue
         file_path = sys.argv[i]
+        if privacy:
+            to_be_printed = file_path[-10:]
+        else:
+            to_be_printed = file_path
         matching_ext = extension_matches(file_path)
         if matching_ext:
-            print(True, file_path)
+            print(True, all_possible_extensions(file_path), to_be_printed)
         else:
-            print(False, all_possible_extensions(file_path), file_path)
+            print(False, all_possible_extensions(file_path), to_be_printed)
