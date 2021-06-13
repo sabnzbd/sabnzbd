@@ -232,9 +232,11 @@ DOWNLOAD_EXT = (
     "xpi",
 )
 
-RAR_EXT = tuple(["r"+str(i).zfill(2) for i in range(0,100)]) # "r00", "r01", ...
+RAR_EXT = tuple(["r" + str(i).zfill(2) for i in range(0, 100)])  # "r00", "r01", ...
 
+# combine to one tuple, with unique entries:
 ALL_EXT = tuple(set(COMMON_EXT + DOWNLOAD_EXT + RAR_EXT))
+
 
 def has_common_extension(file_path: str) -> int:
     """returns boolean if the extension of file_path is a common, well-known extension"""
