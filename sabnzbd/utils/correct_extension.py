@@ -6,9 +6,10 @@
 
 import puremagic
 import os
+import sys
 
 # common extension from https://www.computerhope.com/issues/ch001789.htm
-commonextlist = [
+COMMON_EXT = (
     "3g2",
     "3gp",
     "7z",
@@ -156,9 +157,9 @@ commonextlist = [
     "xml",
     "z",
     "zip",
-]
+)
 
-downloadextlist = [
+DOWNLOAD_EXT = (
     "ass",
     "avi",
     "bat",
@@ -208,34 +209,6 @@ downloadextlist = [
     "plist",
     "png",
     "py",
-    "r00",
-    "r01",
-    "r02",
-    "r03",
-    "r04",
-    "r05",
-    "r06",
-    "r07",
-    "r08",
-    "r09",
-    "r10",
-    "r11",
-    "r12",
-    "r13",
-    "r14",
-    "r15",
-    "r16",
-    "r17",
-    "r18",
-    "r19",
-    "r21",
-    "r22",
-    "r23",
-    "r24",
-    "r25",
-    "r26",
-    "r27",
-    "r28",
     "rar",
     "releaseinfo",
     "rev",
@@ -257,15 +230,18 @@ downloadextlist = [
     "wmv",
     "xml",
     "xpi",
-]
+)
 
+RAR_EXT = tuple(["r"+str(i).zfill(2) for i in range(0,100)]) # "r00", "r01", ...
+
+ALL_EXT = tuple(set(COMMON_EXT + DOWNLOAD_EXT + RAR_EXT))
 
 def has_common_extension(file_path: str) -> int:
     """returns boolean if the extension of file_path is a common, well-known extension"""
     # TBD use SAB's own extension finder
     filename, file_extension = os.path.splitext(file_path)
     file_extension = file_extension[1:].lower()
-    return (file_extension in commonextlist) or (file_extension in downloadextlist)
+    return file_extension in ALL_EXT
 
 
 def all_possible_extensions(file_path: str) -> list:
@@ -280,7 +256,7 @@ def most_likely_extension(file_path: str) -> str:
     """Returns most_likely extension"""
     for possible_extension in all_possible_extensions(file_path):
         # let's see if technically-suggested extension is also likely IRL
-        if (possible_extension in commonextlist) or (possible_extension in downloadextlist):
+        if possible_extension in ALL_EXT:
             # Yes, looks likely
             return possible_extension
     # no common extension found, so just return the first
@@ -291,8 +267,6 @@ def most_likely_extension(file_path: str) -> str:
 
 
 def extension_matches(file_path: str) -> int:
-    import os
-
     # TBD use SAB's own extension finder
     filename, file_extension = os.path.splitext(file_path)
     file_extension = file_extension[1:].lower()
@@ -300,8 +274,6 @@ def extension_matches(file_path: str) -> int:
 
 
 if __name__ == "__main__":
-    import sys
-
     privacy = False
 
     # parse all parameters on CLI as files to be ext-checked

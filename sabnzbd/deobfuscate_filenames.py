@@ -135,9 +135,10 @@ def is_probably_obfuscated(myinputfilename):
 def deobfuscate_list(filelist, usefulname):
     """Check all files in filelist, and if wanted, deobfuscate: rename to filename based on usefulname"""
 
-    # Two methods
+    # Methods
     # 1. based on par2 (if any)
-    # 2. based on detecting obfuscated filenames
+    # 2. if no meaningful extension, add it
+    # 3. based on detecting obfuscated filenames
 
     # to be sure, only keep really exsiting files:
     filelist = [f for f in filelist if os.path.exists(f)]
@@ -173,7 +174,7 @@ def deobfuscate_list(filelist, usefulname):
                 # uncommon (so: obfuscated) extension
                 new_extension_to_add = correct_extension.most_likely_extension(file)
                 new_name = get_unique_filename("%s%s" % (file, new_extension_to_add))
-                logging.info("Deobfuscate renaming (add extension) %s to %s", file, new_name)
+                logging.info("Deobfuscate renaming (adding extension) %s to %s", file, new_name)
                 renamer(file, new_name)
                 newlist.append(new_name)
         filelist = newlist

@@ -41,14 +41,13 @@ class Test_Extension:
         assert correct_extension.has_common_extension("djjddj/aaaaa.epub")
         assert not correct_extension.has_common_extension("98ads098f098fa.a0ds98f098asdf")
 
+    '''
     def test_most_likely_extension(self):
         assert correct_extension.most_likely_extension("tests/data/test_extension/hello_world_mpthree.blabla") == "mp3"
-
+    '''
 
 class TestCorrect_Extension:
     def test_all_possible_extensions(self):
-
-        import os
 
         filename = "tests/data/par2file/basic_16k.par2"
         assert os.path.isfile(filename)
