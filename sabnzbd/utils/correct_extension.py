@@ -275,6 +275,7 @@ def all_possible_extensions(file_path: str) -> list:
         extension_list.append(i.extension)
     return extension_list
 
+
 def most_likely_extension(file_path: str) -> str:
     """ Returns most_likely extension"""
     for possible_extension in all_possible_extensions(file_path):

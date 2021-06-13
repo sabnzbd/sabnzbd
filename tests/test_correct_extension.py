@@ -33,6 +33,7 @@ class TestPuremagic:
         result = puremagic.magic_file(filename)
         assert result[0].extension == ".par2"
 
+
 class Test_Extension:
     def test_has_common_extension(self):
         assert correct_extension.has_common_extension("blabla/blabla.mkv")
@@ -43,10 +44,12 @@ class Test_Extension:
     def test_most_likely_extension(self):
         assert correct_extension.most_likely_extension("tests/data/test_extension/hello_world_mpthree.blabla") == "mp3"
 
+
 class TestCorrect_Extension:
     def test_all_possible_extensions(self):
 
         import os
+
         filename = "tests/data/par2file/basic_16k.par2"
         assert os.path.isfile(filename)
         extension_list = correct_extension.all_possible_extensions(filename)
