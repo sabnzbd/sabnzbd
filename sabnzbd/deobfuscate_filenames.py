@@ -165,8 +165,8 @@ def deobfuscate_list(filelist, usefulname):
         # Example: if 'kjladsflkjadf.adsflkjads' is probably a PNG, rename to 'kjladsflkjadf.adsflkjads.png'
         newlist = []
         for file in filelist:
-            logging.debug("SJ100: file is %s", file)
             if correct_extension.has_common_extension(file):
+                # common extension, like .doc or .iso, so assume OK and change nothing
                 logging.debug("extension of %s looks common", file)
                 newlist.append(file)
             else:

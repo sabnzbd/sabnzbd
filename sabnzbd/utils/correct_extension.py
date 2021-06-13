@@ -261,7 +261,7 @@ downloadextlist = [
 
 
 def has_common_extension(file_path: str) -> int:
-    """ returns boolean if the extension of file_path is a common, well-known extension"""
+    """returns boolean if the extension of file_path is a common, well-known extension"""
     # TBD use SAB's own extension finder
     filename, file_extension = os.path.splitext(file_path)
     file_extension = file_extension[1:].lower()
@@ -277,7 +277,7 @@ def all_possible_extensions(file_path: str) -> list:
 
 
 def most_likely_extension(file_path: str) -> str:
-    """ Returns most_likely extension"""
+    """Returns most_likely extension"""
     for possible_extension in all_possible_extensions(file_path):
         # let's see if technically-suggested extension is also likely IRL
         if (possible_extension in commonextlist) or (possible_extension in downloadextlist):
