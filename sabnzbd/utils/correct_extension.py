@@ -280,14 +280,14 @@ def most_likely_extension(file_path: str) -> str:
     """ Returns most_likely extension"""
     for possible_extension in all_possible_extensions(file_path):
         # let's see if technically-suggested extension is also likely IRL
-        print("SJ: possible_extension", possible_extension)
         if (possible_extension in commonextlist) or (possible_extension in downloadextlist):
             # Yes, looks likely
-            print("SJ: JA")
             return possible_extension
     # no common extension found, so just return the first
-    return all_possible_extensions(file_path)[0]
-
+    try:
+        return all_possible_extensions(file_path)[0]
+    except:
+        return ""
 
 def extension_matches(file_path: str) -> int:
     import os
@@ -309,6 +309,7 @@ if __name__ == "__main__":
             # privacy, please ... so only print last 10 chars of a file
             privacy = True
             continue
+
         file_path = sys.argv[i]
 
         if privacy:
@@ -317,7 +318,19 @@ if __name__ == "__main__":
             to_be_printed = file_path
 
         matching_ext = extension_matches(file_path)
+
+
+        if has_common_extension(file_path):
+            # a common extension, so let's see what puremagic says, so that we can learn
+            filename, file_extension = os.path.splitext(file_path)
+            file_extension = file_extension[1:].lower()
+
+            print("IRL-ext", file_extension, "most_likely", most_likely_extension(file_path), "puremagic", all_possible_extensions(file_path))
+
+
+        '''
         if matching_ext:
             print(True, has_common_extension(file_path), all_possible_extensions(file_path), to_be_printed)
         else:
             print(False, has_common_extension(file_path), all_possible_extensions(file_path), to_be_printed)
+        '''

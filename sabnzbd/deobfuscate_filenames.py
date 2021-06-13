@@ -35,6 +35,7 @@ import re
 
 from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
 from sabnzbd.par2file import is_parfile, parse_par2_file
+import sabnzbd.utils.correct_extension as correct_extension
 
 # Files to exclude and minimal file size for renaming
 EXCLUDED_FILE_EXTS = (".vob", ".rar", ".par2", ".mts", ".m2ts", ".cpi", ".clpi", ".mpl", ".mpls", ".bdm", ".bdmv")
@@ -157,6 +158,25 @@ def deobfuscate_list(filelist, usefulname):
                 run_renamer = False
             else:
                 logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
+
+    if run_renamer:
+        # let's see if there are files with uncommon (so: obfuscated) extensions
+        # if so, let's give them a better extension based on their internal content/info
+        # Example: if 'kjladsflkjadf.adsflkjads' is probably a PNG, rename to 'kjladsflkjadf.adsflkjads.png'
+        newlist = []
+        for file in filelist:
+            logging.debug("SJ100: file is %s", file)
+            if correct_extension.has_common_extension(file):
+                logging.debug("extension of %s looks common", file)
+                newlist.append(file)
+            else:
+                # uncommon (so: obfuscated) extension
+                new_extension_to_add = correct_extension.most_likely_extension(file)
+                new_name = get_unique_filename("%s%s" % (file, new_extension_to_add))
+                logging.info("Deobfuscate renaming (add extension) %s to %s", file, new_name)
+                renamer(file, new_name)
+                newlist.append(new_name)
+        filelist = newlist
 
     # No par2 files? Then we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
     if run_renamer:
