@@ -179,7 +179,7 @@ def deobfuscate_list(filelist, usefulname):
                 newlist.append(new_name)
         filelist = newlist
 
-    # No par2 files? Then we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
+    # Now we try to rename qualifying (big, not-excluded, obfuscated) files to the job-name
     if run_renamer:
         excluded_file_exts = EXCLUDED_FILE_EXTS
         # If there is a collection with bigger files with the same extension, we don't want to rename it
