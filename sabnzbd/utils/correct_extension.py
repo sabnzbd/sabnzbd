@@ -5,6 +5,267 @@
 
 
 import puremagic
+import os
+
+# common extension from https://www.computerhope.com/issues/ch001789.htm
+commonextlist = [
+    "3g2",
+    "3gp",
+    "7z",
+    "ai",
+    "aif",
+    "apk",
+    "arj",
+    "asp",
+    "aspx",
+    "avi",
+    "bak",
+    "bat",
+    "bin",
+    "bin",
+    "bmp",
+    "c",
+    "cab",
+    "cda",
+    "cer",
+    "cfg",
+    "cfm",
+    "cgi",
+    "cgi",
+    "cgi",
+    "class",
+    "com",
+    "cpl",
+    "cpp",
+    "cs",
+    "css",
+    "csv",
+    "cur",
+    "dat",
+    "db",
+    "dbf",
+    "deb",
+    "dll",
+    "dmg",
+    "dmp",
+    "doc",
+    "docx",
+    "drv",
+    "email",
+    "eml",
+    "emlx",
+    "exe",
+    "flv",
+    "fnt",
+    "fon",
+    "gadget",
+    "gif",
+    "h",
+    "h264",
+    "htm",
+    "html",
+    "icns",
+    "ico",
+    "ico",
+    "ini",
+    "iso",
+    "jar",
+    "java",
+    "jpeg",
+    "jpg",
+    "js",
+    "jsp",
+    "key",
+    "lnk",
+    "log",
+    "m4v",
+    "mdb",
+    "mid",
+    "midi",
+    "mkv",
+    "mov",
+    "mp3",
+    "mp4",
+    "mpa",
+    "mpeg",
+    "mpg",
+    "msg",
+    "msi",
+    "msi",
+    "odp",
+    "ods",
+    "odt",
+    "oft",
+    "ogg",
+    "ost",
+    "otf",
+    "part",
+    "pdf",
+    "php",
+    "php",
+    "pkg",
+    "pl",
+    "pl",
+    "pl",
+    "png",
+    "pps",
+    "ppt",
+    "pptx",
+    "ps",
+    "psd",
+    "pst",
+    "py",
+    "py",
+    "py",
+    "rar",
+    "rm",
+    "rpm",
+    "rss",
+    "rtf",
+    "sav",
+    "sh",
+    "sql",
+    "svg",
+    "swf",
+    "swift",
+    "sys",
+    "tar",
+    "tar",
+    "gz",
+    "tex",
+    "tif",
+    "tiff",
+    "tmp",
+    "toast",
+    "ttf",
+    "txt",
+    "vb",
+    "vcd",
+    "vcf",
+    "vob",
+    "wav",
+    "wma",
+    "wmv",
+    "wpd",
+    "wpl",
+    "wsf",
+    "xhtml",
+    "xls",
+    "xlsm",
+    "xlsx",
+    "xml",
+    "z",
+    "zip",
+]
+
+downloadextlist = [
+    "ass",
+    "avi",
+    "bat",
+    "bdmv",
+    "bin",
+    "bup",
+    "clpi",
+    "crx",
+    "db",
+    "diz",
+    "docx",
+    "epub",
+    "exe",
+    "flac",
+    "gif",
+    "gz",
+    "htm",
+    "html",
+    "icns",
+    "ico",
+    "idx",
+    "ifo",
+    "img",
+    "inf",
+    "info",
+    "ini",
+    "iso",
+    "jpg",
+    "log",
+    "m2ts",
+    "m3u",
+    "m4a",
+    "mkv",
+    "mp3",
+    "mp4",
+    "mpls",
+    "mx",
+    "nfo",
+    "nib",
+    "nzb",
+    "otf",
+    "par2",
+    "part",
+    "pdf",
+    "pem",
+    "php",
+    "plist",
+    "png",
+    "py",
+    "r00",
+    "r01",
+    "r02",
+    "r03",
+    "r04",
+    "r05",
+    "r06",
+    "r07",
+    "r08",
+    "r09",
+    "r10",
+    "r11",
+    "r12",
+    "r13",
+    "r14",
+    "r15",
+    "r16",
+    "r17",
+    "r18",
+    "r19",
+    "r21",
+    "r22",
+    "r23",
+    "r24",
+    "r25",
+    "r26",
+    "r27",
+    "r28",
+    "rar",
+    "releaseinfo",
+    "rev",
+    "sfv",
+    "sh",
+    "srr",
+    "srs",
+    "srt",
+    "strings",
+    "sub",
+    "sup",
+    "sys",
+    "tif",
+    "ttf",
+    "txt",
+    "url",
+    "vob",
+    "website",
+    "wmv",
+    "xml",
+    "xpi",
+]
+
+
+def has_common_extension(file_path: str) -> int:
+    """ returns boolean if the extension of file_path is a common, well-known extension"""
+    # TBD use SAB's own extension finder
+    filename, file_extension = os.path.splitext(file_path)
+    file_extension = file_extension[1:].lower()
+    return (file_extension in commonextlist) or (file_extension in downloadextlist)
 
 
 def all_possible_extensions(file_path: str) -> list:
@@ -14,18 +275,31 @@ def all_possible_extensions(file_path: str) -> list:
         extension_list.append(i.extension)
     return extension_list
 
+def most_likely_extension(file_path: str) -> str:
+    """ Returns most_likely extension"""
+    for possible_extension in all_possible_extensions(file_path):
+        # let's see if technically-suggested extension is also likely IRL
+        print("SJ: possible_extension", possible_extension)
+        if (possible_extension in commonextlist) or (possible_extension in downloadextlist):
+            # Yes, looks likely
+            print("SJ: JA")
+            return possible_extension
+    # no common extension found, so just return the first
+    return all_possible_extensions(file_path)[0]
+
 
 def extension_matches(file_path: str) -> int:
     import os
 
     # TBD use SAB's own extension finder
     filename, file_extension = os.path.splitext(file_path)
-    file_extension = file_extension.lower()
+    file_extension = file_extension[1:].lower()
     return file_extension in all_possible_extensions(file_path)
 
 
 if __name__ == "__main__":
     import sys
+
     privacy = False
 
     # parse all parameters on CLI as files to be ext-checked
@@ -35,12 +309,14 @@ if __name__ == "__main__":
             privacy = True
             continue
         file_path = sys.argv[i]
+
         if privacy:
             to_be_printed = file_path[-10:]
         else:
             to_be_printed = file_path
+
         matching_ext = extension_matches(file_path)
         if matching_ext:
-            print(True, all_possible_extensions(file_path), to_be_printed)
+            print(True, has_common_extension(file_path), all_possible_extensions(file_path), to_be_printed)
         else:
-            print(False, all_possible_extensions(file_path), to_be_printed)
+            print(False, has_common_extension(file_path), all_possible_extensions(file_path), to_be_printed)
