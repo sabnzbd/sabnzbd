@@ -236,6 +236,12 @@ function ViewModel() {
                     values: sabSpeedHistory
                 })
 
+                // Add option to open the server details tab
+                $('.sparkline-container').click(function() {
+                    $('a[href="#modal-options"]').trigger('click')
+                    $('a[href="#options_connections"]').trigger('click')
+                })
+
             } else {
                 // Update
                 $('.sparkline').text(self.speedHistory.join(",")).change()
