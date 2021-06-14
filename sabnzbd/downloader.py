@@ -38,6 +38,7 @@ import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo
 from sabnzbd.utils.happyeyeballs import happyeyeballs
+from sabnzbd.constants import Status, REPICKLE_TIMEOUT
 
 
 # Timeout penalty in minutes for each cause
@@ -635,6 +636,7 @@ class Downloader(Thread):
                     server.idle_threads.remove(nw)
                     server.busy_threads.append(nw)
 
+                    article.nzf.pickle_lock_time = now + REPICKLE_TIMEOUT
                     nw.article = article
 
                     if nw.connected:

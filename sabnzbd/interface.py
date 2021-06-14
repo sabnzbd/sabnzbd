@@ -984,6 +984,7 @@ GENERAL_LIST = (
     "refresh_rate",
     "language",
     "cache_limit",
+    "repickle_articles",
     "inet_exposure",
     "enable_https",
     "https_port",

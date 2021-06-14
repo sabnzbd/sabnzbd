@@ -211,6 +211,11 @@
                     <input type="text" name="cache_limit" id="cache_limit" value="$cache_limit" class="smaller_input" />
                     <span class="desc">$T('explain-cache_limitstr').replace("64M", "256M").replace("128M", "512M")</span>
                 </div>
+               <div class="field-pair advanced-settings">
+                    <label class="config" for="repickle_articles">$T('opt-repickle_articles')</label>
+                    <input type="checkbox" name="repickle_articles" id="repickle_articles" value="1" <!--#if int($repickle_articles)> 0 then 'checked="checked" data-original="1"' else ""#-->/>
+                    <span class="desc">$T('explain-repickle_articles')</span>
+                </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                 </div>
