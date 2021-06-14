@@ -35,7 +35,7 @@ import re
 
 from sabnzbd.filesystem import get_unique_filename, renamer, get_ext
 from sabnzbd.par2file import is_parfile, parse_par2_file
-import sabnzbd.utils.correct_extension as correct_extension
+import sabnzbd.utils.file_extension as file_extension
 
 # Files to exclude and minimal file size for renaming
 EXCLUDED_FILE_EXTS = (".vob", ".rar", ".par2", ".mts", ".m2ts", ".cpi", ".clpi", ".mpl", ".mpls", ".bdm", ".bdmv")
@@ -132,12 +132,12 @@ def is_probably_obfuscated(myinputfilename):
     return True  # default not obfuscated
 
 
-def deobfuscate_list(filelist, usefulname):
+def deobfuscate_list(filelist, usefulname, extension_too = True):
     """Check all files in filelist, and if wanted, deobfuscate: rename to filename based on usefulname"""
 
     # Methods
     # 1. based on par2 (if any)
-    # 2. if no meaningful extension, add it
+    # 2. if no meaningful extension, add it (unless extension_too == False)
     # 3. based on detecting obfuscated filenames
 
     # to be sure, only keep really exsiting files:
@@ -160,19 +160,22 @@ def deobfuscate_list(filelist, usefulname):
             else:
                 logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
 
-    if run_renamer:
-        # let's see if there are files with uncommon (so: obfuscated) extensions
+    if not run_renamer:
+        return # done
+
+    if run_renamer and extension_too:
+        # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
         # if so, let's give them a better extension based on their internal content/info
         # Example: if 'kjladsflkjadf.adsflkjads' is probably a PNG, rename to 'kjladsflkjadf.adsflkjads.png'
         newlist = []
         for file in filelist:
-            if correct_extension.has_common_extension(file):
+            if file_extension.has_popular_extension(file):
                 # common extension, like .doc or .iso, so assume OK and change nothing
                 logging.debug("extension of %s looks common", file)
                 newlist.append(file)
             else:
                 # uncommon (so: obfuscated) extension
-                new_extension_to_add = correct_extension.most_likely_extension(file)
+                new_extension_to_add = file_extension.what_is_most_likely_extension(file)
                 new_name = get_unique_filename("%s%s" % (file, new_extension_to_add))
                 logging.info("Deobfuscate renaming (adding extension) %s to %s", file, new_name)
                 renamer(file, new_name)

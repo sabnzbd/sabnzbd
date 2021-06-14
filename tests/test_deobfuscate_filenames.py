@@ -95,7 +95,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        deobfuscate_list(myfilelist, jobname, extension_too = False)
 
         # Check original files:
         assert not os.path.isfile(output_file1)  # original filename should not be there anymore
@@ -138,7 +138,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        deobfuscate_list(myfilelist, jobname, extension_too = False)
 
         # Check original files:
         assert not os.path.isfile(output_file1)  # original filename should not be there anymore
@@ -174,7 +174,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        deobfuscate_list(myfilelist, jobname, extension_too = False)
 
         # Check original files:
         assert not os.path.isfile(output_file1)  # original filename should not be there anymore
@@ -218,7 +218,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        deobfuscate_list(myfilelist, jobname, extension_too = False)
 
         # Check original files:
         assert not os.path.isfile(isofile)  # original iso not be there anymore
@@ -269,7 +269,7 @@ class TestDeobfuscateFinalResult:
 
         # and now unleash the magic on that filelist, with a more useful jobname:
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        deobfuscate_list(myfilelist, jobname, extension_too = False)
 
         # Check original files:
         # the collection with same extension should still be there:
@@ -292,14 +292,14 @@ class TestDeobfuscateFinalResult:
         # non existing file
         myfilelist = ["/bla/bla/notthere.bin"]
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        deobfuscate_list(myfilelist, jobname, extension_too = False)
 
         # Create directory with a directory name to could be renamed
         dirname = os.path.join(SAB_DATA_DIR, "333c1c9e2bdfb5114044bf25152b7eaa.bla")
         os.mkdir(dirname)
         myfilelist = [dirname]
         jobname = "My Important Download 2020"
-        deobfuscate_list(myfilelist, jobname)
+        deobfuscate_list(myfilelist, jobname, extension_too = False)
         assert os.path.exists(dirname)
         shutil.rmtree(dirname)
 

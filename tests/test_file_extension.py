@@ -21,7 +21,7 @@ Testing SABnzbd correct extension functionality module
 
 import os
 from tests.testhelper import *
-import sabnzbd.utils.correct_extension as correct_extension
+import sabnzbd.utils.file_extension as file_extension
 
 
 class TestPuremagic:
@@ -33,29 +33,26 @@ class TestPuremagic:
         result = puremagic.magic_file(filename)
         assert result[0].extension == ".par2"
 
+class Test_File_Extension:
+    def test_has_popular_extension(self):
+        assert file_extension.has_popular_extension("blabla/blabla.mkv")
+        assert file_extension.has_popular_extension("blabla/blabla.srt")
+        assert file_extension.has_popular_extension("djjddj/aaaaa.epub")
+        assert not file_extension.has_popular_extension("98ads098f098fa.a0ds98f098asdf")
 
-class Test_Extension:
-    def test_has_common_extension(self):
-        assert correct_extension.has_common_extension("blabla/blabla.mkv")
-        assert correct_extension.has_common_extension("blabla/blabla.srt")
-        assert correct_extension.has_common_extension("djjddj/aaaaa.epub")
-        assert not correct_extension.has_common_extension("98ads098f098fa.a0ds98f098asdf")
-
-    '''
-    def test_most_likely_extension(self):
-        assert correct_extension.most_likely_extension("tests/data/test_extension/hello_world_mpthree.blabla") == "mp3"
-    '''
-
-
-class TestCorrect_Extension:
-    def test_all_possible_extensions(self):
-
-        filename = "tests/data/par2file/basic_16k.par2"
+    def test_what_is_most_likely_extension(self):
+        filename = "tests/data/test_file_extension/apeeengeee" # A PNG
         assert os.path.isfile(filename)
-        extension_list = correct_extension.all_possible_extensions(filename)
-        assert ".par2" in extension_list
+        assert file_extension.what_is_most_likely_extension(filename) == ".png"
 
-        filename = "tests/data/test_extension/hello_world_mpthree.blabla"
+        filename = "tests/data/test_file_extension/somepeedeef" # Some PDF
         assert os.path.isfile(filename)
-        extension_list = correct_extension.all_possible_extensions(filename)
-        assert ".mpga" in extension_list  # puremagic says it's mpga, not mp3 ...
+        assert file_extension.what_is_most_likely_extension(filename) == ".pdf"
+
+        filename = "tests/data/test_file_extension/my_matroska" # my Matroska MKV
+        assert os.path.isfile(filename)
+        assert file_extension.what_is_most_likely_extension(filename) == ".mkv"
+
+
+
+

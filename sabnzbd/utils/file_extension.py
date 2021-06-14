@@ -7,9 +7,10 @@
 import puremagic
 import os
 import sys
+import typing
 
 # common extension from https://www.computerhope.com/issues/ch001789.htm
-COMMON_EXT = (
+POPULAR_EXT = (
     "3g2",
     "3gp",
     "7z",
@@ -235,44 +236,40 @@ DOWNLOAD_EXT = (
 RAR_EXT = tuple(["r" + str(i).zfill(2) for i in range(0, 100)])  # "r00", "r01", ...
 
 # combine to one tuple, with unique entries:
-ALL_EXT = tuple(set(COMMON_EXT + DOWNLOAD_EXT + RAR_EXT))
+ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT + RAR_EXT))
 
 
-def has_common_extension(file_path: str) -> int:
-    """returns boolean if the extension of file_path is a common, well-known extension"""
-    # TBD use SAB's own extension finder
+def has_popular_extension(file_path: str) -> bool:
+    """returns boolean if the extension of file_path is a popular, well-known extension"""
+    # TODO use SAB's own extension finder
     filename, file_extension = os.path.splitext(file_path)
-    file_extension = file_extension[1:].lower()
+    file_extension = file_extension[1:].lower() # do not include the dot
     return file_extension in ALL_EXT
 
 
-def all_possible_extensions(file_path: str) -> list:
-    """returns a list with all possible extensions for given file_path"""
+def all_possible_extensions(file_path: str) -> typing.List:
+    """returns a list with all possible extensions for given file_path as reported by puremagic"""
     extension_list = []
     for i in puremagic.magic_file(file_path):
         extension_list.append(i.extension)
     return extension_list
 
 
-def most_likely_extension(file_path: str) -> str:
+def what_is_most_likely_extension(file_path: str) -> str:
     """Returns most_likely extension"""
     for possible_extension in all_possible_extensions(file_path):
         # let's see if technically-suggested extension is also likely IRL
         if possible_extension in ALL_EXT:
             # Yes, looks likely
             return possible_extension
-    # no common extension found, so just return the first
+
+    # TODO: check if text or NZB, as puremagic is not good at that.
+
+    # no popular extension found, so just trust puremagic and return the first (if any)
     try:
         return all_possible_extensions(file_path)[0]
     except:
         return ""
-
-
-def extension_matches(file_path: str) -> int:
-    # TBD use SAB's own extension finder
-    filename, file_extension = os.path.splitext(file_path)
-    file_extension = file_extension[1:].lower()
-    return file_extension in all_possible_extensions(file_path)
 
 
 if __name__ == "__main__":
@@ -292,9 +289,7 @@ if __name__ == "__main__":
         else:
             to_be_printed = file_path
 
-        matching_ext = extension_matches(file_path)
-
-        if has_common_extension(file_path):
+        if has_popular_extension(file_path):
             # a common extension, so let's see what puremagic says, so that we can learn
             filename, file_extension = os.path.splitext(file_path)
             file_extension = file_extension[1:].lower()
@@ -303,14 +298,8 @@ if __name__ == "__main__":
                 "IRL-ext",
                 file_extension,
                 "most_likely",
-                most_likely_extension(file_path),
+                what_is_most_likely_extension(file_path),
                 "puremagic",
                 all_possible_extensions(file_path),
             )
 
-        """
-        if matching_ext:
-            print(True, has_common_extension(file_path), all_possible_extensions(file_path), to_be_printed)
-        else:
-            print(False, has_common_extension(file_path), all_possible_extensions(file_path), to_be_printed)
-        """
