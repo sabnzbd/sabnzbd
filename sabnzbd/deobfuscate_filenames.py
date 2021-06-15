@@ -132,7 +132,7 @@ def is_probably_obfuscated(myinputfilename):
     return True  # default not obfuscated
 
 
-def deobfuscate_list(filelist, usefulname, extension_too = True):
+def deobfuscate_list(filelist, usefulname, extension_too=True):
     """Check all files in filelist, and if wanted, deobfuscate: rename to filename based on usefulname"""
 
     # Methods
@@ -161,7 +161,7 @@ def deobfuscate_list(filelist, usefulname, extension_too = True):
                 logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
 
     if not run_renamer:
-        return # done
+        return  # done
 
     if run_renamer and extension_too:
         # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions

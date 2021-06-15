@@ -33,6 +33,7 @@ class TestPuremagic:
         result = puremagic.magic_file(filename)
         assert result[0].extension == ".par2"
 
+
 class Test_File_Extension:
     def test_has_popular_extension(self):
         assert file_extension.has_popular_extension("blabla/blabla.mkv")
@@ -41,18 +42,14 @@ class Test_File_Extension:
         assert not file_extension.has_popular_extension("98ads098f098fa.a0ds98f098asdf")
 
     def test_what_is_most_likely_extension(self):
-        filename = "tests/data/test_file_extension/apeeengeee" # A PNG
+        filename = "tests/data/test_file_extension/apeeengeee"  # A PNG
         assert os.path.isfile(filename)
         assert file_extension.what_is_most_likely_extension(filename) == ".png"
 
-        filename = "tests/data/test_file_extension/somepeedeef" # Some PDF
+        filename = "tests/data/test_file_extension/somepeedeef"  # Some PDF
         assert os.path.isfile(filename)
         assert file_extension.what_is_most_likely_extension(filename) == ".pdf"
 
-        filename = "tests/data/test_file_extension/my_matroska" # my Matroska MKV
+        filename = "tests/data/test_file_extension/my_matroska"  # my Matroska MKV
         assert os.path.isfile(filename)
         assert file_extension.what_is_most_likely_extension(filename) == ".mkv"
-
-
-
-

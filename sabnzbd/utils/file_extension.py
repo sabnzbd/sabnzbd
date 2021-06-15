@@ -243,7 +243,7 @@ def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
     # TODO use SAB's own extension finder
     filename, file_extension = os.path.splitext(file_path)
-    file_extension = file_extension[1:].lower() # do not include the dot
+    file_extension = file_extension[1:].lower()  # do not include the dot
     return file_extension in ALL_EXT
 
 
@@ -302,4 +302,3 @@ if __name__ == "__main__":
                 "puremagic",
                 all_possible_extensions(file_path),
             )
-
