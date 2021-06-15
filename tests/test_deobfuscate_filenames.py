@@ -326,3 +326,4 @@ class TestDeobfuscateFinalResult:
         os.rename(test_output, test_input)
         assert os.path.exists(test_input)
         # done
+
