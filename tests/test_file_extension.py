@@ -53,3 +53,11 @@ class Test_File_Extension:
         filename = "tests/data/test_file_extension/my_matroska"  # my Matroska MKV
         assert os.path.isfile(filename)
         assert file_extension.what_is_most_likely_extension(filename) == ".mkv"
+
+        filename = "tests/data/test_file_extension/sometxtfile"  # some txt file
+        assert os.path.isfile(filename)
+        assert file_extension.what_is_most_likely_extension(filename) == ".txt"
+
+        filename = "tests/data/test_file_extension/some_nzb_file"  # some txt file
+        assert os.path.isfile(filename)
+        assert file_extension.what_is_most_likely_extension(filename) == ".nzb"

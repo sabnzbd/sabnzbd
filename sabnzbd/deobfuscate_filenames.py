@@ -182,6 +182,7 @@ def deobfuscate_list(filelist, usefulname, extension_too=True):
                     renamer(file, new_name)
                     newlist.append(new_name)
                 else:
+                    # no new extension found
                     newlist.append(file)
         filelist = newlist
 

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.1//EN" "http://www.newzbin.com/DTD/nzb/nzb-1.1.dtd">
+<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb">
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601671" subject="mix no ext 38f38a34acc2 [02/10] - &quot;inthemix.par2&quot; yEnc (1/1) 39860">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="41232" number="1">QoEbWuJpTnYmReOxUbFmBvLx-1623601671928@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601671" subject="mix no ext 38f38a34acc2 [03/10] - &quot;inthemix.vol000+001.par2&quot; yEnc (1/1) 40196">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="41590" number="1">OfUzNpRoQlEkAkJwUoHxJlJj-1623601671929@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601671" subject="mix no ext 38f38a34acc2 [04/10] - &quot;inthemix.vol001+002.par2&quot; yEnc (1/1) 40532">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="41938" number="1">TsNlKcDyMiCiNeHrMhFrQwPu-1623601671929@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601672" subject="mix no ext 38f38a34acc2 [06/10] - &quot;inthemix.vol007+008.par2&quot; yEnc (1/1) 122036">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="125956" number="1">RvFtBzLeVzYhCiSjNkYqPkYv-1623601672004@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601672" subject="mix no ext 38f38a34acc2 [05/10] - &quot;inthemix.vol003+004.par2&quot; yEnc (1/1) 80948">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="83601" number="1">CyBcLhFsErVvWhKaJbKySsLh-1623601672003@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601671" subject="mix no ext 38f38a34acc2 [01/10] - &quot;inthemix.rar&quot; yEnc (1/1) 528471">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="544152" number="1">ZtFjLqEiBmQgZyHyRjIvLmDq-1623601671925@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601672" subject="mix no ext 38f38a34acc2 [07/10] - &quot;inthemix.vol015+016.par2&quot; yEnc (1/1) 164468">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="169681" number="1">ZbBmMqCmJyRgOjAiSgMmFhUs-1623601672012@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601672" subject="mix no ext 38f38a34acc2 [08/10] - &quot;inthemix.vol031+032.par2&quot; yEnc (1/1) 209588">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="216211" number="1">OmEhDrElGwEkYrHsTcFlYeYp-1623601672019@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601672" subject="mix no ext 38f38a34acc2 [09/10] - &quot;inthemix.vol063+064.par2&quot; yEnc (1/1) 260084">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="268274" number="1">SkUsGaAkBjNpHoCsLtLiBcYn-1623601672044@nyuu</segment>
+		</segments>
+	</file>
+	<file poster="blablamannetje &lt;blabla@example.com&gt;" date="1623601672" subject="mix no ext 38f38a34acc2 [10/10] - &quot;inthemix.vol127+071.par2&quot; yEnc (1/1) 262436">
+		<groups>
+			<group>alt.binaries.test</group>
+		</groups>
+		<segments>
+			<segment bytes="270671" number="1">PfYdNqVpPpLvOqTvYrXoRbQi-1623601672045@nyuu</segment>
+		</segments>
+	</file>
+</nzb>

@@ -8,6 +8,7 @@ import puremagic
 import os
 import sys
 import typing
+from pathlib import Path
 
 # common extension from https://www.computerhope.com/issues/ch001789.htm
 POPULAR_EXT = (
@@ -263,7 +264,18 @@ def what_is_most_likely_extension(file_path: str) -> str:
             # Yes, looks likely
             return possible_extension
 
-    # TODO: check if text or NZB, as puremagic is not good at that.
+    # Check if text or NZB, as puremagic is not good at that.
+    try:
+        txt = Path(file_path).read_text()
+        # Yes, a text file ... so let's check if it's even an NZB:
+        if txt.lower().find("<nzb xmlns=") >= 0 or txt.lower().find("!doctype nzb public") >= 0:
+            # yes, contains NZB signals:
+            return ".nzb"
+        else:
+            return ".txt"
+    except:
+        # not txt, and thus not nzb either
+        pass
 
     # no popular extension found, so just trust puremagic and return the first (if any)
     try:
