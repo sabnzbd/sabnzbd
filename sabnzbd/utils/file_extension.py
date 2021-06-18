@@ -172,6 +172,7 @@ DOWNLOAD_EXT = (
     "crx",
     "db",
     "diz",
+    "djvu",
     "docx",
     "epub",
     "exe",
