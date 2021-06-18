@@ -1,5 +1,14 @@
-Release Notes - SABnzbd 3.3.0 
+Release Notes - SABnzbd 3.3.1
 =========================================================
+
+## Changes and bugfixes since 3.3.0
+- Include wiki URL in `External internet access denied` message.
+  https://sabnzbd.org/access-denied
+- Open the desired tab directly by URL in Glitter tabbed-mode.
+- Some filenames could be missed when parsing the NZB file.
+- API-call `history` would not filter active post-processing by `nzo_ids`.
+- Passwords for encrypted jobs were tried in a random order.
+- Clean invalid data from download statistics.
 
 ## Changes since 3.2.1
 - The `External internet access` will automatically detect local network
