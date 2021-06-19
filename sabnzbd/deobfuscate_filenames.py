@@ -161,6 +161,7 @@ def deobfuscate_list(filelist, usefulname, extension_too=True):
                 logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
 
     if par2_renaming_done:
+        # TODO really needed to quit here?
         return  # done
 
     if extension_too:
