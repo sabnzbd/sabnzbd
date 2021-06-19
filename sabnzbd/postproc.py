@@ -65,13 +65,12 @@ from sabnzbd.filesystem import (
     get_filename,
 )
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.sorting import Sorter
+from sabnzbd.sorting import Sorter, is_sample
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
     FORCE_PRIORITY,
     POSTPROC_QUEUE_FILE_NAME,
     POSTPROC_QUEUE_VERSION,
-    sample_match,
     JOB_ADMIN,
     Status,
     VERIFIED_FILE,
@@ -92,9 +91,6 @@ import sabnzbd.deobfuscate_filenames as deobfuscate
 
 
 MAX_FAST_JOB_COUNT = 3
-
-# Match samples
-RE_SAMPLE = re.compile(sample_match, re.I)
 
 
 class PostProcessor(Thread):
@@ -515,10 +511,7 @@ def process_job(nzo: NzbObject):
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
             if all_ok and file_sorter.sort_file:
                 if newfiles:
-                    file_sorter.rename(newfiles, workdir_complete)
-                    workdir_complete, ok = file_sorter.move(workdir_complete)
-                else:
-                    workdir_complete, ok = file_sorter.rename_with_ext(workdir_complete)
+                    workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
                 if not ok:
                     nzo.set_unpack_info("Unpack", T("Failed to move files"))
                     all_ok = False
@@ -749,7 +742,7 @@ def parring(nzo: NzbObject, workdir: str):
         # Need to make a copy because it can change during iteration
         single = len(nzo.extrapars) == 1
         for setname in list(nzo.extrapars):
-            if cfg.ignore_samples() and RE_SAMPLE.search(setname.lower()):
+            if cfg.ignore_samples() and is_sample(setname.lower()):
                 continue
             # Skip sets that were already tried
             if not verified.get(setname, False):
@@ -1156,7 +1149,7 @@ def remove_samples(path):
     for root, _dirs, files in os.walk(path):
         for file_to_match in files:
             nr_files += 1
-            if RE_SAMPLE.search(file_to_match):
+            if is_sample(file_to_match):
                 files_to_delete.append(os.path.join(root, file_to_match))
 
     # Make sure we skip false-positives

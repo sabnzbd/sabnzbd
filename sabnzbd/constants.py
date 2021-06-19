@@ -123,25 +123,6 @@ CHEETAH_DIRECTIVES = {"directiveStartToken": "<!--#", "directiveEndToken": "#-->
 
 IGNORED_FOLDERS = ("@eaDir", ".appleDouble")
 
-# (MATCHER, [EXTRA, MATCHERS])
-series_match = [
-    (compile(r"( [sS]|[\d]+)x(\d+)"), [compile(r"^[-\.]+([sS]|[\d])+x(\d+)"), compile(r"^[-\.](\d+)")]),  # 1x01
-    (
-        compile(r"[Ss](\d+)[\.\-]?[Ee](\d+)"),  # S01E01
-        [compile(r"^[-\.]+[Ss](\d+)[\.\-]?[Ee](\d+)"), compile(r"^[-\.](\d+)")],
-    ),
-    (compile(r"[ \-_\.](\d)(\d{2,2})[ \-_\.]"), []),  # .101. / _101_ / etc.
-    (compile(r"[ \-_\.](\d)(\d{2,2})$"), []),  # .101 at end of title
-]
-
-date_match = [r"(\d{4})\W(\d{1,2})\W(\d{1,2})", r"(\d{1,2})\W(\d{1,2})\W(\d{4})"]  # 2008-10-16  # 10.16.2008
-
-year_match = r"[\W]([1|2]\d{3})([^\w]|$)"  # Something '(YYYY)' or '.YYYY.' or ' YYYY '
-
-sample_match = r"((^|[\W_])(sample|proof))"  # something-sample or something-proof
-
-resolution_match = r"(^|[\W_])((240|360|480|540|576|720|900|1080|1440|2160|4320)[piP])([\W_]|$)"  # 576i, 720p, 1080P
-
 
 class Status:
     IDLE = "Idle"  # Q: Nothing in the queue

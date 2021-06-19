@@ -8,6 +8,7 @@ cherrypy
 portend
 chardet
 notify2
+guessit>=3.1.0  # https://github.com/guessit-io/guessit/pull/536 needed for sample detection
 
 # Windows system integration
 pywin32>=227; sys_platform == 'win32'
