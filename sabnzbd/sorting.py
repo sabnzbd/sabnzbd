@@ -34,11 +34,9 @@ import sabnzbd
 from sabnzbd.filesystem import (
     move_to_path,
     cleanup_empty_directories,
-    get_unique_path,
     get_unique_filename,
     get_ext,
     renamer,
-    sanitize_and_trim_path,
     sanitize_foldername,
     clip_path,
 )
@@ -53,6 +51,8 @@ LOWERCASE = ("the", "of", "and", "at", "vs", "a", "an", "but", "nor", "for", "on
 UPPERCASE = ("III", "II", "IV")
 
 REPLACE_AFTER = {"()": "", "..": ".", "__": "_", "  ": " ", " .%ext": ".%ext"}
+
+RE_GI = re.compile(r"(%G([._]?)I<([\w]+)>)")  # %GI<property>, %G.I<property>, or %G_I<property>
 
 # Title() function messes up country names, so need to replace them instead
 COUNTRY_REP = (
@@ -119,7 +119,7 @@ COUNTRY_REP = (
 )
 
 
-class SuperSorter:
+class BaseSorter:
     """Common methods for Sorter classes"""
 
     def __init__(
@@ -128,6 +128,8 @@ class SuperSorter:
         job_name: str,
         path: str,
         cat: str,
+        sort_string: str,
+        cats: str,
         guess: Optional[MatchesDict],
         force: Optional[bool] = False,
     ) -> None:
@@ -143,6 +145,8 @@ class SuperSorter:
         self.type = None
         self.guess = guess
         self.force = force
+        self.sort_string = sort_string
+        self.cats = cats
 
         # Check categories and do the guessing work, if necessary
         self.match()
@@ -276,7 +280,6 @@ class SuperSorter:
                 mapping.append(("%0d", self.info["day_two"]))
 
         # Handle generic guessit markers
-        RE_GI = re.compile(r"(%G([._]?)I<([\w]+)>)")  # %GI<property>, %G.I<property>, or %G_I<property>
         for marker, spacer, guess_property in re.findall(RE_GI, sorter):
             value = self.guess.get(guess_property, "") if self.guess else ""
             # Guessit returns a list for some properties in case they have multiple entries/values
@@ -386,7 +389,7 @@ class Sorter:
         return self.sorter.rename(newfiles, workdir_complete)
 
 
-class SeriesSorter(SuperSorter):
+class SeriesSorter(BaseSorter):
     """Methods for Series Sorting"""
 
     def __init__(
@@ -398,10 +401,8 @@ class SeriesSorter(SuperSorter):
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ) -> None:
-        self.sort_string = cfg.tv_sort_string()
-        self.cats = cfg.tv_categories()
 
-        super().__init__(nzo, job_name, path, cat, guess, force)
+        super().__init__(nzo, job_name, path, cat, cfg.tv_sort_string(), cfg.tv_categories(), guess, force)
 
     def match(self) -> None:
         """Try to guess series info if config and category sort out or force is set"""
@@ -455,7 +456,7 @@ class SeriesSorter(SuperSorter):
             return super().rename(files, current_path, cfg.episode_rename_limit.get_int())
 
 
-class MovieSorter(SuperSorter):
+class MovieSorter(BaseSorter):
     """Methods for Movie Sorting"""
 
     def __init__(
@@ -467,11 +468,9 @@ class MovieSorter(SuperSorter):
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ) -> None:
-        self.sort_string = cfg.movie_sort_string()
         self.extra = cfg.movie_sort_extra()
-        self.cats = cfg.movie_categories()
 
-        super().__init__(nzo, job_name, path, cat, guess, force)
+        super().__init__(nzo, job_name, path, cat, cfg.movie_sort_string(), cfg.movie_categories(), guess, force)
 
     def match(self) -> None:
         """Try to guess movie info if config and category sort out or force is set"""
@@ -514,7 +513,7 @@ class MovieSorter(SuperSorter):
         if len(files) == 1:
             return super().rename(files, current_path, cfg.movie_rename_limit.get_int())
 
-        # Multiple files, check for sequencial filenames
+        # Multiple files, check for sequential filenames
         elif files and self.extra:
             matched_files = check_for_multiple(files)
             if matched_files:
@@ -541,7 +540,7 @@ class MovieSorter(SuperSorter):
         return move_to_parent_directory(current_path)
 
 
-class DateSorter(SuperSorter):
+class DateSorter(BaseSorter):
     """Methods for Date Sorting"""
 
     def __init__(
@@ -553,10 +552,8 @@ class DateSorter(SuperSorter):
         guess: Optional[MatchesDict] = None,
         force: Optional[bool] = False,
     ) -> None:
-        self.sort_string = cfg.date_sort_string()
-        self.cats = cfg.date_categories()
 
-        super().__init__(nzo, job_name, path, cat, guess, force)
+        super().__init__(nzo, job_name, path, cat, cfg.date_sort_string(), cfg.date_categories(), guess, force)
 
     def match(self) -> None:
         """Checks the category for a match, if so set self.matched to true"""
@@ -663,14 +660,15 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
 
     # Try to avoid setting the type to movie on arbitrary jobs (e.g. 'Setup.exe') just because guessit defaults to that
     table = str.maketrans({char: "" for char in whitespace + "_.-()[]{}"})
-    if (
-        guess.get("type") == "movie"
-        and not sort_type == "movie"  # No movie hint
-        and not any([key in guess for key in ("year", "screen_size", "video_codec")])  # No typical movie properties set
-    ):
-        # Check for full name used as title, or weird chars in group
-        if guess.get("title").translate(table) == name.translate(table) or any(
-            c in guess.get("release_group", "") for c in (whitespace + punctuation)
+    if guess.get("type") == "movie" and not sort_type == "movie":  # No movie hint
+        if (
+            guess.get("title").translate(table) == name.translate(table)  # Check for full name used as title
+            or any(
+                c in guess.get("release_group", "") for c in (whitespace + punctuation)
+            )  # interpuction of white spaces in the groupname
+            or not any(
+                [key in guess for key in ("year", "screen_size", "video_codec")]
+            )  # No typical movie properties set
         ):
             guess["type"] = "unknown"
 
@@ -744,7 +742,7 @@ def get_titles(
         if guess:
             title = guess.get("title", "")
             if title and "country" in guess:
-                title += " (" + guess.get("country").alpha2 + ")"  # Append ' (CC)'
+                title += " (" + str(guess.get("country")) + ")"  # Append ' (CC)'
 
         # Fallback to the jobname if neither of the better options yielded a title
         if not title:

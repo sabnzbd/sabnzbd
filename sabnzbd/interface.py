@@ -1899,7 +1899,7 @@ class ConfigSorting:
         for kw in SORT_LIST:
             conf[kw] = config.get_config("misc", kw)()
         conf["categories"] = list_cats(False)
-        conf["guessitProperties"] = tuple(guessit_properties().keys())
+        conf["guessit_properties"] = tuple(guessit_properties().keys())
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_sorting.tmpl"),
