@@ -447,13 +447,15 @@ class SeriesSorter(BaseSorter):
         """Fetch the guessed episode number(s)"""
         self.format_series_numbers(self.guess.get("episode", 1), "episode_num")
 
-    def rename(self, files: List[str], current_path: str) -> Tuple[str, bool]:
+    def rename(
+        self, files: List[str], current_path: str, min_size: int = cfg.episode_rename_limit.get_int()
+    ) -> Tuple[str, bool]:
         """Rename for Series"""
         if not self.do_rename:
             return current_path, False
         else:
             logging.debug("Renaming series file(s)")
-            return super().rename(files, current_path, cfg.episode_rename_limit.get_int())
+            return super().rename(files, current_path, min_size)
 
 
 class MovieSorter(BaseSorter):
@@ -489,7 +491,7 @@ class MovieSorter(BaseSorter):
         self.get_resolution()
         self.get_names()
 
-    def rename(self, files, current_path) -> Tuple[str, bool]:
+    def rename(self, files, current_path, min_size: int = cfg.movie_rename_limit.get_int()) -> Tuple[str, bool]:
         """Rename for movie files"""
         if not self.do_rename:
             return current_path, False
@@ -498,11 +500,7 @@ class MovieSorter(BaseSorter):
         def filter_files(f, current_path):
             filepath = os.path.normpath(f) if is_full_path(f) else os.path.normpath(os.path.join(current_path, f))
             if os.path.exists(filepath):
-                if (
-                    os.stat(filepath).st_size >= cfg.movie_rename_limit.get_int()
-                    and not is_sample(f)
-                    and get_ext(f) not in EXCLUDED_FILE_EXTS
-                ):
+                if os.stat(filepath).st_size >= min_size and not is_sample(f) and get_ext(f) not in EXCLUDED_FILE_EXTS:
                     return True
             return False
 
@@ -511,7 +509,7 @@ class MovieSorter(BaseSorter):
 
         # Single movie file
         if len(files) == 1:
-            return super().rename(files, current_path, cfg.movie_rename_limit.get_int())
+            return super().rename(files, current_path, min_size)
 
         # Multiple files, check for sequential filenames
         elif files and self.extra:
@@ -582,13 +580,15 @@ class DateSorter(BaseSorter):
         self.get_names()
         self.get_showdescriptions()
 
-    def rename(self, files: List[str], current_path: str) -> Tuple[str, bool]:
+    def rename(
+        self, files: List[str], current_path: str, min_size: int = cfg.episode_rename_limit.get_int()
+    ) -> Tuple[str, bool]:
         """Renaming Date file"""
         if not self.do_rename:
             return current_path, False
         else:
             logging.debug("Renaming date file(s)")
-            return super().rename(files, current_path, cfg.episode_rename_limit.get_int())
+            return super().rename(files, current_path, min_size)
 
 
 def ends_in_file(path: str) -> bool:

@@ -627,7 +627,7 @@ class TestSortingSorters:
             sorter = s_class(None, job_name, job_dir, "*", force=True)
             sorter.get_values()
             sorter.construct_path()
-            sort_dest, is_ok = sorter.rename(all_files, job_dir)
+            sort_dest, is_ok = sorter.rename(all_files, job_dir, size_limit)
 
             # Check the result
             try:
