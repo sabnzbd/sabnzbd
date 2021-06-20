@@ -701,7 +701,11 @@ def is_sample(filename: str) -> bool:
         return True
 
     # If that didn't work, start guessing
-    return ("Sample" or "Proof") in guess_what(filename).get("other", "")
+    guess = guess_what(filename).get("other", "")
+    if isinstance(guess, list):
+        return any(item in ("Sample", "Proof") for item in guess)
+    else:
+        return guess in ("Sample", "Proof")
 
 
 def path_subst(path: str, mapping: List[Tuple[str, str]]) -> str:

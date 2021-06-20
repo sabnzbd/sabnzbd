@@ -97,6 +97,10 @@ class TestSortingFunctions:
             ("Wot.Eva.540i.WEB-DL.aac.H264-Groupie sample.mp4", True),
             ("file-sample.mkv", True),
             ("PROOF.JPG", True),
+            ("Bla.s01e02.title.1080p.aac-sample proof.mkv", True),
+            ("Bla.s01e02.title.1080p.aac-proof.mkv", True),
+            ("Bla.s01e02.title.1080p.aac sample proof.mkv", True),
+            ("Bla.s01e02.title.1080p.aac proof.mkv", True),
             ("Not Death Proof (2022) 1080p x264 (DD5.1) BE Subs", False),  # Try to trigger some false positives
             ("Proof.of.Everything.(2042).4320p.x266-4U", False),
             ("Crime_Scene_S01E13_Free_Sample_For_Sale_480p-OhDear", False),
