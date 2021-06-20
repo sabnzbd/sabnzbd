@@ -425,7 +425,7 @@ class BPSMeter:
         # We record every second, but display at the user's refresh-rate
         return self.bps_list[::refresh_rate]
 
-    def get_stable_speed(self, timespan: int = 10):
+    def get_stable_speed(self, timespan: int = 10) -> Optional[int]:
         """See if there is a stable speed the last <timespan> seconds
         None: indicates it can't determine yet
         0: the speed was not stable during <timespan>
