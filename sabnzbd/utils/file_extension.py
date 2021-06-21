@@ -25,7 +25,6 @@ POPULAR_EXT = (
     "bak",
     "bat",
     "bin",
-    "bin",
     "bmp",
     "c",
     "cab",
@@ -235,10 +234,8 @@ DOWNLOAD_EXT = (
     "xpi",
 )
 
-RAR_EXT = tuple(["r" + str(i).zfill(2) for i in range(0, 100)])  # "r00", "r01", ...
-
 # combine to one tuple, with unique entries:
-ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT + RAR_EXT))
+ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
 
 
 def has_popular_extension(file_path: str) -> bool:
