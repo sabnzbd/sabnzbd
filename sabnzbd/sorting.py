@@ -664,7 +664,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
 
     if digit_fix:
         # Unfix the title
-        guess["title"] = guess["title"][len(digit_fix) :]
+        guess["title"] = guess.get("title", "")[len(digit_fix) :]
 
     # Force season to 1 for seasonless episodes with no date
     if guess.get("type") == "episode" and not "date" in guess:
