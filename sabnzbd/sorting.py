@@ -674,7 +674,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
     table = str.maketrans({char: "" for char in whitespace + "_.-()[]{}"})
     if guess.get("type") == "movie" and not sort_type == "movie":  # No movie hint
         if (
-            guess.get("title").translate(table) == name.translate(table)  # Check for full name used as title
+            guess.get("title", "").translate(table) == name.translate(table)  # Check for full name used as title
             or any(
                 c in guess.get("release_group", "") for c in (whitespace + punctuation)
             )  # interpuction of white spaces in the groupname
