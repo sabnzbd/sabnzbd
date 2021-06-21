@@ -42,6 +42,7 @@ class Test_File_Extension:
         assert not file_extension.has_popular_extension("98ads098f098fa.a0ds98f098asdf")
 
     def test_what_is_most_likely_extension(self):
+        # These are real-content files, where the contents determine the extension
         filename = "tests/data/test_file_extension/apeeengeee"  # A PNG
         assert os.path.isfile(filename)
         assert file_extension.what_is_most_likely_extension(filename) == ".png"
