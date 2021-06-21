@@ -9,6 +9,7 @@ import os
 import sys
 import typing
 from pathlib import Path
+from sabnzbd.filesystem import get_ext
 
 # common extension from https://www.computerhope.com/issues/ch001789.htm
 POPULAR_EXT = (
@@ -240,9 +241,7 @@ ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
 
 def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
-    # TODO use SAB's own extension finder
-    filename, file_extension = os.path.splitext(file_path)
-    file_extension = file_extension[1:].lower()  # do not include the dot
+    file_extension = get_ext(file_path)[1:]
     return file_extension in ALL_EXT
 
 

@@ -161,7 +161,7 @@ def deobfuscate_list(filelist, usefulname):
                 logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
 
     if par2_renaming_done:
-        # TODO really needed to quit here?
+        # TODO really needed to quit here? We could also proceed with the other actions. Anyway:
         return  # done
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
