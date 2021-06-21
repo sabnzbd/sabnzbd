@@ -94,7 +94,6 @@ RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')
 # Otherwise something that looks like a filename
 RE_SUBJECT_BASIC_FILENAME = re.compile(r"([\w\-+()'\s.,]+\.[A-Za-z0-9]{2,4})[^A-Za-z0-9]")
 RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
-RE_PROPER = re.compile(r"(^|[\. _-])(PROPER|REAL|REPACK)([\. _-]|$)")
 
 
 ##############################################################################
@@ -1973,39 +1972,38 @@ class NzbObject(TryList):
         no_series_dupes = cfg.no_series_dupes()
         series_propercheck = cfg.series_propercheck()
 
-        # abort logic if dupe check is off for both nzb+series
+        # Abort if dupe check is off for both nzb and series
         if not no_dupes and not no_series_dupes:
             return False, False
 
         series = False
         res = False
-        history_db = HistoryDB()
 
-        # dupe check off nzb contents
-        if no_dupes:
-            res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
-            logging.debug(
-                "Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s", self.filename, self.md5sum, res
-            )
-            if not res and cfg.backup_for_duplicates():
-                res = sabnzbd.backup_exists(self.filename)
-                logging.debug("Dupe checking NZB against backup: filename=%s, result=%s", self.filename, res)
-        # dupe check off nzb filename
-        if not res and no_series_dupes:
-            series, season, episode, misc = sabnzbd.newsunpack.analyse_show(self.final_name)
-            if RE_PROPER.match(misc) and series_propercheck:
-                logging.debug("Dupe checking series+season+ep in history aborted due to PROPER/REAL/REPACK found")
-            else:
-                res = history_db.have_episode(series, season, episode)
+        with HistoryDB() as history_db:
+            # Dupe check off nzb contents
+            if no_dupes:
+                res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
                 logging.debug(
-                    "Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s",
-                    series,
-                    season,
-                    episode,
-                    res,
+                    "Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s", self.filename, self.md5sum, res
                 )
+                if not res and cfg.backup_for_duplicates():
+                    res = sabnzbd.backup_exists(self.filename)
+                    logging.debug("Dupe checking NZB against backup: filename=%s, result=%s", self.filename, res)
+            # Dupe check off nzb filename
+            if not res and no_series_dupes:
+                series, season, episode, _, is_proper = sabnzbd.newsunpack.analyse_show(self.final_name)
+                if is_proper and series_propercheck:
+                    logging.debug("Dupe checking series+season+ep in history aborted due to PROPER/REAL/REPACK found")
+                else:
+                    res = history_db.have_episode(series, season, episode)
+                    logging.debug(
+                        "Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s",
+                        series,
+                        season,
+                        episode,
+                        res,
+                    )
 
-        history_db.close()
         return res, series
 
     def is_gone(self):

@@ -690,3 +690,22 @@ class TestSortingSorters:
             assert generic.sorter.__class__ is result_class
         else:
             assert not generic.sorter
+
+    @pytest.mark.parametrize(
+        "name, result",
+        [
+            ("Undrinkable.2010.PROPER", True),
+            ("Undrinkable.2010.EXTENDED.DVDRip.XviD-MoveIt", False),
+            ("The.Choir.S01E02.The.Details.AC3.DVDRip.XviD-AD1100", False),
+            ("The.Choir.S01E02.The.Real.Details.AC3.DVDRip.XviD-AD1100", False),
+            ("The.Choir.S01E02.The.Details.REAL.AC3.DVDRip.XviD-AD1100", True),
+            ("real.steal.2011.dvdrip.xvid.ac3-4lt1n", False),
+            ("The.Stalking.Mad.S88E01.repack.ReaL.PROPER.CONVERT.1080p.WEB.h265-BTS", True),
+            ("The.Stalking.Mad.S88E01.CONVERT.1080p.WEB.h265-BTS", False),
+        ],
+    )
+    def test_sorter_is_proper(self, name, result):
+        """Test the is_proper method of the BaseSorter class"""
+        sorter = sorting.BaseSorter.__new__(sorting.BaseSorter)  # Skip __init__
+        sorter.guess = sorting.guess_what(name)
+        assert sorter.is_proper() is result

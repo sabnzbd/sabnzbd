@@ -202,6 +202,15 @@ class BaseSorter:
             except TypeError:
                 pass
 
+    def is_proper(self):
+        """Determine if the release is tagged 'Proper'. Note that guessit also sets this for similar
+        tags such as 'Real' and 'Repack', saving us the trouble of checking for additional keywords."""
+        other = self.guess.get("other", "")
+        if isinstance(other, list):
+            return "Proper" in other
+        else:
+            return other == "Proper"
+
     def construct_path(self) -> str:
         """Map all markers and replace the sort string with real values"""
         sorter = self.sort_string
@@ -447,10 +456,10 @@ class SeriesSorter(BaseSorter):
         """Fetch the guessed episode number(s)"""
         self.format_series_numbers(self.guess.get("episode", 1), "episode_num")
 
-    def rename(
-        self, files: List[str], current_path: str, min_size: int = cfg.episode_rename_limit.get_int()
-    ) -> Tuple[str, bool]:
+    def rename(self, files: List[str], current_path: str, min_size: int = -1) -> Tuple[str, bool]:
         """Rename for Series"""
+        if min_size < 0:
+            min_size = cfg.episode_rename_limit.get_int()
         if not self.do_rename:
             return current_path, False
         else:
@@ -491,8 +500,11 @@ class MovieSorter(BaseSorter):
         self.get_resolution()
         self.get_names()
 
-    def rename(self, files, current_path, min_size: int = cfg.movie_rename_limit.get_int()) -> Tuple[str, bool]:
+    def rename(self, files, current_path, min_size: int = -1) -> Tuple[str, bool]:
         """Rename for movie files"""
+        if min_size < 0:
+            min_size = cfg.movie_rename_limit.get_int()
+
         if not self.do_rename:
             return current_path, False
         logging.debug("Renaming movie file(s)")
@@ -580,10 +592,10 @@ class DateSorter(BaseSorter):
         self.get_names()
         self.get_showdescriptions()
 
-    def rename(
-        self, files: List[str], current_path: str, min_size: int = cfg.episode_rename_limit.get_int()
-    ) -> Tuple[str, bool]:
+    def rename(self, files: List[str], current_path: str, min_size: int = -1) -> Tuple[str, bool]:
         """Renaming Date file"""
+        if min_size < 0:
+            min_size = cfg.episode_rename_limit.get_int()
         if not self.do_rename:
             return current_path, False
         else:

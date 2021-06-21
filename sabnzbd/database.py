@@ -271,8 +271,8 @@ class HistoryDB:
             if to_keep > 0:
                 logging.info("Removing all but last %s completed jobs from history", to_keep)
                 return self.execute(
-                    """DELETE FROM history WHERE status = ? AND id NOT IN ( 
-                        SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ? 
+                    """DELETE FROM history WHERE status = ? AND id NOT IN (
+                        SELECT id FROM history WHERE status = ? ORDER BY completed DESC LIMIT ?
                     )""",
                     (Status.COMPLETED, Status.COMPLETED, to_keep),
                     save=True,
@@ -346,7 +346,6 @@ class HistoryDB:
     def have_episode(self, series, season, episode):
         """Check whether History contains this series episode"""
         total = 0
-        series = series.lower().replace(".", " ").replace("_", " ").replace("  ", " ")
         if series and season and episode:
             pattern = "%s/%s/%s" % (series, season, episode)
             if self.execute(
@@ -477,7 +476,7 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
     # Analyze series info only when job is finished
     series = ""
     if series_info:
-        seriesname, season, episode, _ = sabnzbd.newsunpack.analyse_show(nzo.final_name)
+        seriesname, season, episode = sabnzbd.newsunpack.analyse_show(nzo.final_name)[:3]
         if seriesname and season and episode:
             series = "%s/%s/%s" % (seriesname.lower(), season, episode)
 

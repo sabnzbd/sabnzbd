@@ -2298,7 +2298,7 @@ def crc_calculate(path):
     return b"%08x" % (crc & 0xFFFFFFFF)
 
 
-def analyse_show(name: str) -> Tuple[str, str, str, str]:
+def analyse_show(name: str) -> Tuple[str, str, str, str, bool]:
     """Do a quick SeasonSort check and return basic facts"""
     job = SeriesSorter(None, name, None, None, force=True)
     if job.matched:
@@ -2308,6 +2308,7 @@ def analyse_show(name: str) -> Tuple[str, str, str, str]:
         job.info.get("season_num", ""),
         job.info.get("episode_num", ""),
         job.info.get("ep_name", ""),
+        job.is_proper(),
     )
 
 
@@ -2336,7 +2337,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
             str(nzo.bytes),
             " ".join(nzo.groups),
         ]
-        command.extend(analyse_show(nzo.final_name_with_password))
+        command.extend(analyse_show(nzo.final_name_with_password)[:4])
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly
