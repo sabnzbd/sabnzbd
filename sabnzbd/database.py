@@ -347,7 +347,7 @@ class HistoryDB:
         """Check whether History contains this series episode"""
         total = 0
         if series and season and episode:
-            pattern = "%s/%s/%s" % (series, season, episode)
+            pattern = "%s/%s/%s" % (series.lower(), season, episode)
             if self.execute(
                 """SELECT COUNT(*) FROM History WHERE series = ? AND STATUS != ?""", (pattern, Status.FAILED)
             ):
