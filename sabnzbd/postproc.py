@@ -512,9 +512,9 @@ def process_job(nzo: NzbObject):
             if all_ok and file_sorter.sort_file:
                 if newfiles:
                     workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
-                if not ok:
-                    nzo.set_unpack_info("Unpack", T("Failed to move files"))
-                    all_ok = False
+                    if not ok:
+                        nzo.set_unpack_info("Unpack", T("Failed to move files"))
+                        all_ok = False
 
             if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list:
                 # Deobfuscate the filenames
