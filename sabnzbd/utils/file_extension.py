@@ -241,11 +241,11 @@ ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
 
 def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
-    file_extension = get_ext(file_path)[1:]
+    file_extension = get_ext(file_path)[1:]  # without the dot
     return file_extension in ALL_EXT
 
 
-def all_possible_extensions(file_path: str) -> typing.List:
+def all_possible_extensions(file_path: str) -> typing.List[str]:
     """returns a list with all possible extensions for given file_path as reported by puremagic"""
     extension_list = []
     for i in puremagic.magic_file(file_path):
@@ -256,7 +256,7 @@ def all_possible_extensions(file_path: str) -> typing.List:
 def what_is_most_likely_extension(file_path: str) -> str:
     """Returns most_likely extension"""
     for possible_extension in all_possible_extensions(file_path):
-        # let's see if technically-suggested extension is also likely IRL
+        # let's see if technically-suggested extension by puremagic is also likely IRL
         if possible_extension in ALL_EXT:
             # Yes, looks likely
             return possible_extension
@@ -267,14 +267,14 @@ def what_is_most_likely_extension(file_path: str) -> str:
         # Yes, a text file ... so let's check if it's even an NZB:
         if txt.lower().find("<nzb xmlns=") >= 0 or txt.lower().find("!doctype nzb public") >= 0:
             # yes, contains NZB signals:
-            return ".nzb"
+            return "nzb"
         else:
-            return ".txt"
+            return "txt"
     except:
-        # not txt, and thus not nzb either
+        # not txt (and not nzb)
         pass
 
-    # no popular extension found, so just trust puremagic and return the first (if any)
+    # no popular extension found, so just trust puremagic and return the first extension (if any)
     try:
         return all_possible_extensions(file_path)[0]
     except:
