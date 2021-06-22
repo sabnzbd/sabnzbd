@@ -1,13 +1,14 @@
 #!/usr/bin/python3
 
 """ function to check and find correct extension of a (deobfuscated) file
+Note: extension always contains a leading dot
 """
 
 
 import puremagic
 import os
 import sys
-import typing
+from typing import List
 from pathlib import Path
 from sabnzbd.filesystem import get_ext
 
@@ -156,7 +157,6 @@ POPULAR_EXT = (
     "xls",
     "xlsm",
     "xlsx",
-    "xml",
     "z",
     "zip",
 )
@@ -231,22 +231,23 @@ DOWNLOAD_EXT = (
     "vob",
     "website",
     "wmv",
-    "xml",
     "xpi",
 )
 
 # combine to one tuple, with unique entries:
 ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
+# prepend a dot to each extension, because we work with a leading dot in extensions
+ALL_EXT = tuple(["." + i for i in ALL_EXT])
 
 
 def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
-    file_extension = get_ext(file_path)[1:]  # without the dot
+    file_extension = get_ext(file_path)
     return file_extension in ALL_EXT
 
 
-def all_possible_extensions(file_path: str) -> typing.List[str]:
-    """returns a list with all possible extensions for given file_path as reported by puremagic"""
+def all_possible_extensions(file_path: str) -> List[str]:
+    """returns a list with all possible extensions (with leading dot) for given file_path as reported by puremagic"""
     extension_list = []
     for i in puremagic.magic_file(file_path):
         extension_list.append(i.extension)
@@ -254,7 +255,7 @@ def all_possible_extensions(file_path: str) -> typing.List[str]:
 
 
 def what_is_most_likely_extension(file_path: str) -> str:
-    """Returns most_likely extension"""
+    """Returns most_likely extension, with a leading dot"""
     for possible_extension in all_possible_extensions(file_path):
         # let's see if technically-suggested extension by puremagic is also likely IRL
         if possible_extension in ALL_EXT:
@@ -267,9 +268,9 @@ def what_is_most_likely_extension(file_path: str) -> str:
         # Yes, a text file ... so let's check if it's even an NZB:
         if txt.lower().find("<nzb xmlns=") >= 0 or txt.lower().find("!doctype nzb public") >= 0:
             # yes, contains NZB signals:
-            return "nzb"
+            return ".nzb"
         else:
-            return "txt"
+            return ".txt"
     except:
         # not txt (and not nzb)
         pass
