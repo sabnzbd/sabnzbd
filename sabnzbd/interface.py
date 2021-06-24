@@ -72,7 +72,7 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
 import sabnzbd.utils.ssdp
-from sabnzbd.constants import DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
+from sabnzbd.constants import DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
@@ -1899,7 +1899,9 @@ class ConfigSorting:
         for kw in SORT_LIST:
             conf[kw] = config.get_config("misc", kw)()
         conf["categories"] = list_cats(False)
-        conf["guessit_properties"] = tuple(guessit_properties().keys())
+        conf["guessit_properties"] = tuple(
+            prop for prop in guessit_properties().keys() if prop not in EXCLUDED_GUESSIT_PROPERTIES
+        )
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_sorting.tmpl"),

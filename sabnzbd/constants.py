@@ -123,6 +123,10 @@ CHEETAH_DIRECTIVES = {"directiveStartToken": "<!--#", "directiveEndToken": "#-->
 
 IGNORED_FOLDERS = ("@eaDir", ".appleDouble")
 
+EXCLUDED_GUESSIT_PROPERTIES = [
+    "part",
+]
+
 
 class Status:
     IDLE = "Idle"  # Q: Nothing in the queue
