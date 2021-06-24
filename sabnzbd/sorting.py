@@ -41,6 +41,7 @@ from sabnzbd.filesystem import (
     clip_path,
 )
 import sabnzbd.cfg as cfg
+from sabnzbd.constants import EXCLUDED_GUESSIT_PROPERTIES
 from sabnzbd.nzbstuff import NzbObject, scan_password
 
 
@@ -651,9 +652,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
         "expected_title": [],  # This isn't empty by default?
         # "allowed_countries": [],
         # "allowed_languages": [],
-        "excludes": [
-            "part",  # Handled by more powerful check_for_sequence()
-        ],
+        "excludes": EXCLUDED_GUESSIT_PROPERTIES,
     }
     if sort_type:
         # Hint the type if known
