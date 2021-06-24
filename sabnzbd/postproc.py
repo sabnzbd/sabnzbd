@@ -65,7 +65,7 @@ from sabnzbd.filesystem import (
     get_filename,
 )
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.sorting import Sorter, is_sample
+from sabnzbd.sorting import Sorter, is_sample, move_to_parent_directory
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
     FORCE_PRIORITY,
@@ -512,6 +512,8 @@ def process_job(nzo: NzbObject):
             if all_ok and file_sorter.sort_file:
                 if newfiles:
                     workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
+                    if not ok:
+                        workdir_complete, ok = move_to_parent_directory(workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         all_ok = False
