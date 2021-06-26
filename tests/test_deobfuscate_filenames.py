@@ -307,7 +307,6 @@ class TestDeobfuscateFinalResult:
         test_dir = os.path.join(SAB_DATA_DIR, "deobfuscate_filenames")
         test_input = os.path.join(test_dir, "E0CcYdGDFbeCAsT3LoID")
         test_output = os.path.join(test_dir, "random.bin")
-
         # Check if it is there
         assert os.path.exists(test_input)
 
