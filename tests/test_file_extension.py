@@ -24,16 +24,6 @@ from tests.testhelper import *
 import sabnzbd.utils.file_extension as file_extension
 
 
-class TestPuremagic:
-    def test_puremagic_magic_file(self):
-        import puremagic  # direct access only in this test function
-
-        filename = "tests/data/par2file/basic_16k.par2"
-        assert os.path.isfile(filename)
-        result = puremagic.magic_file(filename)
-        assert result[0].extension == ".par2"
-
-
 class Test_File_Extension:
     def test_has_popular_extension(self):
         assert file_extension.has_popular_extension("blabla/blabla.mkv")

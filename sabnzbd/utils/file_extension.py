@@ -271,7 +271,7 @@ def what_is_most_likely_extension(file_path: str) -> str:
             return ".nzb"
         else:
             return ".txt"
-    except:
+    except UnicodeDecodeError:
         # not txt (and not nzb)
         pass
 
