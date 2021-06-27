@@ -45,10 +45,10 @@ class Test_File_Extension:
         assert os.path.isfile(filename)
         assert file_extension.what_is_most_likely_extension(filename) == ".mkv"
 
-        filename = "tests/data/test_file_extension/sometxtfile"  # some txt file
+        filename = "tests/data/test_file_extension/sometxtfile"  # a txt file
         assert os.path.isfile(filename)
         assert file_extension.what_is_most_likely_extension(filename) == ".txt"
 
-        filename = "tests/data/test_file_extension/some_nzb_file"  # some txt file
+        filename = "tests/data/test_file_extension/some_nzb_file"  # a NZB file
         assert os.path.isfile(filename)
         assert file_extension.what_is_most_likely_extension(filename) == ".nzb"
