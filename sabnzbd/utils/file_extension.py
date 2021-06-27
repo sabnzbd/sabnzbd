@@ -278,7 +278,7 @@ def what_is_most_likely_extension(file_path: str) -> str:
     # no popular extension found, so just trust puremagic and return the first extension (if any)
     try:
         return all_possible_extensions(file_path)[0]
-    except:
+    except IndexError:
         return ""
 
 
