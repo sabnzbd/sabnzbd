@@ -55,70 +55,6 @@ REPLACE_AFTER = {"()": "", "..": ".", "__": "_", "  ": " ", " .%ext": ".%ext"}
 
 RE_GI = re.compile(r"(%G([._]?)I<([\w]+)>)")  # %GI<property>, %G.I<property>, or %G_I<property>
 
-# Title() function messes up country names, so need to replace them instead
-COUNTRY_REP = (
-    "(US)",
-    "(UK)",
-    "(EU)",
-    "(CA)",
-    "(YU)",
-    "(VE)",
-    "(TR)",
-    "(CH)",
-    "(SE)",
-    "(ES)",
-    "(KR)",
-    "(ZA)",
-    "(SK)",
-    "(SG)",
-    "(RU)",
-    "(RO)",
-    "(PR)",
-    "(PT)",
-    "(PL)",
-    "(PH)",
-    "(PK)",
-    "(NO)",
-    "(NG)",
-    "(NZ)",
-    "(NL)",
-    "(MX)",
-    "(MY)",
-    "(MK)",
-    "(KZ)",
-    "(JP)",
-    "(JM)",
-    "(IT)",
-    "(IL)",
-    "(IE)",
-    "(IN)",
-    "(IS)",
-    "(HU)",
-    "(HK)",
-    "(HN)",
-    "(GR)",
-    "(GH)",
-    "(DE)",
-    "(FR)",
-    "(FI)",
-    "(DK)",
-    "(CZ)",
-    "(HR)",
-    "(CR)",
-    "(CO)",
-    "(CN)",
-    "(CL)",
-    "(BG)",
-    "(BR)",
-    "(BE)",
-    "(AT)",
-    "(AU)",
-    "(AW)",
-    "(AR)",
-    "(AL)",
-    "(AF)",
-)
-
 
 class BaseSorter:
     """Common methods for Sorter classes"""
@@ -739,7 +675,7 @@ def path_subst(path: str, mapping: List[Tuple[str, str]]) -> str:
 
 
 def get_titles(
-    nzo: Optional[NzbObject], guess: MatchesDict, jobname: str, titleing: bool = False
+    nzo: Optional[NzbObject], guess: Optional[MatchesDict], jobname: str, titleing: bool = False
 ) -> Tuple[str, str, str]:
     """Get the title from NZB metadata or jobname, and return it in various formats. Formatting
     mostly deals with working around quirks of Python's str.title(). NZB metadata is used as-is,
@@ -752,16 +688,9 @@ def get_titles(
         # Try guessit next
         if guess:
             title = guess.get("title", "")
-            if title and "country" in guess:
-                title += " (" + str(guess.get("country")) + ")"  # Append ' (CC)'
 
         # Fallback to the jobname if neither of the better options yielded a title
         if not title:
-            # Format country codes in jobname
-            for rep in COUNTRY_REP:
-                jobname = replace_word(jobname, rep.lower(), rep)  # (us) > (US)
-                jobname = replace_word(jobname, rep.title(), rep)  # (Us) > (US)
-                jobname = replace_word(jobname, ".%s." % (rep.strip("()")), rep)  # .US. > (US)
             title = jobname.replace(".", " ").replace("_", " ").strip(whitespace + "._-")
 
         if titleing:
@@ -770,10 +699,6 @@ def get_titles(
 
             # Get rid of 's uppercased by str.title()
             title = title.replace("'S", "'s")
-
-            # Replace titled country names, (Us) with (US) and so on
-            for rep in COUNTRY_REP:
-                title = title.replace(rep.title(), rep)
 
             # Make sure some words such as 'and' or 'of' stay lowercased.
             for x in LOWERCASE:
@@ -788,6 +713,9 @@ def get_titles(
             # Make sure the first letter of the title is always uppercase
             if title:
                 title = title[0].title() + title[1:]
+
+        if guess and "country" in guess:
+            title += " " + str(guess.get("country"))  # Append ' CC'
 
     # Alternative formats
     dots = re.sub(
