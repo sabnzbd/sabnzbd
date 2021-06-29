@@ -8,6 +8,7 @@ cherrypy
 portend
 chardet
 notify2
+puremagic
 
 # Windows system integration
 pywin32>=227; sys_platform == 'win32'
