@@ -562,6 +562,9 @@ SKIN_TEXT = {
     "explain-deobfuscate_final_filenames": TT(
         "If filenames of (large) files in the final folder look obfuscated or meaningless they will be renamed to the job name."
     ),
+    "explain-deobfuscate_final_filenames-ext": TT(
+        "Additionally, attempts to set the correct file extension based on the file signature if the extension is not present or meaningless."
+    ),
     "opt-enable_https_verification": TT("HTTPS certificate verification"),
     "explain-enable_https_verification": TT(
         "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
