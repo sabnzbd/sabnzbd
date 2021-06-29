@@ -17,9 +17,6 @@
 
 """
 sabnzbd.sorting - Sorting Functions
-Series Sorting - Sorting downloads into seasons & episodes
-Date Sorting - Sorting downloads by a custom date matching
-Generic Sorting - Sorting large files by a custom matching
 """
 
 import os
@@ -54,6 +51,9 @@ UPPERCASE = ("III", "II", "IV")
 REPLACE_AFTER = {"()": "", "..": ".", "__": "_", "  ": " ", " .%ext": ".%ext"}
 
 RE_GI = re.compile(r"(%G([._]?)I<([\w]+)>)")  # %GI<property>, %G.I<property>, or %G_I<property>
+
+# Prevent guessit/rebulk from spamming the log when debug logging is active in SABnzbd
+logging.getLogger("rebulk").setLevel(logging.WARNING)
 
 
 class BaseSorter:

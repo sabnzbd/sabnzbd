@@ -44,7 +44,7 @@ class TestSortingFunctions:
             (
                 "25.817.hdtv-rofl",
                 {"type": "episode", "title": "25", "season": 8, "episode": 17},
-            ),  # Guessit comes up with bad episode info: [24, 17]
+            ),  # Guessit comes up with bad episode info: [25, 17]
             (
                 "The.Wonders.of.Usenet.E08.2160p-SABnzbd",
                 {"type": "episode", "season": 1, "episode": 8},
