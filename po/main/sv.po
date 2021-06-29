@@ -3645,6 +3645,12 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid ""
+"Additionally, attempts to set the correct file extension based on the file "
+"signature if the extension is not present or meaningless."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
 msgstr ""
 
