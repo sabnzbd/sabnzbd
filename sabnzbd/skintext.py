@@ -827,6 +827,11 @@ SKIN_TEXT = {
     "button-DailyF": TT("Daily Folders"),
     "case-adjusted": TT("case-adjusted"),  #: Note for title expression in Sorting that does case adjustment
     "sortResult": TT("Processed Result"),
+    "sort-guessitMeaning": TT("Any property"),
+    "sort-guessitProperty": TT("property"),
+    "guessit-sp-property": TT("GuessIt Property"),
+    "guessit-dot-property": TT("GuessIt.Property"),
+    "guessit-us-property": TT("GuessIt_Property"),
     # Config->Special
     "explain-special": TT(
         "Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>"

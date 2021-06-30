@@ -34,6 +34,7 @@ from random import randint
 from xml.sax.saxutils import escape
 from Cheetah.Template import Template
 from typing import Optional, Callable, Union
+from guessit.api import properties as guessit_properties
 
 import sabnzbd
 import sabnzbd.rss
@@ -71,7 +72,7 @@ from sabnzbd.utils.diskspeed import diskspeedmeasure
 from sabnzbd.utils.getperformance import getpystone
 from sabnzbd.utils.internetspeed import internetspeed
 import sabnzbd.utils.ssdp
-from sabnzbd.constants import DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES
+from sabnzbd.constants import DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
 from sabnzbd.lang import list_languages
 from sabnzbd.api import (
     list_scripts,
@@ -924,6 +925,7 @@ SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
     "size_limit",
     "movie_rename_limit",
+    "episode_rename_limit",
     "nomedia_marker",
     "max_url_retries",
     "req_completion_rate",
@@ -1897,6 +1899,9 @@ class ConfigSorting:
         for kw in SORT_LIST:
             conf[kw] = config.get_config("misc", kw)()
         conf["categories"] = list_cats(False)
+        conf["guessit_properties"] = tuple(
+            prop for prop in guessit_properties().keys() if prop not in EXCLUDED_GUESSIT_PROPERTIES
+        )
 
         template = Template(
             file=os.path.join(sabnzbd.WEB_DIR_CONFIG, "config_sorting.tmpl"),
