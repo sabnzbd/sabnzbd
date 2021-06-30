@@ -719,7 +719,9 @@ def get_titles(
 
     # Alternative formats
     dots = re.sub(
-        "\.{2,}", ".", title.replace(" - ", "-").replace(" ", ".").replace("_", ".").replace("(", ".").replace(")", ".")
+        r"\.{2,}",
+        ".",
+        title.replace(" - ", "-").replace(" ", ".").replace("_", ".").replace("(", ".").replace(")", "."),
     ).rstrip(".")
     underscores = re.sub("_{2,}", "_", title.replace(" ", "_").replace(".", "_")).rstrip("_")
 
