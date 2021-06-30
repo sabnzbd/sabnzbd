@@ -449,8 +449,8 @@ class TestSortingSorters:
                 sorting.SeriesSorter,
                 "rose's_BEAUTY_parlour",
                 "%sn/S%0sE%0e - %en/%sn - S%0sE%0e - %en.%ext",
-                "Rose's Beauty Parlour/S01E01 -",
-                "Rose's Beauty Parlour - S01E01 -",
+                "Rose's Beauty Parlour/S01E -",  # Season defaults to '1' if missing, episode doesn't
+                "Rose's Beauty Parlour - S01E -",
             ),
             (
                 sorting.SeriesSorter,

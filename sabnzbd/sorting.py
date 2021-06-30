@@ -387,11 +387,11 @@ class SeriesSorter(BaseSorter):
 
     def get_seasons(self) -> None:
         """Fetch the guessed season number(s)"""
-        self.format_series_numbers(self.guess.get("season", 1), "season_num")
+        self.format_series_numbers(self.guess.get("season", ""), "season_num")
 
     def get_episodes(self) -> None:
         """Fetch the guessed episode number(s)"""
-        self.format_series_numbers(self.guess.get("episode", 1), "episode_num")
+        self.format_series_numbers(self.guess.get("episode", ""), "episode_num")
 
     def rename(self, files: List[str], current_path: str, min_size: int = -1) -> Tuple[str, bool]:
         """Rename for Series"""
