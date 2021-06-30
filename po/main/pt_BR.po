@@ -578,8 +578,7 @@ msgstr ""
 "Por favor, arrume espaço e continue SABnzbd manualmente.\n"
 "\n"
 
-#. Error message
-#: sabnzbd/filesystem.py, sabnzbd/sorting.py
+#: sabnzbd/filesystem.py
 msgid "Cannot create directory %s"
 msgstr "Não é possível criar a pasta %s"
 
@@ -4592,6 +4591,26 @@ msgid "Processed Result"
 msgstr "Resultado Processado"
 
 #: sabnzbd/skintext.py
+msgid "Any property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt.Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt_Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
 "Rarely used options. For their meaning and explanation, click on the Help "
 "button to go to the Wiki page.<br>Don't change these without checking the "
@@ -5033,11 +5052,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Não tem um provedor usenet? Recomendamos testar %s."
-
-#. Error message
-#: sabnzbd/sorting.py
-msgid "Error getting TV info (%s)"
-msgstr "Erro ao obter informações de TV (%s)"
 
 #. Error message
 #: sabnzbd/sorting.py

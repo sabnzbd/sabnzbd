@@ -576,8 +576,7 @@ msgstr ""
 "אנא פנה מקום והמשך את SABnzbd באופן ידני.\n"
 "\n"
 
-#. Error message
-#: sabnzbd/filesystem.py, sabnzbd/sorting.py
+#: sabnzbd/filesystem.py
 msgid "Cannot create directory %s"
 msgstr "לא ניתן ליצור את התיקייה %s"
 
@@ -3668,6 +3667,8 @@ msgid ""
 "Additionally, attempts to set the correct file extension based on the file "
 "signature if the extension is not present or meaningless."
 msgstr ""
+"בנוסף, מנסה להגדיר את סיומת הקובץ הנכונה על סמך חתימת הקובץ אם הסיומת אינה "
+"נוכחת או חסרת משמעות."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
@@ -4602,6 +4603,26 @@ msgid "Processed Result"
 msgstr "תוצאה מעובדת"
 
 #: sabnzbd/skintext.py
+msgid "Any property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt.Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt_Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
 "Rarely used options. For their meaning and explanation, click on the Help "
 "button to go to the Wiki page.<br>Don't change these without checking the "
@@ -5044,11 +5065,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "אין לך ספק Usenet? אנו ממליצים לנסות את %s."
-
-#. Error message
-#: sabnzbd/sorting.py
-msgid "Error getting TV info (%s)"
-msgstr "שגיאה בהשגת מידע טלוויזיה (%s)"
 
 #. Error message
 #: sabnzbd/sorting.py
