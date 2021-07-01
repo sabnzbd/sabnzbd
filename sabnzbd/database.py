@@ -343,7 +343,7 @@ class HistoryDB:
 
         return items, total_items
 
-    def have_episode(self, series, season, episode):
+    def have_episode(self, series: str, season: str, episode: str) -> bool:
         """Check whether History contains this series episode"""
         total = 0
         if series and season and episode:
@@ -354,7 +354,7 @@ class HistoryDB:
                 total = self.c.fetchone()["COUNT(*)"]
         return total > 0
 
-    def have_name_or_md5sum(self, name, md5sum):
+    def have_name_or_md5sum(self, name: str, md5sum: str) -> bool:
         """Check whether this name or md5sum is already in History"""
         total = 0
         if self.execute(

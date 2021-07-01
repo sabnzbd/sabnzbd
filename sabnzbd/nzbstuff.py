@@ -591,7 +591,7 @@ class NzbObject(TryList):
         futuretype: bool = False,
         cat: Optional[str] = None,
         url: Optional[str] = None,
-        priority: Optional[Union[Status, str]] = DEFAULT_PRIORITY,
+        priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
         nzbname: Optional[str] = None,
         status: Status = Status.QUEUED,
         nzo_info: Optional[Dict[str, Any]] = None,
@@ -721,7 +721,7 @@ class NzbObject(TryList):
         self.url_wait: Optional[float] = None
         self.url_tries = 0
         self.pp_active = False  # Signals active post-processing (not saved)
-        self.md5sum: Optional[bytes] = None
+        self.md5sum: Optional[str] = None
 
         if nzb_data is None and not reuse:
             # This is a slot for a future NZB, ready now
@@ -735,12 +735,6 @@ class NzbObject(TryList):
         if cfg.replace_dots():
             logging.info("Replacing dots with spaces in %s", self.final_name)
             self.final_name = self.final_name.replace(".", " ")
-
-        # Check against identical checksum or series/season/episode
-        if (not reuse) and nzb_data and dup_check and self.priority != REPAIR_PRIORITY:
-            duplicate, series = self.has_duplicates()
-        else:
-            duplicate = series = 0
 
         # Reuse the existing directory
         if reuse and os.path.exists(reuse):
@@ -874,13 +868,23 @@ class NzbObject(TryList):
             self.oversized = True
             self.priority = LOW_PRIORITY
 
-        if duplicate and ((not series and cfg.no_dupes() == 1) or (series and cfg.no_series_dupes() == 1)):
+        # Check against identical checksum or series/season/episode
+        if (not reuse) and nzb_data and dup_check and self.priority != REPAIR_PRIORITY:
+            duplicate, series_duplicate = self.has_duplicates()
+        else:
+            duplicate = series_duplicate = False
+
+        if duplicate and (
+            (not series_duplicate and cfg.no_dupes() == 1) or (series_duplicate and cfg.no_series_dupes() == 1)
+        ):
             if cfg.warn_dupl_jobs():
                 logging.warning(T('Ignoring duplicate NZB "%s"'), filename)
             self.purge_data()
             raise TypeError
 
-        if duplicate and ((not series and cfg.no_dupes() == 3) or (series and cfg.no_series_dupes() == 3)):
+        if duplicate and (
+            (not series_duplicate and cfg.no_dupes() == 3) or (series_duplicate and cfg.no_series_dupes() == 3)
+        ):
             if cfg.warn_dupl_jobs():
                 logging.warning(T('Failing duplicate NZB "%s"'), filename)
             # Move to history, utilizing the same code as accept&fail from pre-queue script
@@ -1304,7 +1308,7 @@ class NzbObject(TryList):
         if not self.unpack:
             self.abort_direct_unpacker()
 
-    def set_priority(self, value: Optional[Union[Status, str]]):
+    def set_priority(self, value: Optional[Union[int, str]]):
         """Check if this is a valid priority"""
         # When unknown (0 is a known one), set to DEFAULT
         if value == "" or value is None:
@@ -1962,7 +1966,7 @@ class NzbObject(TryList):
             else:
                 nzf_ids.remove(nzf_id)
 
-    def has_duplicates(self):
+    def has_duplicates(self) -> Tuple[bool, bool]:
         """Return (res, series)
         where "res" is True when this is a duplicate
         where "series" is True when this is an episode
@@ -1984,11 +1988,15 @@ class NzbObject(TryList):
             if no_dupes:
                 res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
                 logging.debug(
-                    "Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s", self.filename, self.md5sum, res
+                    "Duplicate checked NZB in history: filename=%s, md5sum=%s, result=%s",
+                    self.filename,
+                    self.md5sum,
+                    res,
                 )
                 if not res and cfg.backup_for_duplicates():
                     res = sabnzbd.backup_exists(self.filename)
-                    logging.debug("Dupe checking NZB against backup: filename=%s, result=%s", self.filename, res)
+                    logging.debug("Duplicate checked NZB against backup: filename=%s, result=%s", self.filename, res)
+
             # Dupe check off nzb filename
             if not res and no_series_dupes:
                 series, season, episode, _, is_proper = sabnzbd.newsunpack.analyse_show(self.final_name)

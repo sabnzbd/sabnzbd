@@ -612,7 +612,7 @@ class TestAddingNZBs:
         assert job["status"] == "Paused" if expected_prio != FORCE_PRIORITY else "Downloading"
 
         # Reset duplicate handling (0), nzb_backup_dir ("")
-        get_api_result(mode="set_config_default", extra_arguments={"keyword": "no_dupes", "keyword": "nzb_backup_dir"})
+        get_api_result(mode="set_config_default", extra_arguments={"keyword": ["no_dupes", "nzb_backup_dir"]})
 
         # Remove backup_dir
         for timer in range(0, 5):

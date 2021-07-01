@@ -642,7 +642,7 @@ def add_nzbfile(
     script: Optional[str] = None,
     cat: Optional[str] = None,
     catdir: Optional[str] = None,
-    priority: Optional[Union[Status, str]] = DEFAULT_PRIORITY,
+    priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
     nzbname: Optional[str] = None,
     nzo_info=None,
     url: Optional[str] = None,
