@@ -193,6 +193,7 @@ class FakeHistoryDB(db.HistoryDB):
             distro_choice = choice(self.distro_names)
             distro_random = random_name()
             nzo.password = choice(["secret", ""])
+            nzo.correct_password = "secret"
             nzo.final_name = "%s.%s.Linux.ISO-Usenet" % (distro_choice, distro_random)
             nzo.filename = "%s.%s.Linux-Usenet%s.nzb" % (
                 (distro_choice, distro_random, "{{" + nzo.password + "}}")

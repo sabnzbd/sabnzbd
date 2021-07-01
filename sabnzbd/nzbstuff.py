@@ -855,6 +855,10 @@ class NzbObject(TryList):
         else:
             accept = 1
 
+        # Create a bookkeeping record for the correct password after running the pre-queue script,
+        # to prevent it from showing up as a useless environment variable there.
+        self.correct_password = None
+
         # Pause if requested by the NZB-adding or the pre-queue script
         if self.priority == PAUSED_PRIORITY:
             self.pause()

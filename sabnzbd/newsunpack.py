@@ -148,6 +148,7 @@ ENV_NZO_FIELDS = [
     "bytes_downloaded",
     "bytes_tried",
     "cat",
+    "correct_password",
     "duplicate",
     "encrypted",
     "fail_msg",

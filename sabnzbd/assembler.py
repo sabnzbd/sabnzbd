@@ -355,9 +355,8 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
 
                         # Did any work?
                         if password_hit:
-                            # We always trust the user's input
-                            if not nzo.password:
-                                nzo.password = password_hit
+                            # Record the successful password
+                            nzo.correct_password = password_hit
                             # Don't check other files
                             logging.info('Password "%s" matches for job "%s"', password_hit, nzo.final_name)
                             nzo.encrypted = -1
