@@ -4747,23 +4747,23 @@ msgstr "Résultat traité"
 
 #: sabnzbd/skintext.py
 msgid "Any property"
-msgstr ""
+msgstr "N'importe quel attribut"
 
 #: sabnzbd/skintext.py
 msgid "property"
-msgstr ""
+msgstr "attribut"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt Property"
-msgstr ""
+msgstr "Attribut GuessIt"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt.Property"
-msgstr ""
+msgstr "Attribut.Guessit"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt_Property"
-msgstr ""
+msgstr "Attribut_Guessit"
 
 #: sabnzbd/skintext.py
 msgid ""
