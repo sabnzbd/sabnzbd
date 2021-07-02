@@ -158,8 +158,7 @@ def deobfuscate_list(filelist, usefulname):
             new_files = decode_par2(par2_file)
             if new_files:
                 logging.debug("Deobfuscate par2 repair/verify finished")
-                # par2_renaming_done = True
-                filelist = filelist + new_files
+                filelist += new_files
                 filelist = [f for f in filelist if os.path.isfile(f)]
             else:
                 logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
