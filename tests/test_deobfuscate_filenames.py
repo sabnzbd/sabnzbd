@@ -21,6 +21,7 @@ Testing SABnzbd deobfuscate module
 
 import random
 import shutil
+import zipfile
 
 from sabnzbd.deobfuscate_filenames import *
 from tests.testhelper import *
@@ -324,3 +325,28 @@ class TestDeobfuscateFinalResult:
         # Rename back
         os.rename(test_output, test_input)
         assert os.path.exists(test_input)
+
+    def test_deobfuscate_par2_plus_deobfuscate(self):
+        # test for first par2 based renaming, then deobfuscate obfuscated names
+        work_dir = os.path.join(SAB_DATA_DIR, "testdir" + str(random.randint(10000, 99999)))
+        os.mkdir(work_dir)
+
+        source_zip_file = os.path.join(SAB_DATA_DIR, "deobfuscate_par2_based", "20mb_with_par2_package.zip")
+        with zipfile.ZipFile(source_zip_file, "r") as zip_ref:
+            zip_ref.extractall(work_dir)
+        assert os.path.isfile(os.path.join(work_dir, "rename.par2"))  # the par2 that will do renaming
+        assert os.path.isfile(
+            os.path.join(work_dir, "twentymb.bin")
+        )  # the 20MB file ... needed as deobfuscate only renames >10MB files
+
+        list_of_files = []
+        for (dirpath, dirnames, filenames) in os.walk(work_dir):
+            list_of_files += [os.path.join(dirpath, file) for file in filenames]
+
+        # deobfuscate: first par2 based renaming, then deobfuscate obfuscated names
+        deobfuscate_list(list_of_files, "My Great Download")
+
+        assert os.path.isfile(os.path.join(work_dir, "My Great Download.bin"))  # the twentymb.bin should be renamed
+        assert not os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should be gone
+
+        shutil.rmtree(work_dir)
