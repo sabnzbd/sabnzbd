@@ -303,6 +303,7 @@ class TestDeobfuscateFinalResult:
         assert os.path.exists(dirname)
         shutil.rmtree(dirname)
 
+
     def test_deobfuscate_par2(self):
         # Simple test to see if the par2 file is picked up
         test_dir = os.path.join(SAB_DATA_DIR, "deobfuscate_filenames")
