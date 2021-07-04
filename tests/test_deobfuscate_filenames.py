@@ -335,15 +335,15 @@ class TestDeobfuscateFinalResult:
         with zipfile.ZipFile(source_zip_file, "r") as zip_ref:
             zip_ref.extractall(work_dir)
         assert os.path.isfile(os.path.join(work_dir, "rename.par2"))  # the par2 that will do renaming
-        assert os.path.isfile(
-            os.path.join(work_dir, "twentymb.bin")
-        )  # the 20MB file ... needed as deobfuscate only renames >10MB files
+        assert os.path.isfile(os.path.join(work_dir, "aaaaaaaaaaa"))  # a 20MB no-name file ...
 
         list_of_files = []
         for (dirpath, dirnames, filenames) in os.walk(work_dir):
             list_of_files += [os.path.join(dirpath, file) for file in filenames]
 
-        # deobfuscate: first par2 based renaming, then deobfuscate obfuscated names
+        # deobfuscate will do:
+        # first par2 based renaming aaaaaaaaaaa to twentymb.bin,
+        # then deobfuscate twentymb.bin to the job name (with same extension)
         deobfuscate_list(list_of_files, "My Great Download")
 
         assert os.path.isfile(os.path.join(work_dir, "My Great Download.bin"))  # the twentymb.bin should be renamed
