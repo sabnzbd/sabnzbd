@@ -54,10 +54,8 @@ from sabnzbd.misc import (
 )
 from sabnzbd.filesystem import (
     real_path,
-    long_path,
     globber,
     globber_full,
-    remove_all,
     clip_path,
     same_file,
     setname_from_path,
@@ -68,9 +66,6 @@ import sabnzbd.cfg as cfg
 import sabnzbd.notifier as notifier
 import sabnzbd.newsunpack
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.utils.diskspeed import diskspeedmeasure
-from sabnzbd.utils.getperformance import getpystone
-from sabnzbd.utils.internetspeed import internetspeed
 import sabnzbd.utils.ssdp
 from sabnzbd.constants import DEF_STDCONFIG, DEFAULT_PRIORITY, CHEETAH_DIRECTIVES, EXCLUDED_GUESSIT_PROPERTIES
 from sabnzbd.lang import list_languages
@@ -194,7 +189,6 @@ def check_access(access_type: int = 4, warn_user: bool = False) -> bool:
     if is_loopback_addr(remote_ip):
         return True
 
-    is_allowed = False
     if not cfg.local_ranges():
         # No local ranges defined, allow all private addresses by default
         is_allowed = is_lan_addr(remote_ip)
@@ -409,7 +403,6 @@ class MainPage:
 
         # Add all sub-pages
         self.login = LoginPage()
-        self.status = Status("/status/")
         self.config = ConfigPage("/config/")
         self.wizard = Wizard("/wizard/")
 
@@ -419,11 +412,6 @@ class MainPage:
         if kwargs.get("skip_wizard") or config.get_servers():
             info = build_header()
 
-            info["scripts"] = list_scripts(default=True)
-            info["script"] = "Default"
-
-            info["cat"] = "Default"
-            info["categories"] = list_cats(True)
             info["have_rss_defined"] = bool(config.get_rss())
             info["have_watched_dir"] = bool(cfg.dirscan_dir())
 
@@ -1429,10 +1417,10 @@ class ConfigRss:
         uri = Strip(kwargs.get("uri"))
         if feed and uri:
             try:
-                cfg = config.get_rss()[feed]
+                rss_cfg = config.get_rss()[feed]
             except KeyError:
-                cfg = None
-            if (not cfg) and uri:
+                rss_cfg = None
+            if not rss_cfg and uri:
                 kwargs["feed"] = feed
                 kwargs["uri"] = uri
                 config.ConfigRSS(feed, kwargs)
@@ -1923,152 +1911,6 @@ class ConfigSorting:
         raise Raiser(self.__root)
 
 
-##############################################################################
-LOG_API_RE = re.compile(rb"(apikey|api)(=|:)[\w]+", re.I)
-LOG_API_JSON_RE = re.compile(rb"'(apikey|api)': '[\w]+'", re.I)
-LOG_USER_RE = re.compile(rb"(user|username)\s?=\s?[\S]+", re.I)
-LOG_PASS_RE = re.compile(rb"(password)\s?=\s?[\S]+", re.I)
-LOG_INI_HIDE_RE = re.compile(
-    rb"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
-    re.I,
-)
-LOG_HASH_RE = re.compile(rb"([a-fA-F\d]{25})", re.I)
-
-
-class Status:
-    def __init__(self, root):
-        self.__root = root
-
-    @secured_expose(check_configlock=True)
-    def index(self, **kwargs):
-        template = Template(file=os.path.join(sabnzbd.WEB_DIR, "status.tmpl"), compilerSettings=CHEETAH_DIRECTIVES)
-        return template.respond()
-
-    @secured_expose(check_api_key=True)
-    def showlog(self, **kwargs):
-        try:
-            sabnzbd.LOGHANDLER.flush()
-        except:
-            pass
-
-        # Fetch the INI and the log-data and add a message at the top
-        log_data = b"--------------------------------\n\n"
-        log_data += b"The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
-        log_data += b"\n\n--------------------------------\n"
-
-        with open(sabnzbd.LOGFILE, "rb") as f:
-            log_data += f.read()
-
-        with open(config.get_filename(), "rb") as f:
-            log_data += f.read()
-
-        # We need to remove all passwords/usernames/api-keys
-        log_data = LOG_API_RE.sub(b"apikey=<APIKEY>", log_data)
-        log_data = LOG_API_JSON_RE.sub(b"'apikey':<APIKEY>'", log_data)
-        log_data = LOG_USER_RE.sub(b"\\g<1>=<USER>", log_data)
-        log_data = LOG_PASS_RE.sub(b"password=<PASSWORD>", log_data)
-        log_data = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", log_data)
-        log_data = LOG_HASH_RE.sub(b"<HASH>", log_data)
-
-        # Try to replace the username
-        try:
-            import getpass
-
-            cur_user = getpass.getuser()
-            if cur_user:
-                log_data = log_data.replace(utob(cur_user), b"<USERNAME>")
-        except:
-            pass
-        # Set headers
-        cherrypy.response.headers["Content-Type"] = "application/x-download;charset=utf-8"
-        cherrypy.response.headers["Content-Disposition"] = 'attachment;filename="sabnzbd.log"'
-        return log_data
-
-    @secured_expose(check_api_key=True)
-    def change_loglevel(self, **kwargs):
-        cfg.log_level.set(kwargs.get("loglevel"))
-        config.save_config()
-
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def unblock_server(self, **kwargs):
-        sabnzbd.Downloader.unblock(kwargs.get("server"))
-        # Short sleep so that UI shows new server status
-        time.sleep(1.0)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def delete(self, **kwargs):
-        orphan_delete(kwargs)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def delete_all(self, **kwargs):
-        paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
-        for path in paths:
-            kwargs = {"name": path}
-            orphan_delete(kwargs)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def add(self, **kwargs):
-        orphan_add(kwargs)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def add_all(self, **kwargs):
-        paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
-        for path in paths:
-            kwargs = {"name": path}
-            orphan_add(kwargs)
-        raise Raiser(self.__root)
-
-    @secured_expose(check_api_key=True)
-    def dashrefresh(self, **kwargs):
-        # This function is run when Refresh button on Dashboard is clicked
-        # Put the time consuming dashboard functions here; they only get executed when the user clicks the Refresh button
-
-        # PyStone
-        sabnzbd.PYSTONE_SCORE = getpystone()
-
-        # Diskspeed of download (aka incomplete) directory:
-        dir_speed = diskspeedmeasure(sabnzbd.cfg.download_dir.get_path())
-        if dir_speed:
-            sabnzbd.DOWNLOAD_DIR_SPEED = round(dir_speed, 1)
-        else:
-            sabnzbd.DOWNLOAD_DIR_SPEED = 0
-
-        time.sleep(1.0)
-        # Diskspeed of complete directory:
-        dir_speed = diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path())
-        if dir_speed:
-            sabnzbd.COMPLETE_DIR_SPEED = round(dir_speed, 1)
-        else:
-            sabnzbd.COMPLETE_DIR_SPEED = 0
-
-        # Internet bandwidth
-        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
-
-        raise Raiser(self.__root)  # Refresh screen
-
-
-def orphan_delete(kwargs):
-    path = kwargs.get("name")
-    if path:
-        path = os.path.join(long_path(cfg.download_dir.get_path()), path)
-        logging.info("Removing orphaned job %s", path)
-        remove_all(path, recursive=True)
-
-
-def orphan_add(kwargs):
-    path = kwargs.get("name")
-    if path:
-        path = os.path.join(long_path(cfg.download_dir.get_path()), path)
-        logging.info("Re-adding orphaned job %s", path)
-        sabnzbd.NzbQueue.repair_job(path, None, None)
-
-
 def badParameterResponse(msg, ajax=None):
     """Return a html page with error message and a 'back' button"""
     if ajax:
@@ -2187,141 +2029,142 @@ def GetRssLog(feed):
 
 
 ##############################################################################
-NOTIFY_OPTIONS = {}
-NOTIFY_OPTIONS["misc"] = (
-    "email_endjob",
-    "email_cats",
-    "email_full",
-    "email_server",
-    "email_to",
-    "email_from",
-    "email_account",
-    "email_pwd",
-    "email_rss",
-)
-NOTIFY_OPTIONS["ncenter"] = (
-    "ncenter_enable",
-    "ncenter_cats",
-    "ncenter_prio_startup",
-    "ncenter_prio_download",
-    "ncenter_prio_pause_resume",
-    "ncenter_prio_pp",
-    "ncenter_prio_pp",
-    "ncenter_prio_complete",
-    "ncenter_prio_failed",
-    "ncenter_prio_disk_full",
-    "ncenter_prio_warning",
-    "ncenter_prio_error",
-    "ncenter_prio_queue_done",
-    "ncenter_prio_other",
-    "ncenter_prio_new_login",
-)
-NOTIFY_OPTIONS["acenter"] = (
-    "acenter_enable",
-    "acenter_cats",
-    "acenter_prio_startup",
-    "acenter_prio_download",
-    "acenter_prio_pause_resume",
-    "acenter_prio_pp",
-    "acenter_prio_complete",
-    "acenter_prio_failed",
-    "acenter_prio_disk_full",
-    "acenter_prio_warning",
-    "acenter_prio_error",
-    "acenter_prio_queue_done",
-    "acenter_prio_other",
-    "acenter_prio_new_login",
-)
-NOTIFY_OPTIONS["ntfosd"] = (
-    "ntfosd_enable",
-    "ntfosd_cats",
-    "ntfosd_prio_startup",
-    "ntfosd_prio_download",
-    "ntfosd_prio_pause_resume",
-    "ntfosd_prio_pp",
-    "ntfosd_prio_complete",
-    "ntfosd_prio_failed",
-    "ntfosd_prio_disk_full",
-    "ntfosd_prio_warning",
-    "ntfosd_prio_error",
-    "ntfosd_prio_queue_done",
-    "ntfosd_prio_other",
-    "ntfosd_prio_new_login",
-)
-NOTIFY_OPTIONS["prowl"] = (
-    "prowl_enable",
-    "prowl_cats",
-    "prowl_apikey",
-    "prowl_prio_startup",
-    "prowl_prio_download",
-    "prowl_prio_pause_resume",
-    "prowl_prio_pp",
-    "prowl_prio_complete",
-    "prowl_prio_failed",
-    "prowl_prio_disk_full",
-    "prowl_prio_warning",
-    "prowl_prio_error",
-    "prowl_prio_queue_done",
-    "prowl_prio_other",
-    "prowl_prio_new_login",
-)
-NOTIFY_OPTIONS["pushover"] = (
-    "pushover_enable",
-    "pushover_cats",
-    "pushover_token",
-    "pushover_userkey",
-    "pushover_device",
-    "pushover_prio_startup",
-    "pushover_prio_download",
-    "pushover_prio_pause_resume",
-    "pushover_prio_pp",
-    "pushover_prio_complete",
-    "pushover_prio_failed",
-    "pushover_prio_disk_full",
-    "pushover_prio_warning",
-    "pushover_prio_error",
-    "pushover_prio_queue_done",
-    "pushover_prio_other",
-    "pushover_prio_new_login",
-    "pushover_emergency_retry",
-    "pushover_emergency_expire",
-)
-NOTIFY_OPTIONS["pushbullet"] = (
-    "pushbullet_enable",
-    "pushbullet_cats",
-    "pushbullet_apikey",
-    "pushbullet_device",
-    "pushbullet_prio_startup",
-    "pushbullet_prio_download",
-    "pushbullet_prio_pause_resume",
-    "pushbullet_prio_pp",
-    "pushbullet_prio_complete",
-    "pushbullet_prio_failed",
-    "pushbullet_prio_disk_full",
-    "pushbullet_prio_warning",
-    "pushbullet_prio_error",
-    "pushbullet_prio_queue_done",
-    "pushbullet_prio_other",
-    "pushbullet_prio_new_login",
-)
-NOTIFY_OPTIONS["nscript"] = (
-    "nscript_enable",
-    "nscript_cats",
-    "nscript_script",
-    "nscript_parameters",
-    "nscript_prio_startup",
-    "nscript_prio_download",
-    "nscript_prio_pause_resume",
-    "nscript_prio_pp",
-    "nscript_prio_complete",
-    "nscript_prio_failed",
-    "nscript_prio_disk_full",
-    "nscript_prio_warning",
-    "nscript_prio_error",
-    "nscript_prio_queue_done",
-    "nscript_prio_other",
-    "nscript_prio_new_login",
-)
+NOTIFY_OPTIONS = {
+    "misc": (
+        "email_endjob",
+        "email_cats",
+        "email_full",
+        "email_server",
+        "email_to",
+        "email_from",
+        "email_account",
+        "email_pwd",
+        "email_rss",
+    ),
+    "ncenter": (
+        "ncenter_enable",
+        "ncenter_cats",
+        "ncenter_prio_startup",
+        "ncenter_prio_download",
+        "ncenter_prio_pause_resume",
+        "ncenter_prio_pp",
+        "ncenter_prio_pp",
+        "ncenter_prio_complete",
+        "ncenter_prio_failed",
+        "ncenter_prio_disk_full",
+        "ncenter_prio_warning",
+        "ncenter_prio_error",
+        "ncenter_prio_queue_done",
+        "ncenter_prio_other",
+        "ncenter_prio_new_login",
+    ),
+    "acenter": (
+        "acenter_enable",
+        "acenter_cats",
+        "acenter_prio_startup",
+        "acenter_prio_download",
+        "acenter_prio_pause_resume",
+        "acenter_prio_pp",
+        "acenter_prio_complete",
+        "acenter_prio_failed",
+        "acenter_prio_disk_full",
+        "acenter_prio_warning",
+        "acenter_prio_error",
+        "acenter_prio_queue_done",
+        "acenter_prio_other",
+        "acenter_prio_new_login",
+    ),
+    "ntfosd": (
+        "ntfosd_enable",
+        "ntfosd_cats",
+        "ntfosd_prio_startup",
+        "ntfosd_prio_download",
+        "ntfosd_prio_pause_resume",
+        "ntfosd_prio_pp",
+        "ntfosd_prio_complete",
+        "ntfosd_prio_failed",
+        "ntfosd_prio_disk_full",
+        "ntfosd_prio_warning",
+        "ntfosd_prio_error",
+        "ntfosd_prio_queue_done",
+        "ntfosd_prio_other",
+        "ntfosd_prio_new_login",
+    ),
+    "prowl": (
+        "prowl_enable",
+        "prowl_cats",
+        "prowl_apikey",
+        "prowl_prio_startup",
+        "prowl_prio_download",
+        "prowl_prio_pause_resume",
+        "prowl_prio_pp",
+        "prowl_prio_complete",
+        "prowl_prio_failed",
+        "prowl_prio_disk_full",
+        "prowl_prio_warning",
+        "prowl_prio_error",
+        "prowl_prio_queue_done",
+        "prowl_prio_other",
+        "prowl_prio_new_login",
+    ),
+    "pushover": (
+        "pushover_enable",
+        "pushover_cats",
+        "pushover_token",
+        "pushover_userkey",
+        "pushover_device",
+        "pushover_prio_startup",
+        "pushover_prio_download",
+        "pushover_prio_pause_resume",
+        "pushover_prio_pp",
+        "pushover_prio_complete",
+        "pushover_prio_failed",
+        "pushover_prio_disk_full",
+        "pushover_prio_warning",
+        "pushover_prio_error",
+        "pushover_prio_queue_done",
+        "pushover_prio_other",
+        "pushover_prio_new_login",
+        "pushover_emergency_retry",
+        "pushover_emergency_expire",
+    ),
+    "pushbullet": (
+        "pushbullet_enable",
+        "pushbullet_cats",
+        "pushbullet_apikey",
+        "pushbullet_device",
+        "pushbullet_prio_startup",
+        "pushbullet_prio_download",
+        "pushbullet_prio_pause_resume",
+        "pushbullet_prio_pp",
+        "pushbullet_prio_complete",
+        "pushbullet_prio_failed",
+        "pushbullet_prio_disk_full",
+        "pushbullet_prio_warning",
+        "pushbullet_prio_error",
+        "pushbullet_prio_queue_done",
+        "pushbullet_prio_other",
+        "pushbullet_prio_new_login",
+    ),
+    "nscript": (
+        "nscript_enable",
+        "nscript_cats",
+        "nscript_script",
+        "nscript_parameters",
+        "nscript_prio_startup",
+        "nscript_prio_download",
+        "nscript_prio_pause_resume",
+        "nscript_prio_pp",
+        "nscript_prio_complete",
+        "nscript_prio_failed",
+        "nscript_prio_disk_full",
+        "nscript_prio_warning",
+        "nscript_prio_error",
+        "nscript_prio_queue_done",
+        "nscript_prio_other",
+        "nscript_prio_new_login",
+    ),
+}
 
 
 class ConfigNotify:

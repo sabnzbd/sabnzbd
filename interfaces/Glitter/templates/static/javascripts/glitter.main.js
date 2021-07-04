@@ -739,14 +739,26 @@ function ViewModel() {
         // Full refresh? Only on click and for the status-screen
         var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
 
+        // Measure performance? Takes a while
+        var statusPerformance = (event != undefined) && $(event.currentTarget).hasClass('diskspeed-button');
+
         // Make it spin if the user requested it otherwise we don't,
         // because browsers use a lot of CPU for the animation
         if(statusFullRefresh) {
             self.hasStatusInfo(false)
         }
 
+        // Show loading text for performance measures
+        if(statusPerformance) {
+            self.hasPerformanceInfo(false)
+        }
+
         // Load the custom status info
-        callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {
+        callAPI({
+            mode: 'status',
+            calculate_performance: statusPerformance*1,
+            skip_dashboard: (!statusFullRefresh)*1
+        }).then(function(data) {
             // Update basic
             self.statusInfo.loglevel(data.status.loglevel)
             self.statusInfo.folders(data.status.folders)
@@ -774,8 +786,11 @@ function ViewModel() {
                 if(self.statusInfo.servers().length == 0) {
                     self.statusInfo.loglevel.subscribe(function(newValue) {
                         // Update log-level
-                        callSpecialAPI('./status/change_loglevel/', {
-                            loglevel: newValue
+                        callAPI({
+                            mode: "set_config",
+                            section: "logging",
+                            keyword: "log_level",
+                            value: newValue
                         });
                     })
                 }
@@ -825,16 +840,6 @@ function ViewModel() {
         });
     }
 
-    // Do a disk-speedtest
-    self.testDiskSpeed = function(item, event) {
-        self.hasPerformanceInfo(false)
-
-        // Run it and then display it
-        callSpecialAPI('./status/dashrefresh/').then(function() {
-            self.loadStatusInfo(true, true)
-        })
-    }
-
     // Download a test-NZB
     self.testDownload = function(data, event) {
         var nzbSize = $(event.target).data('size')
@@ -861,8 +866,10 @@ function ViewModel() {
 
     // Unblock server
     self.unblockServer = function(servername) {
-        callSpecialAPI("./status/unblock_server/", {
-            server: servername
+        callAPI({
+            mode: "status",
+            name: "unblock_server",
+            value: servername
         }).then(function() {
             $("#modal-options").modal("hide");
         })
@@ -920,7 +927,7 @@ function ViewModel() {
         $('#options-orphans [data-tooltip="true"]').tooltip('hide')
 
         // Show notification on delete
-        if($(htmlElement.currentTarget).data('action') == 'delete') {
+        if($(htmlElement.currentTarget).data('action') == 'delete_orphan') {
             showNotification('.main-notification-box-removing', 1000)
         } else {
             // Adding back to queue
@@ -928,8 +935,10 @@ function ViewModel() {
         }
 
         // Activate
-        callSpecialAPI("./status/" + $(htmlElement.currentTarget).data('action'), {
-            name: $("<div/>").html(folder).text()
+        callAPI({
+            mode: "status",
+            name: $(htmlElement.currentTarget).data('action'),
+            value: $("<div/>").html(folder).text()
         }).then(function() {
             // Refresh
             self.loadStatusInfo(true, true)
@@ -944,7 +953,10 @@ function ViewModel() {
              // Show notification
             showNotification('.main-notification-box-removing-multiple', 0, self.statusInfo.folders().length)
             // Delete them all
-            callSpecialAPI("./status/delete_all/").then(function() {
+            callAPI({
+                mode: "status",
+                name: "delete_all_orphan"
+            }).then(function() {
                 // Remove notifcation and update screen
                 hideNotification()
                 self.loadStatusInfo(true, true)
@@ -958,7 +970,10 @@ function ViewModel() {
              // Show notification
             showNotification('.main-notification-box-sendback')
             // Delete them all
-            callSpecialAPI("./status/add_all/").then(function() {
+            callAPI({
+                mode: "status",
+                name: "add_all_orphan"
+            }).then(function() {
                 // Remove notifcation and update screen
                 hideNotification()
                 self.loadStatusInfo(true, true)

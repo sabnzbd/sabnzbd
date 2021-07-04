@@ -26,6 +26,7 @@ import gc
 import datetime
 import time
 import json
+import getpass
 import cherrypy
 from threading import Thread
 from typing import Tuple, Optional, List, Dict, Any
@@ -45,8 +46,10 @@ from sabnzbd.constants import (
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.skintext import SKIN_TEXT
+from sabnzbd.utils.diskspeed import diskspeedmeasure
+from sabnzbd.utils.internetspeed import internetspeed
 from sabnzbd.utils.pathbrowser import folders_at_path
-from sabnzbd.utils.getperformance import getcpu
+from sabnzbd.utils.getperformance import getcpu, getpystone
 from sabnzbd.misc import (
     loadavg,
     to_units,
@@ -459,8 +462,60 @@ def _api_change_opts(name, kwargs):
 
 def _api_fullstatus(name, kwargs):
     """API: full history status"""
-    status = build_status(skip_dashboard=kwargs.get("skip_dashboard", 1))
+    status = build_status(
+        calculate_performance=kwargs.get("calculate_performance", 0), skip_dashboard=kwargs.get("skip_dashboard", 1)
+    )
     return report(keyword="status", data=status)
+
+
+def _api_status(name, kwargs):
+    """API: Dispatcher for mode=status, passing on the value"""
+    value = kwargs.get("value", "")
+    return _api_status_table.get(name, (_api_fullstatus, 2))[0](value, kwargs)
+
+
+def _api_unblock_server(value, kwargs):
+    """Unblock a blocked server"""
+    sabnzbd.Downloader.unblock(value)
+    return report()
+
+
+def _api_delete_orphan(path, kwargs):
+    """Remove orphaned job"""
+    if path:
+        path = os.path.join(cfg.download_dir.get_path(), path)
+        logging.info("Removing orphaned job %s", path)
+        remove_all(path, recursive=True)
+        return report()
+    else:
+        return report(_MSG_NO_ITEM)
+
+
+def _api_delete_all_orphan(value, kwargs):
+    """Remove all orphaned jobs"""
+    paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
+    for path in paths:
+        _api_delete_orphan(path, kwargs)
+    return report()
+
+
+def _api_add_orphan(path, kwargs):
+    """Add orphaned job"""
+    if path:
+        path = os.path.join(cfg.download_dir.get_path(), path)
+        logging.info("Re-adding orphaned job %s", path)
+        sabnzbd.NzbQueue.repair_job(path, None, None)
+        return report()
+    else:
+        return report(_MSG_NO_ITEM)
+
+
+def _api_add_all_orphan(value, kwargs):
+    """Add all orphaned jobs"""
+    paths = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
+    for path in paths:
+        _api_add_orphan(path, kwargs)
+    return report()
 
 
 def _api_history(name, kwargs):
@@ -613,6 +668,51 @@ def _api_warnings(name, kwargs):
     elif name:
         return report(_MSG_NOT_IMPLEMENTED)
     return report(keyword="warnings", data=sabnzbd.GUIHANDLER.content())
+
+
+LOG_API_RE = re.compile(rb"(apikey|api)([=:])[\w]+", re.I)
+LOG_API_JSON_RE = re.compile(rb"'(apikey|api)': '[\w]+'", re.I)
+LOG_USER_RE = re.compile(rb"(user|username)\s?=\s?[\S]+", re.I)
+LOG_PASS_RE = re.compile(rb"(password)\s?=\s?[\S]+", re.I)
+LOG_INI_HIDE_RE = re.compile(
+    rb"(email_pwd|email_account|email_to|rating_api_key|pushover_token|pushover_userkey|pushbullet_apikey|prowl_apikey|growl_password|growl_server|IPv[4|6] address)\s?=\s?[\S]+",
+    re.I,
+)
+LOG_HASH_RE = re.compile(rb"([a-fA-F\d]{25})", re.I)
+
+
+def _api_showlog(name, kwargs):
+    """Fetch the INI and the log-data and add a message at the top"""
+    log_data = b"--------------------------------\n\n"
+    log_data += b"The log includes a copy of your sabnzbd.ini with\nall usernames, passwords and API-keys removed."
+    log_data += b"\n\n--------------------------------\n"
+
+    with open(sabnzbd.LOGFILE, "rb") as f:
+        log_data += f.read()
+
+    with open(config.get_filename(), "rb") as f:
+        log_data += f.read()
+
+    # We need to remove all passwords/usernames/api-keys
+    log_data = LOG_API_RE.sub(b"apikey=<APIKEY>", log_data)
+    log_data = LOG_API_JSON_RE.sub(b"'apikey':<APIKEY>'", log_data)
+    log_data = LOG_USER_RE.sub(b"\\g<1>=<USER>", log_data)
+    log_data = LOG_PASS_RE.sub(b"password=<PASSWORD>", log_data)
+    log_data = LOG_INI_HIDE_RE.sub(b"\\1 = <REMOVED>", log_data)
+    log_data = LOG_HASH_RE.sub(b"<HASH>", log_data)
+
+    # Try to replace the username
+    try:
+        cur_user = getpass.getuser()
+        if cur_user:
+            log_data = log_data.replace(utob(cur_user), b"<USERNAME>")
+    except:
+        pass
+
+    # Set headers
+    cherrypy.response.headers["Content-Type"] = "application/x-download;charset=utf-8"
+    cherrypy.response.headers["Content-Disposition"] = 'attachment;filename="sabnzbd.log"'
+    return log_data
 
 
 def _api_get_cats(name, kwargs):
@@ -933,6 +1033,7 @@ _api_table = {
     "change_script": (_api_change_script, 2),
     "change_opts": (_api_change_opts, 2),
     "fullstatus": (_api_fullstatus, 2),
+    "status": (_api_status, 2),
     "history": (_api_history, 2),
     "get_files": (_api_get_files, 2),
     "move_nzf_bulk": (_api_move_nzf_bulk, 2),
@@ -942,6 +1043,7 @@ _api_table = {
     "resume": (_api_resume, 2),
     "shutdown": (_api_shutdown, 3),
     "warnings": (_api_warnings, 2),
+    "showlog": (_api_showlog, 3),
     "config": (_api_config, 2),
     "get_cats": (_api_get_cats, 2),
     "get_scripts": (_api_get_scripts, 2),
@@ -984,6 +1086,14 @@ _api_queue_table = {
     "rating": (_api_queue_rating, 2),
 }
 
+_api_status_table = {
+    "unblock_server": (_api_unblock_server, 2),
+    "delete_orphan": (_api_delete_orphan, 2),
+    "delete_all_orphan": (_api_delete_all_orphan, 2),
+    "add_orphan": (_api_add_orphan, 2),
+    "add_all_orphan": (_api_add_all_orphan, 2),
+}
+
 _api_config_table = {
     "speedlimit": (_api_config_speedlimit, 2),
     "set_speedlimit": (_api_config_speedlimit, 2),
@@ -1001,6 +1111,8 @@ def api_level(mode: str, name: str) -> int:
     """Return access level required for this API call"""
     if mode == "queue" and name in _api_queue_table:
         return _api_queue_table[name][1]
+    if mode == "status" and name in _api_status_table:
+        return _api_status_table[name][1]
     if mode == "config" and name in _api_config_table:
         return _api_config_table[name][1]
     if mode in _api_table:
@@ -1184,7 +1296,7 @@ def handle_cat_api(kwargs):
     return name
 
 
-def build_status(skip_dashboard: bool = False) -> Dict[str, Any]:
+def build_status(calculate_performance: bool = False, skip_dashboard: bool = False) -> Dict[str, Any]:
     # build up header full of basic information
     info = build_header(trans_functions=False)
 
@@ -1194,6 +1306,18 @@ def build_status(skip_dashboard: bool = False) -> Dict[str, Any]:
     info["folders"] = sabnzbd.NzbQueue.scan_jobs(all_jobs=False, action=False)
     info["configfn"] = config.get_filename()
     info["warnings"] = sabnzbd.GUIHANDLER.content()
+
+    # Calculate performance measures, if requested
+    if int_conv(calculate_performance):
+        # PyStone
+        sabnzbd.PYSTONE_SCORE = getpystone()
+
+        # Diskspeed of download (aka incomplete) and complete directory:
+        sabnzbd.DOWNLOAD_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.download_dir.get_path()), 1)
+        sabnzbd.COMPLETE_DIR_SPEED = round(diskspeedmeasure(sabnzbd.cfg.complete_dir.get_path()), 1)
+
+        # Internet bandwidth
+        sabnzbd.INTERNET_BANDWIDTH = round(internetspeed(), 1)
 
     # Dashboard: Speed of System
     info["cpumodel"] = getcpu()
