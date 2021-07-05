@@ -43,7 +43,7 @@ MIN_FILE_SIZE = 10 * 1024 * 1024
 
 
 def decode_par2(parfile):
-    """Parse a par2 file and rename files listed in the par2 to their real name"""
+    """Parse a par2 file and rename files listed in the par2 to their real name. Resturn list of generated files"""
     # Check if really a par2 file
     if not is_parfile(parfile):
         logging.info("Par2 file %s was not really a par2 file")
@@ -55,7 +55,7 @@ def decode_par2(parfile):
 
     # Parse all files in the folder
     dirname = os.path.dirname(parfile)
-    result = False
+    new_files = []  # list of new files generated
     for fn in os.listdir(dirname):
         filepath = os.path.join(dirname, fn)
         # Only check files
@@ -68,9 +68,10 @@ def decode_par2(parfile):
             if file_md5of16k in md5of16k:
                 new_path = os.path.join(dirname, md5of16k[file_md5of16k])
                 # Make sure it's a unique name
-                renamer(filepath, get_unique_filename(new_path))
-                result = True
-    return result
+                unique_filename = get_unique_filename(new_path)
+                renamer(filepath, unique_filename)
+                new_files.append(unique_filename)
+    return new_files
 
 
 def is_probably_obfuscated(myinputfilename):
@@ -154,15 +155,13 @@ def deobfuscate_list(filelist, usefulname):
         for par2_file in par2_files:
             # Analyse data and analyse result
             logging.debug("Deobfuscate par2: handling %s", par2_file)
-            if decode_par2(par2_file):
+            new_files = decode_par2(par2_file)
+            if new_files:
                 logging.debug("Deobfuscate par2 repair/verify finished")
-                par2_renaming_done = True
+                filelist += new_files
+                filelist = [f for f in filelist if os.path.isfile(f)]
             else:
                 logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
-
-    if par2_renaming_done:
-        # TODO really needed to quit here? We could also proceed with the other actions. Anyway:
-        return  # done
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
     # if so, let's give them a better extension based on their internal content/info
