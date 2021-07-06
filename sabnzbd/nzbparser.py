@@ -21,9 +21,11 @@ sabnzbd.nzbparser - Parse and import NZB files
 import bz2
 import gzip
 import re
+import io
 import time
 import logging
 import hashlib
+import html
 import xml.etree.ElementTree
 import datetime
 from typing import Optional, Dict, Any, Union
@@ -36,7 +38,40 @@ from sabnzbd.filesystem import is_archive, get_filename
 from sabnzbd.misc import name_to_cat
 
 
+class RegexException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
+class LineFeeder:
+    """ Split lines by \r or \n """
+
+    def __init__(self, reader):
+        self.reader = reader
+        self.linecache = []
+        self.regex = re.compile("[\r\n]+")
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if not self.linecache:
+            line = self.reader.readline()
+            self.linecache = self.regex.split(line)
+        if self.linecache:
+            return self.linecache.pop(0)
+        else:
+            raise StopIteration
+
+    def readline(self):
+        return self.__next__()
+
+
 def nzbfile_parser(raw_data, nzo):
+    # Try regex parser
+    if nzbfile_regex_parser(raw_data, nzo):
+        return
+
     # Load data as file-object
     raw_data = re.sub(r"""\s(xmlns="[^"]+"|xmlns='[^']+')""", "", raw_data, count=1)
     nzb_tree = xml.etree.ElementTree.fromstring(raw_data)
@@ -153,6 +188,236 @@ def nzbfile_parser(raw_data, nzo):
 
     if skipped_files:
         logging.warning(T("Failed to import %s files from %s"), skipped_files, nzo.filename)
+
+
+def nzbfile_regex_parser(raw_data, nzo):
+    # Hash for dupe-checking
+    md5sum = hashlib.md5()
+
+    # Average date
+    avg_age_sum = 0
+
+    # In case of failing timestamps and failing files
+    time_now = time.time()
+    valid_files = 0
+
+    success = 1
+
+    # Header and end
+    encoding_re = re.compile('<\?xml [^>]*encoding="([^"]*)"')
+    meta_re = re.compile('^\s*<meta type="([^"]*)">([^<]*)</meta>\s*$')
+    nzbtag_re = re.compile("^\s*<nzb[^>]*>\s*$")
+    endnzb_re = re.compile(
+        "^\s*(?:<!--[^>]*-->|)\s*(?:<!--[^>]*-->|)\s*</nzb>\s*(?:<!--[^>]*-->|)\s*(?:<!--[^>]*-->|)\s*$"
+    )
+
+    # Main part
+    group_re = re.compile("^\s*(?:<groups>\s*|)<group>([^<]*)</group>(?:\s*</groups>|)\s*$")
+    file_re = re.compile("^\s*<file([^>]*)>\s*$")
+    fileend_re = re.compile("^\s*</file>\s*$")
+    segment_re = re.compile("^\s*<segment( [^>]*)>([^<]*)</segment>\s*$")
+    whitespace_re = re.compile("^\s*$")
+    ignorable_re = re.compile("^\s*(?:</?segments>|</?groups>|</?head>|<!--[^>]*-->)\s*$")
+
+    # Sub parts of <file>
+    subject_re = re.compile(' subject="([^"]*)"')
+    date_re = re.compile(' date="([^"]*)"')
+
+    # Sub parts of <segment>
+    bytes_re = re.compile(' bytes="([^"]*)"')
+    number_re = re.compile(' number="([^"]*)"')
+
+    try:
+        reader = LineFeeder(io.StringIO(raw_data))
+        open_file_tag = 0
+        linecount = 0
+        encoding = ""
+        res = 0
+        header = ""
+
+        # Read header data until <nzb tag
+        while not res:
+            line = reader.readline()
+            linecount += 1
+            if line == "\n":
+                continue
+            if linecount > 20:
+                raise RegexException("Could not find <nzb tag in header: %s" % header)
+            header += line.replace("\n", " ")
+            res = nzbtag_re.search(line)
+
+        # Get encoding (sanity check)
+        res = encoding_re.search(header)
+        if res:
+            encoding = res.group(1)
+        else:
+            raise RegexException("Could not find encoding in header: %s" % header)
+
+        # Read the rest of the file
+        for line in reader:
+            linecount += 1
+            if line == "\n":
+                continue
+
+            # <segment bytes="100" number="1">articleid</segment>
+            res = segment_re.search(line)
+            if res:
+                if not open_file_tag:
+                    raise RegexException("Found segment without file tag at line %s: %s" % (linecount, line))
+                article_id = html.unescape(res.group(2))
+                segment_size = int(bytes_re.search(res.group(1)).group(1))
+                partnum = int(number_re.search(res.group(1)).group(1))
+
+                # Update hash
+                md5sum.update(utob(article_id))
+
+                # Duplicate parts?
+                if partnum in raw_article_db:
+                    if article_id != raw_article_db[partnum][0]:
+                        raise RegexException(
+                            "Duplicate part %s, but different ID-s (%s // %s)"
+                            % (partnum, raw_article_db[partnum][0], article_id)
+                        )
+                    else:
+                        raise RegexException("Duplicate article (%s)" % article_id)
+                elif segment_size <= 0 or segment_size >= 2 ** 23:
+                    # Perform sanity check (not negative, 0 or larger than 8MB) on article size
+                    # We use this value later to allocate memory in cache and sabyenc
+                    raise RegexException(
+                        "Article %s at line %s has strange size (%s): %s" % (article_id, linecount, segment_size, line)
+                    )
+                else:
+                    raw_article_db[partnum] = (article_id, segment_size)
+                    file_bytes += segment_size
+                    continue
+
+            # <group>a.b.a</group>
+            res = group_re.search(line)
+            if res:
+                # logging.debug("Got group")
+                if res.group(1) not in nzo.groups:
+                    nzo.groups.append(res.group(1))
+                continue
+
+            # </file>
+            res = fileend_re.search(line)
+            if res:
+                if open_file_tag:
+                    open_file_tag = 0
+                else:
+                    raise RegexException("Found closing file tag without start at line %s: %s" % (linecount, line))
+
+                if not file_name:
+                    raise RegexException("Found closing file tag with no file_name at line %s: %s" % (linecount, line))
+
+                # Sort the articles by part number, compatible with Python 3.5
+                raw_article_db_sorted = [raw_article_db[partnum] for partnum in sorted(raw_article_db)]
+
+                # Create NZF
+                nzf = sabnzbd.nzbstuff.NzbFile(file_date, file_name, raw_article_db_sorted, file_bytes, nzo)
+
+                # Check if we already have this exact NZF (see custom eq-checks)
+                if nzf in nzo.files:
+                    logging.info("File %s occured twice in NZB, skipping", nzf.filename)
+                    continue
+
+                # Add valid NZF's
+                if nzf.valid and nzf.nzf_id:
+                    logging.info("File %s added to queue", nzf.filename)
+                    nzo.files.append(nzf)
+                    nzo.files_table[nzf.nzf_id] = nzf
+                    nzo.bytes += nzf.bytes
+                    valid_files += 1
+                    avg_age_sum += file_timestamp
+                    continue
+                else:
+                    raise RegexException(
+                        "Found closing file tag with invalid nzf (valid %s, nzf_id %s) at line %s: %s"
+                        % (nzf.valid, nzf.nzf_id, linecount, line)
+                    )
+
+            # <file>
+            res = file_re.search(line)
+            if res:
+                if open_file_tag:
+                    raise RegexException(
+                        "Found open file tag when already in a file at line %s: %s" % (linecount, line)
+                    )
+                else:
+                    open_file_tag = 1
+
+                raw_article_db = {}
+                file_bytes = 0
+
+                file_name = html.unescape(subject_re.search(res.group(1)).group(1))
+                tmpdate = date_re.search(res.group(1))
+                # Don't fail if no date present
+                try:
+                    file_date = datetime.datetime.fromtimestamp(int(tmpdate.group(1)))
+                    file_timestamp = int(tmpdate.group(1))
+                except:
+                    file_date = datetime.datetime.fromtimestamp(time_now)
+                    file_timestamp = time_now
+                continue
+
+            # Junk
+            res = ignorable_re.search(line)
+            if res:
+                continue
+
+            # <meta type="password">password123</meta>
+            res = meta_re.search(line)
+            if res:
+                # logging.debug("Got meta")
+                meta_type = res.group(1)
+                meta_text = html.unescape(res.group(2))
+                if meta_type and meta_text:
+                    # Meta tags can occur multiple times
+                    if meta_type not in nzo.meta:
+                        nzo.meta[meta_type] = []
+                    nzo.meta[meta_type].append(meta_text)
+                continue
+
+            res = whitespace_re.search(line)
+            if res:
+                continue
+
+            # </nzb>
+            res = endnzb_re.search(line)
+            if res:
+                if open_file_tag:
+                    raise RegexException("Found closing <nzb tag while in file at line %s: %s" % (linecount, line))
+                break
+
+            # logging.debug("Line %s: %s", linecount, binascii.hexlify(line.encode()))
+            # raise RegexException("Unrecognized line #%s: %s (%s)" % (linecount, line, binascii.hexlify(line.encode())))
+            raise RegexException("Unrecognized line #%s: %s" % (linecount, line))
+    except StopIteration as e:
+        logging.warning("Unexpected end of file %s: %s", nzo.filename, e)
+        success = 0
+    except (RegexException, IndexError, AttributeError) as e:
+        logging.warning("Regex parsing of %s failed: %s", nzo.filename, e)
+        success = 0
+
+    if success:
+        # Final bookkeeping
+        logging.debug("NZB Meta-data = %s", nzo.meta)
+        nr_files = max(1, valid_files)
+        nzo.avg_stamp = avg_age_sum / nr_files
+        nzo.avg_date = datetime.datetime.fromtimestamp(avg_age_sum / nr_files)
+        nzo.md5sum = md5sum.hexdigest()
+        return True
+    else:
+        # Remove all data added to the nzo
+        for nzf in nzo.files:
+            nzf.remove_admin()
+        nzo.first_articles = []
+        nzo.first_articles_count = 0
+        nzo.bytes_par2 = 0
+        nzo.files = []
+        nzo.files_table = {}
+        nzo.bytes = 0
+        return False
 
 
 def process_nzb_archive_file(
