@@ -389,7 +389,7 @@ class NzbFile(TryList):
                 self.import_finished = True
 
     def pickle_articles(self):
-        """ Pickle articles to file. Returns False if pickle should be tried again later. """
+        """Pickle articles to file. Returns False if pickle should be tried again later."""
 
         if not self.import_finished or self.deleted or not self.valid or len(self.articles) < 2:
             return True
@@ -454,7 +454,7 @@ class NzbFile(TryList):
         return True
 
     def unpickle_articles(self, source):
-        """ Unpickle articles from file """
+        """Unpickle articles from file"""
         if not self.import_finished:
             logging.debug("unpickle %s, called by %s", self.filename, source)
             article_data = sabnzbd.load_data(self.nzf_id, self.nzo.admin_path, remove=False)
