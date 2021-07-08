@@ -8,7 +8,7 @@ function HistoryListModel(parent) {
     // Variables
     self.lastUpdate = 0;
     self.historyItems = ko.observableArray([])
-    self.showFailed = ko.observable(false);
+    self.showFailed = ko.observable(false).extend({ persist: 'historyShowFailed' });
     self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
     self.searchTerm = ko.observable('').extend({ rateLimit: { timeout: 200, method: "notifyWhenChangesStop" } });
     self.paginationLimit = ko.observable(10).extend({ persist: 'historyPaginationLimit' });
