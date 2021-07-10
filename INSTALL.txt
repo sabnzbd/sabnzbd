@@ -1,4 +1,4 @@
-                            SABnzbd 3.3.0
+                                    SABnzbd
 
 -------------------------------------------------------------------------------
 0) LICENSE
@@ -41,7 +41,7 @@ Use the "Help" button in the web-interface to be directed to the Help Wiki.
 -------------------------------------------------------------------------------
 3) INSTALL pre-built macOS binaries
 -------------------------------------------------------------------------------
-Download the DMG file, mount and drag the SABnzbd icon to Programs.
+Download the DMG file, mount and drag the SABnzbd icon to Applications.
 Just like you do with so many apps.
 
 -------------------------------------------------------------------------------

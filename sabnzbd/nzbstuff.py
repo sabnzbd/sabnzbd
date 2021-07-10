@@ -728,6 +728,9 @@ class NzbObject(TryList):
             # It can also be a retry of a failed job with no extra NZB-file
             return
 
+        # To be updated later if it's a duplicate
+        duplicate = series_duplicate = False
+
         # Apply conversion option to final folder
         if cfg.replace_spaces():
             logging.info("Replacing spaces with underscores in %s", self.final_name)
@@ -771,6 +774,12 @@ class NzbObject(TryList):
                 else:
                     self.purge_data()
                     raise ValueError
+
+            # Check against identical checksum or series/season/episode
+            # Have to check for duplicate before saving the backup, as it will
+            # trigger the duplicate-detection based on the backup
+            if not reuse and dup_check and self.priority != REPAIR_PRIORITY:
+                duplicate, series_duplicate = self.has_duplicates()
 
             sabnzbd.backup_nzb(filename, nzb_data)
             sabnzbd.save_compressed(admin_dir, filename, nzb_data)
@@ -872,12 +881,7 @@ class NzbObject(TryList):
             self.oversized = True
             self.priority = LOW_PRIORITY
 
-        # Check against identical checksum or series/season/episode
-        if (not reuse) and nzb_data and dup_check and self.priority != REPAIR_PRIORITY:
-            duplicate, series_duplicate = self.has_duplicates()
-        else:
-            duplicate = series_duplicate = False
-
+        # Handle duplicates
         if duplicate and (
             (not series_duplicate and cfg.no_dupes() == 1) or (series_duplicate and cfg.no_series_dupes() == 1)
         ):

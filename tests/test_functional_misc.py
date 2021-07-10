@@ -32,7 +32,7 @@ class TestShowLogging(SABnzbdBaseTest):
     def test_showlog(self):
         """Test the output of the filtered-log button"""
         # Basic URL-fetching, easier than Selenium file download
-        log_result = get_url_result("status/showlog")
+        log_result = get_api_result("showlog", extra_arguments={"output": "text"})
 
         # Make sure it has basic log stuff
         assert "The log" in log_result
