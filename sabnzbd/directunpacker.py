@@ -215,7 +215,7 @@ class DirectUnpacker(threading.Thread):
                         "Unexpected end of archive",
                     )
                 ):
-                    logging.info("Error in DirectUnpack of %s: %s", self.cur_setname, platform_btou(linebuf.strip()))
+                    logging.info("Error in DirectUnpack of %s: %s", self.cur_setname, linebuf_encoded)
                     self.abort()
 
                 elif linebuf_encoded.startswith("All OK"):
