@@ -6,6 +6,7 @@ import pkginfo
 from PyInstaller.building.api import EXE, COLLECT, PYZ
 from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE
+from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 # Add extra files in the PyInstaller-spec
 extra_pyinstaller_files = []
@@ -39,6 +40,7 @@ RELEASE_VERSION = pkginfo.Develop(".").version
 
 # Add hidden imports
 extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
+extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
 
 # Add platform specific stuff
 if sys.platform == "darwin":
@@ -108,6 +110,10 @@ for file_item in extra_files:
     extra_pyinstaller_files.append((file_item, "."))
 for folder_item in extra_folders:
     extra_pyinstaller_files.append((folder_item, folder_item))
+
+# Add babelfish data files
+extra_pyinstaller_files.extend(collect_data_files("babelfish"))
+extra_pyinstaller_files.extend(collect_data_files("guessit"))
 
 pyi_analysis = Analysis(
     ["SABnzbd.py"],
