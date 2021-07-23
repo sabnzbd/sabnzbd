@@ -504,7 +504,7 @@ def build_history_info(nzo, workdir_complete="", postproc_time=0, script_output=
         nzo.bytes_downloaded,
         series,
         nzo.md5sum,
-        nzo.password,
+        nzo.correct_password,
     )
 
 

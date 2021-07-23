@@ -750,8 +750,12 @@ def create_https_certificates(ssl_cert, ssl_key):
     return True
 
 
-def get_all_passwords(nzo):
-    """Get all passwords, from the NZB, meta and password file"""
+def get_all_passwords(nzo) -> List[str]:
+    """Get all passwords, from the NZB, meta and password file. In case the correct password is
+    already known, only that password is returned."""
+    if nzo.correct_password:
+        return [nzo.correct_password]
+
     if nzo.password:
         logging.info("Found a password that was set by the user: %s", nzo.password)
         passwords = [nzo.password.strip()]
