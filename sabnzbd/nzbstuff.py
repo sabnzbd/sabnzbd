@@ -556,6 +556,7 @@ NzbObjectSaver = (
     "nzo_info",
     "custom_name",
     "password",
+    "correct_password",
     "next_save",
     "save_timeout",
     "encrypted",
@@ -651,6 +652,7 @@ class NzbObject(TryList):
         self.groups = []
         self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0  # Avg age in seconds (calculated from avg_age)
+        self.correct_password: Optional[str] = None
 
         # Bookkeeping values
         self.meta = {}
@@ -863,10 +865,6 @@ class NzbObject(TryList):
             self.repair, self.unpack, self.delete = pp_to_opts(pp)
         else:
             accept = 1
-
-        # Create a bookkeeping record for the correct password after running the pre-queue script,
-        # to prevent it from showing up as a useless environment variable there.
-        self.correct_password = None
 
         # Pause if requested by the NZB-adding or the pre-queue script
         if self.priority == PAUSED_PRIORITY:
