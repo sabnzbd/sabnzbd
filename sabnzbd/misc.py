@@ -1071,7 +1071,7 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
             command.insert(0, "python.exe")
         if flatten_command:
             command = list2cmdline(command)
-        # On some Windows platforms we need to supress a quick pop-up of the command window
+        # On some Windows platforms we need to suppress a quick pop-up of the command window
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
         startupinfo.wShowWindow = win32con.SW_HIDE

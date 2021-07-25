@@ -95,7 +95,8 @@ class DirectUnpacker(threading.Thread):
 
     def check_requirements(self):
         if (
-            not cfg.direct_unpack()
+            not cfg.enable_unrar()
+            or not cfg.direct_unpack()
             or self.killed
             or self.nzo.first_articles
             or not self.nzo.unpack
