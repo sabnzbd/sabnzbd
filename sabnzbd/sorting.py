@@ -41,7 +41,6 @@ import sabnzbd.cfg as cfg
 from sabnzbd.constants import EXCLUDED_GUESSIT_PROPERTIES
 from sabnzbd.nzbstuff import NzbObject, scan_password
 
-
 # Do not rename .vob files as they are usually DVD's
 EXCLUDED_FILE_EXTS = (".vob", ".bin")
 
@@ -89,6 +88,10 @@ class BaseSorter:
         self.match()
 
     def match(self):
+        """Implemented by child classes"""
+        pass
+
+    def get_values(self):
         """Implemented by child classes"""
         pass
 
@@ -335,10 +338,6 @@ class Sorter:
 
         return self.sorter.get_final_path() if self.sort_file else complete_dir
 
-    def rename(self, newfiles: List[str], workdir_complete: str) -> Tuple[str, bool]:
-        """Rename files of the job"""
-        return self.sorter.rename(newfiles, workdir_complete)
-
 
 class SeriesSorter(BaseSorter):
     """Methods for Series Sorting"""
@@ -357,19 +356,12 @@ class SeriesSorter(BaseSorter):
 
     def match(self):
         """Try to guess series info if config and category sort out or force is set"""
-        if self.force or (cfg.enable_tv_sorting() and cfg.tv_sort_string()):
-            if (
-                self.force
-                or (not self.cats)
-                or (self.cat and self.cat.lower() in self.cats)
-                or (not self.cat and "None" in self.cats)
-            ):
-                if not self.guess:
-                    self.guess = guess_what(self.original_job_name, sort_type="episode")
-                if self.guess.get("type") == "episode" and not "date" in self.guess:
-                    logging.debug("Using tv sorter for %s", self.original_job_name)
-                    self.matched = True
-                    self.type = "tv"
+        if self.force or (cfg.enable_tv_sorting() and cfg.tv_sort_string() and self.cat.lower() in self.cats):
+            self.guess = guess_what(self.original_job_name, sort_type="episode")
+            if self.guess.get("type") == "episode" and "date" not in self.guess:
+                logging.debug("Using tv sorter for %s", self.original_job_name)
+                self.matched = True
+                self.type = "tv"
 
     def get_values(self):
         """Collect all values needed for path replacement"""
@@ -427,14 +419,12 @@ class MovieSorter(BaseSorter):
 
     def match(self):
         """Try to guess movie info if config and category sort out or force is set"""
-        if self.force or (cfg.enable_movie_sorting() and self.sort_string):
-            if self.force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and "None" in self.cats):
-                if not self.guess:
-                    self.guess = guess_what(self.original_job_name, sort_type="movie")
-                if self.guess.get("type") == "movie":
-                    logging.debug("Using movie sorter for %s", self.original_job_name)
-                    self.matched = True
-                    self.type = "movie"
+        if self.force or (cfg.enable_movie_sorting() and self.sort_string and self.cat.lower() in self.cats):
+            self.guess = guess_what(self.original_job_name, sort_type="movie")
+            if self.guess.get("type") == "movie":
+                logging.debug("Using movie sorter for %s", self.original_job_name)
+                self.matched = True
+                self.type = "movie"
 
     def get_values(self):
         """Collect all values needed for path replacement"""
@@ -509,14 +499,12 @@ class DateSorter(BaseSorter):
 
     def match(self):
         """Checks the category for a match, if so set self.matched to true"""
-        if self.force or (cfg.enable_date_sorting() and self.sort_string):
-            if self.force or (self.cat and self.cat.lower() in self.cats) or (not self.cat and "None" in self.cats):
-                if not self.guess:
-                    self.guess = guess_what(self.original_job_name, sort_type="episode")
-                if self.guess.get("type") == "episode" and "date" in self.guess:
-                    logging.debug("Using date sorter for %s", self.original_job_name)
-                    self.matched = True
-                    self.type = "date"
+        if self.force or (cfg.enable_date_sorting() and self.sort_string and self.cat.lower() in self.cats):
+            self.guess = guess_what(self.original_job_name, sort_type="episode")
+            if self.guess.get("type") == "episode" and "date" in self.guess:
+                logging.debug("Using date sorter for %s", self.original_job_name)
+                self.matched = True
+                self.type = "date"
 
     def get_date(self):
         """Get month and day"""
@@ -607,7 +595,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
         guess["title"] = guess.get("title", "")[len(digit_fix) :]
 
     # Force season to 1 for seasonless episodes with no date
-    if guess.get("type") == "episode" and not "date" in guess:
+    if guess.get("type") == "episode" and "date" not in guess:
         guess.setdefault("season", 1)
 
     # Try to avoid setting the type to movie on arbitrary jobs (e.g. 'Setup.exe') just because guessit defaults to that

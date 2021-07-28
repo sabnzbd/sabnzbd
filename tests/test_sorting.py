@@ -681,15 +681,32 @@ class TestSortingSorters:
     )
     def test_sorter_generic(self, job_name, result_sort_file, result_class):
         """Check if the generic sorter makes the right choices"""
-        generic = sorting.Sorter(None, None)
-        generic.detect(job_name, SAB_CACHE_DIR)
 
-        assert generic.sort_file is result_sort_file
-        if result_sort_file:
-            assert generic.sorter
-            assert generic.sorter.__class__ is result_class
-        else:
-            assert not generic.sorter
+        @set_config(
+            {
+                "tv_sort_string": "test",  # TV
+                "tv_categories": "test_cat",
+                "enable_tv_sorting": 1,
+                "movie_sort_string": "test",  # Movie
+                "movie_categories": "test_cat",
+                "enable_movie_sorting": 1,
+                "date_sort_string": "test",  # Date
+                "date_categories": "test_cat",
+                "enable_date_sorting": 1,
+            }
+        )
+        def _func():
+            generic = sorting.Sorter(None, "test_cat")
+            generic.detect(job_name, SAB_CACHE_DIR)
+
+            assert generic.sort_file is result_sort_file
+            if result_sort_file:
+                assert generic.sorter
+                assert generic.sorter.__class__ is result_class
+            else:
+                assert not generic.sorter
+
+        _func()
 
     @pytest.mark.parametrize(
         "name, result",
