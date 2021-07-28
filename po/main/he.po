@@ -4604,23 +4604,23 @@ msgstr "תוצאה מעובדת"
 
 #: sabnzbd/skintext.py
 msgid "Any property"
-msgstr ""
+msgstr "קניין כלשהו"
 
 #: sabnzbd/skintext.py
 msgid "property"
-msgstr ""
+msgstr "קניין"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt Property"
-msgstr ""
+msgstr "קניין GuessIt"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt.Property"
-msgstr ""
+msgstr "GuessIt.Property"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt_Property"
-msgstr ""
+msgstr "GuessIt_Property"
 
 #: sabnzbd/skintext.py
 msgid ""
