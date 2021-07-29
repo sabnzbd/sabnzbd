@@ -344,9 +344,11 @@ class TestDeobfuscateFinalResult:
         # deobfuscate will do:
         # first par2 based renaming aaaaaaaaaaa to twentymb.bin,
         # then deobfuscate twentymb.bin to the job name (with same extension)
-        deobfuscate_list(list_of_files, "My Great Download")
+        list_of_files = recover_par2_names(list_of_files)
+        assert os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should exist
 
+        deobfuscate_list(list_of_files, "My Great Download")
         assert os.path.isfile(os.path.join(work_dir, "My Great Download.bin"))  # the twentymb.bin should be renamed
-        assert not os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should be gone
+        assert not os.path.isfile(os.path.join(work_dir, "twentymb.bin"))  # should now be gone
 
         shutil.rmtree(work_dir)

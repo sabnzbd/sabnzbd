@@ -517,6 +517,9 @@ def process_job(nzo: NzbObject):
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         all_ok = False
 
+            # Use par2 files to deobfuscate unpacked file names
+            newfiles = deobfuscate.recover_par2_names(newfiles)
+
             if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list:
                 # Deobfuscate the filenames
                 logging.info("Running deobfuscate")

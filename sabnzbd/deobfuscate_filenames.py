@@ -74,6 +74,30 @@ def decode_par2(parfile):
     return new_files
 
 
+def recover_par2_names(filelist):
+    """Find par2 files and use them for renaming"""
+    # Check that files exists
+    filelist = [f for f in filelist if os.path.isfile(f)]
+    # Search for par2 files in the filelist
+    par2_files = [f for f in filelist if f.endswith(".par2")]
+    # Found any par2 files we can use?
+    if not par2_files:
+        logging.debug("No par2 files found to process, running renamer")
+    else:
+        # Run par2 from SABnzbd on them
+        for par2_file in par2_files:
+            # Analyse data and analyse result
+            logging.debug("Deobfuscate par2: handling %s", par2_file)
+            new_files = decode_par2(par2_file)
+            if new_files:
+                logging.debug("Deobfuscate par2 repair/verify finished")
+                filelist += new_files
+                filelist = [f for f in filelist if os.path.isfile(f)]
+            else:
+                logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
+    return filelist
+
+
 def is_probably_obfuscated(myinputfilename):
     """Returns boolean if filename is likely obfuscated. Default: True
     myinputfilename (string) can be a plain file name, or a full path"""
@@ -143,25 +167,6 @@ def deobfuscate_list(filelist, usefulname):
 
     # to be sure, only keep really exsiting files:
     filelist = [f for f in filelist if os.path.isfile(f)]
-
-    # Search for par2 files in the filelist
-    par2_files = [f for f in filelist if f.endswith(".par2")]
-    # Found any par2 files we can use?
-    par2_renaming_done = False
-    if not par2_files:
-        logging.debug("No par2 files found to process, running renamer")
-    else:
-        # Run par2 from SABnzbd on them
-        for par2_file in par2_files:
-            # Analyse data and analyse result
-            logging.debug("Deobfuscate par2: handling %s", par2_file)
-            new_files = decode_par2(par2_file)
-            if new_files:
-                logging.debug("Deobfuscate par2 repair/verify finished")
-                filelist += new_files
-                filelist = [f for f in filelist if os.path.isfile(f)]
-            else:
-                logging.debug("Deobfuscate par2 repair/verify did not find anything to rename")
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
     # if so, let's give them a better extension based on their internal content/info
