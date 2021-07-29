@@ -316,7 +316,7 @@ class TestDeobfuscateFinalResult:
         for (dirpath, dirnames, filenames) in os.walk(test_dir):
             list_of_files += [os.path.join(dirpath, file) for file in filenames]
         # Run deobfuscate
-        deobfuscate_list(list_of_files, "doesnt_matter")
+        recover_par2_names(list_of_files, "doesnt_matter")
 
         # Should now be renamed to the filename in the par2 file
         assert not os.path.exists(test_input)
