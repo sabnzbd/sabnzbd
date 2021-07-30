@@ -518,7 +518,7 @@ def process_job(nzo: NzbObject):
                         all_ok = False
 
             # Use par2 files to deobfuscate unpacked file names
-            if cfg.par2_filenames():
+            if cfg.process_unpacked_par2():
                 newfiles = deobfuscate.recover_par2_names(newfiles)
 
             if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list:

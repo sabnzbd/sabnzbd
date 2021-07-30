@@ -880,7 +880,7 @@ SPECIAL_BOOL_LIST = (
     "fast_fail",
     "overwrite_files",
     "enable_par_cleanup",
-    "par2_filenames",
+    "process_unpacked_par2",
     "queue_complete_pers",
     "api_warnings",
     "helpfull_warnings",
