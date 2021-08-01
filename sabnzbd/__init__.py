@@ -1000,16 +1000,16 @@ def check_all_tasks():
 
     # Non-restartable threads, require program restart
     if not sabnzbd.PostProcessor.is_alive():
-        logging.info("Restarting because of crashed postprocessor")
+        logging.warning(T("Restarting because of crashed postprocessor"))
         return False
     if not sabnzbd.Downloader.is_alive():
-        logging.info("Restarting because of crashed downloader")
+        logging.warning(T("Restarting because of crashed downloader"))
         return False
     if not sabnzbd.Decoder.is_alive():
-        logging.info("Restarting because of crashed decoder")
+        logging.warning(T("Restarting because of crashed decoder"))
         return False
     if not sabnzbd.Assembler.is_alive():
-        logging.info("Restarting because of crashed assembler")
+        logging.warning(T("Restarting because of crashed assembler"))
         return False
 
     # Kick the downloader, in case it missed the semaphore
