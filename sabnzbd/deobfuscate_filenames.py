@@ -48,7 +48,7 @@ def decode_par2(parfile: str) -> List[str]:
     # Check if really a par2 file
     if not is_parfile(parfile):
         logging.info("Par2 file %s was not really a par2 file")
-        return False
+        return []
 
     # Parse the par2 file
     md5of16k = {}
@@ -117,7 +117,7 @@ def is_probably_obfuscated(myinputfilename: str) -> bool:
         return True
 
     # 0675e29e9abfd2.f7d069dab0b853283cc1b069a25f82.6547
-    if re.findall(r"^[a-f0-9\.]{40,}$", filebasename):
+    if re.findall(r"^[a-f0-9.]{40,}$", filebasename):
         logging.debug("Obfuscated: starting with 40+ lower case hex digits and/or dots")
         return True
 
