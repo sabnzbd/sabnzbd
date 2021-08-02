@@ -181,22 +181,22 @@ msgstr "Echec du chargement de %s"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
-msgstr ""
+msgstr "Redémarrage suite au plantage du postprocesseur"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed downloader"
-msgstr ""
+msgstr "Redémarrage suite au plantage du téléchargeur"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed decoder"
-msgstr ""
+msgstr "Redémarrage suite au plantage du décodeur"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed assembler"
-msgstr ""
+msgstr "Redémarrage suite au plantage de l'assembleur"
 
 #. Warning message
 #: sabnzbd/__init__.py
