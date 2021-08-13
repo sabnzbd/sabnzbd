@@ -1218,13 +1218,16 @@ class NzbObject(TryList):
         # Check if there are any files left here, so the check is inside the NZO_LOCK
         return articles_left, file_done, not self.files
 
-    @synchronized(NZO_LOCK)
     def add_saved_article(self, article: Article):
         self.saved_articles.append(article)
 
-    @synchronized(NZO_LOCK)
     def remove_saved_article(self, article: Article):
-        self.saved_articles.remove(article)
+        try:
+            self.saved_articles.remove(article)
+        except ValueError:
+            # Due to racing conditions, it could already be removed
+            logging.debug("Failed to remove %s from saved articles, probably already deleted", article)
+            pass
 
     def check_existing_files(self, wdir: str):
         """Check if downloaded files already exits, for these set NZF to complete"""
