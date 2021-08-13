@@ -174,22 +174,22 @@ msgstr "Inlezen van %s mislukt"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
-msgstr ""
+msgstr "SABnzbd wordt herstart omdat de postprocessor is gecrasht"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed downloader"
-msgstr ""
+msgstr "SABnzbd wordt herstart omdat de downloader is gecrasht"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed decoder"
-msgstr ""
+msgstr "SABnzbd wordt herstart omdat de decoder is gecrasht"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed assembler"
-msgstr ""
+msgstr "SABnzbd wordt herstart omdat de assembler is gecrasht"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -691,7 +691,7 @@ msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
-msgstr "Mislukte login progin bij %s"
+msgstr "Mislukte login poging van %s"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -3756,6 +3756,9 @@ msgid ""
 "Additionally, attempts to set the correct file extension based on the file "
 "signature if the extension is not present or meaningless."
 msgstr ""
+"Als de bestandsextensie van een bestand ontbreekt of verhaspelt is, zal er "
+"geprobeerd worden de correcte extensie te vinden op basis van de inhoud van "
+"het bestand."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
@@ -4713,23 +4716,23 @@ msgstr "Bewerkt resultaat"
 
 #: sabnzbd/skintext.py
 msgid "Any property"
-msgstr ""
+msgstr "Alle eigenschappen"
 
 #: sabnzbd/skintext.py
 msgid "property"
-msgstr ""
+msgstr "eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt Property"
-msgstr ""
+msgstr "GuessIt eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt.Property"
-msgstr ""
+msgstr "GuessIt.Eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt_Property"
-msgstr ""
+msgstr "GuessIt_Eigenschap"
 
 #: sabnzbd/skintext.py
 msgid ""
