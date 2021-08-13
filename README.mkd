@@ -1,5 +1,14 @@
-Release Notes - SABnzbd 3.4.0 Beta 1
+Release Notes - SABnzbd 3.4.0 Beta 2
 =========================================================
+
+## Changes and bugfixes since 3.4.0 Beta 1
+- Not all passwords will be tried if a matching one was found.
+- Sorting would always change the final path even if it was disabled.
+- Only run Direct Unpack if `enable_unrar` is enabled.
+- If unpacked files contain `.par2` files they will always be read and
+  used to rename any matching files.
+- `Warning` instead of `Info` when there is a restart due to crashed thread.
+- Prevent crash in the Assembler.
 
 ## Changes since 3.3.1
 - Extended `Deobfuscate final filenames` to attempt to set the correct 
