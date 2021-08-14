@@ -26,7 +26,7 @@ import time
 import re
 import gc
 import queue
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import sabnzbd
 from sabnzbd.newsunpack import (
@@ -512,7 +512,7 @@ def process_job(nzo: NzbObject):
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
             if all_ok and file_sorter.sort_file:
                 if newfiles:
-                    workdir_complete, ok = file_sorter.rename(newfiles, workdir_complete)
+                    workdir_complete, ok = file_sorter.sorter.rename(newfiles, workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
                         all_ok = False
@@ -670,7 +670,7 @@ def process_job(nzo: NzbObject):
     return True
 
 
-def prepare_extraction_path(nzo: NzbObject):
+def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Optional[str]]:
     """Based on the information that we have, generate
     the extraction path and create the directory.
     Separated so it can be called from DirectUnpacker
@@ -1191,7 +1191,7 @@ def rename_and_collapse_folder(oldpath, newpath, files):
     return files
 
 
-def set_marker(folder):
+def set_marker(folder: str) -> Optional[str]:
     """Set marker file and return name"""
     name = cfg.marker_file()
     if name:
@@ -1207,7 +1207,7 @@ def set_marker(folder):
     return name
 
 
-def del_marker(path):
+def del_marker(path: str):
     """Remove marker file"""
     if path and os.path.exists(path):
         logging.debug("Removing marker file %s", path)
