@@ -1,14 +1,5 @@
-Release Notes - SABnzbd 3.4.0 Beta 2
+Release Notes - SABnzbd 3.4.0 Release Candidate 1
 =========================================================
-
-## Changes and bugfixes since 3.4.0 Beta 1
-- Not all passwords will be tried if a matching one was found.
-- Sorting would always change the final path even if it was disabled.
-- Only run Direct Unpack if `enable_unrar` is enabled.
-- If unpacked files contain `.par2` files they will always be read and
-  used to rename any matching files.
-- `Warning` instead of `Info` when there is a restart due to crashed thread.
-- Prevent crash in the Assembler.
 
 ## Changes since 3.3.1
 - Extended `Deobfuscate final filenames` to attempt to set the correct 
@@ -16,13 +7,18 @@ Release Notes - SABnzbd 3.4.0 Beta 2
   not present or meaningless.
 - Added additional pattern keys that can be used in the `Sort String`
   for Sorting, by using the `guessit` package internally for parsing.
+- If unpacked files contain `.par2` files they will always be read and
+  used to rename any matching files.
 - Regular expressions can be used to specify `Unwanted extensions`.
+- Not all passwords will be tried if a matching one was found.
 - Some interface-only options were added as API-call.
 - The Plush skin has been removed.
 
 ## Bugfixes since 3.3.1
 - Duplicate check based on `.nzb` MD5 was performed before it was calculated.
 - Enforce `local_ranges` for broadcasts (Bonjour/SSDP).
+- `Warning` instead of `Info` when there is a restart due to crashed thread.
+- Only run Direct Unpack if `enable_unrar` is enabled.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x 
