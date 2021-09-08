@@ -192,7 +192,7 @@ class URLGrabber(Thread):
 
                         # Get filename from Content-Disposition header
                         if not filename and "filename=" in value:
-                            filename_match = re.match(r".*filename[*=]+(?:UTF-8''?)*([^=;]*);?", value")
+                            filename_match = re.match(r".*filename[*=]+(?:UTF-8''?)*([^=;]*);?", value)
                             if filename_match:
                                 filename = filename_match.group(1).strip('"')
 
