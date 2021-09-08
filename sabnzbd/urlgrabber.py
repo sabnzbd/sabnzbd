@@ -22,6 +22,7 @@ sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 import os
 import sys
 import time
+import re
 import logging
 import queue
 import urllib.request
@@ -191,7 +192,9 @@ class URLGrabber(Thread):
 
                         # Get filename from Content-Disposition header
                         if not filename and "filename=" in value:
-                            filename = value[value.index("filename=") + 9 :].strip(";").strip('"')
+                            filename_match = re.match(r".*filename[*=]+(?:UTF-8''?)*([^=;]*);?", value")
+                            if filename_match:
+                                filename = filename_match.group(1).strip('"')
 
                 if wait:
                     # For sites that have a rate-limiting attribute
