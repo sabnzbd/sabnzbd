@@ -22,7 +22,6 @@ sabnzbd.urlgrabber - Queue for grabbing NZB files from websites
 import os
 import sys
 import time
-import re
 import logging
 import queue
 import urllib.request
