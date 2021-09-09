@@ -27,6 +27,7 @@ import pytest_httpbin
 import sabnzbd.urlgrabber as urlgrabber
 import sabnzbd.version
 from sabnzbd.cfg import selftest_host
+from sabnzbd.urlgrabber import filename_from_content_disposition
 from tests.testhelper import *
 
 
@@ -158,3 +159,26 @@ class TestBuildRequest:
             self._runner(self.httpbin.url + "/status/404", 404)
         with pytest.raises(urllib.error.HTTPError):
             self._runner(self.httpbin.url + "/no/such/file", 404)
+
+
+class TestFilenameFromDispositionHeader:
+    @pytest.mark.parametrize(
+        "header, result",
+        [
+            (
+                "filename=Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb; filename*=UTF-8''Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD-utf.nzb",
+                "Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD-utf.nzb"
+            ),
+            (
+                "filename=Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb;",
+                "Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb"
+            ),
+            (
+                "filename*=UTF-8''Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb",
+                "Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb"
+            ),
+        ]
+    )
+    def test_filename_from_disposition_header(self, header, result):
+        """Test the parsing of different disposition-headers."""
+        assert filename_from_content_disposition(header) == result
