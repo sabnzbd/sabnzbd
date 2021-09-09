@@ -177,6 +177,10 @@ class TestFilenameFromDispositionHeader:
                 "filename*=UTF-8''Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb",
                 "Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb"
             ),
+            (
+                "attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
+            )
         ]
     )
     def test_filename_from_disposition_header(self, header, result):
