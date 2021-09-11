@@ -167,33 +167,33 @@ class TestFilenameFromDispositionHeader:
             (
                 # In this case the first filename (not the UTF-8 encoded) is parsed.
                 "attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz; filename*=UTF-8''jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
-                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
             ),
             (
                 "filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz;",
-                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
             ),
             (
                 "filename*=UTF-8''jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
-                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
             ),
             (
                 "attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
-                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
             ),
             (
                 "attachment; filename=\"jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz\"",
-                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
             ),
             (
                 "attachment; filename=/what/ever/filename.tar.gz",
-                "filename.tar.gz"
+                "filename.tar.gz",
             ),
             (
                 "attachment; filename=",
-                None
-            )
-        ]
+                None,
+            ),
+        ],
     )
     def test_filename_from_disposition_header(self, header, result):
         """Test the parsing of different disposition-headers."""
