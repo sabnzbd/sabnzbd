@@ -166,7 +166,7 @@ class TestFilenameFromDispositionHeader:
         [
             (
                 # In this case the first filename (not the UTF-8 encoded) is parsed.
-                "filename=Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb; filename*=UTF-8''Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD-utf.nzb",
+                "attachment; filename=Zombie.Land.Saga.Revenge.S02E12.1080p.WEB.H264-SENPAI.nzb; filename*=UTF-8''Zombie.Land.Saga.Revenge.S02E12.1080p.WEB.H264-SENPAI.nzb",
                 "Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb"
             ),
             (
