@@ -166,16 +166,16 @@ class TestFilenameFromDispositionHeader:
         [
             (
                 # In this case the first filename (not the UTF-8 encoded) is parsed.
-                "attachment; filename=Zombie.Land.Saga.Revenge.S02E12.1080p.WEB.H264-SENPAI.nzb; filename*=UTF-8''Zombie.Land.Saga.Revenge.S02E12.1080p.WEB.H264-SENPAI.nzb",
-                "Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb"
+                "attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz; filename*=UTF-8''jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
             ),
             (
-                "filename=Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb;",
-                "Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb"
+                "filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz;",
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
             ),
             (
-                "filename*=UTF-8''Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb",
-                "Zombie.Land.Saga.Revenge.S02E12.480p.x264-mSD.nzb"
+                "filename*=UTF-8''jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"
             ),
             (
                 "attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
