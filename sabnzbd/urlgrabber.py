@@ -72,11 +72,11 @@ def filename_from_content_disposition(content_disposition):
         filename_from_content_disposition('attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz')
         should return: 'jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz'
     """
-    msg = Message(f'Content-Disposition: attachment; {content_disposition}')
+    msg = Message(f"Content-Disposition: attachment; {content_disposition}")
     filename = msg.get_filename()
     if filename:
         # Basic sanitation.
-        filename = os.path.basename(filename).lstrip('.').strip()
+        filename = os.path.basename(filename).lstrip(".").strip()
         if filename:
             return filename
 
