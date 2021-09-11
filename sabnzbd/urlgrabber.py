@@ -212,7 +212,7 @@ class URLGrabber(Thread):
                             nzo_info[item] = value
 
                         # Get filename from Content-Disposition header
-                        if not filename and 'filename' in value:
+                        if not filename and "filename" in value:
                             filename = filename_from_content_disposition(value)
 
                 if wait:
