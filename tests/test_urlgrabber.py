@@ -182,7 +182,7 @@ class TestFilenameFromDispositionHeader:
                 "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
             ),
             (
-                "attachment; filename=\"jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz\"",
+                'attachment; filename="jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"',
                 "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
             ),
             (
