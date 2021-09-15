@@ -168,22 +168,22 @@ msgstr "טעינת %s נכשלה"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
-msgstr ""
+msgstr "מפעיל מחדש בגלל בתר־מעבד שקרס"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed downloader"
-msgstr ""
+msgstr "מפעיל מחדש בגלל מורידן שקרס"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed decoder"
-msgstr ""
+msgstr "מפעיל מחדש בגלל מפענח קוד שקרס"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed assembler"
-msgstr ""
+msgstr "מפעיל מחדש בגלל אסמבלר שקרס"
 
 #. Warning message
 #: sabnzbd/__init__.py
