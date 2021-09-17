@@ -34,7 +34,7 @@ function QueueListModel(parent) {
     // External var's
     self.queueItems = ko.observableArray([]);
     self.totalItems = ko.observable(0);
-    self.isMultiEditing = ko.observable(false);
+    self.isMultiEditing = ko.observable(false).extend({ persist: 'queueIsMultiEditing' });
     self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
     self.multiEditItems = ko.observableArray([]);
     self.categoriesList = ko.observableArray([]);
@@ -444,7 +444,7 @@ function QueueListModel(parent) {
                     // Empty it
                     self.multiEditItems.removeAll();
                     // Hide notification
-                    hideNotification(true)
+                    hideNotification()
                 }
             })
         }
@@ -745,7 +745,7 @@ function QueueModel(parent, data) {
                 parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
                 self.parent.parent.refresh();
                 // Hide notifcation
-                hideNotification(true)
+                hideNotification()
             });
         }
     };

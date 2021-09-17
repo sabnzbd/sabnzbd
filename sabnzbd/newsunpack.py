@@ -28,6 +28,7 @@ import time
 import zlib
 import shutil
 import functools
+from typing import Tuple
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
@@ -65,7 +66,6 @@ from sabnzbd.constants import Status
 RAR_RE = re.compile(r"\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
 RAR_RE_V3 = re.compile(r"\.(?P<ext>part\d*)$", re.I)
 
-LOADING_RE = re.compile(r'^Loading "(.+)"')
 TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
 EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
 EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")
@@ -148,6 +148,7 @@ ENV_NZO_FIELDS = [
     "bytes_downloaded",
     "bytes_tried",
     "cat",
+    "correct_password",
     "duplicate",
     "encrypted",
     "fail_msg",
@@ -2298,16 +2299,18 @@ def crc_calculate(path):
     return b"%08x" % (crc & 0xFFFFFFFF)
 
 
-def analyse_show(name):
+def analyse_show(name: str) -> Tuple[str, str, str, str, bool]:
     """Do a quick SeasonSort check and return basic facts"""
-    job = SeriesSorter(None, name, None, None)
-    job.match(force=True)
-    if job.is_match():
+    job = SeriesSorter(None, name, None, None, force=True)
+    if job.matched:
         job.get_values()
-    info = job.show_info
-    show_name = info.get("show_name", "").replace(".", " ").replace("_", " ")
-    show_name = show_name.replace("  ", " ")
-    return show_name, info.get("season_num", ""), info.get("episode_num", ""), info.get("ep_name", "")
+    return (
+        job.info.get("title", ""),
+        job.info.get("season_num", ""),
+        job.info.get("episode_num", ""),
+        job.info.get("ep_name", ""),
+        job.is_proper(),
+    )
 
 
 def pre_queue(nzo: NzbObject, pp, cat):
@@ -2335,7 +2338,7 @@ def pre_queue(nzo: NzbObject, pp, cat):
             str(nzo.bytes),
             " ".join(nzo.groups),
         ]
-        command.extend(analyse_show(nzo.final_name_with_password))
+        command.extend(analyse_show(nzo.final_name_with_password)[:4])
         command = [fix(arg) for arg in command]
 
         # Fields not in the NZO directly

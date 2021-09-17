@@ -73,7 +73,7 @@ def time_format(fmt):
         return fmt
 
 
-def calc_age(date: datetime.datetime, trans=False) -> str:
+def calc_age(date: datetime.datetime, trans: bool = False) -> str:
     """Calculate the age difference between now and date.
     Value is returned as either days, hours, or minutes.
     When 'trans' is True, time symbols will be translated.
@@ -218,6 +218,23 @@ _wildcard_to_regex = {
 def wildcard_to_re(text):
     """Convert plain wildcard string (with '*' and '?') to regex."""
     return "".join([_wildcard_to_regex.get(ch, ch) for ch in text])
+
+
+def convert_filter(text):
+    """Return compiled regex.
+    If string starts with re: it's a real regex
+    else quote all regex specials, replace '*' by '.*'
+    """
+    text = text.strip().lower()
+    if text.startswith("re:"):
+        txt = text[3:].strip()
+    else:
+        txt = wildcard_to_re(text)
+    try:
+        return re.compile(txt, re.I)
+    except:
+        logging.debug("Could not compile regex: %s", text)
+        return None
 
 
 def cat_convert(cat):
@@ -733,8 +750,12 @@ def create_https_certificates(ssl_cert, ssl_key):
     return True
 
 
-def get_all_passwords(nzo):
-    """Get all passwords, from the NZB, meta and password file"""
+def get_all_passwords(nzo) -> List[str]:
+    """Get all passwords, from the NZB, meta and password file. In case the correct password is
+    already known, only that password is returned."""
+    if nzo.correct_password:
+        return [nzo.correct_password]
+
     if nzo.password:
         logging.info("Found a password that was set by the user: %s", nzo.password)
         passwords = [nzo.password.strip()]
@@ -1050,7 +1071,7 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
             command.insert(0, "python.exe")
         if flatten_command:
             command = list2cmdline(command)
-        # On some Windows platforms we need to supress a quick pop-up of the command window
+        # On some Windows platforms we need to suppress a quick pop-up of the command window
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
         startupinfo.wShowWindow = win32con.SW_HIDE

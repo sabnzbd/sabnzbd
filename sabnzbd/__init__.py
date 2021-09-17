@@ -20,17 +20,17 @@ import logging
 import datetime
 import tempfile
 import pickle
-import ctypes
 import ctypes.util
 import gzip
 import time
 import socket
 import cherrypy
+import cherrypy._cpreqbody
 import platform
 import sys
 import ssl
 from threading import Lock, Thread, Condition
-from typing import Any, AnyStr
+from typing import Any, AnyStr, Optional, Union
 
 ##############################################################################
 # Determine platform flags
@@ -124,6 +124,7 @@ from sabnzbd.constants import (
     QUEUE_FILE_NAME,
     QUEUE_VERSION,
     QUEUE_FILE_TMPL,
+    Status,
 )
 import sabnzbd.utils.ssdp
 
@@ -163,7 +164,6 @@ LINUX_POWER = powersup.HAVE_DBUS
 
 LOGFILE = None
 WEBLOGFILE = None
-LOGHANDLER = None
 GUIHANDLER = None
 LOG_ALL = False
 AMBI_LOCALHOST = False
@@ -636,19 +636,19 @@ def save_compressed(folder: str, filename: str, data: AnyStr):
 
 
 def add_nzbfile(
-    nzbfile,
-    pp=None,
-    script=None,
-    cat=None,
-    catdir=None,
-    priority=DEFAULT_PRIORITY,
-    nzbname=None,
+    nzbfile: Union[str, cherrypy._cpreqbody.Part],
+    pp: Optional[Union[int, str]] = None,
+    script: Optional[str] = None,
+    cat: Optional[str] = None,
+    catdir: Optional[str] = None,
+    priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+    nzbname: Optional[str] = None,
     nzo_info=None,
-    url=None,
-    keep=None,
-    reuse=None,
-    password=None,
-    nzo_id=None,
+    url: Optional[str] = None,
+    keep: Optional[bool] = None,
+    reuse: Optional[str] = None,
+    password: Optional[str] = None,
+    nzo_id: Optional[str] = None,
 ):
     """Add file, either a single NZB-file or an archive.
     All other parameters are passed to the NZO-creation.
@@ -824,7 +824,6 @@ def change_queue_complete_action(action, new=True):
         cfg.queue_complete.set(action or "")
         config.save_config()
 
-    # keep the name of the action for matching the current select in queue.tmpl
     sabnzbd.QUEUECOMPLETE = action
     sabnzbd.QUEUECOMPLETEACTION = _action
     sabnzbd.QUEUECOMPLETEARG = _argument
@@ -1001,16 +1000,16 @@ def check_all_tasks():
 
     # Non-restartable threads, require program restart
     if not sabnzbd.PostProcessor.is_alive():
-        logging.info("Restarting because of crashed postprocessor")
+        logging.warning(T("Restarting because of crashed postprocessor"))
         return False
     if not sabnzbd.Downloader.is_alive():
-        logging.info("Restarting because of crashed downloader")
+        logging.warning(T("Restarting because of crashed downloader"))
         return False
     if not sabnzbd.Decoder.is_alive():
-        logging.info("Restarting because of crashed decoder")
+        logging.warning(T("Restarting because of crashed decoder"))
         return False
     if not sabnzbd.Assembler.is_alive():
-        logging.info("Restarting because of crashed assembler")
+        logging.warning(T("Restarting because of crashed assembler"))
         return False
 
     # Kick the downloader, in case it missed the semaphore

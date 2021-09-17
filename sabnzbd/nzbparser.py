@@ -26,9 +26,11 @@ import logging
 import hashlib
 import xml.etree.ElementTree
 import datetime
+from typing import Optional, Dict, Any, Union
 
 import sabnzbd
 from sabnzbd import filesystem, nzbstuff
+from sabnzbd.constants import Status
 from sabnzbd.encoding import utob, correct_unknown_encoding
 from sabnzbd.filesystem import is_archive, get_filename
 from sabnzbd.misc import name_to_cat
@@ -154,21 +156,21 @@ def nzbfile_parser(raw_data, nzo):
 
 
 def process_nzb_archive_file(
-    filename,
-    path,
-    pp=None,
-    script=None,
-    cat=None,
-    catdir=None,
-    keep=False,
-    priority=None,
-    nzbname=None,
-    reuse=None,
-    nzo_info=None,
-    dup_check=True,
-    url=None,
-    password=None,
-    nzo_id=None,
+    filename: str,
+    path: str,
+    pp: Optional[int] = None,
+    script: Optional[str] = None,
+    cat: Optional[str] = None,
+    catdir: Optional[str] = None,
+    keep: bool = False,
+    priority: Optional[Union[int, str]] = None,
+    nzbname: Optional[str] = None,
+    reuse: Optional[str] = None,
+    nzo_info: Optional[Dict[str, Any]] = None,
+    dup_check: bool = True,
+    url: Optional[str] = None,
+    password: Optional[str] = None,
+    nzo_id: Optional[str] = None,
 ):
     """Analyse ZIP file and create job(s).
     Accepts ZIP files with ONLY nzb/nfo/folder files in it.
@@ -214,7 +216,7 @@ def process_nzb_archive_file(
                             name,
                             pp=pp,
                             script=script,
-                            nzb=data,
+                            nzb_data=data,
                             cat=cat,
                             url=url,
                             priority=priority,
@@ -255,21 +257,21 @@ def process_nzb_archive_file(
 
 
 def process_single_nzb(
-    filename,
-    path,
-    pp=None,
-    script=None,
-    cat=None,
-    catdir=None,
-    keep=False,
-    priority=None,
-    nzbname=None,
-    reuse=None,
-    nzo_info=None,
-    dup_check=True,
-    url=None,
-    password=None,
-    nzo_id=None,
+    filename: str,
+    path: str,
+    pp: Optional[int] = None,
+    script: Optional[str] = None,
+    cat: Optional[str] = None,
+    catdir: Optional[str] = None,
+    keep: bool = False,
+    priority: Optional[Union[int, str]] = None,
+    nzbname: Optional[str] = None,
+    reuse: Optional[str] = None,
+    nzo_info: Optional[Dict[str, Any]] = None,
+    dup_check: bool = True,
+    url: Optional[str] = None,
+    password: Optional[str] = None,
+    nzo_id: Optional[str] = None,
 ):
     """Analyze file and create a job from it
     Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
@@ -316,7 +318,7 @@ def process_single_nzb(
             filename,
             pp=pp,
             script=script,
-            nzb=data,
+            nzb_data=data,
             cat=cat,
             url=url,
             priority=priority,
@@ -349,7 +351,7 @@ def process_single_nzb(
             # Re-use existing nzo_id, when a "future" job gets it payload
             sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
             nzo.nzo_id = nzo_id
-        nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=reuse))
+        nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
         nzo.update_rating()
 
     try:

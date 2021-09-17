@@ -1,7 +1,6 @@
 /**
     Base variables and functions
 **/
-var fadeOnDeleteDuration = 400; // ms after deleting a row
 var isMobile = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 
 // To avoid problems when localStorage is disabled
@@ -55,42 +54,6 @@ function callSpecialAPI(url, data) {
     });
 
     return $.when(ajaxQuery);
-}
-
-/**
-    Handle visibility changes so we
-    do only incremental update when not visible
-**/
-var pageIsVisible = true;
-// Set the name of the hidden property and the change event for visibility
-var hidden, visibilityChange;
-if(typeof document.hidden !== "undefined") { // Opera 12.10 and Firefox 18 and later support
-    hidden = "hidden";
-    visibilityChange = "visibilitychange";
-} else if(typeof document.mozHidden !== "undefined") {
-    hidden = "mozHidden";
-    visibilityChange = "mozvisibilitychange";
-} else if(typeof document.msHidden !== "undefined") {
-    hidden = "msHidden";
-    visibilityChange = "msvisibilitychange";
-} else if(typeof document.webkitHidden !== "undefined") {
-    hidden = "webkitHidden";
-    visibilityChange = "webkitvisibilitychange";
-}
-
-// Set the global visibility
-function handleVisibilityChange() {
-    if(document[hidden]) {
-        pageIsVisible = false;
-    } else {
-        pageIsVisible = true;
-    }
-}
-
-// Add event listener only for supported browsers
-if(typeof document.addEventListener !== "undefined" && typeof document[hidden] !== "undefined") {
-    // Handle page visibility change
-    document.addEventListener(visibilityChange, handleVisibilityChange, false);
 }
 
 /***
@@ -264,18 +227,13 @@ function showNotification(notiName, notiTimeout, fileCounter) {
     // Remove after timeout
     if(notiTimeout) {
         setTimeout(function() {
-            hideNotification(true);
+            hideNotification();
         }, notiTimeout)
     }
 }
 
 // Hide notification
-function hideNotification(fadeItOut) {
-    // Hide the box with or without effect
-    if(fadeItOut) {
-        $('.main-notification-box').fadeOut()
-    } else {
-        $('.main-notification-box').hide()
-    }
-
+function hideNotification() {
+    // Hide the box with effect
+    $('.main-notification-box').fadeOut()
 }

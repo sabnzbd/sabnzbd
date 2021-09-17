@@ -28,6 +28,7 @@ import urllib.request
 import urllib.error
 import urllib.parse
 from http.client import IncompleteRead, HTTPResponse
+from mailbox import Message
 from threading import Thread
 import base64
 from typing import Tuple, Optional
@@ -190,8 +191,8 @@ class URLGrabber(Thread):
                             nzo_info[item] = value
 
                         # Get filename from Content-Disposition header
-                        if not filename and "filename=" in value:
-                            filename = value[value.index("filename=") + 9 :].strip(";").strip('"')
+                        if not filename and "filename" in value:
+                            filename = filename_from_content_disposition(value)
 
                 if wait:
                     # For sites that have a rate-limiting attribute
@@ -369,3 +370,23 @@ def _analyse(fetch_request: HTTPResponse, future_nzo: NzbObject):
         return None, msg, True, when, data
 
     return fetch_request, fetch_request.msg, False, 0, data
+
+
+def filename_from_content_disposition(content_disposition: str) -> Optional[str]:
+    """
+    Extract and validate filename from a Content-Disposition header.
+
+    Origin: https://github.com/httpie/httpie/blob/4c8633c6e51f388523ab4fa649040934402a4fc9/httpie/downloads.py#L98
+    :param content_disposition: Content-Disposition value
+    :type content_disposition: str
+    :return: the filename if present and valid, otherwise `None`
+    :example:
+        filename_from_content_disposition('attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz')
+        should return: 'jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz'
+    """
+    filename = Message(f"Content-Disposition: attachment; {content_disposition}").get_filename()
+    if filename:
+        # Basic sanitation
+        filename = os.path.basename(filename).lstrip(".").strip()
+        if filename:
+            return filename

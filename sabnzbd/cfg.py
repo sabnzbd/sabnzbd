@@ -46,7 +46,6 @@ from sabnzbd.constants import (
     DEF_SCANRATE,
     DEF_COMPLETE_DIR,
     DEF_FOLDER_MAX,
-    DEF_FILE_MAX,
 )
 
 ##############################################################################
@@ -191,6 +190,7 @@ replace_spaces = OptionBool("misc", "replace_spaces", False)
 replace_dots = OptionBool("misc", "replace_dots", False)
 safe_postproc = OptionBool("misc", "safe_postproc", True)
 pause_on_post_processing = OptionBool("misc", "pause_on_post_processing", False)
+enable_all_par = OptionBool("misc", "enable_all_par", False)
 sanitize_safe = OptionBool("misc", "sanitize_safe", False)
 cleanup_list = OptionList("misc", "cleanup_list")
 unwanted_extensions = OptionList("misc", "unwanted_extensions")
@@ -199,6 +199,7 @@ unwanted_extensions_mode = OptionNumber("misc", "unwanted_extensions_mode", 0)
 new_nzb_on_failure = OptionBool("misc", "new_nzb_on_failure", False)
 history_retention = OptionStr("misc", "history_retention", "0")
 enable_meta = OptionBool("misc", "enable_meta", True)
+
 
 quota_size = OptionStr("misc", "quota_size")
 quota_day = OptionStr("misc", "quota_day")
@@ -232,13 +233,12 @@ rating_filter_pause_keywords = OptionStr("misc", "rating_filter_pause_keywords")
 ##############################################################################
 enable_tv_sorting = OptionBool("misc", "enable_tv_sorting", False)
 tv_sort_string = OptionStr("misc", "tv_sort_string")
-tv_sort_countries = OptionNumber("misc", "tv_sort_countries", 1)
 tv_categories = OptionList("misc", "tv_categories", "")
 
 enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False)
 movie_sort_string = OptionStr("misc", "movie_sort_string")
 movie_sort_extra = OptionStr("misc", "movie_sort_extra", "-cd%1", strip=False)
-movie_extra_folders = OptionBool("misc", "movie_extra_folder", False)
+movie_extra_folder = OptionBool("misc", "movie_extra_folder", False)
 movie_categories = OptionList("misc", "movie_categories", ["movies"])
 
 enable_date_sorting = OptionBool("misc", "enable_date_sorting", False)
@@ -260,8 +260,8 @@ rss_rate = OptionNumber("misc", "rss_rate", 60, 15, 24 * 60)
 ampm = OptionBool("misc", "ampm", False)
 replace_illegal = OptionBool("misc", "replace_illegal", True)
 start_paused = OptionBool("misc", "start_paused", False)
-enable_all_par = OptionBool("misc", "enable_all_par", False)
 enable_par_cleanup = OptionBool("misc", "enable_par_cleanup", True)
+process_unpacked_par2 = OptionBool("misc", "process_unpacked_par2", True)
 enable_unrar = OptionBool("misc", "enable_unrar", True)
 enable_unzip = OptionBool("misc", "enable_unzip", True)
 enable_7zip = OptionBool("misc", "enable_7zip", True)
@@ -297,6 +297,7 @@ rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex
 req_completion_rate = OptionNumber("misc", "req_completion_rate", 100.2, 100, 200)
 selftest_host = OptionStr("misc", "selftest_host", "self-test.sabnzbd.org")
 movie_rename_limit = OptionStr("misc", "movie_rename_limit", "100M")
+episode_rename_limit = OptionStr("misc", "episode_rename_limit", "20M")
 size_limit = OptionStr("misc", "size_limit", "0")
 show_sysload = OptionNumber("misc", "show_sysload", 2, 0, 2)
 history_limit = OptionNumber("misc", "history_limit", 10, 0)

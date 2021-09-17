@@ -1,5 +1,5 @@
 <!--#set global $pane="General"#-->
-<!--#set global $help_uri="configuration/3.3/general"#-->
+<!--#set global $help_uri="configuration/3.4/general"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -10,7 +10,8 @@
     </div>
     <form action="saveGeneral" method="post" name="fullform" class="fullform" autocomplete="off">
     <input type="hidden" id="apikey" name="apikey" value="$apikey" />
-    <input type="hidden" id="ajax" name="ajax" value=1 />
+    <input type="hidden" id="ajax" name="ajax" value="1" />
+    <input type="hidden" name="output" value="json" />
     <div class="section">
         <div class="col2">
             <h3>$T('webServer') <a href="$helpuri$help_uri" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
@@ -283,7 +284,7 @@
     \$('#apikey, #nzbkey').click(function () { \$(this).select() });
 
     \$('#generate_new_apikey').click(function () {
-      if (confirm("$T('Plush-confirm')")) {
+      if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
           url: "../../api",
@@ -296,7 +297,7 @@
       }
     });
     \$('#generate_new_nzbkey').click(function () {
-      if (confirm("$T('Plush-confirm')")) {
+      if (confirm("$T('confirm')")) {
         $.ajax({
           type: "POST",
           url: "../../api",

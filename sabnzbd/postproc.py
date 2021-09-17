@@ -26,7 +26,7 @@ import time
 import re
 import gc
 import queue
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import sabnzbd
 from sabnzbd.newsunpack import (
@@ -65,13 +65,12 @@ from sabnzbd.filesystem import (
     get_filename,
 )
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.sorting import Sorter
+from sabnzbd.sorting import Sorter, is_sample
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
     FORCE_PRIORITY,
     POSTPROC_QUEUE_FILE_NAME,
     POSTPROC_QUEUE_VERSION,
-    sample_match,
     JOB_ADMIN,
     Status,
     VERIFIED_FILE,
@@ -81,7 +80,6 @@ import sabnzbd.emailer as emailer
 import sabnzbd.downloader
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.encoding as encoding
 import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.notifier as notifier
@@ -92,9 +90,6 @@ import sabnzbd.deobfuscate_filenames as deobfuscate
 
 
 MAX_FAST_JOB_COUNT = 3
-
-# Match samples
-RE_SAMPLE = re.compile(sample_match, re.I)
 
 
 class PostProcessor(Thread):
@@ -321,6 +316,8 @@ def process_job(nzo: NzbObject):
     # Signal empty download, for when 'empty_postproc' is enabled
     empty = False
     nzb_list = []
+    one_folder = False
+    newfiles = []
     # These need to be initialized in case of a crash
     workdir_complete = ""
     script_log = ""
@@ -423,7 +420,6 @@ def process_job(nzo: NzbObject):
                     nzo
                 )
 
-            newfiles = []
             # Run Stage 2: Unpack
             if flag_unpack:
                 # Set the current nzo status to "Extracting...". Used in History
@@ -484,6 +480,7 @@ def process_job(nzo: NzbObject):
 
         script_output = ""
         script_ret = 0
+        script_error = False
         if not nzb_list:
             # Give destination its final name
             if cfg.folder_rename() and tmp_workdir_complete and not one_folder:
@@ -515,52 +512,49 @@ def process_job(nzo: NzbObject):
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
             if all_ok and file_sorter.sort_file:
                 if newfiles:
-                    file_sorter.rename(newfiles, workdir_complete)
-                    workdir_complete, ok = file_sorter.move(workdir_complete)
-                else:
-                    workdir_complete, ok = file_sorter.rename_with_ext(workdir_complete)
-                if not ok:
-                    nzo.set_unpack_info("Unpack", T("Failed to move files"))
-                    all_ok = False
+                    workdir_complete, ok = file_sorter.sorter.rename(newfiles, workdir_complete)
+                    if not ok:
+                        nzo.set_unpack_info("Unpack", T("Failed to move files"))
+                        all_ok = False
 
-            if cfg.deobfuscate_final_filenames() and all_ok and not nzb_list:
-                # Deobfuscate the filenames
-                logging.info("Running deobfuscate")
-                deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
+            # Run further post-processing
+            if (all_ok or not cfg.safe_postproc()) and not nzb_list:
+                # Use par2 files to deobfuscate unpacked file names
+                if cfg.process_unpacked_par2():
+                    newfiles = deobfuscate.recover_par2_names(newfiles)
 
-            # Run the user script
-            script_path = make_script_path(script)
-            if (all_ok or not cfg.safe_postproc()) and (not nzb_list) and script_path:
-                # Set the current nzo status to "Ext Script...". Used in History
-                nzo.status = Status.RUNNING
-                nzo.set_action_line(T("Running script"), script)
-                nzo.set_unpack_info("Script", T("Running user script %s") % script, unique=True)
-                script_log, script_ret = external_processing(
-                    script_path, nzo, clip_path(workdir_complete), nzo.final_name, job_result
-                )
-                script_line = get_last_line(script_log)
-                if script_log:
-                    script_output = nzo.nzo_id
-                if script_line:
-                    nzo.set_unpack_info("Script", script_line, unique=True)
-                else:
-                    nzo.set_unpack_info("Script", T("Ran %s") % script, unique=True)
-            else:
-                script = ""
-                script_line = ""
-                script_ret = 0
+                if cfg.deobfuscate_final_filenames():
+                    # Deobfuscate the filenames
+                    logging.info("Running deobfuscate")
+                    deobfuscate.deobfuscate_list(newfiles, nzo.final_name)
 
-        # Maybe bad script result should fail job
-        if script_ret and cfg.script_can_fail():
-            script_error = True
-            all_ok = False
-            nzo.fail_msg = T("Script exit code is %s") % script_ret
-        else:
-            script_error = False
+                # Run the user script
+                script_path = make_script_path(script)
+                if script_path:
+                    # Set the current nzo status to "Ext Script...". Used in History
+                    nzo.status = Status.RUNNING
+                    nzo.set_action_line(T("Running script"), script)
+                    nzo.set_unpack_info("Script", T("Running user script %s") % script, unique=True)
+                    script_log, script_ret = external_processing(
+                        script_path, nzo, clip_path(workdir_complete), nzo.final_name, job_result
+                    )
+                    script_line = get_last_line(script_log)
+                    if script_log:
+                        script_output = nzo.nzo_id
+                    if script_line:
+                        nzo.set_unpack_info("Script", script_line, unique=True)
+                    else:
+                        nzo.set_unpack_info("Script", T("Ran %s") % script, unique=True)
+
+                    # Maybe bad script result should fail job
+                    if script_ret and cfg.script_can_fail():
+                        script_error = True
+                        all_ok = False
+                        nzo.fail_msg = T("Script exit code is %s") % script_ret
 
         # Email the results
-        if (not nzb_list) and cfg.email_endjob():
-            if (cfg.email_endjob() == 1) or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
+        if not nzb_list and cfg.email_endjob():
+            if cfg.email_endjob() == 1 or (cfg.email_endjob() == 2 and (unpack_error or par_error or script_error)):
                 emailer.endjob(
                     nzo.final_name,
                     nzo.cat,
@@ -583,8 +577,7 @@ def process_job(nzo: NzbObject):
             if len(script_log.rstrip().split("\n")) > 1:
                 nzo.set_unpack_info(
                     "Script",
-                    '%s%s <a href="./scriptlog?name=%s">(%s)</a>'
-                    % (script_ret, script_line, encoding.xml_name(script_output), T("More")),
+                    '%s%s <a href="./scriptlog?name=%s">(%s)</a>' % (script_ret, script_line, script_output, T("More")),
                     unique=True,
                 )
             else:
@@ -677,7 +670,7 @@ def process_job(nzo: NzbObject):
     return True
 
 
-def prepare_extraction_path(nzo: NzbObject):
+def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Optional[str]]:
     """Based on the information that we have, generate
     the extraction path and create the directory.
     Separated so it can be called from DirectUnpacker
@@ -749,7 +742,7 @@ def parring(nzo: NzbObject, workdir: str):
         # Need to make a copy because it can change during iteration
         single = len(nzo.extrapars) == 1
         for setname in list(nzo.extrapars):
-            if cfg.ignore_samples() and RE_SAMPLE.search(setname.lower()):
+            if cfg.ignore_samples() and is_sample(setname.lower()):
                 continue
             # Skip sets that were already tried
             if not verified.get(setname, False):
@@ -1156,7 +1149,7 @@ def remove_samples(path):
     for root, _dirs, files in os.walk(path):
         for file_to_match in files:
             nr_files += 1
-            if RE_SAMPLE.search(file_to_match):
+            if is_sample(file_to_match):
                 files_to_delete.append(os.path.join(root, file_to_match))
 
     # Make sure we skip false-positives
@@ -1198,7 +1191,7 @@ def rename_and_collapse_folder(oldpath, newpath, files):
     return files
 
 
-def set_marker(folder):
+def set_marker(folder: str) -> Optional[str]:
     """Set marker file and return name"""
     name = cfg.marker_file()
     if name:
@@ -1214,7 +1207,7 @@ def set_marker(folder):
     return name
 
 
-def del_marker(path):
+def del_marker(path: str):
     """Remove marker file"""
     if path and os.path.exists(path):
         logging.debug("Removing marker file %s", path)

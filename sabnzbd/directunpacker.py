@@ -95,7 +95,8 @@ class DirectUnpacker(threading.Thread):
 
     def check_requirements(self):
         if (
-            not cfg.direct_unpack()
+            not cfg.enable_unrar()
+            or not cfg.direct_unpack()
             or self.killed
             or self.nzo.first_articles
             or not self.nzo.unpack
@@ -215,7 +216,7 @@ class DirectUnpacker(threading.Thread):
                         "Unexpected end of archive",
                     )
                 ):
-                    logging.info("Error in DirectUnpack of %s: %s", self.cur_setname, platform_btou(linebuf.strip()))
+                    logging.info("Error in DirectUnpack of %s: %s", self.cur_setname, linebuf_encoded)
                     self.abort()
 
                 elif linebuf_encoded.startswith("All OK"):
@@ -224,10 +225,14 @@ class DirectUnpacker(threading.Thread):
                     self.unpack_time += time.time() - start_time
                     ACTIVE_UNPACKERS.remove(self)
 
+                    # Take note of the correct password
+                    if self.nzo.password and not self.nzo.correct_password:
+                        self.nzo.correct_password = self.nzo.password
+
                     # Add to success
                     rarfile_path = os.path.join(self.nzo.download_path, self.rarfile_nzf.filename)
                     self.success_sets[self.cur_setname] = (
-                        rar_volumelist(rarfile_path, self.nzo.password, rarfiles),
+                        rar_volumelist(rarfile_path, self.nzo.correct_password, rarfiles),
                         extracted,
                     )
                     logging.info("DirectUnpack completed for %s", self.cur_setname)
@@ -364,7 +369,9 @@ class DirectUnpacker(threading.Thread):
         extraction_path, _, _, one_folder, _ = self.unpack_dir_info
 
         # Set options
-        if self.nzo.password:
+        if self.nzo.correct_password:
+            password_command = "-p%s" % self.nzo.correct_password
+        elif self.nzo.password:
             password_command = "-p%s" % self.nzo.password
         else:
             password_command = "-p-"

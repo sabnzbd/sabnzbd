@@ -25,6 +25,8 @@ import sys
 
 from math import ceil
 from random import sample
+from typing import List
+
 from tavern.core import run
 from warnings import warn
 
@@ -140,9 +142,8 @@ class ApiTestFunctions:
         else:
             minimum_size -= queue_size
 
-        charset = ascii_lowercase + digits
         for _ in range(0, minimum_size):
-            job_name = "%s-CRQ" % ("".join(choice(charset) for i in range(16)))
+            job_name = "%s-CRQ" % random_name()
             job_dir = os.path.join(SAB_CACHE_DIR, job_name)
 
             # Create the job_dir and fill it with a bunch of smallish files with
@@ -150,8 +151,8 @@ class ApiTestFunctions:
             # expect at least two files per NZB.
             try:
                 os.mkdir(job_dir)
-                for number_of_files in range(0, randint(2, 4)):
-                    job_file = "%s.%s" % ("".join(choice(charset) for i in range(randint(6, 18))), sample(charset, 3))
+                for number_of_files in range(0, randint(4, 6)):
+                    job_file = "%s.%s" % (random_name(), random_name(3))
                     with open(os.path.join(job_dir, job_file), "wb") as f:
                         f.write(os.urandom(randint(1, 512 * 1024)))
             except Exception:
@@ -175,6 +176,11 @@ class ApiTestFunctions:
         """Clear the entire queue"""
         self._get_api_json("queue", extra_args={"name": "purge", "del_files": del_files})
         assert len(self._get_api_json("queue")["queue"]["slots"]) == 0
+
+    def _get_files(self, nzo_id: str) -> List[str]:
+        files_json = self._get_api_json("get_files", extra_args={"value": nzo_id})
+        assert "files" in files_json
+        return [file["nzf_id"] for file in files_json["files"]]
 
 
 @pytest.mark.usefixtures("run_sabnzbd")
@@ -490,7 +496,7 @@ class TestQueueApi(ApiTestFunctions):
 
     @pytest.mark.parametrize("select_by", ["search", "nzo_ids"])
     def test_api_queue_restrict_no_results_search_and_nzo_ids(self, select_by):
-        fake_search = "FakeSearch_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
+        fake_search = "FakeSearch_%s" % random_name()
         json = self._get_api_json("queue", extra_args={select_by: fake_search})
         assert len(json["queue"]["slots"]) == 0
 
@@ -859,9 +865,7 @@ class TestQueueApi(ApiTestFunctions):
         # Select a job and file to delete
         nzo_ids = [slot["nzo_id"] for slot in self._get_api_json("queue")["queue"]["slots"]]
         nzo_id = choice(nzo_ids)
-        json = self._get_api_json("get_files", extra_args={"value": nzo_id})
-        assert json["files"]
-        nzf_ids = [file["nzf_id"] for file in json["files"]]
+        nzf_ids = self._get_files(nzo_id)
         assert nzf_ids
         nzf_id = choice(nzf_ids)
 
@@ -871,8 +875,7 @@ class TestQueueApi(ApiTestFunctions):
         assert nzf_id in json["nzf_ids"]
 
         # Verify it's really gone
-        json = self._get_api_json("get_files", extra_args={"value": nzo_id})
-        changed_nzf_ids = [file["nzf_id"] for file in json["files"]]
+        changed_nzf_ids = self._get_files(nzo_id)
         assert nzf_id not in changed_nzf_ids
         assert len(changed_nzf_ids) == len(nzf_ids) - 1
 
@@ -881,17 +884,77 @@ class TestQueueApi(ApiTestFunctions):
         assert json["status"] is False
         assert json["nzf_ids"] == []
 
-        # Attempt to remove multiple nzf_ids at once (which isn't supported)
+        # Attempt to remove multiple nzf_ids at once
         nzo_ids.remove(nzo_id)
         nzo_id = choice(nzo_ids)
-        json = self._get_api_json("get_files", extra_args={"value": nzo_id})
-        nzf_ids = [file["nzf_id"] for file in json["files"]]
-        assert len(nzf_ids) > 0
+        original_nzf_ids = self._get_files(nzo_id)
+        nzf_ids_to_remove = sample(original_nzf_ids, k=2)
         json = self._get_api_json(
-            mode="queue", extra_args={"name": "delete_nzf", "value": nzo_id, "value2": ",".join(nzf_ids)}
+            mode="queue", extra_args={"name": "delete_nzf", "value": nzo_id, "value2": ",".join(nzf_ids_to_remove)}
+        )
+        assert json["status"] is True
+        assert len(json["nzf_ids"]) == len(nzf_ids_to_remove)
+
+        # Verify they are really gone
+        changed_nzf_ids = self._get_files(nzo_id)
+        for nzf_id in nzf_ids_to_remove:
+            assert nzf_id not in changed_nzf_ids
+            assert len(changed_nzf_ids) == len(original_nzf_ids) - len(nzf_ids_to_remove)
+
+    def test_api_move_nzf_bulk(self):
+        # Clear queue so we don't use any of the files from the
+        # delete_nzf test, since we expect at least 4 files
+        self._purge_queue()
+        self._create_random_queue(minimum_size=1)
+
+        # Select a job and file to delete
+        nzo_ids = [slot["nzo_id"] for slot in self._get_api_json("queue")["queue"]["slots"]]
+        nzo_id = choice(nzo_ids)
+        nzf_ids = self._get_files(nzo_id)
+        assert nzf_ids
+
+        # Move the bottom 2 up
+        json = self._get_api_json(
+            mode="move_nzf_bulk", extra_args={"name": "top", "value": nzo_id, "nzf_ids": ",".join(nzf_ids[-2:])}
+        )
+        assert json["status"] is True
+        new_nzf_ids = self._get_files(nzo_id)
+        assert new_nzf_ids[:2] == nzf_ids[-2:]
+
+        # Move the top 2 down
+        nzf_ids = self._get_files(nzo_id)
+        json = self._get_api_json(
+            mode="move_nzf_bulk", extra_args={"name": "bottom", "value": nzo_id, "nzf_ids": ",".join(nzf_ids[:2])}
+        )
+        assert json["status"] is True
+        new_nzf_ids = self._get_files(nzo_id)
+        assert new_nzf_ids[-2:] == nzf_ids[:2]
+
+        # Move the last 2 up 2 spots
+        nzf_ids = self._get_files(nzo_id)
+        json = self._get_api_json(
+            mode="move_nzf_bulk",
+            extra_args={"name": "up", "value": nzo_id, "nzf_ids": ",".join(nzf_ids[-2:]), "size": "2"},
+        )
+        assert json["status"] is True
+        new_nzf_ids = self._get_files(nzo_id)
+        assert new_nzf_ids[-4:-2] == nzf_ids[-2:]
+
+        # Move the first 2 down 2 spots
+        nzf_ids = self._get_files(nzo_id)
+        json = self._get_api_json(
+            mode="move_nzf_bulk",
+            extra_args={"name": "down", "value": nzo_id, "nzf_ids": ",".join(nzf_ids[:2]), "size": "2"},
+        )
+        assert json["status"] is True
+        new_nzf_ids = self._get_files(nzo_id)
+        assert new_nzf_ids[2:4] == nzf_ids[:2]
+
+        # See failure if called with valid nzf_id but missing size
+        json = self._get_api_json(
+            mode="move_nzf_bulk", extra_args={"name": "up", "value": nzo_id, "nzf_ids": ",".join(nzf_ids[:2])}
         )
         assert json["status"] is False
-        assert json["nzf_ids"] == []
 
 
 @pytest.mark.usefixtures("run_sabnzbd", "generate_fake_history", "update_history_specs")
@@ -926,7 +989,7 @@ class TestHistoryApi(ApiTestFunctions):
         assert slot_sum == slot_total
 
     def test_api_history_restrict_invalid_cat(self):
-        fake_cat = "FakeCat_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
+        fake_cat = "FakeCat_%s" % random_name()
         json = self._get_api_history({"category": fake_cat})
         assert len(json["history"]["slots"]) == 0
 
@@ -941,12 +1004,12 @@ class TestHistoryApi(ApiTestFunctions):
                 assert slot["category"] == cat
 
     def test_api_history_restrict_invalid_cat_and_limit(self):
-        fake_cat = "FakeCat_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
+        fake_cat = "FakeCat_%s" % random_name()
         json = self._get_api_history({"category": fake_cat, "limit": randint(1, 5)})
         assert len(json["history"]["slots"]) == 0
 
     def test_api_history_restrict_invalid_cat_and_search(self):
-        fake_cat = "FakeCat_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
+        fake_cat = "FakeCat_%s" % random_name()
         for distro in self.history_distro_names:
             json = self._get_api_history({"category": fake_cat, "search": distro})
             assert len(json["history"]["slots"]) == 0
@@ -969,7 +1032,7 @@ class TestHistoryApi(ApiTestFunctions):
 
     @pytest.mark.parametrize("select_by", ["search", "nzo_ids"])
     def test_api_history_restrict_no_results_search_and_nzo_ids(self, select_by):
-        fake_search = "FakeSearch_%s" % ("".join(choice(ascii_lowercase + digits) for i in range(16)))
+        fake_search = "FakeSearch_%s" % random_name()
         json = self._get_api_history({select_by: fake_search})
         assert len(json["history"]["slots"]) == 0
 

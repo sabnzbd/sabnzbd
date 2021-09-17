@@ -116,7 +116,7 @@
                             <div class="col-sm-6">$T('dashboard-systemPerformance') &nbsp; </div>
                             <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.pystone"></span>
-                                <a href="#" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small data-bind="truncatedText: statusInfo.cpumodel, length: 25, attr: { 'data-original-title': statusInfo.cpumodel }" data-tooltip="true"></small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -125,7 +125,7 @@
                             <div class="col-sm-6">$T('dashboard-downloadDirSpeed') &nbsp; </div>
                             <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.downloaddirspeed()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.downloaddir, length: 24, attr: { 'data-original-title': statusInfo.downloaddir }" data-tooltip="true"></span>)</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -134,7 +134,7 @@
                             <div class="col-sm-6">$T('dashboard-completeDirSpeed') &nbsp; </div>
                             <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.completedirspeed()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small>(<span data-bind="truncatedText: statusInfo.completedir, length: 24, attr: { 'data-original-title': statusInfo.completedir }" data-tooltip="true"></span>)</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -143,7 +143,7 @@
                             <div class="col-sm-6">$T('dashboard-internetBandwidth') &nbsp; </div>
                             <div class="col-sm-6" data-bind="visible: hasPerformanceInfo">
                                 <span data-bind="text: statusInfo.internetbandwidth()"></span> MB/s
-                                <a href="#" class="diskspeed-button" data-bind="click: testDiskSpeed" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
+                                <a href="#" class="diskspeed-button" data-bind="click: loadStatusInfo" data-tooltip="true" data-placement="right" title="$T('dashboard-repeatTest')"><span class="glyphicon glyphicon-repeat"></span></a>
                                 <small>(<span data-bind="text: statusInfo.internetbandwidth()*8"></span> Mbps)</small>
                             </div>
                             <div class="col-sm-6 col-loading" data-bind="visible: !hasPerformanceInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
@@ -170,7 +170,7 @@
                         </div>
                         <div class="row options-function-box">
                             <div class="col-sm-6">
-                                <a href="./status/showlog?apikey=$apikey" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
+                                <a href="./api?mode=showlog&apikey=$apikey" target="_blank" class="btn btn-default" data-tooltip="true" data-placement="top" title="$T('Glitter-logText')">
                                     <span class="glyphicon glyphicon-file"></span> $T('link-showLog')
                                 </a>
                             </div>
@@ -285,8 +285,8 @@
                                 <tr>
                                     <td><span class="glyphicon glyphicon-folder-open"></span></td>
                                     <td class="row-wrap-text"><strong data-bind="html: \$data"></strong></td>
-                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
-                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
+                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="add_orphan" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-backToQueue')"><span class="glyphicon glyphicon-plus-sign"></span></a></td>
+                                    <td><a href="#" data-bind="click: \$root.folderProcess" data-action="delete_orphan" class="hover-button" data-tooltip="true" data-placement="left" title="$T('Glitter-deleteJobAndFolders')"><span class="glyphicon glyphicon-trash"></span></a></td>
                                 </tr>
                             </tbody>
                         </table>

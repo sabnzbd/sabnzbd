@@ -7,7 +7,7 @@
 # 
 msgid ""
 msgstr ""
-"Project-Id-Version: SABnzbd-3.3.0-develop\n"
+"Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
 "Last-Translator: Safihre <safihre@sabnzbd.org>, 2020\n"
 "Language-Team: Portuguese (Brazil) (https://www.transifex.com/sabnzbd/teams/111101/pt_BR/)\n"
@@ -168,6 +168,26 @@ msgstr "Falha ao carregar %s"
 
 #. Warning message
 #: sabnzbd/__init__.py
+msgid "Restarting because of crashed postprocessor"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed downloader"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed decoder"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed assembler"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
 msgid "Cannot access PID file %s"
 msgstr ""
 
@@ -183,6 +203,10 @@ msgstr "Notificação de teste"
 msgid "&nbsp;Resolving address"
 msgstr "&nbsp;Resolvendo endereço"
 
+#: sabnzbd/api.py
+msgid "unknown"
+msgstr "desconhecido"
+
 #. No value, used in dropdown menus - Job details page, select no files
 #: sabnzbd/api.py, sabnzbd/skintext.py
 msgid "None"
@@ -192,10 +216,6 @@ msgstr "Nenhum"
 #: sabnzbd/api.py, sabnzbd/interface.py, sabnzbd/skintext.py
 msgid "Default"
 msgstr "Padrão"
-
-#: sabnzbd/api.py
-msgid "unknown"
-msgstr "desconhecido"
 
 #. Error message
 #: sabnzbd/api.py
@@ -578,8 +598,7 @@ msgstr ""
 "Por favor, arrume espaço e continue SABnzbd manualmente.\n"
 "\n"
 
-#. Error message
-#: sabnzbd/filesystem.py, sabnzbd/sorting.py
+#: sabnzbd/filesystem.py
 msgid "Cannot create directory %s"
 msgstr "Não é possível criar a pasta %s"
 
@@ -657,21 +676,6 @@ msgstr "Falha de autenticação, verifique usuário / senha."
 msgid "Unsuccessful login attempt from %s"
 msgstr ""
 
-#. Bytes (used as postfix, as in "GB", "TB")
-#: sabnzbd/interface.py, sabnzbd/skintext.py
-msgid "B"
-msgstr "B"
-
-#: sabnzbd/interface.py
-msgid ""
-"&nbsp<br />SABnzbd shutdown finished.<br />Wait for about 5 second and then "
-"click the button below.<br /><br /><strong><a "
-"href=\"..\">Refresh</a></strong><br />"
-msgstr ""
-"&nbsp<br />Encerramento do SABnzbd concluído.<br />Espere cerca de 5 "
-"segundos e, em seguida, clique no botão abaixo.<br /><br /><strong><a "
-"href=\"..\">Atualizar</a></strong><br />"
-
 #: sabnzbd/interface.py
 msgid ""
 "The Completed Download Folder cannot be the same or a subfolder of the "
@@ -743,10 +747,6 @@ msgstr "ERRO:"
 #: sabnzbd/interface.py
 msgid "Back"
 msgstr "Voltar"
-
-#: sabnzbd/interface.py
-msgid "Incorrect value for %s: %s"
-msgstr "Valor incorreto para %s: %s"
 
 #: sabnzbd/misc.py
 msgid "d"
@@ -1183,11 +1183,6 @@ msgstr "Erro ao carregar %s. Arquivo corrompido detectado"
 #: sabnzbd/nzbqueue.py
 msgid "NZB added to queue"
 msgstr "NZB adicionado à fila"
-
-#. Warning message
-#: sabnzbd/nzbqueue.py
-msgid "%s -> Unknown encoding"
-msgstr "%s -> Codificação desconhecida"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
@@ -1765,7 +1760,7 @@ msgstr "Pausar por 6 horas"
 msgid "Shutdown"
 msgstr "Encerrar"
 
-#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py, sabnzbd/skintext.py
+#: sabnzbd/sabtray.py, sabnzbd/sabtraylinux.py
 msgid "Remaining"
 msgstr "Restante"
 
@@ -2022,6 +2017,11 @@ msgstr "MB"
 #: sabnzbd/skintext.py
 msgid "GB"
 msgstr "GB"
+
+#. Bytes (used as postfix, as in "GB", "TB")
+#: sabnzbd/skintext.py
+msgid "B"
+msgstr "B"
 
 #. One hour
 #: sabnzbd/skintext.py
@@ -3677,6 +3677,12 @@ msgid ""
 msgstr ""
 
 #: sabnzbd/skintext.py
+msgid ""
+"Additionally, attempts to set the correct file extension based on the file "
+"signature if the extension is not present or meaningless."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
 msgstr ""
 
@@ -4605,6 +4611,26 @@ msgid "Processed Result"
 msgstr "Resultado Processado"
 
 #: sabnzbd/skintext.py
+msgid "Any property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt.Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "GuessIt_Property"
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid ""
 "Rarely used options. For their meaning and explanation, click on the Help "
 "button to go to the Wiki page.<br>Don't change these without checking the "
@@ -4724,7 +4750,6 @@ msgstr ""
 msgid "WARNING:"
 msgstr "AVISO:"
 
-#. Fetch from URL button in "Add NZB" dialog box
 #: sabnzbd/skintext.py
 msgid "Fetch"
 msgstr "Obter"
@@ -4934,145 +4959,6 @@ msgid "Removing jobs"
 msgstr ""
 
 #: sabnzbd/skintext.py
-msgid "Prev"
-msgstr "Ant"
-
-#. Button to go to next Wizard page
-#: sabnzbd/skintext.py
-msgid "Next"
-msgstr "Próx"
-
-#: sabnzbd/skintext.py
-msgid "Purge the History?"
-msgstr "Limpar o Histórico?"
-
-#: sabnzbd/skintext.py
-msgid "You must enable JavaScript for Plush to function!"
-msgstr "Você deve habilitar o JavaScript para Plush funcionar!"
-
-#: sabnzbd/skintext.py
-msgid "Options"
-msgstr "Opções"
-
-#: sabnzbd/skintext.py
-msgid "Pause for how many minutes?"
-msgstr "Pausar por quantos minutos?"
-
-#: sabnzbd/skintext.py
-msgid "Top Menu"
-msgstr "Menu Superior"
-
-#: sabnzbd/skintext.py
-msgid "On Finish"
-msgstr "Ao Concluir"
-
-#: sabnzbd/skintext.py
-msgid "Sort"
-msgstr "Ordenar"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Oldest&rarr;Newest)</small>"
-msgstr "Ordenar por Idade <small>(Mais antigo&rarr;Mais novo)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Age <small>(Newest&rarr;Oldest)</small>"
-msgstr "Ordenar por Idade <small>(Mais novo&rarr;Mais antigo)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(A&rarr;Z)</small>"
-msgstr "Ordenar por Nome <small>(A&rarr;Z)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Name <small>(Z&rarr;A)</small>"
-msgstr "Ordenar por Nome <small>(Z&rarr;A)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Smallest&rarr;Largest)</small>"
-msgstr "Ordenar por Tamanho <small>(Menor&rarr;Maior)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Sort by Size <small>(Largest&rarr;Smallest)</small>"
-msgstr "Ordenar por Tamanho <small>(Maior&rarr;Menor)</small>"
-
-#: sabnzbd/skintext.py
-msgid "Purge the Queue?"
-msgstr "Limpar a fila?"
-
-#: sabnzbd/skintext.py
-msgid "Retry all failed jobs in History?"
-msgstr "Repetir todos os trabalhos com falha no Histórico?"
-
-#: sabnzbd/skintext.py
-msgid "Purge"
-msgstr "Eliminar"
-
-#. Used in speed menu. Split in two lines if too long.
-#: sabnzbd/skintext.py
-msgid "Max Speed"
-msgstr "Velocidade Máx"
-
-#: sabnzbd/skintext.py
-msgid "Range"
-msgstr "Intervalo"
-
-#: sabnzbd/skintext.py
-msgid "Apply to Selected"
-msgstr "Aplicar aos Selecionados"
-
-#: sabnzbd/skintext.py
-msgid "Everything"
-msgstr "Tudo"
-
-#: sabnzbd/skintext.py
-msgid "Refresh Rate"
-msgstr "Taxa de Atualização"
-
-#: sabnzbd/skintext.py
-msgid "Container Width"
-msgstr "Largura do Contêiner"
-
-#: sabnzbd/skintext.py
-msgid ""
-"This will prevent refreshing content when your mouse cursor is hovering over"
-" the queue."
-msgstr ""
-"Isso irá impedir que o conteúdo seja atualizado quando o cursor do mouse "
-"estiver sobre a fila."
-
-#: sabnzbd/skintext.py
-msgid "Block Refreshes on Hover"
-msgstr "Impedir Atualizações no Foco"
-
-#. Upload button in "Add NZB" dialog box
-#: sabnzbd/skintext.py
-msgid "Upload"
-msgstr "Enviar"
-
-#: sabnzbd/skintext.py
-msgid "Upload: .nzb .rar .zip .gz, .bz2"
-msgstr "Enviar: .nzb .rar .zip .gz, .bz2"
-
-#: sabnzbd/skintext.py
-msgid "Progress"
-msgstr "Progresso"
-
-#: sabnzbd/skintext.py
-msgid "Not enough disk space to complete downloads!"
-msgstr "Não há espaço em disco suficiente para completar os downloads!"
-
-#: sabnzbd/skintext.py
-msgid "Free (Temp)"
-msgstr "Disponível (Temporário)"
-
-#: sabnzbd/skintext.py
-msgid "IDLE"
-msgstr "OCIOSO"
-
-#: sabnzbd/skintext.py
-msgid "Downloads"
-msgstr "Downloads"
-
-#: sabnzbd/skintext.py
 msgid "SABnzbd Quick-Start Wizard"
 msgstr "Assistente de Início Rápido do SABnzbd"
 
@@ -5084,6 +4970,11 @@ msgstr "Versão do SABnzbd"
 #: sabnzbd/skintext.py
 msgid "Previous"
 msgstr "Anterior"
+
+#. Button to go to next Wizard page
+#: sabnzbd/skintext.py
+msgid "Next"
+msgstr "Próx"
 
 #: sabnzbd/skintext.py
 msgid "Server Details"
@@ -5181,11 +5072,6 @@ msgstr ""
 #: sabnzbd/skintext.py
 msgid "Don't have a usenet provider? We recommend trying %s."
 msgstr "Não tem um provedor usenet? Recomendamos testar %s."
-
-#. Error message
-#: sabnzbd/sorting.py
-msgid "Error getting TV info (%s)"
-msgstr "Erro ao obter informações de TV (%s)"
 
 #. Error message
 #: sabnzbd/sorting.py

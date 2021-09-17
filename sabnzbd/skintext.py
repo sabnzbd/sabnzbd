@@ -562,6 +562,9 @@ SKIN_TEXT = {
     "explain-deobfuscate_final_filenames": TT(
         "If filenames of (large) files in the final folder look obfuscated or meaningless they will be renamed to the job name."
     ),
+    "explain-deobfuscate_final_filenames-ext": TT(
+        "Additionally, attempts to set the correct file extension based on the file signature if the extension is not present or meaningless."
+    ),
     "opt-enable_https_verification": TT("HTTPS certificate verification"),
     "explain-enable_https_verification": TT(
         "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
@@ -824,6 +827,11 @@ SKIN_TEXT = {
     "button-DailyF": TT("Daily Folders"),
     "case-adjusted": TT("case-adjusted"),  #: Note for title expression in Sorting that does case adjustment
     "sortResult": TT("Processed Result"),
+    "sort-guessitMeaning": TT("Any property"),
+    "sort-guessitProperty": TT("property"),
+    "guessit-sp-property": TT("GuessIt Property"),
+    "guessit-dot-property": TT("GuessIt.Property"),
+    "guessit-us-property": TT("GuessIt_Property"),
     # Config->Special
     "explain-special": TT(
         "Rarely used options. For their meaning and explanation, click on the Help button to go to the Wiki page.<br>"
@@ -951,68 +959,6 @@ SKIN_TEXT = {
     "Glitter-notification-removing1": TT("Removing job"),  # Notification window
     "Glitter-notification-removing": TT("Removing jobs"),  # Notification window
     "Glitter-notification-shutdown": TT("Shutting down"),  # Notification window
-    # Plush skin
-    "Plush-confirmWithoutSavingPrompt": TT("Changes have not been saved, and will be lost."),
-    "Plush-confirm": TT("Are you sure?"),
-    "Plush-openInfoURL": TT("Open Informational URL"),
-    "Plush-viewScriptLog": TT("View Script Log"),
-    "Plush-prev": TT("Prev"),
-    "Plush-next": TT("Next"),
-    "Plush-confirmPurgeH": TT("Purge the History?"),
-    "Plush-enableJavascript": TT("You must enable JavaScript for Plush to function!"),
-    "Plush-addnzb": TT("Add NZB"),
-    "Plush-button-refresh": TT("Refresh"),
-    "Plush-options": TT("Options"),
-    "Plush-updateAvailable": TT("Update Available!"),
-    "Plush-pause5m": TT("Pause for 5 minutes"),
-    "Plush-pause15m": TT("Pause for 15 minutes"),
-    "Plush-pause30m": TT("Pause for 30 minutes"),
-    "Plush-pause1h": TT("Pause for 1 hour"),
-    "Plush-pause3h": TT("Pause for 3 hours"),
-    "Plush-pause6h": TT("Pause for 6 hours"),
-    "Plush-pauseForPrompt": TT("Pause for how many minutes?"),
-    "Plush-pauseFor": TT("Pause for..."),
-    "Plush-multiOperations": TT("Multi-Operations"),
-    "Plush-topMenu": TT("Top Menu"),
-    "Plush-onQueueFinish": TT("On Finish"),
-    "Plush-sort": TT("Sort"),
-    "Plush-sortAgeAsc": TT("Sort by Age <small>(Oldest&rarr;Newest)</small>"),
-    "Plush-sortAgeDesc": TT("Sort by Age <small>(Newest&rarr;Oldest)</small>"),
-    "Plush-sortNameAsc": TT("Sort by Name <small>(A&rarr;Z)</small>"),
-    "Plush-sortNameDesc": TT("Sort by Name <small>(Z&rarr;A)</small>"),
-    "Plush-sortSizeAsc": TT("Sort by Size <small>(Smallest&rarr;Largest)</small>"),
-    "Plush-sortSizeDesc": TT("Sort by Size <small>(Largest&rarr;Smallest)</small>"),
-    "Plush-confirmPurgeQ": TT("Purge the Queue?"),
-    "Plush-confirmRetryQ": TT("Retry all failed jobs in History?"),
-    "Plush-purge": TT("Purge"),
-    "Plush-left": TT("left"),
-    "Plush-maxSpeed": TT("Max Speed"),  #: Used in speed menu. Split in two lines if too long.
-    "Plush-nzo-range": TT("Range"),
-    "Plush-reset": TT("Reset"),
-    "Plush-applySelected": TT("Apply to Selected"),
-    "Plush-page": TT("page"),
-    "Plush-everything": TT("Everything"),
-    "Plush-disabled": TT("Disabled"),
-    "Plush-refreshRate": TT("Refresh Rate"),
-    "Plush-containerWidth": TT("Container Width"),
-    "Plush-confirmDeleteQueue": TT("Confirm Queue Deletions"),
-    "Plush-confirmDeleteHistory": TT("Confirm History Deletions"),
-    "Plush-explain-blockRefresh": TT(
-        "This will prevent refreshing content when your mouse cursor is hovering over the queue."
-    ),
-    "Plush-blockRefresh": TT("Block Refreshes on Hover"),
-    "Plush-fetch": TT("Fetch"),  #: Fetch from URL button in "Add NZB" dialog box
-    "Plush-upload": TT("Upload"),  #: Upload button in "Add NZB" dialog box
-    "Plush-uploadTip": TT("Upload: .nzb .rar .zip .gz, .bz2"),
-    "Plush-addnzb-filename": TT("Optionally specify a filename"),
-    "Plush-progress": TT("Progress"),
-    "Plush-remaining": TT("Remaining"),
-    "Plush-notEnoughSpace": TT("Not enough disk space to complete downloads!"),
-    "Plush-freeSpace": TT("Free Space"),
-    "Plush-freeSpaceTemp": TT("Free (Temp)"),
-    "Plush-idle": TT("IDLE"),
-    "Plush-downloads": TT("Downloads"),
-    "Plush-tab-repair": TT("Queue repair"),
     # Wizard
     "wizard-quickstart": TT("SABnzbd Quick-Start Wizard"),
     "wizard-version": TT("SABnzbd Version"),

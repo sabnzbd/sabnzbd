@@ -1,5 +1,5 @@
 <!--#set global $pane="Switches"#-->
-<!--#set global $help_uri="configuration/3.3/switches"#-->
+<!--#set global $help_uri="configuration/3.4/switches"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -11,6 +11,7 @@
     <form action="saveSwitches" method="post" name="fullform" class="fullform" autocomplete="off">
         <input type="hidden" id="apikey" name="apikey" value="$apikey" />
         <input type="hidden" id="ajax" name="ajax" value="1" />
+        <input type="hidden" name="output" value="json" />
         <div class="section advanced-settings">
             <div class="col2">
                 <h3>$T('swtag-server') <a href="$helpuri$help_uri#toc1" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
@@ -244,7 +245,7 @@
                     <div class="field-pair">
                         <label class="config" for="deobfuscate_final_filenames">$T('opt-deobfuscate_final_filenames')</label>
                         <input type="checkbox" name="deobfuscate_final_filenames" id="deobfuscate_final_filenames" value="1" <!--#if int($deobfuscate_final_filenames) > 0 then 'checked="checked"' else ""#--> />
-                        <span class="desc">$T('explain-deobfuscate_final_filenames')</span>
+                        <span class="desc">$T('explain-deobfuscate_final_filenames') $T('explain-deobfuscate_final_filenames-ext')</span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="enable_meta">$T('opt-enable_meta')</label>

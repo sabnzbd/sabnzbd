@@ -23,6 +23,7 @@ h2 {
 .sparkline-container svg {
     margin: 10px 15px 8px;
     float: left;
+    cursor: pointer;
 }
 
 .main-navbar .sparkline {
