@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 3.4.0 Release Candidate 1
+Release Notes - SABnzbd 3.4.0
 =========================================================
 
 ## Changes since 3.3.1
@@ -17,6 +17,7 @@ Release Notes - SABnzbd 3.4.0 Release Candidate 1
 ## Bugfixes since 3.3.1
 - Duplicate check based on `.nzb` MD5 was performed before it was calculated.
 - Enforce `local_ranges` for broadcasts (Bonjour/SSDP).
+- Correctly parse the filename in `Content-Disposition` header.
 - `Warning` instead of `Info` when there is a restart due to crashed thread.
 - Only run Direct Unpack if `enable_unrar` is enabled.
 
