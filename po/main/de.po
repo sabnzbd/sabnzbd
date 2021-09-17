@@ -8,12 +8,13 @@
 # reloxx13 <reloxx@interia.pl>, 2021
 # Ben Hecht <benjamin.hecht@me.com>, 2021
 # Safihre <safihre@sabnzbd.org>, 2021
+# Manuel C. Senn, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
+"Last-Translator: Manuel C. Senn, 2021\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -181,22 +182,22 @@ msgstr "Fehler beim Laden von %s"
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed postprocessor"
-msgstr ""
+msgstr "Neustart aufgrund eines abgestürzten Postprocessors"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed downloader"
-msgstr ""
+msgstr "Neustart aufgrund eines abgestürzten Downloaders"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed decoder"
-msgstr ""
+msgstr "Neustart aufgrund eines abgestürzten Dekoders"
 
 #. Warning message
 #: sabnzbd/__init__.py
 msgid "Restarting because of crashed assembler"
-msgstr ""
+msgstr "Neustart aufgrund eines abgestürzten Assemblers"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -1687,7 +1688,7 @@ msgstr "RAR-Datei konnten nicht überprüft werden"
 
 #: sabnzbd/postproc.py
 msgid "Trying RAR renamer"
-msgstr ""
+msgstr "Versuche RAR Umbenenner"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -3605,6 +3606,8 @@ msgid ""
 "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
 " <b>exe, com</b>"
 msgstr ""
+"Modus auswählen, und alle (nicht-)erwünschten Erweiterungen auflisten. Zum "
+"Beispiel : <b>exe</b> oder <b>exe, com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
@@ -3800,6 +3803,9 @@ msgid ""
 "Additionally, attempts to set the correct file extension based on the file "
 "signature if the extension is not present or meaningless."
 msgstr ""
+"Zusätzlich wird versucht die korrekte Dateierweiterung mithilfe der "
+"Dateisignatur zu ermitteln, falls noch keine Dateierweiterung vorhanden, "
+"oder sie sinnlos sein sollte."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
@@ -4014,11 +4020,11 @@ msgstr "Zeitüberschreitung"
 
 #: sabnzbd/skintext.py
 msgid "Account expiration date"
-msgstr ""
+msgstr "Account Ablaufdatum"
 
 #: sabnzbd/skintext.py
 msgid "Warn 5 days in advance of account expiration date."
-msgstr ""
+msgstr "5 Tage vor dem Ablauf des Accounts warnen."
 
 #: sabnzbd/skintext.py
 msgid ""
