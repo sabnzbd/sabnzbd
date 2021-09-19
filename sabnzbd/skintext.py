@@ -646,7 +646,7 @@ SKIN_TEXT = {
     "explain-svrprio": TT("0 is highest priority, 100 is the lowest priority"),  #: Explain server priority
     "srv-required": TT("Required"),  #: Server required tickbox
     "explain-required": TT(
-        "Download will be paused while connection or login fails for this server"
+        "In case of connection failures, the download queue will be paused for a few minutes instead of skipping this server"
     ),  #: Explain server required tickbox
     "srv-optional": TT("Optional"),  #: Server optional tickbox
     "explain-optional": TT(
