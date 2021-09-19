@@ -844,15 +844,17 @@ class Downloader(Thread):
                                 penalty = _PENALTY_UNKNOWN
                                 block = True
                             if block or (penalty and server.optional):
+                                retry_article = False
                                 if server.active:
                                     if server.required:
                                         sabnzbd.Scheduler.plan_required_server_resume()
+                                        retry_article = True
                                     else:
                                         server.deactivate()
                                         if penalty and (block or server.optional):
                                             self.plan_server(server, penalty)
                                 # Note that the article is discard for this server
-                                self.__reset_nw(nw, retry_article=False, send_quit=True)
+                                self.__reset_nw(nw, retry_article=retry_article, send_quit=True)
                             continue
                         except:
                             logging.error(
