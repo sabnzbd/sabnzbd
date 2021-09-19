@@ -853,7 +853,7 @@ class Downloader(Thread):
                                         server.deactivate()
                                         if penalty and (block or server.optional):
                                             self.plan_server(server, penalty)
-                                # Note that the article is discard for this server
+                                # Note that the article is discard for this server if the server is not required
                                 self.__reset_nw(nw, retry_article=retry_article, send_quit=True)
                             continue
                         except:
