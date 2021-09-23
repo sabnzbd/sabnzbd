@@ -1,5 +1,8 @@
-Release Notes - SABnzbd 3.4.0
+Release Notes - SABnzbd 3.4.1
 =========================================================
+
+## Bugfixes since 3.4.0
+- macOS: Failed to run on M1 systems or older macOS versions.
 
 ## Changes since 3.3.1
 - Extended `Deobfuscate final filenames` to attempt to set the correct 
