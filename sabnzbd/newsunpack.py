@@ -1118,8 +1118,7 @@ def par2_repair(parfile_nzf: NzbFile, nzo: NzbObject, workdir, setname, single):
         readd = False
         for extrapar in nzo.extrapars[setname][:]:
             # Make sure we only get new par2 files
-            if extrapar not in nzo.finished_files and extrapar not in nzo.files:
-                nzo.add_parfile(extrapar)
+            if nzo.add_parfile(extrapar):
                 readd = True
         if readd:
             return readd, result

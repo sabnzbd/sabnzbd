@@ -1105,8 +1105,7 @@ class NzbObject(TryList):
                 self.postpone_pars(nzf, setname)
             # Get the next one
             for new_nzf in self.extrapars[setname]:
-                if not new_nzf.completed:
-                    self.add_parfile(new_nzf)
+                if self.add_parfile(new_nzf):
                     # Add it to the top
                     self.files.remove(new_nzf)
                     self.files.insert(0, new_nzf)
@@ -1143,8 +1142,8 @@ class NzbObject(TryList):
             added_blocks = 0
             while added_blocks < needed_blocks:
                 new_nzf = block_list.pop()
-                self.add_parfile(new_nzf)
-                added_blocks += new_nzf.blocks
+                if self.add_parfile(new_nzf):
+                    added_blocks += new_nzf.blocks
 
             logging.info("Added %s blocks to %s", added_blocks, self.final_name)
             return added_blocks
@@ -1433,15 +1432,18 @@ class NzbObject(TryList):
             self.unwanted_ext = 2
 
     @synchronized(NZO_LOCK)
-    def add_parfile(self, parfile: NzbFile):
+    def add_parfile(self, parfile: NzbFile) -> bool:
         """Add parfile to the files to be downloaded
         Resets trylist just to be sure
         Adjust download-size accordingly
+        Returns False when the file couldn't be added
         """
         if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
             parfile.reset_try_list()
             self.files.append(parfile)
             self.bytes_tried -= parfile.bytes_left
+            return True
+        return False
 
     @synchronized(NZO_LOCK)
     def remove_parset(self, setname: str):
@@ -1468,12 +1470,12 @@ class NzbObject(TryList):
                 # from all the sets. This probably means we get too much par2, but it's worth it.
                 blocks_new = 0
                 for new_nzf in self.extrapars[parset]:
-                    self.add_parfile(new_nzf)
-                    blocks_new += new_nzf.blocks
-                    # Enough now?
-                    if blocks_new >= self.bad_articles:
-                        logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
-                        break
+                    if self.add_parfile(new_nzf):
+                        blocks_new += new_nzf.blocks
+                        # Enough now?
+                        if blocks_new >= self.bad_articles:
+                            logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
+                            break
             # Reset NZO TryList
             self.reset_try_list()
 
