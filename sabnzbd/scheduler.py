@@ -400,10 +400,7 @@ class Scheduler:
         """Cancel the current auto resume task"""
         if self.resume_task:
             logging.debug("Cancelling existing resume_task '%s'", self.resume_task.name)
-            try:
-                self.scheduler.cancel(self.resume_task)
-            except ValueError:
-                pass
+            self.scheduler.cancel(self.resume_task)
             self.resume_task = None
 
     def pause_int(self) -> str:
