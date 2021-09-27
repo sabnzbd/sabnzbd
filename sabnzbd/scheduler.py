@@ -391,6 +391,11 @@ class Scheduler:
             self.__check_diskspace, "check_diskspace", 5 * 60, 9 * 60, "threaded", args=[full_dir, required_space]
         )
 
+    def plan_required_server_resume(self, interval: int = 5):
+        """Create task for resuming downloading"""
+        if not sabnzbd.Downloader.paused:
+            self.plan_resume(interval)
+
     def cancel_resume_task(self):
         """Cancel the current auto resume task"""
         if self.resume_task:
