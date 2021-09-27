@@ -4077,6 +4077,17 @@ msgstr "Strikt"
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 ist die höchste, 99 die niedrigste Priorität"
 
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+
 #. Server optional tickbox
 #: sabnzbd/skintext.py
 msgid "Optional"
