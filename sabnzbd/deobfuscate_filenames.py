@@ -166,7 +166,7 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
     # 2. if no meaningful extension, add it
     # 3. based on detecting obfuscated filenames
 
-    # to be sure, only keep really exsiting files:
+    # to be sure, only keep really existing files:
     filelist = [f for f in filelist if os.path.isfile(f)]
 
     # let's see if there are files with uncommon/unpopular (so: obfuscated) extensions
@@ -176,7 +176,7 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
     for file in filelist:
         if file_extension.has_popular_extension(file):
             # common extension, like .doc or .iso, so assume OK and change nothing
-            logging.debug("extension of %s looks common", file)
+            logging.debug("Extension of %s looks common", file)
             newlist.append(file)
         else:
             # uncommon (so: obfuscated) extension
@@ -220,6 +220,7 @@ def deobfuscate_list(filelist: List[str], usefulname: str):
         # check that file is still there (and not renamed by the secondary renaming process below)
         if not os.path.isfile(filename):
             continue
+
         logging.debug("Deobfuscate inspecting %s", filename)
         # Do we need to rename this file?
         # Criteria: big, not-excluded extension, obfuscated (in that order)
