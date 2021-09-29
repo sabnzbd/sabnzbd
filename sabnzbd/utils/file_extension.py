@@ -264,9 +264,12 @@ def what_is_most_likely_extension(file_path: str) -> str:
 
     # Check if text or NZB, as puremagic is not good at that.
     try:
-        txt = Path(file_path).read_text()
+        # Only read the start, don't need the whole file
+        with open(file_path, "r") as inp_file:
+            txt = inp_file.read(200).lower()
+
         # Yes, a text file ... so let's check if it's even an NZB:
-        if txt.lower().find("<nzb xmlns=") >= 0 or txt.lower().find("!doctype nzb public") >= 0:
+        if "!doctype nzb public" in txt or "<nzb xmlns=" in txt:
             # yes, contains NZB signals:
             return ".nzb"
         else:
