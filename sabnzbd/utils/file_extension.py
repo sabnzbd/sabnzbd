@@ -8,9 +8,10 @@ Note: extension always contains a leading dot
 import puremagic
 import os
 import sys
+import re
 from typing import List
-from pathlib import Path
 from sabnzbd.filesystem import get_ext
+
 
 # common extension from https://www.computerhope.com/issues/ch001789.htm
 POPULAR_EXT = (
@@ -234,16 +235,19 @@ DOWNLOAD_EXT = (
     "xpi",
 )
 
-# combine to one tuple, with unique entries:
+# Combine to one tuple, with unique entries:
 ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
-# prepend a dot to each extension, because we work with a leading dot in extensions
+# Prepend a dot to each extension, because we work with a leading dot in extensions
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
+
+# Match old-style multi-rar extensions
+SIMPLE_RAR_RE = re.compile(r"\.r\d\d\d?$", re.I)
 
 
 def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
     file_extension = get_ext(file_path)
-    return file_extension in ALL_EXT
+    return file_extension in ALL_EXT or SIMPLE_RAR_RE.match(file_extension)
 
 
 def all_possible_extensions(file_path: str) -> List[str]:
