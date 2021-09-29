@@ -4083,13 +4083,15 @@ msgstr "0 est la priorité la plus élevée, 99 est la priorité la plus faible"
 #. Server required tickbox
 #: sabnzbd/skintext.py
 msgid "Required"
-msgstr ""
+msgstr "Obligatoire"
 
 #: sabnzbd/skintext.py
 msgid ""
 "In case of connection failures, the download queue will be paused for a few "
 "minutes instead of skipping this server"
 msgstr ""
+"En cas d'échecs de connexion, la file d'attente des téléchargements sera "
+"mise en pause pendant quelques minutes au lieu de passer au serveur suivant."
 
 #. Server optional tickbox
 #: sabnzbd/skintext.py
