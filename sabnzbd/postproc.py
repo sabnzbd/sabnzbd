@@ -520,7 +520,8 @@ def process_job(nzo: NzbObject):
             # Run further post-processing
             if (all_ok or not cfg.safe_postproc()) and not nzb_list:
                 # Use par2 files to deobfuscate unpacked file names
-                if cfg.process_unpacked_par2():
+                # Only if we also run cleanup, so not to process the "regular" par2 files
+                if flag_delete and cfg.process_unpacked_par2():
                     newfiles = deobfuscate.recover_par2_names(newfiles)
 
                 if cfg.deobfuscate_final_filenames():
