@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 3.4.1
+Release Notes - SABnzbd 3.4.2 Release Candidate 1
 =========================================================
+
+## Bugfixes since 3.4.1
+- Crash when `.par2` files were missing during download.
+- Prevent scanning the whole file to identify the correct extension.
+- `.rXX` extensions were renamed to `.rXX.rar`.
+- Processing unpacked `.par2` files would also process source
+  `.par2` files and could result in duplicate (`.1`) filenames.
 
 ## Bugfixes since 3.4.0
 - macOS: Failed to run on M1 systems or older macOS versions.
