@@ -515,6 +515,7 @@ def process_job(nzo: NzbObject):
                     workdir_complete, ok = file_sorter.sorter.rename(newfiles, workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
+                        nzo.fail_msg = T("Failed to move files")
                         all_ok = False
 
             # Run further post-processing
