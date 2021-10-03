@@ -305,7 +305,7 @@ class BaseSorter:
                 except:
                     logging.error(T("Failed to rename: %s to %s"), clip_path(current_path), clip_path(newpath))
                     logging.info("Traceback: ", exc_info=True)
-                rename_similar(current_path, ext, self.filename_set, ())
+                rename_similar(current_path, ext, self.filename_set)
         else:
             logging.debug("Nothing to rename, %s", files)
 
@@ -794,7 +794,7 @@ def strip_path_elements(path: str) -> str:
     return "\\\\" + path if is_unc else path
 
 
-def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: List[str]):
+def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optional[List[str]] = None):
     """Rename all other files in the 'folder' hierarchy after 'name'
     and move them to the root of 'folder'.
     Files having extension 'skip_ext' will be moved, but not renamed.
@@ -807,7 +807,7 @@ def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: List[st
     for root, dirs, files in os.walk(folder):
         for f in files:
             path = os.path.join(root, f)
-            if path in skipped_files:
+            if skipped_files and path in skipped_files:
                 continue
             org, ext = os.path.splitext(f)
             if ext.lower() == skip_ext:
