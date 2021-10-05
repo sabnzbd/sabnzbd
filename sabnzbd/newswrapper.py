@@ -286,7 +286,7 @@ class NNTP:
                 # Setup the SSL socket
                 ctx = ssl.create_default_context()
 
-                if sabnzbd.cfg.require_modern_tls():
+                if not sabnzbd.cfg.allow_old_ssl_tls():
                     # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
                     ctx.options |= ssl.OP_NO_SSLv2 | ssl.OP_NO_SSLv3 | ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
 

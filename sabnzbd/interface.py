@@ -908,7 +908,7 @@ SPECIAL_BOOL_LIST = (
     "disable_api_key",
     "api_logging",
     "x_frame_options",
-    "require_modern_tls",
+    "allow_old_ssl_tls",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",

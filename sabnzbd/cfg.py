@@ -289,7 +289,7 @@ api_warnings = OptionBool("misc", "api_warnings", True, protect=True)
 disable_key = OptionBool("misc", "disable_api_key", False, protect=True)
 no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
-require_modern_tls = OptionBool("misc", "require_modern_tls", False)
+allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 num_decoders = OptionNumber("misc", "num_decoders", 3)
 
 # Text values
