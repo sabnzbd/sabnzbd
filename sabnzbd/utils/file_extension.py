@@ -170,6 +170,7 @@ DOWNLOAD_EXT = (
     "bin",
     "bup",
     "cbr",
+    "cbz",
     "clpi",
     "crx",
     "db",
