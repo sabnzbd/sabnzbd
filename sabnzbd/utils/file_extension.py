@@ -169,6 +169,7 @@ DOWNLOAD_EXT = (
     "bdmv",
     "bin",
     "bup",
+    "cbr",
     "clpi",
     "crx",
     "db",
