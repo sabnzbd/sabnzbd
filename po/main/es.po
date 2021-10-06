@@ -4257,6 +4257,12 @@ msgid "Read All Feeds Now"
 msgstr "Leer todas las fuentes ahora"
 
 #: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
 msgstr "Notificación por email al terminar"
 
@@ -4542,7 +4548,13 @@ msgstr "Categorías Indexer / Grupos"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "Ordenación de Series"
 
@@ -4570,7 +4582,8 @@ msgstr "Preajustes"
 msgid "Example"
 msgstr "Ejemplo"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr "Clasificación de películas"
 
@@ -4722,7 +4735,8 @@ msgstr "En directorios"
 msgid "No folders"
 msgstr "Sin Directorios"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "Ordenar por fecha"
 

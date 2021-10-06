@@ -4058,6 +4058,12 @@ msgid "Read All Feeds Now"
 msgstr "立即读取全部 Feed"
 
 #: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
 msgstr "任务完成 Email 通知"
 
@@ -4335,7 +4341,13 @@ msgstr "索引 Categories / Groups"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "TV 排序"
 
@@ -4363,7 +4375,8 @@ msgstr "预设"
 msgid "Example"
 msgstr "示例"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr "电影排序"
 
@@ -4515,7 +4528,8 @@ msgstr "分文件夹"
 msgid "No folders"
 msgstr "不分文件夹"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "日期排序"
 
