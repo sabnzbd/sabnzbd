@@ -233,7 +233,7 @@ rating_filter_pause_keywords = OptionStr("misc", "rating_filter_pause_keywords")
 ##############################################################################
 enable_tv_sorting = OptionBool("misc", "enable_tv_sorting", False)
 tv_sort_string = OptionStr("misc", "tv_sort_string")
-tv_categories = OptionList("misc", "tv_categories", "")
+tv_categories = OptionList("misc", "tv_categories", ["tv"])
 
 enable_movie_sorting = OptionBool("misc", "enable_movie_sorting", False)
 movie_sort_string = OptionStr("misc", "movie_sort_string")

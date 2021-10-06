@@ -11,12 +11,13 @@
                 <h3>$T('seriesSorting') <a href="$helpuri$help_uri#toc0" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                 <p>
                     <b>$T('affectedCat')</b><br/>
-                    <select name="tv_categories" multiple="multiple" class="multiple_cats">
+                    <select name="tv_categories" multiple="multiple" class="multiple_cats" required="required">
                         <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $tv_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>
                 </p>
+                <p>$T('selectOneCat')</p>
             </div>
             <!-- /col2 -->
             <div class="col1">
@@ -223,12 +224,13 @@
                 <h3>$T('movieSort') <a href="$helpuri$help_uri#toc6" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                 <p>
                     <b>$T('affectedCat')</b><br/>
-                    <select name="movie_categories" multiple="multiple" class="multiple_cats">
+                    <select name="movie_categories" multiple="multiple" class="multiple_cats" required="required">
                         <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $movie_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>
                 </p>
+                <p>$T('selectOneCat')</p>
             </div>
             <!-- /col2 -->
             <div class="col1">
@@ -419,12 +421,13 @@
                 <h3>$T('dateSorting') <a href="$helpuri$help_uri#toc9" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                 <p>
                     <b>$T('affectedCat')</b><br/>
-                    <select name="date_categories" multiple="multiple" class="multiple_cats">
+                    <select name="date_categories" multiple="multiple" class="multiple_cats" required="required">
                         <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $date_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>
                 </p>
+                <p>$T('selectOneCat')</p>
             </div>
             <!-- /col2 -->
             <div class="col1">
