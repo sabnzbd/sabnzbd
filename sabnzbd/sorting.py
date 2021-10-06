@@ -363,6 +363,10 @@ class SeriesSorter(BaseSorter):
                 self.matched = True
                 self.type = "tv"
 
+        # Require at least 1 category, this was not enforced before 3.4.0
+        if cfg.enable_tv_sorting() and not self.cats:
+            logging.warning("%s: %s", T("Series Sorting"), T("Select at least 1 category."))
+
     def get_values(self):
         """Collect all values needed for path replacement"""
         self.get_year()
@@ -425,6 +429,10 @@ class MovieSorter(BaseSorter):
                 logging.debug("Using movie sorter for %s", self.original_job_name)
                 self.matched = True
                 self.type = "movie"
+
+        # Require at least 1 category, this was not enforced before 3.4.0
+        if cfg.enable_movie_sorting() and not self.cats:
+            logging.warning("%s: %s", T("Movie Sorting"), T("Select at least 1 category."))
 
     def get_values(self):
         """Collect all values needed for path replacement"""
@@ -505,6 +513,10 @@ class DateSorter(BaseSorter):
                 logging.debug("Using date sorter for %s", self.original_job_name)
                 self.matched = True
                 self.type = "date"
+
+        # Require at least 1 category, this was not enforced before 3.4.0
+        if cfg.enable_date_sorting() and not self.cats:
+            logging.warning("%s: %s", T("Date Sorting"), T("Select at least 1 category."))
 
     def get_date(self):
         """Get month and day"""
