@@ -399,7 +399,7 @@ class SeriesSorter(BaseSorter):
         if min_size < 0:
             min_size = cfg.episode_rename_limit.get_int()
         if not self.do_rename:
-            return current_path, False
+            return current_path, True
         else:
             logging.debug("Renaming series file(s)")
             return super().rename(files, current_path, min_size)
@@ -446,7 +446,8 @@ class MovieSorter(BaseSorter):
             min_size = cfg.movie_rename_limit.get_int()
 
         if not self.do_rename:
-            return current_path, False
+            return current_path, True
+
         logging.debug("Renaming movie file(s)")
 
         def filter_files(f, current_path):
@@ -539,7 +540,7 @@ class DateSorter(BaseSorter):
         if min_size < 0:
             min_size = cfg.episode_rename_limit.get_int()
         if not self.do_rename:
-            return current_path, False
+            return current_path, True
         else:
             logging.debug("Renaming date file(s)")
             return super().rename(files, current_path, min_size)
