@@ -2,15 +2,16 @@ Release Notes - SABnzbd 3.4.2 Release Candidate 2
 =========================================================
 
 ## Bugfixes since 3.4.1
-- Sorting requires at least 1 category te be selected since 3.4.0.
+- Sorting requires at least 1 category to be selected since 3.4.0.
   Warning will be shown if no category is selected.
+- Sorting would fail if `%ext` or `%fn` was not used.
 - Job failure due to Sorting-problems was not shown in the History.
 - Crash when `.par2` files were missing during download.
 - Prevent scanning the whole file to identify the correct extension.
 - `.rXX`, `.cbz` and `.cbr` extensions were wrongly renamed.
 - Processing unpacked `.par2` files would also process source
   `.par2` files and could result in duplicate (`.1`) filenames.
-- Always show number of MB missing during download.
+- Always show the number of MB missing during download.
 
 ## Bugfixes since 3.4.0
 - macOS: Failed to run on M1 systems or older macOS versions.
@@ -37,7 +38,7 @@ Release Notes - SABnzbd 3.4.2 Release Candidate 2
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x 
-  version. If you downgrade to 3.1.x or lower, detailed download 
+  version. If you downgrade to 3.1.x or lower, all detailed download 
   statistics will be lost.
 
 ## Known problems and solutions
