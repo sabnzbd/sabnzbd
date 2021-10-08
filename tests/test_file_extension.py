@@ -30,7 +30,7 @@ class Test_File_Extension:
         assert file_extension.has_popular_extension("blabla/blabla.srt")
         assert file_extension.has_popular_extension("djjddj/aaaaa.epub")
         assert file_extension.has_popular_extension("test/testing.r01")
-        assert file_extension.has_popular_extension("test/testing.r901")
+        assert file_extension.has_popular_extension("test/testing.s91")
         assert not file_extension.has_popular_extension("test/testing")
         assert not file_extension.has_popular_extension("test/testing.rar01")
         assert not file_extension.has_popular_extension("98ads098f098fa.a0ds98f098asdf")
