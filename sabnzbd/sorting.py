@@ -38,7 +38,7 @@ from sabnzbd.filesystem import (
     clip_path,
 )
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import EXCLUDED_GUESSIT_PROPERTIES
+from sabnzbd.constants import EXCLUDED_GUESSIT_PROPERTIES, IGNORED_MOVIE_FOLDERS
 from sabnzbd.nzbstuff import NzbObject, scan_password
 
 # Do not rename .vob files as they are usually DVD's
@@ -76,7 +76,7 @@ class BaseSorter:
         self.cat = cat
         self.filename_set = ""
         self.fname = ""  # Value for %fn substitution in folders
-        self.do_rename = False
+        self.rename_files = False
         self.info = {}
         self.type = None
         self.guess = guess
@@ -259,7 +259,7 @@ class BaseSorter:
         # Split the last part of the path up for the renamer
         if extension:
             path, self.filename_set = os.path.split(path)
-            self.do_rename = True
+            self.rename_files = True
 
         # The normpath function translates "" to "." which results in an incorrect path
         return os.path.normpath(path) if path else path
@@ -317,7 +317,7 @@ class Sorter:
 
     def __init__(self, nzo: Optional[NzbObject], cat: str):
         self.sorter: Optional[BaseSorter] = None
-        self.sort_file = False
+        self.sorter_active = False
         self.nzo = nzo
         self.cat = cat
 
@@ -334,9 +334,9 @@ class Sorter:
             self.sorter = MovieSorter(self.nzo, job_name, complete_dir, self.cat, guess)
 
         if self.sorter and self.sorter.matched:
-            self.sort_file = True
+            self.sorter_active = True
 
-        return self.sorter.get_final_path() if self.sort_file else complete_dir
+        return self.sorter.get_final_path() if self.sorter_active else complete_dir
 
 
 class SeriesSorter(BaseSorter):
@@ -398,8 +398,8 @@ class SeriesSorter(BaseSorter):
         """Rename for Series"""
         if min_size < 0:
             min_size = cfg.episode_rename_limit.get_int()
-        if not self.do_rename:
-            return current_path, True
+        if not self.rename_files:
+            return move_to_parent_directory(current_path)
         else:
             logging.debug("Renaming series file(s)")
             return super().rename(files, current_path, min_size)
@@ -445,8 +445,8 @@ class MovieSorter(BaseSorter):
         if min_size < 0:
             min_size = cfg.movie_rename_limit.get_int()
 
-        if not self.do_rename:
-            return current_path, True
+        if not self.rename_files:
+            return move_to_parent_directory(current_path)
 
         logging.debug("Renaming movie file(s)")
 
@@ -539,8 +539,8 @@ class DateSorter(BaseSorter):
         """Renaming Date file"""
         if min_size < 0:
             min_size = cfg.episode_rename_limit.get_int()
-        if not self.do_rename:
-            return current_path, True
+        if not self.rename_files:
+            return move_to_parent_directory(current_path)
         else:
             logging.debug("Renaming date file(s)")
             return super().rename(files, current_path, min_size)
@@ -559,9 +559,11 @@ def move_to_parent_directory(workdir: str) -> Tuple[str, bool]:
     workdir = os.path.abspath(os.path.normpath(workdir))
     dest = os.path.abspath(os.path.normpath(os.path.join(workdir, "..")))
 
+    logging.debug("Moving all files from %s to %s", workdir, dest)
+
     # Check for DVD folders and bail out if found
     for item in os.listdir(workdir):
-        if item.lower() in ("video_ts", "audio_ts", "bdmv"):
+        if item.lower() in IGNORED_MOVIE_FOLDERS:
             return workdir, True
 
     for root, dirs, files in os.walk(workdir):
@@ -874,7 +876,7 @@ def eval_sort(sort_type: str, expression: str, name: str = None, multipart: str 
     if "%fn" in path:
         path = path.replace("%fn", fname + ".ext")
     else:
-        if sorter.do_rename:
+        if sorter.rename_files:
             path = fpath + ".ext"
         else:
             path += "\\" if sabnzbd.WIN32 else "/"

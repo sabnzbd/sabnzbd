@@ -25,6 +25,7 @@ import sys
 from random import choice
 
 from sabnzbd import sorting
+from sabnzbd.constants import IGNORED_MOVIE_FOLDERS
 from tests.testhelper import *
 
 
@@ -315,7 +316,7 @@ class TestSortingFunctions:
             pyfakefs.fake_filesystem_unittest.set_uid(0)
             # Create a fake filesystem in a random base directory, and included a typical DVD directory
             base_dir = "/" + os.urandom(4).hex() + "/" + os.urandom(2).hex()
-            dvd = choice(("video_ts", "audio_ts", "bdmv"))
+            dvd = choice(IGNORED_MOVIE_FOLDERS)
             for test_dir in ["dir/2", "TEST/DIR2"]:
                 ffs.fs.create_dir(base_dir + "/" + test_dir, perm_bits=755)
                 assert os.path.exists(base_dir + "/" + test_dir) is True
@@ -373,7 +374,7 @@ class TestSortingFunctions:
             pyfakefs.fake_filesystem_unittest.set_uid(0)
             # Create a fake filesystem in a random base directory, and included a typical DVD directory
             base_dir = "D:\\" + os.urandom(4).hex() + "\\" + os.urandom(2).hex()
-            dvd = choice(("video_ts", "audio_ts", "bdmv"))
+            dvd = choice(IGNORED_MOVIE_FOLDERS)
             for test_dir in ["dir\\2", "TEST\\DIR2"]:
                 ffs.fs.create_dir(base_dir + "\\" + test_dir, perm_bits=755)
                 assert os.path.exists(base_dir + "\\" + test_dir) is True
@@ -553,11 +554,14 @@ class TestSortingSorters:
         _func()
 
     @pytest.mark.parametrize(
-        "s_class, job_tag, sort_string, sort_result",  # sort_result without extension
+        "s_class, job_tag, sort_string, sort_filename_result",  # Supply sort_filename_result without extension
         [
             (sorting.SeriesSorter, "S01E02", "%r/%sn s%0se%0e.%ext", "Simulated Job s01e02"),
+            (sorting.SeriesSorter, "S01E02", "%r/%sn s%0se%0e", ""),
             (sorting.MovieSorter, "2021", "%y_%.title.%r.%ext", "2021_Simulated.Job.2160p"),
-            (sorting.DateSorter, "2020-02-29", "%y/%0m/%0d/%.t-%GI<release_group>", "Simulated.Job-SAB"),
+            (sorting.MovieSorter, "2021", "%y_%.title.%r", ""),
+            (sorting.DateSorter, "2020-02-29", "%y/%0m/%0d/%.t-%GI<release_group>.%ext", "Simulated.Job-SAB"),
+            (sorting.DateSorter, "2020-02-29", "%y/%0m/%0d/%.t-%GI<release_group>", ""),
         ],
     )
     @pytest.mark.parametrize("size_limit, file_size", [(512, 1024), (1024, 512)])
@@ -569,7 +573,7 @@ class TestSortingSorters:
         s_class,
         job_tag,
         sort_string,
-        sort_result,
+        sort_filename_result,
         size_limit,
         file_size,
         extension,
@@ -631,8 +635,10 @@ class TestSortingSorters:
 
             # Check the result
             try:
+                # If there's no "%ext" in the sort_string, no filenames should be changed
                 if (
                     is_ok
+                    and sort_filename_result
                     and file_size > size_limit
                     and extension not in sorting.EXCLUDED_FILE_EXTS
                     and not (sorter.type == "movie" and number_of_files > 1 and not generate_sequential_filenames)
@@ -642,10 +648,10 @@ class TestSortingSorters:
                     if number_of_files > 1 and generate_sequential_filenames and sorter.type == "movie":
                         # Movie sequential file handling
                         for n in range(1, number_of_files + 1):
-                            expected = os.path.join(sort_dest, sort_result + " CD" + str(n) + extension)
+                            expected = os.path.join(sort_dest, sort_filename_result + " CD" + str(n) + extension)
                             assert os.path.exists(expected)
                     else:
-                        expected = os.path.join(sort_dest, sort_result + extension)
+                        expected = os.path.join(sort_dest, sort_filename_result + extension)
                         assert os.path.exists(expected)
                 else:
                     # No renaming should happen
@@ -699,7 +705,7 @@ class TestSortingSorters:
             generic = sorting.Sorter(None, "test_cat")
             generic.detect(job_name, SAB_CACHE_DIR)
 
-            assert generic.sort_file is result_sort_file
+            assert generic.sorter_active is result_sort_file
             if result_sort_file:
                 assert generic.sorter
                 assert generic.sorter.__class__ is result_class

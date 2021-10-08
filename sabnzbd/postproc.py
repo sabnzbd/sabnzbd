@@ -74,6 +74,7 @@ from sabnzbd.constants import (
     JOB_ADMIN,
     Status,
     VERIFIED_FILE,
+    IGNORED_MOVIE_FOLDERS,
 )
 from sabnzbd.nzbparser import process_single_nzb
 import sabnzbd.emailer as emailer
@@ -499,7 +500,7 @@ def process_job(nzo: NzbObject):
                     )
                     logging.info("Traceback: ", exc_info=True)
                     # Better disable sorting because filenames are all off now
-                    file_sorter.sort_file = None
+                    file_sorter.sorter_active = None
 
             if empty:
                 job_result = -1
@@ -510,7 +511,7 @@ def process_job(nzo: NzbObject):
                 remove_samples(workdir_complete)
 
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
-            if all_ok and file_sorter.sort_file:
+            if all_ok and file_sorter.sorter_active:
                 if newfiles:
                     workdir_complete, ok = file_sorter.sorter.rename(newfiles, workdir_complete)
                     if not ok:
@@ -693,7 +694,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     else:
         file_sorter = Sorter(None, nzo.cat)
     complete_dir = file_sorter.detect(nzo.final_name, complete_dir)
-    if file_sorter.sort_file:
+    if file_sorter.sorter_active:
         one_folder = False
 
     complete_dir = sanitize_and_trim_path(complete_dir)
@@ -1177,7 +1178,7 @@ def rename_and_collapse_folder(oldpath, newpath, files):
     if len(items) == 1:
         folder = items[0]
         folder_path = os.path.join(oldpath, folder)
-        if os.path.isdir(folder_path) and folder not in ("VIDEO_TS", "AUDIO_TS"):
+        if os.path.isdir(folder_path) and folder.lower() not in IGNORED_MOVIE_FOLDERS:
             logging.info("Collapsing %s", os.path.join(newpath, folder))
             oldpath = folder_path
 
