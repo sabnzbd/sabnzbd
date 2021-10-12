@@ -357,7 +357,8 @@ class SeriesSorter(BaseSorter):
     def match(self):
         """Try to guess series info if config and category sort out or force is set"""
         if self.force or (cfg.enable_tv_sorting() and cfg.tv_sort_string() and self.cat.lower() in self.cats):
-            self.guess = guess_what(self.original_job_name, sort_type="episode")
+            if not self.guess:
+                self.guess = guess_what(self.original_job_name, sort_type="episode")
             if self.guess.get("type") == "episode" and "date" not in self.guess:
                 logging.debug("Using tv sorter for %s", self.original_job_name)
                 self.matched = True
@@ -424,7 +425,8 @@ class MovieSorter(BaseSorter):
     def match(self):
         """Try to guess movie info if config and category sort out or force is set"""
         if self.force or (cfg.enable_movie_sorting() and self.sort_string and self.cat.lower() in self.cats):
-            self.guess = guess_what(self.original_job_name, sort_type="movie")
+            if not self.guess:
+                self.guess = guess_what(self.original_job_name, sort_type="movie")
             if self.guess.get("type") == "movie":
                 logging.debug("Using movie sorter for %s", self.original_job_name)
                 self.matched = True
@@ -509,7 +511,8 @@ class DateSorter(BaseSorter):
     def match(self):
         """Checks the category for a match, if so set self.matched to true"""
         if self.force or (cfg.enable_date_sorting() and self.sort_string and self.cat.lower() in self.cats):
-            self.guess = guess_what(self.original_job_name, sort_type="episode")
+            if not self.guess:
+                self.guess = guess_what(self.original_job_name, sort_type="episode")
             if self.guess.get("type") == "episode" and "date" in self.guess:
                 logging.debug("Using date sorter for %s", self.original_job_name)
                 self.matched = True
