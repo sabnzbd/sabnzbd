@@ -17,7 +17,6 @@
 
 import os
 from collections import namedtuple
-from re import compile
 
 CONFIG_VERSION = 19
 

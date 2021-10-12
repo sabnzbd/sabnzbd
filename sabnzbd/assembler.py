@@ -24,7 +24,6 @@ import queue
 import logging
 import re
 from threading import Thread
-from time import sleep
 import hashlib
 from typing import Tuple, Optional, List
 
