@@ -39,6 +39,7 @@ from sabnzbd.filesystem import (
 )
 import sabnzbd.cfg as cfg
 from sabnzbd.constants import EXCLUDED_GUESSIT_PROPERTIES, IGNORED_MOVIE_FOLDERS
+from sabnzbd.misc import is_sample
 from sabnzbd.nzbstuff import NzbObject, scan_password
 
 # Do not rename .vob files as they are usually DVD's
@@ -630,38 +631,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
         ):
             guess["type"] = "unknown"
 
-    # Remove sample indicators from groupnames, e.g. 'sample-groupname' or 'groupname-proof'
-    group = guess.get("release_group", "")
-    if group.lower().startswith(("sample-", "proof-")) or group.lower().endswith(("-sample", "-proof")):
-        # Set clean groupname
-        guess["release_group"] = re.sub("^(sample|proof)-|-(sample|proof)$", "", group, re.I)
-        # Add 'Sample' property to the guess
-        other = guess.get("other")
-        if not other:
-            guess.setdefault("other", "Sample")
-        else:
-            if "Sample" not in guess["other"]:
-                # Pre-existing 'other' may be a string or a list
-                try:
-                    guess["other"].append("Sample")
-                except AttributeError:
-                    guess["other"] = [other, "Sample"]
-
     return guess
-
-
-def is_sample(filename: str) -> bool:
-    """Try to determine if filename belongs to a sample"""
-    if os.path.splitext(filename)[0].lower().strip() in ("sample", "proof"):
-        # The entire filename is just 'sample.ext' or similar
-        return True
-
-    # If that didn't work, start guessing
-    guess = guess_what(filename).get("other", "")
-    if isinstance(guess, list):
-        return any(item in ("Sample", "Proof") for item in guess)
-    else:
-        return guess in ("Sample", "Proof")
 
 
 def path_subst(path: str, mapping: List[Tuple[str, str]]) -> str:

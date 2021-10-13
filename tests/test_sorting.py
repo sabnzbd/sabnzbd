@@ -66,7 +66,7 @@ class TestSortingFunctions:
                     "country": "US",
                 },
             ),
-            ("Test Movie 720p HDTV AAC x265 sample-MYgroup", {"release_group": "MYgroup", "other": "Sample"}),
+            ("Test Movie 720p HDTV AAC x265 MYgroup-Sample", {"release_group": "MYgroup", "other": "Sample"}),
             (None, None),  # Jobname missing
             ("", None),
         ],
@@ -85,33 +85,6 @@ class TestSortingFunctions:
                     assert key not in guess
                 else:
                     assert guess[key] == value
-
-    @pytest.mark.parametrize(
-        "name, result",
-        [
-            ("Free.Open.Source.Movie.2001.1080p.WEB-DL.DD5.1.H264-FOSS", False),  # Not samples
-            ("Setup.exe", False),
-            ("23.123.hdtv-rofl", False),
-            ("Something.1080p.WEB-DL.DD5.1.H264-EMRG-sample", True),  # Samples
-            ("Something.1080p.WEB-DL.DD5.1.H264-EMRG-sample.ogg", True),
-            ("Sumtin_Else_1080p_WEB-DL_DD5.1_H264_proof-EMRG", True),
-            ("Wot.Eva.540i.WEB-DL.aac.H264-Groupie sample.mp4", True),
-            ("file-sample.mkv", True),
-            ("PROOF.JPG", True),
-            ("Bla.s01e02.title.1080p.aac-sample proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac-proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac sample proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac proof.mkv", True),
-            ("Not Death Proof (2022) 1080p x264 (DD5.1) BE Subs", False),  # Try to trigger some false positives
-            ("Proof.of.Everything.(2042).4320p.x266-4U", False),
-            ("Crime_Scene_S01E13_Free_Sample_For_Sale_480p-OhDear", False),
-            ("Sample That 2011 480p WEB-DL.H265-aMiGo", False),
-            ("Look at That 2011 540i WEB-DL.H265-NoSample", False),
-            ("NOT A SAMPLE.JPG", False),
-        ],
-    )
-    def test_is_sample(self, name, result):
-        assert sorting.is_sample(name) == result
 
     @pytest.mark.parametrize("platform", ["linux", "darwin", "win32"])
     @pytest.mark.parametrize(

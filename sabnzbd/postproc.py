@@ -39,7 +39,7 @@ from sabnzbd.newsunpack import (
     is_sfv_file,
 )
 from threading import Thread
-from sabnzbd.misc import on_cleanup_list
+from sabnzbd.misc import on_cleanup_list, is_sample
 from sabnzbd.filesystem import (
     real_path,
     get_unique_path,
@@ -65,7 +65,7 @@ from sabnzbd.filesystem import (
     get_filename,
 )
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.sorting import Sorter, is_sample
+from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
     FORCE_PRIORITY,
