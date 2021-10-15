@@ -1,4 +1,4 @@
-Release Notes - SABnzbd 3.4.2 Release Candidate 2
+Release Notes - SABnzbd 3.4.2
 =========================================================
 
 ## Bugfixes since 3.4.1
@@ -6,6 +6,7 @@ Release Notes - SABnzbd 3.4.2 Release Candidate 2
   Warning will be shown if no category is selected.
 - Sorting would fail if `%ext` or `%fn` was not used.
 - Job failure due to Sorting-problems was not shown in the History.
+- `Ignore Samples` did not remove all sample files.
 - Crash when `.par2` files were missing during download.
 - Prevent scanning the whole file to identify the correct extension.
 - `.rXX`, `.cbz` and `.cbr` extensions were wrongly renamed.
