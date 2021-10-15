@@ -8,15 +8,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
         os: [ubuntu-20.04]
         include:
+          # TODO: Update to 3.10 when all packages are available, currently lxml is missing
           - name: macOS
             os: macos-latest
-            python-version: 3.9
+            python-version: "3.9"
           - name: Windows
             os: windows-latest
-            python-version: 3.9
+            python-version: "3.9"
 
     steps:
     - uses: actions/checkout@v2
@@ -30,7 +31,7 @@ jobs:
     - name: Install Python dependencies
       run: |
         python --version
-        pip install --upgrade pip
+        pip install --upgrade pip wheel
         pip install --upgrade -r requirements.txt
         pip install --upgrade -r tests/requirements.txt
     - name: Test SABnzbd

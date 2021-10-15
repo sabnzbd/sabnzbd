@@ -46,6 +46,8 @@ try:
     import portend
     import cryptography
     import chardet
+    import guessit
+    import puremagic
 except ImportError as e:
     print("Not all required Python modules are available, please check requirements.txt")
     print("Missing module:", e.name)
@@ -1439,11 +1441,10 @@ def main():
     try:
         cherrypy.engine.start()
     except:
+        # Since the webserver is started by cherrypy in a separate thread, we can't really catch any
+        # start-up errors. This try/except only catches very few errors, the rest is only shown in the console.
         logging.error(T("Failed to start web-interface: "), exc_info=True)
         abort_and_show_error(browserhost, cherryport)
-
-    # Wait for server to become ready
-    cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
     if sabnzbd.WIN32:
         if enable_https:

@@ -38,7 +38,8 @@ from sabnzbd.filesystem import (
     clip_path,
 )
 import sabnzbd.cfg as cfg
-from sabnzbd.constants import EXCLUDED_GUESSIT_PROPERTIES
+from sabnzbd.constants import EXCLUDED_GUESSIT_PROPERTIES, IGNORED_MOVIE_FOLDERS
+from sabnzbd.misc import is_sample
 from sabnzbd.nzbstuff import NzbObject, scan_password
 
 # Do not rename .vob files as they are usually DVD's
@@ -76,7 +77,7 @@ class BaseSorter:
         self.cat = cat
         self.filename_set = ""
         self.fname = ""  # Value for %fn substitution in folders
-        self.do_rename = False
+        self.rename_files = False
         self.info = {}
         self.type = None
         self.guess = guess
@@ -259,7 +260,7 @@ class BaseSorter:
         # Split the last part of the path up for the renamer
         if extension:
             path, self.filename_set = os.path.split(path)
-            self.do_rename = True
+            self.rename_files = True
 
         # The normpath function translates "" to "." which results in an incorrect path
         return os.path.normpath(path) if path else path
@@ -305,7 +306,7 @@ class BaseSorter:
                 except:
                     logging.error(T("Failed to rename: %s to %s"), clip_path(current_path), clip_path(newpath))
                     logging.info("Traceback: ", exc_info=True)
-                rename_similar(current_path, ext, self.filename_set, ())
+                rename_similar(current_path, ext, self.filename_set)
         else:
             logging.debug("Nothing to rename, %s", files)
 
@@ -317,7 +318,7 @@ class Sorter:
 
     def __init__(self, nzo: Optional[NzbObject], cat: str):
         self.sorter: Optional[BaseSorter] = None
-        self.sort_file = False
+        self.sorter_active = False
         self.nzo = nzo
         self.cat = cat
 
@@ -334,9 +335,9 @@ class Sorter:
             self.sorter = MovieSorter(self.nzo, job_name, complete_dir, self.cat, guess)
 
         if self.sorter and self.sorter.matched:
-            self.sort_file = True
+            self.sorter_active = True
 
-        return self.sorter.get_final_path() if self.sort_file else complete_dir
+        return self.sorter.get_final_path() if self.sorter_active else complete_dir
 
 
 class SeriesSorter(BaseSorter):
@@ -357,11 +358,16 @@ class SeriesSorter(BaseSorter):
     def match(self):
         """Try to guess series info if config and category sort out or force is set"""
         if self.force or (cfg.enable_tv_sorting() and cfg.tv_sort_string() and self.cat.lower() in self.cats):
-            self.guess = guess_what(self.original_job_name, sort_type="episode")
+            if not self.guess:
+                self.guess = guess_what(self.original_job_name, sort_type="episode")
             if self.guess.get("type") == "episode" and "date" not in self.guess:
                 logging.debug("Using tv sorter for %s", self.original_job_name)
                 self.matched = True
                 self.type = "tv"
+
+        # Require at least 1 category, this was not enforced before 3.4.0
+        if cfg.enable_tv_sorting() and not self.cats:
+            logging.warning("%s: %s", T("Series Sorting"), T("Select at least 1 category."))
 
     def get_values(self):
         """Collect all values needed for path replacement"""
@@ -394,8 +400,8 @@ class SeriesSorter(BaseSorter):
         """Rename for Series"""
         if min_size < 0:
             min_size = cfg.episode_rename_limit.get_int()
-        if not self.do_rename:
-            return current_path, False
+        if not self.rename_files:
+            return move_to_parent_directory(current_path)
         else:
             logging.debug("Renaming series file(s)")
             return super().rename(files, current_path, min_size)
@@ -420,11 +426,16 @@ class MovieSorter(BaseSorter):
     def match(self):
         """Try to guess movie info if config and category sort out or force is set"""
         if self.force or (cfg.enable_movie_sorting() and self.sort_string and self.cat.lower() in self.cats):
-            self.guess = guess_what(self.original_job_name, sort_type="movie")
+            if not self.guess:
+                self.guess = guess_what(self.original_job_name, sort_type="movie")
             if self.guess.get("type") == "movie":
                 logging.debug("Using movie sorter for %s", self.original_job_name)
                 self.matched = True
                 self.type = "movie"
+
+        # Require at least 1 category, this was not enforced before 3.4.0
+        if cfg.enable_movie_sorting() and not self.cats:
+            logging.warning("%s: %s", T("Movie Sorting"), T("Select at least 1 category."))
 
     def get_values(self):
         """Collect all values needed for path replacement"""
@@ -437,8 +448,9 @@ class MovieSorter(BaseSorter):
         if min_size < 0:
             min_size = cfg.movie_rename_limit.get_int()
 
-        if not self.do_rename:
-            return current_path, False
+        if not self.rename_files:
+            return move_to_parent_directory(current_path)
+
         logging.debug("Renaming movie file(s)")
 
         def filter_files(f, current_path):
@@ -500,11 +512,16 @@ class DateSorter(BaseSorter):
     def match(self):
         """Checks the category for a match, if so set self.matched to true"""
         if self.force or (cfg.enable_date_sorting() and self.sort_string and self.cat.lower() in self.cats):
-            self.guess = guess_what(self.original_job_name, sort_type="episode")
+            if not self.guess:
+                self.guess = guess_what(self.original_job_name, sort_type="episode")
             if self.guess.get("type") == "episode" and "date" in self.guess:
                 logging.debug("Using date sorter for %s", self.original_job_name)
                 self.matched = True
                 self.type = "date"
+
+        # Require at least 1 category, this was not enforced before 3.4.0
+        if cfg.enable_date_sorting() and not self.cats:
+            logging.warning("%s: %s", T("Date Sorting"), T("Select at least 1 category."))
 
     def get_date(self):
         """Get month and day"""
@@ -526,8 +543,8 @@ class DateSorter(BaseSorter):
         """Renaming Date file"""
         if min_size < 0:
             min_size = cfg.episode_rename_limit.get_int()
-        if not self.do_rename:
-            return current_path, False
+        if not self.rename_files:
+            return move_to_parent_directory(current_path)
         else:
             logging.debug("Renaming date file(s)")
             return super().rename(files, current_path, min_size)
@@ -546,9 +563,11 @@ def move_to_parent_directory(workdir: str) -> Tuple[str, bool]:
     workdir = os.path.abspath(os.path.normpath(workdir))
     dest = os.path.abspath(os.path.normpath(os.path.join(workdir, "..")))
 
+    logging.debug("Moving all files from %s to %s", workdir, dest)
+
     # Check for DVD folders and bail out if found
     for item in os.listdir(workdir):
-        if item.lower() in ("video_ts", "audio_ts", "bdmv"):
+        if item.lower() in IGNORED_MOVIE_FOLDERS:
             return workdir, True
 
     for root, dirs, files in os.walk(workdir):
@@ -612,38 +631,7 @@ def guess_what(name: str, sort_type: Optional[str] = None) -> MatchesDict:
         ):
             guess["type"] = "unknown"
 
-    # Remove sample indicators from groupnames, e.g. 'sample-groupname' or 'groupname-proof'
-    group = guess.get("release_group", "")
-    if group.lower().startswith(("sample-", "proof-")) or group.lower().endswith(("-sample", "-proof")):
-        # Set clean groupname
-        guess["release_group"] = re.sub("^(sample|proof)-|-(sample|proof)$", "", group, re.I)
-        # Add 'Sample' property to the guess
-        other = guess.get("other")
-        if not other:
-            guess.setdefault("other", "Sample")
-        else:
-            if "Sample" not in guess["other"]:
-                # Pre-existing 'other' may be a string or a list
-                try:
-                    guess["other"].append("Sample")
-                except AttributeError:
-                    guess["other"] = [other, "Sample"]
-
     return guess
-
-
-def is_sample(filename: str) -> bool:
-    """Try to determine if filename belongs to a sample"""
-    if os.path.splitext(filename)[0].lower().strip() in ("sample", "proof"):
-        # The entire filename is just 'sample.ext' or similar
-        return True
-
-    # If that didn't work, start guessing
-    guess = guess_what(filename).get("other", "")
-    if isinstance(guess, list):
-        return any(item in ("Sample", "Proof") for item in guess)
-    else:
-        return guess in ("Sample", "Proof")
 
 
 def path_subst(path: str, mapping: List[Tuple[str, str]]) -> str:
@@ -794,7 +782,7 @@ def strip_path_elements(path: str) -> str:
     return "\\\\" + path if is_unc else path
 
 
-def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: List[str]):
+def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: Optional[List[str]] = None):
     """Rename all other files in the 'folder' hierarchy after 'name'
     and move them to the root of 'folder'.
     Files having extension 'skip_ext' will be moved, but not renamed.
@@ -807,7 +795,7 @@ def rename_similar(folder: str, skip_ext: str, name: str, skipped_files: List[st
     for root, dirs, files in os.walk(folder):
         for f in files:
             path = os.path.join(root, f)
-            if path in skipped_files:
+            if skipped_files and path in skipped_files:
                 continue
             org, ext = os.path.splitext(f)
             if ext.lower() == skip_ext:
@@ -861,7 +849,7 @@ def eval_sort(sort_type: str, expression: str, name: str = None, multipart: str 
     if "%fn" in path:
         path = path.replace("%fn", fname + ".ext")
     else:
-        if sorter.do_rename:
+        if sorter.rename_files:
             path = fpath + ".ext"
         else:
             path += "\\" if sabnzbd.WIN32 else "/"

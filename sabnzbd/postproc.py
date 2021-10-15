@@ -39,7 +39,7 @@ from sabnzbd.newsunpack import (
     is_sfv_file,
 )
 from threading import Thread
-from sabnzbd.misc import on_cleanup_list
+from sabnzbd.misc import on_cleanup_list, is_sample
 from sabnzbd.filesystem import (
     real_path,
     get_unique_path,
@@ -65,7 +65,7 @@ from sabnzbd.filesystem import (
     get_filename,
 )
 from sabnzbd.nzbstuff import NzbObject
-from sabnzbd.sorting import Sorter, is_sample
+from sabnzbd.sorting import Sorter
 from sabnzbd.constants import (
     REPAIR_PRIORITY,
     FORCE_PRIORITY,
@@ -74,6 +74,7 @@ from sabnzbd.constants import (
     JOB_ADMIN,
     Status,
     VERIFIED_FILE,
+    IGNORED_MOVIE_FOLDERS,
 )
 from sabnzbd.nzbparser import process_single_nzb
 import sabnzbd.emailer as emailer
@@ -499,7 +500,7 @@ def process_job(nzo: NzbObject):
                     )
                     logging.info("Traceback: ", exc_info=True)
                     # Better disable sorting because filenames are all off now
-                    file_sorter.sort_file = None
+                    file_sorter.sorter_active = None
 
             if empty:
                 job_result = -1
@@ -510,17 +511,19 @@ def process_job(nzo: NzbObject):
                 remove_samples(workdir_complete)
 
             # TV/Movie/Date Renaming code part 2 - rename and move files to parent folder
-            if all_ok and file_sorter.sort_file:
+            if all_ok and file_sorter.sorter_active:
                 if newfiles:
                     workdir_complete, ok = file_sorter.sorter.rename(newfiles, workdir_complete)
                     if not ok:
                         nzo.set_unpack_info("Unpack", T("Failed to move files"))
+                        nzo.fail_msg = T("Failed to move files")
                         all_ok = False
 
             # Run further post-processing
             if (all_ok or not cfg.safe_postproc()) and not nzb_list:
                 # Use par2 files to deobfuscate unpacked file names
-                if cfg.process_unpacked_par2():
+                # Only if we also run cleanup, so not to process the "regular" par2 files
+                if flag_delete and cfg.process_unpacked_par2():
                     newfiles = deobfuscate.recover_par2_names(newfiles)
 
                 if cfg.deobfuscate_final_filenames():
@@ -691,7 +694,7 @@ def prepare_extraction_path(nzo: NzbObject) -> Tuple[str, str, Sorter, bool, Opt
     else:
         file_sorter = Sorter(None, nzo.cat)
     complete_dir = file_sorter.detect(nzo.final_name, complete_dir)
-    if file_sorter.sort_file:
+    if file_sorter.sorter_active:
         one_folder = False
 
     complete_dir = sanitize_and_trim_path(complete_dir)
@@ -1175,7 +1178,7 @@ def rename_and_collapse_folder(oldpath, newpath, files):
     if len(items) == 1:
         folder = items[0]
         folder_path = os.path.join(oldpath, folder)
-        if os.path.isdir(folder_path) and folder not in ("VIDEO_TS", "AUDIO_TS"):
+        if os.path.isdir(folder_path) and folder.lower() not in IGNORED_MOVIE_FOLDERS:
             logging.info("Collapsing %s", os.path.join(newpath, folder))
             oldpath = folder_path
 

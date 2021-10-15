@@ -43,6 +43,7 @@ from sabnzbd.filesystem import userxbit
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
 RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
+RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
 RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 
@@ -806,6 +807,11 @@ def get_all_passwords(nzo) -> List[str]:
         if password not in unique_passwords:
             unique_passwords.append(password)
     return unique_passwords
+
+
+def is_sample(filename: str) -> bool:
+    """Try to determine if filename is (most likely) a sample"""
+    return bool(re.search(RE_SAMPLE, filename))
 
 
 def find_on_path(targets):

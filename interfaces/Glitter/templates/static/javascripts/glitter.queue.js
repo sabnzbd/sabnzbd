@@ -531,11 +531,10 @@ function QueueModel(parent, data) {
         return self.name()
     })
     self.missingText = ko.pureComputed(function() {
-        // Check for missing data, the value is arbitrary! (1%)
-        if(self.missingMB()/self.totalMB() > 0.01) {
+        // Check for missing data, can show 0 if article-size is smaller than 500K, but we accept that
+        if(self.missingMB()) {
             return self.missingMB().toFixed(0) + ' MB ' + glitterTranslate.misingArt
         }
-        return;
     })
     self.statusText = ko.computed(function() {
         // Checking
