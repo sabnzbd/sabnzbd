@@ -18,8 +18,6 @@
 """
 tests.test_functional_downloads - Test the downloading flow
 """
-import sys
-
 import sabnzbd.filesystem as filesystem
 from tests.testhelper import *
 
