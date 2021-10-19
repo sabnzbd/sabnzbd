@@ -19,10 +19,8 @@
 sabnzbd.osxmenu - macOS Top Menu
 """
 
-import objc
 from Foundation import *
 from AppKit import *
-from PyObjCTools import AppHelper
 from objc import YES, NO
 
 import os
