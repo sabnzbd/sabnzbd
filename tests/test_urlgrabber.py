@@ -25,7 +25,6 @@ import urllib.parse
 import pytest_httpbin
 
 import sabnzbd.urlgrabber as urlgrabber
-import sabnzbd.version
 from sabnzbd.cfg import selftest_host
 from tests.testhelper import *
 

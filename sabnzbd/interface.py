@@ -24,7 +24,6 @@ import time
 from datetime import datetime
 import cherrypy
 import logging
-import urllib.request, urllib.parse, urllib.error
 import re
 import hashlib
 import socket

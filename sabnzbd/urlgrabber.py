@@ -25,7 +25,6 @@ import time
 import logging
 import queue
 import urllib.request
-import urllib.error
 import urllib.parse
 from http.client import IncompleteRead, HTTPResponse
 from mailbox import Message

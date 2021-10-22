@@ -38,7 +38,6 @@ from sabnzbd.panic import launch_a_browser
 
 from sabnzbd.api import fast_queue
 import sabnzbd.config as config
-import sabnzbd.downloader
 
 status_icons = {
     "idle": "icons/sabnzbd_osx_idle.tiff",

@@ -25,9 +25,7 @@ import time
 from typing import Optional
 
 import sabnzbd.utils.kronos as kronos
-import sabnzbd.rss
 import sabnzbd.downloader
-import sabnzbd.dirscanner
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg

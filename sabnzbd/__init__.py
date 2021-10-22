@@ -121,10 +121,6 @@ from sabnzbd.constants import (
     DEFAULT_PRIORITY,
     VALID_ARCHIVES,
     REPAIR_REQUEST,
-    QUEUE_FILE_NAME,
-    QUEUE_VERSION,
-    QUEUE_FILE_TMPL,
-    Status,
 )
 import sabnzbd.utils.ssdp
 

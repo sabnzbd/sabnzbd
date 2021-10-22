@@ -78,10 +78,8 @@ from sabnzbd.constants import (
 )
 from sabnzbd.nzbparser import process_single_nzb
 import sabnzbd.emailer as emailer
-import sabnzbd.downloader
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
-import sabnzbd.nzbqueue
 import sabnzbd.database as database
 import sabnzbd.notifier as notifier
 import sabnzbd.utils.rarfile as rarfile
