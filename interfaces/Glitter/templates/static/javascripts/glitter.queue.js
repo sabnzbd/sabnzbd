@@ -34,7 +34,7 @@ function QueueListModel(parent) {
     // External var's
     self.queueItems = ko.observableArray([]);
     self.totalItems = ko.observable(0);
-    self.isMultiEditing = ko.observable(false);
+    self.isMultiEditing = ko.observable(false).extend({ persist: 'queueIsMultiEditing' });
     self.isLoading = ko.observable(false).extend({ rateLimit: 100 });
     self.multiEditItems = ko.observableArray([]);
     self.categoriesList = ko.observableArray([]);
@@ -444,7 +444,7 @@ function QueueListModel(parent) {
                     // Empty it
                     self.multiEditItems.removeAll();
                     // Hide notification
-                    hideNotification(true)
+                    hideNotification()
                 }
             })
         }
@@ -531,11 +531,10 @@ function QueueModel(parent, data) {
         return self.name()
     })
     self.missingText = ko.pureComputed(function() {
-        // Check for missing data, the value is arbitrary! (1%)
-        if(self.missingMB()/self.totalMB() > 0.01) {
+        // Check for missing data, can show 0 if article-size is smaller than 500K, but we accept that
+        if(self.missingMB()) {
             return self.missingMB().toFixed(0) + ' MB ' + glitterTranslate.misingArt
         }
-        return;
     })
     self.statusText = ko.computed(function() {
         // Checking
@@ -745,7 +744,7 @@ function QueueModel(parent, data) {
                 parent.multiEditItems.remove(function(inList) { return inList.id == itemToDelete.id; })
                 self.parent.parent.refresh();
                 // Hide notifcation
-                hideNotification(true)
+                hideNotification()
             });
         }
     };

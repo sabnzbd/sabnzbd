@@ -25,7 +25,6 @@ import urllib.parse
 import pytest_httpbin
 
 import sabnzbd.urlgrabber as urlgrabber
-import sabnzbd.version
 from sabnzbd.cfg import selftest_host
 from tests.testhelper import *
 
@@ -158,3 +157,43 @@ class TestBuildRequest:
             self._runner(self.httpbin.url + "/status/404", 404)
         with pytest.raises(urllib.error.HTTPError):
             self._runner(self.httpbin.url + "/no/such/file", 404)
+
+
+class TestFilenameFromDispositionHeader:
+    @pytest.mark.parametrize(
+        "header, result",
+        [
+            (
+                # In this case the first filename (not the UTF-8 encoded) is parsed.
+                "attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz; filename*=UTF-8''jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+            ),
+            (
+                "filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz;",
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+            ),
+            (
+                "filename*=UTF-8''jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+            ),
+            (
+                "attachment; filename=jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+            ),
+            (
+                'attachment; filename="jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz"',
+                "jakubroztocil-httpie-0.4.1-20-g40bd8f6.tar.gz",
+            ),
+            (
+                "attachment; filename=/what/ever/filename.tar.gz",
+                "filename.tar.gz",
+            ),
+            (
+                "attachment; filename=",
+                None,
+            ),
+        ],
+    )
+    def test_filename_from_disposition_header(self, header, result):
+        """Test the parsing of different disposition-headers."""
+        assert urlgrabber.filename_from_content_disposition(header) == result

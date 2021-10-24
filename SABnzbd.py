@@ -22,6 +22,7 @@ if sys.hexversion < 0x03060000:
     print("You can read more at: https://sabnzbd.org/wiki/installation/install-off-modules")
     sys.exit(1)
 
+import os
 import logging
 import logging.handlers
 import importlib.util
@@ -45,6 +46,8 @@ try:
     import portend
     import cryptography
     import chardet
+    import guessit
+    import puremagic
 except ImportError as e:
     print("Not all required Python modules are available, please check requirements.txt")
     print("Missing module:", e.name)
@@ -55,7 +58,23 @@ except ImportError as e:
 import sabnzbd
 import sabnzbd.lang
 import sabnzbd.interface
-from sabnzbd.constants import *
+from sabnzbd.constants import (
+    DEF_TIMEOUT,
+    DEF_LOG_ERRFILE,
+    DEF_MAIN_TMPL,
+    DEF_STDINTF,
+    DEF_WORKDIR,
+    DEF_INTERFACES,
+    DEF_LANGUAGE,
+    VALID_NZB_FILES,
+    VALID_ARCHIVES,
+    DEF_INI_FILE,
+    MAX_WARNINGS,
+    RSS_FILE_NAME,
+    DEF_LOG_FILE,
+    DEF_STDCONFIG,
+    DEF_LOG_CHERRY,
+)
 import sabnzbd.newsunpack
 from sabnzbd.misc import (
     check_latest_version,
@@ -69,12 +88,12 @@ from sabnzbd.misc import (
     upload_file_to_sabnzbd,
     is_localhost,
     is_lan_addr,
+    ip_in_subnet,
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
 import sabnzbd.config as config
 import sabnzbd.cfg
-import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
@@ -88,11 +107,10 @@ try:
     import win32event
     import win32service
     import win32ts
-    import pywintypes
     import servicemanager
     from win32com.shell import shell, shellcon
 
-    from sabnzbd.utils.apireg import get_connection_info, set_connection_info, del_connection_info
+    from sabnzbd.utils.apireg import get_connection_info, set_connection_info
     import sabnzbd.sabtray
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
@@ -342,7 +360,7 @@ def fix_webname(name):
         xname = ""
     if xname in ("Default",):
         return "Glitter"
-    elif xname in ("Glitter", "Plush"):
+    elif xname in ("Glitter",):
         return xname
     elif xname in ("Wizard",):
         return name.lower()
@@ -1421,11 +1439,10 @@ def main():
     try:
         cherrypy.engine.start()
     except:
+        # Since the webserver is started by cherrypy in a separate thread, we can't really catch any
+        # start-up errors. This try/except only catches very few errors, the rest is only shown in the console.
         logging.error(T("Failed to start web-interface: "), exc_info=True)
         abort_and_show_error(browserhost, cherryport)
-
-    # Wait for server to become ready
-    cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
     if sabnzbd.WIN32:
         if enable_https:
@@ -1488,7 +1505,14 @@ def main():
             external_host = localipv4()
         logging.debug("Using %s as host address for Bonjour and SSDP", external_host)
 
-        if is_lan_addr(external_host):
+        # Only broadcast to local network addresses. If local ranges have been defined, further
+        # restrict broadcasts to those specific ranges in order to avoid broadcasting to the "wrong"
+        # private network when the system is connected to multiple such networks (e.g. a corporate
+        # VPN in addition to a standard household LAN).
+        if is_lan_addr(external_host) and (
+            (not sabnzbd.cfg.local_ranges()) or any(ip_in_subnet(external_host, r) for r in sabnzbd.cfg.local_ranges())
+        ):
+            # Start Bonjour and SSDP
             sabnzbd.zconfig.set_bonjour(external_host, cherryport)
 
             # Set URL for browser for external hosts

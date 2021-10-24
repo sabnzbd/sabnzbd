@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-""" Measure writing speed of disk specifiec, or working directory if not specified"""
+""" Measure writing speed of disk specified (or working directory if not specified)"""
 
 import time
 import os

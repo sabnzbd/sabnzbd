@@ -59,7 +59,7 @@ jobs:
         path: "*-win32-bin.zip"
         name: Windows Windows standalone binary (32bit and legacy)
     - name: Prepare official release
-      if: env.AUTOMATION_GITHUB_TOKEN && !startsWith(github.ref, 'refs/tags/')
+      if: env.AUTOMATION_GITHUB_TOKEN && startsWith(github.ref, 'refs/tags/')
       run: python builder/package.py release
 
   build_macos:
@@ -73,7 +73,7 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: 3.9.5
+      PYTHON_VERSION: 3.9.7
       MACOSX_DEPLOYMENT_TARGET: 10.9
     steps:
     - uses: actions/checkout@v2
@@ -110,5 +110,5 @@ jobs:
         path: "*-osx.dmg"
         name: macOS binary (not notarized)
     - name: Prepare official release
-      if: env.AUTOMATION_GITHUB_TOKEN && !startsWith(github.ref, 'refs/tags/')
+      if: env.AUTOMATION_GITHUB_TOKEN && startsWith(github.ref, 'refs/tags/')
       run: python3 builder/package.py release

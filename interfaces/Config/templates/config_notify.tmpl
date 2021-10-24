@@ -1,5 +1,5 @@
 <!--#set global $pane="Email"#-->
-<!--#set global $help_uri="configuration/3.3/notifications"#-->
+<!--#set global $help_uri="configuration/3.5/notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#def show_notify_checkboxes($section_label)#-->
@@ -22,12 +22,14 @@
                 <option value="$ct" <!--#if $ct in $getVar($section_label + '_cats') then 'selected="selected"' else ""#-->>$Tspec($ct)</option>
             <!--#end for#-->
         </select>
+        <p>$T('defaultNotifiesAll')</p>
     </div>
 <!--#end def#-->
 
 <div class="colmask">
-    <form action="saveEmail" method="post" name="fullform" class="fullform" autocomplete="off">
+    <form action="saveNotify" method="post" name="fullform" class="fullform" autocomplete="off">
     <input type="hidden" id="apikey" name="apikey" value="$apikey" />
+    <input type="hidden" name="output" value="json" />
     <input type="hidden" id="ajax" name="ajax" value="1" />
     <div class="section" id="email">
         <div class="col2">
@@ -39,6 +41,7 @@
                         <option value="$ct" <!--#if $ct in $email_cats then 'selected="selected"' else ""#-->>$Tspec($ct)</option>
                     <!--#end for#-->
                 </select>
+                <p>$T('defaultNotifiesAll')</p>
             </div>
         </div>
         <div class="col1">
@@ -46,9 +49,9 @@
                 <div class="field-pair">
                     <label class="config" for="email_endjob">$T('opt-email_endjob')</label>
                     <select name="email_endjob" id="email_endjob">
-                        <option value="0" <!--#if int($email_endjob) == 0 then 'selected="selected"' else ""#--> >$T('email-never')</option>
-                        <option value="1" <!--#if int($email_endjob) == 1 then 'selected="selected"' else ""#--> >$T('email-always')</option>
-                        <option value="2" <!--#if int($email_endjob) == 2 then 'selected="selected"' else ""#--> >$T('email-errorOnly')</option>
+                        <option value="0" <!--#if int($email_endjob) == "0" then 'selected="selected"' else ""#--> >$T('email-never')</option>
+                        <option value="1" <!--#if int($email_endjob) == "1" then 'selected="selected"' else ""#--> >$T('email-always')</option>
+                        <option value="2" <!--#if int($email_endjob) == "2" then 'selected="selected"' else ""#--> >$T('email-errorOnly')</option>
                     </select>
                 </div>
                 <div class="field-pair">
@@ -238,12 +241,12 @@
                             $T($notify_types[$type]).replace('/', ' / ')
                         </label>
                         <select name="${section_label}_prio_$type" id="${section_label}_prio_$type">
-                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == -3 then 'selected="selected"' else ""#--> >$T('prowl-off')</option>
-                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
-                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == -1 then 'selected="selected"' else ""#--> >$T('prowl-moderate')</option>
-                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
-                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == 1  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
-                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == "-3" then 'selected="selected"' else ""#--> >$T('prowl-off')</option>
+                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == "-2" then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == "-1" then 'selected="selected"' else ""#--> >$T('prowl-moderate')</option>
+                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == "0"  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == "1"  then 'selected="selected"' else ""#--> >$T('prowl-high')</option>
+                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == "2"  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
                         </select>
                     </div>
                 <!--#end for#-->
@@ -304,12 +307,12 @@
                             $T($notify_types[$type]).replace('/', ' / ')
                         </label>
                         <select name="${section_label}_prio_$type" id="${section_label}_prio_$type">
-                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == -3 then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
-                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == -2 then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
-                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == -1 then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
-                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == 0  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
-                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == 1  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
-                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == 2  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
+                            <option value="-3" <!--#if $getVar($section_label + '_prio_' + $type) == "-3" then 'selected="selected"' else ""#--> >$T('pushover-off')</option>
+                            <option value="-2" <!--#if $getVar($section_label + '_prio_' + $type) == "-2" then 'selected="selected"' else ""#--> >$T('prowl-very-low')</option>
+                            <option value="-1" <!--#if $getVar($section_label + '_prio_' + $type) == "-1" then 'selected="selected"' else ""#--> >$T('pushover-low')</option>
+                            <option value="0"  <!--#if $getVar($section_label + '_prio_' + $type) == "0"  then 'selected="selected"' else ""#--> >$T('prowl-normal')</option>
+                            <option value="1"  <!--#if $getVar($section_label + '_prio_' + $type) == "1"  then 'selected="selected"' else ""#--> >$T('pushover-high')</option>
+                            <option value="2"  <!--#if $getVar($section_label + '_prio_' + $type) == "2"  then 'selected="selected"' else ""#--> >$T('prowl-emergency')</option>
                         </select>
                     </div>
                 <!--#end for#-->

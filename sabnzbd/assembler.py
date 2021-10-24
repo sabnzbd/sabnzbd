@@ -24,7 +24,6 @@ import queue
 import logging
 import re
 from threading import Thread
-from time import sleep
 import hashlib
 from typing import Tuple, Optional, List
 
@@ -41,7 +40,6 @@ from sabnzbd.filesystem import (
 from sabnzbd.constants import Status, GIGI, MAX_ASSEMBLER_QUEUE
 import sabnzbd.cfg as cfg
 from sabnzbd.nzbstuff import NzbObject, NzbFile
-import sabnzbd.downloader
 import sabnzbd.par2file as par2file
 import sabnzbd.utils.rarfile as rarfile
 
@@ -248,19 +246,6 @@ class Assembler(Thread):
             nzf.md5sum = nzf.md5.digest()
 
 
-def file_has_articles(nzf: NzbFile):
-    """Do a quick check to see if any articles are present for this file.
-    Destructive: only to be used to differentiate between unknown encoding and no articles.
-    """
-    has = False
-    for article in nzf.decodetable:
-        sleep(0.01)
-        data = sabnzbd.ArticleCache.load_article(article)
-        if data:
-            has = True
-    return has
-
-
 RE_SUBS = re.compile(r"\W+sub|subs|subpack|subtitle|subtitles(?![a-z])", re.I)
 SAFE_EXTS = (".mkv", ".mp4", ".avi", ".wmv", ".mpg", ".webm")
 
@@ -368,9 +353,8 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
 
                         # Did any work?
                         if password_hit:
-                            # We always trust the user's input
-                            if not nzo.password:
-                                nzo.password = password_hit
+                            # Record the successful password
+                            nzo.correct_password = password_hit
                             # Don't check other files
                             logging.info('Password "%s" matches for job "%s"', password_hit, nzo.final_name)
                             nzo.encrypted = -1

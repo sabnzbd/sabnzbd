@@ -224,6 +224,12 @@ class BPSMeter:
             if len(data) > 12:
                 self.article_stats_tried, self.article_stats_failed = data[12:14]
 
+            # Clean the data, it could have invalid values in older versions
+            for server in self.timeline_total:
+                for data_data in self.timeline_total[server]:
+                    if not isinstance(self.timeline_total[server][data_data], int):
+                        self.timeline_total[server][data_data] = 0
+
             # Trigger quota actions
             if abs(quota - self.quota) > 0.5:
                 self.change_quota()
@@ -419,13 +425,21 @@ class BPSMeter:
         # We record every second, but display at the user's refresh-rate
         return self.bps_list[::refresh_rate]
 
-    def get_stable_speed(self, timespan=10):
+    def get_stable_speed(self, timespan: int = 10) -> Optional[int]:
         """See if there is a stable speed the last <timespan> seconds
         None: indicates it can't determine yet
-        False: the speed was not stable during <timespan>
+        0: the speed was not stable during <timespan>
+        Positive float: the speed was stable
         """
         if len(self.bps_list) < timespan:
             return None
+
+        # Check if speed fell by more than 15%
+        try:
+            if self.bps_list[-1] / self.bps_list[-timespan] < 0.85:
+                return 0
+        except:
+            pass
 
         # Calculate the variance in the speed
         avg = sum(self.bps_list[-timespan:]) / timespan
@@ -439,7 +453,7 @@ class BPSMeter:
             if (vari / (self.bps / KIBI)) < 0.05:
                 return avg
             else:
-                return False
+                return 0
         except:
             # Probably one of the values was 0
             pass

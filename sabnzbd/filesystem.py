@@ -59,6 +59,25 @@ def get_ext(filename: str) -> str:
         return ""
 
 
+def is_listed_ext(ext: str, ext_list: list) -> bool:
+    """Check if the extension is listed. In case of a regexp the entire extension must be matched;
+    partial matches aren't accepted (e.g. 'r[0-9]{2}' will be treated the same as '^r[0-9]{2}$' and
+    thus return false for extentions such as 'r007' despite the substring match on 'r00').
+    """
+    for item in ext_list:
+        RE_EXT = sabnzbd.misc.convert_filter(item)
+        if RE_EXT:
+            try:
+                if len(RE_EXT.match(ext).group()) == len(ext):
+                    return True
+            except Exception:
+                pass
+        elif item == ext:
+            return True
+    # No match found
+    return False
+
+
 def has_unwanted_extension(filename: str) -> bool:
     """Determine if a filename has an unwanted extension, given the configured mode"""
     extension = get_ext(filename).replace(".", "")
@@ -66,14 +85,17 @@ def has_unwanted_extension(filename: str) -> bool:
         return (
             # Blacklisted
             sabnzbd.cfg.unwanted_extensions_mode() == 0
-            and extension in sabnzbd.cfg.unwanted_extensions()
+            and is_listed_ext(extension, sabnzbd.cfg.unwanted_extensions())
         ) or (
             # Not whitelisted
             sabnzbd.cfg.unwanted_extensions_mode() == 1
-            and extension not in sabnzbd.cfg.unwanted_extensions()
+            and not is_listed_ext(extension, sabnzbd.cfg.unwanted_extensions())
         )
     else:
-        return bool(sabnzbd.cfg.unwanted_extensions_mode())
+        # Don't consider missing extensions unwanted to prevent indiscriminate blocking of
+        # obfuscated jobs in whitelist mode. If there is an extension but nothing listed as
+        # (un)wanted, the result only depends on the configured mode.
+        return bool(extension and sabnzbd.cfg.unwanted_extensions_mode())
 
 
 def get_filename(path: str) -> str:
@@ -458,6 +480,61 @@ def check_mount(path: str) -> bool:
     return not m
 
 
+RAR_RE = re.compile(r"\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
+SPLITFILE_RE = re.compile(r"\.(\d\d\d?\d$)", re.I)
+ZIP_RE = re.compile(r"\.(zip$)", re.I)
+SEVENZIP_RE = re.compile(r"\.7z$", re.I)
+SEVENMULTI_RE = re.compile(r"\.7z\.\d+$", re.I)
+TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
+
+
+def build_filelists(
+    workdir: Optional[str], workdir_complete: Optional[str] = None, check_both: bool = False, check_rar: bool = True
+) -> Tuple[List[str], List[str], List[str], List[str], List[str]]:
+    """Build filelists, if workdir_complete has files, ignore workdir.
+    Optionally scan both directories.
+    Optionally test content to establish RAR-ness
+    """
+    sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
+
+    if workdir_complete:
+        filelist.extend(listdir_full(workdir_complete))
+
+    if workdir and (not filelist or check_both):
+        filelist.extend(listdir_full(workdir, recursive=False))
+
+    for file in filelist:
+        # Extra check for rar (takes CPU/disk)
+        file_is_rar = False
+        if check_rar:
+            file_is_rar = rarfile.is_rarfile(file)
+
+        # Run through all the checks
+        if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
+            # 7zip
+            sevens.append(file)
+        elif SPLITFILE_RE.search(file) and not file_is_rar:
+            # Joinables, optional with RAR check
+            joinables.append(file)
+        elif ZIP_RE.search(file):
+            # ZIP files
+            zips.append(file)
+        elif RAR_RE.search(file):
+            # RAR files
+            rars.append(file)
+        elif TS_RE.search(file):
+            # TS split files
+            ts.append(file)
+
+    logging.debug("build_filelists(): joinables: %s", joinables)
+    logging.debug("build_filelists(): zips: %s", zips)
+    logging.debug("build_filelists(): rars: %s", rars)
+    logging.debug("build_filelists(): 7zips: %s", sevens)
+    logging.debug("build_filelists(): ts: %s", ts)
+
+    return joinables, zips, rars, sevens, ts
+
+
 def safe_fnmatch(f: str, pattern: str) -> bool:
     """fnmatch will fail if the pattern contains any of it's
     key characters, like [, ] or !.
@@ -830,7 +907,7 @@ def get_filepath(path: str, nzo, filename: str):
 def renamer(old: str, new: str, create_local_directories: bool = False) -> str:
     """Rename file/folder with retries for Win32
     Optionally alows the creation of local directories if they don't exist yet
-    Returns new filename (which could be changed due to sanitize_filenam) on success"""
+    Returns new filename (which could be changed due to sanitize_filename) on success"""
     # Sanitize last part of new name
     path, name = os.path.split(new)
     new = os.path.join(path, sanitize_filename(name))

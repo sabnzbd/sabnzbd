@@ -43,6 +43,7 @@ from sabnzbd.filesystem import userxbit
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
 RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
+RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
 RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 
@@ -73,7 +74,7 @@ def time_format(fmt):
         return fmt
 
 
-def calc_age(date: datetime.datetime, trans=False) -> str:
+def calc_age(date: datetime.datetime, trans: bool = False) -> str:
     """Calculate the age difference between now and date.
     Value is returned as either days, hours, or minutes.
     When 'trans' is True, time symbols will be translated.
@@ -218,6 +219,23 @@ _wildcard_to_regex = {
 def wildcard_to_re(text):
     """Convert plain wildcard string (with '*' and '?') to regex."""
     return "".join([_wildcard_to_regex.get(ch, ch) for ch in text])
+
+
+def convert_filter(text):
+    """Return compiled regex.
+    If string starts with re: it's a real regex
+    else quote all regex specials, replace '*' by '.*'
+    """
+    text = text.strip().lower()
+    if text.startswith("re:"):
+        txt = text[3:].strip()
+    else:
+        txt = wildcard_to_re(text)
+    try:
+        return re.compile(txt, re.I)
+    except:
+        logging.debug("Could not compile regex: %s", text)
+        return None
 
 
 def cat_convert(cat):
@@ -733,8 +751,12 @@ def create_https_certificates(ssl_cert, ssl_key):
     return True
 
 
-def get_all_passwords(nzo):
-    """Get all passwords, from the NZB, meta and password file"""
+def get_all_passwords(nzo) -> List[str]:
+    """Get all passwords, from the NZB, meta and password file. In case the correct password is
+    already known, only that password is returned."""
+    if nzo.correct_password:
+        return [nzo.correct_password]
+
     if nzo.password:
         logging.info("Found a password that was set by the user: %s", nzo.password)
         passwords = [nzo.password.strip()]
@@ -779,7 +801,17 @@ def get_all_passwords(nzo):
         # If we're not sure about encryption, start with empty password
         # and make sure we have at least the empty password
         passwords.insert(0, "")
-    return set(passwords)
+
+    unique_passwords = []
+    for password in passwords:
+        if password not in unique_passwords:
+            unique_passwords.append(password)
+    return unique_passwords
+
+
+def is_sample(filename: str) -> bool:
+    """Try to determine if filename is (most likely) a sample"""
+    return bool(re.search(RE_SAMPLE, filename))
 
 
 def find_on_path(targets):
@@ -1045,7 +1077,7 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
             command.insert(0, "python.exe")
         if flatten_command:
             command = list2cmdline(command)
-        # On some Windows platforms we need to supress a quick pop-up of the command window
+        # On some Windows platforms we need to suppress a quick pop-up of the command window
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
         startupinfo.wShowWindow = win32con.SW_HIDE

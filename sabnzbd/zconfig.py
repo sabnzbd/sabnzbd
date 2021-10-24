@@ -19,7 +19,6 @@
 sabnzbd.zconfig - bonjour/zeroconfig support
 """
 
-import os
 import logging
 import socket
 

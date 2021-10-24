@@ -1,5 +1,5 @@
 <!--#set global $pane="Sorting"#-->
-<!--#set global $help_uri="configuration/3.3/sorting"#-->
+<!--#set global $help_uri="configuration/3.5/sorting"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <div class="colmask">
@@ -11,12 +11,13 @@
                 <h3>$T('seriesSorting') <a href="$helpuri$help_uri#toc0" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                 <p>
                     <b>$T('affectedCat')</b><br/>
-                    <select name="tv_cat" multiple="multiple" class="multiple_cats">
+                    <select name="tv_categories" multiple="multiple" class="multiple_cats" required="required">
                         <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $tv_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>
                 </p>
+                <p>$T('selectOneCat')</p>
             </div>
             <!-- /col2 -->
             <div class="col1">
@@ -96,6 +97,26 @@
                                     <td>$T('show-us-name')</td>
                                 </tr>
                                 <tr>
+                                    <td class="align-right"><b>$T('Resolution'):</b></td>
+                                    <td>%r</td>
+                                    <td>1080p</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('year'):</b></td>
+                                    <td>%y</td>
+                                    <td>2021</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('decade'):</b></td>
+                                    <td>%decade</td>
+                                    <td>20</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>%0decade</td>
+                                    <td>2020</td>
+                                </tr>
+                                <tr>
                                     <td class="align-right"><b>$T('show-seasonNum'):</b></td>
                                     <td>%s</td>
                                     <td>1</td>
@@ -131,11 +152,6 @@
                                     <td>$T('ep-us-name')</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('Resolution'):</b></td>
-                                    <td>%r</td>
-                                    <td>1080p</td>
-                                </tr>
-                                <tr>
                                     <td class="align-right"><b>$T('fileExt'):</b></td>
                                     <td>%ext</td>
                                     <td>avi</td>
@@ -156,6 +172,43 @@
                                     <td>$T('text')</td>
                                 </tr>
                             </tbody>
+                            <tbody>
+                                <tr>
+                                    <th class="align-right"><b>GuessIt</b></th>
+                                    <th>$T('sort-pattern')</th>
+                                    <th>$T('sort-result')</th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <td class="align-right"><b>$T('sort-guessitMeaning'):</b></td>
+                                    <td>%GI&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-sp-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b></b></td>
+                                    <td>%G.I&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-dot-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b></b></td>
+                                    <td>%G_I&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-us-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('Example')</b></td>
+                                    <td>%GI&lt;audio_codec&gt;</td>
+                                    <td>DTS</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right" style="vertical-align:top;"><b>$T('Valid properties')</b></td>
+                                    <td colspan=2>
+                                        <!--#for $prop in $guessit_properties#-->
+                                        $prop<br>
+                                        <!--#end for#-->
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="field-pair">
@@ -171,12 +224,13 @@
                 <h3>$T('movieSort') <a href="$helpuri$help_uri#toc6" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                 <p>
                     <b>$T('affectedCat')</b><br/>
-                    <select name="movie_cat" multiple="multiple" class="multiple_cats">
+                    <select name="movie_categories" multiple="multiple" class="multiple_cats" required="required">
                         <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $movie_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>
                 </p>
+                <p>$T('selectOneCat')</p>
             </div>
             <!-- /col2 -->
             <div class="col1">
@@ -232,6 +286,21 @@
                             <tbody>
                                 <tr>
                                     <td class="align-right"><b>$T('sort-title'):</b></td>
+                                    <td>%sn</td>
+                                    <td>$T('movie-sp-name') ($T('case-adjusted'))</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>%s.n</td>
+                                    <td>$T('movie-dot-name') ($T('case-adjusted'))</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>%s_n</td>
+                                    <td>$T('movie-us-name') ($T('case-adjusted'))</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('sort-title'):</b></td>
                                     <td>%title</td>
                                     <td>$T('movie-sp-name')</td>
                                 </tr>
@@ -246,29 +315,29 @@
                                     <td>$T('movie-us-name')</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('year'):</b></td>
-                                    <td>%y</td>
-                                    <td>2009</td>
-                                </tr>
-                                <tr>
                                     <td class="align-right"><b>$T('Resolution'):</b></td>
                                     <td>%r</td>
                                     <td>1080p</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('extension'):</b></td>
-                                    <td>%ext</td>
-                                    <td>avi</td>
+                                    <td class="align-right"><b>$T('year'):</b></td>
+                                    <td>%y</td>
+                                    <td>2021</td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('decade'):</b></td>
                                     <td>%decade</td>
-                                    <td>00</td>
+                                    <td>20</td>
                                 </tr>
                                 <tr>
                                     <td>&nbsp;</td>
                                     <td>%0decade</td>
-                                    <td>2000</td>
+                                    <td>2020</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('extension'):</b></td>
+                                    <td>%ext</td>
+                                    <td>avi</td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('orgFilename'):</b></td>
@@ -300,6 +369,43 @@
                                     <td>1</td>
                                 </tr>
                             </tbody>
+                            <tbody>
+                                <tr>
+                                    <th class="align-right"><b>GuessIt</b></th>
+                                    <th>$T('sort-pattern')</th>
+                                    <th>$T('sort-result')</th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <td class="align-right"><b>$T('sort-guessitMeaning'):</b></td>
+                                    <td>%GI&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-sp-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b></b></td>
+                                    <td>%G.I&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-dot-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b></b></td>
+                                    <td>%G_I&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-us-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('Example')</b></td>
+                                    <td>%GI&lt;audio_codec&gt;</td>
+                                    <td>DTS</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right" style="vertical-align:top;"><b>$T('Valid properties')</b></td>
+                                    <td colspan=2>
+                                        <!--#for $prop in $guessit_properties#-->
+                                        $prop<br>
+                                        <!--#end for#-->
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="field-pair">
@@ -315,12 +421,13 @@
                 <h3>$T('dateSorting') <a href="$helpuri$help_uri#toc9" target="_blank"><span class="glyphicon glyphicon-question-sign"></span></a></h3>
                 <p>
                     <b>$T('affectedCat')</b><br/>
-                    <select name="date_cat" multiple="multiple" class="multiple_cats">
+                    <select name="date_categories" multiple="multiple" class="multiple_cats" required="required">
                         <!--#for $ct in $categories#-->
                         <option value="$ct" <!--#if $ct in $date_categories then 'selected="selected"' else ""#--> >$Tspec($ct)</option>
                         <!--#end for#-->
                     </select>
                 </p>
+                <p>$T('selectOneCat')</p>
             </div>
             <!-- /col2 -->
             <div class="col1">
@@ -369,6 +476,21 @@
                             <tbody>
                                 <tr>
                                     <td class="align-right"><b>$T('show-name'):</b></td>
+                                    <td>%sn</td>
+                                    <td>$T('show-sp-name') ($T('case-adjusted'))</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>%s.n</td>
+                                    <td>$T('show-dot-name') ($T('case-adjusted'))</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>%s_n</td>
+                                    <td>$T('show-us-name') ($T('case-adjusted'))</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('show-name'):</b></td>
                                     <td>%t</td>
                                     <td>$T('show-sp-name')</td>
                                 </tr>
@@ -383,9 +505,24 @@
                                     <td>$T('show-us-name')</td>
                                 </tr>
                                 <tr>
+                                    <td class="align-right"><b>$T('Resolution'):</b></td>
+                                    <td>%r</td>
+                                    <td>1080p</td>
+                                </tr>
+                                <tr>
                                     <td class="align-right"><b>$T('year'):</b></td>
                                     <td>%y</td>
-                                    <td>2009</td>
+                                    <td>2021</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('decade'):</b></td>
+                                    <td>%decade</td>
+                                    <td>20</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td>%0decade</td>
+                                    <td>2020</td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('month'):</b></td>
@@ -408,19 +545,14 @@
                                     <td>02</td>
                                 </tr>
                                 <tr>
-                                    <td class="align-right"><b>$T('decade'):</b></td>
-                                    <td>%decade</td>
-                                    <td>00</td>
+                                    <td class="align-right"><b>$T('ep-name'):</b></td>
+                                    <td>%en</td>
+                                    <td>$T('ep-sp-name')</td>
                                 </tr>
                                 <tr>
                                     <td>&nbsp;</td>
-                                    <td>%0decade</td>
-                                    <td>2000</td>
-                                </tr>
-                                <tr>
-                                    <td class="align-right"><b>$T('Resolution'):</b></td>
-                                    <td>%r</td>
-                                    <td>1080p</td>
+                                    <td>%e.n</td>
+                                    <td>$T('ep-dot-name')</td>
                                 </tr>
                                 <tr>
                                     <td class="align-right"><b>$T('orgFilename'):</b></td>
@@ -436,6 +568,43 @@
                                     <td class="align-right"><b>$T('lowercase'):</b></td>
                                     <td>{$T('TEXT')}</td>
                                     <td>$T('text')</td>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <th class="align-right"><b>GuessIt</b></th>
+                                    <th>$T('sort-pattern')</th>
+                                    <th>$T('sort-result')</th>
+                                </tr>
+                            </tbody>
+                            <tbody>
+                                <tr>
+                                    <td class="align-right"><b>$T('sort-guessitMeaning'):</b></td>
+                                    <td>%GI&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-sp-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b></b></td>
+                                    <td>%G.I&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-dot-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b></b></td>
+                                    <td>%G_I&lt;$T('sort-guessitProperty')&gt;</td>
+                                    <td>$T('guessit-us-property')</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right"><b>$T('Example')</b></td>
+                                    <td>%GI&lt;audio_codec&gt;</td>
+                                    <td>DTS</td>
+                                </tr>
+                                <tr>
+                                    <td class="align-right" style="vertical-align:top;"><b>$T('Valid properties')</b></td>
+                                    <td colspan=2>
+                                        <!--#for $prop in $guessit_properties#-->
+                                        $prop<br>
+                                        <!--#end for#-->
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>

@@ -18,9 +18,6 @@
 """
 tests.test_newsunpack - Tests of various functions in newspack
 """
-
-import pytest
-
 from sabnzbd.newsunpack import *
 
 

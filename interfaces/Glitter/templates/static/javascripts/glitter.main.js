@@ -21,7 +21,7 @@ function ViewModel() {
     self.extraQueueColumns = ko.observableArray([]).extend({ persist: 'extraColumns' });
     self.extraHistoryColumns = ko.observableArray([]).extend({ persist: 'extraHistoryColumns' });
     self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
-    self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
+    self.speedMetrics = { '': "B/s", K: "KB/s", M: "MB/s", G: "GB/s" };
 
     // Set information varibales
     self.title = ko.observable();
@@ -236,6 +236,12 @@ function ViewModel() {
                     values: sabSpeedHistory
                 })
 
+                // Add option to open the server details tab
+                $('.sparkline-container').click(function() {
+                    $('a[href="#modal-options"]').trigger('click')
+                    $('a[href="#options_connections"]').trigger('click')
+                })
+
             } else {
                 // Update
                 $('.sparkline').text(self.speedHistory.join(",")).change()
@@ -323,47 +329,6 @@ function ViewModel() {
         // Clear previous timeout to prevent double-calls
         clearTimeout(self.interval);
 
-        /**
-            Limited refresh
-        **/
-        // Only update the title when page not visible
-        if(!pageIsVisible) {
-            // Request new title
-            callSpecialAPI('./queue/', { limit: 1, start: 0 }).done(function(data) {
-                // Split title & speed
-                var dataSplit = data.split('|||');
-
-                // Maybe the result is actually the login page?
-                if(dataSplit[0].substring(0, 11) === '<html lang=') {
-                    // Redirect
-                    document.location = document.location
-                    return
-                }
-
-                // Set title
-                self.title(dataSplit[0]);
-
-                // Update sparkline data
-                if(self.speedHistory.length >= 50) {
-                    // Remove first one
-                    self.speedHistory.shift();
-                }
-                // Add
-                self.speedHistory.push(dataSplit[1]);
-
-                // Does it contain 'Paused'? Update icon!
-                self.downloadsPaused(data.indexOf(glitterTranslate.paused) > -1)
-
-                // Force the next full update to be full
-                self.history.lastUpdate = 0
-            }).always(self.setNextUpdate)
-            // Do not continue!
-            return;
-        }
-
-        /**
-            Full refresh
-        **/
         // Do requests for full information
         // Catch the fail to display message
         var queueApi = callAPI({
@@ -550,10 +515,12 @@ function ViewModel() {
         });
     })
 
-    // Clear warnings through this special URL..
+    // Clear warnings
     self.clearWarnings = function() {
-        // Activate
-        callSpecialAPI("./status/clearwarnings/").done(self.refresh)
+        callAPI({
+            mode: "warnings",
+            name: "clear"
+        }).done(self.refresh)
     }
 
     // Clear messages
@@ -758,7 +725,7 @@ function ViewModel() {
                 // Refresh
                 self.refresh();
                 // Hide notification
-                hideNotification(true)
+                hideNotification()
                 // Reset the form
                 $('#modal-add-nzb form').trigger('reset');
                 $('#nzbname').val('')
@@ -772,14 +739,26 @@ function ViewModel() {
         // Full refresh? Only on click and for the status-screen
         var statusFullRefresh = (event != undefined) && $('#options-status').hasClass('active');
 
+        // Measure performance? Takes a while
+        var statusPerformance = (event != undefined) && $(event.currentTarget).hasClass('diskspeed-button');
+
         // Make it spin if the user requested it otherwise we don't,
         // because browsers use a lot of CPU for the animation
         if(statusFullRefresh) {
             self.hasStatusInfo(false)
         }
 
+        // Show loading text for performance measures
+        if(statusPerformance) {
+            self.hasPerformanceInfo(false)
+        }
+
         // Load the custom status info
-        callAPI({ mode: 'fullstatus', skip_dashboard: (!statusFullRefresh)*1 }).then(function(data) {
+        callAPI({
+            mode: 'status',
+            calculate_performance: statusPerformance*1,
+            skip_dashboard: (!statusFullRefresh)*1
+        }).then(function(data) {
             // Update basic
             self.statusInfo.loglevel(data.status.loglevel)
             self.statusInfo.folders(data.status.folders)
@@ -807,8 +786,11 @@ function ViewModel() {
                 if(self.statusInfo.servers().length == 0) {
                     self.statusInfo.loglevel.subscribe(function(newValue) {
                         // Update log-level
-                        callSpecialAPI('./status/change_loglevel/', {
-                            loglevel: newValue
+                        callAPI({
+                            mode: "set_config",
+                            section: "logging",
+                            keyword: "log_level",
+                            value: newValue
                         });
                     })
                 }
@@ -858,16 +840,6 @@ function ViewModel() {
         });
     }
 
-    // Do a disk-speedtest
-    self.testDiskSpeed = function(item, event) {
-        self.hasPerformanceInfo(false)
-
-        // Run it and then display it
-        callSpecialAPI('./status/dashrefresh/').then(function() {
-            self.loadStatusInfo(true, true)
-        })
-    }
-
     // Download a test-NZB
     self.testDownload = function(data, event) {
         var nzbSize = $(event.target).data('size')
@@ -894,8 +866,10 @@ function ViewModel() {
 
     // Unblock server
     self.unblockServer = function(servername) {
-        callSpecialAPI("./status/unblock_server/", {
-            server: servername
+        callAPI({
+            mode: "status",
+            name: "unblock_server",
+            value: servername
         }).then(function() {
             $("#modal-options").modal("hide");
         })
@@ -953,7 +927,7 @@ function ViewModel() {
         $('#options-orphans [data-tooltip="true"]').tooltip('hide')
 
         // Show notification on delete
-        if($(htmlElement.currentTarget).data('action') == 'delete') {
+        if($(htmlElement.currentTarget).data('action') == 'delete_orphan') {
             showNotification('.main-notification-box-removing', 1000)
         } else {
             // Adding back to queue
@@ -961,13 +935,15 @@ function ViewModel() {
         }
 
         // Activate
-        callSpecialAPI("./status/" + $(htmlElement.currentTarget).data('action'), {
-            name: $("<div/>").html(folder).text()
+        callAPI({
+            mode: "status",
+            name: $(htmlElement.currentTarget).data('action'),
+            value: $("<div/>").html(folder).text()
         }).then(function() {
             // Refresh
             self.loadStatusInfo(true, true)
             // Hide notification
-            hideNotification(true)
+            hideNotification()
         })
     }
 
@@ -977,9 +953,12 @@ function ViewModel() {
              // Show notification
             showNotification('.main-notification-box-removing-multiple', 0, self.statusInfo.folders().length)
             // Delete them all
-            callSpecialAPI("./status/delete_all/").then(function() {
+            callAPI({
+                mode: "status",
+                name: "delete_all_orphan"
+            }).then(function() {
                 // Remove notifcation and update screen
-                hideNotification(true)
+                hideNotification()
                 self.loadStatusInfo(true, true)
             })
         }
@@ -991,9 +970,12 @@ function ViewModel() {
              // Show notification
             showNotification('.main-notification-box-sendback')
             // Delete them all
-            callSpecialAPI("./status/add_all/").then(function() {
+            callAPI({
+                mode: "status",
+                name: "add_all_orphan"
+            }).then(function() {
                 // Remove notifcation and update screen
-                hideNotification(true)
+                hideNotification()
                 self.loadStatusInfo(true, true)
             })
         }
@@ -1014,6 +996,11 @@ function ViewModel() {
         $('body').toggleClass('container-tabbed')
     })
 
+    // Change hash for page-reload
+    $('.history-queue-swicher .nav-tabs a').on('shown.bs.tab', function (e) {
+        window.location.hash = e.target.hash;
+    })
+
     /**
          SABnzb options
     **/
@@ -1029,7 +1016,7 @@ function ViewModel() {
     self.restartSAB = function() {
         if(!confirm(glitterTranslate.restart)) return;
         // Call restart function
-        callSpecialAPI("./config/restart/")
+        callAPI({ mode: "restart" })
 
         // Set counter, we need at least 15 seconds
         self.isRestarting(Math.max(1, Math.floor(15 / self.refreshRate())));
@@ -1054,18 +1041,16 @@ function ViewModel() {
         if(!confirm(glitterTranslate.repair)) return;
         // Hide the modal and show the notifucation
         $("#modal-options").modal("hide");
-        showNotification('.main-notification-box-queue-repair')
+        showNotification('.main-notification-box-queue-repair', 5000)
         // Call the API
-        callSpecialAPI("./config/repair/").then(function() {
-            hideNotification(true)
-        })
+        callAPI({ mode: "restart_repair" })
     }
     // Force disconnect
     self.forceDisconnect = function() {
         // Show notification
         showNotification('.main-notification-box-disconnect', 3000)
         // Call API
-        callSpecialAPI("./status/disconnect/").then(function() {
+        callAPI({ mode: "disconnect" }).then(function() {
             $("#modal-options").modal("hide");
         })
     }
@@ -1087,6 +1072,11 @@ function ViewModel() {
     // Tabbed layout?
     if(localStorageGetItem('displayTabbed') === 'true') {
         $('body').addClass('container-tabbed')
+
+        var tab_from_hash = location.hash.replace(/^#/, '');
+        if (tab_from_hash) {
+            $('.history-queue-swicher .nav-tabs a[href="#' + tab_from_hash + '"]').tab('show');
+        }
     }
 
     // Get the speed-limit, refresh rate and server names

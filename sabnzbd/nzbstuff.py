@@ -26,7 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional, Union
 
 # SABnzbd modules
 import sabnzbd
@@ -92,9 +92,8 @@ from sabnzbd.deobfuscate_filenames import is_probably_obfuscated
 # In the subject, we expect the filename within double quotes
 RE_SUBJECT_FILENAME_QUOTES = re.compile(r'"([^"]*)"')
 # Otherwise something that looks like a filename
-RE_SUBJECT_BASIC_FILENAME = re.compile(r"([\w\-+()'\s.,]+\.[A-Za-z0-9]{2,4})")
+RE_SUBJECT_BASIC_FILENAME = re.compile(r"([\w\-+()'\s.,]+\.[A-Za-z0-9]{2,4})[^A-Za-z0-9]")
 RE_RAR = re.compile(r"(\.rar|\.r\d\d|\.s\d\d|\.t\d\d|\.u\d\d|\.v\d\d)$", re.I)
-RE_PROPER = re.compile(r"(^|[\. _-])(PROPER|REAL|REPACK)([\. _-]|$)")
 
 
 ##############################################################################
@@ -557,6 +556,7 @@ NzbObjectSaver = (
     "nzo_info",
     "custom_name",
     "password",
+    "correct_password",
     "next_save",
     "save_timeout",
     "encrypted",
@@ -585,30 +585,30 @@ NZO_LOCK = threading.RLock()
 class NzbObject(TryList):
     def __init__(
         self,
-        filename,
-        pp=None,
-        script=None,
-        nzb=None,
-        futuretype=False,
-        cat=None,
-        url=None,
-        priority=DEFAULT_PRIORITY,
-        nzbname=None,
-        status=Status.QUEUED,
-        nzo_info=None,
-        reuse=None,
-        dup_check=True,
+        filename: str,
+        pp: Optional[int] = None,
+        script: Optional[str] = None,
+        nzb_data: Optional[str] = None,
+        futuretype: bool = False,
+        cat: Optional[str] = None,
+        url: Optional[str] = None,
+        priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+        nzbname: Optional[str] = None,
+        status: Status = Status.QUEUED,
+        nzo_info: Optional[Dict[str, Any]] = None,
+        reuse: Optional[str] = None,
+        dup_check: bool = True,
     ):
         super().__init__()
 
         self.filename = filename  # Original filename
-        if nzbname and nzb:
+        if nzbname and nzb_data:
             self.work_name = nzbname  # Use nzbname if set and only for non-future slot
         else:
             self.work_name = filename
 
         # For future-slots we keep the name given by URLGrabber
-        if nzb is None:
+        if nzb_data is None:
             self.final_name = self.work_name = filename
         else:
             # Remove trailing .nzb and .par(2)
@@ -652,6 +652,7 @@ class NzbObject(TryList):
         self.groups = []
         self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0  # Avg age in seconds (calculated from avg_age)
+        self.correct_password: Optional[str] = None
 
         # Bookkeeping values
         self.meta = {}
@@ -722,12 +723,15 @@ class NzbObject(TryList):
         self.url_wait: Optional[float] = None
         self.url_tries = 0
         self.pp_active = False  # Signals active post-processing (not saved)
-        self.md5sum: Optional[bytes] = None
+        self.md5sum: Optional[str] = None
 
-        if nzb is None and not reuse:
+        if nzb_data is None and not reuse:
             # This is a slot for a future NZB, ready now
             # It can also be a retry of a failed job with no extra NZB-file
             return
+
+        # To be updated later if it's a duplicate
+        duplicate = series_duplicate = False
 
         # Apply conversion option to final folder
         if cfg.replace_spaces():
@@ -736,12 +740,6 @@ class NzbObject(TryList):
         if cfg.replace_dots():
             logging.info("Replacing dots with spaces in %s", self.final_name)
             self.final_name = self.final_name.replace(".", " ")
-
-        # Check against identical checksum or series/season/episode
-        if (not reuse) and nzb and dup_check and self.priority != REPAIR_PRIORITY:
-            duplicate, series = self.has_duplicates()
-        else:
-            duplicate = series = 0
 
         # Reuse the existing directory
         if reuse and os.path.exists(reuse):
@@ -764,9 +762,9 @@ class NzbObject(TryList):
             remove_all(admin_dir, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
-        if nzb and "<nzb" in nzb:
+        if nzb_data and "<nzb" in nzb_data:
             try:
-                sabnzbd.nzbparser.nzbfile_parser(nzb, self)
+                sabnzbd.nzbparser.nzbfile_parser(nzb_data, self)
             except Exception as err:
                 self.incomplete = True
                 logging.warning(T("Invalid NZB file %s, skipping (reason=%s, line=%s)"), filename, err, "1")
@@ -779,8 +777,14 @@ class NzbObject(TryList):
                     self.purge_data()
                     raise ValueError
 
-            sabnzbd.backup_nzb(filename, nzb)
-            sabnzbd.save_compressed(admin_dir, filename, nzb)
+            # Check against identical checksum or series/season/episode
+            # Have to check for duplicate before saving the backup, as it will
+            # trigger the duplicate-detection based on the backup
+            if not reuse and dup_check and self.priority != REPAIR_PRIORITY:
+                duplicate, series_duplicate = self.has_duplicates()
+
+            sabnzbd.backup_nzb(filename, nzb_data)
+            sabnzbd.save_compressed(admin_dir, filename, nzb_data)
 
         if not self.files and not reuse:
             self.purge_data()
@@ -875,13 +879,18 @@ class NzbObject(TryList):
             self.oversized = True
             self.priority = LOW_PRIORITY
 
-        if duplicate and ((not series and cfg.no_dupes() == 1) or (series and cfg.no_series_dupes() == 1)):
+        # Handle duplicates
+        if duplicate and (
+            (not series_duplicate and cfg.no_dupes() == 1) or (series_duplicate and cfg.no_series_dupes() == 1)
+        ):
             if cfg.warn_dupl_jobs():
                 logging.warning(T('Ignoring duplicate NZB "%s"'), filename)
             self.purge_data()
             raise TypeError
 
-        if duplicate and ((not series and cfg.no_dupes() == 3) or (series and cfg.no_series_dupes() == 3)):
+        if duplicate and (
+            (not series_duplicate and cfg.no_dupes() == 3) or (series_duplicate and cfg.no_series_dupes() == 3)
+        ):
             if cfg.warn_dupl_jobs():
                 logging.warning(T('Failing duplicate NZB "%s"'), filename)
             # Move to history, utilizing the same code as accept&fail from pre-queue script
@@ -1096,8 +1105,7 @@ class NzbObject(TryList):
                 self.postpone_pars(nzf, setname)
             # Get the next one
             for new_nzf in self.extrapars[setname]:
-                if not new_nzf.completed:
-                    self.add_parfile(new_nzf)
+                if self.add_parfile(new_nzf):
                     # Add it to the top
                     self.files.remove(new_nzf)
                     self.files.insert(0, new_nzf)
@@ -1134,8 +1142,8 @@ class NzbObject(TryList):
             added_blocks = 0
             while added_blocks < needed_blocks:
                 new_nzf = block_list.pop()
-                self.add_parfile(new_nzf)
-                added_blocks += new_nzf.blocks
+                if self.add_parfile(new_nzf):
+                    added_blocks += new_nzf.blocks
 
             logging.info("Added %s blocks to %s", added_blocks, self.final_name)
             return added_blocks
@@ -1209,17 +1217,15 @@ class NzbObject(TryList):
         # Check if there are any files left here, so the check is inside the NZO_LOCK
         return articles_left, file_done, not self.files
 
-    @synchronized(NZO_LOCK)
     def add_saved_article(self, article: Article):
         self.saved_articles.append(article)
 
-    @synchronized(NZO_LOCK)
     def remove_saved_article(self, article: Article):
         try:
             self.saved_articles.remove(article)
         except ValueError:
-            # It's not there if the job is fully missing
-            # and this function is called from file_has_articles
+            # Due to racing conditions, it could already be removed
+            logging.debug("Failed to remove %s from saved articles, probably already deleted", article)
             pass
 
     def check_existing_files(self, wdir: str):
@@ -1310,7 +1316,7 @@ class NzbObject(TryList):
         if not self.unpack:
             self.abort_direct_unpacker()
 
-    def set_priority(self, value: Any):
+    def set_priority(self, value: Optional[Union[int, str]]):
         """Check if this is a valid priority"""
         # When unknown (0 is a known one), set to DEFAULT
         if value == "" or value is None:
@@ -1336,7 +1342,7 @@ class NzbObject(TryList):
         # Invalid value, set to normal priority
         self.priority = NORMAL_PRIORITY
 
-    def set_stateless_priority(self, category: str) -> int:
+    def set_stateless_priority(self, category: str):
         """Find a priority that doesn't set a job state, starting from the given category,
         for jobs to fall back to after their priority was set to PAUSED or DUP. The fallback
         priority cannot be another state-setting priority or FORCE; the latter could override
@@ -1426,15 +1432,18 @@ class NzbObject(TryList):
             self.unwanted_ext = 2
 
     @synchronized(NZO_LOCK)
-    def add_parfile(self, parfile: NzbFile):
+    def add_parfile(self, parfile: NzbFile) -> bool:
         """Add parfile to the files to be downloaded
         Resets trylist just to be sure
         Adjust download-size accordingly
+        Returns False when the file couldn't be added
         """
         if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
             parfile.reset_try_list()
             self.files.append(parfile)
             self.bytes_tried -= parfile.bytes_left
+            return True
+        return False
 
     @synchronized(NZO_LOCK)
     def remove_parset(self, setname: str):
@@ -1461,12 +1470,12 @@ class NzbObject(TryList):
                 # from all the sets. This probably means we get too much par2, but it's worth it.
                 blocks_new = 0
                 for new_nzf in self.extrapars[parset]:
-                    self.add_parfile(new_nzf)
-                    blocks_new += new_nzf.blocks
-                    # Enough now?
-                    if blocks_new >= self.bad_articles:
-                        logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
-                        break
+                    if self.add_parfile(new_nzf):
+                        blocks_new += new_nzf.blocks
+                        # Enough now?
+                        if blocks_new >= self.bad_articles:
+                            logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
+                            break
             # Reset NZO TryList
             self.reset_try_list()
 
@@ -1968,7 +1977,7 @@ class NzbObject(TryList):
             else:
                 nzf_ids.remove(nzf_id)
 
-    def has_duplicates(self):
+    def has_duplicates(self) -> Tuple[bool, bool]:
         """Return (res, series)
         where "res" is True when this is a duplicate
         where "series" is True when this is an episode
@@ -1978,39 +1987,42 @@ class NzbObject(TryList):
         no_series_dupes = cfg.no_series_dupes()
         series_propercheck = cfg.series_propercheck()
 
-        # abort logic if dupe check is off for both nzb+series
+        # Abort if dupe check is off for both nzb and series
         if not no_dupes and not no_series_dupes:
             return False, False
 
         series = False
         res = False
-        history_db = HistoryDB()
 
-        # dupe check off nzb contents
-        if no_dupes:
-            res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
-            logging.debug(
-                "Dupe checking NZB in history: filename=%s, md5sum=%s, result=%s", self.filename, self.md5sum, res
-            )
-            if not res and cfg.backup_for_duplicates():
-                res = sabnzbd.backup_exists(self.filename)
-                logging.debug("Dupe checking NZB against backup: filename=%s, result=%s", self.filename, res)
-        # dupe check off nzb filename
-        if not res and no_series_dupes:
-            series, season, episode, misc = sabnzbd.newsunpack.analyse_show(self.final_name)
-            if RE_PROPER.match(misc) and series_propercheck:
-                logging.debug("Dupe checking series+season+ep in history aborted due to PROPER/REAL/REPACK found")
-            else:
-                res = history_db.have_episode(series, season, episode)
+        with HistoryDB() as history_db:
+            # Dupe check off nzb contents
+            if no_dupes:
+                res = history_db.have_name_or_md5sum(self.final_name, self.md5sum)
                 logging.debug(
-                    "Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s",
-                    series,
-                    season,
-                    episode,
+                    "Duplicate checked NZB in history: filename=%s, md5sum=%s, result=%s",
+                    self.filename,
+                    self.md5sum,
                     res,
                 )
+                if not res and cfg.backup_for_duplicates():
+                    res = sabnzbd.backup_exists(self.filename)
+                    logging.debug("Duplicate checked NZB against backup: filename=%s, result=%s", self.filename, res)
 
-        history_db.close()
+            # Dupe check off nzb filename
+            if not res and no_series_dupes:
+                series, season, episode, _, is_proper = sabnzbd.newsunpack.analyse_show(self.final_name)
+                if is_proper and series_propercheck:
+                    logging.debug("Dupe checking series+season+ep in history aborted due to PROPER/REAL/REPACK found")
+                else:
+                    res = history_db.have_episode(series, season, episode)
+                    logging.debug(
+                        "Dupe checking series+season+ep in history: series=%s, season=%s, episode=%s, result=%s",
+                        series,
+                        season,
+                        episode,
+                        res,
+                    )
+
         return res, series
 
     def is_gone(self):

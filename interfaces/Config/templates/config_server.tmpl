@@ -1,5 +1,5 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configuration/3.3/servers"#-->
+<!--#set global $help_uri="configuration/3.5/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#import json#-->
@@ -34,6 +34,7 @@
         <div class="col1">
             <form action="addServer" method="post" autocomplete="off" onsubmit="removeObfuscation();">
                 <input type="hidden" name="apikey" value="$apikey" />
+                <input type="hidden" name="output" value="json" />
                 <fieldset>
                     <div class="field-pair">
                         <label class="config" for="enable">$T('srv-enable')</label>
@@ -103,6 +104,11 @@
                         <span class="desc">$T('srv-explain-send_group')</span>
                     </div>
                     <div class="field-pair advanced-settings">
+                        <label class="config" for="required">$T('srv-required')</label>
+                        <input type="checkbox" name="required" id="required" value="1" />
+                        <span class="desc">$T('explain-required')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
                         <label class="config" for="optional">$T('srv-optional')</label>
                         <input type="checkbox" name="optional" id="optional" value="1" />
                         <span class="desc">$T('explain-optional')</span>
@@ -139,6 +145,7 @@
     <!--#for $cur, $server in enumerate($servers) #-->
         <form action="saveServer" method="post" class="fullform" autocomplete="off">
             <input type="hidden" name="apikey" value="$apikey" />
+            <input type="hidden" name="output" value="json" />
             <input type="hidden" name="server" value="$server['name']" />
             <input type="hidden" id="ajax" name="ajax" value=1 />
 
@@ -222,6 +229,11 @@
                             <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$server['ssl_ciphers']" />
                             <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
                             <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="required$cur">$T('srv-required')</label>
+                            <input type="checkbox" name="required" id="required$cur" value="1" <!--#if int($server['required']) != 0 then 'checked="checked"' else ""#--> />
+                            <span class="desc">$T('explain-required')</span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="optional$cur">$T('srv-optional')</label>
@@ -522,7 +534,7 @@
             \$.ajax({
                 type: "POST",
                 url: "../../api",
-                data: "mode=config&output=json&name=test_server&" + \$(this).parents('form:first').serialize()
+                data: "mode=config&name=test_server&" + \$(this).parents('form:first').serialize()
             }).then(function(data) {
                 // Let's replace the link
                 msg = data.value.message.replace('https://sabnzbd.org/certificate-errors', '<a href="https://sabnzbd.org/certificate-errors" class="alert-link" target="_blank">https://sabnzbd.org/certificate-errors</a>')
@@ -545,7 +557,7 @@
         });
 
         \$('.delServer').click(function(){
-            if( confirm("$T('Plush-confirm')") ) {
+            if( confirm("$T('confirm')") ) {
                 \$(this).parents('form:first').attr('action','delServer').submit();
                 // Let us leave!
                 formWasSubmitted = true;
@@ -556,7 +568,7 @@
         });
 
         \$('.clrServer').click(function(){
-            if( confirm("$T('Plush-confirm')") ) {
+            if( confirm("$T('confirm')") ) {
                 \$(this).parents('form:first').attr('action','clrServer').submit();
                 // Let us leave!
                 formWasSubmitted = true;

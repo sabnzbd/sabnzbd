@@ -49,7 +49,6 @@ extra_folders = [
     "licenses/",
     "locale/",
     "email/",
-    "interfaces/Plush/",
     "interfaces/Glitter/",
     "interfaces/wizard/",
     "interfaces/Config/",
@@ -148,7 +147,7 @@ if __name__ == "__main__":
     patch_version_file(RELEASE_VERSION)
 
     # To draft a release or not to draft a release?
-    RELEASE_THIS = "draft release" in run_git_command(["log", "-1", "--pretty=format:%b"])
+    RELEASE_THIS = "refs/tags/" in os.environ.get("GITHUB_REF", "")
 
     # Rename release notes file
     safe_remove("README.txt")
@@ -339,7 +338,7 @@ if __name__ == "__main__":
                 print("Approved! Stapling the result to the app")
                 run_external_command(["xcrun", "stapler", "staple", "dist/SABnzbd.app"])
             elif notarization_user and notarization_pass:
-                print("Notarization skipped, add 'draft release' to the commit message trigger notarization!")
+                print("Notarization skipped, tag commit to trigger notarization!")
             else:
                 print("Notarization skipped, NOTARIZATION_USER or NOTARIZATION_PASS missing.")
         else:
@@ -461,6 +460,23 @@ if __name__ == "__main__":
                     print("Uploading %s to release %s" % (file_to_check, gh_release.title))
                     gh_release.upload_asset(file_to_check)
 
+            # Check if we now have all files
+            gh_new_assets = gh_release.get_assets()
+            if gh_new_assets.totalCount:
+                all_assets = [gh_asset.name for gh_asset in gh_new_assets]
+
+                # Check if we have all files, using set-comparison
+                if set(files_to_check) == set(all_assets):
+                    print("All assets present, releasing %s" % RELEASE_VERSION)
+                    # Publish release
+                    gh_release.update_release(
+                        tag_name=RELEASE_VERSION,
+                        name=RELEASE_TITLE,
+                        message=readme_data,
+                        draft=False,
+                        prerelease=prerelease,
+                    )
+
             # Update the website
             gh_repo_web = gh_obj.get_repo("sabnzbd/sabnzbd.github.io")
             # Check if the branch already exists, only create one if it doesn't
@@ -542,7 +558,7 @@ if __name__ == "__main__":
                     head=RELEASE_VERSION,
                 )
         else:
-            print("To push release to GitHub, add 'draft release' to the commit message.")
+            print("To push release to GitHub, first tag the commit.")
             print("Or missing the AUTOMATION_GITHUB_TOKEN, cannot push to GitHub without it.")
 
     # Reset!

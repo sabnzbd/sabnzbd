@@ -19,10 +19,8 @@
 sabnzbd.osxmenu - macOS Top Menu
 """
 
-import objc
 from Foundation import *
 from AppKit import *
-from PyObjCTools import AppHelper
 from objc import YES, NO
 
 import os
@@ -37,11 +35,9 @@ from sabnzbd.filesystem import diskspace
 from sabnzbd.misc import to_units
 from sabnzbd.constants import VALID_ARCHIVES, VALID_NZB_FILES, MEBI, Status
 from sabnzbd.panic import launch_a_browser
-import sabnzbd.notifier as notifier
 
 from sabnzbd.api import fast_queue
 import sabnzbd.config as config
-import sabnzbd.downloader
 
 status_icons = {
     "idle": "icons/sabnzbd_osx_idle.tiff",
@@ -289,7 +285,7 @@ class SABnzbdDelegate(NSObject):
             # Fetch history items
             if not self.history_db:
                 self.history_db = sabnzbd.database.HistoryDB()
-            items, fetched_items, _total_items = self.history_db.fetch_history(limit=10)
+            items = self.history_db.fetch_history(limit=10)[0]
 
             self.menu_history = NSMenu.alloc().init()
             self.failedAttributes = {
@@ -302,7 +298,7 @@ class SABnzbdDelegate(NSObject):
             self.menu_history.addItem_(menu_history_item)
             self.menu_history.addItem_(NSMenuItem.separatorItem())
 
-            if fetched_items:
+            if items:
                 for history in items:
                     if os.path.isdir(history["storage"]):
                         menu_history_item = NSMenuItem.alloc().initWithTitle_action_keyEquivalent_(
