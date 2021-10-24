@@ -24,7 +24,7 @@ import time
 from datetime import datetime
 import cherrypy
 import logging
-import urllib.request, urllib.parse, urllib.error
+import urllib.parse
 import re
 import hashlib
 import socket
@@ -880,6 +880,7 @@ SPECIAL_BOOL_LIST = (
     "fast_fail",
     "overwrite_files",
     "enable_par_cleanup",
+    "process_unpacked_par2",
     "queue_complete_pers",
     "api_warnings",
     "helpfull_warnings",
@@ -907,7 +908,7 @@ SPECIAL_BOOL_LIST = (
     "disable_api_key",
     "api_logging",
     "x_frame_options",
-    "require_modern_tls",
+    "allow_old_ssl_tls",
 )
 SPECIAL_VALUE_LIST = (
     "downloader_sleep_time",
@@ -1234,7 +1235,7 @@ def handle_server(kwargs, root=None, new_svr=False):
     if new_svr:
         server = unique_svr_name(server)
 
-    for kw in ("ssl", "send_group", "enable", "optional"):
+    for kw in ("ssl", "send_group", "enable", "required", "optional"):
         if kw not in kwargs.keys():
             kwargs[kw] = None
     if svr and not new_svr:

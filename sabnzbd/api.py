@@ -67,7 +67,6 @@ from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 from sabnzbd.lang import is_rtl
 import sabnzbd.notifier
-import sabnzbd.rss
 import sabnzbd.emailer
 import sabnzbd.sorting
 

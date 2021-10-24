@@ -173,6 +173,26 @@ msgstr "Inlezen van %s mislukt"
 
 #. Warning message
 #: sabnzbd/__init__.py
+msgid "Restarting because of crashed postprocessor"
+msgstr "SABnzbd wordt herstart omdat de postprocessor is gecrasht"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed downloader"
+msgstr "SABnzbd wordt herstart omdat de downloader is gecrasht"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed decoder"
+msgstr "SABnzbd wordt herstart omdat de decoder is gecrasht"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed assembler"
+msgstr "SABnzbd wordt herstart omdat de assembler is gecrasht"
+
+#. Warning message
+#: sabnzbd/__init__.py
 msgid "Cannot access PID file %s"
 msgstr "Kan het PID bestand %s niet benaderen"
 
@@ -671,7 +691,7 @@ msgstr "Inloggen mislukt, controleer gebruikersnaam en wachtwoord."
 #. Warning message
 #: sabnzbd/interface.py
 msgid "Unsuccessful login attempt from %s"
-msgstr "Mislukte login progin bij %s"
+msgstr "Mislukte login poging van %s"
 
 #: sabnzbd/interface.py
 msgid ""
@@ -3736,6 +3756,9 @@ msgid ""
 "Additionally, attempts to set the correct file extension based on the file "
 "signature if the extension is not present or meaningless."
 msgstr ""
+"Als de bestandsextensie van een bestand ontbreekt of verhaspelt is, zal er "
+"geprobeerd worden de correcte extensie te vinden op basis van de inhoud van "
+"het bestand."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
@@ -4010,6 +4033,17 @@ msgstr "Strikt"
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 is de hoogste en 99 de laagste prioriteit"
 
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+
 #. Server optional tickbox
 #: sabnzbd/skintext.py
 msgid "Optional"
@@ -4195,6 +4229,12 @@ msgstr "Gedownload"
 #: sabnzbd/skintext.py
 msgid "Read All Feeds Now"
 msgstr "Alle feeds nu uitlezen"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
@@ -4482,7 +4522,13 @@ msgstr "Indexer Categorieën / Groepen"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "Serie sorteren"
 
@@ -4510,7 +4556,8 @@ msgstr "Standaardinstellingen"
 msgid "Example"
 msgstr "Voorbeeld"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr "Film sorteren"
 
@@ -4662,7 +4709,8 @@ msgstr "In mappen"
 msgid "No folders"
 msgstr "Geen mappen"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "Datum sorteren"
 
@@ -4693,23 +4741,23 @@ msgstr "Bewerkt resultaat"
 
 #: sabnzbd/skintext.py
 msgid "Any property"
-msgstr ""
+msgstr "Alle eigenschappen"
 
 #: sabnzbd/skintext.py
 msgid "property"
-msgstr ""
+msgstr "eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt Property"
-msgstr ""
+msgstr "GuessIt eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt.Property"
-msgstr ""
+msgstr "GuessIt.Eigenschap"
 
 #: sabnzbd/skintext.py
 msgid "GuessIt_Property"
-msgstr ""
+msgstr "GuessIt_Eigenschap"
 
 #: sabnzbd/skintext.py
 msgid ""

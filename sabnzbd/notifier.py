@@ -23,7 +23,8 @@ sabnzbd.notifier - Send notifications to any notification services
 
 import os.path
 import logging
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.parse
 import http.client
 import json
 from threading import Thread

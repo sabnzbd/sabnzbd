@@ -25,6 +25,7 @@ import sys
 from random import choice
 
 from sabnzbd import sorting
+from sabnzbd.constants import IGNORED_MOVIE_FOLDERS
 from tests.testhelper import *
 
 
@@ -65,7 +66,7 @@ class TestSortingFunctions:
                     "country": "US",
                 },
             ),
-            ("Test Movie 720p HDTV AAC x265 sample-MYgroup", {"release_group": "MYgroup", "other": "Sample"}),
+            ("Test Movie 720p HDTV AAC x265 MYgroup-Sample", {"release_group": "MYgroup", "other": "Sample"}),
             (None, None),  # Jobname missing
             ("", None),
         ],
@@ -84,33 +85,6 @@ class TestSortingFunctions:
                     assert key not in guess
                 else:
                     assert guess[key] == value
-
-    @pytest.mark.parametrize(
-        "name, result",
-        [
-            ("Free.Open.Source.Movie.2001.1080p.WEB-DL.DD5.1.H264-FOSS", False),  # Not samples
-            ("Setup.exe", False),
-            ("23.123.hdtv-rofl", False),
-            ("Something.1080p.WEB-DL.DD5.1.H264-EMRG-sample", True),  # Samples
-            ("Something.1080p.WEB-DL.DD5.1.H264-EMRG-sample.ogg", True),
-            ("Sumtin_Else_1080p_WEB-DL_DD5.1_H264_proof-EMRG", True),
-            ("Wot.Eva.540i.WEB-DL.aac.H264-Groupie sample.mp4", True),
-            ("file-sample.mkv", True),
-            ("PROOF.JPG", True),
-            ("Bla.s01e02.title.1080p.aac-sample proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac-proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac sample proof.mkv", True),
-            ("Bla.s01e02.title.1080p.aac proof.mkv", True),
-            ("Not Death Proof (2022) 1080p x264 (DD5.1) BE Subs", False),  # Try to trigger some false positives
-            ("Proof.of.Everything.(2042).4320p.x266-4U", False),
-            ("Crime_Scene_S01E13_Free_Sample_For_Sale_480p-OhDear", False),
-            ("Sample That 2011 480p WEB-DL.H265-aMiGo", False),
-            ("Look at That 2011 540i WEB-DL.H265-NoSample", False),
-            ("NOT A SAMPLE.JPG", False),
-        ],
-    )
-    def test_is_sample(self, name, result):
-        assert sorting.is_sample(name) == result
 
     @pytest.mark.parametrize("platform", ["linux", "darwin", "win32"])
     @pytest.mark.parametrize(
@@ -315,7 +289,7 @@ class TestSortingFunctions:
             pyfakefs.fake_filesystem_unittest.set_uid(0)
             # Create a fake filesystem in a random base directory, and included a typical DVD directory
             base_dir = "/" + os.urandom(4).hex() + "/" + os.urandom(2).hex()
-            dvd = choice(("video_ts", "audio_ts", "bdmv"))
+            dvd = choice(IGNORED_MOVIE_FOLDERS)
             for test_dir in ["dir/2", "TEST/DIR2"]:
                 ffs.fs.create_dir(base_dir + "/" + test_dir, perm_bits=755)
                 assert os.path.exists(base_dir + "/" + test_dir) is True
@@ -373,7 +347,7 @@ class TestSortingFunctions:
             pyfakefs.fake_filesystem_unittest.set_uid(0)
             # Create a fake filesystem in a random base directory, and included a typical DVD directory
             base_dir = "D:\\" + os.urandom(4).hex() + "\\" + os.urandom(2).hex()
-            dvd = choice(("video_ts", "audio_ts", "bdmv"))
+            dvd = choice(IGNORED_MOVIE_FOLDERS)
             for test_dir in ["dir\\2", "TEST\\DIR2"]:
                 ffs.fs.create_dir(base_dir + "\\" + test_dir, perm_bits=755)
                 assert os.path.exists(base_dir + "\\" + test_dir) is True
@@ -553,11 +527,14 @@ class TestSortingSorters:
         _func()
 
     @pytest.mark.parametrize(
-        "s_class, job_tag, sort_string, sort_result",  # sort_result without extension
+        "s_class, job_tag, sort_string, sort_filename_result",  # Supply sort_filename_result without extension
         [
             (sorting.SeriesSorter, "S01E02", "%r/%sn s%0se%0e.%ext", "Simulated Job s01e02"),
+            (sorting.SeriesSorter, "S01E02", "%r/%sn s%0se%0e", ""),
             (sorting.MovieSorter, "2021", "%y_%.title.%r.%ext", "2021_Simulated.Job.2160p"),
-            (sorting.DateSorter, "2020-02-29", "%y/%0m/%0d/%.t-%GI<release_group>", "Simulated.Job-SAB"),
+            (sorting.MovieSorter, "2021", "%y_%.title.%r", ""),
+            (sorting.DateSorter, "2020-02-29", "%y/%0m/%0d/%.t-%GI<release_group>.%ext", "Simulated.Job-SAB"),
+            (sorting.DateSorter, "2020-02-29", "%y/%0m/%0d/%.t-%GI<release_group>", ""),
         ],
     )
     @pytest.mark.parametrize("size_limit, file_size", [(512, 1024), (1024, 512)])
@@ -569,7 +546,7 @@ class TestSortingSorters:
         s_class,
         job_tag,
         sort_string,
-        sort_result,
+        sort_filename_result,
         size_limit,
         file_size,
         extension,
@@ -631,8 +608,10 @@ class TestSortingSorters:
 
             # Check the result
             try:
+                # If there's no "%ext" in the sort_string, no filenames should be changed
                 if (
                     is_ok
+                    and sort_filename_result
                     and file_size > size_limit
                     and extension not in sorting.EXCLUDED_FILE_EXTS
                     and not (sorter.type == "movie" and number_of_files > 1 and not generate_sequential_filenames)
@@ -642,10 +621,10 @@ class TestSortingSorters:
                     if number_of_files > 1 and generate_sequential_filenames and sorter.type == "movie":
                         # Movie sequential file handling
                         for n in range(1, number_of_files + 1):
-                            expected = os.path.join(sort_dest, sort_result + " CD" + str(n) + extension)
+                            expected = os.path.join(sort_dest, sort_filename_result + " CD" + str(n) + extension)
                             assert os.path.exists(expected)
                     else:
-                        expected = os.path.join(sort_dest, sort_result + extension)
+                        expected = os.path.join(sort_dest, sort_filename_result + extension)
                         assert os.path.exists(expected)
                 else:
                     # No renaming should happen
@@ -681,15 +660,32 @@ class TestSortingSorters:
     )
     def test_sorter_generic(self, job_name, result_sort_file, result_class):
         """Check if the generic sorter makes the right choices"""
-        generic = sorting.Sorter(None, None)
-        generic.detect(job_name, SAB_CACHE_DIR)
 
-        assert generic.sort_file is result_sort_file
-        if result_sort_file:
-            assert generic.sorter
-            assert generic.sorter.__class__ is result_class
-        else:
-            assert not generic.sorter
+        @set_config(
+            {
+                "tv_sort_string": "test",  # TV
+                "tv_categories": "test_cat",
+                "enable_tv_sorting": 1,
+                "movie_sort_string": "test",  # Movie
+                "movie_categories": "test_cat",
+                "enable_movie_sorting": 1,
+                "date_sort_string": "test",  # Date
+                "date_categories": "test_cat",
+                "enable_date_sorting": 1,
+            }
+        )
+        def _func():
+            generic = sorting.Sorter(None, "test_cat")
+            generic.detect(job_name, SAB_CACHE_DIR)
+
+            assert generic.sorter_active is result_sort_file
+            if result_sort_file:
+                assert generic.sorter
+                assert generic.sorter.__class__ is result_class
+            else:
+                assert not generic.sorter
+
+        _func()
 
     @pytest.mark.parametrize(
         "name, result",

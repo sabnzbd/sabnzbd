@@ -30,7 +30,6 @@ from typing import Optional, Dict, Any, Union
 
 import sabnzbd
 from sabnzbd import filesystem, nzbstuff
-from sabnzbd.constants import Status
 from sabnzbd.encoding import utob, correct_unknown_encoding
 from sabnzbd.filesystem import is_archive, get_filename
 from sabnzbd.misc import name_to_cat

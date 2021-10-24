@@ -8,27 +8,30 @@ on:
 jobs:
   translations:
     runs-on: ubuntu-latest
+    env:
+      TX_TOKEN: ${{ secrets.TX_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - name: Generate translatable texts
         run: |
           python3 tools/extract_pot.py
       - name: Install Transifex client
+        if: env.TX_TOKEN
         # Sudo is needed to link the "tx"-command
         run: |
           sudo -H python3 -m pip install setuptools wheel
           sudo -H python3 -m pip install transifex-client
       - name: Push/pull Transifex translations
+        if: env.TX_TOKEN
         run: |
           tx push --source --parallel
           tx pull --all --force --parallel
-        env:
-          TX_TOKEN: ${{ secrets.TX_TOKEN }}
       - name: Compile translations to validate them
         run: |
           python3 tools/make_mo.py
       - name: Push translatable and translated texts back to repo
         uses: stefanzweifel/git-auto-commit-action@v4.5.1
+        if: env.TX_TOKEN
         with:
           commit_message: Update translatable texts
           commit_user_name: SABnzbd Automation

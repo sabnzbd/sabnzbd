@@ -74,6 +74,7 @@ class Server:
         "ssl",
         "ssl_verify",
         "ssl_ciphers",
+        "required",
         "optional",
         "retention",
         "send_group",
@@ -110,6 +111,7 @@ class Server:
         send_group,
         username=None,
         password=None,
+        required=False,
         optional=False,
         retention=0,
     ):
@@ -126,6 +128,7 @@ class Server:
         self.ssl: bool = ssl
         self.ssl_verify: int = ssl_verify
         self.ssl_ciphers: str = ssl_ciphers
+        self.required: bool = required
         self.optional: bool = optional
         self.retention: int = retention
         self.send_group: bool = send_group
@@ -313,6 +316,7 @@ class Downloader(Thread):
             ssl_ciphers = srv.ssl_ciphers()
             username = srv.username()
             password = srv.password()
+            required = srv.required()
             optional = srv.optional()
             retention = int(srv.retention() * 24 * 3600)  # days ==> seconds
             send_group = srv.send_group()
@@ -345,6 +349,7 @@ class Downloader(Thread):
                     send_group,
                     username,
                     password,
+                    required,
                     optional,
                     retention,
                 )
@@ -474,12 +479,16 @@ class Downloader(Thread):
             if server.errormsg != errormsg:
                 server.errormsg = errormsg
                 logging.warning(errormsg)
-                logging.warning(T("Server %s will be ignored for %s minutes"), server.host, _PENALTY_TIMEOUT)
+                if not server.required:
+                    logging.warning(T("Server %s will be ignored for %s minutes"), server.host, _PENALTY_TIMEOUT)
 
             # Not fully the same as the code below for optional servers
             server.bad_cons = 0
-            server.deactivate()
-            self.plan_server(server, _PENALTY_TIMEOUT)
+            if server.required:
+                sabnzbd.Scheduler.plan_required_server_resume()
+            else:
+                server.deactivate()
+                self.plan_server(server, _PENALTY_TIMEOUT)
 
         # Optional and active server had too many problems.
         # Disable it now and send a re-enable plan to the scheduler
@@ -837,12 +846,17 @@ class Downloader(Thread):
                                 penalty = _PENALTY_UNKNOWN
                                 block = True
                             if block or (penalty and server.optional):
+                                retry_article = False
                                 if server.active:
-                                    server.deactivate()
-                                    if penalty and (block or server.optional):
-                                        self.plan_server(server, penalty)
-                                # Note that the article is discard for this server
-                                self.__reset_nw(nw, retry_article=False, send_quit=True)
+                                    if server.required:
+                                        sabnzbd.Scheduler.plan_required_server_resume()
+                                        retry_article = True
+                                    else:
+                                        server.deactivate()
+                                        if penalty and (block or server.optional):
+                                            self.plan_server(server, penalty)
+                                # Note that the article is discard for this server if the server is not required
+                                self.__reset_nw(nw, retry_article=retry_article, send_quit=True)
                             continue
                         except:
                             logging.error(

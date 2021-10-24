@@ -21,7 +21,7 @@ function ViewModel() {
     self.extraQueueColumns = ko.observableArray([]).extend({ persist: 'extraColumns' });
     self.extraHistoryColumns = ko.observableArray([]).extend({ persist: 'extraHistoryColumns' });
     self.showActiveConnections = ko.observable(false).extend({ persist: 'showActiveConnections' });
-    self.speedMetrics = { K: "KB/s", M: "MB/s", G: "GB/s" };
+    self.speedMetrics = { '': "B/s", K: "KB/s", M: "MB/s", G: "GB/s" };
 
     // Set information varibales
     self.title = ko.observable();

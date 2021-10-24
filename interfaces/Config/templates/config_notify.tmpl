@@ -1,5 +1,5 @@
 <!--#set global $pane="Email"#-->
-<!--#set global $help_uri="configuration/3.4/notifications"#-->
+<!--#set global $help_uri="configuration/3.5/notifications"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#def show_notify_checkboxes($section_label)#-->
@@ -22,6 +22,7 @@
                 <option value="$ct" <!--#if $ct in $getVar($section_label + '_cats') then 'selected="selected"' else ""#-->>$Tspec($ct)</option>
             <!--#end for#-->
         </select>
+        <p>$T('defaultNotifiesAll')</p>
     </div>
 <!--#end def#-->
 
@@ -40,6 +41,7 @@
                         <option value="$ct" <!--#if $ct in $email_cats then 'selected="selected"' else ""#-->>$Tspec($ct)</option>
                     <!--#end for#-->
                 </select>
+                <p>$T('defaultNotifiesAll')</p>
             </div>
         </div>
         <div class="col1">

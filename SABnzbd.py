@@ -46,6 +46,8 @@ try:
     import portend
     import cryptography
     import chardet
+    import guessit
+    import puremagic
 except ImportError as e:
     print("Not all required Python modules are available, please check requirements.txt")
     print("Missing module:", e.name)
@@ -92,7 +94,6 @@ from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remo
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
 import sabnzbd.config as config
 import sabnzbd.cfg
-import sabnzbd.downloader
 import sabnzbd.notifier as notifier
 import sabnzbd.zconfig
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6
@@ -106,11 +107,10 @@ try:
     import win32event
     import win32service
     import win32ts
-    import pywintypes
     import servicemanager
     from win32com.shell import shell, shellcon
 
-    from sabnzbd.utils.apireg import get_connection_info, set_connection_info, del_connection_info
+    from sabnzbd.utils.apireg import get_connection_info, set_connection_info
     import sabnzbd.sabtray
 
     win32api.SetConsoleCtrlHandler(sabnzbd.sig_handler, True)
@@ -1439,11 +1439,10 @@ def main():
     try:
         cherrypy.engine.start()
     except:
+        # Since the webserver is started by cherrypy in a separate thread, we can't really catch any
+        # start-up errors. This try/except only catches very few errors, the rest is only shown in the console.
         logging.error(T("Failed to start web-interface: "), exc_info=True)
         abort_and_show_error(browserhost, cherryport)
-
-    # Wait for server to become ready
-    cherrypy.engine.wait(cherrypy.process.wspbus.states.STARTED)
 
     if sabnzbd.WIN32:
         if enable_https:

@@ -43,6 +43,7 @@ from sabnzbd.filesystem import userxbit
 TAB_UNITS = ("", "K", "M", "G", "T", "P")
 RE_UNITS = re.compile(r"(\d+\.*\d*)\s*([KMGTP]?)", re.I)
 RE_VERSION = re.compile(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)")
+RE_SAMPLE = re.compile(r"((^|[\W_])(sample|proof))", re.I)  # something-sample or something-proof
 RE_IP4 = re.compile(r"inet\s+(addr:\s*)?(\d+\.\d+\.\d+\.\d+)")
 RE_IP6 = re.compile(r"inet6\s+(addr:\s*)?([0-9a-f:]+)", re.I)
 
@@ -750,8 +751,12 @@ def create_https_certificates(ssl_cert, ssl_key):
     return True
 
 
-def get_all_passwords(nzo):
-    """Get all passwords, from the NZB, meta and password file"""
+def get_all_passwords(nzo) -> List[str]:
+    """Get all passwords, from the NZB, meta and password file. In case the correct password is
+    already known, only that password is returned."""
+    if nzo.correct_password:
+        return [nzo.correct_password]
+
     if nzo.password:
         logging.info("Found a password that was set by the user: %s", nzo.password)
         passwords = [nzo.password.strip()]
@@ -802,6 +807,11 @@ def get_all_passwords(nzo):
         if password not in unique_passwords:
             unique_passwords.append(password)
     return unique_passwords
+
+
+def is_sample(filename: str) -> bool:
+    """Try to determine if filename is (most likely) a sample"""
+    return bool(re.search(RE_SAMPLE, filename))
 
 
 def find_on_path(targets):
@@ -1067,7 +1077,7 @@ def build_and_run_command(command: List[str], flatten_command=False, **kwargs):
             command.insert(0, "python.exe")
         if flatten_command:
             command = list2cmdline(command)
-        # On some Windows platforms we need to supress a quick pop-up of the command window
+        # On some Windows platforms we need to suppress a quick pop-up of the command window
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags = win32process.STARTF_USESHOWWINDOW
         startupinfo.wShowWindow = win32con.SW_HIDE
