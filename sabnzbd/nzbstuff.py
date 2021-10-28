@@ -1744,7 +1744,7 @@ class NzbObject(TryList):
             and not is_probably_obfuscated(yenc_filename)
             and not nzf.filename.endswith(".par2")
         ):
-            logging.info("Detected filename from yenc: %s -> %s", nzf.filename, yenc_filename)
+            logging.info("Detected filename from yenc or uu: %s -> %s", nzf.filename, yenc_filename)
             self.renamed_file(yenc_filename, nzf.filename)
             nzf.filename = yenc_filename
 
