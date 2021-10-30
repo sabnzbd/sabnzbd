@@ -363,7 +363,9 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
                     nbytes = (((ord(line[0]) - 32) & 63) * 4 + 5) / 3
                     decoded_line = binascii.a2b_uu(line[:nbytes])
                 except Exception as msg2:
-                    logging.info("Error while uu-decoding %s: %s (workaround: %s)", article.article, msg, msg2)
+                    logging.info(
+                        "Error while uu-decoding %s: %s (line: %s; workaround: %s)", article.article, msg, line, msg2
+                    )
                     raise BadData(decoded_data.getvalue())
 
             # Store the decoded data
