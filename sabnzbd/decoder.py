@@ -22,7 +22,7 @@ sabnzbd.decoder - article decoder
 import logging
 import hashlib
 import queue
-from binascii import a2b_uu
+import binascii
 from io import BytesIO
 from threading import Thread
 from typing import Tuple, List, Optional
@@ -55,13 +55,11 @@ class BadData(Exception):
 
 
 class BadYenc(Exception):
-    def __init__(self):
-        super().__init__()
+    pass
 
 
 class BadUu(Exception):
-    def __init__(self):
-        super().__init__()
+    pass
 
 
 class Decoder:
@@ -146,9 +144,11 @@ class DecoderWorker(Thread):
                 if sabnzbd.LOG_ALL:
                     logging.debug("Decoding %s", art_id)
 
-                decoded_data = (
-                    decode_yenc(article, raw_data) if article.nzf.type != "uu" else decode_uu(article, raw_data)
-                )
+                if article.nzf.type == "uu":
+                    decoded_data = decode_uu(article, raw_data)
+                else:
+                    decoded_data = decode_yenc(article, raw_data)
+
                 article_success = True
 
             except MemoryError:
@@ -191,18 +191,21 @@ class DecoderWorker(Thread):
                             article_success = True
                         except Exception:
                             pass
-                    # Examine headers (for precheck) or body (for download)
-                    # Look for DMCA clues (while skipping "X-" headers)
-                    for line in raw_data:
-                        lline = line.lower()
-                        if b"message-id:" in lline:
-                            article_success = True
-                        if not lline.startswith(b"x-") and match_str(
-                            lline, (b"dmca", b"removed", b"cancel", b"blocked")
-                        ):
-                            article_success = False
-                            logging.info("Article removed from server (%s)", art_id)
-                            break
+                    # Only bother with further checks if uu-decoding didn't work out
+                    if not article_success:
+                        # Convert the initial chunks of raw socket data to article lines,
+                        # and examine the headers (for precheck) or body (for download).
+                        for line in b"".join(raw_data[:2]).split(b"\r\n"):
+                            lline = line.lower()
+                            if lline.startswith(b"message-id:"):
+                                article_success = True
+                            # Look for DMCA clues (while skipping "X-" headers)
+                            if not lline.startswith(b"x-") and match_str(
+                                lline, (b"dmca", b"removed", b"cancel", b"blocked")
+                            ):
+                                article_success = False
+                                logging.info("Article removed from server (%s)", art_id)
+                                break
 
                 # Pre-check, proper article found so just register
                 if nzo.precheck and article_success and sabnzbd.LOG_ALL:
@@ -261,6 +264,10 @@ def decode_yenc(article: Article, raw_data: List[bytes]) -> bytes:
 
 
 def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
+    """Try to uu-decode an article. The raw_data may or may not contain headers.
+    If there are headers, they will be separated from the body by at least one
+    empty line. In case of no headers, the first line seems to always be the nntp
+    response code (222) directly followed by the msg body."""
     if not raw_data:
         logging.debug("No data to decode")
         raise BadUu
@@ -270,11 +277,6 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
         for data in raw_data:
             encoded_data.write(data)
         raw_data = encoded_data.getvalue().split(b"\r\n")
-
-    # The raw_data may or may not contain headers. If there are headers, they
-    # will be separated from the body by at least one empty line. In case of no
-    # headers, the first line seems to always be the nntp response code (222)
-    # directly followed by the msg body.
 
     # Index of the uu payload start in raw_data
     uu_start = 0
@@ -320,12 +322,13 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
                 raise IndexError
 
             uu_begin_data = raw_data[uu_start].split(b" ")
-            uu_filename = ubtou(uu_begin_data[2].strip())
+            # Filename may contain spaces
+            uu_filename = ubtou(b" ".join(uu_begin_data[2:]).strip())
 
             # Sanity check the 'begin' line
             if (
-                len(uu_begin_data) != 3
-                or uu_begin_data[0] != b"begin"
+                len(uu_begin_data) < 3
+                or uu_begin_data[0].lower() != b"begin"
                 or (not int(uu_begin_data[1], 8))
                 or (not uu_filename)
             ):
@@ -353,14 +356,14 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
                 break
 
             try:
-                decoded_line = a2b_uu(line)
+                decoded_line = binascii.a2b_uu(line)
             except binascii.Error as msg:
                 try:
                     # Workaround for broken uuencoders by Fredrik Lundh
                     nbytes = (((ord(line[0]) - 32) & 63) * 4 + 5) / 3
-                    decoded_line = a2b_uu(line[:nbytes])
-                except binascii.Error as msg:
-                    logging.info("Error while uu-decoding %s: %s", article.article, msg)
+                    decoded_line = binascii.a2b_uu(line[:nbytes])
+                except Exception as msg2:
+                    logging.info("Error while uu-decoding %s: %s (workaround: %s)", article.article, msg, msg2)
                     raise BadData(decoded_data.getvalue())
 
             # Store the decoded data
