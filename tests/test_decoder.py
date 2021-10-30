@@ -56,7 +56,7 @@ class TestUuDecoder:
         one is passed; all uu payload is taken from VALID_UU_{LINES, END}.
 
         Returns Article with a random id and lowest_partnum correctly set, socket-style raw
-        data, and the expected result of uu decoding for the generate message or part.
+        data, and the expected result of uu decoding for the generated message.
         """
         article_id = "test@host" + os.urandom(8).hex() + ".sab"
         article = Article(article_id, randint(4321, 54321), None)
@@ -88,14 +88,11 @@ class TestUuDecoder:
                 data.append(begin_line)
             else:
                 data.append(b"begin 644 My Favorite Open Source Movie.mkv")
+
+        if part in ("begin", "middle", "single"):
             size = randint(4, len(VALID_UU_LINES) - 1)
             data.extend(VALID_UU_LINES[:size])
             result.extend(LINES_DATA[:size])
-
-        if part == "middle":
-            size = randint(-1 * len(VALID_UU_LINES) - 1, -8)
-            data.extend(VALID_UU_LINES[size:])
-            result.extend(LINES_DATA[size:])
 
         if part in ("end", "single"):
             if insert_end:
