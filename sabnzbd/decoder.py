@@ -301,7 +301,7 @@ def decode_uu(article: Article, raw_data: List[bytes]) -> bytes:
             raise BadUu
 
     def is_uu_junk(line: bytes) -> bool:
-        """Determine if the lilne is empty or contains known junk data"""
+        """Determine if the line is empty or contains known junk data"""
         return (not line) or line == b"-- " or line.startswith(b"Posted via ")
 
     # Check the uu 'begin' line

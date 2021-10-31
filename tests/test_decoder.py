@@ -23,7 +23,6 @@ import os
 import pytest
 
 from random import randint
-from typing import Optional
 from unittest import mock
 
 import sabnzbd.decoder as decoder
@@ -49,11 +48,10 @@ class TestUuDecoder:
         insert_excess_empty_lines: bool = False,
         insert_headers: bool = False,
         insert_end: bool = True,
-        begin_line: Optional[bytes] = None,
+        begin_line: bytes = b"begin 644 My Favorite Open Source Movie.mkv",
     ):
         """Generate message parts. Part may be one of 'begin', 'middle', or 'end' for multipart
-        messages, or 'single' for a singlepart message. A standard uu begin line is added unless
-        one is passed; all uu payload is taken from VALID_UU_{LINES, END}.
+        messages, or 'single' for a singlepart message. All uu payload is taken from VALID_UU_*.
 
         Returns Article with a random id and lowest_partnum correctly set, socket-style raw
         data, and the expected result of uu decoding for the generated message.
@@ -84,10 +82,7 @@ class TestUuDecoder:
 
         # Insert uu data into the body
         if part in ("begin", "single"):
-            if begin_line:
-                data.append(begin_line)
-            else:
-                data.append(b"begin 644 My Favorite Open Source Movie.mkv")
+            data.append(begin_line)
 
         if part in ("begin", "middle", "single"):
             size = randint(4, len(VALID_UU_LINES) - 1)
@@ -178,8 +173,6 @@ class TestUuDecoder:
         decoded_data = expected_data = b""
         for part in ("begin", "middle", "middle", "end"):
             article, data, result = self._generate_msg_part(part, insert_empty_line, False, False, True, None)
-            print("data = %s" % data)
-            print("result = %s" % result)
             decoded_data += decoder.decode_uu(article, [data])
             expected_data += result
 
