@@ -153,7 +153,6 @@ class TestUuDecoder:
             b"begin 444 filename with spaces.txt",
             b"BEGIN 644 foobar",
             b"begin 0755 shell.sh",
-            None,
         ],
     )
     def test_singlepart(self, insert_empty_line, insert_excess_empty_lines, insert_headers, insert_end, begin_line):
@@ -172,7 +171,7 @@ class TestUuDecoder:
         # Generate and process a multipart msg
         decoded_data = expected_data = b""
         for part in ("begin", "middle", "middle", "end"):
-            article, data, result = self._generate_msg_part(part, insert_empty_line, False, False, True, None)
+            article, data, result = self._generate_msg_part(part, insert_empty_line, False, False, True)
             decoded_data += decoder.decode_uu(article, [data])
             expected_data += result
 
