@@ -138,7 +138,7 @@ class TestUuDecoder:
     def test_missing_uu_begin(self, raw_data):
         article = Article("foo@bar", 1234, None)
         article.lowest_partnum = True
-        filler = b"Some more\r\nrandom\r\nlines\r\nso the article\r\nlong\r\nenough\r\n"
+        filler = b"\r\n" * 4
         with pytest.raises(decoder.BadUu):
             assert decoder.decode_uu(article, raw_data.append(filler))
 
@@ -183,10 +183,12 @@ class TestUuDecoder:
         "bad_data",
         [
             b"MI^+0E\"C^364:CQ':]DW++^$F0J)6FDG/!`]0\\(4;EG$UY5RI,3JMBNX\\8+06\r\n$(WAIVBC^",  # Trailing junk
+            VALID_UU_LINES[-1][:10] + bytes("ваше здоровье", encoding="utf8") + VALID_UU_LINES[-1][-10:],  # Non-ascii
         ],
     )
     def test_broken_uu(self, bad_data):
         article = Article("foo@bar", 4321, None)
         article.lowest_partnum = False
+        filler = b"\r\n".join(VALID_UU_LINES[:4]) + b"\r\n"
         with pytest.raises(decoder.BadData):
-            assert decoder.decode_uu(article, [b"222 0 <foo@bar>\r\n" + bad_data + b"\r\n"])
+            assert decoder.decode_uu(article, [b"222 0 <foo@bar>\r\n" + filler + bad_data + b"\r\n"])
