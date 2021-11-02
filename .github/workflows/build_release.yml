@@ -10,11 +10,11 @@ jobs:
       AUTOMATION_GITHUB_TOKEN: ${{ secrets.AUTOMATION_GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.9 (64bit)
+    - name: Set up Python 3.10 (64bit)
       uses: actions/setup-python@v2
       with:
-        python-version: 3.9
-        architecture: x64
+        python-version: "3.10"
+        architecture: "x64"
     - name: Install Python dependencies (64bit)
       run: |
         python --version
@@ -43,8 +43,8 @@ jobs:
     - name: Set up Python 3.8 (32bit and legacy)
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
-        architecture: x86
+        python-version: "3.8"
+        architecture: "x86"
     - name: Install Python dependencies (32bit and legacy)
       run: |
         python --version
@@ -73,8 +73,8 @@ jobs:
       # We need the official Python, because the GA ones only support newer macOS versions
       # The deployment target is picked up by the Python build tools automatically
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
-      PYTHON_VERSION: 3.9.7
-      MACOSX_DEPLOYMENT_TARGET: 10.9
+      PYTHON_VERSION: "3.10.0"
+      MACOSX_DEPLOYMENT_TARGET: "10.9"
     steps:
     - uses: actions/checkout@v2
     - name: Cache Python download
@@ -85,15 +85,17 @@ jobs:
         key: macOS-Python-${{ env.PYTHON_VERSION }}
     - name: Get Python
       if: steps.cache-python-download.outputs.cache-hit != 'true'
-      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macosx10.9.pkg -o ~/python.pkg
+      run: curl https://www.python.org/ftp/python/${PYTHON_VERSION}/python-${PYTHON_VERSION}-macos11.pkg -o ~/python.pkg
     - name: Install Python
       run: sudo installer -pkg ~/python.pkg -target /
     - name: Install Python dependencies
+      # We need to build the PyInstaller bootloader from sources:
+      # https://github.com/pyinstaller/pyinstaller/issues/6235
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
         pip3 install --upgrade -r requirements.txt
-        pip3 install --upgrade -r builder/requirements.txt
+        pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
     - name: Import macOS codesign certificates
       uses: apple-actions/import-codesign-certs@v1
       if: env.SIGNING_AUTH

@@ -26,7 +26,6 @@ import subprocess
 import tarfile
 import pkginfo
 import github
-from distutils.dir_util import copy_tree
 
 
 VERSION_FILE = "sabnzbd/version.py"
@@ -185,8 +184,7 @@ if __name__ == "__main__":
         # Run PyInstaller and check output
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
-        # Use special distutils function to merge the main and console directories
-        copy_tree("dist/SABnzbd-console", "dist/SABnzbd")
+        shutil.copytree("dist/SABnzbd-console", "dist/SABnzbd", dirs_exist_ok=True)
         safe_remove("dist/SABnzbd-console")
 
         # Remove unwanted DLL's
@@ -361,7 +359,7 @@ if __name__ == "__main__":
 
         # Copy all folders and files to the new folder
         for source_folder in extra_folders:
-            copy_tree(source_folder, os.path.join(src_folder, source_folder))
+            shutil.copytree(source_folder, os.path.join(src_folder, source_folder), dirs_exist_ok=True)
 
         # Copy all files
         for source_file in extra_files:
