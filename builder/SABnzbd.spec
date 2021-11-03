@@ -66,6 +66,7 @@ else:
     # Windows
     extra_hiddenimports.append("win32timezone")
     extra_folders += ["win/multipar/", "win/unrar/", "win/7zip/"]
+    extra_files += ["portable.cmd"]
 
     # Parse the version info
     version_regexed = re.search(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)", RELEASE_VERSION)
