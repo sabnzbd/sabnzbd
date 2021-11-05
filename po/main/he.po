@@ -404,10 +404,6 @@ msgstr "רישום של אירוע בלתי תקף בהיסטוריה עבור %
 msgid "Decoder failure: Out of memory"
 msgstr "כישלון מפענח: אין זיכרון"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode התגלה, רק קידוד yEnc נתמך [%s]"
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"

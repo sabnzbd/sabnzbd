@@ -429,10 +429,6 @@ msgstr "Étape de journalisation invalide dans l'historique pour %s"
 msgid "Decoder failure: Out of memory"
 msgstr "Échec du décodeur : mémoire insuffisante"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode détecté, seul l'encodage yEnc est pris en charge [%s]"
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"

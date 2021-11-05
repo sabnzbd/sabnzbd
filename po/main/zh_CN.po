@@ -400,10 +400,6 @@ msgstr "%s 历史信息中 stage 日志无效"
 msgid "Decoder failure: Out of memory"
 msgstr "解码器失败：内存不足"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"

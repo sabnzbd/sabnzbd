@@ -417,10 +417,6 @@ msgstr "Jurnal istoric stagii invalid pentru %s"
 msgid "Decoder failure: Out of memory"
 msgstr "Eroare decodare: lipsă memorie"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode detectat, este suportată doar codarea yEnc [%s]"
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"

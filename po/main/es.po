@@ -428,10 +428,6 @@ msgstr "Registro de etapa invalido para transferencia terminada %s"
 msgid "Decoder failure: Out of memory"
 msgstr "Fallo del decodificador: no hay memoria"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "Se ha detectado UUencode, solo se permite codificación yEnc [%s]"
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"

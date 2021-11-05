@@ -420,10 +420,6 @@ msgstr "Ongeldig loggen van fase in geschiedenis voor %s"
 msgid "Decoder failure: Out of memory"
 msgstr "Decoder fout: onvoldoende geheugen"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode gevonden, alleen yEnc codering wordt ondersteund [%s]"
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"

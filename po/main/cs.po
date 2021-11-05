@@ -411,10 +411,6 @@ msgstr ""
 msgid "Decoder failure: Out of memory"
 msgstr "Chyba dekodéru: nedostatek paměti"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "Detekováno UUencode, pouze yEnc je podporováno [%s]"
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"

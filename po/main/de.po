@@ -429,10 +429,6 @@ msgstr "Ungültiges Stufen-Protokoll im Verlauf für %s"
 msgid "Decoder failure: Out of memory"
 msgstr "Decoder Fehler: Nicht genügend Speicher"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode erkannt, aber nur yEnc encoding ist untertützt [%s]"
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"

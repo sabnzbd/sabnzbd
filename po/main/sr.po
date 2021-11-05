@@ -402,10 +402,6 @@ msgstr "Погрешне етапе извештаја можете наћи у 
 msgid "Decoder failure: Out of memory"
 msgstr ""
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
