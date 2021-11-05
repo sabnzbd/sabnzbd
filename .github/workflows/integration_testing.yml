@@ -9,16 +9,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.6", "3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
         os: [ubuntu-20.04]
         include:
-          # TODO: Update to 3.10 when all packages are available, currently lxml is missing
           - name: macOS
             os: macos-latest
-            python-version: "3.9"
+            python-version: "3.10"
           - name: Windows
             os: windows-latest
-            python-version: "3.9"
+            python-version: "3.10"
 
     steps:
     - uses: actions/checkout@v2
