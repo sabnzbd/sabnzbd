@@ -2,7 +2,7 @@ name: sabnzbd
 summary: SABnzbd
 description: The automated Usenet download tool
 confinement: strict
-base: core18
+base: core20
 grade: stable
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
 adopt-info: sabnzbd
