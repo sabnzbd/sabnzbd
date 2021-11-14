@@ -9,7 +9,7 @@ portend
 chardet
 notify2
 python-socks
-socks
+PySocks
 puremagic
 guessit>=3.1.0
 
