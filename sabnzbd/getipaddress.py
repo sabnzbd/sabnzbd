@@ -101,6 +101,7 @@ def publicipv4():
             # specify the Host, because we only provide the IPv4 address in the URL:
             req.add_header("Host", sabnzbd.cfg.selftest_host())
             # get the response, timeout 2 seconds, in case the website is not accessible
+            socket.socket = sabnzbd.ORIGINAL_SOCKET
             public_ipv4 = ubtou(urllib.request.urlopen(req, timeout=2).read())
             # ... check the response is indeed an IPv4 address:
             # if we got anything else than a plain IPv4 address, this will raise an exception
