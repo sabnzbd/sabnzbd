@@ -25,6 +25,7 @@ import urllib.request
 import urllib.parse
 import re
 import subprocess
+import socks
 import socket
 import time
 import datetime
@@ -322,11 +323,29 @@ def set_serv_parms(service, args):
     return True
 
 
+def set_socks5_proxy():
+    if cfg.proxy_enabled():
+        proxy_host = cfg.proxy_host()
+        proxy_port = int(cfg.proxy_port())
+        socks.set_default_proxy(
+            socks.SOCKS5,
+            proxy_host,
+            proxy_port,
+            True,  # use remote DNS, default
+            cfg.proxy_username(),
+            cfg.proxy_password(),
+        )
+        socket.socket = socks.socksocket
+    else:
+        socket.socket = sabnzbd.ORIGINAL_SOCKET
+
+
 def get_from_url(url: str) -> Optional[str]:
     """Retrieve URL and return content"""
     try:
         req = urllib.request.Request(url)
         req.add_header("User-Agent", "SABnzbd/%s" % sabnzbd.__version__)
+        set_socks5_proxy()
         with urllib.request.urlopen(req) as response:
             return ubtou(response.read())
     except:

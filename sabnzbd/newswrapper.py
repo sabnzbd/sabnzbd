@@ -286,6 +286,7 @@ class NNTP:
             proxy_url += "%s:%s" % (sabnzbd.cfg.proxy_host(), sabnzbd.cfg.proxy_port())
             logging.debug("Using SOCKS5 proxy %s", proxy_url)
             proxy = Proxy.from_url(proxy_url)
+            socket.socket = sabnzbd.ORIGINAL_SOCKET
             proxy_sock = proxy.connect(dest_host=self.host, dest_port=self.nw.server.port)
 
         # Secured or unsecured?

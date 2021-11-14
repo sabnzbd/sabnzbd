@@ -10,6 +10,10 @@ import time
 import logging
 import urllib.request
 
+import sabnzbd.cfg as cfg
+
+from sabnzbd.misc import set_socks5_proxy
+
 SIZE_URL_LIST = [
     [5, "https://sabnzbd.org/tests/internetspeed/5MB.bin"],
     [10, "https://sabnzbd.org/tests/internetspeed/10MB.bin"],
@@ -24,6 +28,7 @@ def measure_speed_from_url(url: str) -> float:
     downloaded_bytes = 0  # default
     try:
         req = urllib.request.Request(url, data=None, headers={"User-Agent": "Mozilla/5.0 (Macintosh)"})
+        set_socks5_proxy()
         downloaded_bytes = len(urllib.request.urlopen(req, timeout=4).read())
     except:
         # No connection at all?

@@ -197,6 +197,7 @@ CMDLINE = " ".join(['"%s"' % arg for arg in sys.argv])
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
 
+ORIGINAL_SOCKET = socket.socket
 
 ##############################################################################
 # Signal Handler

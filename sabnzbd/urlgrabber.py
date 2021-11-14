@@ -349,6 +349,8 @@ def _build_request(url: str) -> HTTPResponse:
     req.add_header("Accept-encoding", "gzip")
     if user_passwd:
         req.add_header("Authorization", "Basic " + ubtou(base64.b64encode(utob(user_passwd))).strip())
+
+    misc.set_socks5_proxy()
     return urllib.request.urlopen(req)
 
 
