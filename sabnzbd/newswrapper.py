@@ -269,7 +269,6 @@ class NNTP:
             raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
         af, socktype, proto, canonname, sa = self.nw.server.info[0]
-        proxy_enabled = sabnzbd.cfg.proxy_enabled()
 
         # there will be a connect to host (or self.host, so let's force set 'af' to the correct value
         if is_ipv4_addr(self.host):
@@ -279,7 +278,7 @@ class NNTP:
 
         sabnzbd.misc.set_socks5_proxy()
         self.sock = socket.socket(af, socktype, proto)
-        if proxy_enabled:
+        if sabnzbd.cfg.proxy_enabled():
             self.sock.connect((self.host, self.nw.server.port))
 
         # Secured or unsecured?

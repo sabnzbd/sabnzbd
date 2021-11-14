@@ -370,6 +370,9 @@ SKIN_TEXT = {
     "explain-cache_limitstr": TT(
         'Cache articles in memory to reduce disk access.<br /><i>In bytes, optionally follow with K,M,G. For example: "64M" or "128M"</i>'
     ),
+    "proxy": TT("Proxy"),
+    "opt-proxy_enabled": TT("Enable proxy"),
+    "explain-proxy_enabled": TT("Use SOCKS5 proxy for NNTP and HTTP(S) requests"),
     "opt-cleanup_list": TT("Cleanup List"),
     "explain-cleanup_list": TT(
         "List of file extensions that should be deleted after download.<br />For example: <b>nfo</b> or <b>nfo, sfv</b>"
