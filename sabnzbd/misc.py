@@ -325,8 +325,7 @@ def set_serv_parms(service, args):
 
 def set_socks5_proxy():
     if cfg.socks5_proxy_url():
-        proxy_url = cfg.socks5_proxy_url()
-        proxy = urllib.parse.urlparse(proxy_url)
+        proxy = urllib.parse.urlparse(cfg.socks5_proxy_url())
         logging.debug("Using proxy %s:%s", proxy.hostname, proxy.port)
         socks.set_default_proxy(
             socks.SOCKS5,
