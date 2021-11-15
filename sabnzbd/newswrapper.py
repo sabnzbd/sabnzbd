@@ -279,7 +279,11 @@ class NNTP:
         sabnzbd.misc.set_socks5_proxy()
         self.sock = socket.socket(af, socktype, proto)
         if sabnzbd.cfg.socks5_proxy_url():
-            self.sock.connect((self.host, self.nw.server.port))
+            try:
+                self.sock.connect((self.host, self.nw.server.port))
+            except OSError as e:
+                self.error(e)
+                return
 
         # Secured or unsecured?
         if self.nw.server.ssl:
