@@ -278,7 +278,7 @@ class NNTP:
 
         sabnzbd.misc.set_socks5_proxy()
         self.sock = socket.socket(af, socktype, proto)
-        if sabnzbd.cfg.proxy_enabled():
+        if sabnzbd.cfg.socks5_proxy_url():
             self.sock.connect((self.host, self.nw.server.port))
 
         # Secured or unsecured?
@@ -327,7 +327,7 @@ class NNTP:
                 self.sock.settimeout(15)
 
             # Connect
-            if not sabnzbd.cfg.proxy_enabled():
+            if not sabnzbd.cfg.socks5_proxy_url():
                 self.sock.connect((self.host, self.nw.server.port))
             self.sock.setblocking(self.nw.blocking)
 

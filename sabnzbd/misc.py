@@ -324,16 +324,17 @@ def set_serv_parms(service, args):
 
 
 def set_socks5_proxy():
-    if cfg.proxy_enabled():
-        proxy_host = cfg.proxy_host()
-        proxy_port = int(cfg.proxy_port())
+    if cfg.socks5_proxy_url():
+        proxy_url = cfg.socks5_proxy_url()
+        proxy = urllib.parse.urlparse(proxy_url)
+        logging.debug("Using proxy %s:%s", proxy.hostname, proxy.port)
         socks.set_default_proxy(
             socks.SOCKS5,
-            proxy_host,
-            proxy_port,
+            proxy.hostname,
+            proxy.port,
             True,  # use remote DNS, default
-            cfg.proxy_username(),
-            cfg.proxy_password(),
+            proxy.username,
+            proxy.password,
         )
         socket.socket = socks.socksocket
     else:

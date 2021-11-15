@@ -10,8 +10,6 @@ import time
 import logging
 import urllib.request
 
-import sabnzbd.cfg as cfg
-
 from sabnzbd.misc import set_socks5_proxy
 
 SIZE_URL_LIST = [

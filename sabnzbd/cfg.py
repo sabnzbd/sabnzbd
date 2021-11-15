@@ -134,11 +134,6 @@ enable_https = OptionBool("misc", "enable_https", False)
 inet_exposure = OptionNumber("misc", "inet_exposure", 0, protect=True)
 api_key = OptionStr("misc", "api_key", create_api_key())
 nzb_key = OptionStr("misc", "nzb_key", create_api_key())
-proxy_enabled = OptionBool("misc", "proxy_enabled", False)
-proxy_host = OptionStr("misc", "proxy_host")
-proxy_port = OptionStr("misc", "proxy_port")
-proxy_username = OptionStr("misc", "proxy_username")
-proxy_password = OptionPassword("misc", "proxy_password")
 
 
 ##############################################################################
@@ -316,6 +311,7 @@ local_ranges = OptionList("misc", "local_ranges", protect=True)
 max_url_retries = OptionNumber("misc", "max_url_retries", 10, 1)
 downloader_sleep_time = OptionNumber("misc", "downloader_sleep_time", 10, 0)
 ssdp_broadcast_interval = OptionNumber("misc", "ssdp_broadcast_interval", 15, 1, 600)
+socks5_proxy_url = OptionStr("misc", "socks5_proxy_url")
 
 
 ##############################################################################

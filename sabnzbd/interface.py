@@ -928,6 +928,7 @@ SPECIAL_VALUE_LIST = (
     "selftest_host",
     "rating_host",
     "ssdp_broadcast_interval",
+    "socks5_proxy_url",
 )
 SPECIAL_LIST_LIST = (
     "rss_odd_titles",
@@ -994,11 +995,6 @@ GENERAL_LIST = (
     "enable_https_verification",
     "auto_browser",
     "check_new_rel",
-    "proxy_enabled",
-    "proxy_host",
-    "proxy_port",
-    "proxy_username",
-    "proxy_password",
 )
 
 
