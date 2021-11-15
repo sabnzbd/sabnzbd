@@ -69,8 +69,6 @@ elif os.name == "posix":
     # Parse macOS version numbers
     if platform.system().lower() == "darwin":
         DARWIN = True
-        # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
-        DARWIN_VERSION = int(platform.mac_ver()[0].split(".")[1])
         MACOSLIBC = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)  # the MacOS C library
         try:
             import Foundation

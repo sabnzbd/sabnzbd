@@ -77,9 +77,7 @@ class SABnzbdDelegate(NSObject):
                 # Path is modified for the binary
                 icon_path = os.path.join(os.path.dirname(sys.executable), "..", "Resources", status_icons[icon])
             self.icons[icon] = NSImage.alloc().initByReferencingFile_(icon_path)
-            if sabnzbd.DARWIN_VERSION > 9:
-                # Support for Yosemite Dark Mode
-                self.icons[icon].setTemplate_(YES)
+            self.icons[icon].setTemplate_(YES)
 
         self.status_item.setImage_(self.icons["idle"])
         self.status_item.setAlternateImage_(self.icons["clicked"])
@@ -432,13 +430,8 @@ class SABnzbdDelegate(NSObject):
             style.setMaximumLineHeight_(9.0)
             style.setParagraphSpacing_(-3.0)
 
-            # In Big Sur the offset was changed
-            baseline_offset = 5.0
-            if sabnzbd.DARWIN_VERSION >= 16:
-                baseline_offset = baseline_offset * -1
-
             titleAttributes = {
-                NSBaselineOffsetAttributeName: baseline_offset,
+                NSBaselineOffsetAttributeName: -5.0,
                 NSFontAttributeName: NSFont.menuFontOfSize_(9.0),
                 NSParagraphStyleAttributeName: style,
             }
