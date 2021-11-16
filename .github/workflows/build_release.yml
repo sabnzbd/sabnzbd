@@ -64,7 +64,7 @@ jobs:
 
   build_macos:
     name: Build macOS binary
-    runs-on: macos-latest
+    runs-on: macos-11
     env:
       SIGNING_AUTH: ${{ secrets.SIGNING_AUTH }}
       NOTARIZATION_USER: ${{ secrets.NOTARIZATION_USER }}
@@ -89,13 +89,29 @@ jobs:
     - name: Install Python
       run: sudo installer -pkg ~/python.pkg -target /
     - name: Install Python dependencies
-      # We need to build the PyInstaller bootloader from sources:
-      # https://github.com/pyinstaller/pyinstaller/issues/6235
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
         pip3 install --upgrade -r requirements.txt
-        pip3 install --upgrade -r builder/requirements.txt --no-binary pyinstaller
+        pip3 install --upgrade -r builder/requirements.txt
+    - name: Checkout PyInstaller
+      # We need to build the PyInstaller bootloader from sources:
+      # https://github.com/pyinstaller/pyinstaller/issues/6235
+      uses: actions/checkout@v2
+      with:
+        repository: pyinstaller/pyinstaller
+        path: pyinstaller
+    - name: Build PyInstaller bootloader for macOS 10.9 support
+      # Make sure we checkout the latest stable release
+      run: |
+        python3 --version
+        cd pyinstaller/bootloader
+        git fetch --tags
+        git checkout $(git describe --tags $(git rev-list --tags --max-count=1))
+        python3 ./waf all
+        cd ..
+        python3 -m pip install .
+        cd ..
     - name: Import macOS codesign certificates
       uses: apple-actions/import-codesign-certs@v1
       if: env.SIGNING_AUTH
