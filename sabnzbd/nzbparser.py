@@ -35,7 +35,10 @@ from sabnzbd.filesystem import is_archive, get_filename
 from sabnzbd.misc import name_to_cat
 
 
-def nzbfile_parser(raw_data, nzo):
+def nzbfile_parser(raw_data: str, nzo):
+    # For type-hinting
+    nzo: sabnzbd.nzbstuff.NzbObject
+
     # Load data as file-object
     raw_data = re.sub(r"""\s(xmlns="[^"]+"|xmlns='[^']+')""", "", raw_data, count=1)
     nzb_tree = xml.etree.ElementTree.fromstring(raw_data)

@@ -32,6 +32,7 @@ import signal
 import socket
 import platform
 import subprocess
+import multiprocessing
 import ssl
 import time
 import re
@@ -1738,6 +1739,9 @@ def handle_windows_service():
 
 
 if __name__ == "__main__":
+    # Require for freezing
+    multiprocessing.freeze_support()
+
     # We can only register these in the main thread
     signal.signal(signal.SIGINT, sabnzbd.sig_handler)
     signal.signal(signal.SIGTERM, sabnzbd.sig_handler)
