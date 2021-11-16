@@ -41,6 +41,7 @@ RELEASE_VERSION = pkginfo.Develop(".").version
 # Add hidden imports
 extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
 extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
+extra_hiddenimports.extend(collect_submodules("guessit.data"))
 
 # Add platform specific stuff
 if sys.platform == "darwin":
