@@ -75,6 +75,8 @@ jobs:
       # If updated, make sure to also set LSMinimumSystemVersion in SABnzbd.spec
       PYTHON_VERSION: "3.10.0"
       MACOSX_DEPLOYMENT_TARGET: "10.9"
+      # We need to force compile for universal2 support
+      CFLAGS: -arch arm64 -arch x86_64
     steps:
     - uses: actions/checkout@v2
     - name: Cache Python download
@@ -92,7 +94,7 @@ jobs:
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-        pip3 install --upgrade -r requirements.txt
+        pip3 install --upgrade -r requirements.txt --no-binary sabyenc3
         pip3 install --upgrade -r builder/requirements.txt
     - name: Checkout PyInstaller
       # We need to build the PyInstaller bootloader from sources:
