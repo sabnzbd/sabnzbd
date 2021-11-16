@@ -1487,6 +1487,8 @@ def main():
         browser_url = "http://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
     sabnzbd.BROWSER_URL = browser_url
 
+    sabnzbd.set_socks5_proxy()
+
     if not autorestarted:
         launch_a_browser(browser_url)
         notifier.send_notification("SABnzbd", T("SABnzbd %s started") % sabnzbd.__version__, "startup")

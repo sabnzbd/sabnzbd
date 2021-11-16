@@ -33,7 +33,7 @@ import sabnzbd
 import sabnzbd.cfg
 from sabnzbd.encoding import platform_btou, utob
 from sabnzbd.filesystem import make_script_path
-from sabnzbd.misc import build_and_run_command, set_socks5_proxy
+from sabnzbd.misc import build_and_run_command
 from sabnzbd.newsunpack import create_env
 
 if sabnzbd.FOUNDATION:
@@ -235,7 +235,6 @@ def send_prowl(title, msg, gtype, force=False, test=None):
             "&event=%s&description=%s&priority=%d" % (apikey, title, msg, prio)
         )
         try:
-            set_socks5_proxy()
             urllib.request.urlopen(url)
             return ""
         except:

@@ -24,11 +24,13 @@ import ctypes.util
 import gzip
 import time
 import socket
+import socks
 import cherrypy
 import cherrypy._cpreqbody
 import platform
 import sys
 import ssl
+import urllib.parse
 from threading import Lock, Thread, Condition
 from typing import Any, AnyStr, Optional, Union
 
@@ -279,6 +281,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.language.callback(guard_language)
     cfg.enable_https_verification.callback(guard_https_ver)
     guard_https_ver()
+    cfg.socks5_proxy_url.callback(set_socks5_proxy)
 
     check_incomplete_vs_complete()
 
@@ -1077,6 +1080,23 @@ def wait_for_download_folder():
     while not cfg.download_dir.test_path():
         logging.debug('Waiting for "incomplete" folder')
         time.sleep(2.0)
+
+
+def set_socks5_proxy():
+    if cfg.socks5_proxy_url():
+        proxy = urllib.parse.urlparse(cfg.socks5_proxy_url())
+        logging.debug("Using proxy %s:%s", proxy.hostname, proxy.port)
+        socks.set_default_proxy(
+            socks.SOCKS5,
+            proxy.hostname,
+            proxy.port,
+            True,  # use remote DNS, default
+            proxy.username,
+            proxy.password,
+        )
+        socket.socket = socks.socksocket
+    else:
+        socket.socket = sabnzbd.ORIGINAL_SOCKET
 
 
 def test_ipv6():

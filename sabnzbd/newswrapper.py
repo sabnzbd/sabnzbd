@@ -276,7 +276,6 @@ class NNTP:
         if is_ipv6_addr(self.host):
             af = socket.AF_INET6
 
-        sabnzbd.misc.set_socks5_proxy()
         self.sock = socket.socket(af, socktype, proto)
         if sabnzbd.cfg.socks5_proxy_url():
             try:
