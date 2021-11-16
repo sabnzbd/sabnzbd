@@ -137,6 +137,7 @@ exe = EXE(
     append_pkg=False,
     icon="icons/sabnzbd.ico",
     version=version_info,
+    target_arch="universal2"
 )
 
 coll = COLLECT(exe, pyi_analysis.binaries, pyi_analysis.zipfiles, pyi_analysis.datas, name="SABnzbd")
