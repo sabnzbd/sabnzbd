@@ -94,7 +94,7 @@ jobs:
       run: |
         python3 --version
         pip3 install --upgrade pip wheel
-        pip3 install --upgrade -r requirements.txt --no-binary sabyenc3
+        env LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" CFLAGS="-I$(brew --prefix openssl@1.1)/include" pip3 install --upgrade -r requirements.txt --no-binary sabyenc3,cryptography,cffi
         pip3 install --upgrade -r builder/requirements.txt
     - name: Checkout PyInstaller
       # We need to build the PyInstaller bootloader from sources:
