@@ -277,12 +277,6 @@ class NNTP:
             af = socket.AF_INET6
 
         self.sock = socket.socket(af, socktype, proto)
-        if sabnzbd.cfg.socks5_proxy_url():
-            try:
-                self.sock.connect((self.host, self.nw.server.port))
-            except OSError as e:
-                self.error(e)
-                return
 
         # Secured or unsecured?
         if self.nw.server.ssl:
@@ -330,8 +324,7 @@ class NNTP:
                 self.sock.settimeout(15)
 
             # Connect
-            if not sabnzbd.cfg.socks5_proxy_url():
-                self.sock.connect((self.host, self.nw.server.port))
+            self.sock.connect((self.host, self.nw.server.port))
             self.sock.setblocking(self.nw.blocking)
 
             # Log SSL/TLS info
