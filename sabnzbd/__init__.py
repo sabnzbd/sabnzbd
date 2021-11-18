@@ -199,8 +199,6 @@ CMDLINE = " ".join(['"%s"' % arg for arg in sys.argv])
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
 
-ORIGINAL_SOCKET = socket.socket
-
 ##############################################################################
 # Signal Handler
 ##############################################################################
@@ -281,7 +279,6 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.language.callback(guard_language)
     cfg.enable_https_verification.callback(guard_https_ver)
     guard_https_ver()
-    cfg.socks5_proxy_url.callback(set_socks5_proxy)
 
     check_incomplete_vs_complete()
 
@@ -1095,8 +1092,6 @@ def set_socks5_proxy():
             proxy.password,
         )
         socket.socket = socks.socksocket
-    else:
-        socket.socket = sabnzbd.ORIGINAL_SOCKET
 
 
 def test_ipv6():
