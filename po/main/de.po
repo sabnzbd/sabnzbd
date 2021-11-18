@@ -9,12 +9,13 @@
 # Ben Hecht <benjamin.hecht@me.com>, 2021
 # Safihre <safihre@sabnzbd.org>, 2021
 # Manuel C. Senn, 2021
+# Andreas Kames, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Manuel C. Senn, 2021\n"
+"Last-Translator: Andreas Kames, 2021\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -534,7 +535,7 @@ msgstr "Wird beendet …"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s is expiring in %s day(s)"
-msgstr "Server %s läuft in %s tag(en) ab"
+msgstr "Server %s läuft in %s Tag(en) ab"
 
 #. Warning message
 #: sabnzbd/downloader.py
@@ -1684,7 +1685,7 @@ msgstr "RAR-Datei konnten nicht überprüft werden"
 
 #: sabnzbd/postproc.py
 msgid "Trying RAR renamer"
-msgstr "Versuche RAR Umbenenner"
+msgstr "Versuche RAR-Umbenenner"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -4076,13 +4077,15 @@ msgstr "0 ist die höchste, 99 die niedrigste Priorität"
 #. Server required tickbox
 #: sabnzbd/skintext.py
 msgid "Required"
-msgstr ""
+msgstr "Benötigt"
 
 #: sabnzbd/skintext.py
 msgid ""
 "In case of connection failures, the download queue will be paused for a few "
 "minutes instead of skipping this server"
 msgstr ""
+"Im Fall von Verbindungsausfällen wird die Downloadwarteschlange für ein paar"
+" Minuten pausiert, statt diesen Server zu überspringen"
 
 #. Server optional tickbox
 #: sabnzbd/skintext.py
@@ -4201,7 +4204,7 @@ msgstr "Bearbeiten"
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py
 msgid "Next scan at"
-msgstr "Nächster scan um"
+msgstr "Nächster Scan um"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4563,7 +4566,7 @@ msgstr "X"
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Select at least 1 category."
-msgstr ""
+msgstr "Wähle mindestens 1 Kategorie"
 
 #. Warning message
 #: sabnzbd/skintext.py, sabnzbd/sorting.py
@@ -4946,7 +4949,7 @@ msgstr "Weitere Warteschlangen Spalten"
 
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
-msgstr "Weitere Verlauf Spalten"
+msgstr "Weitere Verlaufspalten"
 
 #: sabnzbd/skintext.py
 msgid "page"
