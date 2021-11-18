@@ -276,43 +276,8 @@ class NNTP:
         if is_ipv6_addr(self.host):
             af = socket.AF_INET6
 
+        # Create socket and store fileno of the socket
         self.sock = socket.socket(af, socktype, proto)
-        if sabnzbd.cfg.socks5_proxy_url():
-            try:
-                self.sock.connect((self.host, self.nw.server.port))
-            except OSError as e:
-                self.error(e)
-                return
-
-        # Secured or unsecured?
-        if self.nw.server.ssl:
-            # Use context or just wrapper
-            if sabnzbd.CERTIFICATE_VALIDATION:
-                # Setup the SSL socket
-                ctx = ssl.create_default_context()
-
-                if not sabnzbd.cfg.allow_old_ssl_tls():
-                    # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
-                    ctx.options |= ssl.OP_NO_SSLv2 | ssl.OP_NO_SSLv3 | ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
-
-                # Only verify hostname when we're strict
-                if self.nw.server.ssl_verify < 2:
-                    ctx.check_hostname = False
-                # Certificates optional
-                if self.nw.server.ssl_verify == 0:
-                    ctx.verify_mode = ssl.CERT_NONE
-
-                # Did the user set a custom cipher-string?
-                if self.nw.server.ssl_ciphers:
-                    # At their own risk, socket will error out in case it was invalid
-                    ctx.set_ciphers(self.nw.server.ssl_ciphers)
-
-                self.sock = ctx.wrap_socket(self.sock, server_hostname=self.nw.server.host)
-            else:
-                # Use a regular wrapper, no certificate validation
-                self.sock = ssl.wrap_socket(self.sock)
-
-        # Store fileno of the socket
         self.fileno: int = self.sock.fileno()
 
         # Open the connection in a separate thread due to avoid blocking
@@ -330,12 +295,36 @@ class NNTP:
                 self.sock.settimeout(15)
 
             # Connect
-            if not sabnzbd.cfg.socks5_proxy_url():
-                self.sock.connect((self.host, self.nw.server.port))
-            self.sock.setblocking(self.nw.blocking)
+            self.sock.connect((self.host, self.nw.server.port))
 
-            # Log SSL/TLS info
+            # Secured or unsecured?
             if self.nw.server.ssl:
+                # Setup the SSL socket
+                ctx = ssl.create_default_context()
+
+                if not sabnzbd.cfg.allow_old_ssl_tls():
+                    # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
+                    ctx.options |= ssl.OP_NO_SSLv2 | ssl.OP_NO_SSLv3 | ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
+
+                # Only verify hostname when we're strict
+                if self.nw.server.ssl_verify < 2:
+                    ctx.check_hostname = False
+                    # Certificates optional
+                    if self.nw.server.ssl_verify == 0:
+                        ctx.verify_mode = ssl.CERT_NONE
+
+                # Did the user set a custom cipher-string?
+                if self.nw.server.ssl_ciphers:
+                    # At their own risk, socket will error out in case it was invalid
+                    ctx.set_ciphers(self.nw.server.ssl_ciphers)
+
+                # Disable any verification if the setup is bad
+                if not sabnzbd.CERTIFICATE_VALIDATION:
+                    ctx.check_hostname = False
+                    ctx.verify_mode = ssl.CERT_NONE
+
+                # Wrap socket and log SSL/TLS diagnostic info
+                self.sock = ctx.wrap_socket(self.sock, server_hostname=self.nw.server.host)
                 logging.info(
                     "%s@%s: Connected using %s (%s)",
                     self.nw.thrdnum,
@@ -344,6 +333,9 @@ class NNTP:
                     self.sock.cipher()[0],
                 )
                 self.nw.server.ssl_info = "%s (%s)" % (self.sock.version(), self.sock.cipher()[0])
+
+            # Set blocking mode
+            self.sock.setblocking(self.nw.blocking)
 
             # Now it's safe to add the socket to the list of active sockets
             # Skip this step during server test
