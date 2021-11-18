@@ -80,8 +80,6 @@ def publicipv4():
     public ipv4 needs special attention, meaning forcing
     IPv4 connections, and not allowing IPv6 connections
     """
-    if sabnzbd.cfg.socks5_proxy_url():
-        return None
     public_ipv4 = None
     try:
         ipv4_found = False
@@ -126,6 +124,6 @@ def ipv6():
             # IPv6 prefix for documentation purpose
             s_ipv6.connect(("2001:db8::8080", 80))
             ipv6_address = s_ipv6.getsockname()[0]
-    except socket.error:
+    except:
         ipv6_address = None
     return ipv6_address
