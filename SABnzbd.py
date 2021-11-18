@@ -1467,6 +1467,9 @@ def main():
     if sabnzbd.NO_DOWNLOADING:
         return
 
+    # Apply proxy, if configured, before main requests are made
+    sabnzbd.set_socks5_proxy()
+
     # Start all SABnzbd tasks
     logging.info("Starting %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
     try:
@@ -1486,8 +1489,6 @@ def main():
     else:
         browser_url = "http://%s:%s%s" % (browserhost, cherryport, sabnzbd.cfg.url_base())
     sabnzbd.BROWSER_URL = browser_url
-
-    sabnzbd.set_socks5_proxy()
 
     if not autorestarted:
         launch_a_browser(browser_url)

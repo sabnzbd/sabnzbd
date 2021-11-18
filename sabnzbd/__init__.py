@@ -1085,7 +1085,7 @@ def wait_for_download_folder():
 def set_socks5_proxy():
     if cfg.socks5_proxy_url():
         proxy = urllib.parse.urlparse(cfg.socks5_proxy_url())
-        logging.debug("Using proxy %s:%s", proxy.hostname, proxy.port)
+        logging.info("Using Socks5 proxy %s:%s", proxy.hostname, proxy.port)
         socks.set_default_proxy(
             socks.SOCKS5,
             proxy.hostname,
