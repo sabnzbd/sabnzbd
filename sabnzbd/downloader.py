@@ -186,7 +186,7 @@ class Server:
                 logging.debug("%s: Connecting to address %s", self.host, ip)
             elif cfg.load_balancing() == 2:
                 # RFC6555 / Happy Eyeballs:
-                ip = happyeyeballs(self.host, port=self.port, ssl=self.ssl)
+                ip = happyeyeballs(self.host, port=self.port, use_ssl=self.ssl)
                 if ip:
                     logging.debug("%s: Connecting to address %s", self.host, ip)
                 else:
