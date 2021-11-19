@@ -28,6 +28,7 @@ from nntplib import NNTPPermanentError
 import socket
 import random
 import sys
+import ssl
 from typing import List, Dict, Optional, Union
 
 import sabnzbd
@@ -73,6 +74,7 @@ class Server:
         "ssl",
         "ssl_verify",
         "ssl_ciphers",
+        "ssl_context",
         "required",
         "optional",
         "retention",
@@ -104,7 +106,7 @@ class Server:
         timeout,
         threads,
         priority,
-        ssl,
+        use_ssl,
         ssl_verify,
         ssl_ciphers,
         send_group,
@@ -124,9 +126,10 @@ class Server:
         self.timeout: int = timeout
         self.threads: int = threads
         self.priority: int = priority
-        self.ssl: bool = ssl
+        self.ssl: bool = use_ssl
         self.ssl_verify: int = ssl_verify
         self.ssl_ciphers: str = ssl_ciphers
+        self.ssl_context: Optional[ssl.SSLContext] = None
         self.required: bool = required
         self.optional: bool = optional
         self.retention: int = retention

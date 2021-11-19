@@ -276,6 +276,34 @@ class NNTP:
         if is_ipv6_addr(self.host):
             af = socket.AF_INET6
 
+        # Create SSL-context if it is needed and not created yet
+        if self.nw.server.ssl and not self.nw.server.ssl_context:
+            # Setup the SSL socket
+            self.nw.server.ssl_context = ssl.create_default_context()
+
+            if not sabnzbd.cfg.allow_old_ssl_tls():
+                # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
+                self.nw.server.ssl_context.options |= (
+                    ssl.OP_NO_SSLv2 | ssl.OP_NO_SSLv3 | ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
+                )
+
+            # Only verify hostname when we're strict
+            if self.nw.server.ssl_verify < 2:
+                self.nw.server.ssl_context.check_hostname = False
+                # Certificates optional
+                if self.nw.server.ssl_verify == 0:
+                    self.nw.server.ssl_context.verify_mode = ssl.CERT_NONE
+
+            # Did the user set a custom cipher-string?
+            if self.nw.server.ssl_ciphers:
+                # At their own risk, socket will error out in case it was invalid
+                self.nw.server.ssl_context.set_ciphers(self.nw.server.ssl_ciphers)
+
+            # Disable any verification if the setup is bad
+            if not sabnzbd.CERTIFICATE_VALIDATION:
+                self.nw.server.ssl_context.check_hostname = False
+                self.nw.server.ssl_context.verify_mode = ssl.CERT_NONE
+
         # Create socket and store fileno of the socket
         self.sock = socket.socket(af, socktype, proto)
         self.fileno: int = self.sock.fileno()
@@ -299,32 +327,8 @@ class NNTP:
 
             # Secured or unsecured?
             if self.nw.server.ssl:
-                # Setup the SSL socket
-                ctx = ssl.create_default_context()
-
-                if not sabnzbd.cfg.allow_old_ssl_tls():
-                    # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
-                    ctx.options |= ssl.OP_NO_SSLv2 | ssl.OP_NO_SSLv3 | ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
-
-                # Only verify hostname when we're strict
-                if self.nw.server.ssl_verify < 2:
-                    ctx.check_hostname = False
-                    # Certificates optional
-                    if self.nw.server.ssl_verify == 0:
-                        ctx.verify_mode = ssl.CERT_NONE
-
-                # Did the user set a custom cipher-string?
-                if self.nw.server.ssl_ciphers:
-                    # At their own risk, socket will error out in case it was invalid
-                    ctx.set_ciphers(self.nw.server.ssl_ciphers)
-
-                # Disable any verification if the setup is bad
-                if not sabnzbd.CERTIFICATE_VALIDATION:
-                    ctx.check_hostname = False
-                    ctx.verify_mode = ssl.CERT_NONE
-
                 # Wrap socket and log SSL/TLS diagnostic info
-                self.sock = ctx.wrap_socket(self.sock, server_hostname=self.nw.server.host)
+                self.sock = self.nw.server.ssl_context.wrap_socket(self.sock, server_hostname=self.nw.server.host)
                 logging.info(
                     "%s@%s: Connected using %s (%s)",
                     self.nw.thrdnum,
