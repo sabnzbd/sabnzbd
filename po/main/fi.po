@@ -3700,6 +3700,14 @@ msgstr ""
 "protokollan avulla."
 
 #: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Server"
 msgstr "Palvelin"
 

@@ -3618,6 +3618,14 @@ msgid ""
 msgstr "当用 HTTPS 方式连接索引和RSS源时验证证书。"
 
 #: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Server"
 msgstr "服务器"
 
