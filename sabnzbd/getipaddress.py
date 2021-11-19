@@ -24,6 +24,7 @@ import multiprocessing.pool
 import functools
 import urllib.request
 import urllib.error
+import socks
 
 import sabnzbd
 import sabnzbd.cfg
@@ -62,6 +63,13 @@ def addresslookup4(myhost):
 @timeout(3.0)
 def addresslookup6(myhost):
     return socket.getaddrinfo(myhost, 80, socket.AF_INET6)
+
+
+def active_socks5_proxy():
+    """Return the active proxy"""
+    if socket.socket == socks.socksocket:
+        return "%s:%s" % socks.socksocket.default_proxy[1:3]
+    return None
 
 
 def localipv4():
