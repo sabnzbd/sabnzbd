@@ -271,6 +271,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.https_cert.callback(guard_restart)
     cfg.https_key.callback(guard_restart)
     cfg.enable_https.callback(guard_restart)
+    cfg.socks5_proxy_url.callback(guard_restart)
     cfg.top_only.callback(guard_top_only)
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
     cfg.quota_size.callback(guard_quota_size)

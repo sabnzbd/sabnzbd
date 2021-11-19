@@ -179,6 +179,11 @@
                     <input type="checkbox" name="enable_https_verification" id="enable_https_verification" value="1" <!--#if int($enable_https_verification) > 0 then 'checked="checked"' else ""#--> <!--#if int($certificate_validation) == 0 then "disabled=\"disabled\"" else ""#--> />
                     <span class="desc">$T('explain-enable_https_verification')</span>
                 </div>
+                <div class="field-pair advanced-settings">
+                    <label class="config" for="socks5_proxy_url">$T('opt-socks5_proxy_url')</label>
+                    <input type="text" name="socks5_proxy_url" id="socks5_proxy_url" value="$socks5_proxy_url" />
+                    <span class="desc">$T('explain-socks5_proxy_url') $T('readwiki')</span>
+                </div>
                 <div class="field-pair">
                     <button class="btn btn-default saveButton"><span class="glyphicon glyphicon-ok"></span> $T('button-saveChanges')</button>
                 </div>
