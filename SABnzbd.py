@@ -1468,6 +1468,9 @@ def main():
     if sabnzbd.NO_DOWNLOADING:
         return
 
+    # Apply proxy, if configured, before main requests are made
+    sabnzbd.set_socks5_proxy()
+
     # Start all SABnzbd tasks
     logging.info("Starting %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
     try:

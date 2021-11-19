@@ -55,6 +55,7 @@ function ViewModel() {
     self.statusInfo = {};
     self.statusInfo.folders = ko.observableArray([]);
     self.statusInfo.servers = ko.observableArray([]);
+    self.statusInfo.active_socks5_proxy = ko.observable();
     self.statusInfo.localipv4 = ko.observable();
     self.statusInfo.publicipv4 = ko.observable();
     self.statusInfo.ipv6 = ko.observable();
@@ -773,6 +774,7 @@ function ViewModel() {
                 self.statusInfo.completedirspeed(data.status.completedirspeed)
                 self.statusInfo.internetbandwidth(data.status.internetbandwidth)
                 self.statusInfo.dnslookup(data.status.dnslookup)
+                self.statusInfo.active_socks5_proxy(data.status.active_socks5_proxy)
                 self.statusInfo.localipv4(data.status.localipv4)
                 self.statusInfo.publicipv4(data.status.publicipv4)
                 self.statusInfo.ipv6(data.status.ipv6 || glitterTranslate.noneText)
@@ -1115,6 +1117,9 @@ function ViewModel() {
 
         // Save servers (for reporting functionality of OZnzb)
         self.servers = response.config.servers;
+
+        // Already set if we are using a proxy
+        if(response.config.misc.socks5_proxy_url) self.statusInfo.active_socks5_proxy(true)
 
         // Update message
         if(newRelease) {

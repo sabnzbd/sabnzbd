@@ -569,6 +569,8 @@ SKIN_TEXT = {
     "explain-enable_https_verification": TT(
         "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
     ),
+    "opt-socks5_proxy_url": TT("SOCKS5 Proxy"),
+    "explain-socks5_proxy_url": TT("Use the specified SOCKS5 proxy for all outgoing connections."),
     "swtag-server": TT("Server"),
     "swtag-queue": TT("Queue"),
     "swtag-pp": TT("Post processing"),

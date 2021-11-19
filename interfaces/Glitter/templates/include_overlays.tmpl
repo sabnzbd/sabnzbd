@@ -85,6 +85,11 @@
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane fade in active" id="options-status">
+                        <div class="row" data-bind="visible: statusInfo.active_socks5_proxy">
+                            <div class="col-sm-6">$T('opt-socks5_proxy_url') &nbsp </div>
+                            <div class="col-sm-6" data-bind="visible: hasStatusInfo, text: statusInfo.active_socks5_proxy"></div>
+                            <div class="col-sm-6 col-loading" data-bind="visible: !hasStatusInfo()">$T('Glitter-loading')<span class="loader-dot-one">.</span><span class="loader-dot-two">.</span><span class="loader-dot-three">.</span></div>
+                        </div>
                         <div class="row">
                             <div class="col-sm-6">$T('dashboard-localIP4') &nbsp; </div>
                             <div class="col-sm-6" data-bind="visible: hasStatusInfo, text: !statusInfo.localipv4() ? '$T('dashboard-connectionError')' : statusInfo.localipv4(), css: { 'options-bad-status' : !statusInfo.localipv4() }"></div>
