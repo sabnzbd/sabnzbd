@@ -1,5 +1,5 @@
 # Testing requirements
-selenium
+selenium<4.0.0
 requests
 pytest
 pyfakefs
