@@ -3819,11 +3819,12 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "SOCKS5 Proxy"
-msgstr ""
+msgstr "Proxy SOCKS5"
 
 #: sabnzbd/skintext.py
 msgid "Use the specified SOCKS5 proxy for all outgoing connections."
 msgstr ""
+"Utiliser le proxy SOCKS5 spécifié pour toutes les connexions sortantes."
 
 #: sabnzbd/skintext.py
 msgid "Server"
