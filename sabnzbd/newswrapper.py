@@ -281,11 +281,12 @@ class NNTP:
             # Setup the SSL socket
             self.nw.server.ssl_context = ssl.create_default_context()
 
-            if not sabnzbd.cfg.allow_old_ssl_tls():
+            if sabnzbd.cfg.allow_old_ssl_tls():
+                # Allow anything that the system has
+                self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.MINIMUM_SUPPORTED
+            else:
                 # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
-                self.nw.server.ssl_context.options |= (
-                    ssl.OP_NO_SSLv2 | ssl.OP_NO_SSLv3 | ssl.OP_NO_TLSv1 | ssl.OP_NO_TLSv1_1
-                )
+                self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
 
             # Only verify hostname when we're strict
             if self.nw.server.ssl_verify < 2:
