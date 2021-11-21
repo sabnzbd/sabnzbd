@@ -49,6 +49,7 @@ try:
     import chardet
     import guessit
     import puremagic
+    import socks
 except ImportError as e:
     print("Not all required Python modules are available, please check requirements.txt")
     print("Missing module:", e.name)
