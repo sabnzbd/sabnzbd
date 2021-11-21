@@ -3769,11 +3769,11 @@ msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "SOCKS5 Proxy"
-msgstr ""
+msgstr "SOCKS5 Proxy"
 
 #: sabnzbd/skintext.py
 msgid "Use the specified SOCKS5 proxy for all outgoing connections."
-msgstr ""
+msgstr "Gebruik een SOCKS5 proxy server voor alle uitgaande verbindingen."
 
 #: sabnzbd/skintext.py
 msgid "Server"
