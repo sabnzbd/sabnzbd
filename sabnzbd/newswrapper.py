@@ -279,7 +279,7 @@ class NNTP:
         # Create SSL-context if it is needed and not created yet
         if self.nw.server.ssl and not self.nw.server.ssl_context:
             # Setup the SSL socket
-            self.nw.server.ssl_context = ssl.create_default_context()
+            self.nw.server.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 
             if sabnzbd.cfg.allow_old_ssl_tls():
                 # Allow anything that the system has
@@ -299,6 +299,9 @@ class NNTP:
             if self.nw.server.ssl_ciphers:
                 # At their own risk, socket will error out in case it was invalid
                 self.nw.server.ssl_context.set_ciphers(self.nw.server.ssl_ciphers)
+            else:
+                # Support at least TLSv1.2+ ciphers, as some essential ones are removed by default in Python 3.10
+                self.nw.server.ssl_context.set_ciphers("HIGH:TLSv1.2")
 
             # Disable any verification if the setup is bad
             if not sabnzbd.CERTIFICATE_VALIDATION:
