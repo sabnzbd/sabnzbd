@@ -281,13 +281,6 @@ class NNTP:
             # Setup the SSL socket
             self.nw.server.ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
 
-            if sabnzbd.cfg.allow_old_ssl_tls():
-                # Allow anything that the system has
-                self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.MINIMUM_SUPPORTED
-            else:
-                # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
-                self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
-
             # Only verify hostname when we're strict
             if self.nw.server.ssl_verify < 2:
                 self.nw.server.ssl_context.check_hostname = False
@@ -299,9 +292,18 @@ class NNTP:
             if self.nw.server.ssl_ciphers:
                 # At their own risk, socket will error out in case it was invalid
                 self.nw.server.ssl_context.set_ciphers(self.nw.server.ssl_ciphers)
+                # Python does not allow setting ciphers on TLSv1.3, so have to force TLSv1.2 as the maximum
+                self.nw.server.ssl_context.maximum_version = ssl.TLSVersion.TLSv1_2
             else:
                 # Support at least TLSv1.2+ ciphers, as some essential ones are removed by default in Python 3.10
-                self.nw.server.ssl_context.set_ciphers("HIGH:TLSv1.2")
+                self.nw.server.ssl_context.set_ciphers("HIGH")
+
+            if sabnzbd.cfg.allow_old_ssl_tls():
+                # Allow anything that the system has
+                self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.MINIMUM_SUPPORTED
+            else:
+                # We want a modern TLS (1.2 or higher), so we disallow older protocol versions (<= TLS 1.1)
+                self.nw.server.ssl_context.minimum_version = ssl.TLSVersion.TLSv1_2
 
             # Disable any verification if the setup is bad
             if not sabnzbd.CERTIFICATE_VALIDATION:
