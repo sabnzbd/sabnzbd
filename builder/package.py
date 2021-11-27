@@ -22,6 +22,7 @@ import sys
 import os
 import time
 import shutil
+import shlex
 import subprocess
 import tarfile
 import pkginfo
@@ -242,6 +243,14 @@ if __name__ == "__main__":
 
         # Run PyInstaller and check output
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
+
+        # Make sure we created a fully universal2 release
+        for bin_to_check in glob.glob("dist/SABnzbd.app/Contents/MacOS/**/*.so", recursive=True):
+            print("Checking if binary is universal2: %s" % bin_to_check)
+            file_output = run_external_command(["file", bin_to_check])
+            # Make sure we have both arm64 and x86
+            if not ("x86_64" in file_output and "arm64" in file_output):
+                raise RuntimeError("Non-universal2 binary found!")
 
         # Only continue if we can sign
         if authority:

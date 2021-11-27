@@ -91,10 +91,20 @@ jobs:
     - name: Install Python
       run: sudo installer -pkg ~/python.pkg -target /
     - name: Install Python dependencies
+      # cffi will pick up the single-arch libffi from Homebrew, while Apple provides universal2-version
+      # of libffi with XCode. So we forcefully have to remove the Homebrew one.
+      # Because building cryptography is hard, and we cannot force pip to fetch universal2 version we
+      # first install the x86 version (and it's dependencies) and then manually fetch the universal2 build
+      # https://github.com/pyca/cryptography/issues/5918
       run: |
+        brew uninstall libffi --ignore-dependencies
         python3 --version
         pip3 install --upgrade pip wheel
-        env LDFLAGS="-L$(brew --prefix openssl@1.1)/lib" CFLAGS="-I$(brew --prefix openssl@1.1)/include" pip3 install --upgrade -r requirements.txt --no-binary sabyenc3,cryptography,cffi
+        ARCHFLAGS="-arch x86_64 -arch arm64" pip3 install --upgrade cffi --no-binary cffi
+        pip3 install --upgrade -r requirements.txt --no-binary sabyenc3
+        pip3 uninstall cryptography -y
+        pip3 download cryptography --platform macosx_10_10_universal2 --only-binary :all: --no-deps --dest .
+        pip3 install cryptography --no-cache-dir --no-index --find-links .
         pip3 install --upgrade -r builder/requirements.txt
     - name: Checkout PyInstaller
       # We need to build the PyInstaller bootloader from sources:
