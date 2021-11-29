@@ -268,7 +268,7 @@ class NNTP:
         if not self.nw.server.info:
             raise socket.error(errno.EADDRNOTAVAIL, "Address not available - Check for internet or DNS problems")
 
-        af, socktype, proto, canonname, sa = self.nw.server.info[0]
+        af, socktype, proto, _, _ = self.nw.server.info[0]
 
         # there will be a connect to host (or self.host, so let's force set 'af' to the correct value
         if is_ipv4_addr(self.host):
