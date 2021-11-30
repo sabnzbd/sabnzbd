@@ -43,7 +43,7 @@ class RegexException(Exception):
 
 
 class LineFeeder:
-    """ Split lines by \r or \n """
+    """Split lines by \r or \n"""
 
     def __init__(self, reader):
         self.reader = reader
