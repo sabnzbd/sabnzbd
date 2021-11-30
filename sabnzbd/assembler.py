@@ -25,6 +25,7 @@ import logging
 import re
 from threading import Thread
 import hashlib
+import ctypes
 from typing import Tuple, Optional, List
 
 import sabnzbd
@@ -117,6 +118,8 @@ class Assembler(Thread):
                                 logging.error(T("Disk error on creating file %s"), clip_path(filepath))
                             # Log traceback
                             logging.info("Traceback: ", exc_info=True)
+                            if sabnzbd.WIN32:
+                                logging.info("Winerror: %s", hex(ctypes.windll.ntdll.RtlGetLastNtStatus() + 2 ** 32))
                             # Pause without saving
                             sabnzbd.Downloader.pause()
                         continue
