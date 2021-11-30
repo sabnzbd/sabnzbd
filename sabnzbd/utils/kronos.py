@@ -414,7 +414,7 @@ class ThreadedScheduler(Scheduler):
     def start(self):
         """Splice off a thread in which the scheduler will run."""
         self.thread = threading.Thread(target=self._run)
-        self.thread.setDaemon(True)
+        self.thread.deamon = True
         self.thread.start()
 
     def stop(self):

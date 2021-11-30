@@ -32,7 +32,6 @@ from typing import Optional, Dict, Any, Union
 
 import sabnzbd
 from sabnzbd import filesystem, nzbstuff
-from sabnzbd.constants import Status
 from sabnzbd.encoding import utob, correct_unknown_encoding
 from sabnzbd.filesystem import is_archive, get_filename
 from sabnzbd.misc import name_to_cat
@@ -67,7 +66,10 @@ class LineFeeder:
         return self.__next__()
 
 
-def nzbfile_parser(raw_data, nzo):
+def nzbfile_parser(raw_data: str, nzo):
+    # For type-hinting
+    nzo: sabnzbd.nzbstuff.NzbObject
+
     # Try regex parser
     if nzbfile_regex_parser(raw_data, nzo):
         return
@@ -190,7 +192,7 @@ def nzbfile_parser(raw_data, nzo):
         logging.warning(T("Failed to import %s files from %s"), skipped_files, nzo.filename)
 
 
-def nzbfile_regex_parser(raw_data, nzo):
+def nzbfile_regex_parser(raw_data: str, nzo):
     # Hash for dupe-checking
     md5sum = hashlib.md5()
 

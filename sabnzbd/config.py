@@ -409,6 +409,7 @@ class ConfigServer:
         self.ssl_verify = OptionNumber(name, "ssl_verify", 2, add=False)
         self.ssl_ciphers = OptionStr(name, "ssl_ciphers", add=False)
         self.enable = OptionBool(name, "enable", True, add=False)
+        self.required = OptionBool(name, "required", False, add=False)
         self.optional = OptionBool(name, "optional", False, add=False)
         self.retention = OptionNumber(name, "retention", 0, add=False)
         self.expire_date = OptionStr(name, "expire_date", add=False)
@@ -442,6 +443,7 @@ class ConfigServer:
             "ssl_ciphers",
             "send_group",
             "enable",
+            "required",
             "optional",
             "retention",
             "expire_date",
@@ -476,6 +478,7 @@ class ConfigServer:
         output_dict["ssl_verify"] = self.ssl_verify()
         output_dict["ssl_ciphers"] = self.ssl_ciphers()
         output_dict["enable"] = self.enable()
+        output_dict["required"] = self.required()
         output_dict["optional"] = self.optional()
         output_dict["retention"] = self.retention()
         output_dict["expire_date"] = self.expire_date()

@@ -6,6 +6,7 @@ import pkginfo
 from PyInstaller.building.api import EXE, COLLECT, PYZ
 from PyInstaller.building.build_main import Analysis
 from PyInstaller.building.osx import BUNDLE
+from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 # Add extra files in the PyInstaller-spec
 extra_pyinstaller_files = []
@@ -39,6 +40,8 @@ RELEASE_VERSION = pkginfo.Develop(".").version
 
 # Add hidden imports
 extra_hiddenimports = ["Cheetah.DummyTransaction", "cheroot.ssl.builtin", "certifi"]
+extra_hiddenimports.extend(collect_submodules("babelfish.converters"))
+extra_hiddenimports.extend(collect_submodules("guessit.data"))
 
 # Add platform specific stuff
 if sys.platform == "darwin":
@@ -64,6 +67,7 @@ else:
     # Windows
     extra_hiddenimports.append("win32timezone")
     extra_folders += ["win/multipar/", "win/unrar/", "win/7zip/"]
+    extra_files += ["portable.cmd"]
 
     # Parse the version info
     version_regexed = re.search(r"(\d+)\.(\d+)\.(\d+)([a-zA-Z]*)(\d*)", RELEASE_VERSION)
@@ -109,6 +113,10 @@ for file_item in extra_files:
 for folder_item in extra_folders:
     extra_pyinstaller_files.append((folder_item, folder_item))
 
+# Add babelfish data files
+extra_pyinstaller_files.extend(collect_data_files("babelfish"))
+extra_pyinstaller_files.extend(collect_data_files("guessit"))
+
 pyi_analysis = Analysis(
     ["SABnzbd.py"],
     datas=extra_pyinstaller_files,
@@ -129,6 +137,7 @@ exe = EXE(
     append_pkg=False,
     icon="icons/sabnzbd.ico",
     version=version_info,
+    target_arch="universal2",
 )
 
 coll = COLLECT(exe, pyi_analysis.binaries, pyi_analysis.zipfiles, pyi_analysis.datas, name="SABnzbd")

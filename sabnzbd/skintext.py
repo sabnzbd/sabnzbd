@@ -569,6 +569,8 @@ SKIN_TEXT = {
     "explain-enable_https_verification": TT(
         "Verify certificates when connecting to indexers and RSS-sources using HTTPS."
     ),
+    "opt-socks5_proxy_url": TT("SOCKS5 Proxy"),
+    "explain-socks5_proxy_url": TT("Use the specified SOCKS5 proxy for all outgoing connections."),
     "swtag-server": TT("Server"),
     "swtag-queue": TT("Queue"),
     "swtag-pp": TT("Post processing"),
@@ -644,6 +646,10 @@ SKIN_TEXT = {
     "ssl_verify-strict": TT("Strict"),
     "srv-priority": TT("Priority"),  #: Server priority
     "explain-svrprio": TT("0 is highest priority, 100 is the lowest priority"),  #: Explain server priority
+    "srv-required": TT("Required"),  #: Server required tickbox
+    "explain-required": TT(
+        "In case of connection failures, the download queue will be paused for a few minutes instead of skipping this server"
+    ),  #: Explain server required tickbox
     "srv-optional": TT("Optional"),  #: Server optional tickbox
     "explain-optional": TT(
         "For unreliable servers, will be ignored longer in case of failures"
@@ -701,6 +707,9 @@ SKIN_TEXT = {
     "link-download": TT("Download"),  #: Config->RSS button "download item"
     "button-rssNow": TT("Read All Feeds Now"),  #: Config->RSS button
     # Config->Notifications
+    "defaultNotifiesAll": TT(
+        "If only the <em>Default</em> category is selected, notifications are enabled for jobs in all categories."
+    ),
     "opt-email_endjob": TT("Email Notification On Job Completion"),
     "email-never": TT("Never"),  #: When to send email
     "email-always": TT("Always"),  #: When to send email
@@ -773,6 +782,7 @@ SKIN_TEXT = {
     "catTags": TT("Indexer Categories / Groups"),
     "button-delCat": TT("X"),  #: Small delete button
     # Config->Sorting
+    "selectOneCat": TT("Select at least 1 category."),
     "seriesSorting": TT("Series Sorting"),
     "opt-tvsort": TT("Enable TV Sorting"),
     "sort-legenda": TT("Pattern Key"),

@@ -1,19 +1,19 @@
-Release Notes - SABnzbd 3.4.0 Beta 1
+Release Notes - SABnzbd 3.5.0 Beta 1
 =========================================================
 
-## Changes since 3.3.1
-- Extended `Deobfuscate final filenames` to attempt to set the correct 
-  file extension based on the file signature if the file extension is 
-  not present or meaningless.
-- Added additional pattern keys that can be used in the `Sort String`
-  for Sorting, by using the `guessit` package internally for parsing.
-- Regular expressions can be used to specify `Unwanted extensions`.
-- Some interface-only options were added as API-call.
-- The Plush skin has been removed.
+## Changes since 3.4.2
+- Removed Python 3.6 support.
+- SOCKS5 proxy support for all outgoing connections.
+- Restored support for UUencoded jobs.
+- `Required` server option: in case of connection failures, the queue
+  will be paused for a few minutes instead of skipping the server.
+- Require TLSv1.2 or higher for SSL news server connections.
+- macOS/Windows: updated to Python 3.10.
+- macOS: native support for M1 systems.
 
-## Bugfixes since 3.3.1
-- Duplicate check based on `.nzb` MD5 was performed before it was calculated.
-- Enforce `local_ranges` for broadcasts (Bonjour/SSDP).
+## Bugfixes since 3.4.2
+- Email notification setting was not shown correctly.
+- Windows: `portable.cmd` was not included in the release.
 
 ## Upgrade notices
 - The download statistics file `totals10.sab` is updated in 3.2.x 

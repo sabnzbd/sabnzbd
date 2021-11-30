@@ -56,6 +56,8 @@ from sabnzbd.filesystem import (
     setname_from_path,
     get_ext,
     get_filename,
+    TS_RE,
+    build_filelists,
 )
 from sabnzbd.nzbstuff import NzbObject, NzbFile
 from sabnzbd.sorting import SeriesSorter
@@ -63,18 +65,12 @@ import sabnzbd.cfg as cfg
 from sabnzbd.constants import Status
 
 # Regex globals
-RAR_RE = re.compile(r"\.(?P<ext>part\d*\.rar|rar|r\d\d|s\d\d|t\d\d|u\d\d|v\d\d|\d\d\d?\d)$", re.I)
 RAR_RE_V3 = re.compile(r"\.(?P<ext>part\d*)$", re.I)
-
 TARGET_RE = re.compile(r'^(?:File|Target): "(.+)" -')
 EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
 EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")
-SPLITFILE_RE = re.compile(r"\.(\d\d\d?\d$)", re.I)
-ZIP_RE = re.compile(r"\.(zip$)", re.I)
-SEVENZIP_RE = re.compile(r"\.7z$", re.I)
-SEVENMULTI_RE = re.compile(r"\.7z\.\d+$", re.I)
-TS_RE = re.compile(r"\.(\d+)\.(ts$)", re.I)
 
+# Constants
 PAR2_COMMAND = None
 MULTIPAR_COMMAND = None
 RAR_COMMAND = None
@@ -148,6 +144,7 @@ ENV_NZO_FIELDS = [
     "bytes_downloaded",
     "bytes_tried",
     "cat",
+    "correct_password",
     "duplicate",
     "encrypted",
     "fail_msg",
@@ -1117,8 +1114,7 @@ def par2_repair(parfile_nzf: NzbFile, nzo: NzbObject, workdir, setname, single):
         readd = False
         for extrapar in nzo.extrapars[setname][:]:
             # Make sure we only get new par2 files
-            if extrapar not in nzo.finished_files and extrapar not in nzo.files:
-                nzo.add_parfile(extrapar)
+            if nzo.add_parfile(extrapar):
                 readd = True
         if readd:
             return readd, result
@@ -1992,51 +1988,6 @@ def rar_sort(a, b):
         return 1
     else:
         return cmp(a, b)
-
-
-def build_filelists(workdir, workdir_complete=None, check_both=False, check_rar=True):
-    """Build filelists, if workdir_complete has files, ignore workdir.
-    Optionally scan both directories.
-    Optionally test content to establish RAR-ness
-    """
-    sevens, joinables, zips, rars, ts, filelist = ([], [], [], [], [], [])
-
-    if workdir_complete:
-        filelist.extend(listdir_full(workdir_complete))
-
-    if workdir and (not filelist or check_both):
-        filelist.extend(listdir_full(workdir, recursive=False))
-
-    for file in filelist:
-        # Extra check for rar (takes CPU/disk)
-        file_is_rar = False
-        if check_rar:
-            file_is_rar = rarfile.is_rarfile(file)
-
-        # Run through all the checks
-        if SEVENZIP_RE.search(file) or SEVENMULTI_RE.search(file):
-            # 7zip
-            sevens.append(file)
-        elif SPLITFILE_RE.search(file) and not file_is_rar:
-            # Joinables, optional with RAR check
-            joinables.append(file)
-        elif ZIP_RE.search(file):
-            # ZIP files
-            zips.append(file)
-        elif RAR_RE.search(file):
-            # RAR files
-            rars.append(file)
-        elif TS_RE.search(file):
-            # TS split files
-            ts.append(file)
-
-    logging.debug("build_filelists(): joinables: %s", joinables)
-    logging.debug("build_filelists(): zips: %s", zips)
-    logging.debug("build_filelists(): rars: %s", rars)
-    logging.debug("build_filelists(): 7zips: %s", sevens)
-    logging.debug("build_filelists(): ts: %s", ts)
-
-    return joinables, zips, rars, sevens, ts
 
 
 def quick_check_set(set, nzo):

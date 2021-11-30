@@ -8,12 +8,14 @@
 # reloxx13 <reloxx@interia.pl>, 2021
 # Ben Hecht <benjamin.hecht@me.com>, 2021
 # Safihre <safihre@sabnzbd.org>, 2021
+# Manuel C. Senn, 2021
+# Andreas Kames, 2021
 # 
 msgid ""
 msgstr ""
 "Project-Id-Version: SABnzbd-develop\n"
 "PO-Revision-Date: 2020-06-27 15:49+0000\n"
-"Last-Translator: Safihre <safihre@sabnzbd.org>, 2021\n"
+"Last-Translator: Andreas Kames, 2021\n"
 "Language-Team: German (https://www.transifex.com/sabnzbd/teams/111101/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -177,6 +179,26 @@ msgstr "Fehler in tempfile.mkstemp"
 #: sabnzbd/__init__.py
 msgid "Loading %s failed"
 msgstr "Fehler beim Laden von %s"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed postprocessor"
+msgstr "Neustart aufgrund eines abgestürzten Postprocessors"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed downloader"
+msgstr "Neustart aufgrund eines abgestürzten Downloaders"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed decoder"
+msgstr "Neustart aufgrund eines abgestürzten Dekoders"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed assembler"
+msgstr "Neustart aufgrund eines abgestürzten Assemblers"
 
 #. Warning message
 #: sabnzbd/__init__.py
@@ -408,10 +430,6 @@ msgstr "Ungültiges Stufen-Protokoll im Verlauf für %s"
 msgid "Decoder failure: Out of memory"
 msgstr "Decoder Fehler: Nicht genügend Speicher"
 
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode erkannt, aber nur yEnc encoding ist untertützt [%s]"
-
 #. Warning message
 #: sabnzbd/decoder.py
 msgid "Unknown Error while decoding %s"
@@ -517,7 +535,7 @@ msgstr "Wird beendet …"
 #. Warning message
 #: sabnzbd/downloader.py
 msgid "Server %s is expiring in %s day(s)"
-msgstr "Server %s läuft in %s tag(en) ab"
+msgstr "Server %s läuft in %s Tag(en) ab"
 
 #. Warning message
 #: sabnzbd/downloader.py
@@ -1667,7 +1685,7 @@ msgstr "RAR-Datei konnten nicht überprüft werden"
 
 #: sabnzbd/postproc.py
 msgid "Trying RAR renamer"
-msgstr ""
+msgstr "Versuche RAR-Umbenenner"
 
 #. Warning message
 #: sabnzbd/postproc.py
@@ -3585,6 +3603,8 @@ msgid ""
 "Select a mode and list all (un)wanted extensions. For example: <b>exe</b> or"
 " <b>exe, com</b>"
 msgstr ""
+"Modus auswählen, und alle (nicht-)erwünschten Erweiterungen auflisten. Zum "
+"Beispiel : <b>exe</b> oder <b>exe, com</b>"
 
 #: sabnzbd/skintext.py
 msgid "Enable SFV-based checks"
@@ -3780,6 +3800,9 @@ msgid ""
 "Additionally, attempts to set the correct file extension based on the file "
 "signature if the extension is not present or meaningless."
 msgstr ""
+"Zusätzlich wird versucht die korrekte Dateierweiterung mithilfe der "
+"Dateisignatur zu ermitteln, falls noch keine Dateierweiterung vorhanden, "
+"oder sie sinnlos sein sollte."
 
 #: sabnzbd/skintext.py
 msgid "HTTPS certificate verification"
@@ -3791,6 +3814,14 @@ msgid ""
 msgstr ""
 "Überprüfe Zertifikate bei Verbindungen zu Indexern und RSS-Quellen über "
 "HTTPS."
+
+#: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Server"
@@ -3994,11 +4025,11 @@ msgstr "Zeitüberschreitung"
 
 #: sabnzbd/skintext.py
 msgid "Account expiration date"
-msgstr ""
+msgstr "Account Ablaufdatum"
 
 #: sabnzbd/skintext.py
 msgid "Warn 5 days in advance of account expiration date."
-msgstr ""
+msgstr "5 Tage vor dem Ablauf des Accounts warnen."
 
 #: sabnzbd/skintext.py
 msgid ""
@@ -4050,6 +4081,19 @@ msgstr "Strikt"
 #: sabnzbd/skintext.py
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 ist die höchste, 99 die niedrigste Priorität"
+
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr "Benötigt"
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+"Im Fall von Verbindungsausfällen wird die Downloadwarteschlange für ein paar"
+" Minuten pausiert, statt diesen Server zu überspringen"
 
 #. Server optional tickbox
 #: sabnzbd/skintext.py
@@ -4168,7 +4212,7 @@ msgstr "Bearbeiten"
 #. Config->RSS when will be the next RSS scan
 #: sabnzbd/skintext.py
 msgid "Next scan at"
-msgstr "Nächster scan um"
+msgstr "Nächster Scan um"
 
 #. Config->RSS table column header
 #: sabnzbd/skintext.py
@@ -4234,6 +4278,12 @@ msgstr "Heruntergeladen"
 #: sabnzbd/skintext.py
 msgid "Read All Feeds Now"
 msgstr "Jetzt alle Feeds lesen"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
@@ -4521,7 +4571,13 @@ msgstr "Indexer Kategorien/Gruppen"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr "Wähle mindestens 1 Kategorie"
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "Sortieren von TV-Serien"
 
@@ -4549,7 +4605,8 @@ msgstr "Voreinstellungen"
 msgid "Example"
 msgstr "Beispiel"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr "Film Sortierung"
 
@@ -4701,7 +4758,8 @@ msgstr "In Ordnern"
 msgid "No folders"
 msgstr "Keine Ordner"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "Sortieren nach Datum"
 
@@ -4899,7 +4957,7 @@ msgstr "Weitere Warteschlangen Spalten"
 
 #: sabnzbd/skintext.py
 msgid "Extra history columns"
-msgstr "Weitere Verlauf Spalten"
+msgstr "Weitere Verlaufspalten"
 
 #: sabnzbd/skintext.py
 msgid "page"

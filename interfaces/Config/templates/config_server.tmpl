@@ -1,5 +1,5 @@
 <!--#set global $pane="Servers"#-->
-<!--#set global $help_uri="configuration/3.4/servers"#-->
+<!--#set global $help_uri="configuration/3.5/servers"#-->
 <!--#include $webdir + "/_inc_header_uc.tmpl"#-->
 
 <!--#import json#-->
@@ -102,6 +102,11 @@
                         <label class="config" for="send_group">$T('srv-send_group')</label>
                         <input type="checkbox" name="send_group" id="send_group" value="1" />
                         <span class="desc">$T('srv-explain-send_group')</span>
+                    </div>
+                    <div class="field-pair advanced-settings">
+                        <label class="config" for="required">$T('srv-required')</label>
+                        <input type="checkbox" name="required" id="required" value="1" />
+                        <span class="desc">$T('explain-required')</span>
                     </div>
                     <div class="field-pair advanced-settings">
                         <label class="config" for="optional">$T('srv-optional')</label>
@@ -224,6 +229,11 @@
                             <input type="text" name="ssl_ciphers" id="ssl_ciphers" value="$server['ssl_ciphers']" />
                             <span class="desc">$T('explain-ssl_ciphers') <br>$T('readwiki')
                             <a href="${helpuri}advanced/ssl-ciphers" target="_blank">${helpuri}advanced/ssl-ciphers</a></span>
+                        </div>
+                        <div class="field-pair advanced-settings">
+                            <label class="config" for="required$cur">$T('srv-required')</label>
+                            <input type="checkbox" name="required" id="required$cur" value="1" <!--#if int($server['required']) != 0 then 'checked="checked"' else ""#--> />
+                            <span class="desc">$T('explain-required')</span>
                         </div>
                         <div class="field-pair advanced-settings">
                             <label class="config" for="optional$cur">$T('srv-optional')</label>

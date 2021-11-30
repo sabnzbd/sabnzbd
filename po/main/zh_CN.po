@@ -164,6 +164,26 @@ msgstr "加载 %s 失败"
 
 #. Warning message
 #: sabnzbd/__init__.py
+msgid "Restarting because of crashed postprocessor"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed downloader"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed decoder"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed assembler"
+msgstr ""
+
+#. Warning message
+#: sabnzbd/__init__.py
 msgid "Cannot access PID file %s"
 msgstr ""
 
@@ -379,10 +399,6 @@ msgstr "%s 历史信息中 stage 日志无效"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "解码器失败：内存不足"
-
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr ""
 
 #. Warning message
 #: sabnzbd/decoder.py
@@ -3602,6 +3618,14 @@ msgid ""
 msgstr "当用 HTTPS 方式连接索引和RSS源时验证证书。"
 
 #: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
+
+#: sabnzbd/skintext.py
 msgid "Server"
 msgstr "服务器"
 
@@ -3844,6 +3868,17 @@ msgstr "严格"
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 为最高优先级，100 为最低优先级"
 
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr ""
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+
 #. Server optional tickbox
 #: sabnzbd/skintext.py
 msgid "Optional"
@@ -4025,6 +4060,12 @@ msgstr "已下载"
 #: sabnzbd/skintext.py
 msgid "Read All Feeds Now"
 msgstr "立即读取全部 Feed"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
@@ -4304,7 +4345,13 @@ msgstr "索引 Categories / Groups"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr ""
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "TV 排序"
 
@@ -4332,7 +4379,8 @@ msgstr "预设"
 msgid "Example"
 msgstr "示例"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr "电影排序"
 
@@ -4484,7 +4532,8 @@ msgstr "分文件夹"
 msgid "No folders"
 msgstr "不分文件夹"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "日期排序"
 

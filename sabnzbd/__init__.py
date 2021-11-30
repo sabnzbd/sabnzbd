@@ -24,11 +24,13 @@ import ctypes.util
 import gzip
 import time
 import socket
+import socks
 import cherrypy
 import cherrypy._cpreqbody
 import platform
 import sys
 import ssl
+import urllib.parse
 from threading import Lock, Thread, Condition
 from typing import Any, AnyStr, Optional, Union
 
@@ -69,8 +71,6 @@ elif os.name == "posix":
     # Parse macOS version numbers
     if platform.system().lower() == "darwin":
         DARWIN = True
-        # 12 = Sierra, 11 = ElCaptain, 10 = Yosemite, 9 = Mavericks, 8 = MountainLion
-        DARWIN_VERSION = int(platform.mac_ver()[0].split(".")[1])
         MACOSLIBC = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)  # the MacOS C library
         try:
             import Foundation
@@ -121,10 +121,6 @@ from sabnzbd.constants import (
     DEFAULT_PRIORITY,
     VALID_ARCHIVES,
     REPAIR_REQUEST,
-    QUEUE_FILE_NAME,
-    QUEUE_VERSION,
-    QUEUE_FILE_TMPL,
-    Status,
 )
 import sabnzbd.utils.ssdp
 
@@ -201,7 +197,6 @@ CMDLINE = " ".join(['"%s"' % arg for arg in sys.argv])
 __INITIALIZED__ = False
 __SHUTTING_DOWN__ = False
 
-
 ##############################################################################
 # Signal Handler
 ##############################################################################
@@ -274,6 +269,7 @@ def initialize(pause_downloader=False, clean_up=False, repair=0):
     cfg.https_cert.callback(guard_restart)
     cfg.https_key.callback(guard_restart)
     cfg.enable_https.callback(guard_restart)
+    cfg.socks5_proxy_url.callback(guard_restart)
     cfg.top_only.callback(guard_top_only)
     cfg.pause_on_post_processing.callback(guard_pause_on_pp)
     cfg.quota_size.callback(guard_quota_size)
@@ -1000,16 +996,16 @@ def check_all_tasks():
 
     # Non-restartable threads, require program restart
     if not sabnzbd.PostProcessor.is_alive():
-        logging.info("Restarting because of crashed postprocessor")
+        logging.warning(T("Restarting because of crashed postprocessor"))
         return False
     if not sabnzbd.Downloader.is_alive():
-        logging.info("Restarting because of crashed downloader")
+        logging.warning(T("Restarting because of crashed downloader"))
         return False
     if not sabnzbd.Decoder.is_alive():
-        logging.info("Restarting because of crashed decoder")
+        logging.warning(T("Restarting because of crashed decoder"))
         return False
     if not sabnzbd.Assembler.is_alive():
-        logging.info("Restarting because of crashed assembler")
+        logging.warning(T("Restarting because of crashed assembler"))
         return False
 
     # Kick the downloader, in case it missed the semaphore
@@ -1080,6 +1076,21 @@ def wait_for_download_folder():
     while not cfg.download_dir.test_path():
         logging.debug('Waiting for "incomplete" folder')
         time.sleep(2.0)
+
+
+def set_socks5_proxy():
+    if cfg.socks5_proxy_url():
+        proxy = urllib.parse.urlparse(cfg.socks5_proxy_url())
+        logging.info("Using Socks5 proxy %s:%s", proxy.hostname, proxy.port)
+        socks.set_default_proxy(
+            socks.SOCKS5,
+            proxy.hostname,
+            proxy.port,
+            True,  # use remote DNS, default
+            proxy.username,
+            proxy.password,
+        )
+        socket.socket = socks.socksocket
 
 
 def test_ipv6():

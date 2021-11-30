@@ -63,11 +63,10 @@ from sabnzbd.misc import (
 from sabnzbd.filesystem import diskspace, get_ext, clip_path, remove_all, list_scripts
 from sabnzbd.encoding import xml_name, utob
 from sabnzbd.utils.servertests import test_nntp_server_dict
-from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup
+from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup, active_socks5_proxy
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 from sabnzbd.lang import is_rtl
 import sabnzbd.notifier
-import sabnzbd.rss
 import sabnzbd.emailer
 import sabnzbd.sorting
 
@@ -1336,6 +1335,7 @@ def build_status(calculate_performance: bool = False, skip_dashboard: bool = Fal
 
     # Dashboard: Connection information
     if not int_conv(skip_dashboard):
+        info["active_socks5_proxy"] = active_socks5_proxy()
         info["localipv4"] = localipv4()
         info["publicipv4"] = publicipv4()
         info["ipv6"] = ipv6()

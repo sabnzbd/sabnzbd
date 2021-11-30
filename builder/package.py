@@ -22,11 +22,11 @@ import sys
 import os
 import time
 import shutil
+import shlex
 import subprocess
 import tarfile
 import pkginfo
 import github
-from distutils.dir_util import copy_tree
 
 
 VERSION_FILE = "sabnzbd/version.py"
@@ -185,8 +185,7 @@ if __name__ == "__main__":
         # Run PyInstaller and check output
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
 
-        # Use special distutils function to merge the main and console directories
-        copy_tree("dist/SABnzbd-console", "dist/SABnzbd")
+        shutil.copytree("dist/SABnzbd-console", "dist/SABnzbd", dirs_exist_ok=True)
         safe_remove("dist/SABnzbd-console")
 
         # Remove unwanted DLL's
@@ -244,6 +243,14 @@ if __name__ == "__main__":
 
         # Run PyInstaller and check output
         run_external_command([sys.executable, "-O", "-m", "PyInstaller", "SABnzbd.spec"])
+
+        # Make sure we created a fully universal2 release
+        for bin_to_check in glob.glob("dist/SABnzbd.app/Contents/MacOS/**/*.so", recursive=True):
+            print("Checking if binary is universal2: %s" % bin_to_check)
+            file_output = run_external_command(["file", bin_to_check])
+            # Make sure we have both arm64 and x86
+            if not ("x86_64" in file_output and "arm64" in file_output):
+                raise RuntimeError("Non-universal2 binary found!")
 
         # Only continue if we can sign
         if authority:
@@ -361,7 +368,7 @@ if __name__ == "__main__":
 
         # Copy all folders and files to the new folder
         for source_folder in extra_folders:
-            copy_tree(source_folder, os.path.join(src_folder, source_folder))
+            shutil.copytree(source_folder, os.path.join(src_folder, source_folder), dirs_exist_ok=True)
 
         # Copy all files
         for source_file in extra_files:

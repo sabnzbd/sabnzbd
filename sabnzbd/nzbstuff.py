@@ -556,6 +556,7 @@ NzbObjectSaver = (
     "nzo_info",
     "custom_name",
     "password",
+    "correct_password",
     "next_save",
     "save_timeout",
     "encrypted",
@@ -651,6 +652,7 @@ class NzbObject(TryList):
         self.groups = []
         self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0  # Avg age in seconds (calculated from avg_age)
+        self.correct_password: Optional[str] = None
 
         # Bookkeeping values
         self.meta = {}
@@ -1103,8 +1105,7 @@ class NzbObject(TryList):
                 self.postpone_pars(nzf, setname)
             # Get the next one
             for new_nzf in self.extrapars[setname]:
-                if not new_nzf.completed:
-                    self.add_parfile(new_nzf)
+                if self.add_parfile(new_nzf):
                     # Add it to the top
                     self.files.remove(new_nzf)
                     self.files.insert(0, new_nzf)
@@ -1141,8 +1142,8 @@ class NzbObject(TryList):
             added_blocks = 0
             while added_blocks < needed_blocks:
                 new_nzf = block_list.pop()
-                self.add_parfile(new_nzf)
-                added_blocks += new_nzf.blocks
+                if self.add_parfile(new_nzf):
+                    added_blocks += new_nzf.blocks
 
             logging.info("Added %s blocks to %s", added_blocks, self.final_name)
             return added_blocks
@@ -1216,13 +1217,16 @@ class NzbObject(TryList):
         # Check if there are any files left here, so the check is inside the NZO_LOCK
         return articles_left, file_done, not self.files
 
-    @synchronized(NZO_LOCK)
     def add_saved_article(self, article: Article):
         self.saved_articles.append(article)
 
-    @synchronized(NZO_LOCK)
     def remove_saved_article(self, article: Article):
-        self.saved_articles.remove(article)
+        try:
+            self.saved_articles.remove(article)
+        except ValueError:
+            # Due to racing conditions, it could already be removed
+            logging.debug("Failed to remove %s from saved articles, probably already deleted", article)
+            pass
 
     def check_existing_files(self, wdir: str):
         """Check if downloaded files already exits, for these set NZF to complete"""
@@ -1428,15 +1432,18 @@ class NzbObject(TryList):
             self.unwanted_ext = 2
 
     @synchronized(NZO_LOCK)
-    def add_parfile(self, parfile: NzbFile):
+    def add_parfile(self, parfile: NzbFile) -> bool:
         """Add parfile to the files to be downloaded
         Resets trylist just to be sure
         Adjust download-size accordingly
+        Returns False when the file couldn't be added
         """
         if not parfile.completed and parfile not in self.files and parfile not in self.finished_files:
             parfile.reset_try_list()
             self.files.append(parfile)
             self.bytes_tried -= parfile.bytes_left
+            return True
+        return False
 
     @synchronized(NZO_LOCK)
     def remove_parset(self, setname: str):
@@ -1463,12 +1470,12 @@ class NzbObject(TryList):
                 # from all the sets. This probably means we get too much par2, but it's worth it.
                 blocks_new = 0
                 for new_nzf in self.extrapars[parset]:
-                    self.add_parfile(new_nzf)
-                    blocks_new += new_nzf.blocks
-                    # Enough now?
-                    if blocks_new >= self.bad_articles:
-                        logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
-                        break
+                    if self.add_parfile(new_nzf):
+                        blocks_new += new_nzf.blocks
+                        # Enough now?
+                        if blocks_new >= self.bad_articles:
+                            logging.info("Prospectively added %s repair blocks to %s", blocks_new, self.final_name)
+                            break
             # Reset NZO TryList
             self.reset_try_list()
 
@@ -1737,7 +1744,7 @@ class NzbObject(TryList):
             and not is_probably_obfuscated(yenc_filename)
             and not nzf.filename.endswith(".par2")
         ):
-            logging.info("Detected filename from yenc: %s -> %s", nzf.filename, yenc_filename)
+            logging.info("Detected filename from yenc or uu: %s -> %s", nzf.filename, yenc_filename)
             self.renamed_file(yenc_filename, nzf.filename)
             nzf.filename = yenc_filename
 

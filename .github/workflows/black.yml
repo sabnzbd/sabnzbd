@@ -17,6 +17,6 @@ jobs:
             builder
             tests
             --line-length=120
-            --target-version=py36
+            --target-version=py37
             --check
             --diff

@@ -180,6 +180,26 @@ msgstr "Echec du chargement de %s"
 
 #. Warning message
 #: sabnzbd/__init__.py
+msgid "Restarting because of crashed postprocessor"
+msgstr "Redémarrage suite au plantage du postprocesseur"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed downloader"
+msgstr "Redémarrage suite au plantage du téléchargeur"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed decoder"
+msgstr "Redémarrage suite au plantage du décodeur"
+
+#. Warning message
+#: sabnzbd/__init__.py
+msgid "Restarting because of crashed assembler"
+msgstr "Redémarrage suite au plantage de l'assembleur"
+
+#. Warning message
+#: sabnzbd/__init__.py
 msgid "Cannot access PID file %s"
 msgstr "Impossible d'accéder au fichier PID %s"
 
@@ -408,10 +428,6 @@ msgstr "Étape de journalisation invalide dans l'historique pour %s"
 #: sabnzbd/decoder.py
 msgid "Decoder failure: Out of memory"
 msgstr "Échec du décodeur : mémoire insuffisante"
-
-#: sabnzbd/decoder.py
-msgid "UUencode detected, only yEnc encoding is supported [%s]"
-msgstr "UUencode détecté, seul l'encodage yEnc est pris en charge [%s]"
 
 #. Warning message
 #: sabnzbd/decoder.py
@@ -3802,6 +3818,15 @@ msgstr ""
 "utilisant HTTPS."
 
 #: sabnzbd/skintext.py
+msgid "SOCKS5 Proxy"
+msgstr "Proxy SOCKS5"
+
+#: sabnzbd/skintext.py
+msgid "Use the specified SOCKS5 proxy for all outgoing connections."
+msgstr ""
+"Utiliser le proxy SOCKS5 spécifié pour toutes les connexions sortantes."
+
+#: sabnzbd/skintext.py
 msgid "Server"
 msgstr "Serveur"
 
@@ -4060,6 +4085,19 @@ msgstr "Strict"
 msgid "0 is highest priority, 100 is the lowest priority"
 msgstr "0 est la priorité la plus élevée, 99 est la priorité la plus faible"
 
+#. Server required tickbox
+#: sabnzbd/skintext.py
+msgid "Required"
+msgstr "Obligatoire"
+
+#: sabnzbd/skintext.py
+msgid ""
+"In case of connection failures, the download queue will be paused for a few "
+"minutes instead of skipping this server"
+msgstr ""
+"En cas d'échecs de connexion, la file d'attente des téléchargements sera "
+"mise en pause pendant quelques minutes au lieu de passer au serveur suivant."
+
 #. Server optional tickbox
 #: sabnzbd/skintext.py
 msgid "Optional"
@@ -4246,6 +4284,14 @@ msgstr "Téléchargé"
 #: sabnzbd/skintext.py
 msgid "Read All Feeds Now"
 msgstr "Lire tous les flux maintenant"
+
+#: sabnzbd/skintext.py
+msgid ""
+"If only the <em>Default</em> category is selected, notifications are enabled"
+" for jobs in all categories."
+msgstr ""
+"Si seule la catégorie <em>Défaut</em> est sélectionnée, les notifications "
+"seront activées pour les tâches de toutes les catégories."
 
 #: sabnzbd/skintext.py
 msgid "Email Notification On Job Completion"
@@ -4535,7 +4581,13 @@ msgstr "Catégories de l'indexeur / Groupes"
 msgid "X"
 msgstr "X"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
+msgid "Select at least 1 category."
+msgstr "Sélectionnez au moins une catégorie."
+
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Series Sorting"
 msgstr "Tri des séries"
 
@@ -4563,7 +4615,8 @@ msgstr "Modèles prédéfinis"
 msgid "Example"
 msgstr "Exemple"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Movie Sorting"
 msgstr "Tri des films"
 
@@ -4716,7 +4769,8 @@ msgstr "Dans les dossiers"
 msgid "No folders"
 msgstr "Pas de dossiers"
 
-#: sabnzbd/skintext.py
+#. Warning message
+#: sabnzbd/skintext.py, sabnzbd/sorting.py
 msgid "Date Sorting"
 msgstr "Tri par date"
 

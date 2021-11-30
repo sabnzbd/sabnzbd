@@ -257,6 +257,8 @@ class TestSanitizeFiles(ffs.TestCase):
         self.setUpPyfakefs()
         self.fs.path_separator = "\\"
         self.fs.is_windows_fs = True
+        # Disable randomisation of directory listings
+        self.fs.shuffle_listdir_results = False
 
     def test_sanitize_files_input(self):
         assert [] == filesystem.sanitize_files(folder=None)

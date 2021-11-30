@@ -72,7 +72,7 @@ class TestBasicPages(SABnzbdBaseTest):
                 self.no_page_crash()
             else:
                 # For others if all is fine, button will be back to normal in 1 second
-                time.sleep(1.0)
+                time.sleep(1.5)
                 assert submit_btn.text == "Save Changes"
 
 

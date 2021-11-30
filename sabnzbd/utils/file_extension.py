@@ -9,8 +9,7 @@ import puremagic
 import os
 import sys
 from typing import List
-from pathlib import Path
-from sabnzbd.filesystem import get_ext
+from sabnzbd.filesystem import get_ext, RAR_RE
 
 # common extension from https://www.computerhope.com/issues/ch001789.htm
 POPULAR_EXT = (
@@ -168,6 +167,8 @@ DOWNLOAD_EXT = (
     "bdmv",
     "bin",
     "bup",
+    "cbr",
+    "cbz",
     "clpi",
     "crx",
     "db",
@@ -234,16 +235,16 @@ DOWNLOAD_EXT = (
     "xpi",
 )
 
-# combine to one tuple, with unique entries:
+# Combine to one tuple, with unique entries:
 ALL_EXT = tuple(set(POPULAR_EXT + DOWNLOAD_EXT))
-# prepend a dot to each extension, because we work with a leading dot in extensions
+# Prepend a dot to each extension, because we work with a leading dot in extensions
 ALL_EXT = tuple(["." + i for i in ALL_EXT])
 
 
 def has_popular_extension(file_path: str) -> bool:
     """returns boolean if the extension of file_path is a popular, well-known extension"""
     file_extension = get_ext(file_path)
-    return file_extension in ALL_EXT
+    return file_extension in ALL_EXT or RAR_RE.match(file_extension)
 
 
 def all_possible_extensions(file_path: str) -> List[str]:
@@ -264,9 +265,12 @@ def what_is_most_likely_extension(file_path: str) -> str:
 
     # Check if text or NZB, as puremagic is not good at that.
     try:
-        txt = Path(file_path).read_text()
+        # Only read the start, don't need the whole file
+        with open(file_path, "r") as inp_file:
+            txt = inp_file.read(200).lower()
+
         # Yes, a text file ... so let's check if it's even an NZB:
-        if txt.lower().find("<nzb xmlns=") >= 0 or txt.lower().find("!doctype nzb public") >= 0:
+        if "!doctype nzb public" in txt or "<nzb xmlns=" in txt:
             # yes, contains NZB signals:
             return ".nzb"
         else:

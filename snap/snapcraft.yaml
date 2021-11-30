@@ -2,7 +2,7 @@ name: sabnzbd
 summary: SABnzbd
 description: The automated Usenet download tool
 confinement: strict
-base: core18
+base: core20
 grade: stable
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
 adopt-info: sabnzbd
@@ -19,8 +19,7 @@ parts:
   sabnzbd:
     plugin: python
     source: .
-    python-version: python3
-    requirements: [snap/requirements_snap.txt, requirements.txt]
+    requirements: [snap/local/requirements_snap.txt, requirements.txt]
     stage-packages: [python3-dev, libdb5.3, unrar, p7zip-full, par2]
     build-packages: [libffi-dev, python3-dev, libssl-dev, cargo]
     override-build: |

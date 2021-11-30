@@ -17,7 +17,6 @@
 
 import os
 from collections import namedtuple
-from re import compile
 
 CONFIG_VERSION = 19
 
@@ -122,6 +121,7 @@ VALID_NZB_FILES = (".nzb", ".gz", ".bz2")
 CHEETAH_DIRECTIVES = {"directiveStartToken": "<!--#", "directiveEndToken": "#-->", "prioritizeSearchListOverSelf": True}
 
 IGNORED_FOLDERS = ("@eaDir", ".appleDouble")
+IGNORED_MOVIE_FOLDERS = ("video_ts", "audio_ts", "bdmv")
 
 EXCLUDED_GUESSIT_PROPERTIES = [
     "part",

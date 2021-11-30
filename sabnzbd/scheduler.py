@@ -25,9 +25,7 @@ import time
 from typing import Optional
 
 import sabnzbd.utils.kronos as kronos
-import sabnzbd.rss
 import sabnzbd.downloader
-import sabnzbd.dirscanner
 import sabnzbd.misc
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
@@ -390,6 +388,11 @@ class Scheduler:
         self.resume_task = self.scheduler.add_interval_task(
             self.__check_diskspace, "check_diskspace", 5 * 60, 9 * 60, "threaded", args=[full_dir, required_space]
         )
+
+    def plan_required_server_resume(self, interval: int = 5):
+        """Create task for resuming downloading"""
+        if not sabnzbd.Downloader.paused:
+            self.plan_resume(interval)
 
     def cancel_resume_task(self):
         """Cancel the current auto resume task"""
