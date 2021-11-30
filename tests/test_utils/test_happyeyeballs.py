@@ -36,7 +36,7 @@ class TestHappyEyeballs:
         assert "." in ip or ":" in ip
 
     def test_google_https(self):
-        ip = happyeyeballs("www.google.com", port=443, use_ssl=True)
+        ip = happyeyeballs("www.google.com", port=443)
         assert "." in ip or ":" in ip
 
     def test_not_resolvable(self):

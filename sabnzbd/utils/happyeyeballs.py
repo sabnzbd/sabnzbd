@@ -11,7 +11,6 @@ print happyeyeballs('newszilla.xs4all.nl', port=119)
 """
 
 import socket
-import ssl
 import threading
 import time
 import logging
@@ -19,7 +18,7 @@ import queue
 
 
 # Called by each thread
-def do_socket_connect(result_queue: queue.Queue, ip: str, port: int, use_ssl: bool, ipv4delay: int):
+def do_socket_connect(result_queue: queue.Queue, ip: str, port: int, ipv4delay: int):
     """Connect to the ip, and put the result into the queue"""
     try:
         # Create socket
@@ -31,38 +30,26 @@ def do_socket_connect(result_queue: queue.Queue, ip: str, port: int, use_ssl: bo
 
         s.settimeout(3)
 
-        if not use_ssl:
-            try:
-                # Connect ...
-                s.connect((ip, port))
-            finally:
-                # always close
-                s.close()
-        else:
-            # SSL, so wrap socket, don't care about any verification
-            context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-            context.check_hostname = False
-            context.verify_mode = ssl.CERT_NONE
-            wrapped_socket = context.wrap_socket(s)
+        try:
+            # Connect ...
+            s.connect((ip, port))
+        finally:
+            # always close
+            s.close()
 
-            try:
-                wrapped_socket.connect((ip, port))
-            finally:
-                # Always close
-                wrapped_socket.close()
         result_queue.put((ip, True))
     except:
         # We got an exception, so no successful connect on IP & port:
         result_queue.put((ip, False))
 
 
-def happyeyeballs(host: str, port: int = 80, use_ssl: bool = False, preferipv6: bool = False) -> str:
+def happyeyeballs(host: str, port: int = 80, preferipv6: bool = False) -> str:
     """Happyeyeballs function, with caching of the results"""
 
     # Find out if a cached result is available, and recent enough:
     timecurrent = int(time.time())  # current time in seconds since epoch
     retentionseconds = 100
-    hostkey = (host, port, use_ssl, preferipv6)  # Example key: ('ssl.astraweb.com', 563, True, True)
+    hostkey = (host, port, preferipv6)  # Example key: ('ssl.astraweb.com', 563, True)
 
     try:
         # Let's check the time:
@@ -93,9 +80,7 @@ def happyeyeballs(host: str, port: int = 80, use_ssl: bool = False, preferipv6: 
         allinfo = socket.getaddrinfo(host, port, 0, 0, socket.IPPROTO_TCP)
         for info in allinfo:
             address = info[4][0]
-            resolver_thread = threading.Thread(
-                target=do_socket_connect, args=(result_queue, address, port, use_ssl, ipv4delay)
-            )
+            resolver_thread = threading.Thread(target=do_socket_connect, args=(result_queue, address, port, ipv4delay))
             resolver_thread.daemon = True
             resolver_thread.start()
 
@@ -109,9 +94,7 @@ def happyeyeballs(host: str, port: int = 80, use_ssl: bool = False, preferipv6: 
     except:
         result = None
 
-    logging.info(
-        "Quickest IP address for %s (port %s, ssl %s, preferipv6 %s) is %s", host, port, use_ssl, preferipv6, result
-    )
+    logging.info("Quickest IP address for %s (port %s, preferipv6 %s) is %s", host, port, preferipv6, result)
     delay = int(1000 * (time.perf_counter() - start))
     logging.debug("Happy Eyeballs lookup and port connect took %s ms", delay)
 
@@ -127,21 +110,21 @@ happyeyeballs.happylist = {}  # The cached results. This static variable must be
 if __name__ == "__main__":
     # plain HTTP/HTTPS sites:
     print((happyeyeballs("www.google.com")))
-    print((happyeyeballs("www.google.com", port=443, use_ssl=True)))
+    print((happyeyeballs("www.google.com", port=443)))
     print((happyeyeballs("www.nu.nl")))
 
     # newsservers:
     print((happyeyeballs("newszilla6.xs4all.nl", port=119)))
     print((happyeyeballs("newszilla.xs4all.nl", port=119)))
     print((happyeyeballs("block.cheapnews.eu", port=119)))
-    print((happyeyeballs("block.cheapnews.eu", port=443, use_ssl=True)))
-    print((happyeyeballs("sslreader.eweka.nl", port=563, use_ssl=True)))
+    print((happyeyeballs("block.cheapnews.eu", port=443)))
+    print((happyeyeballs("sslreader.eweka.nl", port=563)))
     print((happyeyeballs("news.thundernews.com", port=119)))
     print((happyeyeballs("news.thundernews.com", port=119, preferipv6=False)))
-    print((happyeyeballs("secure.eu.thundernews.com", port=563, use_ssl=True)))
-    print((happyeyeballs("bonus.frugalusenet.com", port=563, use_ssl=True)))
+    print((happyeyeballs("secure.eu.thundernews.com", port=563)))
+    print((happyeyeballs("bonus.frugalusenet.com", port=563)))
 
     # Strange cases
-    print((happyeyeballs("does.not.resolve", port=443, use_ssl=True)))
+    print((happyeyeballs("does.not.resolve", port=443)))
     print((happyeyeballs("www.google.com", port=119)))
     print((happyeyeballs("216.58.211.164")))

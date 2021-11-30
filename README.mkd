@@ -1,5 +1,12 @@
-Release Notes - SABnzbd 3.5.0 Beta 1
+Release Notes - SABnzbd 3.5.0 Beta 2
 =========================================================
+
+## Changes since 3.5.0 Beta 1
+- Updated news server SSL setup due to changes in Python 3.10.
+- Setting custom ciphers forces the maximum TLS version to 1.2.
+- Handle multiple passwords stored in NZB-file.
+- Print low-level Windows status error on `IOError`.
+- macOS: full native support for M1 systems.
 
 ## Changes since 3.4.2
 - Removed Python 3.6 support.
