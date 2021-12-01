@@ -43,8 +43,8 @@ def socket_test_server(ssl_context: ssl.SSLContext):
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
         server_socket.bind((TEST_HOST, TEST_PORT))
-        server_socket.listen(5)
-        server_socket.settimeout(5)
+        server_socket.listen(1)
+        server_socket.settimeout(1.0)
         conn, _ = server_socket.accept()
         with ssl_context.wrap_socket(sock=conn, server_side=True) as wrapped_socket:
             wrapped_socket.write(TEST_DATA)
@@ -66,6 +66,8 @@ class TestNewsWrapper:
             (None, "TLSv1.3", None, True),  # Default, highest
             (ssl.TLSVersion.TLSv1_2, "TLSv1.2", None, True),  # Server with just TLSv1.2
             (ssl.TLSVersion.SSLv3, None, None, False),  # No connection for old TLS/SSL
+            (ssl.TLSVersion.TLSv1, None, None, False),
+            (ssl.TLSVersion.TLSv1_1, None, None, False),
             (None, None, "RC4-MD5", False),  # No connection for old cipher
             (None, "TLSv1.2", "AES256-SHA", True),  # Forced to TLSv1.2 if ciphers set
             (None, None, "TLS_AES_128_CCM_SHA256", False),  # Cannot force use of TLSv1.3 cipher
@@ -90,7 +92,8 @@ class TestNewsWrapper:
         # Set the options
         if server_tls:
             server_context.maximum_version = server_tls
-        threading.Thread(target=socket_test_server, args=(server_context,), daemon=True).start()
+        server_thread = threading.Thread(target=socket_test_server, args=(server_context,), daemon=True)
+        server_thread.start()
 
         # Create the NNTP, mocking the required values
         # We disable certificate validation, as we use self-signed certificates
@@ -119,3 +122,8 @@ class TestNewsWrapper:
 
             if client_cipher:
                 assert nntp.sock.cipher()[0] == client_cipher
+
+        # Wait for server to close
+        server_thread.join(timeout=1.5)
+        if server_thread.is_alive():
+            raise RuntimeError("Test server was not stopped")
