@@ -48,7 +48,7 @@ class LineFeeder:
     def __init__(self, reader):
         self.reader = reader
         self.linecache = []
-        self.regex = re.compile("[\r\n]+")
+        self.regex = re.compile(r"[\r\n]+")
 
     def __iter__(self):
         return self
@@ -56,7 +56,12 @@ class LineFeeder:
     def __next__(self):
         if not self.linecache:
             line = self.reader.readline()
+            if not line:
+                raise StopIteration
             self.linecache = self.regex.split(line)
+            # Remove empty element after last line break
+            if len(self.linecache) > 1:
+                self.linecache.pop()
         if self.linecache:
             return self.linecache.pop(0)
         else:
@@ -203,37 +208,37 @@ def nzbfile_regex_parser(raw_data: str, nzo):
     time_now = time.time()
     valid_files = 0
 
-    success = 1
+    success = 0
 
     # Header and end
-    encoding_re = re.compile('<\?xml [^>]*encoding="([^"]*)"')
-    meta_re = re.compile('^\s*<meta type="([^"]*)">([^<]*)</meta>\s*$')
-    nzbtag_re = re.compile("^\s*<nzb[^>]*>\s*$")
-    endnzb_re = re.compile(
-        "^\s*(?:<!--[^>]*-->|)\s*(?:<!--[^>]*-->|)\s*</nzb>\s*(?:<!--[^>]*-->|)\s*(?:<!--[^>]*-->|)\s*$"
-    )
+    encoding_re = re.compile(r'<\?xml [^>]*encoding="([^"]*)"')
+    meta_re = re.compile(r'^\s*<meta type="([^"]*)">([^<]*)</meta>\s*$')
+    nzbtag_re = re.compile(r"^\s*<nzb[^>]*>\s*$")
+    endnzb_re = re.compile(r"^\s*</nzb>\s*$")
 
     # Main part
-    group_re = re.compile("^\s*(?:<groups>\s*|)<group>([^<]*)</group>(?:\s*</groups>|)\s*$")
-    file_re = re.compile("^\s*<file([^>]*)>\s*$")
-    fileend_re = re.compile("^\s*</file>\s*$")
-    segment_re = re.compile("^\s*<segment( [^>]*)>([^<]*)</segment>\s*$")
-    whitespace_re = re.compile("^\s*$")
-    ignorable_re = re.compile("^\s*(?:</?segments>|</?groups>|</?head>|<!--[^>]*-->)\s*$")
+    group_re = re.compile(r"^\s*(?:<groups>\s*|)<group>([^<]*)</group>(?:\s*</groups>|)\s*$")
+    file_re = re.compile(r"^\s*<file([^>]*)>\s*$")
+    fileend_re = re.compile(r"^\s*</file>\s*$")
+    segment_re = re.compile(r"^\s*<segment( [^>]*)>([^<]*)</segment>\s*$")
+    ignorable_re = re.compile(r"^\s*(?:</?segments>|</?groups>|</?head>)\s*$")
 
     # Sub parts of <file>
-    subject_re = re.compile(' subject="([^"]*)"')
-    date_re = re.compile(' date="([^"]*)"')
+    subject_re = re.compile(r' subject="([^"]*)"')
+    date_re = re.compile(r' date="([^"]*)"')
 
     # Sub parts of <segment>
-    bytes_re = re.compile(' bytes="([^"]*)"')
-    number_re = re.compile(' number="([^"]*)"')
+    bytes_re = re.compile(r' bytes="([^"]*)"')
+    number_re = re.compile(r' number="([^"]*)"')
+
+    # Misc
+    comment_re = re.compile(r"<!--[^<>]*-->")
+    whitespace_re = re.compile(r"^\s*$")
 
     try:
         reader = LineFeeder(io.StringIO(raw_data))
         open_file_tag = 0
         linecount = 0
-        encoding = ""
         res = 0
         header = ""
 
@@ -241,25 +246,26 @@ def nzbfile_regex_parser(raw_data: str, nzo):
         while not res:
             line = reader.readline()
             linecount += 1
-            if line == "\n":
-                continue
             if linecount > 20:
                 raise RegexException("Could not find <nzb tag in header: %s" % header)
-            header += line.replace("\n", " ")
+            if not line:
+                continue
+            header += line
+            line = re.sub(comment_re, "", line)
             res = nzbtag_re.search(line)
 
         # Get encoding (sanity check)
         res = encoding_re.search(header)
-        if res:
-            encoding = res.group(1)
-        else:
+        if not res:
             raise RegexException("Could not find encoding in header: %s" % header)
 
         # Read the rest of the file
         for line in reader:
             linecount += 1
-            if line == "\n":
+            if not line:
                 continue
+
+            line = re.sub(comment_re, "", line)
 
             # <segment bytes="100" number="1">articleid</segment>
             res = segment_re.search(line)
@@ -296,7 +302,6 @@ def nzbfile_regex_parser(raw_data: str, nzo):
             # <group>a.b.a</group>
             res = group_re.search(line)
             if res:
-                # logging.debug("Got group")
                 if res.group(1) not in nzo.groups:
                     nzo.groups.append(res.group(1))
                 continue
@@ -389,21 +394,19 @@ def nzbfile_regex_parser(raw_data: str, nzo):
             if res:
                 if open_file_tag:
                     raise RegexException("Found closing <nzb tag while in file at line %s: %s" % (linecount, line))
+                success = 1
                 break
 
-            # logging.debug("Line %s: %s", linecount, binascii.hexlify(line.encode()))
             # raise RegexException("Unrecognized line #%s: %s (%s)" % (linecount, line, binascii.hexlify(line.encode())))
             raise RegexException("Unrecognized line #%s: %s" % (linecount, line))
     except StopIteration as e:
-        logging.warning("Unexpected end of file %s: %s", nzo.filename, e)
-        success = 0
+        logging.debug("Regex parsing: Unexpected end of file %s at line %d", nzo.filename, linecount)
     except (RegexException, IndexError, AttributeError) as e:
-        logging.warning("Regex parsing of %s failed: %s", nzo.filename, e)
-        success = 0
+        logging.debug("Regex parsing: %s failed: %s", nzo.filename, e)
 
     if success:
         # Final bookkeeping
-        logging.debug("NZB Meta-data = %s", nzo.meta)
+        logging.debug("Regex parsing: Read %d lines. NZB Meta-data = %s", linecount, nzo.meta)
         nr_files = max(1, valid_files)
         nzo.avg_stamp = avg_age_sum / nr_files
         nzo.avg_date = datetime.datetime.fromtimestamp(avg_age_sum / nr_files)
