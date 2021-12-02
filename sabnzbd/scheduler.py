@@ -314,7 +314,6 @@ class Scheduler:
                 sabnzbd.pause_all()
             else:
                 sabnzbd.unpause_all()
-            sabnzbd.Downloader.set_paused_state(paused or paused_all)
 
         sabnzbd.PostProcessor.paused = pause_post
         if speedlimit is not None:

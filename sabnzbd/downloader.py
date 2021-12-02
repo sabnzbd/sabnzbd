@@ -372,7 +372,9 @@ class Downloader(Thread):
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
         """Set downloader to specified paused state"""
-        self.paused = state
+        if self.paused != state:
+            cfg.start_paused.set(int(state))
+            self.paused = state
 
     @NzbQueueLocker
     def resume(self):
