@@ -378,6 +378,8 @@ class Downloader(Thread):
     def resume(self):
         # Do not notify when SABnzbd is still starting
         if self.paused and sabnzbd.WEB_DIR:
+            if cfg.preserve_state():
+                cfg.start_paused.set(0)
             logging.info("Resuming")
             sabnzbd.notifier.send_notification("SABnzbd", T("Resuming"), "pause_resume")
         self.paused = False
@@ -386,6 +388,8 @@ class Downloader(Thread):
     def pause(self):
         """Pause the downloader, optionally saving admin"""
         if not self.paused:
+            if cfg.preserve_state():
+                cfg.start_paused.set(1)
             self.paused = True
             logging.info("Pausing")
             sabnzbd.notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")

@@ -876,6 +876,7 @@ class ConfigSwitches:
 ##############################################################################
 SPECIAL_BOOL_LIST = (
     "start_paused",
+    "preserve_state",
     "no_penalties",
     "fast_fail",
     "overwrite_files",
