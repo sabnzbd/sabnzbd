@@ -18,11 +18,13 @@
 """
 tests.test_newswrapper - Tests of various functions in newswrapper
 """
+import logging
 import os.path
 import socket
 import tempfile
 import threading
 import ssl
+import time
 from typing import Optional
 import portend
 
@@ -48,8 +50,9 @@ def socket_test_server(ssl_context: ssl.SSLContext):
         conn, _ = server_socket.accept()
         with ssl_context.wrap_socket(sock=conn, server_side=True) as wrapped_socket:
             wrapped_socket.write(TEST_DATA)
-    except:
+    except Exception as e:
         # Skip SSL errors
+        logging.info("Error in server: %s", e)
         pass
     finally:
         # Make sure to close the socket
@@ -127,3 +130,4 @@ class TestNewsWrapper:
         server_thread.join(timeout=1.5)
         if server_thread.is_alive():
             raise RuntimeError("Test server was not stopped")
+        time.sleep(1.0)
