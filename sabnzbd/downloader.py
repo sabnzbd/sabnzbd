@@ -371,8 +371,11 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
-        """Set downloader to specified paused state"""
-        self.paused = state
+        """Set downloader to new paused state if it is changed"""
+        if self.paused != state:
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(state)
+            self.paused = state
 
     @NzbQueueLocker
     def resume(self):
@@ -380,6 +383,8 @@ class Downloader(Thread):
         if self.paused and sabnzbd.WEB_DIR:
             logging.info("Resuming")
             sabnzbd.notifier.send_notification("SABnzbd", T("Resuming"), "pause_resume")
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(False)
         self.paused = False
 
     @NzbQueueLocker
@@ -389,6 +394,8 @@ class Downloader(Thread):
             self.paused = True
             logging.info("Pausing")
             sabnzbd.notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(True)
             if self.is_paused():
                 sabnzbd.BPSMeter.reset()
             if cfg.autodisconnect():
