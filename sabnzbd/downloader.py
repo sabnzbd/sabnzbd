@@ -371,18 +371,18 @@ class Downloader(Thread):
 
     @NzbQueueLocker
     def set_paused_state(self, state: bool):
-        """Set downloader to specified paused state"""
+        """Set downloader to new paused state if it is changed"""
         if self.paused != state:
-            if cfg.preserve_state():
-                cfg.start_paused.set(int(state))
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(state)
             self.paused = state
 
     @NzbQueueLocker
     def resume(self):
         # Do not notify when SABnzbd is still starting
         if self.paused and sabnzbd.WEB_DIR:
-            if cfg.preserve_state():
-                cfg.start_paused.set(0)
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(False)
             logging.info("Resuming")
             sabnzbd.notifier.send_notification("SABnzbd", T("Resuming"), "pause_resume")
         self.paused = False
@@ -391,8 +391,8 @@ class Downloader(Thread):
     def pause(self):
         """Pause the downloader, optionally saving admin"""
         if not self.paused:
-            if cfg.preserve_state():
-                cfg.start_paused.set(1)
+            if cfg.preserve_paused_state():
+                cfg.start_paused.set(True)
             self.paused = True
             logging.info("Pausing")
             sabnzbd.notifier.send_notification("SABnzbd", T("Paused"), "pause_resume")
