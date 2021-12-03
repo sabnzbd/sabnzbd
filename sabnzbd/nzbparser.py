@@ -76,7 +76,7 @@ def nzbfile_parser(raw_data: str, nzo):
     nzo: sabnzbd.nzbstuff.NzbObject
 
     # Try regex parser
-    if nzbfile_regex_parser(raw_data, nzo):
+    if sabnzbd.cfg.enable_regex_parser() and nzbfile_regex_parser(raw_data, nzo):
         return
 
     # Load data as file-object

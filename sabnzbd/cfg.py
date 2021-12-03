@@ -291,6 +291,7 @@ no_penalties = OptionBool("misc", "no_penalties", False)
 x_frame_options = OptionBool("misc", "x_frame_options", True)
 allow_old_ssl_tls = OptionBool("misc", "allow_old_ssl_tls", False)
 num_decoders = OptionNumber("misc", "num_decoders", 3)
+enable_regex_parser = OptionBool("misc", "enable_regex_parser", True)
 
 # Text values
 rss_odd_titles = OptionList("misc", "rss_odd_titles", ["nzbindex.nl/", "nzbindex.com/", "nzbclub.com/"])
