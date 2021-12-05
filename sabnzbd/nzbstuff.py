@@ -764,7 +764,6 @@ class NzbObject(TryList):
 
         if nzb_data and "<nzb" in nzb_data:
             backup_nzb = sabnzbd.backup_nzb(filename, nzb_data)
-            nzb_data = re.sub(r"""\s(xmlns="[^"]+"|xmlns='[^']+')""", "", nzb_data, count=1)
             full_nzb_path = sabnzbd.save_compressed(admin_dir, filename, nzb_data)
             nzb_data = None
             try:

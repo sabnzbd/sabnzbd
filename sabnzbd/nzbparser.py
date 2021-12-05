@@ -54,6 +54,11 @@ def nzbfile_parser(full_nzb_path: str, nzo):
     with gzip.open(full_nzb_path) as nzb_fh:
         try:
             for _, element in xml.etree.ElementTree.iterparse(nzb_fh):
+                # Ignore namespace
+                _, has_namespace, postfix = element.tag.partition("}")
+                if has_namespace:
+                    element.tag = postfix  # strip all namespaces
+
                 # Parse the header
                 if element.tag.lower() == "head":
                     for meta in element.iter("meta"):
