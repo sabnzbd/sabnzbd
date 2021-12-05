@@ -20,7 +20,6 @@ sabnzbd.nzbparser - Parse and import NZB files
 """
 import bz2
 import gzip
-import re
 import time
 import logging
 import hashlib
@@ -57,7 +56,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
                 # Ignore namespace
                 _, has_namespace, postfix = element.tag.partition("}")
                 if has_namespace:
-                    element.tag = postfix  # strip all namespaces
+                    element.tag = postfix
 
                 # Parse the header
                 if element.tag.lower() == "head":
