@@ -604,7 +604,7 @@ def backup_nzb(filename: str, data: AnyStr):
     """Backup NZB file"""
     path = cfg.nzb_backup_dir.get_path()
     if path:
-        save_compressed(path, filename, data)
+        return save_compressed(path, filename, data)
 
 
 def save_compressed(folder: str, filename: str, data: AnyStr):
@@ -613,10 +613,11 @@ def save_compressed(folder: str, filename: str, data: AnyStr):
         filename += ".gz"
     else:
         filename += ".nzb.gz"
-    logging.info("Backing up %s", os.path.join(folder, filename))
+    full_nzb_path = os.path.join(folder, filename)
+    logging.info("Backing up %s", full_nzb_path)
     try:
         # Have to get around the path being put inside the tgz
-        with open(os.path.join(folder, filename), "wb") as tgz_file:
+        with open(full_nzb_path, "wb") as tgz_file:
             f = gzip.GzipFile(filename, fileobj=tgz_file, mode="wb")
             f.write(encoding.utob(data))
             f.flush()
@@ -624,6 +625,8 @@ def save_compressed(folder: str, filename: str, data: AnyStr):
     except:
         logging.error(T("Saving %s failed"), os.path.join(folder, filename))
         logging.info("Traceback: ", exc_info=True)
+
+    return full_nzb_path
 
 
 ##############################################################################
