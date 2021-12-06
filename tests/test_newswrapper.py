@@ -27,6 +27,7 @@ import ssl
 import time
 from typing import Optional
 import portend
+from flaky import flaky
 
 from tests.testhelper import *
 from sabnzbd import misc
@@ -59,6 +60,7 @@ def socket_test_server(ssl_context: ssl.SSLContext):
         server_socket.close()
 
 
+@flaky
 class TestNewsWrapper:
     cert_file = os.path.join(tempfile.mkdtemp(), "test.cert")
     key_file = os.path.join(tempfile.mkdtemp(), "test.key")
