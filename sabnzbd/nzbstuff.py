@@ -779,7 +779,10 @@ class NzbObject(TryList):
                 else:
                     self.purge_data()
                     if backup_nzb:
-                        os.remove(backup_nzb)
+                        try:
+                            os.remove(backup_nzb)
+                        except:
+                            pass
                     raise ValueError
 
             # Check against identical checksum or series/season/episode

@@ -600,15 +600,15 @@ def backup_exists(filename: str) -> bool:
     return path and os.path.exists(os.path.join(path, filename + ".gz"))
 
 
-def backup_nzb(filename: str, data: AnyStr):
-    """Backup NZB file"""
+def backup_nzb(filename: str, data: AnyStr) -> Optional[str]:
+    """Backup NZB file, return path to nzb if it was saved"""
     path = cfg.nzb_backup_dir.get_path()
     if path:
         return save_compressed(path, filename, data)
 
 
-def save_compressed(folder: str, filename: str, data: AnyStr):
-    """Save compressed NZB file in folder"""
+def save_compressed(folder: str, filename: str, data: AnyStr) -> str:
+    """Save compressed NZB file in folder, return path to saved nzb file"""
     if filename.endswith(".nzb"):
         filename += ".gz"
     else:
@@ -623,7 +623,7 @@ def save_compressed(folder: str, filename: str, data: AnyStr):
             f.flush()
             f.close()
     except:
-        logging.error(T("Saving %s failed"), os.path.join(folder, filename))
+        logging.error(T("Saving %s failed"), full_nzb_path)
         logging.info("Traceback: ", exc_info=True)
 
     return full_nzb_path
