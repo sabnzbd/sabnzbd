@@ -18,6 +18,7 @@
 import os
 import logging
 import datetime
+import shutil
 import tempfile
 import pickle
 import ctypes.util
@@ -600,11 +601,11 @@ def backup_exists(filename: str) -> bool:
     return path and os.path.exists(os.path.join(path, filename + ".gz"))
 
 
-def backup_nzb(filename: str, data: AnyStr) -> Optional[str]:
+def backup_nzb(nzb_path: str):
     """Backup NZB file, return path to nzb if it was saved"""
-    path = cfg.nzb_backup_dir.get_path()
-    if path:
-        return save_compressed(path, filename, data)
+    nzb_backup_dir = cfg.nzb_backup_dir.get_path()
+    if nzb_backup_dir:
+        shutil.copy(nzb_path, nzb_backup_dir)
 
 
 def save_compressed(folder: str, filename: str, data: AnyStr) -> str:
@@ -614,14 +615,13 @@ def save_compressed(folder: str, filename: str, data: AnyStr) -> str:
     else:
         filename += ".nzb.gz"
     full_nzb_path = os.path.join(folder, filename)
-    logging.info("Backing up %s", full_nzb_path)
+    logging.info("Saving %s", full_nzb_path)
     try:
         # Have to get around the path being put inside the tgz
         with open(full_nzb_path, "wb") as tgz_file:
-            f = gzip.GzipFile(filename, fileobj=tgz_file, mode="wb")
-            f.write(encoding.utob(data))
-            f.flush()
-            f.close()
+            # We only need minimal compression to prevent huge files
+            with gzip.GzipFile(filename, mode="wb", compresslevel=1, fileobj=tgz_file) as gzip_file:
+                gzip_file.write(encoding.utob(data))
     except:
         logging.error(T("Saving %s failed"), full_nzb_path)
         logging.info("Traceback: ", exc_info=True)
@@ -685,6 +685,9 @@ def add_nzbfile(
             logging.error(T("Cannot create temp file for %s"), filename)
             logging.info("Traceback: ", exc_info=True)
             return None
+        finally:
+            # Close the CherryPy reference
+            nzbfile.file.close()
 
     # Externally defined if we should keep the file?
     if keep is None:

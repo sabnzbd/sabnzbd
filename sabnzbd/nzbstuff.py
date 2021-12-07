@@ -763,9 +763,7 @@ class NzbObject(TryList):
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
         if nzb_data and "<nzb" in nzb_data:
-            backup_nzb = sabnzbd.backup_nzb(filename, nzb_data)
             full_nzb_path = sabnzbd.save_compressed(admin_dir, filename, nzb_data)
-            nzb_data = None
             try:
                 sabnzbd.nzbparser.nzbfile_parser(full_nzb_path, self)
             except Exception as err:
@@ -778,11 +776,6 @@ class NzbObject(TryList):
                     self.pause()
                 else:
                     self.purge_data()
-                    if backup_nzb:
-                        try:
-                            os.remove(backup_nzb)
-                        except:
-                            pass
                     raise ValueError
 
             # Check against identical checksum or series/season/episode
@@ -790,6 +783,9 @@ class NzbObject(TryList):
             # trigger the duplicate-detection based on the backup
             if not reuse and dup_check and self.priority != REPAIR_PRIORITY:
                 duplicate, series_duplicate = self.has_duplicates()
+
+            # Copy to backup
+            sabnzbd.backup_nzb(full_nzb_path)
 
         if not self.files and not reuse:
             self.purge_data()
