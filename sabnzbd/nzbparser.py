@@ -53,6 +53,9 @@ def nzbfile_parser(full_nzb_path: str, nzo):
     with gzip.open(full_nzb_path) as nzb_fh:
         try:
             for _, element in xml.etree.ElementTree.iterparse(nzb_fh):
+                # For type-hinting
+                element: xml.etree.ElementTree.Element
+
                 # Ignore namespace
                 _, has_namespace, postfix = element.tag.partition("}")
                 if has_namespace:

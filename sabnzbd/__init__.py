@@ -605,6 +605,7 @@ def backup_nzb(nzb_path: str):
     """Backup NZB file, return path to nzb if it was saved"""
     nzb_backup_dir = cfg.nzb_backup_dir.get_path()
     if nzb_backup_dir:
+        logging.debug("Saving copy of %s in %s", filesystem.get_filename(nzb_path), nzb_backup_dir)
         shutil.copy(nzb_path, nzb_backup_dir)
 
 
