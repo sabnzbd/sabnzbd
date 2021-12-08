@@ -26,7 +26,7 @@ import datetime
 import threading
 import functools
 import difflib
-from typing import List, Dict, Any, Tuple, Optional, Union
+from typing import List, Dict, Any, Tuple, Optional, Union, BinaryIO
 
 # SABnzbd modules
 import sabnzbd
@@ -588,13 +588,13 @@ class NzbObject(TryList):
         filename: str,
         pp: Optional[int] = None,
         script: Optional[str] = None,
-        nzb_data: Optional[str] = None,
+        nzb_fp: Optional[BinaryIO] = None,
         futuretype: bool = False,
         cat: Optional[str] = None,
         url: Optional[str] = None,
         priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
         nzbname: Optional[str] = None,
-        status: Status = Status.QUEUED,
+        status: str = Status.QUEUED,
         nzo_info: Optional[Dict[str, Any]] = None,
         reuse: Optional[str] = None,
         dup_check: bool = True,
@@ -602,13 +602,13 @@ class NzbObject(TryList):
         super().__init__()
 
         self.filename = filename  # Original filename
-        if nzbname and nzb_data:
+        if nzbname and nzb_fp:
             self.work_name = nzbname  # Use nzbname if set and only for non-future slot
         else:
             self.work_name = filename
 
         # For future-slots we keep the name given by URLGrabber
-        if nzb_data is None:
+        if nzb_fp is None:
             self.final_name = self.work_name = filename
         else:
             # Remove trailing .nzb and .par(2)
@@ -725,7 +725,7 @@ class NzbObject(TryList):
         self.pp_active = False  # Signals active post-processing (not saved)
         self.md5sum: Optional[str] = None
 
-        if nzb_data is None and not reuse:
+        if nzb_fp is None and not reuse:
             # This is a slot for a future NZB, ready now
             # It can also be a retry of a failed job with no extra NZB-file
             return
@@ -762,13 +762,13 @@ class NzbObject(TryList):
             remove_all(admin_dir, "SABnzbd_nz?_*", keep_folder=True)
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
-        if nzb_data and "<nzb" in nzb_data:
-            full_nzb_path = sabnzbd.save_compressed(admin_dir, filename, nzb_data)
+        if nzb_fp:
+            full_nzb_path = sabnzbd.save_compressed(admin_dir, filename, nzb_fp)
             try:
                 sabnzbd.nzbparser.nzbfile_parser(full_nzb_path, self)
             except Exception as err:
                 self.incomplete = True
-                logging.warning(T("Invalid NZB file %s, skipping (reason=%s, line=%s)"), filename, err, "1")
+                logging.warning(T("Invalid NZB file %s, skipping (error: %s)"), filename, err)
                 logging.info("Traceback: ", exc_info=True)
 
                 # Some people want to keep the broken files
