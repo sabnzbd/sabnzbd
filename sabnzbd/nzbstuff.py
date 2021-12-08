@@ -763,8 +763,9 @@ class NzbObject(TryList):
             remove_all(admin_dir, "SABnzbd_article_*", keep_folder=True)
 
         if nzb_data and "<nzb" in nzb_data:
+            full_nzb_path = sabnzbd.save_compressed(admin_dir, filename, nzb_data)
             try:
-                sabnzbd.nzbparser.nzbfile_parser(nzb_data, self)
+                sabnzbd.nzbparser.nzbfile_parser(full_nzb_path, self)
             except Exception as err:
                 self.incomplete = True
                 logging.warning(T("Invalid NZB file %s, skipping (reason=%s, line=%s)"), filename, err, "1")
@@ -783,8 +784,8 @@ class NzbObject(TryList):
             if not reuse and dup_check and self.priority != REPAIR_PRIORITY:
                 duplicate, series_duplicate = self.has_duplicates()
 
-            sabnzbd.backup_nzb(filename, nzb_data)
-            sabnzbd.save_compressed(admin_dir, filename, nzb_data)
+            # Copy to backup
+            sabnzbd.backup_nzb(full_nzb_path)
 
         if not self.files and not reuse:
             self.purge_data()
