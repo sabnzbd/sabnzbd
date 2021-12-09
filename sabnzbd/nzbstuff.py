@@ -648,7 +648,7 @@ class NzbObject(TryList):
             self.script = script
 
         # Information fields
-        self.url = url or filename
+        self.url = url
         self.groups = []
         self.avg_date = datetime.datetime(1970, 1, 1, 1, 0)
         self.avg_stamp = 0.0  # Avg age in seconds (calculated from avg_age)
@@ -1579,9 +1579,7 @@ class NzbObject(TryList):
         if dups:
             download_msgs.append(T("%s articles had non-matching duplicates") % dups)
         self.set_unpack_info("Download", "<br/>".join(download_msgs), unique=True)
-
-        if self.url:
-            self.set_unpack_info("Source", self.url, unique=True)
+        self.set_unpack_info("Source", self.url or self.filename, unique=True)
 
     @synchronized(NZO_LOCK)
     def increase_bad_articles_counter(self, article_type: str):
