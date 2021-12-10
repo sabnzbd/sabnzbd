@@ -215,7 +215,7 @@ def process_nzb_archive_file(
         for name in names:
             if name.lower().endswith(".nzb"):
                 try:
-                    datap = io.BytesIO(zf.read(name))
+                    datap = zf.open(name)
                 except OSError:
                     logging.error(T("Cannot read %s"), name, exc_info=True)
                     zf.close()
