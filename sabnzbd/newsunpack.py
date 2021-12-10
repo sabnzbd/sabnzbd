@@ -26,9 +26,10 @@ import subprocess
 import logging
 import time
 import zlib
+import io
 import shutil
 import functools
-from typing import Tuple
+from typing import Tuple, List, BinaryIO
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
@@ -2346,14 +2347,13 @@ def is_sevenfile(path):
 class SevenZip:
     """Minimal emulation of ZipFile class for 7Zip"""
 
-    def __init__(self, path):
+    def __init__(self, path: str):
         self.path = path
 
-    def namelist(self):
+    def namelist(self) -> List[str]:
         """Return list of names in 7Zip"""
         names = []
-        # Future extension: use '-sccUTF-8' to get names in UTF8 encoding
-        command = [SEVEN_COMMAND, "l", "-p", "-y", "-slt", self.path]
+        command = [SEVEN_COMMAND, "l", "-p", "-y", "-slt", "-sccUTF-8", self.path]
         output = run_command(command)
 
         re_path = re.compile("^Path = (.+)")
@@ -2366,11 +2366,14 @@ class SevenZip:
             del names[0]
         return names
 
-    def read(self, name):
+    def open(self, name: str) -> BinaryIO:
         """Read named file from 7Zip and return data"""
         command = [SEVEN_COMMAND, "e", "-p", "-y", "-so", self.path, name]
         # Ignore diagnostic output, otherwise it will be appended to content
-        return run_command(command, stderr=subprocess.DEVNULL)
+        with build_and_run_command(command, stderr=subprocess.DEVNULL) as p:
+            data = io.BytesIO(p.stdout.read())
+            p.wait()
+        return data
 
     def close(self):
         """Close file"""
