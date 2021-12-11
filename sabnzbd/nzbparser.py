@@ -51,7 +51,7 @@ def nzbfile_parser(full_nzb_path: str, nzo):
     valid_files = 0
 
     # Use nzb.gz file from admin dir
-    with gzip.open(full_nzb_path, "r") as nzb_fh:
+    with gzip.open(full_nzb_path) as nzb_fh:
         for _, element in xml.etree.ElementTree.iterparse(nzb_fh):
             # For type-hinting
             element: xml.etree.ElementTree.Element

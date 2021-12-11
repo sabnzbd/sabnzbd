@@ -616,16 +616,21 @@ def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
     else:
         filename += ".nzb.gz"
     full_nzb_path = os.path.join(folder, filename)
-    logging.info("Saving %s", full_nzb_path)
-    try:
-        # Have to get around the path being put inside the tgz
-        with open(full_nzb_path, "wb") as tgz_file:
-            # We only need minimal compression to prevent huge files
-            with gzip.GzipFile(filename, mode="wb", compresslevel=1, fileobj=tgz_file) as gzip_file:
-                shutil.copyfileobj(data_fp, gzip_file)
-    except:
-        logging.error(T("Saving %s failed"), full_nzb_path)
-        logging.info("Traceback: ", exc_info=True)
+
+    # Skip existing ones, as it might be queue-repair
+    if not os.path.exists(full_nzb_path):
+        logging.info("Saving %s", full_nzb_path)
+        try:
+            # Have to get around the path being put inside the tgz
+            with open(full_nzb_path, "wb") as tgz_file:
+                # We only need minimal compression to prevent huge files
+                with gzip.GzipFile(filename, mode="wb", compresslevel=1, fileobj=tgz_file) as gzip_file:
+                    shutil.copyfileobj(data_fp, gzip_file)
+        except:
+            logging.error(T("Saving %s failed"), full_nzb_path)
+            logging.info("Traceback: ", exc_info=True)
+    else:
+        logging.info("Skipping existing file %s", full_nzb_path)
 
     return full_nzb_path
 
