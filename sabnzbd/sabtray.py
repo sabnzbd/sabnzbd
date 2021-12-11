@@ -198,4 +198,4 @@ class SABTrayThread(SysTrayIconThread):
 
     def resume(self):
         sabnzbd.Scheduler.plan_resume(0)
-        sabnzbd.unpause_all()
+        sabnzbd.downloader.unpause_all()

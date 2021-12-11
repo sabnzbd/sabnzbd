@@ -34,7 +34,6 @@ from typing import List, Dict, Optional, Union
 import sabnzbd
 from sabnzbd.decorators import synchronized, NzbQueueLocker, DOWNLOADER_CV
 from sabnzbd.newswrapper import NewsWrapper
-import sabnzbd.notifier
 import sabnzbd.config as config
 import sabnzbd.cfg as cfg
 from sabnzbd.misc import from_units, nntp_to_msg, int_conv, get_server_addrinfo, helpful_warning
@@ -547,11 +546,11 @@ class Downloader(Thread):
 
     def run(self):
         # First check IPv6 connectivity
-        sabnzbd.EXTERNAL_IPV6 = sabnzbd.test_ipv6()
+        sabnzbd.EXTERNAL_IPV6 = sabnzbd.misc.test_ipv6()
         logging.debug("External IPv6 test result: %s", sabnzbd.EXTERNAL_IPV6)
 
         # Then we check SSL certificate checking
-        sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.test_cert_checking()
+        sabnzbd.CERTIFICATE_VALIDATION = sabnzbd.misc.test_cert_checking()
         logging.debug("SSL verification test: %s", sabnzbd.CERTIFICATE_VALIDATION)
 
         # Kick BPS-Meter to check quota
@@ -1151,3 +1150,17 @@ def check_server_quota():
                 logging.warning(T("Server %s has used the specified quota"), server.displayname())
                 server.quota.set("")
                 config.save_config()
+
+
+def pause_all():
+    """Pause all activities than cause disk access"""
+    sabnzbd.PAUSED_ALL = True
+    sabnzbd.Downloader.pause()
+    logging.debug("PAUSED_ALL active")
+
+
+def unpause_all():
+    """Resume all activities"""
+    sabnzbd.PAUSED_ALL = False
+    sabnzbd.Downloader.resume()
+    logging.debug("PAUSED_ALL inactive")

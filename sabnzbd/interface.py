@@ -37,7 +37,6 @@ from typing import Optional, Callable, Union
 from guessit.api import properties as guessit_properties
 
 import sabnzbd
-import sabnzbd.rss
 from sabnzbd.misc import (
     to_units,
     from_units,
@@ -748,7 +747,7 @@ class ConfigFolders:
                     # return sabnzbd.api.report('json', error=msg)
                     return badParameterResponse(msg, kwargs.get("ajax"))
 
-        if not sabnzbd.check_incomplete_vs_complete():
+        if not sabnzbd.filesystem.check_incomplete_vs_complete():
             return badParameterResponse(
                 T("The Completed Download Folder cannot be the same or a subfolder of the Temporary Download Folder"),
                 kwargs.get("ajax"),
@@ -1565,7 +1564,7 @@ class ConfigRss:
             prio = att.get("prio")
 
             if url:
-                sabnzbd.add_url(url, pp, script, cat, prio, nzbname)
+                sabnzbd.urlgrabber.add_url(url, pp, script, cat, prio, nzbname)
             # Need to pass the title instead
             sabnzbd.RSSReader.flag_downloaded(feed, url)
         raise rssRaiser(self.__root, kwargs)

@@ -512,7 +512,7 @@ class SABnzbdDelegate(NSObject):
             logging.info("[osx] receiving from macOS : %s", filename)
             if os.path.exists(filename):
                 if sabnzbd.filesystem.get_ext(filename) in VALID_ARCHIVES + VALID_NZB_FILES:
-                    sabnzbd.add_nzbfile(filename, keep=True)
+                    sabnzbd.nzbparser.add_nzbfile(filename, keep=True)
         # logging.info('opening done')
 
     def applicationShouldTerminate_(self, sender):

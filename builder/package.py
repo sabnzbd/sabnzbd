@@ -22,7 +22,6 @@ import sys
 import os
 import time
 import shutil
-import shlex
 import subprocess
 import tarfile
 import pkginfo

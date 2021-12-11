@@ -67,7 +67,6 @@ from sabnzbd.utils.servertests import test_nntp_server_dict
 from sabnzbd.getipaddress import localipv4, publicipv4, ipv6, addresslookup, active_socks5_proxy
 from sabnzbd.database import build_history_info, unpack_history_info, HistoryDB
 from sabnzbd.lang import is_rtl
-import sabnzbd.notifier
 import sabnzbd.emailer
 import sabnzbd.sorting
 
@@ -195,7 +194,7 @@ def _api_queue_rename(value, kwargs):
 
 def _api_queue_change_complete_action(value, kwargs):
     """API: accepts value(=action)"""
-    sabnzbd.change_queue_complete_action(value)
+    sabnzbd.misc.change_queue_complete_action(value)
     return report()
 
 
@@ -331,7 +330,7 @@ def _api_addfile(name, kwargs):
             # Indexer category, so do mapping
             cat = cat_convert(xcat)
         # Add the NZB-file
-        res, nzo_ids = sabnzbd.add_nzbfile(
+        res, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
             name,
             pp=kwargs.get("pp"),
             script=kwargs.get("script"),
@@ -386,7 +385,7 @@ def _api_addlocalfile(name, kwargs):
             password = kwargs.get("password")
 
             if get_ext(name) in VALID_ARCHIVES + VALID_NZB_FILES:
-                res, nzo_ids = sabnzbd.add_nzbfile(
+                res, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
                     name,
                     pp=pp,
                     script=script,
@@ -553,7 +552,7 @@ def _api_history(name, kwargs):
                 history_db.remove_failed(search)
             if special in ("all", "completed"):
                 history_db.remove_completed(search)
-            sabnzbd.history_updated()
+            sabnzbd.misc.history_updated()
             return report()
         elif value:
             jobs = value.split(",")
@@ -565,7 +564,7 @@ def _api_history(name, kwargs):
                     history_db = sabnzbd.get_db_connection()
                     remove_all(history_db.get_path(job), recursive=True)
                     history_db.remove_history(job)
-            sabnzbd.history_updated()
+            sabnzbd.misc.history_updated()
             return report()
         else:
             return report(_MSG_NO_VALUE)
@@ -634,7 +633,7 @@ def _api_addurl(name, kwargs):
     password = kwargs.get("password", "")
 
     if name:
-        nzo_id = sabnzbd.add_url(name, pp, script, cat, priority, nzbname, password)
+        nzo_id = sabnzbd.urlgrabber.add_url(name, pp, script, cat, priority, nzbname, password)
         # Reporting a list of NZO's, for compatibility with other add-methods
         return report(keyword="", data={"status": True, "nzo_ids": [nzo_id]})
     else:
@@ -650,7 +649,7 @@ def _api_pause(name, kwargs):
 
 def _api_resume(name, kwargs):
     sabnzbd.Scheduler.plan_resume(0)
-    sabnzbd.unpause_all()
+    sabnzbd.downloader.unpause_all()
     return report()
 
 
@@ -753,7 +752,7 @@ def _api_restart(name, kwargs):
 
 def _api_restart_repair(name, kwargs):
     logging.info("Queue repair requested by API")
-    sabnzbd.request_repair()
+    sabnzbd.misc.request_repair()
     # Do the shutdown async to still send goodbye to browser
     Thread(target=sabnzbd.trigger_restart, kwargs={"timeout": 1}).start()
     return report()
@@ -1581,7 +1580,7 @@ def retry_job(job, new_nzb=None, password=None):
         history_db = sabnzbd.get_db_connection()
         futuretype, url, pp, script, cat = history_db.get_other(job)
         if futuretype:
-            nzo_id = sabnzbd.add_url(url, pp, script, cat)
+            nzo_id = sabnzbd.urlgrabber.add_url(url, pp, script, cat)
         else:
             path = history_db.get_path(job)
             nzo_id = sabnzbd.NzbQueue.repair_job(path, new_nzb, password)

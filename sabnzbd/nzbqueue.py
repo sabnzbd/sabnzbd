@@ -76,7 +76,7 @@ class NzbQueue:
         if repair < 2:
             # Try to process the queue file
             try:
-                data = sabnzbd.load_admin(QUEUE_FILE_NAME)
+                data = sabnzbd.filesystem.load_admin(QUEUE_FILE_NAME)
                 if data:
                     queue_vers, nzo_ids, _ = data
                     if not queue_vers == QUEUE_VERSION:
@@ -99,11 +99,11 @@ class NzbQueue:
             path = get_admin_path(folder, future=False)
 
             # Try as normal job
-            nzo = sabnzbd.load_data(_id, path, remove=False)
+            nzo = sabnzbd.filesystem.load_data(_id, path, remove=False)
             if not nzo:
                 # Try as future job
                 path = get_admin_path(folder, future=True)
-                nzo = sabnzbd.load_data(_id, path)
+                nzo = sabnzbd.filesystem.load_data(_id, path)
             if nzo:
                 self.add(nzo, save=False, quiet=True)
                 folders.append(folder)
@@ -117,7 +117,7 @@ class NzbQueue:
                 path, nzo_id = os.path.split(item)
                 if nzo_id not in self.__nzo_table:
                     if nzo_id.startswith("SABnzbd_nzo"):
-                        nzo = sabnzbd.load_data(nzo_id, path, remove=True)
+                        nzo = sabnzbd.filesystem.load_data(nzo_id, path, remove=True)
                         if nzo:
                             self.add(nzo, save=True)
                     else:
@@ -179,17 +179,19 @@ class NzbQueue:
         if getattr(new_nzb, "filename", None):
             remove_all(admin_path, "*.gz", keep_folder=True)
             logging.debug("Repair job %s with new NZB (%s)", name, new_nzb.filename)
-            _, nzo_ids = sabnzbd.add_nzbfile(new_nzb, nzbname=name, reuse=repair_folder, password=password)
+            _, nzo_ids = sabnzbd.nzbparser.add_nzbfile(new_nzb, nzbname=name, reuse=repair_folder, password=password)
         else:
             # Was this file already post-processed?
-            verified = sabnzbd.load_data(VERIFIED_FILE, admin_path, remove=False)
+            verified = sabnzbd.filesystem.load_data(VERIFIED_FILE, admin_path, remove=False)
             filenames = []
             if not verified or not all(verified[x] for x in verified):
                 filenames = globber_full(admin_path, "*.gz")
 
             if filenames:
                 logging.debug("Repair job %s by re-parsing stored NZB", name)
-                _, nzo_ids = sabnzbd.add_nzbfile(filenames[0], nzbname=name, reuse=repair_folder, password=password)
+                _, nzo_ids = sabnzbd.nzbparser.add_nzbfile(
+                    filenames[0], nzbname=name, reuse=repair_folder, password=password
+                )
             else:
                 try:
                     logging.debug("Repair job %s without stored NZB", name)
@@ -244,9 +246,9 @@ class NzbQueue:
                         # Also includes save_data for NZO
                         nzo.save_to_disk()
                     else:
-                        sabnzbd.save_data(nzo, nzo.nzo_id, nzo.admin_path)
+                        sabnzbd.filesystem.save_data(nzo, nzo.nzo_id, nzo.admin_path)
 
-        sabnzbd.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
+        sabnzbd.filesystem.save_admin((QUEUE_VERSION, nzo_ids, []), QUEUE_FILE_NAME)
 
     def set_top_only(self, value):
         self.__top_only = value
@@ -327,7 +329,7 @@ class NzbQueue:
     @NzbQueueLocker
     def add(self, nzo: NzbObject, save: bool = True, quiet: bool = False) -> str:
         if not nzo.nzo_id:
-            nzo.nzo_id = sabnzbd.get_new_id("nzo", nzo.admin_path, self.__nzo_table)
+            nzo.nzo_id = sabnzbd.filesystem.get_new_id("nzo", nzo.admin_path, self.__nzo_table)
 
         # If no files are to be downloaded anymore, send to postproc
         if not nzo.files and not nzo.futuretype:

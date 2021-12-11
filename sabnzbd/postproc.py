@@ -126,12 +126,12 @@ class PostProcessor(Thread):
     def save(self):
         """Save postproc queue"""
         logging.info("Saving postproc queue")
-        sabnzbd.save_admin((POSTPROC_QUEUE_VERSION, self.history_queue), POSTPROC_QUEUE_FILE_NAME)
+        sabnzbd.filesystem.save_admin((POSTPROC_QUEUE_VERSION, self.history_queue), POSTPROC_QUEUE_FILE_NAME)
 
     def load(self):
         """Save postproc queue"""
         logging.info("Loading postproc queue")
-        data = sabnzbd.load_admin(POSTPROC_QUEUE_FILE_NAME)
+        data = sabnzbd.filesystem.load_admin(POSTPROC_QUEUE_FILE_NAME)
         if data is None:
             return
         try:
@@ -170,7 +170,7 @@ class PostProcessor(Thread):
         else:
             self.slow_queue.put(nzo)
         self.save()
-        sabnzbd.history_updated()
+        sabnzbd.misc.history_updated()
 
     def remove(self, nzo: NzbObject):
         """Remove given nzo from the queue"""
@@ -179,7 +179,7 @@ class PostProcessor(Thread):
         except:
             pass
         self.save()
-        sabnzbd.history_updated()
+        sabnzbd.misc.history_updated()
 
     def stop(self):
         """Stop thread after finishing running job"""
@@ -664,7 +664,7 @@ def process_job(nzo: NzbObject):
         # Purge items
         history_db.auto_history_purge()
 
-    sabnzbd.history_updated()
+    sabnzbd.misc.history_updated()
     return True
 
 
@@ -729,7 +729,7 @@ def parring(nzo: NzbObject):
     re_add = False
 
     # Get verification status of sets
-    verified = sabnzbd.load_data(VERIFIED_FILE, nzo.admin_path, remove=False) or {}
+    verified = sabnzbd.filesystem.load_data(VERIFIED_FILE, nzo.admin_path, remove=False) or {}
     logging.debug("Verified sets: %s", verified)
 
     # If all were verified successfully, we skip the rest of the checks
@@ -802,7 +802,7 @@ def parring(nzo: NzbObject):
         sabnzbd.Downloader.resume_from_postproc()
 
     logging.debug("Verified sets: %s", verified)
-    sabnzbd.save_data(verified, VERIFIED_FILE, nzo.admin_path)
+    sabnzbd.filesystem.save_data(verified, VERIFIED_FILE, nzo.admin_path)
 
     logging.info("Verification and repair finished for %s", nzo.final_name)
     return par_error, re_add
@@ -1036,7 +1036,7 @@ def handle_empty_queue():
                 sabnzbd.QUEUECOMPLETEACTION(sabnzbd.QUEUECOMPLETEARG)
             else:
                 Thread(target=sabnzbd.QUEUECOMPLETEACTION).start()
-            sabnzbd.change_queue_complete_action(cfg.queue_complete(), new=False)
+            sabnzbd.misc.change_queue_complete_action(cfg.queue_complete(), new=False)
 
         # Trigger garbage collection and release of memory
         logging.debug("Triggering garbage collection and release of memory")
@@ -1234,4 +1234,4 @@ def try_alt_nzb(nzo):
     """Try to get a new NZB if available"""
     url = nzo.nzo_info.get("failure")
     if url and cfg.new_nzb_on_failure():
-        sabnzbd.add_url(url, nzo.pp, nzo.script, nzo.cat, nzo.priority)
+        sabnzbd.urlgrabber.add_url(url, nzo.pp, nzo.script, nzo.cat, nzo.priority)

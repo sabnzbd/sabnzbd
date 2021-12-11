@@ -18,18 +18,20 @@
 """
 sabnzbd.misc - filesystem operations
 """
-
+import gzip
 import os
+import pickle
 import sys
 import logging
 import re
 import shutil
+import tempfile
 import threading
 import time
 import fnmatch
 import stat
 import ctypes
-from typing import Union, List, Tuple, Dict, Optional
+from typing import Union, List, Tuple, Any, Dict, Optional, BinaryIO
 
 try:
     import win32api
@@ -1076,3 +1078,166 @@ def diskspace(force: bool = False) -> Dict[str, Tuple[float, float]]:
         __DISKS_SAME = __LAST_DISK_RESULT["download_dir"] == __LAST_DISK_RESULT["complete_dir"]
 
     return __LAST_DISK_RESULT
+
+
+def get_new_id(prefix, folder, check_list=None):
+    """Return unique prefixed admin identifier within folder
+    optionally making sure that id is not in the check_list.
+    """
+    for n in range(100):
+        try:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+            fd, path = tempfile.mkstemp("", "SABnzbd_%s_" % prefix, folder)
+            os.close(fd)
+            head, tail = os.path.split(path)
+            if not check_list or tail not in check_list:
+                return tail
+        except:
+            logging.error(T("Failure in tempfile.mkstemp"))
+            logging.info("Traceback: ", exc_info=True)
+            break
+    # Cannot create unique id, crash the process
+    raise IOError
+
+
+def save_data(data, _id, path, do_pickle=True, silent=False):
+    """Save data to a diskfile"""
+    if not silent:
+        logging.debug("[%s] Saving data for %s in %s", sabnzbd.misc.caller_name(), _id, path)
+    path = os.path.join(path, _id)
+
+    # We try 3 times, to avoid any dict or access problems
+    for t in range(3):
+        try:
+            with open(path, "wb") as data_file:
+                if do_pickle:
+                    pickle.dump(data, data_file, protocol=pickle.HIGHEST_PROTOCOL)
+                else:
+                    data_file.write(data)
+            break
+        except:
+            if silent:
+                # This can happen, probably a removed folder
+                pass
+            elif t == 2:
+                logging.error(T("Saving %s failed"), path)
+                logging.info("Traceback: ", exc_info=True)
+            else:
+                # Wait a tiny bit before trying again
+                time.sleep(0.1)
+
+
+def load_data(data_id, path, remove=True, do_pickle=True, silent=False):
+    """Read data from disk file"""
+    path = os.path.join(path, data_id)
+
+    if not os.path.exists(path):
+        logging.info("[%s] %s missing", sabnzbd.misc.caller_name(), path)
+        return None
+
+    if not silent:
+        logging.debug("[%s] Loading data for %s from %s", sabnzbd.misc.caller_name(), data_id, path)
+
+    try:
+        with open(path, "rb") as data_file:
+            if do_pickle:
+                try:
+                    data = pickle.load(data_file, encoding=sabnzbd.encoding.CODEPAGE)
+                except UnicodeDecodeError:
+                    # Could be Python 2 data that we can load using old encoding
+                    data = pickle.load(data_file, encoding="latin1")
+            else:
+                data = data_file.read()
+
+        if remove:
+            remove_file(path)
+    except:
+        logging.error(T("Loading %s failed"), path)
+        logging.info("Traceback: ", exc_info=True)
+        return None
+
+    return data
+
+
+def remove_data(_id: str, path: str):
+    """Remove admin file"""
+    path = os.path.join(path, _id)
+    try:
+        if os.path.exists(path):
+            remove_file(path)
+    except:
+        logging.debug("Failed to remove %s", path)
+
+
+def save_admin(data: Any, data_id: str):
+    """Save data in admin folder in specified format"""
+    logging.debug("[%s] Saving data for %s", sabnzbd.misc.caller_name(), data_id)
+    save_data(data, data_id, sabnzbd.cfg.admin_dir.get_path())
+
+
+def load_admin(data_id: str, remove=False, silent=False) -> Any:
+    """Read data in admin folder in specified format"""
+    logging.debug("[%s] Loading data for %s", sabnzbd.misc.caller_name(), data_id)
+    return load_data(data_id, sabnzbd.cfg.admin_dir.get_path(), remove=remove, silent=silent)
+
+
+def check_incomplete_vs_complete():
+    """Make sure download_dir and complete_dir are not identical
+    or that download_dir is not a subfolder of complete_dir"""
+    complete = sabnzbd.cfg.complete_dir.get_path()
+    if same_file(sabnzbd.cfg.download_dir.get_path(), complete):
+        if real_path("X", sabnzbd.cfg.download_dir()) == long_path(sabnzbd.cfg.download_dir()):
+            # Abs path, so set download_dir as an abs path inside the complete_dir
+            sabnzbd.cfg.download_dir.set(os.path.join(complete, "incomplete"))
+        else:
+            sabnzbd.cfg.download_dir.set("incomplete")
+        return False
+    return True
+
+
+def wait_for_download_folder():
+    """Wait for download folder to become available"""
+    while not sabnzbd.cfg.download_dir.test_path():
+        logging.debug('Waiting for "incomplete" folder')
+        time.sleep(2.0)
+
+
+def backup_exists(filename: str) -> bool:
+    """Return True if backup exists and no_dupes is set"""
+    path = sabnzbd.cfg.nzb_backup_dir.get_path()
+    return path and os.path.exists(os.path.join(path, filename + ".gz"))
+
+
+def backup_nzb(nzb_path: str):
+    """Backup NZB file, return path to nzb if it was saved"""
+    nzb_backup_dir = sabnzbd.cfg.nzb_backup_dir.get_path()
+    if nzb_backup_dir:
+        logging.debug("Saving copy of %s in %s", get_filename(nzb_path), nzb_backup_dir)
+        shutil.copy(nzb_path, nzb_backup_dir)
+
+
+def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
+    """Save compressed NZB file in folder, return path to saved nzb file"""
+    if filename.endswith(".nzb"):
+        filename += ".gz"
+    else:
+        filename += ".nzb.gz"
+    full_nzb_path = os.path.join(folder, filename)
+
+    # Skip existing ones, as it might be queue-repair
+    if not os.path.exists(full_nzb_path):
+        logging.info("Saving %s", full_nzb_path)
+        try:
+            # Have to get around the path being put inside the tgz
+            with open(full_nzb_path, "wb") as tgz_file:
+                # We only need minimal compression to prevent huge files
+                with gzip.GzipFile(filename, mode="wb", compresslevel=1, fileobj=tgz_file) as gzip_file:
+                    shutil.copyfileobj(data_fp, gzip_file)
+        except:
+            logging.error(T("Saving %s failed"), full_nzb_path)
+            logging.info("Traceback: ", exc_info=True)
+    else:
+        logging.info("Skipping existing file %s", full_nzb_path)
+
+    return full_nzb_path

@@ -24,7 +24,7 @@ import subprocess
 import sys
 
 import sabnzbd.encoding
-from sabnzbd import save_compressed
+from sabnzbd.filesystem import save_compressed
 from sabnzbd.constants import JOB_ADMIN
 from tests.testhelper import *
 

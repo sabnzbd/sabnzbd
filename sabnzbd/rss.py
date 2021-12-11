@@ -85,7 +85,7 @@ class RSSReader:
         self.shutdown = False
 
         try:
-            self.jobs = sabnzbd.load_admin(RSS_FILE_NAME)
+            self.jobs = sabnzbd.filesystem.load_admin(RSS_FILE_NAME)
             if self.jobs:
                 for feed in self.jobs:
                     remove_obsolete(self.jobs[feed], list(self.jobs[feed]))
@@ -500,7 +500,7 @@ class RSSReader:
 
     @synchronized(RSS_LOCK)
     def save(self):
-        sabnzbd.save_admin(self.jobs, RSS_FILE_NAME)
+        sabnzbd.filesystem.save_admin(self.jobs, RSS_FILE_NAME)
 
     @synchronized(RSS_LOCK)
     def delete(self, feed):
@@ -653,7 +653,7 @@ def _HandleLink(
         jobs[link]["status"] = "D"
         jobs[link]["time_downloaded"] = time.localtime()
         logging.info("Adding %s (%s) to queue", link, title)
-        sabnzbd.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
+        sabnzbd.urlgrabber.add_url(link, pp=pp, script=script, cat=cat, priority=priority, nzbname=nzbname)
     else:
         if star:
             jobs[link]["status"] = flag + "*"

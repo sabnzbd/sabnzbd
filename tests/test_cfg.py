@@ -16,10 +16,9 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-tests.test_config - Testing functions in config.py
+tests.test_cfg - Testing functions in cfg.py
 """
-
-import sabnzbd.config as config
+import sabnzbd.cfg as cfg
 
 
 class TestValidators:
@@ -31,7 +30,7 @@ class TestValidators:
 
         def assert_allowed(inp_value):
             """Helper function to check for block"""
-            msg, value = config.clean_nice_ionice_parameters(inp_value)
+            msg, value = cfg.clean_nice_ionice_parameters(inp_value)
             assert msg is None
             assert value == inp_value
 
@@ -66,7 +65,7 @@ class TestValidators:
 
         def assert_blocked(inp_value):
             """Helper function to check for block"""
-            msg, value = config.clean_nice_ionice_parameters(inp_value)
+            msg, value = cfg.clean_nice_ionice_parameters(inp_value)
             assert msg
             assert msg.startswith("Incorrect parameter")
             assert value is None
@@ -88,7 +87,7 @@ class TestValidators:
         assert_blocked("--classdata=;/bin/echo")
 
     def test_validate_single_tag(self):
-        assert config.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])
-        assert config.validate_single_tag(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
-        assert config.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
-        assert config.validate_single_tag(["alt.group"]) == (None, ["alt.group"])
+        assert cfg.validate_single_tag(["TV", ">", "HD"]) == (None, ["TV > HD"])
+        assert cfg.validate_single_tag(["TV", ">", "HD", "Plus"]) == (None, ["TV", ">", "HD", "Plus"])
+        assert cfg.validate_single_tag(["alt.bin", "alt.tv"]) == (None, ["alt.bin", "alt.tv"])
+        assert cfg.validate_single_tag(["alt.group"]) == (None, ["alt.group"])

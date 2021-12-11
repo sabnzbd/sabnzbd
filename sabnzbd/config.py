@@ -18,7 +18,7 @@
 """
 sabnzbd.config - Configuration Support
 """
-import argparse
+
 import logging
 import os
 import re
@@ -30,7 +30,7 @@ from urllib.parse import urlparse
 
 import configobj
 
-import sabnzbd.misc
+import sabnzbd
 from sabnzbd.constants import CONFIG_VERSION, NORMAL_PRIORITY, DEFAULT_PRIORITY
 from sabnzbd.decorators import synchronized
 from sabnzbd.filesystem import clip_path, real_path, create_real_path, renamer, remove_file, is_writable
@@ -514,7 +514,7 @@ class ConfigCat:
         self.pp = OptionStr(name, "pp", add=False)
         self.script = OptionStr(name, "script", "Default", add=False)
         self.dir = OptionDir(name, "dir", add=False, create=False)
-        self.newzbin = OptionList(name, "newzbin", add=False, validation=validate_single_tag)
+        self.newzbin = OptionList(name, "newzbin", add=False, validation=sabnzbd.cfg.validate_single_tag)
         self.priority = OptionNumber(name, "priority", DEFAULT_PRIORITY, add=False)
 
         self.set_dict(values)
@@ -1016,17 +1016,7 @@ def get_filename():
     return CFG.filename
 
 
-##############################################################################
-# Default Validation handlers
-##############################################################################
 __PW_PREFIX = "!!!encoded!!!"
-
-
-class ErrorCatchingArgumentParser(argparse.ArgumentParser):
-    def error(self, status=0, message=None):
-        # Need to override so it doesn't raise SystemExit
-        if status:
-            raise ValueError
 
 
 def encode_password(pw):
@@ -1060,100 +1050,6 @@ def decode_password(pw, name):
         return decPW
     else:
         return pw
-
-
-def clean_nice_ionice_parameters(value):
-    """Verify that the passed parameters are not exploits"""
-    if value:
-        parser = ErrorCatchingArgumentParser()
-
-        # Nice parameters
-        parser.add_argument("-n", "--adjustment", type=int)
-
-        # Ionice parameters, not supporting -p
-        parser.add_argument("--classdata", type=int)
-        parser.add_argument("-c", "--class", type=int)
-        parser.add_argument("-t", "--ignore", action="store_true")
-
-        try:
-            parser.parse_args(value.split())
-        except ValueError:
-            # Also log at start-up if invalid parameter was set in the ini
-            msg = "%s: %s" % (T("Incorrect parameter"), value)
-            logging.error(msg)
-            return msg, None
-    return None, value
-
-
-def all_lowercase(value):
-    """Lowercase everything!"""
-    if isinstance(value, list):
-        # If list, for each item
-        return None, [item.lower() for item in value]
-    return None, value.lower()
-
-
-def validate_permissions(value: str):
-    """Check the permissions for correct input"""
-    # Octal verification
-    if not value:
-        return None, value
-    try:
-        oct_value = int(value, 8)
-        # Block setting it to 0
-        if not oct_value:
-            raise ValueError
-    except ValueError:
-        return T("%s is not a correct octal value") % value, None
-
-    # Check if we at least have user-permissions
-    if oct_value < int("700", 8):
-        sabnzbd.misc.helpful_warning(
-            T("Permissions setting of %s might deny SABnzbd access to the files and folders it creates."), value
-        )
-    return None, value
-
-
-def validate_no_unc(root, value, default):
-    """Check if path isn't a UNC path"""
-    # Only need to check the 'value' part
-    if value and not value.startswith(r"\\"):
-        return validate_notempty(root, value, default)
-    else:
-        return T('UNC path "%s" not allowed here') % value, None
-
-
-def validate_safedir(root, value, default):
-    """Allow only when queues are empty and no UNC"""
-    if not sabnzbd.__INITIALIZED__ or (sabnzbd.PostProcessor.empty() and sabnzbd.NzbQueue.is_empty()):
-        return validate_no_unc(root, value, default)
-    else:
-        return T("Error: Queue not empty, cannot change folder."), None
-
-
-def validate_notempty(root, value, default):
-    """If value is empty, return default"""
-    if value:
-        return None, value
-    else:
-        return None, default
-
-
-def validate_strip_right_slash(value):
-    """Strips the right slash"""
-    if value:
-        return None, value.rstrip("/")
-    return None, value
-
-
-def validate_single_tag(value: List[str]) -> Tuple[None, List[str]]:
-    """Don't split single indexer tags like "TV > HD"
-    into ['TV', '>', 'HD']
-    """
-    if len(value) == 3:
-        if value[1] == ">":
-            return None, [" ".join(value)]
-    return None, value
 
 
 def create_api_key():

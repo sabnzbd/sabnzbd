@@ -18,6 +18,7 @@
 """
 sabnzbd.nzbparser - Parse and import NZB files
 """
+import os
 import bz2
 import gzip
 import time
@@ -26,14 +27,328 @@ import hashlib
 import xml.etree.ElementTree
 import datetime
 import zipfile
+import tempfile
+import cherrypy._cpreqbody
 from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
-from sabnzbd import filesystem, nzbstuff
-from sabnzbd.encoding import utob
-from sabnzbd.filesystem import get_filename
+from sabnzbd import nzbstuff
+from sabnzbd.encoding import utob, correct_unknown_encoding
+from sabnzbd.filesystem import get_filename, is_valid_script, get_ext, setname_from_path, clip_path, remove_file
 from sabnzbd.misc import name_to_cat
+from sabnzbd.constants import DEFAULT_PRIORITY, VALID_ARCHIVES
 from sabnzbd.utils import rarfile
+
+
+def add_nzbfile(
+    nzbfile: Union[str, cherrypy._cpreqbody.Part],
+    pp: Optional[Union[int, str]] = None,
+    script: Optional[str] = None,
+    cat: Optional[str] = None,
+    catdir: Optional[str] = None,
+    priority: Optional[Union[int, str]] = DEFAULT_PRIORITY,
+    nzbname: Optional[str] = None,
+    nzo_info=None,
+    url: Optional[str] = None,
+    keep: Optional[bool] = None,
+    reuse: Optional[str] = None,
+    password: Optional[str] = None,
+    nzo_id: Optional[str] = None,
+):
+    """Add file, either a single NZB-file or an archive.
+    All other parameters are passed to the NZO-creation.
+    """
+    if pp == "-1":
+        pp = None
+    if script and (script.lower() == "default" or not is_valid_script(script)):
+        script = None
+    if cat and cat.lower() == "default":
+        cat = None
+
+    if isinstance(nzbfile, str):
+        # File coming from queue repair or local file-path
+        path = nzbfile
+        filename = os.path.basename(path)
+        keep_default = True
+        if not sabnzbd.WIN32:
+            # If windows client sends file to Unix server backslashes may
+            # be included, so convert these
+            path = path.replace("\\", "/")
+        logging.info("Attempting to add %s [%s]", filename, path)
+    else:
+        # File from file-upload object
+        # CherryPy mangles unicode-filenames: https://github.com/cherrypy/cherrypy/issues/1766
+        filename = correct_unknown_encoding(nzbfile.filename)
+        logging.info("Attempting to add %s", filename)
+        keep_default = False
+        try:
+            # We have to create a copy, because we can't re-use the CherryPy temp-file
+            # Just to be sure we add the extension to detect file type later on
+            nzb_temp_file, path = tempfile.mkstemp(suffix=get_ext(filename))
+            os.write(nzb_temp_file, nzbfile.file.read())
+            os.close(nzb_temp_file)
+        except OSError:
+            logging.error(T("Cannot create temp file for %s"), filename)
+            logging.info("Traceback: ", exc_info=True)
+            return None
+        finally:
+            # Close the CherryPy reference
+            nzbfile.file.close()
+
+    # Externally defined if we should keep the file?
+    if keep is None:
+        keep = keep_default
+
+    if get_ext(filename) in VALID_ARCHIVES:
+        return process_nzb_archive_file(
+            filename,
+            path=path,
+            pp=pp,
+            script=script,
+            cat=cat,
+            catdir=catdir,
+            priority=priority,
+            nzbname=nzbname,
+            keep=keep,
+            reuse=reuse,
+            nzo_info=nzo_info,
+            url=url,
+            password=password,
+            nzo_id=nzo_id,
+        )
+    else:
+        return process_single_nzb(
+            filename,
+            path=path,
+            pp=pp,
+            script=script,
+            cat=cat,
+            catdir=catdir,
+            priority=priority,
+            nzbname=nzbname,
+            keep=keep,
+            reuse=reuse,
+            nzo_info=nzo_info,
+            url=url,
+            password=password,
+            nzo_id=nzo_id,
+        )
+
+
+def process_nzb_archive_file(
+    filename: str,
+    path: str,
+    pp: Optional[int] = None,
+    script: Optional[str] = None,
+    cat: Optional[str] = None,
+    catdir: Optional[str] = None,
+    keep: bool = False,
+    priority: Optional[Union[int, str]] = None,
+    nzbname: Optional[str] = None,
+    reuse: Optional[str] = None,
+    nzo_info: Optional[Dict[str, Any]] = None,
+    dup_check: bool = True,
+    url: Optional[str] = None,
+    password: Optional[str] = None,
+    nzo_id: Optional[str] = None,
+) -> Tuple[int, List[str]]:
+    """Analyse archive and create job(s).
+    Accepts archive files with ONLY nzb/nfo/folder files in it.
+    returns (status, nzo_ids)
+        status: -1==Error, 0==OK, 1==Ignore
+    """
+    nzo_ids = []
+    if catdir is None:
+        catdir = cat
+    filename, cat = name_to_cat(filename, catdir)
+
+    try:
+        if zipfile.is_zipfile(path):
+            zf = zipfile.ZipFile(path)
+        elif rarfile.is_rarfile(path):
+            zf = rarfile.RarFile(path)
+        elif sabnzbd.newsunpack.is_sevenfile(path):
+            zf = sabnzbd.newsunpack.SevenZip(path)
+        else:
+            raise TypeError("File %s is not a supported archive!" % filename)
+    except:
+        logging.info(T("Cannot read %s"), path, exc_info=True)
+        return -1, []
+
+    status = 1
+    names = zf.namelist()
+    nzbcount = 0
+    for name in names:
+        name = name.lower()
+        if name.endswith(".nzb"):
+            status = 0
+            nzbcount += 1
+
+    if status == 0:
+        if nzbcount != 1:
+            nzbname = None
+        for name in names:
+            if name.lower().endswith(".nzb"):
+                try:
+                    datap = zf.open(name)
+                except OSError:
+                    logging.error(T("Cannot read %s"), name, exc_info=True)
+                    zf.close()
+                    return -1, []
+                name = setname_from_path(name)
+                if datap:
+                    nzo = None
+                    try:
+                        nzo = nzbstuff.NzbObject(
+                            name,
+                            pp=pp,
+                            script=script,
+                            nzb_fp=datap,
+                            cat=cat,
+                            url=url,
+                            priority=priority,
+                            nzbname=nzbname,
+                            nzo_info=nzo_info,
+                            reuse=reuse,
+                            dup_check=dup_check,
+                        )
+                        if not nzo.password:
+                            nzo.password = password
+                    except (TypeError, ValueError):
+                        # Duplicate or empty, ignore
+                        pass
+                    except:
+                        # Something else is wrong, show error
+                        logging.error(T("Error while adding %s, removing"), name, exc_info=True)
+                    finally:
+                        datap.close()
+
+                    if nzo:
+                        if nzo_id:
+                            # Re-use existing nzo_id, when a "future" job gets it payload
+                            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
+                            nzo.nzo_id = nzo_id
+                            nzo_id = None
+                        nzo_ids.append(sabnzbd.NzbQueue.add(nzo))
+                        nzo.update_rating()
+
+        # Close the pointer to the compressed file
+        zf.close()
+
+        try:
+            if not keep:
+                remove_file(path)
+        except OSError:
+            logging.error(T("Error removing %s"), clip_path(path))
+            logging.info("Traceback: ", exc_info=True)
+    else:
+        zf.close()
+        status = 1
+
+    return status, nzo_ids
+
+
+def process_single_nzb(
+    filename: str,
+    path: str,
+    pp: Optional[int] = None,
+    script: Optional[str] = None,
+    cat: Optional[str] = None,
+    catdir: Optional[str] = None,
+    keep: bool = False,
+    priority: Optional[Union[int, str]] = None,
+    nzbname: Optional[str] = None,
+    reuse: Optional[str] = None,
+    nzo_info: Optional[Dict[str, Any]] = None,
+    dup_check: bool = True,
+    url: Optional[str] = None,
+    password: Optional[str] = None,
+    nzo_id: Optional[str] = None,
+) -> Tuple[int, List[str]]:
+    """Analyze file and create a job from it
+    Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
+    returns (status, nzo_ids)
+        status: -1==Error, 0==OK
+    """
+    nzo_ids = []
+    if catdir is None:
+        catdir = cat
+
+    try:
+        with open(path, "rb") as nzb_file:
+            check_bytes = nzb_file.read(2)
+
+        if check_bytes == b"\x1f\x8b":
+            # gzip file or gzip in disguise
+            filename = filename.replace(".nzb.gz", ".nzb")
+            nzb_fp = gzip.GzipFile(path, "rb")
+        elif check_bytes == b"BZ":
+            # bz2 file or bz2 in disguise
+            filename = filename.replace(".nzb.bz2", ".nzb")
+            nzb_fp = bz2.BZ2File(path, "rb")
+        else:
+            nzb_fp = open(path, "rb")
+
+    except OSError:
+        logging.warning(T("Cannot read %s"), clip_path(path))
+        logging.info("Traceback: ", exc_info=True)
+        return -2, nzo_ids
+
+    if filename:
+        filename, cat = name_to_cat(filename, catdir)
+        # The name is used as the name of the folder, so sanitize it using folder specific santization
+        if not nzbname:
+            # Prevent embedded password from being damaged by sanitize and trimming
+            nzbname = get_filename(filename)
+
+    try:
+        nzo = nzbstuff.NzbObject(
+            filename,
+            pp=pp,
+            script=script,
+            nzb_fp=nzb_fp,
+            cat=cat,
+            url=url,
+            priority=priority,
+            nzbname=nzbname,
+            nzo_info=nzo_info,
+            reuse=reuse,
+            dup_check=dup_check,
+        )
+        if not nzo.password:
+            nzo.password = password
+    except TypeError:
+        # Duplicate, ignore
+        if nzo_id:
+            sabnzbd.NzbQueue.remove(nzo_id)
+        nzo = None
+    except ValueError:
+        # Empty
+        return 1, nzo_ids
+    except:
+        # Something else is wrong, show error
+        logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
+        return -1, nzo_ids
+    finally:
+        nzb_fp.close()
+
+    if nzo:
+        if nzo_id:
+            # Re-use existing nzo_id, when a "future" job gets it payload
+            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
+            nzo.nzo_id = nzo_id
+        nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
+        nzo.update_rating()
+
+    try:
+        if not keep:
+            remove_file(path)
+    except OSError:
+        # Job was still added to the queue, so throw error but don't report failed add
+        logging.error(T("Error removing %s"), clip_path(path))
+        logging.info("Traceback: ", exc_info=True)
+
+    return 0, nzo_ids
 
 
 def nzbfile_parser(full_nzb_path: str, nzo):
@@ -166,219 +481,3 @@ def nzbfile_parser(full_nzb_path: str, nzo):
 
     if skipped_files:
         logging.warning(T("Failed to import %s files from %s"), skipped_files, nzo.filename)
-
-
-def process_nzb_archive_file(
-    filename: str,
-    path: str,
-    pp: Optional[int] = None,
-    script: Optional[str] = None,
-    cat: Optional[str] = None,
-    catdir: Optional[str] = None,
-    keep: bool = False,
-    priority: Optional[Union[int, str]] = None,
-    nzbname: Optional[str] = None,
-    reuse: Optional[str] = None,
-    nzo_info: Optional[Dict[str, Any]] = None,
-    dup_check: bool = True,
-    url: Optional[str] = None,
-    password: Optional[str] = None,
-    nzo_id: Optional[str] = None,
-) -> Tuple[int, List[str]]:
-    """Analyse archive and create job(s).
-    Accepts archive files with ONLY nzb/nfo/folder files in it.
-    returns (status, nzo_ids)
-        status: -1==Error, 0==OK, 1==Ignore
-    """
-    nzo_ids = []
-    if catdir is None:
-        catdir = cat
-    filename, cat = name_to_cat(filename, catdir)
-
-    try:
-        if zipfile.is_zipfile(path):
-            zf = zipfile.ZipFile(path)
-        elif rarfile.is_rarfile(path):
-            zf = rarfile.RarFile(path)
-        elif sabnzbd.newsunpack.is_sevenfile(path):
-            zf = sabnzbd.newsunpack.SevenZip(path)
-        else:
-            raise TypeError("File %s is not a supported archive!" % filename)
-    except:
-        logging.info(T("Cannot read %s"), path, exc_info=True)
-        return -1, []
-
-    status = 1
-    names = zf.namelist()
-    nzbcount = 0
-    for name in names:
-        name = name.lower()
-        if name.endswith(".nzb"):
-            status = 0
-            nzbcount += 1
-
-    if status == 0:
-        if nzbcount != 1:
-            nzbname = None
-        for name in names:
-            if name.lower().endswith(".nzb"):
-                try:
-                    datap = zf.open(name)
-                except OSError:
-                    logging.error(T("Cannot read %s"), name, exc_info=True)
-                    zf.close()
-                    return -1, []
-                name = filesystem.setname_from_path(name)
-                if datap:
-                    nzo = None
-                    try:
-                        nzo = nzbstuff.NzbObject(
-                            name,
-                            pp=pp,
-                            script=script,
-                            nzb_fp=datap,
-                            cat=cat,
-                            url=url,
-                            priority=priority,
-                            nzbname=nzbname,
-                            nzo_info=nzo_info,
-                            reuse=reuse,
-                            dup_check=dup_check,
-                        )
-                        if not nzo.password:
-                            nzo.password = password
-                    except (TypeError, ValueError):
-                        # Duplicate or empty, ignore
-                        pass
-                    except:
-                        # Something else is wrong, show error
-                        logging.error(T("Error while adding %s, removing"), name, exc_info=True)
-                    finally:
-                        datap.close()
-
-                    if nzo:
-                        if nzo_id:
-                            # Re-use existing nzo_id, when a "future" job gets it payload
-                            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
-                            nzo.nzo_id = nzo_id
-                            nzo_id = None
-                        nzo_ids.append(sabnzbd.NzbQueue.add(nzo))
-                        nzo.update_rating()
-
-        # Close the pointer to the compressed file
-        zf.close()
-
-        try:
-            if not keep:
-                filesystem.remove_file(path)
-        except OSError:
-            logging.error(T("Error removing %s"), filesystem.clip_path(path))
-            logging.info("Traceback: ", exc_info=True)
-    else:
-        zf.close()
-        status = 1
-
-    return status, nzo_ids
-
-
-def process_single_nzb(
-    filename: str,
-    path: str,
-    pp: Optional[int] = None,
-    script: Optional[str] = None,
-    cat: Optional[str] = None,
-    catdir: Optional[str] = None,
-    keep: bool = False,
-    priority: Optional[Union[int, str]] = None,
-    nzbname: Optional[str] = None,
-    reuse: Optional[str] = None,
-    nzo_info: Optional[Dict[str, Any]] = None,
-    dup_check: bool = True,
-    url: Optional[str] = None,
-    password: Optional[str] = None,
-    nzo_id: Optional[str] = None,
-) -> Tuple[int, List[str]]:
-    """Analyze file and create a job from it
-    Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
-    returns (status, nzo_ids)
-        status: -1==Error, 0==OK
-    """
-    nzo_ids = []
-    if catdir is None:
-        catdir = cat
-
-    try:
-        with open(path, "rb") as nzb_file:
-            check_bytes = nzb_file.read(2)
-
-        if check_bytes == b"\x1f\x8b":
-            # gzip file or gzip in disguise
-            filename = filename.replace(".nzb.gz", ".nzb")
-            nzb_fp = gzip.GzipFile(path, "rb")
-        elif check_bytes == b"BZ":
-            # bz2 file or bz2 in disguise
-            filename = filename.replace(".nzb.bz2", ".nzb")
-            nzb_fp = bz2.BZ2File(path, "rb")
-        else:
-            nzb_fp = open(path, "rb")
-
-    except OSError:
-        logging.warning(T("Cannot read %s"), filesystem.clip_path(path))
-        logging.info("Traceback: ", exc_info=True)
-        return -2, nzo_ids
-
-    if filename:
-        filename, cat = name_to_cat(filename, catdir)
-        # The name is used as the name of the folder, so sanitize it using folder specific santization
-        if not nzbname:
-            # Prevent embedded password from being damaged by sanitize and trimming
-            nzbname = get_filename(filename)
-
-    try:
-        nzo = nzbstuff.NzbObject(
-            filename,
-            pp=pp,
-            script=script,
-            nzb_fp=nzb_fp,
-            cat=cat,
-            url=url,
-            priority=priority,
-            nzbname=nzbname,
-            nzo_info=nzo_info,
-            reuse=reuse,
-            dup_check=dup_check,
-        )
-        if not nzo.password:
-            nzo.password = password
-    except TypeError:
-        # Duplicate, ignore
-        if nzo_id:
-            sabnzbd.NzbQueue.remove(nzo_id)
-        nzo = None
-    except ValueError:
-        # Empty
-        return 1, nzo_ids
-    except:
-        # Something else is wrong, show error
-        logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
-        return -1, nzo_ids
-    finally:
-        nzb_fp.close()
-
-    if nzo:
-        if nzo_id:
-            # Re-use existing nzo_id, when a "future" job gets it payload
-            sabnzbd.NzbQueue.remove(nzo_id, delete_all_data=False)
-            nzo.nzo_id = nzo_id
-        nzo_ids.append(sabnzbd.NzbQueue.add(nzo, quiet=bool(reuse)))
-        nzo.update_rating()
-
-    try:
-        if not keep:
-            filesystem.remove_file(path)
-    except OSError:
-        # Job was still added to the queue, so throw error but don't report failed add
-        logging.error(T("Error removing %s"), filesystem.clip_path(path))
-        logging.info("Traceback: ", exc_info=True)
-
-    return 0, nzo_ids

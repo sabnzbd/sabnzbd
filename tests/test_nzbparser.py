@@ -18,9 +18,11 @@
 """
 tests.test_nzbparser - Tests of basic NZB parsing
 """
+
 from tests.testhelper import *
 import sabnzbd.nzbparser as nzbparser
-from sabnzbd import nzbstuff, save_compressed
+from sabnzbd import nzbstuff
+from sabnzbd.filesystem import save_compressed
 
 
 @pytest.mark.usefixtures("clean_cache_dir")

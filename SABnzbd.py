@@ -92,6 +92,7 @@ from sabnzbd.misc import (
     is_lan_addr,
     ip_in_subnet,
     helpful_warning,
+    set_https_verification,
 )
 from sabnzbd.filesystem import get_ext, real_path, long_path, globber_full, remove_file
 from sabnzbd.panic import panic_tmpl, panic_port, panic_host, panic, launch_a_browser
@@ -681,9 +682,9 @@ def is_sabnzbd_running(url):
     try:
         url = "%s&mode=version" % url
         # Do this without certificate verification, few installations will have that
-        prev = sabnzbd.set_https_verification(False)
+        prev = set_https_verification(False)
         ver = get_from_url(url)
-        sabnzbd.set_https_verification(prev)
+        set_https_verification(prev)
         return ver and (re.search(r"\d+\.\d+\.", ver) or ver.strip() == sabnzbd.__version__)
     except:
         return False
@@ -711,10 +712,10 @@ def check_for_sabnzbd(url, upload_nzbs, allow_browser=True):
     if is_sabnzbd_running(url):
         # Upload any specified nzb files to the running instance
         if upload_nzbs:
-            prev = sabnzbd.set_https_verification(False)
+            prev = set_https_verification(False)
             for f in upload_nzbs:
                 upload_file_to_sabnzbd(url, f)
-            sabnzbd.set_https_verification(prev)
+            set_https_verification(prev)
         else:
             # Launch the web browser and quit since sabnzbd is already running
             # Trim away everything after the final slash in the URL
@@ -1462,7 +1463,7 @@ def main():
         return
 
     # Apply proxy, if configured, before main requests are made
-    sabnzbd.set_socks5_proxy()
+    sabnzbd.misc.set_socks5_proxy()
 
     # Start all SABnzbd tasks
     logging.info("Starting %s-%s", sabnzbd.MY_NAME, sabnzbd.__version__)
@@ -1475,7 +1476,7 @@ def main():
     # Upload any nzb/zip/rar/nzb.gz/nzb.bz2 files from file association
     if upload_nzbs:
         for upload_nzb in upload_nzbs:
-            sabnzbd.add_nzbfile(upload_nzb)
+            sabnzbd.nzbparser.add_nzbfile(upload_nzb)
 
     # Set URL for browser
     if enable_https:
@@ -1556,7 +1557,7 @@ def main():
         # 30 sec polling tasks
         if not timer % 10:
             # Keep OS awake (if needed)
-            sabnzbd.keep_awake()
+            sabnzbd.misc.keep_awake()
             # Restart scheduler (if needed)
             sabnzbd.Scheduler.restart(plan_restart=False)
             # Save config (if needed)
