@@ -355,6 +355,7 @@ def process_single_nzb(
         return 1, nzo_ids
     except:
         # Read all the data to check if it's incomplete
+        nzb_fp.seek(0)
         data = nzb_fp.read()
         if data.find(b"<nzb") >= 0 > data.find(b"</nzb"):
             # Looks like an incomplete file, retry
