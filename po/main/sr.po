@@ -556,8 +556,7 @@ msgid "No recipients given, no email sent"
 msgstr "Нема примаоце, е-порука није послана"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Неуспешно читање %s"
 
@@ -1176,8 +1175,8 @@ msgstr "NZB додат у ред"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Неважећи NZB %s, прескакање (разлог=%s, линија=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py

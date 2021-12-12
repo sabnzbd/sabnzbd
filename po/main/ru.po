@@ -557,8 +557,7 @@ msgid "No recipients given, no email sent"
 msgstr "Получатели не указаны. Электронное письмо не отправлено"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Не удаётся прочитать %s"
 
@@ -1182,8 +1181,8 @@ msgstr "NZB-файл добавлен в очередь"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Недопустимый NZB-файл %s: пропущен (причина — %s, строка — %s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py

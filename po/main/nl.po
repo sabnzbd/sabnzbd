@@ -578,8 +578,7 @@ msgid "No recipients given, no email sent"
 msgstr "Geen geadresseerden opgegeven, e-mail niet verstuurd"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "%s kan niet gelezen worden"
 
@@ -1212,8 +1211,8 @@ msgstr "Download aan wachtrij toegevoegd"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Foutief NZB-bestand %s, overslaan (reden=%s, regel=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py

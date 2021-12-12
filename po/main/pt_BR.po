@@ -561,8 +561,7 @@ msgid "No recipients given, no email sent"
 msgstr "Nenhum destinário fornecido, e-mail não enviado"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Não é possível ler %s"
 
@@ -1182,8 +1181,8 @@ msgstr "NZB adicionado à fila"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Arquivo NZB %s inválido. Pulando (razão=%s, linha=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py

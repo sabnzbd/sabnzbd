@@ -559,8 +559,7 @@ msgid "No recipients given, no email sent"
 msgstr "נמענים לא ניתנו, דוא״ל לא נשלח"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "לא ניתן לקרוא את %s"
 
@@ -1183,8 +1182,8 @@ msgstr "NZB התווסף לתור"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "קובץ NZB בלתי תקף %s, מדלג (סיבה=%s, שורה=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py

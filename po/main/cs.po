@@ -568,8 +568,7 @@ msgid "No recipients given, no email sent"
 msgstr "Nebyli zadáni přijemci, žádný email neodeslán"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Nelze číst %s"
 
@@ -1187,8 +1186,8 @@ msgstr "NZB přidáno do fronty"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Nesprávný NZB soubor %s, přeskakuji (důvod=%s, řádek=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py

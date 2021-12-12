@@ -562,8 +562,7 @@ msgid "No recipients given, no email sent"
 msgstr "Vastaanottajaa ei määritelty, sähköpostia ei lähetetty"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Ei voida lukea %s"
 
@@ -1183,8 +1182,8 @@ msgstr "NZB lisätty jonoon"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Virheellinen NZB tiedosto %s, ohitetaan (syy=%s, rivi=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py

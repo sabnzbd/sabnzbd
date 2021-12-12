@@ -566,8 +566,7 @@ msgid "No recipients given, no email sent"
 msgstr "Ingen modtagere givet, ingen e-mail sendt"
 
 #. Error message - Warning message
-#: sabnzbd/emailer.py, sabnzbd/filesystem.py, sabnzbd/nzbparser.py,
-#: sabnzbd/rss.py
+#: sabnzbd/emailer.py, sabnzbd/nzbparser.py, sabnzbd/rss.py
 msgid "Cannot read %s"
 msgstr "Kan ikke læse %s"
 
@@ -1190,8 +1189,8 @@ msgstr "NZB tilføjet i køen"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py
-msgid "Invalid NZB file %s, skipping (reason=%s, line=%s)"
-msgstr "Ødelagt NZB fil %s, springer over (årsag=%s, linje=%s)"
+msgid "Invalid NZB file %s, skipping (error: %s)"
+msgstr ""
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
