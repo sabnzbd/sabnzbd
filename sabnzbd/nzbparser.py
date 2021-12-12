@@ -26,7 +26,7 @@ import logging
 import hashlib
 import xml.etree.ElementTree
 import datetime
-from typing import Optional, Dict, Any, Union
+from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
 from sabnzbd import filesystem, nzbstuff
@@ -183,9 +183,9 @@ def process_nzb_archive_file(
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
-):
-    """Analyse ZIP file and create job(s).
-    Accepts ZIP files with ONLY nzb/nfo/folder files in it.
+) -> Tuple[int, List[str]]:
+    """Analyse archive and create job(s).
+    Accepts archive files with ONLY nzb/nfo/folder files in it.
     returns (status, nzo_ids)
         status: -1==Error, 0==OK, 1==Ignore
     """
@@ -289,11 +289,11 @@ def process_single_nzb(
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
-):
+) -> Tuple[int, List[str]]:
     """Analyze file and create a job from it
     Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
     returns (status, nzo_ids)
-        status: -2==Error/retry, -1==Error, 0==OK
+        status: -1==Error, 0==OK
     """
     nzo_ids = []
     if catdir is None:
@@ -306,16 +306,13 @@ def process_single_nzb(
         if check_bytes == b"\x1f\x8b":
             # gzip file or gzip in disguise
             filename = filename.replace(".nzb.gz", ".nzb")
-            nzb_reader_handler = gzip.GzipFile
+            nzb_fp = gzip.GzipFile(path, "rb")
         elif check_bytes == b"BZ":
             # bz2 file or bz2 in disguise
             filename = filename.replace(".nzb.bz2", ".nzb")
-            nzb_reader_handler = bz2.BZ2File
+            nzb_fp = bz2.BZ2File(path, "rb")
         else:
-            nzb_reader_handler = open
-
-        # Open file pointer
-        nzb_fp = nzb_reader_handler(path, "rb")
+            nzb_fp = open(path, "rb")
 
     except OSError:
         logging.warning(T("Cannot read %s"), filesystem.clip_path(path))
@@ -354,16 +351,9 @@ def process_single_nzb(
         # Empty
         return 1, nzo_ids
     except:
-        # Read all the data to check if it's incomplete
-        nzb_fp.seek(0)
-        data = nzb_fp.read()
-        if data.find(b"<nzb") >= 0 > data.find(b"</nzb"):
-            # Looks like an incomplete file, retry
-            return -2, nzo_ids
-        else:
-            # Something else is wrong, show error
-            logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
-            return -1, nzo_ids
+        # Something else is wrong, show error
+        logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
+        return -1, nzo_ids
     finally:
         nzb_fp.close()
 
