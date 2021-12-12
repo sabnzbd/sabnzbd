@@ -21,18 +21,19 @@ sabnzbd.nzbparser - Parse and import NZB files
 import bz2
 import gzip
 import time
-import io
 import logging
 import hashlib
 import xml.etree.ElementTree
 import datetime
+import zipfile
 from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
 from sabnzbd import filesystem, nzbstuff
 from sabnzbd.encoding import utob
-from sabnzbd.filesystem import is_archive, get_filename
+from sabnzbd.filesystem import get_filename
 from sabnzbd.misc import name_to_cat
+from sabnzbd.utils import rarfile
 
 
 def nzbfile_parser(full_nzb_path: str, nzo):
@@ -192,13 +193,20 @@ def process_nzb_archive_file(
     nzo_ids = []
     if catdir is None:
         catdir = cat
-
     filename, cat = name_to_cat(filename, catdir)
-    # Returns -1==Error/Retry, 0==OK, 1==Ignore
-    status, zf, extension = is_archive(path)
 
-    if status != 0:
-        return status, []
+    try:
+        if zipfile.is_zipfile(path):
+            zf = zipfile.ZipFile(path)
+        elif rarfile.is_rarfile(path):
+            zf = rarfile.RarFile(path)
+        elif sabnzbd.newsunpack.is_sevenfile(path):
+            zf = sabnzbd.newsunpack.SevenZip(path)
+        else:
+            raise TypeError("Archive %s is not a real archive!" % filename)
+    except:
+        logging.info(T("Cannot read %s"), path, exc_info=True)
+        return -1, []
 
     status = 1
     names = zf.namelist()

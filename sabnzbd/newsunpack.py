@@ -72,6 +72,7 @@ EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
 EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")
 
 # Constants
+SEVENZIP_ID = b"7z\xbc\xaf'\x1c"
 PAR2_COMMAND = None
 MULTIPAR_COMMAND = None
 RAR_COMMAND = None
@@ -138,6 +139,9 @@ def find_programs(curdir):
 
         # Run check on par2-multicore
         sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)
+
+    # Set the path for rarfile
+    rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
 
 
 ENV_NZO_FIELDS = [
@@ -1953,7 +1957,6 @@ def rar_volumelist(rarfile_path, password, known_volumes):
     # UnRar is required to read some RAR files
     # RarFile can fail in special cases
     try:
-        rarfile.UNRAR_TOOL = RAR_COMMAND
         zf = rarfile.RarFile(rarfile_path)
 
         # setpassword can fail due to bugs in RarFile
@@ -2339,9 +2342,12 @@ def pre_queue(nzo: NzbObject, pp, cat):
     return values
 
 
-def is_sevenfile(path):
-    """Return True if path has proper extension and 7Zip is installed"""
-    return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == ".7z"
+def is_sevenfile(path: str) -> bool:
+    """Return True if path has 7Zip-signature and 7Zip is detected"""
+    with open(path, "rb") as sevenzip:
+        if sevenzip.read(6) == SEVENZIP_ID:
+            return bool(SEVEN_COMMAND)
+    return False
 
 
 class SevenZip:

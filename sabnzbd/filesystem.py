@@ -28,9 +28,8 @@ import threading
 import time
 import fnmatch
 import stat
-import zipfile
 import ctypes
-from typing import Union, List, Tuple, Any, Dict, Optional
+from typing import Union, List, Tuple, Dict, Optional
 
 try:
     import win32api
@@ -424,40 +423,6 @@ def same_file(a: str, b: str) -> int:
             return 1
         else:
             return is_subfolder
-
-
-def is_archive(path: str) -> Tuple[int, Any, str]:
-    """Check if file in path is an ZIP, RAR or 7z file
-    :param path: path to file
-    :return: (zf, status, expected_extension)
-            status: -1==Error/Retry, 0==OK, 1==Ignore
-    """
-    if zipfile.is_zipfile(path):
-        try:
-            zf = zipfile.ZipFile(path)
-            return 0, zf, ".zip"
-        except:
-            logging.info(T("Cannot read %s"), path, exc_info=True)
-            return -1, None, ""
-    elif rarfile.is_rarfile(path):
-        try:
-            # Set path to tool to open it
-            rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
-            zf = rarfile.RarFile(path)
-            return 0, zf, ".rar"
-        except:
-            logging.info(T("Cannot read %s"), path, exc_info=True)
-            return -1, None, ""
-    elif sabnzbd.newsunpack.is_sevenfile(path):
-        try:
-            zf = sabnzbd.newsunpack.SevenZip(path)
-            return 0, zf, ".7z"
-        except:
-            logging.info(T("Cannot read %s"), path, exc_info=True)
-            return -1, None, ""
-    else:
-        logging.info("Archive %s is not a real archive!", os.path.basename(path))
-        return 1, None, ""
 
 
 def check_mount(path: str) -> bool:

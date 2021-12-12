@@ -299,7 +299,6 @@ def check_encrypted_and_unwanted_files(nzo: NzbObject, filepath: str) -> Tuple[b
             # Is it even a rarfile?
             if rarfile.is_rarfile(filepath):
                 # Open the rar
-                rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
                 zf = rarfile.RarFile(filepath, single_file_check=True)
 
                 # Check for encryption

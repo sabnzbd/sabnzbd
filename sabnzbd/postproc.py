@@ -854,9 +854,7 @@ def try_rar_check(nzo: NzbObject, rars):
         nzo.set_unpack_info("Repair", T("Trying RAR-based verification"), setname)
         nzo.set_action_line(T("Trying RAR-based verification"), "...")
         try:
-            # Set path to unrar and open the file
             # Requires de-unicode for RarFile to work!
-            rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
             zf = rarfile.RarFile(rars[0])
 
             # Skip if it's encrypted
