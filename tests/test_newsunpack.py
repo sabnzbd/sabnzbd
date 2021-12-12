@@ -18,12 +18,37 @@
 """
 tests.test_newsunpack - Tests of various functions in newspack
 """
-from sabnzbd.newsunpack import *
+import pytest
+
+import sabnzbd.newsunpack as newsunpack
 
 
 class TestNewsUnpack:
     def test_is_sfv_file(self):
-        assert is_sfv_file("tests/data/good_sfv_unicode.sfv")
-        assert is_sfv_file("tests/data/one_line.sfv")
-        assert not is_sfv_file("tests/data/only_comments.sfv")
-        assert not is_sfv_file("tests/data/random.bin")
+        assert newsunpack.is_sfv_file("tests/data/good_sfv_unicode.sfv")
+        assert newsunpack.is_sfv_file("tests/data/one_line.sfv")
+        assert not newsunpack.is_sfv_file("tests/data/only_comments.sfv")
+        assert not newsunpack.is_sfv_file("tests/data/random.bin")
+
+    def test_is_sevenfile(self):
+        # False, because the command is not set
+        assert not newsunpack.SEVEN_COMMAND
+        assert not newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
+
+        # Set the command to get some real results
+        newsunpack.find_programs(".")
+        assert newsunpack.SEVEN_COMMAND
+        assert not newsunpack.is_sevenfile("tests/data/only_comments.sfv")
+        assert not newsunpack.is_sevenfile("tests/data/random.bin")
+        assert not newsunpack.is_sevenfile("tests/data/par2file/basic_16k.par2")
+        assert newsunpack.is_sevenfile("tests/data/test_7zip/testfile.7z")
+
+    def test_sevenzip(self):
+        testzip = newsunpack.SevenZip("tests/data/test_7zip/testfile.7z")
+        assert testzip.namelist() == ["testfile.bin"]
+        # Basic check that we can get data from the 7zip
+        assert len(testzip.open(testzip.namelist()[0]).read()) == 102400
+
+        # Test with a non-7zip file
+        with pytest.raises(TypeError):
+            newsunpack.SevenZip("tests/data/basic_rar5/testfile.rar")

@@ -203,7 +203,7 @@ def process_nzb_archive_file(
         elif sabnzbd.newsunpack.is_sevenfile(path):
             zf = sabnzbd.newsunpack.SevenZip(path)
         else:
-            raise TypeError("Archive %s is not a real archive!" % filename)
+            raise TypeError("File %s is not a supported archive!" % filename)
     except:
         logging.info(T("Cannot read %s"), path, exc_info=True)
         return -1, []

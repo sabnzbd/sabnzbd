@@ -2355,6 +2355,9 @@ class SevenZip:
 
     def __init__(self, path: str):
         self.path = path
+        # Check if it's actually a 7Zip-file
+        if not is_sevenfile(self.path):
+            raise TypeError("File is not a 7zip file")
 
     def namelist(self) -> List[str]:
         """Return list of names in 7Zip"""
