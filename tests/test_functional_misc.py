@@ -18,6 +18,7 @@
 """
 tests.test_functional_misc - Functional tests of various functions
 """
+import io
 import shutil
 import subprocess
 import sys
@@ -52,7 +53,7 @@ class TestQueueRepair(SABnzbdBaseTest):
         # Create folder and save compressed NZB like SABnzbd would do
         admin_path = os.path.join(SAB_INCOMPLETE_DIR, test_job_name, JOB_ADMIN)
         os.makedirs(admin_path)
-        save_compressed(admin_path, test_job_name, nzb_data)
+        save_compressed(admin_path, test_job_name, io.BytesIO(sabnzbd.encoding.utob(nzb_data)))
         assert os.path.exists(os.path.join(admin_path, test_job_name + ".nzb.gz"))
 
         # Pause the queue do we don't download stuff

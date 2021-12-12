@@ -33,7 +33,7 @@ import sys
 import ssl
 import urllib.parse
 from threading import Lock, Thread, Condition
-from typing import Any, AnyStr, Optional, Union
+from typing import Any, Optional, Union, BinaryIO
 
 ##############################################################################
 # Determine platform flags
@@ -609,23 +609,28 @@ def backup_nzb(nzb_path: str):
         shutil.copy(nzb_path, nzb_backup_dir)
 
 
-def save_compressed(folder: str, filename: str, data: AnyStr) -> str:
+def save_compressed(folder: str, filename: str, data_fp: BinaryIO) -> str:
     """Save compressed NZB file in folder, return path to saved nzb file"""
     if filename.endswith(".nzb"):
         filename += ".gz"
     else:
         filename += ".nzb.gz"
     full_nzb_path = os.path.join(folder, filename)
-    logging.info("Saving %s", full_nzb_path)
-    try:
-        # Have to get around the path being put inside the tgz
-        with open(full_nzb_path, "wb") as tgz_file:
-            # We only need minimal compression to prevent huge files
-            with gzip.GzipFile(filename, mode="wb", compresslevel=1, fileobj=tgz_file) as gzip_file:
-                gzip_file.write(encoding.utob(data))
-    except:
-        logging.error(T("Saving %s failed"), full_nzb_path)
-        logging.info("Traceback: ", exc_info=True)
+
+    # Skip existing ones, as it might be queue-repair
+    if not os.path.exists(full_nzb_path):
+        logging.info("Saving %s", full_nzb_path)
+        try:
+            # Have to get around the path being put inside the tgz
+            with open(full_nzb_path, "wb") as tgz_file:
+                # We only need minimal compression to prevent huge files
+                with gzip.GzipFile(filename, mode="wb", compresslevel=1, fileobj=tgz_file) as gzip_file:
+                    shutil.copyfileobj(data_fp, gzip_file)
+        except:
+            logging.error(T("Saving %s failed"), full_nzb_path)
+            logging.info("Traceback: ", exc_info=True)
+    else:
+        logging.info("Skipping existing file %s", full_nzb_path)
 
     return full_nzb_path
 

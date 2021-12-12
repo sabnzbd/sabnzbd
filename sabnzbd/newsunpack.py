@@ -26,9 +26,10 @@ import subprocess
 import logging
 import time
 import zlib
+import io
 import shutil
 import functools
-from typing import Tuple
+from typing import Tuple, List, BinaryIO
 
 import sabnzbd
 from sabnzbd.encoding import platform_btou, correct_unknown_encoding, ubtou
@@ -71,6 +72,7 @@ EXTRACTFROM_RE = re.compile(r"^Extracting\sfrom\s(.+)")
 EXTRACTED_RE = re.compile(r"^(Extracting|Creating|...)\s+(.*?)\s+OK\s*$")
 
 # Constants
+SEVENZIP_ID = b"7z\xbc\xaf'\x1c"
 PAR2_COMMAND = None
 MULTIPAR_COMMAND = None
 RAR_COMMAND = None
@@ -137,6 +139,9 @@ def find_programs(curdir):
 
         # Run check on par2-multicore
         sabnzbd.newsunpack.PAR2_MT = par2_mt_check(sabnzbd.newsunpack.PAR2_COMMAND)
+
+    # Set the path for rarfile
+    rarfile.UNRAR_TOOL = sabnzbd.newsunpack.RAR_COMMAND
 
 
 ENV_NZO_FIELDS = [
@@ -1952,7 +1957,6 @@ def rar_volumelist(rarfile_path, password, known_volumes):
     # UnRar is required to read some RAR files
     # RarFile can fail in special cases
     try:
-        rarfile.UNRAR_TOOL = RAR_COMMAND
         zf = rarfile.RarFile(rarfile_path)
 
         # setpassword can fail due to bugs in RarFile
@@ -2338,22 +2342,24 @@ def pre_queue(nzo: NzbObject, pp, cat):
     return values
 
 
-def is_sevenfile(path):
-    """Return True if path has proper extension and 7Zip is installed"""
-    return SEVEN_COMMAND and os.path.splitext(path)[1].lower() == ".7z"
+def is_sevenfile(path: str) -> bool:
+    """Return True if path has 7Zip-signature and 7Zip is detected"""
+    with open(path, "rb") as sevenzip:
+        if sevenzip.read(6) == SEVENZIP_ID:
+            return bool(SEVEN_COMMAND)
+    return False
 
 
 class SevenZip:
     """Minimal emulation of ZipFile class for 7Zip"""
 
-    def __init__(self, path):
+    def __init__(self, path: str):
         self.path = path
 
-    def namelist(self):
+    def namelist(self) -> List[str]:
         """Return list of names in 7Zip"""
         names = []
-        # Future extension: use '-sccUTF-8' to get names in UTF8 encoding
-        command = [SEVEN_COMMAND, "l", "-p", "-y", "-slt", self.path]
+        command = [SEVEN_COMMAND, "l", "-p", "-y", "-slt", "-sccUTF-8", self.path]
         output = run_command(command)
 
         re_path = re.compile("^Path = (.+)")
@@ -2366,11 +2372,14 @@ class SevenZip:
             del names[0]
         return names
 
-    def read(self, name):
+    def open(self, name: str) -> BinaryIO:
         """Read named file from 7Zip and return data"""
         command = [SEVEN_COMMAND, "e", "-p", "-y", "-so", self.path, name]
         # Ignore diagnostic output, otherwise it will be appended to content
-        return run_command(command, stderr=subprocess.DEVNULL)
+        with build_and_run_command(command, stderr=subprocess.DEVNULL) as p:
+            data = io.BytesIO(p.stdout.read())
+            p.wait()
+        return data
 
     def close(self):
         """Close file"""

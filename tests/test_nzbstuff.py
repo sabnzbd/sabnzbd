@@ -1,9 +1,12 @@
 """
 tests.test_nzbstuff - Testing functions in nzbstuff.py
 """
+import io
+
 import sabnzbd.nzbstuff as nzbstuff
 from sabnzbd.config import ConfigCat
 from sabnzbd.constants import NORMAL_PRIORITY
+from sabnzbd.encoding import utob
 from sabnzbd.filesystem import globber
 
 from tests.testhelper import *
@@ -27,7 +30,7 @@ class TestNZO:
         nzb_data = create_and_read_nzb("basic_rar5")
 
         # Very basic test of NZO creation with data
-        nzo = nzbstuff.NzbObject("test_basic_data", nzb_data=nzb_data)
+        nzo = nzbstuff.NzbObject("test_basic_data", nzb_fp=io.BytesIO(utob(nzb_data)))
         assert nzo.final_name == "test_basic_data"
         assert nzo.files
         assert nzo.files[0].filename == "testfile.rar"

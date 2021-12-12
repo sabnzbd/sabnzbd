@@ -25,13 +25,15 @@ import logging
 import hashlib
 import xml.etree.ElementTree
 import datetime
-from typing import Optional, Dict, Any, Union
+import zipfile
+from typing import Optional, Dict, Any, Union, List, Tuple
 
 import sabnzbd
 from sabnzbd import filesystem, nzbstuff
-from sabnzbd.encoding import utob, correct_unknown_encoding
-from sabnzbd.filesystem import is_archive, get_filename
+from sabnzbd.encoding import utob
+from sabnzbd.filesystem import get_filename
 from sabnzbd.misc import name_to_cat
+from sabnzbd.utils import rarfile
 
 
 def nzbfile_parser(full_nzb_path: str, nzo):
@@ -182,22 +184,29 @@ def process_nzb_archive_file(
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
-):
-    """Analyse ZIP file and create job(s).
-    Accepts ZIP files with ONLY nzb/nfo/folder files in it.
+) -> Tuple[int, List[str]]:
+    """Analyse archive and create job(s).
+    Accepts archive files with ONLY nzb/nfo/folder files in it.
     returns (status, nzo_ids)
         status: -1==Error, 0==OK, 1==Ignore
     """
     nzo_ids = []
     if catdir is None:
         catdir = cat
-
     filename, cat = name_to_cat(filename, catdir)
-    # Returns -1==Error/Retry, 0==OK, 1==Ignore
-    status, zf, extension = is_archive(path)
 
-    if status != 0:
-        return status, []
+    try:
+        if zipfile.is_zipfile(path):
+            zf = zipfile.ZipFile(path)
+        elif rarfile.is_rarfile(path):
+            zf = rarfile.RarFile(path)
+        elif sabnzbd.newsunpack.is_sevenfile(path):
+            zf = sabnzbd.newsunpack.SevenZip(path)
+        else:
+            raise TypeError("Archive %s is not a real archive!" % filename)
+    except:
+        logging.info(T("Cannot read %s"), path, exc_info=True)
+        return -1, []
 
     status = 1
     names = zf.namelist()
@@ -214,20 +223,20 @@ def process_nzb_archive_file(
         for name in names:
             if name.lower().endswith(".nzb"):
                 try:
-                    data = correct_unknown_encoding(zf.read(name))
+                    datap = zf.open(name)
                 except OSError:
                     logging.error(T("Cannot read %s"), name, exc_info=True)
                     zf.close()
                     return -1, []
                 name = filesystem.setname_from_path(name)
-                if data:
+                if datap:
                     nzo = None
                     try:
                         nzo = nzbstuff.NzbObject(
                             name,
                             pp=pp,
                             script=script,
-                            nzb_data=data,
+                            nzb_fp=datap,
                             cat=cat,
                             url=url,
                             priority=priority,
@@ -244,6 +253,8 @@ def process_nzb_archive_file(
                     except:
                         # Something else is wrong, show error
                         logging.error(T("Error while adding %s, removing"), name, exc_info=True)
+                    finally:
+                        datap.close()
 
                     if nzo:
                         if nzo_id:
@@ -253,7 +264,10 @@ def process_nzb_archive_file(
                             nzo_id = None
                         nzo_ids.append(sabnzbd.NzbQueue.add(nzo))
                         nzo.update_rating()
+
+        # Close the pointer to the compressed file
         zf.close()
+
         try:
             if not keep:
                 filesystem.remove_file(path)
@@ -283,11 +297,11 @@ def process_single_nzb(
     url: Optional[str] = None,
     password: Optional[str] = None,
     nzo_id: Optional[str] = None,
-):
+) -> Tuple[int, List[str]]:
     """Analyze file and create a job from it
     Supports NZB, NZB.BZ2, NZB.GZ and GZ.NZB-in-disguise
     returns (status, nzo_ids)
-        status: -2==Error/retry, -1==Error, 0==OK
+        status: -1==Error, 0==OK
     """
     nzo_ids = []
     if catdir is None:
@@ -300,17 +314,13 @@ def process_single_nzb(
         if check_bytes == b"\x1f\x8b":
             # gzip file or gzip in disguise
             filename = filename.replace(".nzb.gz", ".nzb")
-            nzb_reader_handler = gzip.GzipFile
+            nzb_fp = gzip.GzipFile(path, "rb")
         elif check_bytes == b"BZ":
             # bz2 file or bz2 in disguise
             filename = filename.replace(".nzb.bz2", ".nzb")
-            nzb_reader_handler = bz2.BZ2File
+            nzb_fp = bz2.BZ2File(path, "rb")
         else:
-            nzb_reader_handler = open
-
-        # Let's get some data and hope we can decode it
-        with nzb_reader_handler(path, "rb") as nzb_file:
-            data = correct_unknown_encoding(nzb_file.read())
+            nzb_fp = open(path, "rb")
 
     except OSError:
         logging.warning(T("Cannot read %s"), filesystem.clip_path(path))
@@ -329,7 +339,7 @@ def process_single_nzb(
             filename,
             pp=pp,
             script=script,
-            nzb_data=data,
+            nzb_fp=nzb_fp,
             cat=cat,
             url=url,
             priority=priority,
@@ -349,13 +359,11 @@ def process_single_nzb(
         # Empty
         return 1, nzo_ids
     except:
-        if data.find("<nzb") >= 0 > data.find("</nzb"):
-            # Looks like an incomplete file, retry
-            return -2, nzo_ids
-        else:
-            # Something else is wrong, show error
-            logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
-            return -1, nzo_ids
+        # Something else is wrong, show error
+        logging.error(T("Error while adding %s, removing"), filename, exc_info=True)
+        return -1, nzo_ids
+    finally:
+        nzb_fp.close()
 
     if nzo:
         if nzo_id:
