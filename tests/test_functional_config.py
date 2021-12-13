@@ -179,8 +179,8 @@ class TestConfigRSS(SABnzbdBaseTest):
 
     def test_rss_basic_flow(self, httpserver: HTTPServer):
         # Setup the response for the NZB
-        nzb_data = create_and_read_nzb("basic_rar5")
-        httpserver.expect_request("/test_nzb.nzb").respond_with_data(nzb_data)
+        nzb_fp = create_and_read_nzb_fp("basic_rar5")
+        httpserver.expect_request("/test_nzb.nzb").respond_with_data(nzb_fp.read())
         nzb_url = httpserver.url_for("/test_nzb.nzb")
 
         # Set the response for the RSS-feed, replacing the URL to the NZB

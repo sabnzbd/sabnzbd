@@ -145,6 +145,7 @@ def create_nzb(nzb_file=None, nzb_dir=None, metadata=None):
 
     # Either use directory or single file
     if nzb_dir:
+        nzb_dir = os.path.normpath(nzb_dir)
         if not os.path.exists(nzb_dir) or not os.path.isdir(nzb_dir):
             raise NotADirectoryError("%s is not a valid directory" % nzb_dir)
 

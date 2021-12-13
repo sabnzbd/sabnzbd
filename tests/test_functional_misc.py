@@ -47,13 +47,13 @@ class TestShowLogging(SABnzbdBaseTest):
 class TestQueueRepair(SABnzbdBaseTest):
     def test_queue_repair(self):
         """Test full queue repair by manually adding an orphaned job"""
-        nzb_data = create_and_read_nzb("basic_rar5")
+        nzb_fp = create_and_read_nzb_fp("basic_rar5")
         test_job_name = "testfile_%s" % time.time()
 
         # Create folder and save compressed NZB like SABnzbd would do
         admin_path = os.path.join(SAB_INCOMPLETE_DIR, test_job_name, JOB_ADMIN)
         os.makedirs(admin_path)
-        save_compressed(admin_path, test_job_name, io.BytesIO(sabnzbd.encoding.utob(nzb_data)))
+        save_compressed(admin_path, test_job_name, nzb_fp)
         assert os.path.exists(os.path.join(admin_path, test_job_name + ".nzb.gz"))
 
         # Pause the queue do we don't download stuff
