@@ -325,6 +325,7 @@ class DirectUnpacker(threading.Thread):
         # Add last line and write any new output
         if linebuf:
             unrar_log.append(platform_btou(linebuf.strip()))
+        if unrar_log:
             logging.debug("DirectUnpack Unrar output %s", "\n".join(unrar_log))
 
         # Make more space
