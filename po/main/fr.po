@@ -1230,7 +1230,7 @@ msgstr "NZB ajouté à la file d'attente"
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
+msgstr "Fichier NZB %s invalide, sera ignoré (erreur : %s)"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
