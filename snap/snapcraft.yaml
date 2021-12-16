@@ -7,11 +7,19 @@ grade: stable
 icon: interfaces/Config/templates/staticcfg/images/logo-small.svg
 adopt-info: sabnzbd
 
+architectures:
+  - build-on: s390x
+  - build-on: ppc64el
+  - build-on: arm64
+  - build-on: armhf
+  - build-on: amd64
+  - build-on: i386
+
 apps:
   sabnzbd:
     environment:
       LC_CTYPE: C.UTF-8
-    command: python3 $SNAP/opt/sabnzbd/SABnzbd.py -f $SNAP_COMMON
+    command: bin/sabnzbd-wrapper
     daemon: simple
     plugs: [network, home, network-bind, removable-media]
 
@@ -28,5 +36,10 @@ parts:
       python3 tools/make_mo.py
       mkdir -p $SNAPCRAFT_PART_INSTALL/opt
       cp -R $SNAPCRAFT_PART_BUILD $SNAPCRAFT_PART_INSTALL/opt/sabnzbd
+      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
+      echo "python3 \$SNAP/opt/sabnzbd/SABnzbd.py -f \$SNAP_COMMON" > $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
+      chmod +x $SNAPCRAFT_PART_INSTALL/bin/sabnzbd-wrapper
+
     organize:
       usr/bin/unrar-nonfree: usr/bin/unrar
+
