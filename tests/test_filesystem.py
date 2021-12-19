@@ -25,6 +25,11 @@ import random
 import shutil
 from pathlib import Path
 
+try:
+    import posix1e
+except ImportError:
+    pass
+
 import pyfakefs.fake_filesystem_unittest as ffs
 
 import sabnzbd.cfg
@@ -1157,3 +1162,78 @@ class TestUnwantedExtensions:
             else:
                 # missing extension is never considered unwanted
                 assert filesystem.has_unwanted_extension(filename) is False
+
+
+@pytest.mark.skipif(not filesystem.HAVE_POSIX_ACL, reason="Platform lacks support for posix ACLs")
+@pytest.mark.usefixtures("clean_cache_dir")
+class TestHasDefaultPosixAcl:
+    DIR_ACL = os.path.join(SAB_CACHE_DIR, "acl")
+    DIR_DEFAULT_ACL = os.path.join(SAB_CACHE_DIR, "default_acl")
+    DIR_NO_ACL = os.path.join(SAB_CACHE_DIR, "no_acl")
+
+    SUBDIR = "subdir"
+    FILENAME = "file.name"
+
+    setup_ok = False
+
+    @classmethod
+    def setup_class(cls):
+        """Create test directories and files, both with and without (default) posix ACLs"""
+        try:
+            for path in (cls.DIR_ACL, cls.DIR_DEFAULT_ACL, cls.DIR_NO_ACL):
+                os.makedirs(path)
+
+            # Make up some permissions-only ACL (no privileges needed)
+            acl_value = posix1e.ACL(text="user::rwx,group::---,other::r-x")
+
+            # Apply ACLs
+            acl_value.applyto(cls.DIR_ACL, posix1e.ACL_TYPE_ACCESS)  # Equivalent of standard permissions
+            acl_value.applyto(cls.DIR_DEFAULT_ACL, posix1e.ACL_TYPE_DEFAULT)  # Set default ACL
+
+            # Create subdirs
+            for path in (cls.DIR_ACL, cls.DIR_DEFAULT_ACL, cls.DIR_NO_ACL):
+                subdir = os.path.join(path, cls.SUBDIR)
+                os.makedirs(subdir)
+                # Create files
+                for fpath in (path, subdir):
+                    with open(os.path.join(fpath, cls.FILENAME), "a"):
+                        os.utime(fpath, None)
+
+            # All good
+            cls.setup_ok = True
+        except Exception:
+            pass
+
+    @pytest.mark.parametrize("platform", ["linux", "darwin"])
+    @pytest.mark.parametrize(
+        "path, result, require_setup",
+        [
+            ("", False, False),
+            ("foobar", False, False),  # No directory component -> empty dirname
+            (DIR_NO_ACL, False, True),
+            (os.path.join(DIR_NO_ACL, SUBDIR), False, True),
+            (os.path.join(DIR_NO_ACL, FILENAME), False, True),
+            (os.path.join(DIR_NO_ACL, SUBDIR, FILENAME), False, True),
+            (os.path.join(DIR_NO_ACL, SUBDIR, "no.such.file"), False, False),
+            (DIR_ACL, False, True),
+            (os.path.join(DIR_ACL, SUBDIR), False, True),
+            (os.path.join(DIR_ACL, FILENAME), False, True),
+            (os.path.join(DIR_ACL, SUBDIR, FILENAME), False, True),
+            (os.path.join(DIR_ACL, SUBDIR, "no.such.file"), False, False),
+            (DIR_DEFAULT_ACL, True, True),
+            (os.path.join(DIR_DEFAULT_ACL, SUBDIR), True, True),
+            (os.path.join(DIR_DEFAULT_ACL, FILENAME), True, True),
+            (os.path.join(DIR_DEFAULT_ACL, SUBDIR, FILENAME), True, True),
+            (os.path.join(DIR_DEFAULT_ACL, SUBDIR, "no.such.file"), True, False),
+        ],
+    )
+    def test_has_default_posix_acl(self, platform, path, result, require_setup):
+        # The test platform or filesystem may not have support for ACLs
+        if require_setup and not self.setup_ok:
+            pytest.skip("ACL test class setup failed")
+
+        @set_platform(platform)
+        def _func():
+            assert filesystem.has_default_posix_acl(path) == result
+
+        _func()

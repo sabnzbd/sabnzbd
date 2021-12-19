@@ -18,6 +18,9 @@ pywin32>=227; sys_platform == 'win32'
 # macOS system calls
 pyobjc; sys_platform == 'darwin'
 
+# Optional detection of default posix ACLs; requires libacl1 headers
+pylibacl; sys_platform != 'win32'
+
 # Optional support for *nix tray icon.
 # Note that pygobject depends on pycairo, which requires pkg-config and cairo headers.
 # See https://pycairo.readthedocs.io/en/latest/getting_started.html

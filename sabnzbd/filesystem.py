@@ -32,6 +32,13 @@ import ctypes
 from typing import Union, List, Tuple, Dict, Optional
 
 try:
+    import posix1e
+
+    HAVE_POSIX_ACL = True
+except ImportError:
+    HAVE_POSIX_ACL = False
+
+try:
     import win32api
     import win32file
 except ImportError:
@@ -42,6 +49,7 @@ from sabnzbd.decorators import synchronized
 from sabnzbd.constants import FUTURE_Q_FOLDER, JOB_ADMIN, GIGI, DEF_FILE_MAX
 from sabnzbd.encoding import correct_unknown_encoding, utob, ubtou
 from sabnzbd.utils import rarfile
+
 
 # For Windows: determine executable extensions
 if os.name == "nt":
@@ -610,9 +618,26 @@ def set_chmod(path: str, permissions: int, report: bool):
             logging.info("Traceback: ", exc_info=True)
 
 
+def has_default_posix_acl(path: str) -> bool:
+    """Check if path is subject to a default posix access control list"""
+    if not HAVE_POSIX_ACL:
+        return False
+
+    # Default ACLs can only be set on directories
+    if not os.path.isdir(path):
+        path = os.path.dirname(path)
+
+    # Check for a valid default ACL
+    try:
+        return posix1e.ACL(filedef=path).valid()
+    except Exception:
+        # Bad input, dirname empty, ACLs not supported on filesystem, ...
+        return False
+
+
 def set_permissions(path: str, recursive: bool = True):
     """Give folder tree and its files their proper permissions"""
-    if not sabnzbd.WIN32:
+    if not sabnzbd.WIN32 and not has_default_posix_acl(path):
         umask = sabnzbd.cfg.umask()
         try:
             # Make sure that user R+W+X is on
