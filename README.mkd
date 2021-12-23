@@ -1,5 +1,10 @@
-Release Notes - SABnzbd 3.5.0 Beta 2
+Release Notes - SABnzbd 3.5.0 Beta 3
 =========================================================
+
+## Changes since 3.5.0 Beta 2
+- Reduced memory usage during and after parsing `.nzb` files.
+- Added option to preserve paused state after a restart.
+- `unrar` logging of Direct Unpack was not logged if it was aborted.
 
 ## Changes since 3.5.0 Beta 1
 - Updated news server SSL setup due to changes in Python 3.10.
