@@ -1183,7 +1183,7 @@ msgstr "NZB התווסף לתור"
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
+msgstr "קובץ NZB בלתי תקף %s, מדלג (שגיאה: %s)"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
@@ -3696,11 +3696,11 @@ msgstr "וודא תעודות בעת התחברות אל מדדנים ומקור
 
 #: sabnzbd/skintext.py
 msgid "SOCKS5 Proxy"
-msgstr ""
+msgstr "ייפוי כוח SOCKS5"
 
 #: sabnzbd/skintext.py
 msgid "Use the specified SOCKS5 proxy for all outgoing connections."
-msgstr ""
+msgstr "השתמש בייפוי הכוח SOCKS5 המצוין עבור כל החיבורים היוצאים."
 
 #: sabnzbd/skintext.py
 msgid "Server"

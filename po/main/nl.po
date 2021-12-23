@@ -1212,7 +1212,7 @@ msgstr "Download aan wachtrij toegevoegd"
 #. Warning message
 #: sabnzbd/nzbstuff.py
 msgid "Invalid NZB file %s, skipping (error: %s)"
-msgstr ""
+msgstr "Corrupte NZB %s wordt overgeslagen (foutmelding: %s)"
 
 #. Warning message
 #: sabnzbd/nzbstuff.py, sabnzbd/urlgrabber.py
